@@ -29,7 +29,7 @@ export function ProjectCard({ project }: { project: Project }) {
     <button
       onClick={open}
       className={cn(
-        "group flex min-h-[180px] flex-col rounded-lg border border-neutral-200 bg-white p-5 text-left shadow-sm transition-all",
+        "group flex min-h-[180px] flex-col rounded-xl border border-neutral-200/80 bg-white p-5 text-left shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all duration-200",
         "hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
       )}
     >
