@@ -2,6 +2,10 @@
 node_modules/
 bun.lockb
 
+# Lokale Arbeits-Artefakte (kein Produktcode)
+.planning/
+.claude-kanban/
+
 # Build output
 dist/
 dist-ssr/

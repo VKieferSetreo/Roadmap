@@ -2,7 +2,10 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react-swc"
 import path from "node:path"
 
-export default defineConfig({
+// Dev läuft auf Root (/), der Production-Build wird unter /roadmap/ ausgeliefert
+// (setreo-intern-hub serviert roadmap/ mit strip-prefix /roadmap).
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/roadmap/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -15,7 +18,7 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    sourcemap: true,
+    sourcemap: false,
     target: "es2022",
   },
-})
+}))
