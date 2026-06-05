@@ -5,11 +5,21 @@ import { runMockAnalysis } from "./generate"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
+/** YYYY-MM-DDTHH:mm relativ zu jetzt (lokale Uhrzeit per UTC-Offset). */
+function iso(daysFromNow: number, hour = 6, minute = 0): string {
+  const d = new Date(Date.now() + daysFromNow * 86400_000)
+  d.setHours(hour, minute, 0, 0)
+  // toISOString gibt UTC; wir nehmen lokal — bauen das Format manuell
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 function makeAnalysed(
   name: string,
   route: RouteInput,
   transport: TransportData,
   ageDays: number,
+  zeitraumStartIn: number = 14,
 ): Project {
   const res = runMockAnalysis(route, transport)
   const created = new Date(Date.now() - ageDays * 86400_000).toISOString()
@@ -22,6 +32,11 @@ function makeAnalysed(
     updatedAt: updated,
     route,
     transport,
+    zeitraum: {
+      // Schwertransport-typisch: Nachtfahrt-Start 22:00, Ankunft 2 Tage später 14:00
+      von: iso(zeitraumStartIn, 22, 0),
+      bis: iso(zeitraumStartIn + 2, 14, 0),
+    },
     routeGeometry: res.routeGeometry,
     findings: res.findings,
     distanzKm: res.distanzKm,
@@ -78,6 +93,7 @@ export function buildSeedProjects(): Project[] {
         achsen: 8,
         ladung: "Raupenbagger 45 t",
       },
+      zeitraum: { von: iso(28, 22, 0), bis: iso(30, 14, 0) },
       routeGeometry: [],
       findings: [],
     },

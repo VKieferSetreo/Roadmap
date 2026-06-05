@@ -22,9 +22,11 @@ interface SettingsStore {
 
 export const TILE_LAYERS: Record<TileStyle, { url: string; attribution: string; label: string }> = {
   standard: {
-    label: "Standard (OpenStreetMap)",
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    // openstreetmap.de liefert OSM-Tiles mit deutschsprachigen Beschriftungen
+    // (Nordsee, Ostsee, Bodensee usw. statt „North Sea", „Baltic Sea").
+    label: "Standard (OpenStreetMap DE)",
+    url: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Tiles: openstreetmap.de',
   },
   hell: {
     label: "Hell (CARTO Positron)",

@@ -6,6 +6,9 @@ bun.lockb
 .planning/
 .claude-kanban/
 
+# Interne Konzept-/Orientierungsdokumente (nicht committen)
+_konzept/
+
 # Build output
 dist/
 dist-ssr/

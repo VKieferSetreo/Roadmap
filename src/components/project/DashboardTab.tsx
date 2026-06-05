@@ -2,7 +2,20 @@
 
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ChevronDown, ClipboardList, Clock, Route as RouteIcon, Search } from "lucide-react"
+import {
+  Building2,
+  CalendarRange,
+  ChevronDown,
+  ClipboardList,
+  Clock,
+  ExternalLink,
+  FileDown,
+  FileSpreadsheet,
+  MapPin,
+  Radio,
+  Route as RouteIcon,
+  Search,
+} from "lucide-react"
 import { Card, CardContent } from "@/components/ui/Card"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
@@ -10,6 +23,7 @@ import { Input } from "@/components/ui/Input"
 import { Select } from "@/components/ui/Select"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { KategorieGlyph } from "./KategorieGlyph"
 import type { Finding, FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -71,6 +85,18 @@ export function DashboardTab({ project }: { project: Project }) {
             dot={SEVERITY_META[sev].marker}
           />
         ))}
+      </div>
+
+      {/* Export-Buttons */}
+      <div className="flex items-center justify-end gap-2">
+        <Button variant="outline" size="sm">
+          <FileDown className="h-3.5 w-3.5" />
+          PDF
+        </Button>
+        <Button variant="outline" size="sm">
+          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+          Excel
+        </Button>
       </div>
 
       {/* Filterleiste */}
@@ -164,7 +190,6 @@ function FindingRow({
 }) {
   const kat = KATEGORIE_META[finding.kategorie]
   const sev = SEVERITY_META[finding.severity]
-  const Icon = kat.icon
   return (
     <li>
       <button
@@ -173,7 +198,7 @@ function FindingRow({
         className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50"
       >
         <span className="rounded-md p-2 text-white" style={{ background: sev.marker }}>
-          <Icon className="h-4 w-4" />
+          <KategorieGlyph kategorie={finding.kategorie} className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-neutral-900">{finding.titel}</p>
@@ -189,9 +214,19 @@ function FindingRow({
         />
       </button>
       {open ? (
-        <div className="border-t border-neutral-100 bg-neutral-50/60 px-4 py-3 pl-[60px]">
-          <p className="text-sm text-neutral-600">{finding.beschreibung}</p>
-          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+        <div className="space-y-4 border-t border-neutral-100 bg-neutral-50/60 px-4 py-4 pl-[60px]">
+          <p className="text-sm text-neutral-700">{finding.beschreibung}</p>
+
+          {/* Strukturierte Details */}
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+            {finding.strassenRef ? (
+              <div className="flex flex-col">
+                <dt className="text-xs text-neutral-400">Straßen-Referenz</dt>
+                <dd className="text-sm font-semibold tabular-nums text-neutral-800">
+                  {finding.strassenRef}
+                </dd>
+              </div>
+            ) : null}
             {Object.entries(finding.detail).map(([k, v]) => (
               <div key={k} className="flex flex-col">
                 <dt className="text-xs text-neutral-400">{k}</dt>
@@ -199,8 +234,71 @@ function FindingRow({
               </div>
             ))}
           </dl>
+
+          {/* Gültigkeit */}
+          {finding.gueltigVon || finding.gueltigBis ? (
+            <div className="flex items-start gap-2 text-xs">
+              <CalendarRange className="mt-0.5 h-3.5 w-3.5 text-neutral-400" />
+              <span className="text-neutral-600">
+                <span className="font-semibold text-neutral-700">Gültig:</span>{" "}
+                {finding.gueltigVon ? formatIsoDE(finding.gueltigVon) : "—"} bis{" "}
+                {finding.gueltigBis ? formatIsoDE(finding.gueltigBis) : "unbefristet"}
+              </span>
+            </div>
+          ) : null}
+
+          {/* Zuständige Stelle */}
+          {finding.zustaendig ? (
+            <div className="flex items-start gap-2 text-xs">
+              <Building2 className="mt-0.5 h-3.5 w-3.5 text-neutral-400" />
+              <span className="text-neutral-600">
+                <span className="font-semibold text-neutral-700">Zuständig:</span>{" "}
+                {finding.zustaendig}
+              </span>
+            </div>
+          ) : null}
+
+          {/* Geo */}
+          <div className="flex items-start gap-2 text-xs">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 text-neutral-400" />
+            <span className="text-neutral-500 tabular-nums">
+              {finding.lat.toFixed(5)}° N · {finding.lng.toFixed(5)}° E
+            </span>
+          </div>
+
+          {/* Quelle als prominenter Link-Block */}
+          {finding.quelle ? (
+            <a
+              href={finding.quelle.url}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50/40 px-3 py-2.5 transition-colors hover:bg-primary-50 hover:border-primary-300"
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <Radio className="h-3.5 w-3.5 flex-shrink-0 text-primary-700" />
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-neutral-900">
+                    {finding.quelle.name}
+                  </div>
+                  <div className="truncate text-[10px] font-mono text-neutral-500">
+                    {finding.quelle.url}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 whitespace-nowrap text-xs font-semibold text-primary-700">
+                Zur Quelle
+                <ExternalLink className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </div>
+            </a>
+          ) : null}
         </div>
       ) : null}
     </li>
   )
+}
+
+function formatIsoDE(iso: string): string {
+  if (!iso) return ""
+  const [y, m, d] = iso.split("-")
+  return `${d}.${m}.${y}`
 }

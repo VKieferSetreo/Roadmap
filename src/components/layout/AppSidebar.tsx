@@ -5,15 +5,12 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
-  ClipboardList,
   Database,
   Folder,
   Home,
   LogOut,
-  MapPinned,
   Plus,
   Settings,
-  SlidersHorizontal,
   X,
   type LucideIcon,
 } from "lucide-react"
@@ -21,27 +18,19 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { cn } from "@/lib/cn"
 
-const MODULE_TABS: { slug: string; label: string; icon: LucideIcon }[] = [
-  { slug: "anlage", label: "Anlage", icon: SlidersHorizontal },
-  { slug: "karte", label: "Karte", icon: MapPinned },
-  { slug: "dashboard", label: "Dashboard", icon: ClipboardList },
-]
-
 interface NavRowProps {
   icon: LucideIcon
   label: string
   active?: boolean
-  indent?: boolean
   onClick: () => void
 }
 
-function NavRow({ icon: Icon, label, active, indent, onClick }: NavRowProps) {
+function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "relative flex w-full items-center gap-2.5 rounded-md py-2 pr-3 text-sm transition-colors",
-        indent ? "pl-9" : "pl-3",
+        "relative flex w-full items-center gap-2.5 rounded-md py-2 pl-3 pr-3 text-sm transition-colors",
         active
           ? "bg-primary-50 font-medium text-primary-700 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
           : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
@@ -102,28 +91,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             sorted.map((p) => {
               const isActive = p.id === activeId
               return (
-                <div key={p.id}>
-                  <NavRow
-                    icon={Folder}
-                    label={p.name}
-                    active={isActive}
-                    onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "anlage"}`)}
-                  />
-                  {isActive ? (
-                    <div className="mt-0.5 flex flex-col gap-0.5">
-                      {MODULE_TABS.map((t) => (
-                        <NavRow
-                          key={t.slug}
-                          icon={t.icon}
-                          label={t.label}
-                          indent
-                          active={activeTab === t.slug}
-                          onClick={() => go(`/projekte/${p.id}/${t.slug}`)}
-                        />
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
+                <NavRow
+                  key={p.id}
+                  icon={Folder}
+                  label={p.name}
+                  active={isActive}
+                  onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "anlage"}`)}
+                />
               )
             })
           )}

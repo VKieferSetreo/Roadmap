@@ -53,6 +53,14 @@ export type FindingKategorie =
 /** Wie kritisch ein Fund für den konkreten Transport ist. */
 export type FindingSeverity = "kritisch" | "warnung" | "hinweis"
 
+/** Datenquelle eines Funds (Behörde, API, OSM …). */
+export interface FindingSource {
+  name: string
+  url: string
+  /** ISO-Datum oder relativer Text, z.B. "vor 12 min". */
+  aktualisiertAm: string
+}
+
 /** Ein auf der Strecke gefundenes Hindernis / eine Auffälligkeit. */
 export interface Finding {
   id: string
@@ -66,11 +74,28 @@ export interface Finding {
   severity: FindingSeverity
   /** Strukturierte Detailwerte, z.B. { "Durchfahrtshöhe": "3,80 m" }. */
   detail: Record<string, string>
+  /** Konkrete Straßen-/km-Referenz, z.B. "A24 km 102,3". */
+  strassenRef?: string
+  /** Gültigkeitszeitraum als ISO-Datum (YYYY-MM-DD). */
+  gueltigVon?: string
+  gueltigBis?: string
+  /** Optionale Datenquelle (Behörde, API, OSM …) mit klickbarem URL. */
+  quelle?: FindingSource
+  /** Zuständige Stelle (Behörde, Niederlassung). */
+  zustaendig?: string
 }
 
 export interface RoutePoint {
   lat: number
   lng: number
+}
+
+/** Transport-Zeitraum (datetime im ISO-Format YYYY-MM-DDTHH:mm). */
+export interface TransportZeitraum {
+  von?: string
+  bis?: string
+  /** Wenn true, gilt der gesamte Tag (00:00 → 23:59) und die Uhrzeit-Auswahl entfällt. */
+  ganztaegig?: boolean
 }
 
 export interface Project {
@@ -82,6 +107,8 @@ export interface Project {
   updatedAt: string
   route: RouteInput
   transport: TransportData
+  /** Geplanter Zeitraum des Transports. */
+  zeitraum: TransportZeitraum
   /** Polyline der Strecke (leer bis zur Analyse). */
   routeGeometry: RoutePoint[]
   findings: Finding[]

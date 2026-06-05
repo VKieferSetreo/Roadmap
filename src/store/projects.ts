@@ -3,7 +3,7 @@
 
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
-import type { Project, RouteInput, TransportData } from "@/types/domain"
+import type { Project, RouteInput, TransportData, TransportZeitraum } from "@/types/domain"
 import { DEFAULT_TRANSPORT } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
@@ -40,6 +40,7 @@ interface ProjectStore {
   removeProject: (id: string) => void
   updateRoute: (id: string, patch: Partial<RouteInput>) => void
   updateTransport: (id: string, patch: Partial<TransportData>) => void
+  updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
   runAnalysis: (id: string) => void
 }
 
@@ -80,6 +81,7 @@ export const useProjectStore = create<ProjectStore>()(
           updatedAt: now(),
           route: { mode: "startziel", vias: [] },
           transport: { ...DEFAULT_TRANSPORT },
+          zeitraum: {},
           routeGeometry: [],
           findings: [],
         }
@@ -118,6 +120,15 @@ export const useProjectStore = create<ProjectStore>()(
           projects: s.projects.map((p) =>
             p.id === id
               ? { ...p, transport: { ...p.transport, ...patch }, updatedAt: now() }
+              : p,
+          ),
+        })),
+
+      updateZeitraum: (id, patch) =>
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? { ...p, zeitraum: { ...p.zeitraum, ...patch }, updatedAt: now() }
               : p,
           ),
         })),

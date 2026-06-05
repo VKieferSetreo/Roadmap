@@ -6,13 +6,143 @@ import type {
   Finding,
   FindingKategorie,
   FindingSeverity,
+  FindingSource,
   RouteInput,
   RoutePoint,
   TransportData,
 } from "@/types/domain"
+// FindingSource wird in buildSourcePool zurückgegeben; Re-Export-Hinweis für Linter.
+export type { FindingSource }
 import { resolveOrt } from "./cities"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
+
+/** Baut einen OSM-Deep-Link auf die konkrete Geo-Position (Marker + Zoom). */
+function osmDeepLink(lat: number, lng: number, zoom = 17): string {
+  const la = lat.toFixed(5)
+  const ln = lng.toFixed(5)
+  return `https://www.openstreetmap.org/?mlat=${la}&mlon=${ln}#map=${zoom}/${la}/${ln}`
+}
+
+/** Extrahiert das Straßenkürzel ("A24") aus einer Straßen-Ref wie "A24 km 102,3". */
+function extractRoad(strassenRef: string | undefined, fallback = "A4"): string {
+  return (strassenRef ?? "").split(/\s+/)[0] || fallback
+}
+
+interface SourceCtx {
+  lat: number
+  lng: number
+  strassenRef: string
+}
+
+/** Baut für jede Kategorie einen Pool an Quellen mit möglichst echten Deep-Links.
+ *  Pseudo-deep-Links bei geschlossenen Systemen (BASt SIB-Bauwerke, BKG, DB Netz)
+ *  zeigen mindestens auf die zuständige Sektion statt nur auf die Domain-Root. */
+function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSource[] {
+  const osm = osmDeepLink(ctx.lat, ctx.lng)
+  const road = extractRoad(ctx.strassenRef)
+  const ahApi = `https://verkehr.autobahn.de/o/autobahn/${road}/services/roadworks`
+  const ahApiClosure = `https://verkehr.autobahn.de/o/autobahn/${road}/services/closure`
+  const ahApiWarn = `https://verkehr.autobahn.de/o/autobahn/${road}/services/warning`
+  const mobiSearch = (q: string) =>
+    `https://mobilithek.info/offers?search=${encodeURIComponent(q)}`
+
+  const bastSib =
+    "https://www.bast.de/DE/Ingenieurbau/Anwendungen/SIB-Bauwerke/SIB-Bauwerke.html"
+  const bkgDgm =
+    "https://www.bkg.bund.de/DE/Produkte-und-Services/Shop-und-Downloads/Digitale-Geodaten/Digitales-Gelaendemodell/digitales-gelaendemodell.html"
+  const dbNetzInfra = "https://fahrweg.dbnetze.com/fahrweg-de/start/das_unternehmen"
+
+  switch (kategorie) {
+    case "bruecke":
+      return [
+        { name: `Autobahn-API · ${road} Closure`, url: ahApiClosure, aktualisiertAm: "vor 12 min" },
+        { name: "BASt SIB-Bauwerke · Bauwerkssuche", url: bastSib, aktualisiertAm: "vor 3 h" },
+        { name: "OSM · Brücken-Position", url: osm, aktualisiertAm: "vor 1 h" },
+      ]
+    case "tunnel":
+      return [
+        { name: "OSM · Tunnel an Position", url: osm, aktualisiertAm: "vor 2 d" },
+        { name: "BASt SIB-Bauwerke · Tunnelregister", url: bastSib, aktualisiertAm: "vor 1 d" },
+      ]
+    case "engstelle":
+      return [
+        { name: `Autobahn-API · ${road} Roadworks`, url: ahApi, aktualisiertAm: "vor 22 min" },
+        { name: `Mobilithek · DATEX-II "${road}"`, url: mobiSearch(`${road} roadworks`), aktualisiertAm: "vor 8 min" },
+      ]
+    case "gewicht":
+      return [
+        { name: "BASt SIB-Bauwerke · Tragfähigkeit", url: bastSib, aktualisiertAm: "vor 6 h" },
+        {
+          name: "StVO §29(3) · Großraum-/Schwertransport",
+          url: "https://www.gesetze-im-internet.de/stvo_2013/__29.html",
+          aktualisiertAm: "vor 14 d",
+        },
+      ]
+    case "kreisverkehr":
+      return [
+        { name: "OSM · Kreisverkehr (Position)", url: osm, aktualisiertAm: "vor 1 d" },
+      ]
+    case "baustelle":
+      return [
+        { name: `Autobahn-API · ${road} Roadworks`, url: ahApi, aktualisiertAm: "vor 9 min" },
+        { name: `Mobilithek · DATEX-II "${road}"`, url: mobiSearch(`${road} baustelle`), aktualisiertAm: "vor 12 min" },
+      ]
+    case "bahnuebergang":
+      return [
+        { name: "OSM · railway=level_crossing", url: osm, aktualisiertAm: "vor 7 d" },
+        { name: "DB Netz · Infrastruktur", url: dbNetzInfra, aktualisiertAm: "vor 30 d" },
+      ]
+    case "steigung":
+      return [
+        { name: "BKG · DGM200 Höhenmodell", url: bkgDgm, aktualisiertAm: "vor 90 d" },
+        { name: "OSM · Höhen-Tags an Position", url: osm, aktualisiertAm: "vor 30 d" },
+      ]
+    case "ampel":
+      return [
+        { name: "OSM · Signalanlage (Position)", url: osm, aktualisiertAm: "vor 1 h" },
+        {
+          name: `Autobahn-API · ${road} Warnungen`,
+          url: ahApiWarn,
+          aktualisiertAm: "vor 1 h",
+        },
+      ]
+  }
+}
+
+const ZUSTAENDIG_POOL: Partial<Record<FindingKategorie, string[]>> = {
+  bruecke: ["Autobahn GmbH Nordost", "Autobahn GmbH Südwest", "RP Karlsruhe — Bauwerksbehörde"],
+  tunnel: ["Autobahn GmbH Nordost · Tunnelleitstelle", "Autobahn GmbH West · Tunnelbetrieb"],
+  engstelle: ["Autobahn GmbH · Baustellenkoordination", "Landesbetrieb Mobilität"],
+  gewicht: ["RP Karlsruhe — Genehmigungsbehörde (VEMAGS)", "Landratsamt — Straßenverkehrsbehörde"],
+  kreisverkehr: ["Kommune — Straßenverkehrsbehörde"],
+  baustelle: ["Autobahn GmbH · Niederlassung", "Landesbetrieb Mobilität"],
+  bahnuebergang: ["DB Netz AG · Regionalbereich"],
+  steigung: [],
+  ampel: ["Kommune — Verkehrsleitstelle"],
+}
+
+function pickSource(kategorie: FindingKategorie, ctx: SourceCtx): FindingSource {
+  const pool = buildSourcePool(kategorie, ctx)
+  return pool[Math.floor(Math.random() * pool.length)]
+}
+
+function pickZustaendig(kategorie: FindingKategorie): string | undefined {
+  const pool = ZUSTAENDIG_POOL[kategorie] ?? []
+  if (!pool.length) return undefined
+  return pool[Math.floor(Math.random() * pool.length)]
+}
+
+function isoDate(daysFromNow: number): string {
+  return new Date(Date.now() + daysFromNow * 86400_000).toISOString().slice(0, 10)
+}
+
+function pickStrassenRef(km: number): string {
+  const roads = ["A2", "A3", "A4", "A5", "A7", "A8", "A9", "A10", "A24", "B1", "B27", "B96"]
+  const road = roads[Math.floor(Math.random() * roads.length)]
+  const exact = (km + Math.random() * 0.9).toFixed(1).replace(".", ",")
+  return `${road} km ${exact}`
+}
 
 /** Haversine-Distanz in km zwischen zwei Punkten. */
 function distanceKm(a: RoutePoint, b: RoutePoint): number {
@@ -234,6 +364,8 @@ export function generateFindings(
     const built = def.build(transport)
     const p = geometry[idx]
 
+    const km = Math.round(cum[idx] * 10) / 10
+    const strassenRef = pickStrassenRef(km)
     findings.push({
       id: uid(),
       kategorie,
@@ -241,9 +373,14 @@ export function generateFindings(
       beschreibung: built.beschreibung,
       lat: p.lat,
       lng: p.lng,
-      km: Math.round(cum[idx] * 10) / 10,
+      km,
       severity: built.severity,
       detail: built.detail,
+      strassenRef,
+      gueltigVon: isoDate(-30 - Math.floor(Math.random() * 60)),
+      gueltigBis: isoDate(30 + Math.floor(Math.random() * 180)),
+      quelle: pickSource(kategorie, { lat: p.lat, lng: p.lng, strassenRef }),
+      zustaendig: pickZustaendig(kategorie),
     })
   }
 

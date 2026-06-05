@@ -4,6 +4,7 @@
 import { Link } from "react-router-dom"
 import { LogOut, Menu } from "lucide-react"
 import { toast } from "sonner"
+import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { useSettingsStore } from "@/store/settings"
 
 function initials(name: string): string {
@@ -28,26 +29,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
       </button>
 
       <Link to="/" className="flex items-center gap-3" aria-label="Setreo Roadmap — Startseite">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="M3 9.5 12 3l9 6.5" />
-            <path d="M5 8.8V21h14V8.8" />
-            <path d="M10 21v-6h4v6" />
-          </svg>
-        </span>
-        <span className="text-lg font-black uppercase leading-none tracking-[0.1em] text-neutral-800">
-          SETREO
-        </span>
+        <SetreoLogo height={36} />
         <span className="text-neutral-300" aria-hidden>
           |
         </span>
