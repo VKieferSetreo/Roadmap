@@ -1,0 +1,7 @@
+# shadcn/ui Components
+
+`bunx shadcn@latest add button card dialog input select badge avatar dropdown-menu tabs sheet switch toast` schreibt hier hin.
+
+In Phase-2: schrittweise Components addieren wenn Pages gebaut werden.
+Für den Bootstrap genügt der untenstehende `Button.tsx` als Minimal-Set,
+damit Pages-Stubs kompilieren ohne dass shadcn schon vollständig installiert ist.

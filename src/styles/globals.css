@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-neutral-50 text-neutral-800 font-sans antialiased text-sm;
+    font-feature-settings: "cv11", "ss01";
+  }
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-1 ring-offset-neutral-50;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-400;
+  }
+}
+
+@layer components {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Shared Form-Input Styling */
+  .input-base {
+    @apply h-9 px-3 rounded-md border border-neutral-200 bg-white outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
+  }
+  textarea.input-base {
+    @apply h-auto py-2;
+  }
+  /* Shimmer-Background-Helper für PageSkeleton */
+  .bg-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      rgb(244 244 245) 0%,
+      rgb(228 228 232) 50%,
+      rgb(244 244 245) 100%
+    );
+    background-size: 200% 100%;
+  }
+  .prov-highlight {
+    background-color: rgba(250, 229, 180, 0.45);
+    transition: background-color 200ms ease;
+  }
+  .prov-highlight-active {
+    background-color: rgba(232, 178, 63, 0.65);
+  }
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgb(244 244 245) 0%,
+      rgb(228 228 232) 50%,
+      rgb(244 244 245) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+  }
+}

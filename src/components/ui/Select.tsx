@@ -1,0 +1,22 @@
+import { forwardRef, type SelectHTMLAttributes } from "react"
+import { ChevronDown } from "lucide-react"
+import { cn } from "@/lib/cn"
+
+export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
+  ({ className, children, ...props }, ref) => (
+    <div className="relative">
+      <select
+        ref={ref}
+        className={cn(
+          "flex h-9 w-full appearance-none rounded-md border border-neutral-300 bg-white px-3 pr-9 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 focus-visible:border-primary-500 disabled:cursor-not-allowed disabled:opacity-50",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+    </div>
+  ),
+)
+Select.displayName = "Select"
