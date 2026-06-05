@@ -8,40 +8,58 @@ interface SheetProps {
   children: ReactNode
   size?: "default" | "wide"
   ariaLabel?: string
+  /** Wenn false: kein Backdrop, kein Body-Scroll-Lock, Rest der App bleibt klickbar.
+   *  Default true (klassischer modaler Drawer). */
+  modal?: boolean
 }
 
-export function Sheet({ open, onClose, children, size = "default", ariaLabel }: SheetProps) {
+export function Sheet({
+  open,
+  onClose,
+  children,
+  size = "default",
+  ariaLabel,
+  modal = true,
+}: SheetProps) {
   useEffect(() => {
     if (!open) return
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose()
     }
     window.addEventListener("keydown", onEsc)
-    document.body.style.overflow = "hidden"
+    if (modal) document.body.style.overflow = "hidden"
     return () => {
       window.removeEventListener("keydown", onEsc)
-      document.body.style.overflow = ""
+      if (modal) document.body.style.overflow = ""
     }
-  }, [open, onClose])
+  }, [open, onClose, modal])
 
   if (!open) return null
+
+  // Non-modal: Wrapper hat pointer-events:none, nur das Panel-Element selbst
+  // wird wieder pointer-events:auto, damit Klicks außerhalb auf der Seite landen.
+  const wrapperPointerCls = modal ? "" : "pointer-events-none"
+  const panelPointerCls = modal ? "" : "pointer-events-auto"
 
   return (
     <div
       role="dialog"
-      aria-modal="true"
+      aria-modal={modal}
       aria-label={ariaLabel}
-      className="fixed inset-0 z-40"
+      className={cn("fixed inset-0 z-40", wrapperPointerCls)}
     >
-      <div
-        className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] animate-fade-in"
-        onClick={onClose}
-        aria-hidden
-      />
+      {modal ? (
+        <div
+          className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] animate-fade-in"
+          onClick={onClose}
+          aria-hidden
+        />
+      ) : null}
       <div
         className={cn(
           "absolute inset-y-0 right-0 bg-white shadow-2xl flex flex-col overflow-hidden border-l border-neutral-200 animate-slide-in-right",
           size === "wide" ? "w-full sm:max-w-3xl" : "w-full sm:max-w-[480px] xl:max-w-[640px]",
+          panelPointerCls,
         )}
       >
         {children}

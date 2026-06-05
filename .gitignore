@@ -34,3 +34,6 @@ pnpm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Interne Konzept-/Orientierungsdokumente (nicht committen)
+_konzept/
