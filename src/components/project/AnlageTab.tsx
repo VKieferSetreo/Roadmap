@@ -87,8 +87,8 @@ export function AnlageTab({ project }: { project: Project }) {
             {route.mode === "upload" ? (
               <DropZone
                 label="Streckendatei hochladen"
-                hint="GPX, KML oder GeoJSON"
-                accept=".gpx,.kml,.geojson,application/gpx+xml,application/vnd.google-earth.kml+xml"
+                hint="GPX, KML, GeoJSON oder Shapefile (.shp / gezippt .zip)"
+                accept=".gpx,.kml,.geojson,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
                 value={route.fileName}
                 onFile={(file) => updateRoute(project.id, { fileName: file.name })}
                 onClear={() => updateRoute(project.id, { fileName: undefined })}

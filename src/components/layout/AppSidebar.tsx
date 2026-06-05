@@ -3,7 +3,6 @@
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
 import { useLocation, useNavigate } from "react-router-dom"
-import { toast } from "sonner"
 import {
   Database,
   Folder,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
+import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 
 interface NavRowProps {
@@ -111,8 +111,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           icon={LogOut}
           label="Abmelden"
           onClick={() => {
-            toast.info("Abmelden ist im Frontend-Demo deaktiviert.")
             onNavigate?.()
+            handleLogout()
           }}
         />
       </div>
