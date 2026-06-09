@@ -11,9 +11,30 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useAuthStore } from "@/store/auth"
 
+const SIDEBAR_OPEN_KEY = "roadmap.sidebar.open"
+
 export function AppLayout() {
   const navigate = useNavigate()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  // Desktop-Sidebar: nativ offen (Kollision-Format), einklappbar; Wahl persistiert.
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try {
+      const v = localStorage.getItem(SIDEBAR_OPEN_KEY)
+      return v === null ? true : v === "true"
+    } catch {
+      return true
+    }
+  })
+  const toggleSidebar = () =>
+    setSidebarOpen((o) => {
+      const next = !o
+      try {
+        localStorage.setItem(SIDEBAR_OPEN_KEY, String(next))
+      } catch {
+        /* ignore */
+      }
+      return next
+    })
   const createProject = useProjectStore((s) => s.createProject)
   const { newProjectOpen, closeNewProject } = useUiStore()
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
@@ -28,7 +49,12 @@ export function AppLayout() {
       <SetreoHeader onMenuClick={() => setMobileNavOpen(true)} />
 
       <div className="flex min-h-0 flex-1">
-        <AppSidebar mobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+        <AppSidebar
+          open={sidebarOpen}
+          onToggle={toggleSidebar}
+          mobileOpen={mobileNavOpen}
+          onClose={() => setMobileNavOpen(false)}
+        />
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
           <Outlet />
         </main>

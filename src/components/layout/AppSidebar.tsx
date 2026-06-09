@@ -86,7 +86,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
         <div className="mt-1 flex flex-col gap-0.5">
           {sorted.length === 0 ? (
-            <p className="px-3 py-2 text-xs text-neutral-400">Noch keine Projekte.</p>
+            <div className="mt-6 flex flex-col items-center px-3 text-center">
+              <Folder className="h-6 w-6 text-neutral-300" />
+              <p className="mt-3 text-sm text-neutral-400">Noch keine Projekte.</p>
+              <button
+                onClick={() => {
+                  openNewProject()
+                  onNavigate?.()
+                }}
+                className="mt-4 w-full rounded-lg bg-primary-600 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700"
+              >
+                + Neues Projekt
+              </button>
+            </div>
           ) : (
             sorted.map((p) => {
               const isActive = p.id === activeId
@@ -120,15 +132,46 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-export function AppSidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose: () => void }) {
+export function AppSidebar({
+  open,
+  onToggle,
+  mobileOpen,
+  onClose,
+}: {
+  open: boolean
+  onToggle: () => void
+  mobileOpen: boolean
+  onClose: () => void
+}) {
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop — links angedockt, nativ offen, einklappbar via Seiten-Chevron
+          (Kollision-Format). Header/Footer bleiben left-bound (sind Geschwister). */}
       <aside
-        className="hidden w-72 shrink-0 border-r border-neutral-200 bg-white lg:block"
+        className={cn(
+          "relative hidden shrink-0 border-r border-neutral-200 bg-white transition-[width] duration-200 ease-in-out lg:block",
+          open ? "w-72" : "w-0",
+        )}
         aria-label="Hauptnavigation"
       >
-        <SidebarContent />
+        <div
+          className={cn(
+            "h-full w-72 overflow-hidden transition-opacity duration-200",
+            open ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <SidebarContent />
+        </div>
+
+        {/* Vertikaler Griff — immer sichtbar, auch eingeklappt */}
+        <button
+          onClick={onToggle}
+          aria-label={open ? "Sidebar einklappen" : "Sidebar ausklappen"}
+          aria-expanded={open}
+          className="absolute top-1/2 -right-8 z-40 hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
+        >
+          {open ? "«" : "»"}
+        </button>
       </aside>
 
       {/* Mobile-Drawer */}
