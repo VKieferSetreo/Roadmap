@@ -98,6 +98,21 @@ describe("gewicht — Rest + Achslast", () => {
     const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 12 }), TR, {})
     expect(r.severity).toBe("hinweis")
   })
+
+  // Prüfgewicht: bei inkonsistenten Stammdaten (Ladung > Gesamt) zählt der größere Wert
+  it("ladungsgewicht > gesamtgewicht → konservativ gegen Ladungsgewicht geprüft", () => {
+    const tr = { ...TR, gesamtgewicht: 40, ladungsgewicht: 55 }
+    const r = evaluate(ob("gewicht", { maxGewichtT: 50 }), tr, {})
+    expect(r.severity).toBe("kritisch") // 50 − 55 = −5
+    expect(r.detail["Prüfgewicht (Ladung)"]).toBe("55,0 t")
+  })
+
+  it("ladungsgewicht ≤ gesamtgewicht → unverändert, kein Prüfgewicht-Detail", () => {
+    const tr = { ...TR, ladungsgewicht: 35 }
+    const r = evaluate(ob("gewicht", { maxGewichtT: 100 }), tr, {})
+    expect(r.severity).toBe("hinweis")
+    expect(r.detail["Prüfgewicht (Ladung)"]).toBeUndefined()
+  })
 })
 
 describe("steigung", () => {
@@ -111,6 +126,11 @@ describe("steigung", () => {
   ])("steigungPct %f bei %f t → %s", (steigungPct, gesamtgewicht, severity) => {
     const r = evaluate(ob("steigung", { steigungPct }), { ...TR, gesamtgewicht }, {})
     expect(r.severity).toBe(severity)
+  })
+
+  it("ladungsgewicht > gesamtgewicht hebt die Schwelle (Prüfgewicht)", () => {
+    const r = evaluate(ob("steigung", { steigungPct: 8 }), { ...TR, gesamtgewicht: 50, ladungsgewicht: 70 }, {})
+    expect(r.severity).toBe("kritisch") // Prüfgewicht 70 > 60
   })
 })
 

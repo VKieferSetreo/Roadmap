@@ -98,9 +98,19 @@ function ruleEngstelle(attrs, transport) {
   }
 }
 
+/** Konservatives Prüfgewicht: bei inkonsistenten Stammdaten (Ladungsgewicht größer als
+ *  angegebenes Gesamtgewicht) wird mit dem größeren Wert gerechnet — lieber zu streng
+ *  warnen als eine Traglast-Überschreitung wegen Eingabefehlern zu übersehen. */
+function pruefgewicht(transport) {
+  const ladung = num(transport.ladungsgewicht)
+  if (ladung != null && ladung > transport.gesamtgewicht) return ladung
+  return transport.gesamtgewicht
+}
+
 function ruleGewicht(attrs, transport) {
   const maxG = num(attrs.maxGewichtT)
   const maxAchs = num(attrs.maxAchslastT)
+  const pg = pruefgewicht(transport)
   if (maxG == null && maxAchs == null) {
     return {
       severity: "hinweis",
@@ -111,10 +121,11 @@ function ruleGewicht(attrs, transport) {
   let severity = "hinweis"
   const detail = {}
   if (maxG != null) {
-    const rest = round2(maxG - transport.gesamtgewicht)
+    const rest = round2(maxG - pg)
     severity = sev3(rest < 0, rest < 10)
     detail["Zul. Gesamtlast"] = fmtT(maxG)
     detail["Gesamtgewicht"] = fmtT(transport.gesamtgewicht)
+    if (pg !== transport.gesamtgewicht) detail["Prüfgewicht (Ladung)"] = fmtT(pg)
     detail["Reserve"] = fmtT(rest)
   }
   if (maxAchs != null) {
@@ -134,6 +145,7 @@ function ruleGewicht(attrs, transport) {
 
 function ruleSteigung(attrs, transport) {
   const pct = num(attrs.steigungPct)
+  const pg = pruefgewicht(transport)
   if (pct == null) {
     return {
       severity: "hinweis",
@@ -142,12 +154,14 @@ function ruleSteigung(attrs, transport) {
     }
   }
   let severity = "hinweis"
-  if (pct >= 8) severity = transport.gesamtgewicht > 60 ? "kritisch" : "warnung"
-  else if (pct >= 5) severity = transport.gesamtgewicht > 100 ? "warnung" : "hinweis"
+  if (pct >= 8) severity = pg > 60 ? "kritisch" : "warnung"
+  else if (pct >= 5) severity = pg > 100 ? "warnung" : "hinweis"
+  const detail = { Längsneigung: fmtPct(pct), Gesamtgewicht: fmtT(transport.gesamtgewicht) }
+  if (pg !== transport.gesamtgewicht) detail["Prüfgewicht (Ladung)"] = fmtT(pg)
   return {
     severity,
     beschreibung: "Längsneigung — Anfahrvermögen und Bremsweg berücksichtigen.",
-    detail: { Längsneigung: fmtPct(pct), Gesamtgewicht: fmtT(transport.gesamtgewicht) },
+    detail,
   }
 }
 
