@@ -12,13 +12,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  default: "bg-primary-600 text-white hover:bg-primary-700",
-  primary: "bg-primary-600 text-white hover:bg-primary-700",
+  default: "bg-primary-600 text-white shadow-card hover:bg-primary-700 hover:shadow-card-hover",
+  primary: "bg-primary-600 text-white shadow-card hover:bg-primary-700 hover:shadow-card-hover",
   secondary: "bg-neutral-100 text-neutral-700 hover:bg-neutral-200",
   outline:
-    "border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900",
+    "border border-neutral-200 bg-white text-neutral-700 shadow-card hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300",
   ghost: "text-neutral-700 hover:bg-neutral-100",
-  destructive: "bg-red-600 text-white hover:bg-red-700",
+  destructive: "bg-red-600 text-white shadow-card hover:bg-red-700",
 }
 
 const sizeClasses: Record<Size, string> = {
@@ -36,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
+        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],
         sizeClasses[size],
         className,

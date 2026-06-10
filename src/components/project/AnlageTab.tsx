@@ -3,14 +3,28 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { AlertTriangle, ArrowRight, CalendarRange, MapPin, Play, Plus, Route, Upload, X } from "lucide-react"
+import {
+  AlertTriangle,
+  ArrowRight,
+  CalendarRange,
+  Check,
+  Loader2,
+  MapPin,
+  Play,
+  Plus,
+  Route,
+  Upload,
+  Waypoints,
+  X,
+} from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { DropZone } from "@/components/upload/DropZone"
 import { TransportDataForm } from "./TransportDataForm"
-import { useProjectStore } from "@/store/projects"
+import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
+import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import type { Project, RouteMode } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -31,6 +45,25 @@ export function AnlageTab({ project }: { project: Project }) {
       : Boolean(route.start?.trim() && route.ziel?.trim())
 
   const setMode = (mode: RouteMode) => updateRoute(project.id, { mode })
+
+  /** Upload: GPX/KML/GeoJSON sofort client-seitig parsen → echte Geometrie. */
+  const onRouteFile = async (file: File) => {
+    try {
+      const parsed = await parseRouteFile(file)
+      if (parsed) {
+        updateRoute(project.id, { fileName: file.name, points: parsed.points })
+        toast.success(
+          `Strecke geladen: ${parsed.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(parsed.points).toLocaleString("de-DE")} km.`,
+        )
+      } else {
+        // Shapefile: akzeptiert, Geometrie entsteht erst bei der Auswertung
+        updateRoute(project.id, { fileName: file.name, points: undefined })
+        toast.info("Shapefile übernommen — die Strecken-Geometrie wird bei der Auswertung erzeugt.")
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
+    }
+  }
 
   const addVia = () => {
     const v = viaDraft.trim()
@@ -85,14 +118,25 @@ export function AnlageTab({ project }: { project: Project }) {
             </div>
 
             {route.mode === "upload" ? (
-              <DropZone
-                label="Streckendatei hochladen"
-                hint="GPX, KML, GeoJSON oder Shapefile (.shp / gezippt .zip)"
-                accept=".gpx,.kml,.geojson,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
-                value={route.fileName}
-                onFile={(file) => updateRoute(project.id, { fileName: file.name })}
-                onClear={() => updateRoute(project.id, { fileName: undefined })}
-              />
+              <div className="flex flex-col gap-2.5">
+                <DropZone
+                  label="Streckendatei hochladen"
+                  hint="GPX, KML, GeoJSON oder Shapefile (.shp / gezippt .zip)"
+                  accept=".gpx,.kml,.geojson,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
+                  value={route.fileName}
+                  onFile={(file) => void onRouteFile(file)}
+                  onClear={() =>
+                    updateRoute(project.id, { fileName: undefined, points: undefined })
+                  }
+                />
+                {route.points && route.points.length >= 2 ? (
+                  <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50/70 px-2.5 py-1 text-[11px] font-medium tabular-nums text-primary-800">
+                    <Waypoints className="h-3.5 w-3.5" />
+                    {route.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}
+                    {routeLengthKm(route.points).toLocaleString("de-DE")} km erkannt
+                  </span>
+                ) : null}
+              </div>
             ) : (
               <div className="flex flex-col gap-3">
                 <div>
@@ -127,7 +171,13 @@ export function AnlageTab({ project }: { project: Project }) {
                       }}
                       placeholder="Ort hinzufügen"
                     />
-                    <Button type="button" variant="outline" size="icon" onClick={addVia} aria-label="Zwischenstation hinzufügen">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={addVia}
+                      aria-label="Zwischenstation hinzufügen"
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -260,7 +310,9 @@ export function AnlageTab({ project }: { project: Project }) {
                       className="w-[110px]"
                     />
                   ) : null}
-                  <span aria-hidden className="px-1 text-neutral-400">→</span>
+                  <span aria-hidden className="px-1 text-neutral-400">
+                    →
+                  </span>
                   <Input
                     aria-label="Enddatum"
                     type="date"
@@ -291,7 +343,9 @@ export function AnlageTab({ project }: { project: Project }) {
                     />
                   ) : null}
 
-                  {project.zeitraum?.von && project.zeitraum?.bis && !isZeitraumInvalid(project.zeitraum) ? (
+                  {project.zeitraum?.von &&
+                  project.zeitraum?.bis &&
+                  !isZeitraumInvalid(project.zeitraum) ? (
                     <span className="ml-auto rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
                       {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
                     </span>
@@ -322,17 +376,46 @@ export function AnlageTab({ project }: { project: Project }) {
       <Card>
         <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {running ? (
-            <div className="w-full">
+            <div className="w-full animate-fade-in">
               <div className="mb-1.5 flex items-center justify-between text-sm">
                 <span className="font-medium text-neutral-700">{analysis?.step}</span>
-                <span className="tabular-nums text-neutral-500">{Math.round(analysis?.progress ?? 0)}%</span>
+                <span className="tabular-nums text-neutral-500">
+                  {Math.round(analysis?.progress ?? 0)}%
+                </span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                 <div
-                  className="h-full rounded-full bg-primary-500 transition-all duration-300"
+                  className="h-full rounded-full bg-gradient-to-r from-primary-400 to-primary-600 transition-all duration-300"
                   style={{ width: `${analysis?.progress ?? 0}%` }}
                 />
               </div>
+              {/* Schritt-Checkliste */}
+              <ol className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                {ANALYSE_SCHRITTE.map((step, i) => {
+                  const currentIdx = ANALYSE_SCHRITTE.indexOf(analysis?.step ?? "")
+                  const state = i < currentIdx ? "done" : i === currentIdx ? "active" : "pending"
+                  return (
+                    <li
+                      key={step}
+                      className={cn(
+                        "flex items-center gap-2 text-xs transition-colors",
+                        state === "done" && "text-primary-700",
+                        state === "active" && "font-medium text-neutral-800",
+                        state === "pending" && "text-neutral-400",
+                      )}
+                    >
+                      {state === "done" ? (
+                        <Check className="h-3.5 w-3.5 shrink-0 text-primary-600" />
+                      ) : state === "active" ? (
+                        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-primary-600" />
+                      ) : (
+                        <span className="ml-1 mr-1 h-1.5 w-1.5 shrink-0 rounded-full bg-neutral-300" />
+                      )}
+                      {step.replace(" …", "")}
+                    </li>
+                  )
+                })}
+              </ol>
             </div>
           ) : (
             <>
@@ -340,8 +423,8 @@ export function AnlageTab({ project }: { project: Project }) {
                 {project.status === "fertig" ? (
                   <span>
                     Auswertung abgeschlossen ·{" "}
-                    <strong className="text-neutral-800">{project.findings.length} Funde</strong> auf{" "}
-                    {project.distanzKm?.toLocaleString("de-DE")} km
+                    <strong className="text-neutral-800">{project.findings.length} Funde</strong>{" "}
+                    auf {project.distanzKm?.toLocaleString("de-DE")} km
                   </span>
                 ) : routeReady ? (
                   "Bereit zur Auswertung."
@@ -351,7 +434,10 @@ export function AnlageTab({ project }: { project: Project }) {
               </div>
               <div className="flex items-center gap-2">
                 {project.status === "fertig" ? (
-                  <Button variant="outline" onClick={() => navigate(`/projekte/${project.id}/karte`)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(`/projekte/${project.id}/karte`)}
+                  >
                     Ergebnis öffnen <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : null}
@@ -374,13 +460,6 @@ function splitDateTime(value: string | undefined): { date: string; time: string 
   if (!value.includes("T")) return { date: value, time: "" }
   const [d, t = ""] = value.split("T")
   return { date: d, time: t.slice(0, 5) }
-}
-
-/** YYYY-MM-DD → DD.MM.YYYY (ohne Uhrzeit) */
-function formatDeDate(date: string): string {
-  if (!date) return ""
-  const [y, m, d] = date.split("-")
-  return `${d}.${m}.${y}`
 }
 
 /** True wenn der String eine echte Uhrzeit enthält (T-Teil und nicht "00:00").
@@ -408,15 +487,6 @@ function isLadungZuSchwer(t: { gesamtgewicht?: number; ladungsgewicht?: number }
   if (typeof ladung !== "number" || ladung <= 0) return false
   if (typeof gesamt !== "number" || gesamt <= 0) return false
   return ladung > gesamt
-}
-
-/** YYYY-MM-DDTHH:mm → DD.MM.YYYY HH:mm */
-function formatDeDateTime(value: string): string {
-  if (!value) return ""
-  const [datePart, timePart = "00:00"] = value.split("T")
-  const [y, m, d] = datePart.split("-")
-  const hhmm = timePart.slice(0, 5)
-  return `${d}.${m}.${y} ${hhmm}`
 }
 
 /** Dauer zwischen zwei datetime-local Strings als „X Tage Y h" oder „Y h Z min". */

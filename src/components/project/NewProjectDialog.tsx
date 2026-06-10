@@ -28,7 +28,11 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
 
   return (
     <Dialog open={open} onClose={onClose} size="sm">
-      <DialogHeader title="Neues Projekt" subtitle="Strecke und Transport legst du danach an." onClose={onClose} />
+      <DialogHeader
+        title="Neues Projekt"
+        subtitle="Strecke und Transport legst du danach an."
+        onClose={onClose}
+      />
       <div className="px-6 py-5">
         <Label htmlFor="project-name">Projektname</Label>
         <Input

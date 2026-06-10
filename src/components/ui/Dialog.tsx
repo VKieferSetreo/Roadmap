@@ -26,15 +26,19 @@ export function Dialog({ open, onClose, children, size = "default" }: DialogProp
   if (!open) return null
 
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       <div
-        className="absolute inset-0 bg-neutral-950/50 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden
       />
       <div
         className={cn(
-          "relative bg-white rounded-lg shadow-2xl border border-neutral-200 max-h-[85vh] overflow-hidden flex flex-col w-full",
+          "relative flex max-h-[85vh] w-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-2xl",
           size === "sm" && "max-w-sm",
           size === "default" && "max-w-2xl",
           size === "lg" && "max-w-4xl",
@@ -57,10 +61,10 @@ export function DialogHeader({
   onClose?: () => void
 }) {
   return (
-    <div className="border-b border-neutral-200 px-6 py-4 flex items-start justify-between gap-3">
+    <div className="flex items-start justify-between gap-3 border-b border-neutral-200 px-6 py-4">
       <div>
         <h2 className="text-base font-semibold text-neutral-900">{title}</h2>
-        {subtitle ? <p className="text-xs text-neutral-500 mt-0.5">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-0.5 text-xs text-neutral-500">{subtitle}</p> : null}
       </div>
       {onClose ? (
         <button

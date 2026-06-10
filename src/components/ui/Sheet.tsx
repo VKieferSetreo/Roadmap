@@ -27,20 +27,15 @@ export function Sheet({ open, onClose, children, size = "default", ariaLabel }: 
   if (!open) return null
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={ariaLabel}
-      className="fixed inset-0 z-40"
-    >
+    <div role="dialog" aria-modal="true" aria-label={ariaLabel} className="fixed inset-0 z-40">
       <div
-        className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[2px] animate-fade-in"
+        className="absolute inset-0 animate-fade-in bg-neutral-950/40 backdrop-blur-[2px]"
         onClick={onClose}
         aria-hidden
       />
       <div
         className={cn(
-          "absolute inset-y-0 right-0 bg-white shadow-2xl flex flex-col overflow-hidden border-l border-neutral-200 animate-slide-in-right",
+          "absolute inset-y-0 right-0 flex animate-slide-in-right flex-col overflow-hidden border-l border-neutral-200 bg-white shadow-2xl",
           size === "wide" ? "w-full sm:max-w-3xl" : "w-full sm:max-w-[480px] xl:max-w-[640px]",
         )}
       >
@@ -62,14 +57,14 @@ export function SheetHeader({
   rightExtra?: ReactNode
 }) {
   return (
-    <div className="sticky top-0 bg-white z-10 border-b border-neutral-200 px-6 py-4 flex items-start justify-between gap-3">
+    <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-neutral-200 bg-white px-6 py-4">
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold text-neutral-900 leading-tight flex items-center gap-2 flex-wrap">
+        <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold leading-tight text-neutral-900">
           {title}
         </h2>
-        {subtitle ? <p className="text-xs text-neutral-500 mt-1">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-1 text-xs text-neutral-500">{subtitle}</p> : null}
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex flex-shrink-0 items-center gap-2">
         {rightExtra}
         {onClose ? (
           <button
@@ -91,7 +86,7 @@ export function SheetBody({ children, className }: { children: ReactNode; classN
 
 export function SheetFooter({ children }: { children: ReactNode }) {
   return (
-    <div className="border-t border-neutral-200 bg-neutral-50 px-6 py-3 flex items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-2 border-t border-neutral-200 bg-neutral-50 px-6 py-3">
       {children}
     </div>
   )

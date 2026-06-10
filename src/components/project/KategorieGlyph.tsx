@@ -17,7 +17,7 @@ export function KategorieGlyph({ kategorie, className }: KategorieGlyphProps) {
   if (custom) {
     return (
       <span
-        className={cn("inline-flex items-center justify-center h-4 w-4", className)}
+        className={cn("inline-flex h-4 w-4 items-center justify-center", className)}
         aria-hidden
         dangerouslySetInnerHTML={{ __html: custom }}
       />

@@ -26,7 +26,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-semibold text-white flex-shrink-0",
+        "inline-flex flex-shrink-0 items-center justify-center rounded-full font-semibold text-white",
         profile.color,
         sizes[size],
         className,
@@ -53,18 +53,17 @@ export function AvatarStack({
   return (
     <div className="flex -space-x-1.5">
       {visible.map((p) => (
-        <Avatar
-          key={p.id}
-          profile={p}
-          size={size}
-          className="ring-2 ring-white"
-        />
+        <Avatar key={p.id} profile={p} size={size} className="ring-2 ring-white" />
       ))}
       {remaining > 0 ? (
         <span
           className={cn(
-            "inline-flex items-center justify-center rounded-full bg-neutral-200 text-neutral-600 ring-2 ring-white font-medium",
-            size === "default" ? "h-8 w-8 text-xs" : size === "sm" ? "h-6 w-6 text-[10px]" : "h-5 w-5 text-[9px]",
+            "inline-flex items-center justify-center rounded-full bg-neutral-200 font-medium text-neutral-600 ring-2 ring-white",
+            size === "default"
+              ? "h-8 w-8 text-xs"
+              : size === "sm"
+                ? "h-6 w-6 text-[10px]"
+                : "h-5 w-5 text-[9px]",
           )}
         >
           +{remaining}

@@ -37,7 +37,7 @@ export function DropdownMenu({ trigger, children, align = "end", className }: Dr
         <div
           role="menu"
           className={cn(
-            "absolute z-30 mt-1 min-w-[180px] rounded-md border border-neutral-200 bg-white shadow-lg py-1 animate-fade-in",
+            "absolute z-30 mt-1 min-w-[180px] animate-fade-in rounded-md border border-neutral-200 bg-white py-1 shadow-lg",
             align === "end" ? "right-0" : "left-0",
             className,
           )}
@@ -64,7 +64,7 @@ export function DropdownItem({
       role="menuitem"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-2 px-3 py-1.5 text-sm hover:bg-neutral-100 text-left",
+        "flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-neutral-100",
         destructive && "text-red-600 hover:bg-red-50",
       )}
     >

@@ -3,16 +3,7 @@
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
 import { useLocation, useNavigate } from "react-router-dom"
-import {
-  Database,
-  Folder,
-  Home,
-  LogOut,
-  Plus,
-  Settings,
-  X,
-  type LucideIcon,
-} from "lucide-react"
+import { Database, Folder, Home, LogOut, Plus, Settings, X, type LucideIcon } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { handleLogout } from "@/lib/auth"
@@ -32,7 +23,7 @@ function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
       className={cn(
         "relative flex w-full items-center gap-2.5 rounded-md py-2 pl-3 pr-3 text-sm transition-colors",
         active
-          ? "bg-primary-50 font-medium text-primary-700 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
+          ? "bg-primary-50 font-medium text-primary-700 before:absolute before:bottom-1.5 before:left-0 before:top-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
           : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
       )}
       aria-current={active ? "page" : undefined}
@@ -118,7 +109,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="border-t border-neutral-100 p-3">
         <NavRow icon={Database} label="Datenbank" active={onDb} onClick={() => go("/datenbank")} />
-        <NavRow icon={Settings} label="Einstellungen" active={onSettings} onClick={() => go("/einstellungen")} />
+        <NavRow
+          icon={Settings}
+          label="Einstellungen"
+          active={onSettings}
+          onClick={() => go("/einstellungen")}
+        />
         <NavRow
           icon={LogOut}
           label="Abmelden"
@@ -168,7 +164,7 @@ export function AppSidebar({
           onClick={onToggle}
           aria-label={open ? "Sidebar einklappen" : "Sidebar ausklappen"}
           aria-expanded={open}
-          className="absolute top-1/2 -right-8 z-40 hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
+          className="absolute -right-8 top-1/2 z-40 hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
         >
           {open ? "«" : "»"}
         </button>
@@ -177,11 +173,19 @@ export function AppSidebar({
       {/* Mobile-Drawer */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-neutral-950/40 animate-fade-in" onClick={onClose} aria-hidden />
-          <div className="absolute left-0 top-0 h-full w-72 max-w-[85%] border-r border-neutral-200 bg-white shadow-2xl animate-slide-in-right">
+          <div
+            className="absolute inset-0 animate-fade-in bg-neutral-950/40"
+            onClick={onClose}
+            aria-hidden
+          />
+          <div className="absolute left-0 top-0 h-full w-72 max-w-[85%] animate-slide-in-right border-r border-neutral-200 bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
               <span className="text-sm font-semibold text-neutral-700">Navigation</span>
-              <button onClick={onClose} aria-label="Schließen" className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100">
+              <button
+                onClick={onClose}
+                aria-label="Schließen"
+                className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>

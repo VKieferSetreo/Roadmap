@@ -32,24 +32,24 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center py-10 px-6",
-        "border-2 border-dashed border-red-200 rounded-lg bg-red-50/50",
+        "flex flex-col items-center justify-center px-6 py-10 text-center",
+        "rounded-lg border-2 border-dashed border-red-200 bg-red-50/50",
         className,
       )}
       role="alert"
     >
-      <div className="rounded-full bg-red-100 p-3 mb-3">
+      <div className="mb-3 rounded-full bg-red-100 p-3">
         <AlertTriangle className="h-6 w-6 text-red-500" />
       </div>
       <h3 className="font-semibold text-neutral-800">{title}</h3>
-      <p className="text-sm text-red-700 mt-1 max-w-md">{message}</p>
+      <p className="mt-1 max-w-md text-sm text-red-700">{message}</p>
       {apiError?.code ? (
-        <p className="mt-1 text-[11px] text-neutral-500 font-mono">
+        <p className="mt-1 font-mono text-[11px] text-neutral-500">
           {apiError.code}
           {apiError.requestId ? ` · ${apiError.requestId}` : ""}
         </p>
       ) : null}
-      {hint ? <div className="mt-3 text-xs text-neutral-600 max-w-md">{hint}</div> : null}
+      {hint ? <div className="mt-3 max-w-md text-xs text-neutral-600">{hint}</div> : null}
       {onRetry ? (
         <Button variant="outline" size="sm" className="mt-4" onClick={onRetry}>
           <RefreshCw className="h-3.5 w-3.5" />

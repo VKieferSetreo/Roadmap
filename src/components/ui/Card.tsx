@@ -1,13 +1,21 @@
-// Minimal-Card-Stub bis `bunx shadcn@latest add card` läuft.
+// Card-System: ring-basierte Kante + Elevation-Tokens (shadow-card / -hover).
+// `interactive` aktiviert Hover-Lift für klickbare Karten.
 
 import type { HTMLAttributes } from "react"
 import { cn } from "@/lib/cn"
 
-export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  /** Hover-Lift + Schatten-Verstärkung für klickbare Karten. */
+  interactive?: boolean
+}
+
+export function Card({ className, interactive, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-neutral-200/80 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]",
+        "rounded-xl border border-neutral-200/80 bg-white shadow-card",
+        interactive &&
+          "cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-card-hover",
         className,
       )}
       {...props}
@@ -16,7 +24,12 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col gap-1 p-4 border-b border-neutral-100", className)} {...props} />
+  return (
+    <div
+      className={cn("flex flex-col gap-1 border-b border-neutral-100 p-4", className)}
+      {...props}
+    />
+  )
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
@@ -32,5 +45,10 @@ export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivEleme
 }
 
 export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex items-center p-4 border-t border-neutral-100", className)} {...props} />
+  return (
+    <div
+      className={cn("flex items-center border-t border-neutral-100 p-4", className)}
+      {...props}
+    />
+  )
 }

@@ -76,6 +76,31 @@ export default {
           "low-border": "#B91C1C",
           "low-text": "#7F1D1D",
         },
+        // Semantische Severity-Tokens — einzige Quelle für Fund-Schweregrad-Farben.
+        // (Hex-Marker für Leaflet-SVG-Pins kommen aus findingMeta.SEVERITY_META.marker.)
+        severity: {
+          kritisch: {
+            DEFAULT: "#DC2626",
+            strong: "#B91C1C",
+            bg: "#FEF2F2",
+            border: "#FECACA",
+            text: "#991B1B",
+          },
+          warnung: {
+            DEFAULT: "#EA580C",
+            strong: "#C2410C",
+            bg: "#FFF7ED",
+            border: "#FED7AA",
+            text: "#9A3412",
+          },
+          hinweis: {
+            DEFAULT: "#CA8A04",
+            strong: "#A16207",
+            bg: "#FEFCE8",
+            border: "#FDE68A",
+            text: "#854D0E",
+          },
+        },
         frist: {
           "overdue-bg": "#FECACA",
           "overdue-border": "#991B1B",
@@ -101,6 +126,14 @@ export default {
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
+      // Elevation-System: card (Ruhe) → card-hover (Interaktion) → overlay (schwebend).
+      boxShadow: {
+        card: "0 1px 2px 0 rgba(16,24,40,0.04), 0 1px 3px 0 rgba(16,24,40,0.03)",
+        "card-hover":
+          "0 4px 12px -2px rgba(16,24,40,0.08), 0 2px 6px -2px rgba(16,24,40,0.06)",
+        overlay:
+          "0 8px 30px -6px rgba(16,24,40,0.18), 0 2px 8px -2px rgba(16,24,40,0.08)",
+      },
       keyframes: {
         "optimistic-flash": {
           "0%": { backgroundColor: "rgba(91, 153, 104, 0.3)" },
@@ -122,6 +155,17 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "rise-in": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "route-flow": {
+          to: { strokeDashoffset: "-26" },
+        },
       },
       animation: {
         "optimistic-flash": "optimistic-flash 600ms ease-out",
@@ -129,6 +173,8 @@ export default {
         "fade-in": "fade-in 200ms ease-out",
         "prov-pulse": "prov-pulse 500ms ease-in-out 3",
         shimmer: "shimmer 1.5s linear infinite",
+        "rise-in": "rise-in 320ms cubic-bezier(0.21, 1.02, 0.73, 1) backwards",
+        "scale-in": "scale-in 200ms cubic-bezier(0.21, 1.02, 0.73, 1) backwards",
       },
     },
   },

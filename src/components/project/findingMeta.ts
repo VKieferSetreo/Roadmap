@@ -64,11 +64,52 @@ export function hasCustomGlyph(k: FindingKategorie): boolean {
 
 export const SEVERITY_META: Record<
   FindingSeverity,
-  { label: string; badge: NonNullable<BadgeProps["variant"]>; marker: string; dot: string; rank: number }
+  {
+    label: string
+    badge: NonNullable<BadgeProps["variant"]>
+    /** Hex für Leaflet-SVG-Pins (DivIcon-Markup kann keine Tailwind-Klassen nutzen). */
+    marker: string
+    /** Punkt-/Dot-Hintergrund (Tailwind-Token). */
+    dot: string
+    /** gefüllter Icon-Chip (Tailwind-Token). */
+    chip: string
+    /** weiche Flächen-Variante: bg + border + text (Tailwind-Token). */
+    soft: string
+    /** linke Akzent-Kante für Listenzeilen. */
+    accent: string
+    rank: number
+  }
 > = {
-  kritisch: { label: "Kritisch", badge: "danger", marker: "#DC2626", dot: "bg-red-600", rank: 0 },
-  warnung: { label: "Warnung", badge: "warning", marker: "#EA580C", dot: "bg-orange-500", rank: 1 },
-  hinweis: { label: "Hinweis", badge: "muted", marker: "#CA8A04", dot: "bg-yellow-600", rank: 2 },
+  kritisch: {
+    label: "Kritisch",
+    badge: "kritisch",
+    marker: "#DC2626",
+    dot: "bg-severity-kritisch",
+    chip: "bg-severity-kritisch text-white",
+    soft: "bg-severity-kritisch-bg border-severity-kritisch-border text-severity-kritisch-text",
+    accent: "border-l-severity-kritisch",
+    rank: 0,
+  },
+  warnung: {
+    label: "Warnung",
+    badge: "warnung",
+    marker: "#EA580C",
+    dot: "bg-severity-warnung",
+    chip: "bg-severity-warnung text-white",
+    soft: "bg-severity-warnung-bg border-severity-warnung-border text-severity-warnung-text",
+    accent: "border-l-severity-warnung",
+    rank: 1,
+  },
+  hinweis: {
+    label: "Hinweis",
+    badge: "hinweis",
+    marker: "#CA8A04",
+    dot: "bg-severity-hinweis",
+    chip: "bg-severity-hinweis text-white",
+    soft: "bg-severity-hinweis-bg border-severity-hinweis-border text-severity-hinweis-text",
+    accent: "border-l-severity-hinweis",
+    rank: 2,
+  },
 }
 
 export const SEVERITY_ORDER: FindingSeverity[] = ["kritisch", "warnung", "hinweis"]

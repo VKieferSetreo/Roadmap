@@ -8,7 +8,7 @@ import { Toaster } from "sonner"
 import { queryClient } from "@/api/query-client"
 import { router } from "@/routes"
 import { loadPersistedTraceId } from "@/lib/trace"
-import { ToastProvider } from "@/components/ui/Toaster"
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary"
 import "@/styles/globals.css"
 
 loadPersistedTraceId()
@@ -20,12 +20,12 @@ if (!rootEl) {
 
 ReactDOM.createRoot(rootEl).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-      </ToastProvider>
-      <Toaster position="bottom-right" richColors />
-      {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
-    </QueryClientProvider>
+        <Toaster position="bottom-right" richColors />
+        {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 )

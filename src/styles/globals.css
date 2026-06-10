@@ -3,11 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
   }
   body {
-    @apply bg-neutral-50 text-neutral-800 font-sans antialiased text-sm;
+    @apply bg-neutral-50 font-sans text-sm text-neutral-800 antialiased;
     font-feature-settings: "cv11", "ss01";
   }
   *:focus-visible {
@@ -21,7 +23,7 @@
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-300 rounded-full;
+    @apply rounded-full bg-neutral-300;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-neutral-400;
@@ -34,12 +36,16 @@
   }
   /* Shared Form-Input Styling */
   .input-base {
-    @apply h-9 px-3 rounded-md border border-neutral-200 bg-white outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
+    @apply h-9 rounded-md border border-neutral-200 bg-white px-3 outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
   }
   textarea.input-base {
     @apply h-auto py-2;
   }
-  /* Shimmer-Background-Helper für PageSkeleton */
+  /* Frosted-Glass-Panel für Karten-Overlays */
+  .glass {
+    @apply rounded-xl border border-white/60 bg-white/85 shadow-overlay ring-1 ring-neutral-900/5 backdrop-blur-md;
+  }
+  /* Shimmer-Background-Helper für Skeleton-Platzhalter */
   .bg-shimmer {
     background-image: linear-gradient(
       90deg,
@@ -65,5 +71,69 @@
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s linear infinite;
+  }
+}
+
+/* ── Leaflet-Politur ───────────────────────────────────────────────────────── */
+
+/* Popups im App-Look statt Leaflet-Default */
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem;
+  box-shadow:
+    0 8px 30px -6px rgba(16, 24, 40, 0.18),
+    0 2px 8px -2px rgba(16, 24, 40, 0.08);
+  border: 1px solid rgb(229 229 232);
+  font-family: Inter, system-ui, sans-serif;
+}
+.leaflet-popup-content {
+  margin: 10px 14px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.leaflet-popup-tip {
+  box-shadow: 0 2px 8px -2px rgba(16, 24, 40, 0.12);
+}
+.leaflet-container {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Fahrtrichtungs-Fluss auf der Route (animierte weiße Strichelung) */
+.route-flow {
+  animation: route-flow 1.4s linear infinite;
+}
+
+/* Sanftes Aufploppen der Fund-Pins */
+.rm-pin svg {
+  transition: transform 150ms ease-out;
+  transform-origin: 50% 100%;
+}
+.rm-pin:hover svg {
+  transform: scale(1.08);
+}
+
+/* ── Reduced Motion: Animationen respektvoll abschalten ───────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Druck (PDF-Export über Browser-Druck) ─────────────────────────────────── */
+@media print {
+  header,
+  aside,
+  footer,
+  .print-hidden {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+  }
+  body {
+    background: white;
   }
 }

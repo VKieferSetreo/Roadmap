@@ -14,6 +14,11 @@ const badgeVariants = cva(
         success: "bg-status-done-bg border-status-done-border text-status-done-text",
         warning: "bg-status-waiting-bg border-status-waiting-border text-status-waiting-text",
         danger: "bg-frist-today-bg border-frist-today-border text-frist-today-text",
+        // Severity-Varianten — semantische Tokens aus tailwind.config (severity.*)
+        kritisch:
+          "bg-severity-kritisch-bg border-severity-kritisch-border text-severity-kritisch-text",
+        warnung: "bg-severity-warnung-bg border-severity-warnung-border text-severity-warnung-text",
+        hinweis: "bg-severity-hinweis-bg border-severity-hinweis-border text-severity-hinweis-text",
       },
       size: {
         xs: "text-[10px] px-1.5 py-0.5",
@@ -30,8 +35,7 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, size, shape, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant, size, shape }), className)} {...props} />

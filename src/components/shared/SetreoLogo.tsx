@@ -16,10 +16,7 @@ export function SetreoLogo({ height = 28, className, variant = "color" }: Setreo
   if (variant === "white") {
     return (
       <span
-        className={cn(
-          "font-black tracking-tight leading-none text-white",
-          className,
-        )}
+        className={cn("font-black leading-none tracking-tight text-white", className)}
         style={{ fontSize: Math.round(height * 0.85), letterSpacing: "-0.02em" }}
         aria-label="SETREO"
       >
@@ -31,10 +28,7 @@ export function SetreoLogo({ height = 28, className, variant = "color" }: Setreo
   if (errored) {
     return (
       <span
-        className={cn(
-          "font-black tracking-tight leading-none text-primary-600",
-          className,
-        )}
+        className={cn("font-black leading-none tracking-tight text-primary-600", className)}
         style={{ fontSize: Math.round(height * 0.78), letterSpacing: "-0.02em" }}
         aria-label="SETREO"
       >

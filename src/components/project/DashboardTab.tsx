@@ -1,6 +1,7 @@
-// Tab 3 — Auswertungs-Dashboard: Kennzahlen + filterbare Fund-Liste mit Detail.
+// Tab 3 — Auswertungs-Dashboard: Kennzahlen + Charts + Streckenprofil +
+// filterbare Fund-Liste. Export: CSV (echt) + PDF via Druck-Stylesheet.
 
-import { useMemo, useState } from "react"
+import { Suspense, lazy, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Building2,
@@ -16,16 +17,30 @@ import {
   Route as RouteIcon,
   Search,
 } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Select } from "@/components/ui/Select"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
+import { StreckenBand } from "@/components/charts/StreckenBand"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
 import type { Finding, FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
+
+// Recharts nur laden, wenn der Dashboard-Tab wirklich offen ist (Code-Splitting)
+const SeverityDonut = lazy(() =>
+  import("@/components/charts/SeverityDonut").then((m) => ({ default: m.SeverityDonut })),
+)
+const KategorieBar = lazy(() =>
+  import("@/components/charts/KategorieBar").then((m) => ({ default: m.KategorieBar })),
+)
+
+function ChartSkeleton() {
+  return <div className="skeleton h-44 w-full rounded-lg" />
+}
 
 export function DashboardTab({ project }: { project: Project }) {
   const navigate = useNavigate()
@@ -33,6 +48,7 @@ export function DashboardTab({ project }: { project: Project }) {
   const [katFilter, setKatFilter] = useState<string>("alle")
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -46,7 +62,9 @@ export function DashboardTab({ project }: { project: Project }) {
             KATEGORIE_META[f.kategorie].label.toLowerCase().includes(q)
           : true,
       )
-      .sort((a, b) => SEVERITY_META[a.severity].rank - SEVERITY_META[b.severity].rank || a.km - b.km)
+      .sort(
+        (a, b) => SEVERITY_META[a.severity].rank - SEVERITY_META[b.severity].rank || a.km - b.km,
+      )
   }, [project.findings, sevFilter, katFilter, query])
 
   if (project.status !== "fertig") {
@@ -56,7 +74,9 @@ export function DashboardTab({ project }: { project: Project }) {
           icon={ClipboardList}
           title="Noch keine Auswertung"
           description="Sobald die Auswertung gefahren wurde, erscheinen hier alle Funde mit Details."
-          cta={<Button onClick={() => navigate(`/projekte/${project.id}/anlage`)}>Zur Anlage</Button>}
+          cta={
+            <Button onClick={() => navigate(`/projekte/${project.id}/anlage`)}>Zur Anlage</Button>
+          }
         />
       </div>
     )
@@ -67,40 +87,96 @@ export function DashboardTab({ project }: { project: Project }) {
     n: project.findings.filter((f) => f.severity === sev).length,
   }))
 
+  /** StreckenBand-Klick: Fund in der Liste aufklappen + hinscrollen. */
+  const focusFinding = (id: string) => {
+    setSevFilter("alle")
+    setKatFilter("alle")
+    setQuery("")
+    setExpanded(id)
+    requestAnimationFrame(() => {
+      listRef.current
+        ?.querySelector(`[data-finding-id="${id}"]`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" })
+    })
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
       {/* Kennzahlen */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <StatCard label="Strecke" value={`${project.distanzKm?.toLocaleString("de-DE")} km`} icon={<RouteIcon className="h-4 w-4" />} />
+        <StatCard
+          label="Strecke"
+          value={project.distanzKm ?? 0}
+          suffix=" km"
+          icon={<RouteIcon className="h-4 w-4" />}
+          index={0}
+        />
         <StatCard
           label="Fahrzeit"
-          value={`${Math.floor((project.fahrzeitMin ?? 0) / 60)} h ${(project.fahrzeitMin ?? 0) % 60} min`}
+          text={`${Math.floor((project.fahrzeitMin ?? 0) / 60)} h ${(project.fahrzeitMin ?? 0) % 60} min`}
           icon={<Clock className="h-4 w-4" />}
+          index={1}
         />
-        {counts.map(({ sev, n }) => (
-          <StatCard
-            key={sev}
-            label={SEVERITY_META[sev].label}
-            value={String(n)}
-            dot={SEVERITY_META[sev].marker}
-          />
+        {counts.map(({ sev, n }, i) => (
+          <StatCard key={sev} label={SEVERITY_META[sev].label} value={n} sev={sev} index={2 + i} />
         ))}
       </div>
 
-      {/* Export-Buttons */}
-      <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" size="sm">
+      {/* Charts */}
+      <div className="print-hidden grid grid-cols-1 gap-3 md:grid-cols-2">
+        <Card className="animate-rise-in" style={{ animationDelay: "120ms" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Schweregrade</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-1">
+            <Suspense fallback={<ChartSkeleton />}>
+              <SeverityDonut findings={project.findings} />
+            </Suspense>
+          </CardContent>
+        </Card>
+        <Card className="animate-rise-in" style={{ animationDelay: "160ms" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Funde nach Kategorie</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-1">
+            <Suspense fallback={<ChartSkeleton />}>
+              <KategorieBar findings={project.findings} />
+            </Suspense>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Streckenprofil */}
+      {project.distanzKm && project.findings.length > 0 ? (
+        <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Streckenprofil — Funde entlang der Route</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-1">
+            <StreckenBand
+              findings={project.findings}
+              distanzKm={project.distanzKm}
+              selectedId={expanded}
+              onSelect={focusFinding}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Export */}
+      <div className="print-hidden flex items-center justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={() => window.print()}>
           <FileDown className="h-3.5 w-3.5" />
           PDF
         </Button>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={() => exportCsv(project)}>
           <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-          Excel
+          Excel (CSV)
         </Button>
       </div>
 
       {/* Filterleiste */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="print-hidden flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <Input
@@ -116,15 +192,21 @@ export function DashboardTab({ project }: { project: Project }) {
               key={s}
               onClick={() => setSevFilter(s)}
               className={cn(
-                "rounded px-3 py-1 text-xs font-medium capitalize transition-colors",
-                sevFilter === s ? "bg-white text-primary-700 shadow-sm" : "text-neutral-500 hover:text-neutral-700",
+                "cursor-pointer rounded px-3 py-1 text-xs font-medium capitalize transition-colors",
+                sevFilter === s
+                  ? "bg-white text-primary-700 shadow-sm"
+                  : "text-neutral-500 hover:text-neutral-700",
               )}
             >
               {s === "alle" ? "Alle" : SEVERITY_META[s].label}
             </button>
           ))}
         </div>
-        <Select value={katFilter} onChange={(e) => setKatFilter(e.target.value)} className="sm:w-44">
+        <Select
+          value={katFilter}
+          onChange={(e) => setKatFilter(e.target.value)}
+          className="sm:w-44"
+        >
           <option value="alle">Alle Kategorien</option>
           {Object.entries(KATEGORIE_META).map(([key, meta]) => (
             <option key={key} value={key}>
@@ -139,41 +221,126 @@ export function DashboardTab({ project }: { project: Project }) {
         <EmptyState title="Keine Funde für diesen Filter" />
       ) : (
         <Card>
-          <ul className="divide-y divide-neutral-100">
-            {filtered.map((f) => (
-              <FindingRow
-                key={f.id}
-                finding={f}
-                open={expanded === f.id}
-                onToggle={() => setExpanded(expanded === f.id ? null : f.id)}
-              />
-            ))}
-          </ul>
+          <div ref={listRef}>
+            <ul className="divide-y divide-neutral-100">
+              {filtered.map((f) => (
+                <FindingRow
+                  key={f.id}
+                  finding={f}
+                  open={expanded === f.id}
+                  onToggle={() => setExpanded(expanded === f.id ? null : f.id)}
+                />
+              ))}
+            </ul>
+          </div>
         </Card>
       )}
     </div>
   )
 }
 
+/** CSV-Export der Funde (Excel-tauglich: BOM + Semikolon). */
+function exportCsv(project: Project) {
+  const esc = (v: string | number | undefined) => {
+    const s = String(v ?? "")
+    return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  }
+  const header = [
+    "Kategorie",
+    "Schweregrad",
+    "Titel",
+    "Beschreibung",
+    "km",
+    "Straßen-Ref",
+    "Breite (lat)",
+    "Länge (lng)",
+    "Gültig von",
+    "Gültig bis",
+    "Zuständig",
+    "Quelle",
+    "Quelle-URL",
+  ]
+  const rows = project.findings
+    .slice()
+    .sort((a, b) => a.km - b.km)
+    .map((f) =>
+      [
+        KATEGORIE_META[f.kategorie].label,
+        SEVERITY_META[f.severity].label,
+        f.titel,
+        f.beschreibung,
+        String(f.km).replace(".", ","),
+        f.strassenRef,
+        String(f.lat).replace(".", ","),
+        String(f.lng).replace(".", ","),
+        f.gueltigVon,
+        f.gueltigBis,
+        f.zustaendig,
+        f.quelle?.name,
+        f.quelle?.url,
+      ]
+        .map(esc)
+        .join(";"),
+    )
+  // BOM, damit Excel das UTF-8 (Umlaute) korrekt erkennt
+  const csv = "﻿" + [header.join(";"), ...rows].join("\r\n")
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `${project.name.replace(/[^\wäöüÄÖÜß -]+/g, "")} — Funde.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 function StatCard({
   label,
   value,
+  text,
+  suffix,
   icon,
-  dot,
+  sev,
+  index = 0,
 }: {
   label: string
-  value: string
+  value?: number
+  text?: string
+  suffix?: string
   icon?: React.ReactNode
-  dot?: string
+  sev?: FindingSeverity
+  index?: number
 }) {
   return (
-    <Card>
+    <Card
+      className={cn(
+        "animate-rise-in",
+        sev && (value ?? 0) > 0 && "border-transparent ring-1",
+        sev && (value ?? 0) > 0 && SEVERITY_META[sev].soft,
+      )}
+      style={{ animationDelay: `${index * 40}ms` }}
+    >
       <CardContent className="flex flex-col gap-1 p-3">
-        <span className="flex items-center gap-1.5 text-xs text-neutral-500">
-          {dot ? <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: dot }} /> : icon}
+        <span
+          className={cn(
+            "flex items-center gap-1.5 text-xs",
+            sev && (value ?? 0) > 0 ? "" : "text-neutral-500",
+          )}
+        >
+          {sev ? (
+            <span className={cn("inline-block h-2.5 w-2.5 rounded-full", SEVERITY_META[sev].dot)} />
+          ) : (
+            icon
+          )}
           {label}
         </span>
-        <span className="text-xl font-bold tabular-nums text-neutral-900">{value}</span>
+        <span className="text-xl font-bold tabular-nums text-neutral-900">
+          {text ?? (
+            <>
+              <AnimatedNumber value={value ?? 0} />
+              {suffix ?? ""}
+            </>
+          )}
+        </span>
       </CardContent>
     </Card>
   )
@@ -191,30 +358,42 @@ function FindingRow({
   const kat = KATEGORIE_META[finding.kategorie]
   const sev = SEVERITY_META[finding.severity]
   return (
-    <li>
+    <li data-finding-id={finding.id}>
       <button
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50"
+        className={cn(
+          "flex w-full cursor-pointer items-center gap-3 border-l-2 px-4 py-3 text-left transition-colors hover:bg-neutral-50",
+          sev.accent,
+        )}
       >
-        <span className="rounded-md p-2 text-white" style={{ background: sev.marker }}>
+        <span className={cn("rounded-md p-2", sev.chip)}>
           <KategorieGlyph kategorie={finding.kategorie} className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-neutral-900">{finding.titel}</p>
           <p className="truncate text-xs text-neutral-500">
             {kat.label} · km {finding.km.toLocaleString("de-DE")}
+            {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
           </p>
         </div>
         <Badge variant={sev.badge} size="sm">
           {sev.label}
         </Badge>
         <ChevronDown
-          className={cn("h-4 w-4 shrink-0 text-neutral-400 transition-transform", open && "rotate-180")}
+          className={cn(
+            "h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200",
+            open && "rotate-180",
+          )}
         />
       </button>
       {open ? (
-        <div className="space-y-4 border-t border-neutral-100 bg-neutral-50/60 px-4 py-4 pl-[60px]">
+        <div
+          className={cn(
+            "animate-fade-in space-y-4 border-l-2 border-t border-neutral-100 bg-neutral-50/60 px-4 py-4 pl-[60px]",
+            sev.accent,
+          )}
+        >
           <p className="text-sm text-neutral-700">{finding.beschreibung}</p>
 
           {/* Strukturierte Details */}
@@ -261,7 +440,7 @@ function FindingRow({
           {/* Geo */}
           <div className="flex items-start gap-2 text-xs">
             <MapPin className="mt-0.5 h-3.5 w-3.5 text-neutral-400" />
-            <span className="text-neutral-500 tabular-nums">
+            <span className="tabular-nums text-neutral-500">
               {finding.lat.toFixed(5)}° N · {finding.lng.toFixed(5)}° E
             </span>
           </div>
@@ -272,7 +451,7 @@ function FindingRow({
               href={finding.quelle.url}
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50/40 px-3 py-2.5 transition-colors hover:bg-primary-50 hover:border-primary-300"
+              className="group flex items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50/40 px-3 py-2.5 transition-colors hover:border-primary-300 hover:bg-primary-50"
             >
               <div className="flex min-w-0 items-center gap-2">
                 <Radio className="h-3.5 w-3.5 flex-shrink-0 text-primary-700" />
@@ -280,7 +459,7 @@ function FindingRow({
                   <div className="text-sm font-semibold text-neutral-900">
                     {finding.quelle.name}
                   </div>
-                  <div className="truncate text-[10px] font-mono text-neutral-500">
+                  <div className="truncate font-mono text-[10px] text-neutral-500">
                     {finding.quelle.url}
                   </div>
                 </div>

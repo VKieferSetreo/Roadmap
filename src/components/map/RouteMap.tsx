@@ -32,11 +32,11 @@ const GERMANY: [number, number] = [51.1657, 10.4515]
 type PinShape = "drop" | "diamond" | "triangle" | "circle"
 
 const SHAPE_BY_KATEGORIE: Record<FindingKategorie, PinShape> = {
-  bruecke: "drop",      // Bauwerk
-  tunnel: "drop",       // Bauwerk
-  engstelle: "drop",    // Bauwerk
-  gewicht: "diamond",   // physikalisch
-  steigung: "diamond",  // physikalisch
+  bruecke: "drop", // Bauwerk
+  tunnel: "drop", // Bauwerk
+  engstelle: "drop", // Bauwerk
+  gewicht: "diamond", // physikalisch
+  steigung: "diamond", // physikalisch
   baustelle: "triangle", // temporär / Achtung
   kreisverkehr: "circle", // Verkehrssteuerung
   ampel: "circle",
@@ -90,9 +90,7 @@ const CUSTOM_KAT_SVG: Partial<Record<FindingKategorie, string>> = {
 }
 
 function iconSvg(Icon: LucideIcon, size = 16): string {
-  return renderToStaticMarkup(
-    <Icon size={size} strokeWidth={2.3} color="white" />,
-  )
+  return renderToStaticMarkup(<Icon size={size} strokeWidth={2.3} color="white" />)
 }
 
 function iconHtmlForKategorie(kategorie: FindingKategorie): string {
@@ -109,14 +107,11 @@ const PIN_ANCHOR_Y = 42
 function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected: boolean): string {
   const stroke = "#ffffff"
   const shadow = "drop-shadow(0 2px 3px rgba(0,0,0,.45))"
-  const ring = selected
-    ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>`
-    : ""
+  const ring = selected ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>` : ""
 
   // Standard-Glyph-Center innerhalb des Pin-Hauptkörpers (für Glyph-Boxgröße 16×16).
   // Triangle hat einen tieferen Schwerpunkt → Glyph weiter unten.
-  const glyphTransform =
-    shape === "triangle" ? "translate(10 14)" : "translate(10 8)"
+  const glyphTransform = shape === "triangle" ? "translate(10 14)" : "translate(10 8)"
 
   let shapeBody = ""
   switch (shape) {
@@ -242,93 +237,128 @@ export function RouteMap({ geometry, findings, selectedId, onSelect, className }
 
   return (
     <div className={cn("relative h-full w-full", className)}>
-    <MapContainer
-      ref={mapRef}
-      center={GERMANY}
-      zoom={6}
-      scrollWheelZoom
-      zoomControl={false}
-      className="h-full w-full"
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+      <MapContainer
+        ref={mapRef}
+        center={GERMANY}
+        zoom={6}
+        scrollWheelZoom
+        zoomControl={false}
+        className="h-full w-full"
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
 
-      {positions.length >= 2 ? (
-        <>
-          {/* Weißer Schatten unter der Route + farbige Linie für besseren Kontrast */}
-          <Polyline positions={positions} pathOptions={{ color: "#ffffff", weight: 9, opacity: 0.9 }} />
-          <Polyline positions={positions} pathOptions={{ color: "#527121", weight: 5, opacity: 1 }} />
-          <Marker position={positions[0]} icon={startPinIcon()}>
-            <Popup>Start</Popup>
-          </Marker>
-          <Marker position={positions[positions.length - 1]} icon={endPinIcon()}>
-            <Popup>Ziel</Popup>
-          </Marker>
-          <FitBounds points={geometry} enabled={autoFit} />
-        </>
-      ) : null}
+        {positions.length >= 2 ? (
+          <>
+            {/* Weißer Schatten unter der Route + farbige Linie für besseren Kontrast */}
+            <Polyline
+              positions={positions}
+              pathOptions={{ color: "#ffffff", weight: 9, opacity: 0.9 }}
+            />
+            <Polyline
+              positions={positions}
+              pathOptions={{ color: "#527121", weight: 5, opacity: 1 }}
+            />
+            {/* Fahrtrichtungs-Fluss: animierte weiße Strichelung (CSS .route-flow) */}
+            <Polyline
+              positions={positions}
+              pathOptions={{
+                color: "#ffffff",
+                weight: 2,
+                opacity: 0.85,
+                dashArray: "1 12",
+                lineCap: "round",
+                className: "route-flow",
+              }}
+            />
+            <Marker position={positions[0]} icon={startPinIcon()}>
+              <Popup>Start</Popup>
+            </Marker>
+            <Marker position={positions[positions.length - 1]} icon={endPinIcon()}>
+              <Popup>Ziel</Popup>
+            </Marker>
+            <FitBounds points={geometry} enabled={autoFit} />
+          </>
+        ) : null}
 
-      {findings.map((f) => {
-        const meta = SEVERITY_META[f.severity]
-        const kat = KATEGORIE_META[f.kategorie]
-        return (
-          <Marker
-            key={f.id}
-            position={[f.lat, f.lng]}
-            icon={findingPinIcon(f.kategorie, meta.marker, selectedId === f.id)}
-            eventHandlers={{ click: () => onSelect?.(f.id) }}
-            zIndexOffset={selectedId === f.id ? 1000 : 0}
+        {findings.map((f) => {
+          const meta = SEVERITY_META[f.severity]
+          const kat = KATEGORIE_META[f.kategorie]
+          return (
+            <Marker
+              key={f.id}
+              position={[f.lat, f.lng]}
+              icon={findingPinIcon(f.kategorie, meta.marker, selectedId === f.id)}
+              eventHandlers={{ click: () => onSelect?.(f.id) }}
+              zIndexOffset={selectedId === f.id ? 1000 : 0}
+            >
+              <Popup>
+                <div className="min-w-[190px]">
+                  <p className="font-semibold text-neutral-900">{f.titel}</p>
+                  <p className="mt-0.5 text-xs text-neutral-500">
+                    {kat.label} · km {f.km.toLocaleString("de-DE")}
+                    {f.strassenRef ? ` · ${f.strassenRef}` : ""}
+                  </p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
+                    {f.beschreibung}
+                  </p>
+                  <span
+                    className={cn(
+                      "mt-2 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                      SEVERITY_META[f.severity].soft,
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "inline-block h-1.5 w-1.5 rounded-full",
+                        SEVERITY_META[f.severity].dot,
+                      )}
+                    />
+                    {meta.label}
+                  </span>
+                </div>
+              </Popup>
+            </Marker>
+          )
+        })}
+      </MapContainer>
+
+      {/* Map-Controls unten rechts: Zentrieren + Zoom +/− */}
+      <div className="pointer-events-none absolute bottom-3 right-3 z-[500] flex flex-col items-end gap-2">
+        <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
+          <button
+            type="button"
+            onClick={centerOnRoute}
+            aria-label="Auf Strecke zentrieren"
+            title="Auf Strecke zentrieren"
+            disabled={positions.length < 2}
+            className="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Popup>
-              <strong>{kat.label} · {f.titel}</strong>
-              <br />
-              {f.beschreibung}
-              <br />
-              <span style={{ color: "#71717A" }}>
-                km {f.km.toLocaleString("de-DE")} · {meta.label}
-              </span>
-            </Popup>
-          </Marker>
-        )
-      })}
-    </MapContainer>
-
-    {/* Map-Controls unten rechts: Zentrieren + Zoom +/− */}
-    <div className="pointer-events-none absolute bottom-3 right-3 z-[500] flex flex-col items-end gap-2">
-      <div className="pointer-events-auto rounded-md bg-white/95 backdrop-blur-sm border border-neutral-200 shadow-sm overflow-hidden flex flex-col">
-        <button
-          type="button"
-          onClick={centerOnRoute}
-          aria-label="Auf Strecke zentrieren"
-          title="Auf Strecke zentrieren"
-          disabled={positions.length < 2}
-          className="h-8 w-8 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <Locate className="h-4 w-4" />
-        </button>
+            <Locate className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
+          <button
+            type="button"
+            onClick={() => mapRef.current?.zoomIn()}
+            aria-label="Hineinzoomen"
+            title="Hineinzoomen"
+            className="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <div className="h-px bg-neutral-200" />
+          <button
+            type="button"
+            onClick={() => mapRef.current?.zoomOut()}
+            aria-label="Herauszoomen"
+            title="Herauszoomen"
+            className="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+        </div>
       </div>
-      <div className="pointer-events-auto rounded-md bg-white/95 backdrop-blur-sm border border-neutral-200 shadow-sm overflow-hidden flex flex-col">
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomIn()}
-          aria-label="Hineinzoomen"
-          title="Hineinzoomen"
-          className="h-8 w-8 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
-        <div className="h-px bg-neutral-200" />
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomOut()}
-          aria-label="Herauszoomen"
-          title="Herauszoomen"
-          className="h-8 w-8 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-        >
-          <Minus className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
     </div>
   )
 }

@@ -14,10 +14,7 @@ export function LoadingSpinner({
 }) {
   return (
     <div
-      className={cn(
-        "flex items-center justify-center gap-2 py-8 text-neutral-500",
-        className,
-      )}
+      className={cn("flex items-center justify-center gap-2 py-8 text-neutral-500", className)}
       role="status"
       aria-live="polite"
     >

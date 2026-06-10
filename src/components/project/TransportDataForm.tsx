@@ -45,7 +45,9 @@ export function TransportDataForm({ value, onChange, disabled }: TransportDataFo
           <div key={f.key}>
             <Label htmlFor={f.key}>
               {f.label}
-              {f.unit ? <span className="ml-1 normal-case text-neutral-400">({f.unit})</span> : null}
+              {f.unit ? (
+                <span className="ml-1 normal-case text-neutral-400">({f.unit})</span>
+              ) : null}
             </Label>
             <Input
               id={f.key}
@@ -55,7 +57,9 @@ export function TransportDataForm({ value, onChange, disabled }: TransportDataFo
               min={0}
               disabled={disabled}
               value={Number.isFinite(value[f.key] as number) ? (value[f.key] as number) : ""}
-              onChange={(e) => onChange({ [f.key]: e.target.valueAsNumber || 0 } as Partial<TransportData>)}
+              onChange={(e) =>
+                onChange({ [f.key]: e.target.valueAsNumber || 0 } as Partial<TransportData>)
+              }
               className="tabular-nums"
             />
           </div>

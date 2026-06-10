@@ -10,40 +10,28 @@ interface EmptyStateProps {
   description?: string
   /** Aktions-Slot (Button etc.) unter Description. */
   cta?: ReactNode
-  /** Legacy-Prop — `cta` bevorzugen. Bleibt aus Kompatibilitätsgründen. */
-  action?: ReactNode
   className?: string
 }
 
-export function EmptyState({
-  icon: Icon,
-  title,
-  description,
-  cta,
-  action,
-  className,
-}: EmptyStateProps) {
-  const cta_resolved = cta ?? action
+export function EmptyState({ icon: Icon, title, description, cta, className }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center py-10 px-6",
-        "border-2 border-dashed border-neutral-200 rounded-lg bg-neutral-50/50",
+        "flex flex-col items-center justify-center px-6 py-10 text-center",
+        "rounded-lg border-2 border-dashed border-neutral-200 bg-neutral-50/50",
         className,
       )}
       role="status"
       aria-live="polite"
     >
       {Icon ? (
-        <div className="rounded-full bg-neutral-100 p-3 mb-3">
+        <div className="mb-3 rounded-full bg-neutral-100 p-3">
           <Icon className="h-6 w-6 text-neutral-400" />
         </div>
       ) : null}
       <h3 className="font-semibold text-neutral-700">{title}</h3>
-      {description ? (
-        <p className="text-sm text-neutral-500 mt-1 max-w-sm">{description}</p>
-      ) : null}
-      {cta_resolved ? <div className="mt-4">{cta_resolved}</div> : null}
+      {description ? <p className="mt-1 max-w-sm text-sm text-neutral-500">{description}</p> : null}
+      {cta ? <div className="mt-4">{cta}</div> : null}
     </div>
   )
 }
