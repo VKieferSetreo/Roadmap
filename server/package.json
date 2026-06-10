@@ -1,0 +1,25 @@
+{
+  "name": "roadmap-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend der Schwertransport-Routenanalyse (Roadmap) — Express + Postgres",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js --demo",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0",
+    "vitest": "^2.1.8"
+  }
+}
