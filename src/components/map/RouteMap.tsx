@@ -89,9 +89,9 @@ const CUSTOM_KAT_SVG: Partial<Record<FindingKategorie, string>> = {
   </svg>`,
 }
 
-function iconSvg(Icon: LucideIcon, size = 14): string {
+function iconSvg(Icon: LucideIcon, size = 16): string {
   return renderToStaticMarkup(
-    <Icon size={size} strokeWidth={2.4} color="white" />,
+    <Icon size={size} strokeWidth={2.3} color="white" />,
   )
 }
 
@@ -99,57 +99,66 @@ function iconHtmlForKategorie(kategorie: FindingKategorie): string {
   return CUSTOM_KAT_SVG[kategorie] ?? iconSvg(ICON_BY_KATEGORIE[kategorie])
 }
 
+// Einheitliche Pin-Geometrie: alle Forms 36×42, Hauptkörper-Center (18, 16),
+// Anchor unten Mitte (18, 41). Glyph 16×16 zentriert. Form unterscheidet Kategorie-Gruppe.
+const PIN_W = 36
+const PIN_H = 42
+const PIN_ANCHOR_X = 18
+const PIN_ANCHOR_Y = 42
+
 function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected: boolean): string {
   const stroke = "#ffffff"
   const shadow = "drop-shadow(0 2px 3px rgba(0,0,0,.45))"
-  const ring = selected ? `<rect x="-2" y="-2" width="36" height="44" rx="20" fill="${color}33"/>` : ""
+  const ring = selected
+    ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>`
+    : ""
 
+  // Standard-Glyph-Center innerhalb des Pin-Hauptkörpers (für Glyph-Boxgröße 16×16).
+  // Triangle hat einen tieferen Schwerpunkt → Glyph weiter unten.
+  const glyphTransform =
+    shape === "triangle" ? "translate(10 14)" : "translate(10 8)"
+
+  let shapeBody = ""
   switch (shape) {
     case "drop":
-      return `<svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
-        ${ring}
-        <path d="M16 1.5C8.27 1.5 2 7.77 2 15.5c0 9.2 11.45 21.3 13.18 23.08a1.16 1.16 0 0 0 1.64 0C18.55 36.8 30 24.7 30 15.5 30 7.77 23.73 1.5 16 1.5Z"
-              fill="${color}" stroke="${stroke}" stroke-width="2"/>
-        <g transform="translate(9 8)">${iconHtml}</g>
-      </svg>`
+      // Tropfen (MapPin-Style) mit Spitze unten bei (18, 41).
+      shapeBody = `<path d="M18 2 C10 2 4 8 4 16 c0 11 13.6 24.5 13.7 24.6 a0.5 0.5 0 0 0 0.6 0 C18.4 40.5 32 27 32 16 c0 -8 -6 -14 -14 -14 z"
+                         fill="${color}" stroke="${stroke}" stroke-width="2"/>`
+      break
     case "diamond":
-      return `<svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
-        ${ring}
-        <rect x="6" y="6" width="22" height="22" rx="4" fill="${color}" stroke="${stroke}" stroke-width="2" transform="rotate(45 17 17)"/>
-        <g transform="translate(10 10)">${iconHtml}</g>
-      </svg>`
+      // Diamant (rotiertes abgerundetes Quadrat) bei (18, 16) + Stiel-Dreieck nach unten.
+      shapeBody = `<path d="M18 41 L13.5 31 H22.5 Z" fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>
+                   <rect x="7" y="5" width="22" height="22" rx="4" fill="${color}" stroke="${stroke}" stroke-width="2" transform="rotate(45 18 16)"/>`
+      break
     case "triangle":
-      return `<svg width="34" height="36" viewBox="0 0 34 36" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
-        ${ring}
-        <path d="M17 2 L31 28 a3 3 0 0 1 -2.6 4.5 H5.6 a3 3 0 0 1 -2.6 -4.5 Z"
-              fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>
-        <g transform="translate(10 15)">${iconHtml}</g>
-      </svg>`
+      // Achtungsdreieck (abgerundet) mit Spitze oben + Stiel-Dreieck nach unten.
+      shapeBody = `<path d="M18 41 L13.5 31 H22.5 Z" fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>
+                   <path d="M18 3 L32 28 a2.5 2.5 0 0 1 -2.2 3.7 H6.2 a2.5 2.5 0 0 1 -2.2 -3.7 Z"
+                         fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>`
+      break
     case "circle":
-      return `<svg width="32" height="38" viewBox="0 0 32 38" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
-        ${ring}
-        <path d="M16 36 L11 26 H21 Z" fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>
-        <circle cx="16" cy="14" r="12" fill="${color}" stroke="${stroke}" stroke-width="2"/>
-        <g transform="translate(9 7)">${iconHtml}</g>
-      </svg>`
+      // Kreis bei (18, 16) + Stiel-Dreieck nach unten.
+      shapeBody = `<path d="M18 41 L13.5 31 H22.5 Z" fill="${color}" stroke="${stroke}" stroke-width="2" stroke-linejoin="round"/>
+                   <circle cx="18" cy="16" r="13" fill="${color}" stroke="${stroke}" stroke-width="2"/>`
+      break
   }
+
+  return `<svg width="${PIN_W}" height="${PIN_H}" viewBox="0 0 ${PIN_W} ${PIN_H}" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
+    ${ring}
+    ${shapeBody}
+    <g transform="${glyphTransform}">${iconHtml}</g>
+  </svg>`
 }
 
 function findingPinIcon(kategorie: FindingKategorie, color: string, selected: boolean): L.DivIcon {
   const shape = SHAPE_BY_KATEGORIE[kategorie]
   const html = pinShapeSvg(shape, color, iconHtmlForKategorie(kategorie), selected)
-
-  const anchor: [number, number] =
-    shape === "diamond" ? [17, 17] : shape === "drop" ? [16, 40] : shape === "triangle" ? [17, 36] : [16, 38]
-  const size: [number, number] =
-    shape === "diamond" ? [34, 34] : shape === "drop" ? [32, 40] : shape === "triangle" ? [34, 36] : [32, 38]
-
   return L.divIcon({
     className: "rm-pin",
     html,
-    iconSize: size,
-    iconAnchor: anchor,
-    popupAnchor: [0, -size[1] + 4],
+    iconSize: [PIN_W, PIN_H],
+    iconAnchor: [PIN_ANCHOR_X, PIN_ANCHOR_Y],
+    popupAnchor: [0, -PIN_H + 4],
   })
 }
 

@@ -23,6 +23,7 @@ const NUM_FIELDS: NumField[] = [
   { key: "gesamtgewicht", label: "Gesamtgewicht", unit: "t", step: 1 },
   { key: "achslast", label: "Achslast", unit: "t", step: 0.5 },
   { key: "achsen", label: "Achsen", unit: "", step: 1 },
+  { key: "ladungsgewicht", label: "Ladungsgewicht", unit: "t", step: 1 },
 ]
 
 export function TransportDataForm({ value, onChange, disabled }: TransportDataFormProps) {

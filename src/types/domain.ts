@@ -29,7 +29,7 @@ export interface TransportData {
   breite: number
   /** Gesamthöhe in Metern. */
   hoehe: number
-  /** Gesamtgewicht in Tonnen. */
+  /** Gesamtgewicht (Zugfahrzeug + Ladung) in Tonnen. */
   gesamtgewicht: number
   /** maximale Achslast in Tonnen. */
   achslast: number
@@ -37,6 +37,8 @@ export interface TransportData {
   achsen: number
   /** Beschreibung der Ladung. */
   ladung: string
+  /** Reines Ladungsgewicht in Tonnen (für Plausibilitätsprüfung gegen gesamtgewicht). */
+  ladungsgewicht?: number
 }
 
 export type FindingKategorie =
@@ -128,4 +130,5 @@ export const DEFAULT_TRANSPORT: TransportData = {
   achslast: 11.5,
   achsen: 8,
   ladung: "",
+  ladungsgewicht: 35,
 }

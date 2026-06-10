@@ -162,12 +162,27 @@ export function AnlageTab({ project }: { project: Project }) {
           <CardHeader>
             <CardTitle className="text-base">Transport-Stammdaten</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col gap-3">
             <TransportDataForm
               value={project.transport}
               onChange={(patch) => updateTransport(project.id, patch)}
               disabled={running}
             />
+            {isLadungZuSchwer(project.transport) ? (
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800"
+              >
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-red-600" />
+                <span>
+                  <strong>Gesamtgewicht zu niedrig.</strong> Das Ladungsgewicht (
+                  <span className="tabular-nums">{project.transport.ladungsgewicht} t</span>) ist
+                  größer als das Gesamtgewicht (
+                  <span className="tabular-nums">{project.transport.gesamtgewicht} t</span>) — bitte
+                  korrigieren.
+                </span>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       </div>
@@ -384,6 +399,15 @@ function isZeitraumInvalid(z: { von?: string; bis?: string }): boolean {
   const b = new Date(z.bis).getTime()
   if (Number.isNaN(a) || Number.isNaN(b)) return false
   return b < a
+}
+
+/** True wenn die Ladung schwerer ist als das Gesamtgewicht (Plausibilitätsfehler). */
+function isLadungZuSchwer(t: { gesamtgewicht?: number; ladungsgewicht?: number }): boolean {
+  const ladung = t.ladungsgewicht
+  const gesamt = t.gesamtgewicht
+  if (typeof ladung !== "number" || ladung <= 0) return false
+  if (typeof gesamt !== "number" || gesamt <= 0) return false
+  return ladung > gesamt
 }
 
 /** YYYY-MM-DDTHH:mm → DD.MM.YYYY HH:mm */

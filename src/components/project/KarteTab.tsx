@@ -7,6 +7,7 @@ import { RouteMap } from "@/components/map/RouteMap"
 import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { KategorieGlyph } from "./KategorieGlyph"
 import type { Project } from "@/types/domain"
 
 export function KarteTab({ project }: { project: Project }) {
@@ -32,6 +33,10 @@ export function KarteTab({ project }: { project: Project }) {
     sev,
     n: project.findings.filter((f) => f.severity === sev).length,
   }))
+  // Unique Kategorien die auf der Strecke vorkommen — für die Legende.
+  const kategoriesOnRoute = Array.from(
+    new Set(project.findings.map((f) => f.kategorie)),
+  ).sort((a, b) => KATEGORIE_META[a].label.localeCompare(KATEGORIE_META[b].label))
   const selected = project.findings.find((f) => f.id === selectedId)
 
   return (
@@ -42,6 +47,31 @@ export function KarteTab({ project }: { project: Project }) {
         selectedId={selectedId}
         onSelect={setSelectedId}
       />
+
+      {/* Legende: Kategorien die auf der Strecke gefunden wurden — oben rechts */}
+      {kategoriesOnRoute.length > 0 ? (
+        <div className="pointer-events-none absolute right-3 top-3 z-[500]">
+          <div className="pointer-events-auto rounded-lg border border-neutral-200 bg-white/95 p-3 shadow-lg backdrop-blur min-w-[180px]">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-neutral-500 mb-2">
+              Legende
+            </div>
+            <ul className="flex flex-col gap-1.5">
+              {kategoriesOnRoute.map((kat) => {
+                const count = project.findings.filter((f) => f.kategorie === kat).length
+                return (
+                  <li key={kat} className="flex items-center gap-2 text-xs text-neutral-700">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-neutral-100 text-neutral-700">
+                      <KategorieGlyph kategorie={kat} className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="flex-1">{KATEGORIE_META[kat].label}</span>
+                    <span className="tabular-nums text-neutral-400">{count}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      ) : null}
 
       {/* Routen-Übersicht oben links */}
       <div className="pointer-events-none absolute left-3 top-3 z-[500] flex flex-col gap-2">
@@ -78,17 +108,12 @@ export function KarteTab({ project }: { project: Project }) {
           <div className="rounded-lg border border-neutral-200 bg-white/95 p-4 shadow-xl backdrop-blur">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
-                {(() => {
-                  const Icon = KATEGORIE_META[selected.kategorie].icon
-                  return (
-                    <span
-                      className="rounded-md p-1.5 text-white"
-                      style={{ background: SEVERITY_META[selected.severity].marker }}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
-                  )
-                })()}
+                <span
+                  className="rounded-md p-1.5 text-white"
+                  style={{ background: SEVERITY_META[selected.severity].marker }}
+                >
+                  <KategorieGlyph kategorie={selected.kategorie} className="h-4 w-4" />
+                </span>
                 <div>
                   <p className="text-sm font-semibold text-neutral-900">{selected.titel}</p>
                   <p className="text-xs text-neutral-500">
