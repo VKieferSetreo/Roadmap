@@ -12,6 +12,9 @@ export interface RouteInput {
   mode: RouteMode
   /** bei mode="upload": Name der hochgeladenen Streckendatei (GPX/KML/…). */
   fileName?: string
+  /** bei mode="upload": aus der Datei geparste Strecken-Geometrie (GPX/KML/GeoJSON).
+   *  Shapefiles haben (noch) keine Client-Parsing-Unterstützung → points bleibt leer. */
+  points?: RoutePoint[]
   /** bei mode="startziel": Start-Ort. */
   start?: string
   /** bei mode="startziel": Ziel-Ort. */
@@ -118,6 +121,43 @@ export interface Project {
   distanzKm?: number
   /** geschätzte Fahrzeit in Minuten (nach Analyse gesetzt). */
   fahrzeitMin?: number
+}
+
+/** Eintrag der zentralen Hindernis-Datenbank (Backend). Die Analyse-Engine matcht
+ *  diese Einträge gegen den Strecken-Korridor und bewertet sie pro Transport. */
+export interface Obstacle {
+  id: string
+  kategorie: FindingKategorie
+  name: string
+  beschreibung?: string
+  lat: number
+  lng: number
+  strassenRef?: string
+  zustaendig?: string
+  quelle?: FindingSource
+  /** Kategorie-spezifische Grenzwerte: maxHoeheM, maxBreiteM, maxGewichtT,
+   *  maxAchslastT, steigungPct, radiusM, restbreiteM … */
+  attrs: Record<string, number | string>
+  gueltigVon?: string
+  gueltigBis?: string
+  aktiv: boolean
+  /** true für Seed-/Demo-Datensätze — echte Importe haben demo=false. */
+  demo: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+/** Aggregat-Kennzahlen vom Backend (GET /api/stats). */
+export interface AppStats {
+  projekte: number
+  fertig: number
+  funde: number
+  kritisch: number
+  warnung: number
+  hinweis: number
+  hindernisse: number
+  hindernisseDemo: number
+  letzteAnalyse?: string
 }
 
 /** Default-Stammdaten für ein frisch angelegtes Projekt (typischer Schwertransport). */

@@ -15,6 +15,14 @@ export default defineConfig(({ command }) => ({
   server: {
     host: "127.0.0.1",
     port: 5173,
+    // Dev-Proxy aufs lokale Backend (server/, Port 8095). Läuft kein Server,
+    // schlägt nur der Health-Check fehl → App bleibt im Demo-Modus.
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8095",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: "dist",

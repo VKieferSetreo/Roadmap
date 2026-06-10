@@ -57,7 +57,9 @@ function dispatchAuthFailure() {
   window.dispatchEvent(new CustomEvent(AUTH_FAILURE_EVENT))
 }
 
-const baseURL = import.meta.env.VITE_API_BASE_URL ?? "/api"
+// Default: API liegt unter dem App-Basepfad (Dev "/api" via Vite-Proxy,
+// Prod-Build "/roadmap/api" hinter dem setreo-proxy).
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? `${import.meta.env.BASE_URL}api`
 
 export const axiosInstance = axios.create({
   baseURL,

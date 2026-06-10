@@ -10,6 +10,7 @@ import { NewProjectDialog } from "@/components/project/NewProjectDialog"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useAuthStore } from "@/store/auth"
+import { useDataSourceStore } from "@/store/datasource"
 
 const SIDEBAR_OPEN_KEY = "roadmap.sidebar.open"
 
@@ -36,13 +37,17 @@ export function AppLayout() {
       return next
     })
   const createProject = useProjectStore((s) => s.createProject)
+  const initData = useProjectStore((s) => s.initData)
   const { newProjectOpen, closeNewProject } = useUiStore()
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
+  const detect = useDataSourceStore((s) => s.detect)
 
-  // Einmal beim Mounten die echte Anmelde-Identität vom Gateway holen (SSO).
+  // Boot: SSO-Identität holen + Datenquelle erkennen (Backend live vs. Demo-Modus),
+  // dann Projekte laden bzw. Seed setzen.
   useEffect(() => {
     void fetchIdentity()
-  }, [fetchIdentity])
+    void detect().then((mode) => initData(mode))
+  }, [fetchIdentity, detect, initData])
 
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
@@ -66,9 +71,10 @@ export function AppLayout() {
         open={newProjectOpen}
         onClose={closeNewProject}
         onCreate={(name) => {
-          const p = createProject(name)
-          closeNewProject()
-          navigate(`/projekte/${p.id}/anlage`)
+          void createProject(name).then((p) => {
+            closeNewProject()
+            navigate(`/projekte/${p.id}/anlage`)
+          })
         }}
       />
     </div>

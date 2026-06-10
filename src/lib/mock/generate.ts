@@ -44,11 +44,9 @@ function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSo
   const ahApi = `https://verkehr.autobahn.de/o/autobahn/${road}/services/roadworks`
   const ahApiClosure = `https://verkehr.autobahn.de/o/autobahn/${road}/services/closure`
   const ahApiWarn = `https://verkehr.autobahn.de/o/autobahn/${road}/services/warning`
-  const mobiSearch = (q: string) =>
-    `https://mobilithek.info/offers?search=${encodeURIComponent(q)}`
+  const mobiSearch = (q: string) => `https://mobilithek.info/offers?search=${encodeURIComponent(q)}`
 
-  const bastSib =
-    "https://www.bast.de/DE/Ingenieurbau/Anwendungen/SIB-Bauwerke/SIB-Bauwerke.html"
+  const bastSib = "https://www.bast.de/DE/Ingenieurbau/Anwendungen/SIB-Bauwerke/SIB-Bauwerke.html"
   const bkgDgm =
     "https://www.bkg.bund.de/DE/Produkte-und-Services/Shop-und-Downloads/Digitale-Geodaten/Digitales-Gelaendemodell/digitales-gelaendemodell.html"
   const dbNetzInfra = "https://fahrweg.dbnetze.com/fahrweg-de/start/das_unternehmen"
@@ -68,7 +66,11 @@ function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSo
     case "engstelle":
       return [
         { name: `Autobahn-API · ${road} Roadworks`, url: ahApi, aktualisiertAm: "vor 22 min" },
-        { name: `Mobilithek · DATEX-II "${road}"`, url: mobiSearch(`${road} roadworks`), aktualisiertAm: "vor 8 min" },
+        {
+          name: `Mobilithek · DATEX-II "${road}"`,
+          url: mobiSearch(`${road} roadworks`),
+          aktualisiertAm: "vor 8 min",
+        },
       ]
     case "gewicht":
       return [
@@ -80,13 +82,15 @@ function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSo
         },
       ]
     case "kreisverkehr":
-      return [
-        { name: "OSM · Kreisverkehr (Position)", url: osm, aktualisiertAm: "vor 1 d" },
-      ]
+      return [{ name: "OSM · Kreisverkehr (Position)", url: osm, aktualisiertAm: "vor 1 d" }]
     case "baustelle":
       return [
         { name: `Autobahn-API · ${road} Roadworks`, url: ahApi, aktualisiertAm: "vor 9 min" },
-        { name: `Mobilithek · DATEX-II "${road}"`, url: mobiSearch(`${road} baustelle`), aktualisiertAm: "vor 12 min" },
+        {
+          name: `Mobilithek · DATEX-II "${road}"`,
+          url: mobiSearch(`${road} baustelle`),
+          aktualisiertAm: "vor 12 min",
+        },
       ]
     case "bahnuebergang":
       return [
@@ -151,8 +155,7 @@ function distanceKm(a: RoutePoint, b: RoutePoint): number {
   const dLng = ((b.lng - a.lng) * Math.PI) / 180
   const lat1 = (a.lat * Math.PI) / 180
   const lat2 = (b.lat * Math.PI) / 180
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2)
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2)
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
@@ -187,6 +190,10 @@ function buildPolyline(waypoints: RoutePoint[]): RoutePoint[] {
 
 /** Erzeugt die Strecken-Geometrie aus dem Routen-Input. */
 export function buildRouteGeometry(route: RouteInput): RoutePoint[] {
+  // Upload mit client-seitig geparster Geometrie (GPX/KML/GeoJSON) → 1:1 verwenden.
+  if (route.mode === "upload" && route.points && route.points.length >= 2) {
+    return route.points
+  }
   if (route.mode === "startziel" && route.start && route.ziel) {
     const wps = [
       resolveOrt(route.start),
@@ -208,7 +215,11 @@ interface FindKategorieDef {
   kategorie: FindingKategorie
   titel: string
   /** baut Detail + Severity relativ zum Transport. */
-  build: (t: TransportData) => { beschreibung: string; detail: Record<string, string>; severity: FindingSeverity }
+  build: (t: TransportData) => {
+    beschreibung: string
+    detail: Record<string, string>
+    severity: FindingSeverity
+  }
   weight: number
 }
 
@@ -228,7 +239,7 @@ const KATEGORIEN: FindKategorieDef[] = [
       const hoehe = 3.6 + Math.random() * 1.2 // 3,60–4,80 m
       return {
         beschreibung: "Begrenzte Durchfahrtshöhe unter der Brücke prüfen.",
-        detail: { Durchfahrtshöhe: m(hoehe), "Transporthöhe": m(tr.hoehe), Bauwerk: "Straßenbrücke" },
+        detail: { Durchfahrtshöhe: m(hoehe), Transporthöhe: m(tr.hoehe), Bauwerk: "Straßenbrücke" },
         severity: sev(hoehe < tr.hoehe + 0.05, hoehe < tr.hoehe + 0.4),
       }
     },
@@ -241,7 +252,10 @@ const KATEGORIEN: FindKategorieDef[] = [
       const hoehe = 3.8 + Math.random() * 0.9
       return {
         beschreibung: "Tunnelprofil — Höhe und Breite einhalten.",
-        detail: { Tunnelhöhe: m(hoehe), Tunnellänge: `${(0.3 + Math.random() * 2).toFixed(1).replace(".", ",")} km` },
+        detail: {
+          Tunnelhöhe: m(hoehe),
+          Tunnellänge: `${(0.3 + Math.random() * 2).toFixed(1).replace(".", ",")} km`,
+        },
         severity: sev(hoehe < tr.hoehe + 0.05, hoehe < tr.hoehe + 0.5),
       }
     },
@@ -267,7 +281,11 @@ const KATEGORIEN: FindKategorieDef[] = [
       const last = 24 + Math.random() * 40 // 24–64 t
       return {
         beschreibung: "Zulässige Brücken-/Streckenlast prüfen, ggf. Lastverteilung nachweisen.",
-        detail: { "Zul. Last": t(last), Gesamtgewicht: t(tr.gesamtgewicht), Achslast: t(tr.achslast) },
+        detail: {
+          "Zul. Last": t(last),
+          Gesamtgewicht: t(tr.gesamtgewicht),
+          Achslast: t(tr.achslast),
+        },
         severity: sev(last < tr.gesamtgewicht, last < tr.gesamtgewicht * 1.15),
       }
     },
@@ -301,7 +319,10 @@ const KATEGORIEN: FindKategorieDef[] = [
     weight: 1,
     build: (tr) => ({
       beschreibung: "Höhengleicher Bahnübergang — Bodenfreiheit und Wartezeit beachten.",
-      detail: { Sicherung: Math.random() > 0.5 ? "Schranke" : "Lichtzeichen", Fahrzeuglänge: m(tr.laenge) },
+      detail: {
+        Sicherung: Math.random() > 0.5 ? "Schranke" : "Lichtzeichen",
+        Fahrzeuglänge: m(tr.laenge),
+      },
       severity: "hinweis",
     }),
   },
@@ -324,7 +345,10 @@ const KATEGORIEN: FindKategorieDef[] = [
     weight: 1,
     build: (tr) => ({
       beschreibung: "Lichtsignalanlage mit knappem Abbiegeradius.",
-      detail: { Abbiegeradius: `${(8 + Math.random() * 8).toFixed(0)} m`, Fahrzeuglänge: m(tr.laenge) },
+      detail: {
+        Abbiegeradius: `${(8 + Math.random() * 8).toFixed(0)} m`,
+        Fahrzeuglänge: m(tr.laenge),
+      },
       severity: "hinweis",
     }),
   },
@@ -335,10 +359,7 @@ const WEIGHTED: FindingKategorie[] = KATEGORIEN.flatMap((k) =>
 )
 
 /** Erzeugt Funde entlang der Geometrie, gewichtet nach Transport-Stammdaten. */
-export function generateFindings(
-  geometry: RoutePoint[],
-  transport: TransportData,
-): Finding[] {
+export function generateFindings(geometry: RoutePoint[], transport: TransportData): Finding[] {
   if (geometry.length < 2) return []
 
   // kumulative km-Marken je Geometrie-Punkt
