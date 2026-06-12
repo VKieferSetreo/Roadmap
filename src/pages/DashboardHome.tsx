@@ -1,7 +1,8 @@
 // Home — Hero (schlank) + Projekt-Übersicht mit Karten-/Listen-Ansicht.
 // Seed/Initial-Load passiert zentral im AppLayout (Datasource-Detection).
 
-import { FolderPlus, LayoutGrid, List, Plus } from "lucide-react"
+import { Archive, ChevronDown, FolderPlus, LayoutGrid, List, Plus } from "lucide-react"
+import { useState } from "react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useSettingsStore, type ProjektAnsicht } from "@/store/settings"
@@ -17,8 +18,12 @@ export function DashboardHome() {
   const openNewProject = useUiStore((s) => s.openNewProject)
   const ansicht = useSettingsStore((s) => s.projektAnsicht)
   const setAnsicht = useSettingsStore((s) => s.setProjektAnsicht)
+  const [archivOffen, setArchivOffen] = useState(false)
 
-  const sorted = [...projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  const aktive = projects.filter((p) => !p.archiviertAm)
+  const archivierte = projects.filter((p) => Boolean(p.archiviertAm))
+  const sorted = [...aktive].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  const sortedArchiv = [...archivierte].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 
   return (
     <div className="h-full overflow-y-auto">
@@ -71,7 +76,8 @@ export function DashboardHome() {
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">Ihre Projekte</h2>
             <p className="text-sm text-neutral-500">
-              {projects.length} {projects.length === 1 ? "Projekt" : "Projekte"}
+              {aktive.length} {aktive.length === 1 ? "Projekt" : "Projekte"}
+              {archivierte.length > 0 ? ` · ${archivierte.length} archiviert` : ""}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -150,6 +156,35 @@ export function DashboardHome() {
             </ul>
           </Card>
         )}
+
+        {/* Archiv — eingeklappt, stört den Alltag nicht */}
+        {sortedArchiv.length > 0 ? (
+          <div className="mt-10">
+            <button
+              onClick={() => setArchivOffen((o) => !o)}
+              aria-expanded={archivOffen}
+              className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-neutral-500 transition-colors hover:text-neutral-800"
+            >
+              <Archive className="h-4 w-4" />
+              Archiv ({sortedArchiv.length})
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  archivOffen && "rotate-180",
+                )}
+              />
+            </button>
+            {archivOffen ? (
+              <Card className="mt-3 opacity-80">
+                <ul className="divide-y divide-neutral-100">
+                  {sortedArchiv.map((p, i) => (
+                    <ProjectListRow key={p.id} project={p} index={i} />
+                  ))}
+                </ul>
+              </Card>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   )

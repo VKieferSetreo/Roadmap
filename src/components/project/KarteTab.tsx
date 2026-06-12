@@ -3,6 +3,7 @@
 
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import {
   Building2,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   EyeOff,
   Layers,
   MapPinned,
+  MapPinPlus,
   Route as RouteIcon,
   X,
 } from "lucide-react"
@@ -20,10 +22,34 @@ import { RouteMap } from "@/components/map/RouteMap"
 import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KategorieGlyph } from "./KategorieGlyph"
+import { ObstacleDialog } from "./ObstacleDialog"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
-import type { Project } from "@/types/domain"
+import { useDataSourceStore } from "@/store/datasource"
+import { useProjectStore } from "@/store/projects"
+import type { Project, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
+
+/** Snap des Karten-Klicks auf den nächstgelegenen Streckenpunkt (Haversine, km). */
+function snapToRoutes(
+  p: RoutePoint,
+  routes: Project["routes"],
+): { punkt: RoutePoint; distKm: number } | null {
+  const R = 6371
+  let best: { punkt: RoutePoint; distKm: number } | null = null
+  for (const r of routes) {
+    for (const q of r.points) {
+      const dLat = ((q.lat - p.lat) * Math.PI) / 180
+      const dLng = ((q.lng - p.lng) * Math.PI) / 180
+      const la1 = (p.lat * Math.PI) / 180
+      const la2 = (q.lat * Math.PI) / 180
+      const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(la1) * Math.cos(la2)
+      const d = 2 * R * Math.asin(Math.sqrt(h))
+      if (!best || d < best.distKm) best = { punkt: q, distKm: d }
+    }
+  }
+  return best
+}
 
 export function KarteTab({ project }: { project: Project }) {
   const navigate = useNavigate()
@@ -31,6 +57,11 @@ export function KarteTab({ project }: { project: Project }) {
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [layersOpen, setLayersOpen] = useState(true)
+  /** Klickmodus „Eintrag erstellen" + gesnappte Position fürs Formular. */
+  const [addMode, setAddMode] = useState(false)
+  const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
+  const live = useDataSourceStore((s) => s.mode) === "live"
+  const runAnalysis = useProjectStore((s) => s.runAnalysis)
 
   const sichtbareRouten = useMemo(
     () => project.routes.filter((r) => !hidden.has(r.id)),
@@ -75,6 +106,18 @@ export function KarteTab({ project }: { project: Project }) {
     })
   }
 
+  /** Klick im Eintrag-Modus: an die Strecke snappen (max. 300 m), Dialog öffnen. */
+  const onMapClick = (p: RoutePoint) => {
+    if (!addMode) return
+    const snap = snapToRoutes(p, sichtbareRouten)
+    if (!snap || snap.distKm > 0.3) {
+      toast.error("Bitte näher an die Strecke klicken (max. 300 m).")
+      return
+    }
+    setAddMode(false)
+    setAddPosition(snap.punkt)
+  }
+
   return (
     <div className="relative h-full w-full">
       <RouteMap
@@ -82,7 +125,26 @@ export function KarteTab({ project }: { project: Project }) {
         findings={sichtbareFindings}
         selectedId={selectedId}
         onSelect={setSelectedId}
+        onMapClick={addMode ? onMapClick : undefined}
       />
+
+      {/* Klickmodus-Banner */}
+      {addMode ? (
+        <div className="pointer-events-none absolute left-1/2 top-3 z-[600] -translate-x-1/2">
+          <div className="glass pointer-events-auto flex animate-rise-in items-center gap-3 px-4 py-2.5">
+            <MapPinPlus className="h-4 w-4 text-primary-600" />
+            <span className="text-sm font-medium text-neutral-800">
+              Auf die Strecke klicken, um den Eintrag zu platzieren
+            </span>
+            <button
+              onClick={() => setAddMode(false)}
+              className="cursor-pointer rounded-md px-2 py-0.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
+            >
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Links oben: Routen-Kennzahlen + Ebenen-Panel */}
       <div className="pointer-events-none absolute left-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
@@ -189,6 +251,21 @@ export function KarteTab({ project }: { project: Project }) {
                 )
               })}
             </ul>
+          ) : null}
+          {/* Kunden-Eintrag per Karten-Klick (nur Live-Modus) */}
+          {live && !addMode ? (
+            <div className="border-t border-neutral-200/70 px-2 py-1.5">
+              <button
+                onClick={() => {
+                  setSelectedId(null)
+                  setAddMode(true)
+                }}
+                className="flex w-full cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-50"
+              >
+                <MapPinPlus className="h-4 w-4" />
+                Eintrag auf der Strecke erstellen
+              </button>
+            </div>
           ) : null}
         </div>
       </div>
@@ -302,6 +379,19 @@ export function KarteTab({ project }: { project: Project }) {
           </div>
         </div>
       ) : null}
+
+      {/* Formular für den Kunden-Eintrag (gesnappte Position) */}
+      <ObstacleDialog
+        position={addPosition}
+        onClose={() => setAddPosition(null)}
+        onCreated={() => {
+          setAddPosition(null)
+          toast.success("Eintrag gespeichert — er fließt in künftige Auswertungen ein.", {
+            action: { label: "Jetzt neu auswerten", onClick: () => runAnalysis(project.id) },
+            duration: 8000,
+          })
+        }}
+      />
     </div>
   )
 }

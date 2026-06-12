@@ -122,7 +122,11 @@
   }
 }
 
-/* ── Druck (PDF-Export über Browser-Druck) ─────────────────────────────────── */
+/* ── Druck (PDF-Export über den Bericht) ───────────────────────────────────── */
+@page {
+  size: A4;
+  margin: 12mm;
+}
 @media print {
   header,
   aside,
@@ -135,5 +139,17 @@
   }
   body {
     background: white;
+  }
+  /* Report-Modus: NUR der Bericht ist sichtbar */
+  body.printing-report #root {
+    display: none !important;
+  }
+  body.printing-report #report-print-root {
+    position: static !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+  .break-inside-avoid {
+    break-inside: avoid;
   }
 }

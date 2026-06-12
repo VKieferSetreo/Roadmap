@@ -8,6 +8,7 @@ import type {
   FindingKategorie,
   FindingSeverity,
   Obstacle,
+  ObstacleCreate,
   Project,
   ProjectRoute,
   ShareInfo,
@@ -40,6 +41,8 @@ export interface ProjectPatch {
   routes?: ProjectRoute[]
   transport?: TransportData
   zeitraum?: TransportZeitraum
+  /** true = archivieren, false = wiederherstellen. */
+  archiviert?: boolean
 }
 
 export const api = {
@@ -103,6 +106,10 @@ export const api = {
     axiosClient<{ obstacles: Obstacle[] }>({ url: "/obstacles", method: "GET", params }).then(
       (r) => r.obstacles,
     ),
+
+  /** Kunden-Hindernis anlegen (tenant-eigen, Karten-Klick-Flow). */
+  createObstacle: (payload: ObstacleCreate) =>
+    axiosClient<Obstacle>({ url: "/obstacles", method: "POST", data: payload }),
 
   stats: () => axiosClient<AppStats>({ url: "/stats", method: "GET" }),
 }

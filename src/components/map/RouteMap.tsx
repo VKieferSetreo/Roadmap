@@ -3,7 +3,15 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
@@ -13,6 +21,14 @@ import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
+
+/** Meldet Karten-Klicks nach oben (z.B. „Eintrag auf der Strecke erstellen"). */
+function MapClickHandler({ onClick }: { onClick: (p: RoutePoint) => void }) {
+  useMapEvents({
+    click: (e) => onClick({ lat: e.latlng.lat, lng: e.latlng.lng }),
+  })
+  return null
+}
 
 /** Passt den Kartenausschnitt an die Strecke an, sobald sie sich ändert. */
 function FitBounds({ points, enabled }: { points: RoutePoint[]; enabled: boolean }) {
@@ -35,10 +51,19 @@ interface RouteMapProps {
   findings: Finding[]
   selectedId?: string | null
   onSelect?: (id: string) => void
+  /** wenn gesetzt: Klicks auf die Karte werden gemeldet + Crosshair-Cursor. */
+  onMapClick?: (p: RoutePoint) => void
   className?: string
 }
 
-export function RouteMap({ routes, findings, selectedId, onSelect, className }: RouteMapProps) {
+export function RouteMap({
+  routes,
+  findings,
+  selectedId,
+  onSelect,
+  onMapClick,
+  className,
+}: RouteMapProps) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const autoFit = useSettingsStore((s) => s.autoFit)
   const tiles = TILE_LAYERS[tileStyle]
@@ -64,7 +89,13 @@ export function RouteMap({ routes, findings, selectedId, onSelect, className }: 
   }
 
   return (
-    <div className={cn("relative h-full w-full", className)}>
+    <div
+      className={cn(
+        "relative h-full w-full",
+        onMapClick && "[&_.leaflet-container]:cursor-crosshair",
+        className,
+      )}
+    >
       <MapContainer
         ref={mapRef}
         center={GERMANY}
@@ -75,6 +106,7 @@ export function RouteMap({ routes, findings, selectedId, onSelect, className }: 
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+        {onMapClick ? <MapClickHandler onClick={onMapClick} /> : null}
 
         {drawn.map((r) => (
           /* je Strecke: weißer Schatten + Strecken-Farbe + Fahrtrichtungs-Fluss */

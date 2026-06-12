@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { ArrowRight, Route as RouteIcon, TriangleAlert } from "lucide-react"
 import { Badge } from "@/components/ui/Badge"
 import { MapPreview } from "@/components/shared/MapPreview"
+import { ProjectMenu } from "./ProjectMenu"
 import type { Project, ProjectStatus } from "@/types/domain"
 import { formatRelativeDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
@@ -33,10 +34,15 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
   const hasRoute = project.routes.some((r) => r.points.length >= 2)
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => navigate(`/projekte/${project.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") navigate(`/projekte/${project.id}`)
+      }}
       className={cn(
-        "group flex flex-col overflow-hidden rounded-xl border border-neutral-200/80 bg-white text-left shadow-card",
+        "group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-neutral-200/80 bg-white text-left shadow-card",
         "transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-card-hover",
         "animate-rise-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
       )}
@@ -52,10 +58,13 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
             <span className="text-xs font-medium">Noch keine Strecke</span>
           </div>
         )}
-        <div className="absolute right-2 top-2">
+        <div className="absolute right-2 top-2 flex items-center gap-1">
           <Badge variant={status.variant} size="sm">
             {status.label}
           </Badge>
+          <span className="rounded-md bg-white/85 backdrop-blur-sm">
+            <ProjectMenu project={project} />
+          </span>
         </div>
       </div>
 
@@ -87,7 +96,7 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           Aktualisiert {formatRelativeDE(project.updatedAt)}
         </p>
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -99,9 +108,14 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
 
   return (
     <li className="animate-rise-in" style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}>
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => navigate(`/projekte/${project.id}`)}
-        className="group flex w-full cursor-pointer items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-neutral-50"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") navigate(`/projekte/${project.id}`)
+        }}
+        className="group flex w-full cursor-pointer items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-neutral-50 focus-visible:bg-neutral-50 focus-visible:outline-none"
       >
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-neutral-900">{project.name}</p>
@@ -123,8 +137,9 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
         <Badge variant={status.variant} size="sm">
           {status.label}
         </Badge>
+        <ProjectMenu project={project} />
         <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition-all group-hover:translate-x-0.5 group-hover:text-primary-600" />
-      </button>
+      </div>
     </li>
   )
 }

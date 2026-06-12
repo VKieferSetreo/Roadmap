@@ -442,11 +442,14 @@ export function AnlageTab({ project }: { project: Project }) {
               </div>
             </>
           )}
+          {/* ── Veröffentlichen — fester Footer derselben Card (kein Layout-Springen) ── */}
+          {project.status === "fertig" && mode === "live" && !running ? (
+            <div className="w-full border-t border-neutral-100 pt-3">
+              <PublishCard project={project} />
+            </div>
+          ) : null}
         </CardContent>
       </Card>
-
-      {/* ── Veröffentlichen (Externe sehen Karte + Auswertung) ── */}
-      {project.status === "fertig" && mode === "live" ? <PublishCard project={project} /> : null}
     </div>
   )
 }

@@ -25,6 +25,7 @@ import { Select } from "@/components/ui/Select"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
+import { ReportView } from "./ReportView"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
@@ -50,6 +51,7 @@ export function DashboardTab({ project }: { project: Project }) {
   const [routeFilter, setRouteFilter] = useState<string>("alle")
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
+  const [reportOpen, setReportOpen] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
 
   const filtered = useMemo(() => {
@@ -191,9 +193,9 @@ export function DashboardTab({ project }: { project: Project }) {
 
       {/* Export */}
       <div className="print-hidden flex items-center justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={() => window.print()}>
+        <Button variant="outline" size="sm" onClick={() => setReportOpen(true)}>
           <FileDown className="h-3.5 w-3.5" />
-          PDF
+          PDF-Bericht
         </Button>
         <Button variant="outline" size="sm" onClick={() => exportCsv(project)}>
           <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
@@ -263,6 +265,8 @@ export function DashboardTab({ project }: { project: Project }) {
           </div>
         </Card>
       )}
+
+      {reportOpen ? <ReportView project={project} onClose={() => setReportOpen(false)} /> : null}
     </div>
   )
 }

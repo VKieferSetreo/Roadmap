@@ -4,6 +4,7 @@
 
 import { Building2, LogOut, Menu } from "lucide-react"
 import { toast } from "sonner"
+import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { useSettingsStore } from "@/store/settings"
 import { useAuthStore } from "@/store/auth"
@@ -73,23 +74,26 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3">
-        <span className="hidden text-[13px] text-neutral-500 sm:inline">{email}</span>
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700"
-          title={email}
-        >
-          {init}
-        </span>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-sm text-neutral-400 transition-colors hover:text-neutral-600"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline">Abmelden</span>
-        </button>
-      </div>
+      {/* Profil-Menü: Avatar klicken → E-Mail + Abmelden */}
+      <DropdownMenu
+        trigger={
+          <span
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 ring-offset-1 transition-shadow hover:ring-2 hover:ring-primary-300"
+            title="Profil"
+            aria-label="Profil-Menü öffnen"
+          >
+            {init}
+          </span>
+        }
+      >
+        <div className="border-b border-neutral-100 px-3 py-2">
+          <p className="text-xs text-neutral-400">Angemeldet als</p>
+          <p className="truncate text-sm font-medium text-neutral-800">{email}</p>
+        </div>
+        <DropdownItem onClick={handleLogout}>
+          <LogOut className="h-4 w-4 text-neutral-400" /> Abmelden
+        </DropdownItem>
+      </DropdownMenu>
     </header>
   )
 }

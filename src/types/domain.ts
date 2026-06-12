@@ -123,6 +123,8 @@ export interface Project {
   fahrzeitMin?: number
   /** aktiver Share-Link (null/undefined = nicht veröffentlicht). */
   share?: ShareInfo | null
+  /** gesetzt = Projekt ist archiviert (aus der Hauptliste ausgeblendet). */
+  archiviertAm?: string | null
 }
 
 /** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Mitglieder. */
@@ -159,8 +161,23 @@ export interface Obstacle {
   quellenId?: string
   /** Datum, ab dem das Hindernis real greift (z.B. Baustellenstart). */
   realerStart?: string
+  /** "global" = Setreo-/Connector-Daten (alle Mandanten) · "eigen" = Eintrag des eigenen Mandanten. */
+  herkunft?: "global" | "eigen"
   createdAt: string
   updatedAt: string
+}
+
+/** Payload zum Anlegen eines (Kunden-)Hindernisses — Karten-Klick-Flow. */
+export interface ObstacleCreate {
+  kategorie: FindingKategorie
+  name: string
+  beschreibung?: string
+  lat: number
+  lng: number
+  attrs: Record<string, number>
+  gueltigVon?: string
+  gueltigBis?: string
+  realerStart?: string
 }
 
 /** Aggregat-Kennzahlen vom Backend (GET /api/stats). */

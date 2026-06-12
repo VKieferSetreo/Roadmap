@@ -49,6 +49,8 @@ interface ProjectStore {
   getProject: (id: string) => Project | undefined
   createProject: (name: string) => Promise<Project>
   renameProject: (id: string, name: string) => void
+  /** Projekt archivieren (true) bzw. wiederherstellen (false). */
+  archiveProject: (id: string, archiviert: boolean) => void
   removeProject: (id: string) => void
 
   /** Strecke hinzufügen (Farbe wird automatisch aus der Palette vergeben). */
@@ -175,6 +177,19 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         }))
         scheduleSync(id, get)
+      },
+
+      archiveProject: (id, archiviert) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id ? { ...p, archiviertAm: archiviert ? now() : null, updatedAt: now() } : p,
+          ),
+        }))
+        if (isLive()) {
+          api.patchProject(id, { archiviert }).catch(() => {
+            toast.error("Archiv-Status konnte nicht gespeichert werden.")
+          })
+        }
       },
 
       removeProject: (id) => {

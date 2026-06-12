@@ -65,7 +65,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     onNavigate?.()
   }
 
-  const sorted = [...projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  const sorted = [...projects]
+    .filter((p) => !p.archiviertAm)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 
   return (
     <div className="flex h-full flex-col">

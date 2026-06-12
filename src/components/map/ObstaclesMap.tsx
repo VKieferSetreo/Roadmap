@@ -10,7 +10,8 @@ import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { Obstacle } from "@/types/domain"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
-const PIN_NEUTRAL = "#475569" // Slate — bewusst keine Severity-Farbe
+const PIN_GLOBAL = "#475569" // Slate — globaler Setreo-/Connector-Bestand
+const PIN_EIGEN = "#527121" // Setreo-Dunkelgrün — eigene Mandanten-Einträge
 
 /** Lesbare Kurzfassung der Grenzwerte. */
 function attrsSummary(o: Obstacle): string {
@@ -38,7 +39,11 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
           <Marker
             key={o.id}
             position={[o.lat, o.lng]}
-            icon={findingPinIcon(o.kategorie, PIN_NEUTRAL, false)}
+            icon={findingPinIcon(
+              o.kategorie,
+              o.herkunft === "eigen" ? PIN_EIGEN : PIN_GLOBAL,
+              false,
+            )}
           >
             <Popup>
               <div className="min-w-[200px]">
@@ -58,6 +63,11 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
                 ) : null}
                 {o.zustaendig ? (
                   <p className="mt-1 text-xs text-neutral-500">{o.zustaendig}</p>
+                ) : null}
+                {o.herkunft === "eigen" ? (
+                  <p className="mt-1.5 inline-block rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[10px] font-medium text-primary-700">
+                    Eigener Eintrag
+                  </p>
                 ) : null}
                 {o.demo ? (
                   <p className="mt-1.5 inline-block rounded-full border border-accent-400 bg-accent-100 px-2 py-0.5 text-[10px] font-medium text-accent-700">
