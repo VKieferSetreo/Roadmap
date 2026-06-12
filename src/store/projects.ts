@@ -1,14 +1,14 @@
 // Projekt-Store (zustand + persist) mit zwei Datenquellen:
 //  - "live": Backend/Postgres — optimistische Updates + debounced PATCH-Sync,
-//    Analyse läuft serverseitig (echte Engine gegen die Hindernis-Datenbank).
+//    Analyse läuft serverseitig (Engine gegen die Hindernis-Datenbank), Tenant-gescoped.
 //  - "demo": lokaler Mock (Frontend-only-Fallback, z.B. Dev ohne Server).
 // `analysis` (laufender Fortschritt) wird NICHT persistiert.
 
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
-import type { Project, RouteInput, TransportData, TransportZeitraum } from "@/types/domain"
-import { DEFAULT_TRANSPORT } from "@/types/domain"
+import type { Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
+import { DEFAULT_TRANSPORT, ROUTE_FARBEN } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
 import { api } from "@/api/roadmap"
@@ -24,7 +24,7 @@ interface AnalysisState {
 }
 
 export const ANALYSE_SCHRITTE = [
-  "Strecke wird aufgebaut …",
+  "Strecken werden geladen …",
   "Geometrie wird abgefahren …",
   "Brücken & Tunnel werden geprüft …",
   "Engstellen & Schleppkurven werden berechnet …",
@@ -42,16 +42,27 @@ interface ProjectStore {
 
   /** Initial-Load: live → Projekte vom Server, demo → Seed wenn leer. */
   initData: (mode: "live" | "demo") => Promise<void>
+  /** Projekte (erneut) vom Server laden — z.B. nach Tenant-Wechsel. */
+  loadProjects: () => Promise<void>
   seedIfEmpty: () => void
   resetToSeed: () => void
   getProject: (id: string) => Project | undefined
   createProject: (name: string) => Promise<Project>
   renameProject: (id: string, name: string) => void
   removeProject: (id: string) => void
-  updateRoute: (id: string, patch: Partial<RouteInput>) => void
+
+  /** Strecke hinzufügen (Farbe wird automatisch aus der Palette vergeben). */
+  addRoute: (id: string, route: Omit<ProjectRoute, "id" | "farbe">) => void
+  removeRoute: (id: string, routeId: string) => void
+  renameRoute: (id: string, routeId: string, name: string) => void
+
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
   runAnalysis: (id: string) => void
+
+  /** Veröffentlichen / Share-Link verwalten (nur live). */
+  publishProject: (id: string, password?: string) => Promise<void>
+  revokeShare: (id: string) => Promise<void>
 }
 
 // Laufende Intervalle + Sync-Debounces außerhalb des States (nicht serialisierbar).
@@ -69,7 +80,7 @@ function scheduleSync(id: string, get: () => ProjectStore) {
     api
       .patchProject(id, {
         name: p.name,
-        route: p.route,
+        routes: p.routes,
         transport: p.transport,
         zeitraum: p.zeitraum,
       })
@@ -77,6 +88,12 @@ function scheduleSync(id: string, get: () => ProjectStore) {
         toast.error("Änderung konnte nicht gespeichert werden — Verbindung prüfen.")
       })
   }, 600)
+}
+
+/** Nächste freie Strecken-Farbe (Palette der Reihe nach, Lücken zuerst). */
+function nextFarbe(routes: ProjectRoute[]): string {
+  const used = new Set(routes.map((r) => r.farbe))
+  return ROUTE_FARBEN.find((f) => !used.has(f)) ?? ROUTE_FARBEN[routes.length % ROUTE_FARBEN.length]
 }
 
 export const useProjectStore = create<ProjectStore>()(
@@ -92,6 +109,10 @@ export const useProjectStore = create<ProjectStore>()(
           get().seedIfEmpty()
           return
         }
+        await get().loadProjects()
+      },
+
+      loadProjects: async () => {
         set({ loading: true })
         try {
           const projects = await api.listProjects()
@@ -127,10 +148,9 @@ export const useProjectStore = create<ProjectStore>()(
           status: "entwurf",
           createdAt: now(),
           updatedAt: now(),
-          route: { mode: "startziel", vias: [] },
-          transport: { ...DEFAULT_TRANSPORT },
+          routes: [],
+          transport: { ...DEFAULT_TRANSPORT, achslasten: [...DEFAULT_TRANSPORT.achslasten] },
           zeitraum: {},
-          routeGeometry: [],
           findings: [],
         })
 
@@ -178,10 +198,42 @@ export const useProjectStore = create<ProjectStore>()(
         }
       },
 
-      updateRoute: (id, patch) => {
+      addRoute: (id, route) => {
         set((s) => ({
           projects: s.projects.map((p) =>
-            p.id === id ? { ...p, route: { ...p.route, ...patch }, updatedAt: now() } : p,
+            p.id === id
+              ? {
+                  ...p,
+                  routes: [...p.routes, { ...route, id: uid(), farbe: nextFarbe(p.routes) }],
+                  updatedAt: now(),
+                }
+              : p,
+          ),
+        }))
+        scheduleSync(id, get)
+      },
+
+      removeRoute: (id, routeId) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? { ...p, routes: p.routes.filter((r) => r.id !== routeId), updatedAt: now() }
+              : p,
+          ),
+        }))
+        scheduleSync(id, get)
+      },
+
+      renameRoute: (id, routeId, name) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  routes: p.routes.map((r) => (r.id === routeId ? { ...r, name } : r)),
+                  updatedAt: now(),
+                }
+              : p,
           ),
         }))
         scheduleSync(id, get)
@@ -245,7 +297,7 @@ export const useProjectStore = create<ProjectStore>()(
 
         const live = isLive()
 
-        // Fortschritts-Animation. Demo: treibt die Analyse selbst (wie bisher).
+        // Fortschritts-Animation. Demo: treibt die Analyse selbst.
         // Live: läuft als Begleiter bis max. 92% — der Server-Response schließt ab.
         timers[id] = setInterval(() => {
           const cur = get().analysis[id]
@@ -261,12 +313,10 @@ export const useProjectStore = create<ProjectStore>()(
             // Demo-Abschluss: deterministischer Mock im Frontend.
             const p = get().getProject(id)
             if (!p) return
-            // Vor dem Sync sicherstellen, dass der letzte Eingabe-Stand verwendet wird.
-            const res = runMockAnalysis(p.route, p.transport)
+            const res = runMockAnalysis(p.routes, p.transport)
             finish((pp) => ({
               ...pp,
               status: "fertig",
-              routeGeometry: res.routeGeometry,
               findings: res.findings,
               distanzKm: res.distanzKm,
               fahrzeitMin: res.fahrzeitMin,
@@ -293,7 +343,7 @@ export const useProjectStore = create<ProjectStore>()(
           const sync = p
             ? api.patchProject(id, {
                 name: p.name,
-                route: p.route,
+                routes: p.routes,
                 transport: p.transport,
                 zeitraum: p.zeitraum,
               })
@@ -307,10 +357,31 @@ export const useProjectStore = create<ProjectStore>()(
             )
         }
       },
+
+      publishProject: async (id, password) => {
+        if (!isLive()) {
+          toast.error("Veröffentlichen braucht die Live-Datenbank (Demo-Modus aktiv).")
+          return
+        }
+        const share = await api.publishProject(id, password)
+        set((s) => ({
+          projects: s.projects.map((p) => (p.id === id ? { ...p, share } : p)),
+        }))
+      },
+
+      revokeShare: async (id) => {
+        await api.revokeShare(id)
+        set((s) => ({
+          projects: s.projects.map((p) => (p.id === id ? { ...p, share: null } : p)),
+        }))
+      },
     }),
     {
       name: "roadmap-projects",
       storage: createJSONStorage(() => localStorage),
+      version: 2,
+      // v1-Persists (route/routeGeometry-Modell) verwerfen — Demo-Seed baut neu auf
+      migrate: (state, version) => (version < 2 ? undefined : (state as ProjectStore)),
       // analysis (laufende Timer-Fortschritte) + loading nicht persistieren
       partialize: (s) => ({ projects: s.projects, seeded: s.seeded }),
     },

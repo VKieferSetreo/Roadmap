@@ -1,13 +1,17 @@
-// Tab 2 — Vollbild-Karte mit Route und Fund-Markern + Glass-Overlays
-// (Routen-Kennzahlen, Severity-Legende, Fund-Detail mit Quelle).
+// Tab 2 — Vollbild-Karte mit allen Strecken (farblich getrennt) + Fund-Markern.
+// Ebenen-Panel (aufklappbar, Checkboxen) blendet Strecken samt ihrer Funde ein/aus.
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Building2,
+  ChevronDown,
   ClipboardList,
   Clock,
   ExternalLink,
+  Eye,
+  EyeOff,
+  Layers,
   MapPinned,
   Route as RouteIcon,
   X,
@@ -17,20 +21,33 @@ import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { routeLengthKm } from "@/lib/parseRouteFile"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 export function KarteTab({ project }: { project: Project }) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
+  const [hidden, setHidden] = useState<Set<string>>(new Set())
+  const [layersOpen, setLayersOpen] = useState(true)
 
-  if (project.status !== "fertig" || project.routeGeometry.length < 2) {
+  const sichtbareRouten = useMemo(
+    () => project.routes.filter((r) => !hidden.has(r.id)),
+    [project.routes, hidden],
+  )
+  const sichtbareFindings = useMemo(
+    () => project.findings.filter((f) => !f.routeId || !hidden.has(f.routeId)),
+    [project.findings, hidden],
+  )
+
+  if (project.status !== "fertig" || !project.routes.some((r) => r.points.length >= 2)) {
     return (
       <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
         <EmptyState
           icon={MapPinned}
           title="Noch keine Auswertung"
-          description="Lege die Strecke fest und starte die Auswertung — die Funde erscheinen dann hier auf der Karte."
+          description="Lade die Strecke(n) hoch und starte die Auswertung — die Funde erscheinen dann hier auf der Karte."
           cta={
             <Button onClick={() => navigate(`/projekte/${project.id}/anlage`)}>Zur Anlage</Button>
           }
@@ -41,25 +58,34 @@ export function KarteTab({ project }: { project: Project }) {
 
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
-    n: project.findings.filter((f) => f.severity === sev).length,
+    n: sichtbareFindings.filter((f) => f.severity === sev).length,
   }))
-  // Unique Kategorien auf der Strecke — für die Legende (alphabetisch nach Label).
-  const kategoriesOnRoute = Array.from(new Set(project.findings.map((f) => f.kategorie))).sort(
+  // Unique Kategorien auf den sichtbaren Strecken — für die Legende.
+  const kategoriesOnRoute = Array.from(new Set(sichtbareFindings.map((f) => f.kategorie))).sort(
     (a, b) => KATEGORIE_META[a].label.localeCompare(KATEGORIE_META[b].label),
   )
-  const selected = project.findings.find((f) => f.id === selectedId)
+  const selected = sichtbareFindings.find((f) => f.id === selectedId)
+
+  const toggleRoute = (routeId: string) => {
+    setHidden((prev) => {
+      const next = new Set(prev)
+      if (next.has(routeId)) next.delete(routeId)
+      else next.add(routeId)
+      return next
+    })
+  }
 
   return (
     <div className="relative h-full w-full">
       <RouteMap
-        geometry={project.routeGeometry}
-        findings={project.findings}
+        routes={sichtbareRouten}
+        findings={sichtbareFindings}
         selectedId={selectedId}
         onSelect={setSelectedId}
       />
 
-      {/* Routen-Übersicht oben links */}
-      <div className="pointer-events-none absolute left-3 top-3 z-[500] flex flex-col gap-2">
+      {/* Links oben: Routen-Kennzahlen + Ebenen-Panel */}
+      <div className="pointer-events-none absolute left-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
         <div className="glass pointer-events-auto animate-rise-in p-3">
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1.5 text-neutral-700">
@@ -98,9 +124,76 @@ export function KarteTab({ project }: { project: Project }) {
             ))}
           </div>
         </div>
+
+        {/* Ebenen-Panel — Strecken ein-/ausblenden (wie Ebenen in Paint) */}
+        <div
+          className="glass pointer-events-auto animate-rise-in"
+          style={{ animationDelay: "60ms" }}
+        >
+          <button
+            type="button"
+            onClick={() => setLayersOpen((o) => !o)}
+            aria-expanded={layersOpen}
+            className="flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left"
+          >
+            <Layers className="h-4 w-4 text-primary-600" />
+            <span className="flex-1 text-sm font-semibold text-neutral-800">Strecken</span>
+            <span className="text-[11px] tabular-nums text-neutral-400">
+              {sichtbareRouten.length}/{project.routes.length}
+            </span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 text-neutral-400 transition-transform duration-200",
+                layersOpen && "rotate-180",
+              )}
+            />
+          </button>
+          {layersOpen ? (
+            <ul className="border-t border-neutral-200/70 px-2 py-1.5">
+              {project.routes.map((r) => {
+                const sichtbar = !hidden.has(r.id)
+                const funde = project.findings.filter((f) => f.routeId === r.id).length
+                return (
+                  <li key={r.id}>
+                    <label
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 transition-colors hover:bg-neutral-100/70",
+                        !sichtbar && "opacity-55",
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={sichtbar}
+                        onChange={() => toggleRoute(r.id)}
+                        className="h-3.5 w-3.5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                        aria-label={`Strecke ${r.name} ${sichtbar ? "ausblenden" : "einblenden"}`}
+                      />
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white"
+                        style={{ background: r.farbe }}
+                        aria-hidden
+                      />
+                      <span className="min-w-0 flex-1 truncate text-xs font-medium text-neutral-700">
+                        {r.name}
+                      </span>
+                      <span className="text-[10px] tabular-nums text-neutral-400">
+                        {routeLengthKm(r.points).toLocaleString("de-DE")} km · {funde}
+                      </span>
+                      {sichtbar ? (
+                        <Eye className="h-3.5 w-3.5 text-neutral-400" aria-hidden />
+                      ) : (
+                        <EyeOff className="h-3.5 w-3.5 text-neutral-300" aria-hidden />
+                      )}
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : null}
+        </div>
       </div>
 
-      {/* Legende oben rechts: Kategorien, die auf der Strecke gefunden wurden */}
+      {/* Legende oben rechts: Kategorien, die auf den sichtbaren Strecken vorkommen */}
       {kategoriesOnRoute.length > 0 ? (
         <div className="pointer-events-none absolute right-3 top-3 z-[500] hidden sm:block">
           <div
@@ -112,7 +205,7 @@ export function KarteTab({ project }: { project: Project }) {
             </p>
             <ul className="flex flex-col gap-1.5">
               {kategoriesOnRoute.map((kat) => {
-                const count = project.findings.filter((f) => f.kategorie === kat).length
+                const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
                 return (
                   <li key={kat} className="flex items-center gap-2 text-xs text-neutral-700">
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-neutral-100 text-neutral-700">
@@ -160,6 +253,18 @@ export function KarteTab({ project }: { project: Project }) {
                   <X className="h-4 w-4" />
                 </button>
               </div>
+              {selected.routeName ? (
+                <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{
+                      background:
+                        project.routes.find((r) => r.id === selected.routeId)?.farbe ?? "#71717A",
+                    }}
+                  />
+                  {selected.routeName}
+                </p>
+              ) : null}
               <p className="mt-2 text-sm text-neutral-600">{selected.beschreibung}</p>
               <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-neutral-200/70 pt-3 text-xs">
                 {Object.entries(selected.detail).map(([k, v]) => (
@@ -178,7 +283,7 @@ export function KarteTab({ project }: { project: Project }) {
               <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
                 <button
                   onClick={() => navigate(`/projekte/${project.id}/dashboard`)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-700 transition-colors hover:text-primary-800"
+                  className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary-700 transition-colors hover:text-primary-800"
                 >
                   <ClipboardList className="h-3.5 w-3.5" /> Im Dashboard öffnen
                 </button>

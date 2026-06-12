@@ -31,7 +31,19 @@ export function ProjectDetail() {
   const navigate = useNavigate()
   const { id, tab } = useParams<{ id: string; tab?: string }>()
   const project = useProjectStore((s) => (id ? s.projects.find((p) => p.id === id) : undefined))
+  const loading = useProjectStore((s) => s.loading)
+  const seeded = useProjectStore((s) => s.seeded)
 
+  // Deep-Link während des Initial-Loads: warten statt nach Home umleiten.
+  if (!project && (loading || !seeded)) {
+    return (
+      <div className="flex h-full flex-col gap-4 px-4 py-6 lg:px-6">
+        <div className="skeleton h-7 w-72 rounded" />
+        <div className="skeleton h-9 w-96 rounded" />
+        <div className="skeleton h-64 w-full rounded-xl" />
+      </div>
+    )
+  }
   if (!project) return <Navigate to="/" replace />
   if (!tab || !VALID.has(tab)) return <Navigate to={`/projekte/${project.id}/anlage`} replace />
 

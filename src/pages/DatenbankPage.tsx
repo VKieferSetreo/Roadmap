@@ -1,12 +1,12 @@
 // Datenbank — zwei Reiter:
-//  - "Funde": projektübergreifende Fund-Suche (live: Server-Suche, demo: lokale Projekte)
-//  - "Hindernisse": die zentrale Hindernis-Datenbank (Backend) — vorbereitet für echte
-//    Daten, Demo-Datensätze sind als solche markiert.
+//  - "Funde": echte Tabellenansicht aller Funde (sortierbar); Zeile öffnen → Karten-Popup
+//    mit dem markierten Fund.
+//  - "Karte": Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar).
+// Spalten-Draft fürs reale Datenformat: docs/HINDERNIS-DATENFORMAT.md.
 
 import { useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import { Building2, Database, Landmark, Search, TriangleAlert } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, Database, Map as MapIcon, Search } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card } from "@/components/ui/Card"
 import { Badge } from "@/components/ui/Badge"
@@ -14,16 +14,18 @@ import { Input } from "@/components/ui/Input"
 import { Select } from "@/components/ui/Select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { FindingMapDialog } from "@/components/map/FindingMapDialog"
+import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { useProjectStore } from "@/store/projects"
 import { useDataSourceStore } from "@/store/datasource"
 import { useDebounce } from "@/hooks/useDebounce"
 import { api, type DbFinding } from "@/api/roadmap"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "@/components/project/findingMeta"
-import type { FindingKategorie, FindingSeverity, Obstacle } from "@/types/domain"
+import type { FindingSeverity } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
-type DbTab = "funde" | "hindernisse"
+type DbTab = "funde" | "karte"
 
 export function DatenbankPage() {
   const [tab, setTab] = useState<DbTab>("funde")
@@ -33,24 +35,25 @@ export function DatenbankPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Projektübergreifende Funde und die zentrale Hindernis-Datenbank."
+        description="Alle Funde in Tabellenform und die zentrale Hindernis-Datenbank auf der Karte."
+        width="wide"
       >
         <div className="flex flex-col gap-4">
           <Tabs value={tab} onValueChange={(v) => setTab(v as DbTab)}>
             <TabsList>
               <TabsTrigger value="funde">
-                <Search className="h-4 w-4" /> Funde
+                <Database className="h-4 w-4" /> Funde
               </TabsTrigger>
-              <TabsTrigger value="hindernisse">
-                <Landmark className="h-4 w-4" /> Hindernisse
+              <TabsTrigger value="karte">
+                <MapIcon className="h-4 w-4" /> Karte
               </TabsTrigger>
             </TabsList>
           </Tabs>
 
           {tab === "funde" ? (
-            <FundeTab live={mode === "live"} />
+            <FundeTabelle live={mode === "live"} />
           ) : (
-            <HindernisseTab live={mode === "live"} />
+            <KarteTab live={mode === "live"} />
           )}
         </div>
       </PageContainer>
@@ -58,14 +61,39 @@ export function DatenbankPage() {
   )
 }
 
-// ── Funde (projektübergreifend) ───────────────────────────────────────────────
+// ── Funde als echte Tabelle ───────────────────────────────────────────────────
 
-function FundeTab({ live }: { live: boolean }) {
-  const navigate = useNavigate()
+type SortKey =
+  | "fachId"
+  | "kategorie"
+  | "titel"
+  | "projektName"
+  | "routeName"
+  | "km"
+  | "severity"
+  | "gueltigBis"
+  | "zustaendig"
+
+const SPALTEN: { key: SortKey; label: string; className?: string }[] = [
+  { key: "fachId", label: "ID", className: "w-[130px]" },
+  { key: "kategorie", label: "Kategorie", className: "w-[150px]" },
+  { key: "titel", label: "Bezeichnung" },
+  { key: "projektName", label: "Projekt" },
+  { key: "routeName", label: "Strecke", className: "w-[110px]" },
+  { key: "km", label: "km", className: "w-[70px] text-right" },
+  { key: "severity", label: "Schweregrad", className: "w-[110px]" },
+  { key: "gueltigBis", label: "Gültig bis", className: "w-[95px]" },
+  { key: "zustaendig", label: "Zuständig" },
+]
+
+function FundeTabelle({ live }: { live: boolean }) {
   const projects = useProjectStore((s) => s.projects)
   const [query, setQuery] = useState("")
   const [sevFilter, setSevFilter] = useState<FindingSeverity | "alle">("alle")
   const [katFilter, setKatFilter] = useState("alle")
+  const [sortKey, setSortKey] = useState<SortKey>("km")
+  const [sortDir, setSortDir] = useState<1 | -1>(1)
+  const [selected, setSelected] = useState<DbFinding | null>(null)
   const debouncedQuery = useDebounce(query, 300)
 
   // Live: Server-Suche. Demo: lokale Aggregation über die Projekt-Funde.
@@ -89,21 +117,42 @@ function FundeTab({ live }: { live: boolean }) {
     [projects],
   )
 
-  const filtered = useMemo(() => {
-    if (live) return serverSearch.data ?? []
-    const q = query.trim().toLowerCase()
-    return localRows
-      .filter((r) => (sevFilter === "alle" ? true : r.severity === sevFilter))
-      .filter((r) => (katFilter === "alle" ? true : r.kategorie === katFilter))
-      .filter((r) =>
-        q
-          ? r.titel.toLowerCase().includes(q) ||
-            r.beschreibung.toLowerCase().includes(q) ||
-            r.projektName.toLowerCase().includes(q) ||
-            KATEGORIE_META[r.kategorie].label.toLowerCase().includes(q)
-          : true,
-      )
-  }, [live, serverSearch.data, localRows, query, sevFilter, katFilter])
+  const rows = useMemo(() => {
+    let r: DbFinding[]
+    if (live) {
+      r = serverSearch.data ?? []
+    } else {
+      const q = query.trim().toLowerCase()
+      r = localRows
+        .filter((x) => (sevFilter === "alle" ? true : x.severity === sevFilter))
+        .filter((x) => (katFilter === "alle" ? true : x.kategorie === katFilter))
+        .filter((x) =>
+          q
+            ? x.titel.toLowerCase().includes(q) ||
+              x.beschreibung.toLowerCase().includes(q) ||
+              x.projektName.toLowerCase().includes(q) ||
+              KATEGORIE_META[x.kategorie].label.toLowerCase().includes(q)
+            : true,
+        )
+    }
+    const dir = sortDir
+    return [...r].sort((a, b) => {
+      if (sortKey === "km") return (a.km - b.km) * dir
+      if (sortKey === "severity")
+        return (SEVERITY_META[a.severity].rank - SEVERITY_META[b.severity].rank) * dir
+      const av = String(a[sortKey] ?? "")
+      const bv = String(b[sortKey] ?? "")
+      return av.localeCompare(bv, "de") * dir
+    })
+  }, [live, serverSearch.data, localRows, query, sevFilter, katFilter, sortKey, sortDir])
+
+  const toggleSort = (key: SortKey) => {
+    if (key === sortKey) setSortDir((d) => (d === 1 ? -1 : 1))
+    else {
+      setSortKey(key)
+      setSortDir(1)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -145,219 +194,150 @@ function FundeTab({ live }: { live: boolean }) {
       </div>
 
       <p className="text-xs text-neutral-400">
-        {live && serverSearch.isLoading ? "Suche läuft …" : `${filtered.length} Treffer`}
-        {live ? " · Live-Datenbank" : " · lokale Projekte (Demo)"}
+        {live && serverSearch.isLoading ? "Suche läuft …" : `${rows.length} Einträge`}
+        {live ? " · Live-Datenbank" : " · lokale Projekte (Demo)"} · Zeile öffnen zeigt die Karte
       </p>
 
       {live && serverSearch.isLoading ? (
         <Card>
           <div className="flex flex-col gap-3 p-4">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="skeleton h-9 w-9 rounded-md" />
-                <div className="flex-1">
-                  <div className="skeleton h-3.5 w-2/3 rounded" />
-                  <div className="skeleton mt-1.5 h-3 w-1/3 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={Database}
-          title="Keine Treffer"
-          description={
-            filtered.length === 0 && !query && sevFilter === "alle" && katFilter === "alle"
-              ? "Es wurden noch keine Auswertungen gefahren."
-              : "Für diese Suche gibt es keine Funde."
-          }
-        />
-      ) : (
-        <Card>
-          <ul className="divide-y divide-neutral-100">
-            {filtered.map((f) => {
-              const kat = KATEGORIE_META[f.kategorie]
-              const sev = SEVERITY_META[f.severity]
-              return (
-                <li key={`${f.projektId}-${f.id}`}>
-                  <button
-                    onClick={() => navigate(`/projekte/${f.projektId}/dashboard`)}
-                    className={cn(
-                      "flex w-full cursor-pointer items-center gap-3 border-l-2 px-4 py-3 text-left transition-colors hover:bg-neutral-50",
-                      sev.accent,
-                    )}
-                  >
-                    <span className={cn("rounded-md p-2", sev.chip)}>
-                      <KategorieGlyph kategorie={f.kategorie} className="h-4 w-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-neutral-900">{f.titel}</p>
-                      <p className="truncate text-xs text-neutral-500">
-                        {f.projektName} · {kat.label} · km {f.km.toLocaleString("de-DE")}
-                      </p>
-                    </div>
-                    <Badge variant={sev.badge} size="sm">
-                      {sev.label}
-                    </Badge>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </Card>
-      )}
-    </div>
-  )
-}
-
-// ── Hindernis-Datenbank ───────────────────────────────────────────────────────
-
-/** Lesbare Zusammenfassung der wichtigsten Grenzwerte eines Hindernisses. */
-function attrsSummary(o: Obstacle): string {
-  const num = (v: number | string | undefined) =>
-    typeof v === "number" ? v.toLocaleString("de-DE") : v
-  const parts: string[] = []
-  if (o.attrs.maxHoeheM !== undefined) parts.push(`Höhe ≤ ${num(o.attrs.maxHoeheM)} m`)
-  if (o.attrs.maxBreiteM !== undefined) parts.push(`Breite ≤ ${num(o.attrs.maxBreiteM)} m`)
-  if (o.attrs.maxGewichtT !== undefined) parts.push(`Last ≤ ${num(o.attrs.maxGewichtT)} t`)
-  if (o.attrs.maxAchslastT !== undefined) parts.push(`Achslast ≤ ${num(o.attrs.maxAchslastT)} t`)
-  if (o.attrs.steigungPct !== undefined) parts.push(`Steigung ${num(o.attrs.steigungPct)} %`)
-  if (o.attrs.radiusM !== undefined) parts.push(`Radius ${num(o.attrs.radiusM)} m`)
-  if (o.attrs.restbreiteM !== undefined) parts.push(`Restbreite ${num(o.attrs.restbreiteM)} m`)
-  return parts.join(" · ")
-}
-
-function HindernisseTab({ live }: { live: boolean }) {
-  const [katFilter, setKatFilter] = useState("alle")
-  const [query, setQuery] = useState("")
-  const debouncedQuery = useDebounce(query, 300)
-
-  const obstacles = useQuery({
-    queryKey: ["obstacles", katFilter, debouncedQuery],
-    queryFn: () =>
-      api.listObstacles({
-        kategorie: katFilter === "alle" ? undefined : katFilter,
-        q: debouncedQuery || undefined,
-      }),
-    enabled: live,
-    staleTime: 30_000,
-  })
-
-  if (!live) {
-    return (
-      <EmptyState
-        icon={Landmark}
-        title="Hindernis-Datenbank nicht verbunden"
-        description="Die zentrale Hindernis-Datenbank lebt im Backend. Im Demo-Modus (ohne Server) werden Funde lokal simuliert — sobald die Anwendung gegen die Live-Datenbank läuft, erscheinen hier alle erfassten Hindernisse."
-      />
-    )
-  }
-
-  const rows = obstacles.data ?? []
-  const demoCount = rows.filter((o) => o.demo).length
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Hindernisse durchsuchen (Name, Straße, Zuständigkeit) …"
-            className="pl-9"
-          />
-        </div>
-        <Select
-          value={katFilter}
-          onChange={(e) => setKatFilter(e.target.value)}
-          className="sm:w-44"
-        >
-          <option value="alle">Alle Kategorien</option>
-          {Object.entries(KATEGORIE_META).map(([key, meta]) => (
-            <option key={key} value={key}>
-              {meta.label}
-            </option>
-          ))}
-        </Select>
-      </div>
-
-      <p className="text-xs text-neutral-400">
-        {obstacles.isLoading
-          ? "Lade Hindernisse …"
-          : `${rows.length} Einträge${demoCount > 0 ? ` · davon ${demoCount} Demo-Datensätze` : ""}`}
-      </p>
-
-      {obstacles.isLoading ? (
-        <Card>
-          <div className="flex flex-col gap-3 p-4">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="skeleton h-9 w-9 rounded-md" />
-                <div className="flex-1">
-                  <div className="skeleton h-3.5 w-1/2 rounded" />
-                  <div className="skeleton mt-1.5 h-3 w-2/3 rounded" />
-                </div>
-              </div>
+              <div key={i} className="skeleton h-9 w-full rounded" />
             ))}
           </div>
         </Card>
       ) : rows.length === 0 ? (
         <EmptyState
-          icon={Landmark}
-          title="Noch keine Hindernisse erfasst"
-          description="Die Datenbank ist bereit — Hindernisse können über die Import-Schnittstelle (GeoJSON/JSON) oder die API eingespielt werden. Analysen finden dann automatisch alle Hindernisse im Strecken-Korridor."
+          icon={Database}
+          title="Keine Treffer"
+          description={
+            !query && sevFilter === "alle" && katFilter === "alle"
+              ? "Es wurden noch keine Auswertungen gefahren."
+              : "Für diese Suche gibt es keine Funde."
+          }
         />
       ) : (
-        <Card>
-          <ul className="divide-y divide-neutral-100">
-            {rows.map((o) => {
-              const kat = KATEGORIE_META[o.kategorie as FindingKategorie]
-              const summary = attrsSummary(o)
-              return (
-                <li key={o.id} className="flex items-center gap-3 px-4 py-3">
-                  <span className="rounded-md bg-neutral-100 p-2 text-neutral-600">
-                    <KategorieGlyph kategorie={o.kategorie} className="h-4 w-4" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-900">
-                      {o.name}
-                      {!o.aktiv ? (
-                        <Badge variant="muted" size="xs">
-                          inaktiv
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[980px] border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-neutral-200 bg-neutral-50/80">
+                  {SPALTEN.map((sp) => (
+                    <th
+                      key={sp.key}
+                      aria-sort={
+                        sortKey === sp.key ? (sortDir === 1 ? "ascending" : "descending") : "none"
+                      }
+                      className={cn(
+                        "px-3 py-2.5 text-left font-medium text-neutral-500",
+                        sp.className,
+                      )}
+                    >
+                      <button
+                        onClick={() => toggleSort(sp.key)}
+                        className="inline-flex cursor-pointer items-center gap-1 text-xs uppercase tracking-wide transition-colors hover:text-neutral-800"
+                      >
+                        {sp.label}
+                        {sortKey === sp.key ? (
+                          sortDir === 1 ? (
+                            <ArrowUp className="h-3 w-3" />
+                          ) : (
+                            <ArrowDown className="h-3 w-3" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="h-3 w-3 opacity-40" />
+                        )}
+                      </button>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((f) => {
+                  const sev = SEVERITY_META[f.severity]
+                  return (
+                    <tr
+                      key={`${f.projektId}-${f.id}`}
+                      onClick={() => setSelected(f)}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") setSelected(f)
+                      }}
+                      className="cursor-pointer border-b border-neutral-100 transition-colors last:border-0 hover:bg-primary-50/40 focus-visible:bg-primary-50/40 focus-visible:outline-none"
+                    >
+                      <td className="px-3 py-2.5 font-mono text-xs text-neutral-500">
+                        {f.fachId ?? "—"}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span className="inline-flex items-center gap-1.5 text-neutral-700">
+                          <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-neutral-100">
+                            <KategorieGlyph kategorie={f.kategorie} className="h-3 w-3" />
+                          </span>
+                          {KATEGORIE_META[f.kategorie].label}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 font-medium text-neutral-900">{f.titel}</td>
+                      <td className="max-w-[200px] truncate px-3 py-2.5 text-neutral-600">
+                        {f.projektName}
+                      </td>
+                      <td className="max-w-[110px] truncate px-3 py-2.5 text-neutral-600">
+                        {f.routeName ?? "—"}
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums text-neutral-600">
+                        {f.km.toLocaleString("de-DE")}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <Badge variant={sev.badge} size="sm">
+                          {sev.label}
                         </Badge>
-                      ) : null}
-                      {o.demo ? (
-                        <Badge variant="accent" size="xs">
-                          Demo
-                        </Badge>
-                      ) : null}
-                    </p>
-                    <p className="truncate text-xs text-neutral-500">
-                      {kat?.label ?? o.kategorie}
-                      {o.strassenRef ? ` · ${o.strassenRef}` : ""}
-                      {summary ? ` · ${summary}` : ""}
-                    </p>
-                  </div>
-                  {o.zustaendig ? (
-                    <span className="hidden items-center gap-1.5 text-xs text-neutral-400 lg:flex">
-                      <Building2 className="h-3.5 w-3.5" />
-                      <span className="max-w-[220px] truncate">{o.zustaendig}</span>
-                    </span>
-                  ) : null}
-                  {o.gueltigBis ? (
-                    <span className="hidden items-center gap-1 text-xs text-neutral-400 md:flex">
-                      <TriangleAlert className="h-3.5 w-3.5" />
-                      bis {o.gueltigBis.split("-").reverse().join(".")}
-                    </span>
-                  ) : null}
-                </li>
-              )
-            })}
-          </ul>
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums text-neutral-600">
+                        {f.gueltigBis ? f.gueltigBis.split("-").reverse().join(".") : "—"}
+                      </td>
+                      <td className="max-w-[220px] truncate px-3 py-2.5 text-neutral-600">
+                        {f.zustaendig ?? "—"}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </Card>
       )}
+
+      <FindingMapDialog finding={selected} onClose={() => setSelected(null)} />
+    </div>
+  )
+}
+
+// ── Übersichtskarte der Hindernis-Datenbank ───────────────────────────────────
+
+function KarteTab({ live }: { live: boolean }) {
+  const obstacles = useQuery({
+    queryKey: ["obstacles-alle"],
+    queryFn: () => api.listObstacles(),
+    enabled: live,
+    staleTime: 60_000,
+  })
+
+  if (!live) {
+    return (
+      <EmptyState
+        icon={MapIcon}
+        title="Hindernis-Datenbank nicht verbunden"
+        description="Die zentrale Hindernis-Datenbank lebt im Backend. Im Demo-Modus (ohne Server) ist die Übersichtskarte nicht verfügbar."
+      />
+    )
+  }
+
+  if (obstacles.isLoading) {
+    return <div className="skeleton h-[60vh] min-h-[380px] w-full rounded-xl" />
+  }
+
+  return (
+    <div className="h-[calc(100vh-320px)] min-h-[420px]">
+      <ObstaclesMap obstacles={obstacles.data ?? []} />
     </div>
   )
 }

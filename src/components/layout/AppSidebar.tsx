@@ -3,9 +3,20 @@
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
 import { useLocation, useNavigate } from "react-router-dom"
-import { Database, Folder, Home, LogOut, Plus, Settings, X, type LucideIcon } from "lucide-react"
+import {
+  Building2,
+  Database,
+  Folder,
+  Home,
+  LogOut,
+  Plus,
+  Settings,
+  X,
+  type LucideIcon,
+} from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
+import { useContextStore } from "@/store/context"
 import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 
@@ -39,12 +50,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { pathname } = useLocation()
   const projects = useProjectStore((s) => s.projects)
   const openNewProject = useUiStore((s) => s.openNewProject)
+  const isAdmin = useContextStore((s) => s.isAdmin)
 
   const m = pathname.match(/^\/projekte\/([^/]+)(?:\/([^/]+))?/)
   const activeId = m?.[1]
   const activeTab = m?.[2] ?? "anlage"
   const onHome = pathname === "/"
   const onDb = pathname.startsWith("/datenbank")
+  const onTenants = pathname.startsWith("/mandanten")
   const onSettings = pathname.startsWith("/einstellungen")
 
   const go = (path: string) => {
@@ -109,6 +122,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="border-t border-neutral-100 p-3">
         <NavRow icon={Database} label="Datenbank" active={onDb} onClick={() => go("/datenbank")} />
+        {isAdmin ? (
+          <NavRow
+            icon={Building2}
+            label="Mandanten"
+            active={onTenants}
+            onClick={() => go("/mandanten")}
+          />
+        ) : null}
         <NavRow
           icon={Settings}
           label="Einstellungen"

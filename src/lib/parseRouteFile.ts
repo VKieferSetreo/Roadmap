@@ -6,7 +6,7 @@ import type { RoutePoint } from "@/types/domain"
 
 export interface ParsedRoute {
   points: RoutePoint[]
-  format: "gpx" | "kml" | "geojson"
+  format: "gpx" | "kml" | "geojson" | "shp"
 }
 
 const MAX_POINTS = 1500
@@ -110,30 +110,55 @@ function parseGeoJson(text: string): RoutePoint[] {
   return out
 }
 
-/** Parst eine Streckendatei. null = Format wird akzeptiert, aber nicht client-seitig
- *  geparst (Shapefile) — der Aufrufer behandelt das als "Geometrie folgt später". */
-export async function parseRouteFile(file: File): Promise<ParsedRoute | null> {
-  const name = file.name.toLowerCase()
-  if (name.endsWith(".shp") || name.endsWith(".zip")) return null
+/** Shapefile (.zip mit .shp/.dbf/.prj ODER nacktes .shp) via shpjs → RoutePoint[].
+ *  shpjs reprojiziert über die .prj nach WGS84 (Behörden liefern oft UTM/EPSG:25832). */
+async function parseShapefile(file: File, isZip: boolean): Promise<RoutePoint[]> {
+  const { default: shp } = await import("shpjs") // lazy — hält den Haupt-Bundle klein
+  const buffer = await file.arrayBuffer()
+  const out: RoutePoint[] = []
+  try {
+    if (isZip) {
+      const parsed = (await shp(buffer)) as GeoJsonGeometry | GeoJsonGeometry[]
+      for (const fc of Array.isArray(parsed) ? parsed : [parsed]) collectGeoJson(fc, out)
+    } else {
+      // nacktes .shp: keine .prj → Koordinaten werden ungeprüft übernommen und
+      // unten gegen WGS84-Grenzen validiert (UTM fällt dabei sauber durch).
+      for (const geom of shp.parseShp(buffer) as GeoJsonGeometry[]) collectGeoJson(geom, out)
+    }
+  } catch {
+    throw new Error("Shapefile konnte nicht gelesen werden — ist die Datei vollständig?")
+  }
+  if (out.length >= 2 && out.filter(isValidPoint).length < 2) {
+    throw new Error(
+      "Shapefile-Koordinaten liegen nicht in WGS84 — bitte als ZIP inkl. .prj-Datei hochladen.",
+    )
+  }
+  return out
+}
 
-  const text = await file.text()
+/** Parst eine Streckendatei (GPX/KML/GeoJSON/Shapefile) zu einer Punktfolge. */
+export async function parseRouteFile(file: File): Promise<ParsedRoute> {
+  const name = file.name.toLowerCase()
   let points: RoutePoint[]
   let format: ParsedRoute["format"]
   if (name.endsWith(".gpx")) {
-    points = parseGpx(text)
+    points = parseGpx(await file.text())
     format = "gpx"
   } else if (name.endsWith(".kml")) {
-    points = parseKml(text)
+    points = parseKml(await file.text())
     format = "kml"
   } else if (name.endsWith(".geojson") || name.endsWith(".json")) {
-    points = parseGeoJson(text)
+    points = parseGeoJson(await file.text())
     format = "geojson"
+  } else if (name.endsWith(".zip") || name.endsWith(".shp")) {
+    points = await parseShapefile(file, name.endsWith(".zip"))
+    format = "shp"
   } else {
-    throw new Error("Unbekanntes Format — bitte GPX, KML oder GeoJSON verwenden.")
+    throw new Error("Unbekanntes Format — bitte GPX, KML, GeoJSON oder Shapefile verwenden.")
   }
 
   const valid = points.filter(isValidPoint)
-  if (valid.length < 2) throw new Error("Die Datei enthält keine gültigen Koordinaten.")
+  if (valid.length < 2) throw new Error("Die Datei enthält keine gültigen Strecken-Koordinaten.")
   return { points: downsample(valid), format }
 }
 

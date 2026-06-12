@@ -25,6 +25,7 @@ import { Select } from "@/components/ui/Select"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
+import { routeLengthKm } from "@/lib/parseRouteFile"
 import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
 import type { Finding, FindingSeverity, Project } from "@/types/domain"
@@ -46,6 +47,7 @@ export function DashboardTab({ project }: { project: Project }) {
   const navigate = useNavigate()
   const [sevFilter, setSevFilter] = useState<FindingSeverity | "alle">("alle")
   const [katFilter, setKatFilter] = useState<string>("alle")
+  const [routeFilter, setRouteFilter] = useState<string>("alle")
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -55,6 +57,7 @@ export function DashboardTab({ project }: { project: Project }) {
     return project.findings
       .filter((f) => (sevFilter === "alle" ? true : f.severity === sevFilter))
       .filter((f) => (katFilter === "alle" ? true : f.kategorie === katFilter))
+      .filter((f) => (routeFilter === "alle" ? true : f.routeId === routeFilter))
       .filter((f) =>
         q
           ? f.titel.toLowerCase().includes(q) ||
@@ -65,7 +68,7 @@ export function DashboardTab({ project }: { project: Project }) {
       .sort(
         (a, b) => SEVERITY_META[a.severity].rank - SEVERITY_META[b.severity].rank || a.km - b.km,
       )
-  }, [project.findings, sevFilter, katFilter, query])
+  }, [project.findings, sevFilter, katFilter, routeFilter, query])
 
   if (project.status !== "fertig") {
     return (
@@ -91,6 +94,7 @@ export function DashboardTab({ project }: { project: Project }) {
   const focusFinding = (id: string) => {
     setSevFilter("alle")
     setKatFilter("alle")
+    setRouteFilter("alle")
     setQuery("")
     setExpanded(id)
     requestAnimationFrame(() => {
@@ -146,19 +150,41 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       </div>
 
-      {/* Streckenprofil */}
-      {project.distanzKm && project.findings.length > 0 ? (
+      {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse) */}
+      {project.findings.length > 0 ? (
         <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Streckenprofil — Funde entlang der Route</CardTitle>
+            <CardTitle className="text-sm">
+              Streckenprofil — Funde entlang der {project.routes.length > 1 ? "Strecken" : "Route"}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="pt-1">
-            <StreckenBand
-              findings={project.findings}
-              distanzKm={project.distanzKm}
-              selectedId={expanded}
-              onSelect={focusFinding}
-            />
+          <CardContent className="flex flex-col gap-3 pt-1">
+            {project.routes
+              .filter((r) => r.points.length >= 2)
+              .map((r) => {
+                const routeFindings = project.findings.filter((f) => f.routeId === r.id)
+                if (routeFindings.length === 0) return null
+                return (
+                  <div key={r.id}>
+                    {project.routes.length > 1 ? (
+                      <p className="mb-0.5 flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ background: r.farbe }}
+                          aria-hidden
+                        />
+                        {r.name}
+                      </p>
+                    ) : null}
+                    <StreckenBand
+                      findings={routeFindings}
+                      distanzKm={routeLengthKm(r.points)}
+                      selectedId={expanded}
+                      onSelect={focusFinding}
+                    />
+                  </div>
+                )
+              })}
           </CardContent>
         </Card>
       ) : null}
@@ -227,6 +253,8 @@ export function DashboardTab({ project }: { project: Project }) {
                 <FindingRow
                   key={f.id}
                   finding={f}
+                  routeFarbe={project.routes.find((r) => r.id === f.routeId)?.farbe}
+                  zeigeStrecke={project.routes.length > 1}
                   open={expanded === f.id}
                   onToggle={() => setExpanded(expanded === f.id ? null : f.id)}
                 />
@@ -348,10 +376,14 @@ function StatCard({
 
 function FindingRow({
   finding,
+  routeFarbe,
+  zeigeStrecke,
   open,
   onToggle,
 }: {
   finding: Finding
+  routeFarbe?: string
+  zeigeStrecke?: boolean
   open: boolean
   onToggle: () => void
 }) {
@@ -372,9 +404,21 @@ function FindingRow({
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-neutral-900">{finding.titel}</p>
-          <p className="truncate text-xs text-neutral-500">
-            {kat.label} · km {finding.km.toLocaleString("de-DE")}
-            {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
+          <p className="flex items-center gap-1.5 truncate text-xs text-neutral-500">
+            {zeigeStrecke && finding.routeName ? (
+              <span className="inline-flex shrink-0 items-center gap-1">
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: routeFarbe ?? "#A1A1AA" }}
+                  aria-hidden
+                />
+                {finding.routeName} ·
+              </span>
+            ) : null}
+            <span className="truncate">
+              {kat.label} · km {finding.km.toLocaleString("de-DE")}
+              {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
+            </span>
           </p>
         </div>
         <Badge variant={sev.badge} size="sm">

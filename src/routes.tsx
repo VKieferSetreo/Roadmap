@@ -4,6 +4,7 @@ import { DashboardHome } from "@/pages/DashboardHome"
 import { ProjectDetail } from "@/pages/ProjectDetail"
 import { DatenbankPage } from "@/pages/DatenbankPage"
 import { SettingsPage } from "@/pages/SettingsPage"
+import { AdminTenantsPage } from "@/pages/AdminTenantsPage"
 
 // Unter /roadmap ausgeliefert (Build) → Router-Basename aus Vite-BASE_URL.
 // Dev (BASE_URL "/") → Basename "/".
@@ -18,6 +19,7 @@ export const router = createBrowserRouter(
         { path: "/projekte/:id", element: <ProjectDetail /> },
         { path: "/projekte/:id/:tab", element: <ProjectDetail /> },
         { path: "/datenbank", element: <DatenbankPage /> },
+        { path: "/mandanten", element: <AdminTenantsPage /> },
         { path: "/einstellungen", element: <SettingsPage /> },
         { path: "*", element: <Navigate to="/" replace /> },
       ],

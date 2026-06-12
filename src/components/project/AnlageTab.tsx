@@ -1,4 +1,5 @@
-// Tab 1 — Streckeneingabe (Upload ODER Start/Ziel) + Transport-Stammdaten + Zeitraum + Analyse-Start.
+// Tab 1 — Strecken (Mehrfach-Upload mit Farben) + Transport-Stammdaten + Zeitraum +
+// Analyse-Start + Veröffentlichen. Start/Ziel-Routing kommt in einem späteren Update.
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -10,73 +11,73 @@ import {
   Check,
   Loader2,
   MapPin,
+  Pencil,
   Play,
-  Plus,
   Route,
+  Sparkles,
   Upload,
   Waypoints,
   X,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
-import { Input, Label } from "@/components/ui/Input"
+import { Input } from "@/components/ui/Input"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { DropZone } from "@/components/upload/DropZone"
 import { TransportDataForm } from "./TransportDataForm"
+import { PublishCard } from "./PublishCard"
 import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
+import { useDataSourceStore } from "@/store/datasource"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
-import type { Project, RouteMode } from "@/types/domain"
+import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
+
+type StreckeTab = "upload" | "startziel"
 
 export function AnlageTab({ project }: { project: Project }) {
   const navigate = useNavigate()
-  const updateRoute = useProjectStore((s) => s.updateRoute)
+  const addRoute = useProjectStore((s) => s.addRoute)
+  const removeRoute = useProjectStore((s) => s.removeRoute)
+  const renameRoute = useProjectStore((s) => s.renameRoute)
   const updateTransport = useProjectStore((s) => s.updateTransport)
   const updateZeitraum = useProjectStore((s) => s.updateZeitraum)
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
   const analysis = useProjectStore((s) => s.analysis[project.id])
-  const [viaDraft, setViaDraft] = useState("")
+  const mode = useDataSourceStore((s) => s.mode)
+
+  const [tab, setTab] = useState<StreckeTab>("upload")
+  const [editRouteId, setEditRouteId] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
 
   const running = analysis?.running ?? false
-  const route = project.route
-  const routeReady =
-    route.mode === "upload"
-      ? Boolean(route.fileName)
-      : Boolean(route.start?.trim() && route.ziel?.trim())
+  const routeReady = project.routes.some((r) => r.points.length >= 2)
 
-  const setMode = (mode: RouteMode) => updateRoute(project.id, { mode })
-
-  /** Upload: GPX/KML/GeoJSON sofort client-seitig parsen → echte Geometrie. */
+  /** Upload: GPX/KML/GeoJSON/Shapefile parsen → als weitere Strecke anhängen. */
   const onRouteFile = async (file: File) => {
     try {
       const parsed = await parseRouteFile(file)
-      if (parsed) {
-        updateRoute(project.id, { fileName: file.name, points: parsed.points })
-        toast.success(
-          `Strecke geladen: ${parsed.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(parsed.points).toLocaleString("de-DE")} km.`,
-        )
-      } else {
-        // Shapefile: akzeptiert, Geometrie entsteht erst bei der Auswertung
-        updateRoute(project.id, { fileName: file.name, points: undefined })
-        toast.info("Shapefile übernommen — die Strecken-Geometrie wird bei der Auswertung erzeugt.")
-      }
+      const name = file.name.replace(/\.(gpx|kml|geojson|json|zip|shp)$/i, "")
+      addRoute(project.id, { name, fileName: file.name, points: parsed.points })
+      toast.success(
+        `Strecke „${name}" geladen: ${parsed.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(parsed.points).toLocaleString("de-DE")} km.`,
+      )
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
     }
   }
 
-  const addVia = () => {
-    const v = viaDraft.trim()
-    if (!v) return
-    updateRoute(project.id, { vias: [...(route.vias ?? []), v] })
-    setViaDraft("")
+  const startRename = (routeId: string, current: string) => {
+    setEditRouteId(routeId)
+    setEditName(current)
   }
-  const removeVia = (i: number) =>
-    updateRoute(project.id, { vias: (route.vias ?? []).filter((_, idx) => idx !== i) })
+  const commitRename = () => {
+    if (editRouteId && editName.trim()) renameRoute(project.id, editRouteId, editName.trim())
+    setEditRouteId(null)
+  }
 
   const onRun = () => {
     if (!routeReady) {
-      toast.error("Bitte zuerst die Strecke festlegen (Datei oder Start/Ziel).")
+      toast.error("Bitte zuerst mindestens eine Strecke hochladen.")
       return
     }
     runAnalysis(project.id)
@@ -86,28 +87,28 @@ export function AnlageTab({ project }: { project: Project }) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {/* ── Strecke ── */}
+        {/* ── Strecken ── */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Route className="h-4 w-4 text-primary-600" /> Strecke
+              <Route className="h-4 w-4 text-primary-600" /> Strecken
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="inline-flex w-full rounded-md border border-neutral-200 bg-neutral-50 p-1">
               {(
                 [
-                  { id: "startziel", label: "Start / Ziel", icon: MapPin },
                   { id: "upload", label: "Datei-Upload", icon: Upload },
+                  { id: "startziel", label: "Start / Ziel", icon: MapPin },
                 ] as const
               ).map((opt) => (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => setMode(opt.id)}
+                  onClick={() => setTab(opt.id)}
                   className={cn(
-                    "flex flex-1 items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium transition-colors",
-                    route.mode === opt.id
+                    "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium transition-colors",
+                    tab === opt.id
                       ? "bg-white text-primary-700 shadow-sm"
                       : "text-neutral-500 hover:text-neutral-700",
                   )}
@@ -117,91 +118,99 @@ export function AnlageTab({ project }: { project: Project }) {
               ))}
             </div>
 
-            {route.mode === "upload" ? (
-              <div className="flex flex-col gap-2.5">
+            {tab === "upload" ? (
+              <div className="flex flex-col gap-3">
+                {/* vorhandene Strecken */}
+                {project.routes.length > 0 ? (
+                  <ul className="flex flex-col gap-2">
+                    {project.routes.map((r) => (
+                      <li
+                        key={r.id}
+                        className="flex items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 py-2"
+                      >
+                        <span
+                          className="h-3 w-3 shrink-0 rounded-full ring-2 ring-white"
+                          style={{ background: r.farbe }}
+                          aria-hidden
+                        />
+                        <div className="min-w-0 flex-1">
+                          {editRouteId === r.id ? (
+                            <Input
+                              autoFocus
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              onBlur={commitRename}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") commitRename()
+                                if (e.key === "Escape") setEditRouteId(null)
+                              }}
+                              className="h-7 text-sm"
+                            />
+                          ) : (
+                            <p className="truncate text-sm font-medium text-neutral-800">
+                              {r.name}
+                            </p>
+                          )}
+                          <p className="truncate text-xs tabular-nums text-neutral-400">
+                            {r.fileName ? `${r.fileName} · ` : ""}
+                            {r.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}
+                            {routeLengthKm(r.points).toLocaleString("de-DE")} km
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => startRename(r.id, r.name)}
+                          aria-label={`Strecke ${r.name} umbenennen`}
+                          disabled={running}
+                          className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeRoute(project.id, r.id)}
+                          aria-label={`Strecke ${r.name} entfernen`}
+                          disabled={running}
+                          className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
                 <DropZone
-                  label="Streckendatei hochladen"
-                  hint="GPX, KML, GeoJSON oder Shapefile (.shp / gezippt .zip)"
-                  accept=".gpx,.kml,.geojson,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
-                  value={route.fileName}
-                  onFile={(file) => void onRouteFile(file)}
-                  onClear={() =>
-                    updateRoute(project.id, { fileName: undefined, points: undefined })
+                  label={
+                    project.routes.length > 0
+                      ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
+                      : "Streckendatei hochladen"
                   }
+                  hint="GPX, KML, GeoJSON oder Shapefile (.zip mit .prj / .shp)"
+                  accept=".gpx,.kml,.geojson,.json,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
+                  onFile={(file) => void onRouteFile(file)}
                 />
-                {route.points && route.points.length >= 2 ? (
-                  <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50/70 px-2.5 py-1 text-[11px] font-medium tabular-nums text-primary-800">
+                {project.routes.length > 1 ? (
+                  <p className="flex items-center gap-1.5 text-xs text-neutral-400">
                     <Waypoints className="h-3.5 w-3.5" />
-                    {route.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}
-                    {routeLengthKm(route.points).toLocaleString("de-DE")} km erkannt
-                  </span>
+                    Alle Strecken erscheinen farblich getrennt auf der Karte — einzeln
+                    ein-/ausblendbar.
+                  </p>
                 ) : null}
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="start">Start</Label>
-                  <Input
-                    id="start"
-                    value={route.start ?? ""}
-                    onChange={(e) => updateRoute(project.id, { start: e.target.value })}
-                    placeholder="z.B. Hamburg"
-                  />
+              /* Start/Ziel — kommt in einem späteren Update */
+              <div className="flex min-h-[180px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-200 bg-neutral-50/50 px-6 py-8 text-center">
+                <div className="mb-3 rounded-full bg-primary-50 p-3 text-primary-600">
+                  <Sparkles className="h-6 w-6" />
                 </div>
-                <div>
-                  <Label htmlFor="ziel">Ziel</Label>
-                  <Input
-                    id="ziel"
-                    value={route.ziel ?? ""}
-                    onChange={(e) => updateRoute(project.id, { ziel: e.target.value })}
-                    placeholder="z.B. München"
-                  />
-                </div>
-                <div>
-                  <Label>Zwischenstationen</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={viaDraft}
-                      onChange={(e) => setViaDraft(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault()
-                          addVia()
-                        }
-                      }}
-                      placeholder="Ort hinzufügen"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={addVia}
-                      aria-label="Zwischenstation hinzufügen"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {(route.vias ?? []).length > 0 ? (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {(route.vias ?? []).map((v, i) => (
-                        <span
-                          key={`${v}-${i}`}
-                          className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-neutral-50 py-1 pl-3 pr-1 text-xs text-neutral-700"
-                        >
-                          {v}
-                          <button
-                            type="button"
-                            onClick={() => removeVia(i)}
-                            aria-label={`${v} entfernen`}
-                            className="rounded-full p-0.5 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
+                <p className="text-sm font-medium text-neutral-700">
+                  Routenplanung über Start / Ziel folgt
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-neutral-500">
+                  Diese Funktion wird mit einem der kommenden Updates ergänzt. Bis dahin bitte die
+                  vorhandene Strecke als Datei hochladen.
+                </p>
               </div>
             )}
           </CardContent>
@@ -212,27 +221,12 @@ export function AnlageTab({ project }: { project: Project }) {
           <CardHeader>
             <CardTitle className="text-base">Transport-Stammdaten</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3">
+          <CardContent>
             <TransportDataForm
               value={project.transport}
               onChange={(patch) => updateTransport(project.id, patch)}
               disabled={running}
             />
-            {isLadungZuSchwer(project.transport) ? (
-              <div
-                role="alert"
-                className="flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800"
-              >
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-red-600" />
-                <span>
-                  <strong>Gesamtgewicht zu niedrig.</strong> Das Ladungsgewicht (
-                  <span className="tabular-nums">{project.transport.ladungsgewicht} t</span>) ist
-                  größer als das Gesamtgewicht (
-                  <span className="tabular-nums">{project.transport.gesamtgewicht} t</span>) — bitte
-                  korrigieren.
-                </span>
-              </div>
-            ) : null}
           </CardContent>
         </Card>
       </div>
@@ -303,7 +297,6 @@ export function AnlageTab({ project }: { project: Project }) {
                       onChange={(t) => {
                         const date = splitDateTime(project.zeitraum?.von).date
                         if (!date) return
-                        // Setze Uhrzeit → ganztaegig explizit auf false (sonst wäre Default wieder true)
                         updateZeitraum(project.id, { von: `${date}T${t}`, ganztaegig: false })
                       }}
                       disabled={running}
@@ -425,11 +418,12 @@ export function AnlageTab({ project }: { project: Project }) {
                     Auswertung abgeschlossen ·{" "}
                     <strong className="text-neutral-800">{project.findings.length} Funde</strong>{" "}
                     auf {project.distanzKm?.toLocaleString("de-DE")} km
+                    {project.routes.length > 1 ? ` (${project.routes.length} Strecken)` : ""}
                   </span>
                 ) : routeReady ? (
                   "Bereit zur Auswertung."
                 ) : (
-                  "Strecke festlegen, um die Auswertung zu starten."
+                  "Strecke hochladen, um die Auswertung zu starten."
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -450,6 +444,9 @@ export function AnlageTab({ project }: { project: Project }) {
           )}
         </CardContent>
       </Card>
+
+      {/* ── Veröffentlichen (Externe sehen Karte + Auswertung) ── */}
+      {project.status === "fertig" && mode === "live" ? <PublishCard project={project} /> : null}
     </div>
   )
 }
@@ -478,15 +475,6 @@ function isZeitraumInvalid(z: { von?: string; bis?: string }): boolean {
   const b = new Date(z.bis).getTime()
   if (Number.isNaN(a) || Number.isNaN(b)) return false
   return b < a
-}
-
-/** True wenn die Ladung schwerer ist als das Gesamtgewicht (Plausibilitätsfehler). */
-function isLadungZuSchwer(t: { gesamtgewicht?: number; ladungsgewicht?: number }): boolean {
-  const ladung = t.ladungsgewicht
-  const gesamt = t.gesamtgewicht
-  if (typeof ladung !== "number" || ladung <= 0) return false
-  if (typeof gesamt !== "number" || gesamt <= 0) return false
-  return ladung > gesamt
 }
 
 /** Dauer zwischen zwei datetime-local Strings als „X Tage Y h" oder „Y h Z min". */

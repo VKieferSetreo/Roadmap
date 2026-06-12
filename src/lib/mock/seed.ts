@@ -1,7 +1,8 @@
-// Seed-Projekte, damit das Dashboard beim ersten Start nicht leer ist.
+// Seed-Projekte (Demo-Modus), damit das Dashboard beim ersten Start nicht leer ist.
 
-import type { Project, RouteInput, TransportData } from "@/types/domain"
-import { runMockAnalysis } from "./generate"
+import type { Project, ProjectRoute, TransportData } from "@/types/domain"
+import { ROUTE_FARBEN } from "@/types/domain"
+import { buildDemoGeometry, runMockAnalysis } from "./generate"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
@@ -14,14 +15,30 @@ function iso(daysFromNow: number, hour = 6, minute = 0): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+function demoRoute(
+  name: string,
+  start: string,
+  ziel: string,
+  vias: string[],
+  idx: number,
+): ProjectRoute {
+  return {
+    id: uid(),
+    name,
+    fileName: `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.gpx`,
+    points: buildDemoGeometry(start, ziel, vias),
+    farbe: ROUTE_FARBEN[idx % ROUTE_FARBEN.length],
+  }
+}
+
 function makeAnalysed(
   name: string,
-  route: RouteInput,
+  routes: ProjectRoute[],
   transport: TransportData,
   ageDays: number,
-  zeitraumStartIn: number = 14,
+  zeitraumStartIn = 14,
 ): Project {
-  const res = runMockAnalysis(route, transport)
+  const res = runMockAnalysis(routes, transport)
   const created = new Date(Date.now() - ageDays * 86400_000).toISOString()
   const updated = new Date(Date.now() - Math.max(0, ageDays - 1) * 86400_000).toISOString()
   return {
@@ -30,14 +47,13 @@ function makeAnalysed(
     status: "fertig",
     createdAt: created,
     updatedAt: updated,
-    route,
+    routes,
     transport,
     zeitraum: {
       // Schwertransport-typisch: Nachtfahrt-Start 22:00, Ankunft 2 Tage später 14:00
       von: iso(zeitraumStartIn, 22, 0),
       bis: iso(zeitraumStartIn + 2, 14, 0),
     },
-    routeGeometry: res.routeGeometry,
     findings: res.findings,
     distanzKm: res.distanzKm,
     fahrzeitMin: res.fahrzeitMin,
@@ -48,33 +64,30 @@ export function buildSeedProjects(): Project[] {
   return [
     makeAnalysed(
       "Trafo-Transport Hamburg → München",
-      { mode: "startziel", start: "Hamburg", ziel: "München", vias: ["Hannover", "Würzburg"] },
+      [
+        demoRoute("Hinfahrt", "Hamburg", "München", ["Hannover", "Würzburg"], 0),
+        demoRoute("Rückfahrt", "München", "Hamburg", ["Kassel"], 1),
+      ],
       {
-        fahrzeugTyp: "Sattelzug mit Tieflader",
         laenge: 26.5,
         breite: 3.2,
         hoehe: 4.4,
         gesamtgewicht: 92,
-        achslast: 12,
         achsen: 10,
-        ladung: "Leistungstransformator 80 t",
-        ladungsgewicht: 80,
+        achslasten: Array(10).fill(9.2),
       },
       6,
     ),
     makeAnalysed(
       "Windkraft-Rotorblatt Bremen → Leipzig",
-      { mode: "startziel", start: "Bremen", ziel: "Leipzig", vias: ["Hannover"] },
+      [demoRoute("Hinfahrt", "Bremen", "Leipzig", ["Hannover"], 0)],
       {
-        fahrzeugTyp: "Selbstfahrer mit Rotorblattadapter",
         laenge: 62,
         breite: 4.0,
         hoehe: 4.6,
         gesamtgewicht: 78,
-        achslast: 10,
         achsen: 12,
-        ladung: "Rotorblatt 58 m",
-        ladungsgewicht: 32,
+        achslasten: Array(12).fill(6.5),
       },
       2,
     ),
@@ -84,20 +97,16 @@ export function buildSeedProjects(): Project[] {
       status: "entwurf",
       createdAt: new Date(Date.now() - 86400_000).toISOString(),
       updatedAt: new Date(Date.now() - 86400_000).toISOString(),
-      route: { mode: "startziel", start: "Köln", ziel: "Stuttgart" },
+      routes: [],
       transport: {
-        fahrzeugTyp: "Tieflader",
         laenge: 22,
         breite: 3.0,
         hoehe: 3.9,
         gesamtgewicht: 64,
-        achslast: 11,
         achsen: 8,
-        ladung: "Raupenbagger 45 t",
-        ladungsgewicht: 45,
+        achslasten: Array(8).fill(8),
       },
       zeitraum: { von: iso(28, 22, 0), bis: iso(30, 14, 0) },
-      routeGeometry: [],
       findings: [],
     },
   ]

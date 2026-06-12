@@ -11,6 +11,8 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useAuthStore } from "@/store/auth"
 import { useDataSourceStore } from "@/store/datasource"
+import { useContextStore } from "@/store/context"
+import { Building2 } from "lucide-react"
 
 const SIDEBAR_OPEN_KEY = "roadmap.sidebar.open"
 
@@ -41,13 +43,24 @@ export function AppLayout() {
   const { newProjectOpen, closeNewProject } = useUiStore()
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
   const detect = useDataSourceStore((s) => s.detect)
+  const mode = useDataSourceStore((s) => s.mode)
+  const loadContext = useContextStore((s) => s.load)
+  const ctxLoaded = useContextStore((s) => s.loaded)
+  const isAdmin = useContextStore((s) => s.isAdmin)
+  const tenant = useContextStore((s) => s.tenant)
 
-  // Boot: SSO-Identität holen + Datenquelle erkennen (Backend live vs. Demo-Modus),
-  // dann Projekte laden bzw. Seed setzen.
+  // Boot: SSO-Identität holen + Datenquelle erkennen (Backend live vs. Demo-Modus).
+  // Live: erst Nutzer-/Mandanten-Kontext (setzt X-Tenant für Admins), dann Projekte.
   useEffect(() => {
     void fetchIdentity()
-    void detect().then((mode) => initData(mode))
-  }, [fetchIdentity, detect, initData])
+    void detect().then(async (m) => {
+      if (m === "live") await loadContext()
+      await initData(m)
+    })
+  }, [fetchIdentity, detect, initData, loadContext])
+
+  // Live + eingeloggt, aber keinem Mandanten zugeordnet → Arbeit nicht möglich.
+  const keinMandant = mode === "live" && ctxLoaded && !isAdmin && !tenant
 
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
@@ -61,7 +74,22 @@ export function AppLayout() {
           onClose={() => setMobileNavOpen(false)}
         />
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
-          <Outlet />
+          {keinMandant ? (
+            <div className="flex h-full items-center justify-center px-4">
+              <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
+                  <Building2 className="h-6 w-6 text-accent-700" />
+                </div>
+                <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
+                <p className="mt-2 text-sm text-neutral-500">
+                  Dein Konto ist noch keinem Mandanten zugewiesen. Bitte wende dich an Setreo —
+                  sobald die Zuordnung steht, erscheinen hier die Projekte deines Teams.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
 

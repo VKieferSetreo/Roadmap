@@ -1,47 +1,36 @@
 // Domänen-Modell für Roadmap — Schwertransport-Routenanalyse.
-// Frontend-only: alle Typen werden aktuell aus dem Mock-Store (zustand) bedient,
-// sind aber so geschnitten, dass ein späteres Backend sie 1:1 liefern kann.
+// Geteilt mit dem Backend (server/ liefert exakt diese Shapes, camelCase).
 
 /** Lebenszyklus eines Projekts. */
 export type ProjectStatus = "entwurf" | "analyse" | "fertig"
 
-/** Wie die Strecke definiert wurde. */
-export type RouteMode = "upload" | "startziel"
-
-export interface RouteInput {
-  mode: RouteMode
-  /** bei mode="upload": Name der hochgeladenen Streckendatei (GPX/KML/…). */
+/** Eine hochgeladene Strecke eines Projekts (z.B. Hin- oder Rückfahrt).
+ *  Mehrere Strecken pro Projekt; eine Gesamt-Auswertung über alle. */
+export interface ProjectRoute {
+  id: string
+  /** Anzeigename im Ebenen-Panel (Default: Dateiname). */
+  name: string
   fileName?: string
-  /** bei mode="upload": aus der Datei geparste Strecken-Geometrie (GPX/KML/GeoJSON).
-   *  Shapefiles haben (noch) keine Client-Parsing-Unterstützung → points bleibt leer. */
-  points?: RoutePoint[]
-  /** bei mode="startziel": Start-Ort. */
-  start?: string
-  /** bei mode="startziel": Ziel-Ort. */
-  ziel?: string
-  /** optionale Zwischenstationen (nur startziel). */
-  vias?: string[]
+  /** Geometrie aus der Datei (GPX/KML/GeoJSON, client-seitig geparst, ≤1500 Punkte). */
+  points: RoutePoint[]
+  /** Hex-Farbe für Karte/Listen-Zuordnung (FE vergibt aus Palette). */
+  farbe: string
 }
 
 /** Stammdaten des Transports — bestimmen, was auf der Strecke zum Problem wird. */
 export interface TransportData {
-  fahrzeugTyp: string
   /** Gesamtlänge in Metern. */
   laenge: number
   /** Gesamtbreite in Metern. */
   breite: number
   /** Gesamthöhe in Metern. */
   hoehe: number
-  /** Gesamtgewicht (Zugfahrzeug + Ladung) in Tonnen. */
+  /** Gesamtgewicht in Tonnen. */
   gesamtgewicht: number
-  /** maximale Achslast in Tonnen. */
-  achslast: number
-  /** Anzahl Achsen. */
+  /** Anzahl Achsen (min. 2 — Zugmaschine). */
   achsen: number
-  /** Beschreibung der Ladung. */
-  ladung: string
-  /** Reines Ladungsgewicht in Tonnen (für Plausibilitätsprüfung gegen gesamtgewicht). */
-  ladungsgewicht?: number
+  /** Achslast pro Achse in Tonnen (Länge === achsen). */
+  achslasten: number[]
 }
 
 export type FindingKategorie =
@@ -74,8 +63,11 @@ export interface Finding {
   beschreibung: string
   lat: number
   lng: number
-  /** Position entlang der Strecke in Kilometern ab Start. */
+  /** Position entlang SEINER Strecke in Kilometern ab Start. */
   km: number
+  /** Zuordnung zur Projekt-Strecke (Multi-Strecken). */
+  routeId?: string
+  routeName?: string
   severity: FindingSeverity
   /** Strukturierte Detailwerte, z.B. { "Durchfahrtshöhe": "3,80 m" }. */
   detail: Record<string, string>
@@ -103,6 +95,13 @@ export interface TransportZeitraum {
   ganztaegig?: boolean
 }
 
+/** Veröffentlichungs-Status eines Projekts (Share-Link für Externe). */
+export interface ShareInfo {
+  url: string
+  hatPasswort: boolean
+  createdAt: string
+}
+
 export interface Project {
   id: string
   name: string
@@ -110,17 +109,29 @@ export interface Project {
   /** ISO-Zeitstempel. */
   createdAt: string
   updatedAt: string
-  route: RouteInput
+  /** Mandant, dem das Projekt gehört. */
+  tenantId?: string
+  /** Hochgeladene Strecken (Hin-/Rückfahrt, Varianten …). */
+  routes: ProjectRoute[]
   transport: TransportData
   /** Geplanter Zeitraum des Transports. */
   zeitraum: TransportZeitraum
-  /** Polyline der Strecke (leer bis zur Analyse). */
-  routeGeometry: RoutePoint[]
   findings: Finding[]
-  /** Streckenlänge in km (nach Analyse gesetzt). */
+  /** Gesamt-Streckenlänge in km, Summe aller Strecken (nach Analyse gesetzt). */
   distanzKm?: number
   /** geschätzte Fahrzeit in Minuten (nach Analyse gesetzt). */
   fahrzeitMin?: number
+  /** aktiver Share-Link (null/undefined = nicht veröffentlicht). */
+  share?: ShareInfo | null
+}
+
+/** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Mitglieder. */
+export interface Tenant {
+  id: string
+  slug: string
+  name: string
+  mitglieder: string[]
+  projekte: number
 }
 
 /** Eintrag der zentralen Hindernis-Datenbank (Backend). Die Analyse-Engine matcht
@@ -143,6 +154,11 @@ export interface Obstacle {
   aktiv: boolean
   /** true für Seed-/Demo-Datensätze — echte Importe haben demo=false. */
   demo: boolean
+  /** Fachliche ID: Index (4) + Quellen-ID (4) + realer Start DDMMYY (6), z.B. 00030009010126. */
+  fachId?: string
+  quellenId?: string
+  /** Datum, ab dem das Hindernis real greift (z.B. Baustellenstart). */
+  realerStart?: string
   createdAt: string
   updatedAt: string
 }
@@ -162,13 +178,22 @@ export interface AppStats {
 
 /** Default-Stammdaten für ein frisch angelegtes Projekt (typischer Schwertransport). */
 export const DEFAULT_TRANSPORT: TransportData = {
-  fahrzeugTyp: "Sattelzug mit Tieflader",
   laenge: 24.5,
   breite: 3.0,
   hoehe: 4.2,
   gesamtgewicht: 68,
-  achslast: 11.5,
   achsen: 8,
-  ladung: "",
-  ladungsgewicht: 35,
+  achslasten: [11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5],
 }
+
+/** Farb-Palette für Projekt-Strecken (Reihenfolge = Vergabe-Reihenfolge). */
+export const ROUTE_FARBEN = [
+  "#527121", // Setreo-Dunkelgrün
+  "#2563EB", // Blau
+  "#9333EA", // Violett
+  "#0D9488", // Petrol
+  "#C2410C", // Terracotta
+  "#DB2777", // Magenta
+  "#4D7C0F", // Oliv
+  "#7C3AED", // Indigo
+] as const

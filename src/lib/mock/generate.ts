@@ -7,7 +7,7 @@ import type {
   FindingKategorie,
   FindingSeverity,
   FindingSource,
-  RouteInput,
+  ProjectRoute,
   RoutePoint,
   TransportData,
 } from "@/types/domain"
@@ -188,25 +188,10 @@ function buildPolyline(waypoints: RoutePoint[]): RoutePoint[] {
   return out
 }
 
-/** Erzeugt die Strecken-Geometrie aus dem Routen-Input. */
-export function buildRouteGeometry(route: RouteInput): RoutePoint[] {
-  // Upload mit client-seitig geparster Geometrie (GPX/KML/GeoJSON) → 1:1 verwenden.
-  if (route.mode === "upload" && route.points && route.points.length >= 2) {
-    return route.points
-  }
-  if (route.mode === "startziel" && route.start && route.ziel) {
-    const wps = [
-      resolveOrt(route.start),
-      ...(route.vias ?? []).filter(Boolean).map(resolveOrt),
-      resolveOrt(route.ziel),
-    ]
-    return buildPolyline(wps)
-  }
-  // Upload-Modus ohne Geocoding: deterministischer Demo-Korridor aus dem Dateinamen.
-  const seed = route.fileName ?? "strecke"
-  const a = resolveOrt(seed + "-start")
-  const b = resolveOrt(seed + "-ziel")
-  return buildPolyline([a, b])
+/** Deterministische Demo-Geometrie über Orte (für Seed-Projekte ohne echte Datei). */
+export function buildDemoGeometry(start: string, ziel: string, vias: string[] = []): RoutePoint[] {
+  const wps = [resolveOrt(start), ...vias.filter(Boolean).map(resolveOrt), resolveOrt(ziel)]
+  return buildPolyline(wps)
 }
 
 // ── Fund-Templates je Kategorie ───────────────────────────────────────────────
@@ -284,7 +269,7 @@ const KATEGORIEN: FindKategorieDef[] = [
         detail: {
           "Zul. Last": t(last),
           Gesamtgewicht: t(tr.gesamtgewicht),
-          Achslast: t(tr.achslast),
+          Achslast: t(Math.max(...tr.achslasten, 0)),
         },
         severity: sev(last < tr.gesamtgewicht, last < tr.gesamtgewicht * 1.15),
       }
@@ -409,23 +394,28 @@ export function generateFindings(geometry: RoutePoint[], transport: TransportDat
 }
 
 export interface AnalysisResult {
-  routeGeometry: RoutePoint[]
   findings: Finding[]
   distanzKm: number
   fahrzeitMin: number
 }
 
-/** Komplettes Analyse-Ergebnis für ein Projekt. */
-export function runMockAnalysis(route: RouteInput, transport: TransportData): AnalysisResult {
-  const routeGeometry = buildRouteGeometry(route)
+/** Komplettes Analyse-Ergebnis für ein Projekt — EINE Auswertung über alle Strecken,
+ *  Funde der jeweiligen Strecke zugeordnet (routeId/routeName, km auf SEINER Strecke). */
+export function runMockAnalysis(routes: ProjectRoute[], transport: TransportData): AnalysisResult {
   let distanzKm = 0
-  for (let i = 1; i < routeGeometry.length; i++) {
-    distanzKm += distanceKm(routeGeometry[i - 1], routeGeometry[i])
+  const findings: Finding[] = []
+  for (const route of routes) {
+    if (route.points.length < 2) continue
+    for (let i = 1; i < route.points.length; i++) {
+      distanzKm += distanceKm(route.points[i - 1], route.points[i])
+    }
+    for (const f of generateFindings(route.points, transport)) {
+      findings.push({ ...f, routeId: route.id, routeName: route.name })
+    }
   }
   distanzKm = Math.round(distanzKm)
-  const findings = generateFindings(routeGeometry, transport)
   // Schwertransport: ~50 km/h Schnitt + Zuschlag pro kritischem Fund
   const kritisch = findings.filter((f) => f.severity === "kritisch").length
   const fahrzeitMin = Math.round((distanzKm / 48) * 60 + kritisch * 25)
-  return { routeGeometry, findings, distanzKm, fahrzeitMin }
+  return { findings, distanzKm, fahrzeitMin }
 }

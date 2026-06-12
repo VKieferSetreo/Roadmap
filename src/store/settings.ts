@@ -5,6 +5,8 @@ import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 
 export type TileStyle = "standard" | "hell"
+/** Darstellung des Projekt-Grids auf der Startseite. */
+export type ProjektAnsicht = "karten" | "liste"
 
 interface Profile {
   name: string
@@ -15,9 +17,11 @@ interface SettingsStore {
   profile: Profile
   tileStyle: TileStyle
   autoFit: boolean
+  projektAnsicht: ProjektAnsicht
   setProfile: (patch: Partial<Profile>) => void
   setTileStyle: (s: TileStyle) => void
   setAutoFit: (v: boolean) => void
+  setProjektAnsicht: (v: ProjektAnsicht) => void
 }
 
 export const TILE_LAYERS: Record<TileStyle, { url: string; attribution: string; label: string }> = {
@@ -43,9 +47,11 @@ export const useSettingsStore = create<SettingsStore>()(
       profile: { name: "Setreo Nutzer", email: "team@setreo.de" },
       tileStyle: "standard",
       autoFit: true,
+      projektAnsicht: "karten",
       setProfile: (patch) => set((s) => ({ profile: { ...s.profile, ...patch } })),
       setTileStyle: (tileStyle) => set({ tileStyle }),
       setAutoFit: (autoFit) => set({ autoFit }),
+      setProjektAnsicht: (projektAnsicht) => set({ projektAnsicht }),
     }),
     { name: "roadmap-settings", storage: createJSONStorage(() => localStorage) },
   ),

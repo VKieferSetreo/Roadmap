@@ -70,11 +70,21 @@ export const axiosInstance = axios.create({
   timeout: 30_000,
 })
 
+// Aktiver Mandant (nur für Setreo-Admins relevant — wählt den Tenant-Kontext serverseitig).
+// Wird vom Context-Store gesetzt; normale Nutzer haben ihren Tenant serverseitig fix.
+let tenantSlug: string | null = null
+export function setTenantHeader(slug: string | null) {
+  tenantSlug = slug
+}
+
 axiosInstance.interceptors.request.use((config) => {
   config.headers.set("X-Request-Id", newRequestId())
   const traceId = getTraceId()
   if (traceId) {
     config.headers.set("X-Trace-Id", traceId)
+  }
+  if (tenantSlug) {
+    config.headers.set("X-Tenant", tenantSlug)
   }
   const token = getAuthToken()
   if (token) {

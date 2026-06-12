@@ -1,13 +1,13 @@
-// Home / Dashboard — Hero mit animierten Kennzahlen + Projekt-Grid.
+// Home — Hero (schlank) + Projekt-Übersicht mit Karten-/Listen-Ansicht.
 // Seed/Initial-Load passiert zentral im AppLayout (Datasource-Detection).
 
-import { FolderPlus, Plus } from "lucide-react"
+import { FolderPlus, LayoutGrid, List, Plus } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
-import { useDataSourceStore } from "@/store/datasource"
-import { ProjectCard } from "@/components/project/ProjectCard"
+import { useSettingsStore, type ProjektAnsicht } from "@/store/settings"
+import { ProjectCard, ProjectListRow } from "@/components/project/ProjectCard"
 import { EmptyState } from "@/components/shared/EmptyState"
-import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
+import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/cn"
 
@@ -15,16 +15,10 @@ export function DashboardHome() {
   const projects = useProjectStore((s) => s.projects)
   const loading = useProjectStore((s) => s.loading)
   const openNewProject = useUiStore((s) => s.openNewProject)
-  const mode = useDataSourceStore((s) => s.mode)
+  const ansicht = useSettingsStore((s) => s.projektAnsicht)
+  const setAnsicht = useSettingsStore((s) => s.setProjektAnsicht)
 
   const sorted = [...projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-
-  const totalFindings = projects.reduce((s, p) => s + p.findings.length, 0)
-  const totalKritisch = projects.reduce(
-    (s, p) => s + p.findings.filter((f) => f.severity === "kritisch").length,
-    0,
-  )
-  const totalKm = projects.reduce((s, p) => s + (p.distanzKm ?? 0), 0)
 
   return (
     <div className="h-full overflow-y-auto">
@@ -59,50 +53,61 @@ export function DashboardHome() {
           </svg>
 
           <div className="relative">
-            <div className="flex items-center gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary-600">
-                Setreo Roadmap
-              </p>
-              {mode === "live" ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-primary-200 bg-white/70 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary-600" />
-                  </span>
-                  Live-Datenbank
-                </span>
-              ) : null}
-            </div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary-600">
+              Setreo Roadmap
+            </p>
             <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-neutral-900 sm:text-[1.7rem]">
               Routenanalyse für Schwertransporte
             </h1>
             <p className="mt-2 max-w-xl text-sm text-neutral-600">
-              Strecke festlegen, Transport-Stammdaten erfassen, Auswertung fahren — alle Hindernisse
+              Strecke hochladen, Transport-Stammdaten erfassen, Auswertung fahren — alle Hindernisse
               entlang der Route auf einen Blick.
             </p>
-
-            {projects.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-x-10 gap-y-4 border-t border-primary-100 pt-5">
-                <HeroStat label="Projekte" value={projects.length} />
-                <HeroStat label="Funde gesamt" value={totalFindings} />
-                <HeroStat label="Kritisch" value={totalKritisch} accent={totalKritisch > 0} />
-                <HeroStat label="Strecke gesamt" value={totalKm} suffix=" km" />
-              </div>
-            ) : null}
           </div>
         </div>
 
         {/* Projekt-Sektion */}
-        <div className="mt-8 flex items-end justify-between">
+        <div className="mt-8 flex items-end justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">Ihre Projekte</h2>
             <p className="text-sm text-neutral-500">
               {projects.length} {projects.length === 1 ? "Projekt" : "Projekte"}
             </p>
           </div>
-          <Button variant="outline" onClick={openNewProject}>
-            <Plus className="h-4 w-4" /> Projekt hinzufügen
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Ansicht: Karten ⇄ Liste */}
+            <div
+              className="inline-flex rounded-md border border-neutral-200 bg-neutral-50 p-1"
+              role="group"
+              aria-label="Ansicht wählen"
+            >
+              {(
+                [
+                  { id: "karten", label: "Karten", icon: LayoutGrid },
+                  { id: "liste", label: "Liste", icon: List },
+                ] as { id: ProjektAnsicht; label: string; icon: typeof List }[]
+              ).map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => setAnsicht(opt.id)}
+                  aria-pressed={ansicht === opt.id}
+                  title={opt.label}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                    ansicht === opt.id
+                      ? "bg-white text-primary-700 shadow-sm"
+                      : "text-neutral-500 hover:text-neutral-700",
+                  )}
+                >
+                  <opt.icon className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{opt.label}</span>
+                </button>
+              ))}
+            </div>
+            <Button variant="outline" onClick={openNewProject}>
+              <Plus className="h-4 w-4" /> Projekt hinzufügen
+            </Button>
+          </div>
         </div>
 
         {loading ? (
@@ -110,9 +115,9 @@ export function DashboardHome() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-[240px] rounded-xl border border-neutral-200/80 bg-white p-0 shadow-card"
+                className="h-[256px] rounded-xl border border-neutral-200/80 bg-white shadow-card"
               >
-                <div className="skeleton h-24 w-full rounded-t-xl" />
+                <div className="skeleton h-28 w-full rounded-t-xl" />
                 <div className="flex flex-col gap-3 p-4">
                   <div className="skeleton h-4 w-3/4 rounded" />
                   <div className="skeleton h-3 w-1/2 rounded" />
@@ -130,43 +135,22 @@ export function DashboardHome() {
               cta={<Button onClick={openNewProject}>Neues Projekt anlegen</Button>}
             />
           </div>
-        ) : (
+        ) : ansicht === "karten" ? (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {sorted.map((p, i) => (
               <ProjectCard key={p.id} project={p} index={i} />
             ))}
           </div>
+        ) : (
+          <Card className="mt-6">
+            <ul className="divide-y divide-neutral-100">
+              {sorted.map((p, i) => (
+                <ProjectListRow key={p.id} project={p} index={i} />
+              ))}
+            </ul>
+          </Card>
         )}
       </div>
-    </div>
-  )
-}
-
-function HeroStat({
-  label,
-  value,
-  suffix,
-  accent,
-}: {
-  label: string
-  value: number
-  suffix?: string
-  accent?: boolean
-}) {
-  return (
-    <div>
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-primary-700/70">
-        {label}
-      </p>
-      <p
-        className={cn(
-          "mt-0.5 text-xl font-bold tabular-nums text-neutral-900",
-          accent && "text-severity-kritisch",
-        )}
-      >
-        <AnimatedNumber value={value} />
-        {suffix ?? ""}
-      </p>
     </div>
   )
 }

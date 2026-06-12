@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "build:share": "vite build --config vite.config.share.ts",
+    "vendor:share": "npm run build:share && rm -rf server/public/share && mkdir -p server/public/share && cp -R dist-share/. server/public/share/ && mv server/public/share/share.html server/public/share/index.html",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\""
@@ -39,6 +41,7 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.27.0",
     "recharts": "^3.8.1",
+    "shpjs": "^6.2.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.4",
     "uuid": "^11.0.2",
