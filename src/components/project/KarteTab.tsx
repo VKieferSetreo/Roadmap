@@ -102,12 +102,12 @@ export function KarteTab({ project }: { project: Project }) {
               </strong>
             </span>
           </div>
-          <div className="mt-2 flex items-center gap-2 border-t border-neutral-200/70 pt-2">
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
             {counts.map(({ sev, n }) => (
               <span
                 key={sev}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium tabular-nums",
+                  "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
                   n > 0
                     ? SEVERITY_META[sev].soft
                     : "border-neutral-200 bg-neutral-50 text-neutral-400",
@@ -115,7 +115,7 @@ export function KarteTab({ project }: { project: Project }) {
               >
                 <span
                   className={cn(
-                    "inline-block h-2 w-2 rounded-full",
+                    "inline-block h-2 w-2 shrink-0 rounded-full",
                     n > 0 ? SEVERITY_META[sev].dot : "bg-neutral-300",
                   )}
                 />

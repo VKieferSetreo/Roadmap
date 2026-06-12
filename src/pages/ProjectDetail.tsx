@@ -42,8 +42,6 @@ export function ProjectDetail() {
   if (!project) return <Navigate to="/" replace />
   if (!tab || !VALID.has(tab)) return <Navigate to={`/projekte/${project.id}/anlage`} replace />
 
-  const kritisch = project.findings.filter((f) => f.severity === "kritisch").length
-
   const commitRename = () => {
     const n = nameDraft.trim()
     setEditingName(false)
@@ -88,17 +86,6 @@ export function ProjectDetail() {
               </button>
             </>
           )}
-          {project.status === "fertig" ? (
-            <span className="ml-auto hidden items-center gap-3 text-xs text-neutral-500 sm:flex">
-              <span className="tabular-nums">{project.distanzKm?.toLocaleString("de-DE")} km</span>
-              <span className="tabular-nums">{project.findings.length} Funde</span>
-              {kritisch > 0 ? (
-                <span className="font-medium tabular-nums text-severity-kritisch">
-                  {kritisch} kritisch
-                </span>
-              ) : null}
-            </span>
-          ) : null}
         </div>
         <Tabs
           value={tab}
