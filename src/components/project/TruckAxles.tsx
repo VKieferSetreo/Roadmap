@@ -38,29 +38,30 @@ function Rad({ cx, cy }: { cx: number; cy: number }) {
   )
 }
 
-/** Zugmaschine mit 2 Achsen (Seitenansicht, Front links). */
+/** Zugmaschine mit 2 Achsen (Seitenansicht, Front links): kompaktes Fahrerhaus
+ *  über der Vorderachse, dahinter flaches Chassis mit Sattelkupplung. */
 function Kabine() {
-  const w = 2 * ACHS_SLOT
+  const w = 2 * ACHS_SLOT // 112 — Räder bei x=28 (vorn) und x=84 (hinten)
   return (
     <svg width={w} height={72} viewBox={`0 0 ${w} 72`} aria-hidden className="shrink-0">
       {/* Chassis */}
       <rect x={4} y={44} width={w - 8} height={8} rx={2} fill="#52525B" />
-      {/* Fahrerhaus */}
+      {/* Fahrerhaus — sitzt über der Vorderachse, Front links */}
       <path
-        d={`M8 46 V20 q0 -6 6 -6 h${w * 0.45} q6 0 8 6 l6 14 v12 z`}
+        d="M11 46 V21 Q11 13 19 13 H42 Q48 13 48 19 V46 Z"
         fill="#87B52D"
         stroke="#527121"
         strokeWidth={1.5}
       />
-      {/* Fenster */}
-      <path
-        d={`M${w * 0.45 + 10} 19 l5 12 h-14 v-12 z`}
-        fill="#E8F2D5"
-        stroke="#527121"
-        strokeWidth={1}
-      />
-      {/* Auspuff/Detail */}
-      <rect x={w - 18} y={30} width={8} height={16} rx={2} fill="#6A9221" />
+      {/* Windschutzscheibe vorn (leicht geneigt) */}
+      <path d="M14 28 V20 Q14 16 19 16 H27 V28 Z" fill="#E8F2D5" stroke="#527121" strokeWidth={1} />
+      {/* Tür-Andeutung */}
+      <line x1={32} y1={22} x2={32} y2={42} stroke="#6A9221" strokeWidth={1.2} />
+      {/* Stoßstange vorn */}
+      <rect x={8} y={40} width={5} height={8} rx={1.5} fill="#3F3F46" />
+      {/* Sattelkupplung über der Hinterachse */}
+      <rect x={68} y={38} width={32} height={6} rx={2} fill="#3F3F46" />
+      <rect x={80} y={34} width={8} height={5} rx={1.5} fill="#71717A" />
       <Rad cx={ACHS_SLOT * 0.5} cy={56} />
       <Rad cx={ACHS_SLOT * 1.5} cy={56} />
     </svg>
