@@ -11,6 +11,9 @@ const ilike = (value, pattern) =>
 
 export function createFakeDb() {
   const state = {
+    tenants: [],
+    members: [], // { tenant_id, email, created_at }
+    shares: [],
     projects: [],
     findings: [],
     obstacles: [],
@@ -21,24 +24,148 @@ export function createFakeDb() {
 
   const ok = (rows = [], rowCount = rows.length) => ({ rows, rowCount })
 
+  /** Test-Bequemlichkeit: Tenant (+ optionale Member) direkt anlegen. */
+  function seedTenant({ slug = "setreo", name = "Setreo", members = [] } = {}) {
+    const row = { id: randomUUID(), slug, name, created_at: now() }
+    state.tenants.push(row)
+    for (const email of members) {
+      state.members.push({ tenant_id: row.id, email: email.toLowerCase(), created_at: now() })
+    }
+    return row
+  }
+
   async function query(text, params = []) {
     const sql = text.replace(/\s+/g, " ").trim()
 
     if (sql === "SELECT 1") return ok([{ "?column?": 1 }])
 
-    // ── projects ──────────────────────────────────────────────────────────────
-    if (sql.startsWith("SELECT * FROM projects ORDER BY updated_at DESC")) {
-      return ok([...state.projects].sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1)))
+    // ── tenants / tenant_members ──────────────────────────────────────────────
+    if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE slug = $1")) {
+      return ok(state.tenants.filter((t) => t.slug === params[0]))
     }
-    if (sql.startsWith("INSERT INTO projects (name, status,")) {
+    if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE id = $1")) {
+      return ok(state.tenants.filter((t) => t.id === params[0]))
+    }
+    if (sql.startsWith("SELECT t.id, t.slug, t.name FROM tenants t JOIN tenant_members m")) {
+      const member = state.members.find((m) => m.email === params[0])
+      return ok(member ? state.tenants.filter((t) => t.id === member.tenant_id) : [])
+    }
+    if (sql.startsWith("SELECT t.id, t.slug, t.name, t.created_at,")) {
+      const rows = [...state.tenants]
+        .sort((a, b) => (a.created_at < b.created_at ? -1 : 1))
+        .map((t) => ({
+          ...t,
+          projekte: state.projects.filter((p) => p.tenant_id === t.id).length,
+        }))
+      return ok(rows)
+    }
+    if (sql.startsWith("SELECT tenant_id, email FROM tenant_members")) {
+      return ok([...state.members].sort((a, b) => (a.email < b.email ? -1 : 1)))
+    }
+    if (sql.startsWith("INSERT INTO tenants (slug, name)")) {
+      const row = { id: randomUUID(), slug: params[0], name: params[1], created_at: now() }
+      state.tenants.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("UPDATE tenants SET name = $2")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      if (!row) return ok([])
+      row.name = params[1]
+      return ok([row])
+    }
+    if (sql.startsWith("DELETE FROM tenants WHERE id = $1")) {
+      const before = state.tenants.length
+      state.tenants = state.tenants.filter((t) => t.id !== params[0])
+      // FK ON DELETE CASCADE
+      state.members = state.members.filter((m) => m.tenant_id !== params[0])
+      state.shares = state.shares.filter((s) => s.tenant_id !== params[0])
+      return ok([], before - state.tenants.length)
+    }
+    if (sql.startsWith("SELECT email FROM tenant_members WHERE email = ANY")) {
+      const [emails, tenantId] = params
+      return ok(
+        state.members
+          .filter((m) => emails.includes(m.email) && m.tenant_id !== tenantId)
+          .map((m) => ({ email: m.email })),
+      )
+    }
+    if (sql.startsWith("DELETE FROM tenant_members WHERE tenant_id = $1")) {
+      const before = state.members.length
+      state.members = state.members.filter((m) => m.tenant_id !== params[0])
+      return ok([], before - state.members.length)
+    }
+    if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email)")) {
+      state.members.push({ tenant_id: params[0], email: params[1], created_at: now() })
+      return ok([], 1)
+    }
+    if (sql.startsWith("SELECT count(*)::int AS n FROM projects WHERE tenant_id = $1")) {
+      return ok([{ n: state.projects.filter((p) => p.tenant_id === params[0]).length }])
+    }
+
+    // ── shares ────────────────────────────────────────────────────────────────
+    if (sql.startsWith("SELECT * FROM shares WHERE project_id = ANY")) {
+      const ids = params[0]
+      return ok(state.shares.filter((s) => ids.includes(s.project_id) && s.revoked_at == null))
+    }
+    if (sql.startsWith("SELECT * FROM shares WHERE project_id = $1 AND revoked_at IS NULL")) {
+      return ok(state.shares.filter((s) => s.project_id === params[0] && s.revoked_at == null))
+    }
+    if (sql.startsWith("INSERT INTO shares (project_id, tenant_id, pw_hash, created_by)")) {
+      // ON CONFLICT (project_id) DO UPDATE … revoked_at = NULL
+      let row = state.shares.find((s) => s.project_id === params[0])
+      if (row) {
+        Object.assign(row, { pw_hash: params[2], created_by: params[3], revoked_at: null })
+      } else {
+        row = {
+          id: randomUUID(),
+          project_id: params[0],
+          tenant_id: params[1],
+          pw_hash: params[2],
+          created_by: params[3],
+          created_at: now(),
+          revoked_at: null,
+        }
+        state.shares.push(row)
+      }
+      return ok([row])
+    }
+    if (sql.startsWith("UPDATE shares SET revoked_at = now() WHERE project_id = $1")) {
+      const row = state.shares.find((s) => s.project_id === params[0] && s.revoked_at == null)
+      if (!row) return ok([], 0)
+      row.revoked_at = now()
+      return ok([], 1)
+    }
+    if (sql.startsWith("SELECT s.*, p.name AS project_name FROM shares s")) {
+      const [projectId, slug] = params
+      const tenant = state.tenants.find((t) => t.slug === slug)
+      const project = state.projects.find((p) => p.id === projectId)
+      const rows = state.shares
+        .filter(
+          (s) =>
+            s.project_id === projectId && s.revoked_at == null &&
+            tenant && s.tenant_id === tenant.id && project,
+        )
+        .map((s) => ({ ...s, project_name: project.name }))
+      return ok(rows)
+    }
+
+    // ── projects ──────────────────────────────────────────────────────────────
+    if (sql.startsWith("SELECT * FROM projects WHERE tenant_id = $1 ORDER BY updated_at DESC")) {
+      return ok(
+        state.projects
+          .filter((p) => p.tenant_id === params[0])
+          .sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1)),
+      )
+    }
+    if (sql.startsWith("INSERT INTO projects (name, status, tenant_id,")) {
       const row = {
         id: randomUUID(),
         name: params[0],
         status: params[1],
-        route_input: J(params[2]),
-        transport: J(params[3]),
-        zeitraum: J(params[4]),
-        route_geometry: J(params[5]),
+        tenant_id: params[2],
+        routes: J(params[3]),
+        transport: J(params[4]),
+        zeitraum: J(params[5]),
         distanz_km: null,
         fahrzeit_min: null,
         created_by: params[6],
@@ -48,6 +175,9 @@ export function createFakeDb() {
       state.projects.push(row)
       return ok([row])
     }
+    if (sql.startsWith("SELECT * FROM projects WHERE id = $1 AND tenant_id = $2")) {
+      return ok(state.projects.filter((p) => p.id === params[0] && p.tenant_id === params[1]))
+    }
     if (sql.startsWith("SELECT * FROM projects WHERE id = $1")) {
       return ok(state.projects.filter((p) => p.id === params[0]))
     }
@@ -56,7 +186,7 @@ export function createFakeDb() {
       if (!row) return ok([])
       Object.assign(row, {
         name: params[1],
-        route_input: J(params[2]),
+        routes: J(params[2]),
         transport: J(params[3]),
         zeitraum: J(params[4]),
         updated_at: now(),
@@ -68,20 +198,25 @@ export function createFakeDb() {
       if (!row) return ok([], 0)
       Object.assign(row, {
         status: params[1],
-        route_geometry: J(params[2]),
-        distanz_km: params[3],
-        fahrzeit_min: params[4],
+        distanz_km: params[2],
+        fahrzeit_min: params[3],
         updated_at: now(),
       })
       return ok([], 1)
     }
-    if (sql.startsWith("DELETE FROM projects WHERE id = $1")) {
+    if (sql.startsWith("DELETE FROM projects WHERE id = $1 AND tenant_id = $2")) {
       const before = state.projects.length
-      state.projects = state.projects.filter((p) => p.id !== params[0])
-      // FK ON DELETE CASCADE
-      state.findings = state.findings.filter((f) => f.project_id !== params[0])
-      state.runs = state.runs.filter((r) => r.project_id !== params[0])
-      return ok([], before - state.projects.length)
+      state.projects = state.projects.filter(
+        (p) => !(p.id === params[0] && p.tenant_id === params[1]),
+      )
+      const removed = before - state.projects.length
+      if (removed) {
+        // FK ON DELETE CASCADE
+        state.findings = state.findings.filter((f) => f.project_id !== params[0])
+        state.runs = state.runs.filter((r) => r.project_id !== params[0])
+        state.shares = state.shares.filter((s) => s.project_id !== params[0])
+      }
+      return ok([], removed)
     }
 
     // ── findings ──────────────────────────────────────────────────────────────
@@ -97,13 +232,14 @@ export function createFakeDb() {
       )
     }
     if (sql.startsWith("SELECT f.*, p.name AS projekt_name FROM findings f")) {
-      const [kategorie, severity, q] = params
+      const [kategorie, severity, q, tenantId] = params
       const rows = state.findings
         .map((f) => {
           const p = state.projects.find((pr) => pr.id === f.project_id)
-          return p ? { ...f, projekt_name: p.name } : null
+          return p ? { ...f, projekt_name: p.name, _tenant_id: p.tenant_id } : null
         })
         .filter(Boolean)
+        .filter((f) => f._tenant_id === tenantId)
         .filter((f) => kategorie == null || f.kategorie === kategorie)
         .filter((f) => severity == null || f.severity === severity)
         .filter(
@@ -138,6 +274,8 @@ export function createFakeDb() {
         gueltig_bis: params[12],
         quelle: params[13] != null ? J(params[13]) : null,
         zustaendig: params[14],
+        route_id: params[15],
+        route_name: params[16],
         created_at: now(),
       }
       state.findings.push(row)
@@ -184,8 +322,11 @@ export function createFakeDb() {
         attrs: J(params[8]),
         gueltig_von: params[9],
         gueltig_bis: params[10],
-        aktiv: params[11],
-        demo: params[12],
+        fach_id: params[11],
+        quellen_id: params[12],
+        realer_start: params[13],
+        aktiv: params[14],
+        demo: params[15],
         created_at: now(),
         updated_at: now(),
       }
@@ -207,8 +348,11 @@ export function createFakeDb() {
         attrs: J(params[9]),
         gueltig_von: params[10],
         gueltig_bis: params[11],
-        aktiv: params[12],
-        demo: params[13],
+        fach_id: params[12],
+        quellen_id: params[13],
+        realer_start: params[14],
+        aktiv: params[15],
+        demo: params[16],
         updated_at: now(),
       })
       return ok([row])
@@ -275,17 +419,22 @@ export function createFakeDb() {
       return ok([], 1)
     }
 
-    // ── stats ─────────────────────────────────────────────────────────────────
+    // ── stats (tenant-gescoped außer Hindernisse) ─────────────────────────────
     if (sql.startsWith("SELECT count(*)::int AS projekte")) {
+      const mine = state.projects.filter((p) => p.tenant_id === params[0])
       return ok([{
-        projekte: state.projects.length,
-        fertig: state.projects.filter((p) => p.status === "fertig").length,
+        projekte: mine.length,
+        fertig: mine.filter((p) => p.status === "fertig").length,
       }])
     }
     if (sql.includes("AS funde")) {
-      const by = (s) => state.findings.filter((f) => f.severity === s).length
+      const tenantProjects = new Set(
+        state.projects.filter((p) => p.tenant_id === params[0]).map((p) => p.id),
+      )
+      const mine = state.findings.filter((f) => tenantProjects.has(f.project_id))
+      const by = (s) => mine.filter((f) => f.severity === s).length
       return ok([{
-        funde: state.findings.length,
+        funde: mine.length,
         kritisch: by("kritisch"),
         warnung: by("warnung"),
         hinweis: by("hinweis"),
@@ -298,8 +447,13 @@ export function createFakeDb() {
         hindernisse_demo: aktiv.filter((o) => o.demo).length,
       }])
     }
-    if (sql.startsWith("SELECT max(finished_at) AS letzte")) {
-      const done = state.runs.filter((r) => r.status === "done" && r.finished_at)
+    if (sql.startsWith("SELECT max(r.finished_at) AS letzte")) {
+      const tenantProjects = new Set(
+        state.projects.filter((p) => p.tenant_id === params[0]).map((p) => p.id),
+      )
+      const done = state.runs.filter(
+        (r) => r.status === "done" && r.finished_at && tenantProjects.has(r.project_id),
+      )
       const letzte = done.length ? done.map((r) => r.finished_at).sort().at(-1) : null
       return ok([{ letzte }])
     }
@@ -307,6 +461,6 @@ export function createFakeDb() {
     throw new Error(`fakeDb: unbekanntes SQL: ${sql}`)
   }
 
-  const db = { state, query, tx: (fn) => fn(db) }
+  const db = { state, seedTenant, query, tx: (fn) => fn(db) }
   return db
 }

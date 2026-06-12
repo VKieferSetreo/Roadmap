@@ -1,4 +1,5 @@
-// Dashboard-Aggregat.
+// Dashboard-Aggregat — Projekte/Funde/letzte Analyse tenant-gescoped,
+// Hindernisse bleiben global (zentrale Setreo-Hindernis-DB).
 
 import { Router } from "express"
 import { asyncHandler, toIso } from "../util.js"
@@ -7,15 +8,18 @@ export function statsRouter({ db }) {
   const r = Router()
 
   r.get("/", asyncHandler(async (req, res) => {
+    const tenantId = req.ctx.tenant.id
     const projekte = await db.query(
-      "SELECT count(*)::int AS projekte, count(*) FILTER (WHERE status = 'fertig')::int AS fertig FROM projects",
+      "SELECT count(*)::int AS projekte, count(*) FILTER (WHERE status = 'fertig')::int AS fertig FROM projects WHERE tenant_id = $1",
+      [tenantId],
     )
     const funde = await db.query(
       `SELECT count(*)::int AS funde,
-              count(*) FILTER (WHERE severity = 'kritisch')::int AS kritisch,
-              count(*) FILTER (WHERE severity = 'warnung')::int AS warnung,
-              count(*) FILTER (WHERE severity = 'hinweis')::int AS hinweis
-       FROM findings`,
+              count(*) FILTER (WHERE f.severity = 'kritisch')::int AS kritisch,
+              count(*) FILTER (WHERE f.severity = 'warnung')::int AS warnung,
+              count(*) FILTER (WHERE f.severity = 'hinweis')::int AS hinweis
+       FROM findings f JOIN projects p ON p.id = f.project_id WHERE p.tenant_id = $1`,
+      [tenantId],
     )
     const hindernisse = await db.query(
       `SELECT count(*) FILTER (WHERE aktiv)::int AS hindernisse,
@@ -23,7 +27,10 @@ export function statsRouter({ db }) {
        FROM obstacles`,
     )
     const letzte = await db.query(
-      "SELECT max(finished_at) AS letzte FROM analysis_runs WHERE status = 'done'",
+      `SELECT max(r.finished_at) AS letzte FROM analysis_runs r
+       JOIN projects p ON p.id = r.project_id
+       WHERE r.status = 'done' AND p.tenant_id = $1`,
+      [tenantId],
     )
     res.json({
       projekte: projekte.rows[0].projekte,

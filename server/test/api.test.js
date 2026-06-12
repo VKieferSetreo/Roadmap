@@ -1,31 +1,14 @@
-// API-Tests: supertest gegen app.js mit injiziertem Fake-db.
-// Kein Netz: fetchImpl wird gemockt (offline → Fallback bzw. Provider-JSON).
+// API-Kerntests v2: supertest gegen app.js mit injiziertem Fake-db.
+// Kein Netz: fetchImpl wird gemockt. Tenant-/Share-Suiten: tenants.test.js, share.test.js.
 
 import request from "supertest"
-import { beforeEach, describe, expect, it } from "vitest"
-import { createApp } from "../src/app.js"
-import { CITY_COORDS, resolveOrt } from "../src/engine/cities.js"
-import { buildPolyline } from "../src/engine/fallback.js"
-import { createFakeDb } from "./helpers/fakeDb.js"
+import { describe, expect, it } from "vitest"
+import { totalKm } from "../src/engine/geometry.js"
+import {
+  cityPoints, createProject, createRoutedProject, jsonResponse, makeApp, midOf,
+} from "./helpers/testApp.js"
 
-/** fetch-Mock: alles offline → Provider-Fallbacks greifen. */
-const offlineFetch = async () => {
-  throw new Error("offline")
-}
-
-const jsonResponse = (payload) => ({ ok: true, json: async () => payload })
-
-function makeApp(overrides = {}) {
-  const db = createFakeDb()
-  const app = createApp({ db, fetchImpl: offlineFetch, requireAuth: false, ...overrides })
-  return { db, app }
-}
-
-async function createProject(app, name = "Testprojekt") {
-  const res = await request(app).post("/api/projects").send({ name })
-  expect(res.status).toBe(201)
-  return res.body
-}
+const round1 = (n) => Math.round(n * 10) / 10
 
 describe("health", () => {
   it("ist ungated und meldet db-Status", async () => {
@@ -44,12 +27,13 @@ describe("auth (Gateway-Modus)", () => {
     expect(res.status).toBe(401)
   })
 
-  it("Lesen mit beliebiger Rolle ok, Schreiben auf obstacles braucht admin/roadmap", async () => {
+  it("Lesen als Tenant-Mitglied ok, Schreiben auf obstacles braucht admin/roadmap", async () => {
     const { app } = makeApp({ requireAuth: true })
-    const asUser = (req) => req.set("X-Auth-User", "max@setreo.de").set("X-Auth-Roles", "user")
+    const asMember = (req) => req.set("X-Auth-User", "vki@setreo.de").set("X-Auth-Roles", "user")
 
-    expect((await asUser(request(app).get("/api/obstacles"))).status).toBe(200)
-    const denied = await asUser(request(app).post("/api/obstacles")).send({
+    expect((await asMember(request(app).get("/api/projects"))).status).toBe(200)
+    expect((await asMember(request(app).get("/api/obstacles"))).status).toBe(200)
+    const denied = await asMember(request(app).post("/api/obstacles")).send({
       kategorie: "ampel", lat: 50, lng: 8,
     })
     expect(denied.status).toBe(403)
@@ -62,26 +46,74 @@ describe("auth (Gateway-Modus)", () => {
     expect(allowed.status).toBe(201)
   })
 
-  it("Dev-Modus ohne Header → anonymer Dev-User darf schreiben", async () => {
+  it("Dev-Modus ohne Header → anonymer Admin auf Tenant setreo", async () => {
     const { app } = makeApp()
     const res = await request(app).post("/api/obstacles").send({ kategorie: "ampel", lat: 50, lng: 8 })
     expect(res.status).toBe(201)
+    const projects = await request(app).get("/api/projects")
+    expect(projects.status).toBe(200)
   })
 })
 
-describe("projects CRUD", () => {
-  it("POST legt Projekt mit Defaults an (camelCase-Contract)", async () => {
+describe("context", () => {
+  it("Mitglied: eigener Tenant, keine tenants-Liste", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    const res = await request(app)
+      .get("/api/context")
+      .set("X-Auth-User", "VKI@setreo.de") // case-insensitive Mapping
+      .set("X-Auth-Roles", "user")
+    expect(res.status).toBe(200)
+    expect(res.body.email).toBe("vki@setreo.de")
+    expect(res.body.isAdmin).toBe(false)
+    expect(res.body.tenant).toMatchObject({ slug: "setreo", name: "Setreo" })
+    expect(res.body.tenants).toBeUndefined()
+  })
+
+  it("Admin: isAdmin + volle tenants-Liste (Switcher)", async () => {
     const { app } = makeApp()
+    const res = await request(app).get("/api/context")
+    expect(res.body.isAdmin).toBe(true)
+    expect(res.body.tenant.slug).toBe("setreo")
+    expect(res.body.tenants).toHaveLength(1)
+    expect(res.body.tenants[0]).toMatchObject({
+      slug: "setreo", name: "Setreo", mitglieder: ["vki@setreo.de"], projekte: 0,
+    })
+  })
+
+  it("Nutzer ohne Mandanten-Zuordnung: context ok (tenant null), projects → 403 kein-mandant", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    const asGhost = (req) => req.set("X-Auth-User", "ghost@nirgendwo.de").set("X-Auth-Roles", "user")
+    const ctx = await asGhost(request(app).get("/api/context"))
+    expect(ctx.status).toBe(200)
+    expect(ctx.body.tenant).toBeNull()
+
+    for (const path of ["/api/projects", "/api/findings", "/api/stats"]) {
+      const res = await asGhost(request(app).get(path))
+      expect(res.status).toBe(403)
+      expect(res.body).toEqual({ error: "kein-mandant" })
+    }
+  })
+})
+
+describe("projects CRUD (v2-Shape)", () => {
+  it("POST legt Projekt mit v2-Defaults an (camelCase-Contract)", async () => {
+    const { app, tenant } = makeApp()
     const p = await createProject(app, "Neues Projekt")
     expect(p.status).toBe("entwurf")
-    expect(p.route).toEqual({ mode: "startziel", vias: [] })
-    expect(p.transport.hoehe).toBe(4.2)
-    expect(p.transport.fahrzeugTyp).toBe("Sattelzug mit Tieflader")
+    expect(p.tenantId).toBe(tenant.id)
+    expect(p.routes).toEqual([])
+    expect(p.transport).toEqual({
+      laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68,
+      achsen: 8, achslasten: [11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5],
+    })
     expect(p.zeitraum).toEqual({})
-    expect(p.routeGeometry).toEqual([])
     expect(p.findings).toEqual([])
+    expect(p.share).toBeNull()
     expect(p.createdAt).toBeTruthy()
     expect(p.distanzKm).toBeUndefined()
+    // v1-Felder sind weg
+    expect(p.route).toBeUndefined()
+    expect(p.routeGeometry).toBeUndefined()
   })
 
   it("POST ohne name → 400", async () => {
@@ -96,26 +128,55 @@ describe("projects CRUD", () => {
     expect((await request(app).get("/api/projects/keine-uuid")).status).toBe(404)
   })
 
-  it("PATCH macht Merge-Patch wie der FE-Store", async () => {
+  it("PATCH: transport/zeitraum Merge-Patch, routes ersetzt das ganze Array", async () => {
+    const { app } = makeApp()
+    const p = await createProject(app)
+    const points = cityPoints("Hamburg", "Hannover")
+    const first = await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-1", name: "Hinfahrt", fileName: "hin.gpx", points }],
+      transport: { hoehe: 4.8, achslasten: [12, 12, 12] },
+      zeitraum: { von: "2026-07-01T22:00" },
+    })
+    expect(first.status).toBe(200)
+    expect(first.body.routes).toHaveLength(1)
+    expect(first.body.routes[0]).toMatchObject({
+      id: "r-1", name: "Hinfahrt", fileName: "hin.gpx", farbe: "#87B52D",
+    })
+    expect(first.body.routes[0].points).toEqual(points)
+    expect(first.body.transport.hoehe).toBe(4.8)
+    expect(first.body.transport.achslasten).toEqual([12, 12, 12]) // Array wird ersetzt
+    expect(first.body.transport.laenge).toBe(24.5) // unangetastete Felder bleiben
+    expect(first.body.zeitraum.von).toBe("2026-07-01T22:00")
+
+    // routes erneut patchen → komplettes Ersetzen, nicht mergen
+    const second = await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-2", name: "Rückfahrt", points, farbe: "#3D5A80" }],
+    })
+    expect(second.body.routes).toHaveLength(1)
+    expect(second.body.routes[0].id).toBe("r-2")
+    expect(second.body.routes[0].farbe).toBe("#3D5A80")
+  })
+
+  it("PATCH vergibt Defaults für fehlende Routen-Felder", async () => {
     const { app } = makeApp()
     const p = await createProject(app)
     const res = await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { start: "Hamburg", ziel: "München" },
-      transport: { hoehe: 4.8 },
-      zeitraum: { von: "2026-07-01T22:00" },
+      routes: [{ points: cityPoints("Köln", "Bonn") }],
     })
     expect(res.status).toBe(200)
-    expect(res.body.route).toEqual({ mode: "startziel", vias: [], start: "Hamburg", ziel: "München" })
-    expect(res.body.transport.hoehe).toBe(4.8)
-    expect(res.body.transport.laenge).toBe(24.5) // unangetastete Felder bleiben
-    expect(res.body.zeitraum.von).toBe("2026-07-01T22:00")
+    const route = res.body.routes[0]
+    expect(route.id).toBeTruthy()
+    expect(route.name).toBe("Strecke 1")
+    expect(route.farbe).toBe("#87B52D")
+    expect(route.fileName).toBeUndefined()
   })
 
-  it("PATCH mit Nicht-Objekt → 400", async () => {
+  it("PATCH mit kaputten Shapes → 400", async () => {
     const { app } = makeApp()
     const p = await createProject(app)
-    const res = await request(app).patch(`/api/projects/${p.id}`).send({ transport: "kaputt" })
-    expect(res.status).toBe(400)
+    expect((await request(app).patch(`/api/projects/${p.id}`).send({ transport: "kaputt" })).status).toBe(400)
+    expect((await request(app).patch(`/api/projects/${p.id}`).send({ routes: "kaputt" })).status).toBe(400)
+    expect((await request(app).patch(`/api/projects/${p.id}`).send({ routes: [{ points: "x" }] })).status).toBe(400)
   })
 
   it("DELETE → 204, danach 404", async () => {
@@ -125,7 +186,7 @@ describe("projects CRUD", () => {
     expect((await request(app).delete(`/api/projects/${p.id}`)).status).toBe(404)
   })
 
-  it("GET / listet mit eingebetteten findings, updatedAt desc", async () => {
+  it("GET / listet mit eingebetteten findings + share, updatedAt desc", async () => {
     const { app } = makeApp()
     await createProject(app, "A")
     await createProject(app, "B")
@@ -133,138 +194,104 @@ describe("projects CRUD", () => {
     expect(res.status).toBe(200)
     expect(res.body.projects).toHaveLength(2)
     expect(Array.isArray(res.body.projects[0].findings)).toBe(true)
+    expect(res.body.projects[0].share).toBeNull()
   })
 })
 
-describe("analysis (offline → deterministische Fallbacks)", () => {
-  async function setupAnalysed(app, db) {
-    const p = await createProject(app, "Trafo HH → M")
+describe("analysis (multi-route, offline)", () => {
+  const HIN = cityPoints("Hamburg", "München")
+  const RUECK = cityPoints("München", "Hamburg")
+
+  async function setupTwoRoutes(app) {
+    const p = await createProject(app, "Trafo HH ⇄ M")
     await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { start: "Hamburg", ziel: "München" },
+      routes: [
+        { id: "r-hin", name: "Hinfahrt", points: HIN },
+        { id: "r-rueck", name: "Rückfahrt", points: RUECK, farbe: "#3D5A80" },
+      ],
       zeitraum: { von: "2026-07-01T22:00", bis: "2026-07-03T14:00" },
     })
-    // Hindernis exakt auf der deterministischen Fallback-Route platzieren
-    const geometry = buildPolyline([resolveOrt("Hamburg"), resolveOrt("München")])
-    const mid = geometry[Math.floor(geometry.length / 2)]
-    const obstacle = await request(app).post("/api/obstacles").send({
-      kategorie: "bruecke",
-      name: "Testbrücke",
-      lat: mid.lat,
-      lng: mid.lng,
-      attrs: { maxHoeheM: 3.8 },
-      strassenRef: "A7 km 300,0",
+    // je ein Hindernis exakt auf einer der beiden Strecken
+    await request(app).post("/api/obstacles").send({
+      kategorie: "bruecke", name: "Brücke Hinfahrt", lat: midOf(HIN).lat, lng: midOf(HIN).lng,
+      attrs: { maxHoeheM: 3.8 }, strassenRef: "A7 km 300,0",
     })
-    expect(obstacle.status).toBe(201)
+    const r2 = midOf(RUECK.slice(0, Math.floor(RUECK.length / 3)))
+    await request(app).post("/api/obstacles").send({
+      kategorie: "engstelle", name: "Engstelle Rückfahrt", lat: r2.lat, lng: r2.lng,
+      attrs: { maxBreiteM: 3.05 },
+    })
     // weit entferntes Hindernis darf NICHT matchen
     await request(app).post("/api/obstacles").send({
-      kategorie: "bruecke", name: "Fernbrücke", lat: mid.lat + 1, lng: mid.lng + 1,
+      kategorie: "bruecke", name: "Fernbrücke", lat: midOf(HIN).lat + 1, lng: midOf(HIN).lng + 1,
       attrs: { maxHoeheM: 3.0 },
     })
     const res = await request(app).post(`/api/projects/${p.id}/analysis`)
     expect(res.status).toBe(200)
-    return { project: res.body, db }
+    return res.body
   }
 
-  it("liefert fertiges Projekt mit Findings aus dem Korridor-Matching", async () => {
-    const { app, db } = makeApp()
-    const { project } = await setupAnalysed(app, db)
+  it("Funde tragen routeId/routeName, km auf der eigenen Route, distanz = Summe", async () => {
+    const { app } = makeApp()
+    const project = await setupTwoRoutes(app)
 
     expect(project.status).toBe("fertig")
-    expect(project.routeGeometry.length).toBeGreaterThan(10)
-    expect(project.distanzKm).toBeGreaterThan(500)
+    expect(project.distanzKm).toBe(round1(totalKm(HIN) + totalKm(RUECK)))
+    expect(project.findings).toHaveLength(2) // Fernbrücke ausgefiltert
 
-    expect(project.findings).toHaveLength(1) // Fernbrücke ausgefiltert
-    const f = project.findings[0]
-    expect(f.kategorie).toBe("bruecke")
-    expect(f.titel).toBe("Testbrücke")
-    expect(f.severity).toBe("kritisch") // 3,80 m vs 4,20 m Default-Höhe
-    expect(f.detail["Spielraum"]).toBe("−0,40 m")
-    expect(f.km).toBeGreaterThan(0)
-    expect(f.strassenRef).toBe("A7 km 300,0")
+    const hin = project.findings.find((f) => f.titel === "Brücke Hinfahrt")
+    expect(hin).toMatchObject({ routeId: "r-hin", routeName: "Hinfahrt", severity: "kritisch" })
+    expect(hin.detail["Spielraum"]).toBe("−0,40 m")
+    expect(hin.km).toBeGreaterThan(0)
+    expect(hin.km).toBeLessThanOrEqual(round1(totalKm(HIN)))
 
-    // deterministische Fahrzeit-Formel: km/55·60 + 25·kritisch + 10·warnung
-    expect(project.fahrzeitMin).toBe(Math.round((project.distanzKm / 55) * 60 + 25))
+    const rueck = project.findings.find((f) => f.titel === "Engstelle Rückfahrt")
+    expect(rueck).toMatchObject({ routeId: "r-rueck", routeName: "Rückfahrt" })
+    expect(rueck.km).toBeLessThanOrEqual(round1(totalKm(RUECK)))
+
+    // deterministische Fahrzeit: Summe(km)/55·60 + 25·kritisch + 10·warnung
+    const kritisch = project.findings.filter((f) => f.severity === "kritisch").length
+    const warnung = project.findings.filter((f) => f.severity === "warnung").length
+    expect(project.fahrzeitMin).toBe(
+      Math.round((project.distanzKm / 55) * 60 + kritisch * 25 + warnung * 10),
+    )
   })
 
-  it("schreibt analysis_run mit Provider-Flags (fallback)", async () => {
+  it("schreibt analysis_run mit stats.routen", async () => {
     const { app, db } = makeApp()
-    await setupAnalysed(app, db)
+    await setupTwoRoutes(app)
     expect(db.state.runs).toHaveLength(1)
     const run = db.state.runs[0]
     expect(run.status).toBe("done")
-    expect(run.provider).toMatchObject({ geocoder: "cities", router: "fallback", fallback: true })
-    expect(run.stats.findings).toBe(1)
+    expect(run.provider).toMatchObject({ router: "upload", fallback: false })
+    expect(run.stats).toMatchObject({ findings: 2, routen: 2 })
   })
 
   it("Re-Analyse ersetzt Findings statt sie zu doppeln", async () => {
     const { app, db } = makeApp()
-    const { project } = await setupAnalysed(app, db)
+    const project = await setupTwoRoutes(app)
     const again = await request(app).post(`/api/projects/${project.id}/analysis`)
     expect(again.status).toBe(200)
-    expect(again.body.findings).toHaveLength(1)
-    expect(db.state.findings).toHaveLength(1)
+    expect(again.body.findings).toHaveLength(2)
+    expect(db.state.findings).toHaveLength(2)
   })
 
-  it("upload-Modus mit points nutzt die Punkte direkt", async () => {
-    const { app } = makeApp()
-    const p = await createProject(app, "Upload")
-    const points = [
-      { lat: 50.0, lng: 8.0 }, { lat: 50.2, lng: 8.4 }, { lat: 50.4, lng: 8.8 },
-    ]
-    await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { mode: "upload", fileName: "strecke.gpx", points },
-    })
-    const res = await request(app).post(`/api/projects/${p.id}/analysis`)
-    expect(res.status).toBe(200)
-    expect(res.body.routeGeometry).toEqual(points)
-  })
-
-  it("startziel ohne Start/Ziel → 400", async () => {
-    const { app } = makeApp()
+  it("keine Route mit Punkten → 422, Projekt bleibt unverändert", async () => {
+    const { app, db } = makeApp()
     const p = await createProject(app)
     const res = await request(app).post(`/api/projects/${p.id}/analysis`)
-    expect(res.status).toBe(400)
-  })
-
-  it("OSRM erreichbar → echte Geometrie + route_cache (zweiter Lauf: cache)", async () => {
-    const osrmFetch = async (url) => {
-      if (String(url).includes("/route/v1/driving/")) {
-        return jsonResponse({
-          code: "Ok",
-          routes: [{
-            geometry: { coordinates: [[9.9937, 53.5511], [10.5, 51.0], [11.582, 48.1351]] },
-            distance: 765000,
-            duration: 28000,
-          }],
-        })
-      }
-      throw new Error("offline") // Nominatim down → Städte-Tabelle
-    }
-    const { app, db } = makeApp({ fetchImpl: osrmFetch })
-    const p = await createProject(app, "OSRM-Projekt")
-    await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { start: "Hamburg", ziel: "München" },
-    })
-    const res = await request(app).post(`/api/projects/${p.id}/analysis`)
-    expect(res.status).toBe(200)
-    expect(res.body.distanzKm).toBe(765)
-    expect(res.body.routeGeometry).toHaveLength(3)
-    expect(db.state.runs[0].provider.router).toBe("osrm")
-
-    await request(app).post(`/api/projects/${p.id}/analysis`)
-    expect(db.state.runs[1].provider.router).toBe("cache")
+    expect(res.status).toBe(422)
+    expect((await request(app).get(`/api/projects/${p.id}`)).body.status).toBe("entwurf")
+    expect(db.state.runs[0].status).toBe("error")
   })
 })
 
 describe("findings-Suche", () => {
-  it("filtert nach severity/kategorie/q und liefert projektName", async () => {
+  it("filtert nach severity/kategorie/q und liefert projektName + routeId", async () => {
     const { app } = makeApp()
-    const p = await createProject(app, "Suchprojekt")
-    await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { start: "Hamburg", ziel: "München" },
-    })
-    const geometry = buildPolyline([resolveOrt("Hamburg"), resolveOrt("München")])
-    const mid = geometry[Math.floor(geometry.length / 2)]
+    const points = cityPoints("Hamburg", "München")
+    const p = await createRoutedProject(app, { name: "Suchprojekt", points })
+    const mid = midOf(points)
     await request(app).post("/api/obstacles").send({
       kategorie: "bruecke", name: "Suchbrücke", lat: mid.lat, lng: mid.lng,
       attrs: { maxHoeheM: 3.8 },
@@ -275,6 +302,8 @@ describe("findings-Suche", () => {
     expect(all.body.findings).toHaveLength(1)
     expect(all.body.findings[0].projektName).toBe("Suchprojekt")
     expect(all.body.findings[0].projektId).toBe(p.id)
+    expect(all.body.findings[0].routeId).toBe("r-1")
+    expect(all.body.findings[0].routeName).toBe("Hinfahrt")
 
     expect((await request(app).get("/api/findings?severity=hinweis")).body.findings).toHaveLength(0)
     expect((await request(app).get("/api/findings?kategorie=bruecke")).body.findings).toHaveLength(1)
@@ -283,11 +312,38 @@ describe("findings-Suche", () => {
   })
 })
 
-describe("obstacles CRUD + Import", () => {
+describe("obstacles CRUD + Import (v2-Felder)", () => {
   it("POST validiert kategorie und lat/lng", async () => {
     const { app } = makeApp()
     expect((await request(app).post("/api/obstacles").send({ kategorie: "ufo", lat: 1, lng: 2 })).status).toBe(400)
     expect((await request(app).post("/api/obstacles").send({ kategorie: "ampel", lat: "x", lng: 2 })).status).toBe(400)
+  })
+
+  it("fachId/quellenId/realerStart werden gespeichert und geliefert", async () => {
+    const { app } = makeApp()
+    const created = await request(app).post("/api/obstacles").send({
+      kategorie: "baustelle", name: "B-Mobilithek", lat: 50, lng: 8,
+      attrs: { restbreiteM: 3.2 },
+      fachId: "00010009010126", quellenId: "0009", realerStart: "2026-01-01",
+    })
+    expect(created.status).toBe(201)
+    expect(created.body).toMatchObject({
+      fachId: "00010009010126", quellenId: "0009", realerStart: "2026-01-01",
+    })
+
+    // Felder ohne Angabe → null (Contract: optional)
+    const plain = await request(app).post("/api/obstacles").send({
+      kategorie: "ampel", lat: 50, lng: 8,
+    })
+    expect(plain.body.fachId).toBeNull()
+    expect(plain.body.quellenId).toBeNull()
+    expect(plain.body.realerStart).toBeNull()
+
+    const patched = await request(app)
+      .patch(`/api/obstacles/${created.body.id}`)
+      .send({ quellenId: "0011" })
+    expect(patched.body.quellenId).toBe("0011")
+    expect(patched.body.fachId).toBe("00010009010126") // Merge erhält Bestand
   })
 
   it("PATCH merged, DELETE → 204/404", async () => {
@@ -360,7 +416,7 @@ describe("geocode", () => {
     const { app } = makeApp()
     const res = await request(app).get("/api/geocode?q=Hamburg")
     expect(res.status).toBe(200)
-    expect(res.body).toMatchObject({ provider: "cities", ...CITY_COORDS.hamburg })
+    expect(res.body).toMatchObject({ provider: "cities" })
   })
 
   it("Nominatim-Treffer wird gecacht (zweiter Aufruf: provider cache)", async () => {
@@ -373,7 +429,6 @@ describe("geocode", () => {
     const { app } = makeApp({ fetchImpl: nominatimFetch })
     const first = await request(app).get("/api/geocode?q=Hamburg")
     expect(first.body).toMatchObject({ provider: "nominatim", lat: 53.55, lng: 9.99 })
-    expect(first.body.displayName).toBe("Hamburg, Deutschland")
 
     const second = await request(app).get("/api/geocode?q=hamburg")
     expect(second.body.provider).toBe("cache")
@@ -381,14 +436,11 @@ describe("geocode", () => {
 })
 
 describe("stats", () => {
-  it("aggregiert Projekte/Funde/Hindernisse/letzteAnalyse", async () => {
-    const { app, db } = makeApp()
-    const p = await createProject(app, "Statprojekt")
-    await request(app).patch(`/api/projects/${p.id}`).send({
-      route: { start: "Hamburg", ziel: "München" },
-    })
-    const geometry = buildPolyline([resolveOrt("Hamburg"), resolveOrt("München")])
-    const mid = geometry[Math.floor(geometry.length / 2)]
+  it("aggregiert tenant-gescoped, Hindernisse global", async () => {
+    const { app } = makeApp()
+    const points = cityPoints("Hamburg", "München")
+    const p = await createRoutedProject(app, { name: "Statprojekt", points })
+    const mid = midOf(points)
     await request(app).post("/api/obstacles").send({
       kategorie: "bruecke", name: "Statbrücke", lat: mid.lat, lng: mid.lng,
       attrs: { maxHoeheM: 3.8 }, demo: true,
@@ -402,6 +454,11 @@ describe("stats", () => {
       hindernisse: 1, hindernisseDemo: 1,
     })
     expect(res.body.letzteAnalyse).toBeTruthy()
-    expect(db.state.runs[0].status).toBe("done")
+
+    // anderer Tenant: leeres Dashboard, aber globale Hindernisse sichtbar
+    await request(app).post("/api/admin/tenants").send({ slug: "kunde-a", name: "Kunde A" })
+    const other = await request(app).get("/api/stats").set("X-Tenant", "kunde-a")
+    expect(other.body).toMatchObject({ projekte: 0, funde: 0, hindernisse: 1 })
+    expect(other.body.letzteAnalyse).toBeNull()
   })
 })

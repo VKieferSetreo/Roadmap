@@ -1,10 +1,11 @@
-// Idempotenter Seed (feste UUIDs, Upserts): ~30 Demo-Hindernisse entlang der
-// Demo-Korridore + 3 Demo-Projekte (analog src/lib/mock/seed.ts).
+// Idempotenter Seed v2 (feste UUIDs, Upserts): Tenant "setreo" + Member,
+// ~30 Demo-Hindernisse entlang der Demo-Korridore + 3 Demo-Projekte im
+// routes[]-Modell (je EINE Route "Hinfahrt" mit deterministischer Geometrie).
 //
-// Determinismus: Hindernisse werden exakt AUF die deterministische
-// Fallback-Geometrie der Demo-Routen gelegt und die Seed-Analyse läuft ohne
-// externe Provider (Nominatim/OSRM = null) — so liefert die Demo-Analyse
-// reproduzierbar Funde, komplett offline. demo=true markiert alles sauber;
+// Determinismus: Routen-Punkte SIND die deterministische Fallback-Polyline
+// (buildPolyline über die Städte-Tabelle), die Hindernisse liegen exakt darauf
+// und die Analyse läuft im Upload-Pfad direkt über die Punkte — komplett
+// offline, kein Geocoding/OSRM nötig. demo=true markiert alles sauber;
 // `node scripts/seed.js --remove-demo` räumt wieder auf.
 
 import { createDb, createPool } from "../src/db.js"
@@ -12,7 +13,7 @@ import { loadEnv } from "../src/env.js"
 import { buildPolyline } from "../src/engine/fallback.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
 import { runAnalysis } from "../src/engine/index.js"
-import { geocodeOrt, routeKey } from "../src/engine/resolveRoute.js"
+import { geocodeOrt } from "../src/engine/resolveRoute.js"
 import { buildSourcePool, pickDeterministic, ZUSTAENDIG_POOL } from "../src/data/sources.js"
 import { fmtKomma } from "../src/engine/rules.js"
 
@@ -23,12 +24,13 @@ const db = createDb(pool)
 
 const OBSTACLE_ID = (i) => `aaaaaaaa-0000-4000-8000-${String(i).padStart(12, "0")}`
 const PROJECT_ID = (i) => `bbbbbbbb-0000-4000-8000-${String(i).padStart(12, "0")}`
+const ROUTE_ID = (i) => `demo-route-${i}`
 
 const DAY_MS = 86_400_000
 const isoDate = (daysFromNow) =>
   new Date(Date.now() + daysFromNow * DAY_MS).toISOString().slice(0, 10)
 
-/** YYYY-MM-DDTHH:mm relativ zu jetzt (lokal) — Format wie der FE-Mock. */
+/** YYYY-MM-DDTHH:mm relativ zu jetzt (lokal) — Format wie der FE-Store. */
 function isoLocal(daysFromNow, hour, minute = 0) {
   const d = new Date(Date.now() + daysFromNow * DAY_MS)
   d.setHours(hour, minute, 0, 0)
@@ -36,18 +38,27 @@ function isoLocal(daysFromNow, hour, minute = 0) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-// ── Demo-Projekte (analog src/lib/mock/seed.ts) ───────────────────────────────
+/** Fach-ID nach Max-Schema: IIIIQQQQDDMMYY (Index · Quelle · realer Start). */
+function fachId(index, quelle, realerStart) {
+  const [y, m, d] = realerStart.split("-")
+  return `${String(index).padStart(4, "0")}${String(quelle).padStart(4, "0")}${d}${m}${y.slice(2)}`
+}
+
+const QUELLE_MOBILITHEK = 9 // Quellen-Register: 0009 = Mobilithek
+
+// ── Demo-Projekte (v2: routes[]-Modell + achslasten[]) ────────────────────────
 
 const PROJECTS = [
   {
     id: PROJECT_ID(1),
     name: "Trafo-Transport Hamburg → München",
-    route: { mode: "startziel", start: "Hamburg", ziel: "München", vias: ["Hannover", "Würzburg"] },
+    orte: ["Hamburg", "Hannover", "Würzburg", "München"],
+    routeName: "Hinfahrt",
+    rueckOrte: ["München", "Würzburg", "Hannover", "Hamburg"],
     transport: {
-      fahrzeugTyp: "Sattelzug mit Tieflader",
       laenge: 26.5, breite: 3.2, hoehe: 4.4,
-      gesamtgewicht: 92, achslast: 12, achsen: 10,
-      ladung: "Leistungstransformator 80 t",
+      gesamtgewicht: 92, achsen: 10,
+      achslasten: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
     },
     zeitraum: { von: isoLocal(14, 22), bis: isoLocal(16, 14) },
     ageDays: 6,
@@ -56,12 +67,12 @@ const PROJECTS = [
   {
     id: PROJECT_ID(2),
     name: "Windkraft-Rotorblatt Bremen → Leipzig",
-    route: { mode: "startziel", start: "Bremen", ziel: "Leipzig", vias: ["Hannover"] },
+    orte: ["Bremen", "Hannover", "Leipzig"],
+    routeName: "Hinfahrt",
     transport: {
-      fahrzeugTyp: "Selbstfahrer mit Rotorblattadapter",
       laenge: 62, breite: 4.0, hoehe: 4.6,
-      gesamtgewicht: 78, achslast: 10, achsen: 12,
-      ladung: "Rotorblatt 58 m",
+      gesamtgewicht: 78, achsen: 12,
+      achslasten: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     },
     zeitraum: { von: isoLocal(14, 22), bis: isoLocal(16, 14) },
     ageDays: 2,
@@ -70,29 +81,30 @@ const PROJECTS = [
   {
     id: PROJECT_ID(3),
     name: "Baumaschine Köln → Stuttgart",
-    route: { mode: "startziel", start: "Köln", ziel: "Stuttgart" },
+    orte: ["Köln", "Stuttgart"],
+    routeName: "Hinfahrt",
     transport: {
-      fahrzeugTyp: "Tieflader",
       laenge: 22, breite: 3.0, hoehe: 3.9,
-      gesamtgewicht: 64, achslast: 11, achsen: 8,
-      ladung: "Raupenbagger 45 t",
+      gesamtgewicht: 64, achsen: 8,
+      achslasten: [11, 11, 11, 11, 11, 11, 11, 11],
     },
     zeitraum: { von: isoLocal(28, 22), bis: isoLocal(30, 14) },
     ageDays: 1,
-    analyse: false, // bleibt Entwurf
+    analyse: false, // bleibt Entwurf (Strecke hochgeladen, noch nicht analysiert)
   },
 ]
 
-// ── Demo-Hindernisse: { frac, kategorie, name, road, attrs, gueltig? } ────────
+// ── Demo-Hindernisse: { frac, kategorie, name, road, attrs, gueltig?, fach? } ──
 // frac = Position entlang des jeweiligen Demo-Korridors (0..1).
+// Die ersten drei tragen exemplarisch fachId/quellenId/realerStart (Max-Schema).
 
 const CORRIDORS = [
   {
     project: PROJECTS[0], // A7-Korridor HH → München
     obstacles: [
-      { frac: 0.06, kategorie: "bruecke", name: "Brücke Seevetal", road: "A7", attrs: { maxHoeheM: 4.42 } },
-      { frac: 0.12, kategorie: "baustelle", name: "Baustelle Soltau", road: "A7", attrs: { restbreiteM: 3.1 }, gueltigVon: isoDate(-14), gueltigBis: isoDate(90) },
-      { frac: 0.2, kategorie: "engstelle", name: "Engstelle Hildesheim", road: "A7", attrs: { maxBreiteM: 3.55 } },
+      { frac: 0.06, kategorie: "bruecke", name: "Brücke Seevetal", road: "A7", attrs: { maxHoeheM: 4.42 }, fach: { quelle: QUELLE_MOBILITHEK, realerStart: "2026-01-01" } },
+      { frac: 0.12, kategorie: "baustelle", name: "Baustelle Soltau", road: "A7", attrs: { restbreiteM: 3.1 }, gueltigVon: isoDate(-14), gueltigBis: isoDate(90), fach: { quelle: QUELLE_MOBILITHEK, realerStart: "2026-03-15" } },
+      { frac: 0.2, kategorie: "engstelle", name: "Engstelle Hildesheim", road: "A7", attrs: { maxBreiteM: 3.55 }, fach: { quelle: QUELLE_MOBILITHEK, realerStart: "2026-07-01" } },
       { frac: 0.28, kategorie: "gewicht", name: "Traglastgrenze Werratalbrücke", road: "A7", attrs: { maxGewichtT: 60, maxAchslastT: 11.5 } },
       { frac: 0.35, kategorie: "bruecke", name: "Brücke Göttingen-Nord", road: "A7", attrs: { maxHoeheM: 4.75 } },
       { frac: 0.42, kategorie: "kreisverkehr", name: "Kreisverkehr Umleitung Kassel", road: "B3", attrs: { radiusM: 14 } },
@@ -151,51 +163,70 @@ function pointAt(geometry, cum, frac) {
   return { lat: last.lat, lng: last.lng, km: cum[cum.length - 1] }
 }
 
-async function resolveWaypoints(route) {
-  const orte = [route.start, ...(route.vias ?? []), route.ziel].filter(Boolean)
-  const out = []
+/** Deterministische Demo-Geometrie: Städte-Tabelle/Cache → Fallback-Polyline. */
+async function corridorGeometry(orte) {
+  const waypoints = []
   for (const ort of orte) {
     const hit = await geocodeOrt(db, null, ort) // Cache → Städte-Tabelle, kein Netz
-    out.push({ lat: hit.lat, lng: hit.lng })
+    waypoints.push({ lat: hit.lat, lng: hit.lng })
   }
-  return out
+  return buildPolyline(waypoints)
+}
+
+async function ensureTenant() {
+  await db.query("INSERT INTO tenants (slug, name) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING", [
+    "setreo", "Setreo",
+  ])
+  const { rows } = await db.query("SELECT id, slug, name FROM tenants WHERE slug = $1", ["setreo"])
+  const tenant = rows[0]
+  await db.query(
+    "INSERT INTO tenant_members (tenant_id, email) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING",
+    [tenant.id, "vki@setreo.de"],
+  )
+  return tenant
 }
 
 async function removeDemo() {
   const o = await db.query("DELETE FROM obstacles WHERE demo = true", [])
-  for (const p of PROJECTS) await db.query("DELETE FROM projects WHERE id = $1", [p.id])
-  console.log(`removed: ${o.rowCount} demo-obstacles, demo-projects (findings/runs via cascade)`)
+  let projects = 0
+  for (const p of PROJECTS) {
+    const res = await db.query("DELETE FROM projects WHERE id = $1", [p.id])
+    projects += res.rowCount
+  }
+  console.log(`removed: ${o.rowCount} demo-obstacles, ${projects} demo-projects (findings/runs/shares via cascade)`)
 }
 
 async function upsertObstacle(o) {
   await db.query(
     `INSERT INTO obstacles (id, kategorie, name, beschreibung, lat, lng, strassen_ref,
-       zustaendig, quelle, attrs, gueltig_von, gueltig_bis, aktiv, demo)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, true, true)
+       zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start, aktiv, demo)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, true, true)
      ON CONFLICT (id) DO UPDATE SET kategorie = EXCLUDED.kategorie, name = EXCLUDED.name,
        beschreibung = EXCLUDED.beschreibung, lat = EXCLUDED.lat, lng = EXCLUDED.lng,
        strassen_ref = EXCLUDED.strassen_ref, zustaendig = EXCLUDED.zustaendig,
        quelle = EXCLUDED.quelle, attrs = EXCLUDED.attrs, gueltig_von = EXCLUDED.gueltig_von,
-       gueltig_bis = EXCLUDED.gueltig_bis, aktiv = true, demo = true, updated_at = now()`,
+       gueltig_bis = EXCLUDED.gueltig_bis, fach_id = EXCLUDED.fach_id,
+       quellen_id = EXCLUDED.quellen_id, realer_start = EXCLUDED.realer_start,
+       aktiv = true, demo = true, updated_at = now()`,
     [o.id, o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef,
       o.zustaendig, JSON.stringify(o.quelle), JSON.stringify(o.attrs),
-      o.gueltigVon, o.gueltigBis],
+      o.gueltigVon, o.gueltigBis, o.fachId, o.quellenId, o.realerStart],
   )
 }
 
 async function seed() {
+  const tenant = await ensureTenant()
+  console.log(`tenant "${tenant.slug}" bereit (${tenant.id})`)
+
+  const geometries = new Map() // project.id → geometry
   let obstacleIndex = 0
   let count = 0
 
   for (const corridor of CORRIDORS) {
     const project = corridor.project
-    const waypoints = await resolveWaypoints(project.route)
-    const geometry = buildPolyline(waypoints)
+    const geometry = await corridorGeometry(project.orte)
     const cum = cumulativeKm(geometry)
-
-    // route_cache für diese Waypoints leeren, damit die Seed-Analyse exakt
-    // die Fallback-Geometrie nutzt, auf der die Hindernisse liegen.
-    await db.query("DELETE FROM route_cache WHERE key = $1", [routeKey(waypoints)])
+    geometries.set(project.id, geometry)
 
     for (const def of corridor.obstacles) {
       obstacleIndex += 1
@@ -216,32 +247,52 @@ async function seed() {
         attrs: def.attrs,
         gueltigVon: def.gueltigVon ?? null,
         gueltigBis: def.gueltigBis ?? null,
+        fachId: def.fach ? fachId(obstacleIndex, def.fach.quelle, def.fach.realerStart) : null,
+        quellenId: def.fach ? String(def.fach.quelle).padStart(4, "0") : null,
+        realerStart: def.fach?.realerStart ?? null,
       })
       count += 1
     }
   }
   console.log(`upserted ${count} demo-obstacles`)
 
-  for (const p of PROJECTS) {
+  for (const [i, p] of PROJECTS.entries()) {
     const created = new Date(Date.now() - p.ageDays * DAY_MS).toISOString()
+    const routes = [{
+      id: ROUTE_ID(i + 1),
+      name: p.routeName,
+      fileName: `${p.name.toLowerCase().replaceAll(/[^a-z0-9äöüß]+/g, "-")}.gpx`,
+      points: geometries.get(p.id),
+      farbe: "#527121",
+    }]
+    if (p.rueckOrte) {
+      routes.push({
+        id: ROUTE_ID(100 + i + 1),
+        name: "Rückfahrt",
+        fileName: "rueckfahrt.gpx",
+        points: await corridorGeometry(p.rueckOrte),
+        farbe: "#2563EB",
+      })
+    }
     await db.query(
-      `INSERT INTO projects (id, name, status, route_input, transport, zeitraum,
-         route_geometry, created_by, created_at, updated_at)
-       VALUES ($1, $2, 'entwurf', $3, $4, $5, '[]', 'demo@setreo', $6, $6)
-       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, route_input = EXCLUDED.route_input,
-         transport = EXCLUDED.transport, zeitraum = EXCLUDED.zeitraum, updated_at = now()`,
-      [p.id, p.name, JSON.stringify(p.route), JSON.stringify(p.transport),
+      `INSERT INTO projects (id, name, status, tenant_id, routes, transport, zeitraum,
+         created_by, created_at, updated_at)
+       VALUES ($1, $2, 'entwurf', $3, $4, $5, $6, 'demo@setreo', $7, $7)
+       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, tenant_id = EXCLUDED.tenant_id,
+         routes = EXCLUDED.routes, transport = EXCLUDED.transport,
+         zeitraum = EXCLUDED.zeitraum, updated_at = now()`,
+      [p.id, p.name, tenant.id, JSON.stringify(routes), JSON.stringify(p.transport),
         JSON.stringify(p.zeitraum), created],
     )
+    p.routes = routes
   }
-  console.log(`upserted ${PROJECTS.length} demo-projects`)
+  console.log(`upserted ${PROJECTS.length} demo-projects (tenant setreo)`)
 
   for (const p of PROJECTS) {
     if (!p.analyse) continue
     const result = await runAnalysis({
       db,
-      project: { id: p.id, route: p.route, transport: p.transport, zeitraum: p.zeitraum },
-      deps: { nominatim: null, osrm: null }, // offline-deterministisch
+      project: { id: p.id, routes: p.routes, transport: p.transport, zeitraum: p.zeitraum },
       corridorM: Number(process.env.CORRIDOR_M ?? 120),
     })
     console.log(

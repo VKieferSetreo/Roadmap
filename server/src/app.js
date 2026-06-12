@@ -1,18 +1,35 @@
 // Express-App als Factory-Export (supertest-fähig, db/fetch injectable).
+//
+// Routing-Schichten v2:
+//   /api/health                       — immer ungated (Docker/Proxy-Probes)
+//   /_share/**                        — UNGATED Public-Share (eigener Router + Assets)
+//   /api/**                           — Gateway-Auth + Tenant-Kontext
+//     /api/context                    — gated, aber OHNE Tenant-Pflicht
+//     /api/admin/tenants              — Admin only, ohne Tenant-Pflicht
+//     /api/projects|findings|stats    — Tenant-Pflicht (403 "kein-mandant")
+//     /api/obstacles|geocode          — global (zentrale Hindernis-DB / Geocoding)
+//   GET /:tenantSlug/:projectId       — Share-SPA-HTML (nach allen API-Routen)
 
+import { existsSync } from "node:fs"
+import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 import express from "express"
-import { authMiddleware } from "./auth.js"
+import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { createNominatim } from "./external/nominatim.js"
-import { createOsrm } from "./external/osrm.js"
+import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
 import { obstaclesRouter } from "./routes/obstacles.js"
 import { projectsRouter } from "./routes/projects.js"
+import { shareRouter } from "./routes/share.js"
 import { statsRouter } from "./routes/stats.js"
-import { ApiError } from "./util.js"
+import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
+import { ApiError, asyncHandler, isUuid } from "./util.js"
 
-export const APP_VERSION = "1.0.0"
+export const APP_VERSION = "2.0.0"
+
+const SHARE_DIR = fileURLToPath(new URL("../public/share", import.meta.url))
 
 export function createApp({
   db = createDefaultDb(),
@@ -20,9 +37,11 @@ export function createApp({
   requireAuth = process.env.REQUIRE_AUTH === "true",
   timeoutMs = Number(process.env.EXTERNAL_TIMEOUT_MS ?? 4000),
   corridorM = Number(process.env.CORRIDOR_M ?? 120),
+  shareBaseUrl = process.env.SHARE_BASE_URL ?? "https://setreo-cloud.com",
+  sessionSalt = process.env.SESSION_SALT ?? "roadmap-dev-salt",
+  shareDir = SHARE_DIR,
 } = {}) {
   const nominatim = createNominatim({ fetchImpl, timeoutMs })
-  const osrm = createOsrm({ fetchImpl, timeoutMs })
 
   const app = express()
   app.disable("x-powered-by")
@@ -40,14 +59,50 @@ export function createApp({
     res.status(dbOk ? 200 : 503).json({ ok: dbOk, db: dbOk, version: APP_VERSION })
   })
 
+  // ── Public-Share (UNGATED — Proxy routet /_share ohne forward_auth) ─────────
+  app.use("/_share", shareRouter({ db, sessionSalt }))
+  // Statisches Share-FE; Verzeichnis wird später vendored — fehlt es, greift 404
+  app.use("/_share", express.static(shareDir))
+
+  // ── Gated API ────────────────────────────────────────────────────────────────
   app.use("/api", authMiddleware({ requireAuth }))
-  app.use("/api/projects", projectsRouter({ db, deps: { nominatim, osrm }, corridorM }))
-  app.use("/api/findings", findingsRouter({ db }))
+  app.use("/api", tenantContext({ db }))
+
+  // gated, aber ohne Tenant-Pflicht — speist Identität + Tenant-Switcher des FE
+  app.get("/api/context", asyncHandler(async (req, res) => {
+    const { email, isAdmin, tenant } = req.ctx
+    res.json({
+      email,
+      isAdmin,
+      tenant: tenant ? { id: tenant.id, slug: tenant.slug, name: tenant.name } : null,
+      ...(isAdmin && { tenants: await listTenants(db) }),
+    })
+  }))
+
+  app.use("/api/admin/tenants", adminTenantsRouter({ db }))
+  app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
+  app.use("/api/findings", requireTenant, findingsRouter({ db }))
+  app.use("/api/stats", requireTenant, statsRouter({ db }))
   app.use("/api/obstacles", obstaclesRouter({ db }))
   app.use("/api/geocode", geoRouter({ db, nominatim }))
-  app.use("/api/stats", statsRouter({ db }))
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Nicht gefunden" }))
+
+  // ── Share-SPA (NACH allen API-Routen): /<tenantSlug>/<projectId> → index.html
+  // Validierung light — der Client zeigt den 404-Screen über die Share-API.
+  app.get("/:tenantSlug/:projectId", (req, res, next) => {
+    const { tenantSlug, projectId } = req.params
+    if (!SLUG_RE.test(tenantSlug) || RESERVED_SLUGS.includes(tenantSlug) || !isUuid(projectId)) {
+      return next()
+    }
+    const indexHtml = join(shareDir, "index.html")
+    if (!existsSync(indexHtml)) {
+      return res
+        .status(503)
+        .json({ error: "Share-Frontend noch nicht installiert (server/public/share fehlt)" })
+    }
+    res.sendFile(indexHtml)
+  })
 
   // zentraler Error-Handler (4-Arg-Signatur ist für Express signifikant)
   app.use((err, req, res, next) => {

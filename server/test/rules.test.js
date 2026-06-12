@@ -3,11 +3,11 @@
 import { describe, expect, it } from "vitest"
 import { evaluate, fmtKomma } from "../src/engine/rules.js"
 
-// Transport-Basis (DEFAULT_TRANSPORT-artig), pro Test überschreibbar
+// Transport-Basis (DEFAULT_TRANSPORT v2), pro Test überschreibbar
 const TR = {
-  fahrzeugTyp: "Sattelzug",
   laenge: 24.5, breite: 3.0, hoehe: 4.2,
-  gesamtgewicht: 68, achslast: 11.5, achsen: 8, ladung: "",
+  gesamtgewicht: 68, achsen: 8,
+  achslasten: [11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5],
 }
 
 const ob = (kategorie, attrs = {}, extra = {}) => ({
@@ -89,9 +89,10 @@ describe("gewicht — Rest + Achslast", () => {
     expect(evaluate(ob("gewicht", { maxGewichtT }), TR, {}).severity).toBe(severity)
   })
 
-  it("Achslast-Überschreitung eskaliert auf kritisch", () => {
+  it("Achslast-Überschreitung (max aus achslasten[]) eskaliert auf kritisch", () => {
     const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), TR, {})
-    expect(r.severity).toBe("kritisch")
+    expect(r.severity).toBe("kritisch") // max(achslasten) = 11,5 > 11
+    expect(r.detail["Achslast"]).toBe("11,5 t")
   })
 
   it("Achslast eingehalten → keine Eskalation", () => {
@@ -99,19 +100,18 @@ describe("gewicht — Rest + Achslast", () => {
     expect(r.severity).toBe("hinweis")
   })
 
-  // Prüfgewicht: bei inkonsistenten Stammdaten (Ladung > Gesamt) zählt der größere Wert
-  it("ladungsgewicht > gesamtgewicht → konservativ gegen Ladungsgewicht geprüft", () => {
-    const tr = { ...TR, gesamtgewicht: 40, ladungsgewicht: 55 }
-    const r = evaluate(ob("gewicht", { maxGewichtT: 50 }), tr, {})
-    expect(r.severity).toBe("kritisch") // 50 − 55 = −5
-    expect(r.detail["Prüfgewicht (Ladung)"]).toBe("55,0 t")
+  it("heterogene achslasten: die höchste Achse zählt", () => {
+    const tr = { ...TR, achslasten: [9, 12, 10] }
+    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), tr, {})
+    expect(r.severity).toBe("kritisch") // 12 > 11
+    expect(r.detail["Achslast"]).toBe("12,0 t")
   })
 
-  it("ladungsgewicht ≤ gesamtgewicht → unverändert, kein Prüfgewicht-Detail", () => {
-    const tr = { ...TR, ladungsgewicht: 35 }
-    const r = evaluate(ob("gewicht", { maxGewichtT: 100 }), tr, {})
+  it("leeres/fehlendes achslasten[] → keine Achslast-Eskalation, kein Achslast-Detail", () => {
+    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), { ...TR, achslasten: [] }, {})
     expect(r.severity).toBe("hinweis")
-    expect(r.detail["Prüfgewicht (Ladung)"]).toBeUndefined()
+    expect(r.detail["Zul. Achslast"]).toBe("11,0 t")
+    expect(r.detail["Achslast"]).toBeUndefined()
   })
 })
 
@@ -126,11 +126,6 @@ describe("steigung", () => {
   ])("steigungPct %f bei %f t → %s", (steigungPct, gesamtgewicht, severity) => {
     const r = evaluate(ob("steigung", { steigungPct }), { ...TR, gesamtgewicht }, {})
     expect(r.severity).toBe(severity)
-  })
-
-  it("ladungsgewicht > gesamtgewicht hebt die Schwelle (Prüfgewicht)", () => {
-    const r = evaluate(ob("steigung", { steigungPct: 8 }), { ...TR, gesamtgewicht: 50, ladungsgewicht: 70 }, {})
-    expect(r.severity).toBe("kritisch") // Prüfgewicht 70 > 60
   })
 })
 

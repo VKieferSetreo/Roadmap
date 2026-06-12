@@ -98,19 +98,17 @@ function ruleEngstelle(attrs, transport) {
   }
 }
 
-/** Konservatives Prüfgewicht: bei inkonsistenten Stammdaten (Ladungsgewicht größer als
- *  angegebenes Gesamtgewicht) wird mit dem größeren Wert gerechnet — lieber zu streng
- *  warnen als eine Traglast-Überschreitung wegen Eingabefehlern zu übersehen. */
-function pruefgewicht(transport) {
-  const ladung = num(transport.ladungsgewicht)
-  if (ladung != null && ladung > transport.gesamtgewicht) return ladung
-  return transport.gesamtgewicht
+/** Höchste Achslast aus dem v2-Array (achslasten: number[]) — null wenn leer/fehlt. */
+function maxAchslast(transport) {
+  const lasten = Array.isArray(transport.achslasten)
+    ? transport.achslasten.filter((v) => typeof v === "number" && Number.isFinite(v))
+    : []
+  return lasten.length ? Math.max(...lasten) : null
 }
 
 function ruleGewicht(attrs, transport) {
   const maxG = num(attrs.maxGewichtT)
   const maxAchs = num(attrs.maxAchslastT)
-  const pg = pruefgewicht(transport)
   if (maxG == null && maxAchs == null) {
     return {
       severity: "hinweis",
@@ -121,17 +119,19 @@ function ruleGewicht(attrs, transport) {
   let severity = "hinweis"
   const detail = {}
   if (maxG != null) {
-    const rest = round2(maxG - pg)
+    const rest = round2(maxG - transport.gesamtgewicht)
     severity = sev3(rest < 0, rest < 10)
     detail["Zul. Gesamtlast"] = fmtT(maxG)
     detail["Gesamtgewicht"] = fmtT(transport.gesamtgewicht)
-    if (pg !== transport.gesamtgewicht) detail["Prüfgewicht (Ladung)"] = fmtT(pg)
     detail["Reserve"] = fmtT(rest)
   }
   if (maxAchs != null) {
+    const achslast = maxAchslast(transport)
     detail["Zul. Achslast"] = fmtT(maxAchs)
-    detail["Achslast"] = fmtT(transport.achslast)
-    if (round2(maxAchs - transport.achslast) < 0) severity = "kritisch"
+    if (achslast != null) {
+      detail["Achslast"] = fmtT(achslast)
+      if (round2(maxAchs - achslast) < 0) severity = "kritisch"
+    }
   }
   return {
     severity,
@@ -145,23 +145,21 @@ function ruleGewicht(attrs, transport) {
 
 function ruleSteigung(attrs, transport) {
   const pct = num(attrs.steigungPct)
-  const pg = pruefgewicht(transport)
+  const gewicht = transport.gesamtgewicht
   if (pct == null) {
     return {
       severity: "hinweis",
       beschreibung: "Längsneigung ohne hinterlegten Wert — Anfahrvermögen berücksichtigen.",
-      detail: { Gesamtgewicht: fmtT(transport.gesamtgewicht) },
+      detail: { Gesamtgewicht: fmtT(gewicht) },
     }
   }
   let severity = "hinweis"
-  if (pct >= 8) severity = pg > 60 ? "kritisch" : "warnung"
-  else if (pct >= 5) severity = pg > 100 ? "warnung" : "hinweis"
-  const detail = { Längsneigung: fmtPct(pct), Gesamtgewicht: fmtT(transport.gesamtgewicht) }
-  if (pg !== transport.gesamtgewicht) detail["Prüfgewicht (Ladung)"] = fmtT(pg)
+  if (pct >= 8) severity = gewicht > 60 ? "kritisch" : "warnung"
+  else if (pct >= 5) severity = gewicht > 100 ? "warnung" : "hinweis"
   return {
     severity,
     beschreibung: "Längsneigung — Anfahrvermögen und Bremsweg berücksichtigen.",
-    detail,
+    detail: { Längsneigung: fmtPct(pct), Gesamtgewicht: fmtT(gewicht) },
   }
 }
 

@@ -1,0 +1,64 @@
+// Tenant-Helfer: Slug-Validierung (inkl. Reserved-Liste), Lookups, Tenant-Liste.
+// Statisches SQL — der FakeDb der Tests dispatcht auf diese Strings.
+
+/** Pfad-Präfixe, die nie ein Tenant-Slug sein dürfen (Share-URL-Raum + Infrastruktur). */
+export const RESERVED_SLUGS = ["c", "api", "admin", "assets", "auth", "_share"]
+
+export const SLUG_RE = /^[a-z0-9-]{2,40}$/
+
+/** → null wenn ok, sonst deutscher Fehlertext. */
+export function slugError(slug) {
+  if (typeof slug !== "string" || !SLUG_RE.test(slug)) {
+    return "slug muss aus [a-z0-9-] bestehen (2–40 Zeichen)"
+  }
+  if (RESERVED_SLUGS.includes(slug)) return `slug "${slug}" ist reserviert`
+  return null
+}
+
+export async function getTenantBySlug(db, slug) {
+  const { rows } = await db.query("SELECT id, slug, name FROM tenants WHERE slug = $1", [slug])
+  return rows[0] ?? null
+}
+
+export async function getTenantById(db, id) {
+  const { rows } = await db.query("SELECT id, slug, name FROM tenants WHERE id = $1", [id])
+  return rows[0] ?? null
+}
+
+/** Tenant eines Nutzers über tenant_members (E-Mail lowercase). */
+export async function getTenantForEmail(db, email) {
+  const { rows } = await db.query(
+    "SELECT t.id, t.slug, t.name FROM tenants t JOIN tenant_members m ON m.tenant_id = t.id WHERE m.email = $1",
+    [String(email).toLowerCase()],
+  )
+  return rows[0] ?? null
+}
+
+/** Volle Tenant-Shape-Liste (mitglieder + projekte) — Admin-Liste + Tenant-Switcher. */
+export async function listTenants(db) {
+  const tenants = await db.query(
+    `SELECT t.id, t.slug, t.name, t.created_at,
+       (SELECT count(*)::int FROM projects p WHERE p.tenant_id = t.id) AS projekte
+     FROM tenants t ORDER BY t.created_at ASC`,
+  )
+  const members = await db.query(
+    "SELECT tenant_id, email FROM tenant_members ORDER BY email ASC",
+  )
+  const byTenant = new Map()
+  for (const m of members.rows) {
+    if (!byTenant.has(m.tenant_id)) byTenant.set(m.tenant_id, [])
+    byTenant.get(m.tenant_id).push(m.email)
+  }
+  return tenants.rows.map((t) => rowToTenant(t, byTenant.get(t.id) ?? []))
+}
+
+/** Tenant-Shape exakt wie im FE-Contract: {id, slug, name, mitglieder, projekte}. */
+export function rowToTenant(row, mitglieder = [], projekte = row.projekte ?? 0) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    mitglieder,
+    projekte: Number(projekte),
+  }
+}

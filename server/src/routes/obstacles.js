@@ -15,8 +15,8 @@ const LIST_SQL = `SELECT * FROM obstacles
   ORDER BY created_at DESC`
 
 const INSERT_SQL = `INSERT INTO obstacles (kategorie, name, beschreibung, lat, lng, strassen_ref,
-    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, aktiv, demo)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`
+    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start, aktiv, demo)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`
 
 /** Normalisiert + validiert ein Obstacle aus Request/Import. → {ok, value|reason} */
 export function validateObstacle(input) {
@@ -46,6 +46,9 @@ export function validateObstacle(input) {
       attrs: input.attrs ?? {},
       gueltigVon: input.gueltigVon ?? null,
       gueltigBis: input.gueltigBis ?? null,
+      fachId: typeof input.fachId === "string" ? input.fachId : null,
+      quellenId: typeof input.quellenId === "string" ? input.quellenId : null,
+      realerStart: input.realerStart ?? null,
       aktiv: input.aktiv !== false,
       demo: input.demo === true,
     },
@@ -55,7 +58,7 @@ export function validateObstacle(input) {
 const insertParams = (o) => [
   o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef, o.zustaendig,
   o.quelle != null ? JSON.stringify(o.quelle) : null, JSON.stringify(o.attrs),
-  o.gueltigVon, o.gueltigBis, o.aktiv, o.demo,
+  o.gueltigVon, o.gueltigBis, o.fachId, o.quellenId, o.realerStart, o.aktiv, o.demo,
 ]
 
 /** GeoJSON-FeatureCollection (Punkte) → flache Obstacle-Inputs. */
@@ -103,7 +106,8 @@ export function obstaclesRouter({ db }) {
     const { rows } = await db.query(
       `UPDATE obstacles SET kategorie = $2, name = $3, beschreibung = $4, lat = $5, lng = $6,
          strassen_ref = $7, zustaendig = $8, quelle = $9, attrs = $10, gueltig_von = $11,
-         gueltig_bis = $12, aktiv = $13, demo = $14, updated_at = now()
+         gueltig_bis = $12, fach_id = $13, quellen_id = $14, realer_start = $15,
+         aktiv = $16, demo = $17, updated_at = now()
        WHERE id = $1 RETURNING *`,
       [req.params.id, ...insertParams(check.value)],
     )

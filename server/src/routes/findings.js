@@ -5,12 +5,14 @@ import { rowToFinding } from "../map.js"
 import { asyncHandler } from "../util.js"
 
 // Statisches SQL mit nullable Filtern — bewusst kein dynamischer Query-Builder.
+// v2: strikt auf den Request-Tenant gescoped ($4).
 const SEARCH_SQL = `SELECT f.*, p.name AS projekt_name FROM findings f
   JOIN projects p ON p.id = f.project_id
   WHERE ($1::text IS NULL OR f.kategorie = $1)
     AND ($2::text IS NULL OR f.severity = $2)
     AND ($3::text IS NULL OR f.titel ILIKE $3 OR f.beschreibung ILIKE $3
          OR f.strassen_ref ILIKE $3 OR p.name ILIKE $3)
+    AND p.tenant_id = $4
   ORDER BY f.km ASC`
 
 export function findingsRouter({ db }) {
@@ -22,6 +24,7 @@ export function findingsRouter({ db }) {
       kategorie || null,
       severity || null,
       q ? `%${q}%` : null,
+      req.ctx.tenant.id,
     ])
     res.json({
       findings: rows.map((row) => ({
