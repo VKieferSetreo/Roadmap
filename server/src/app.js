@@ -6,6 +6,7 @@
 //   /api/**                           — Gateway-Auth + Tenant-Kontext
 //     /api/context                    — gated, aber OHNE Tenant-Pflicht
 //     /api/admin/tenants              — Admin only, ohne Tenant-Pflicht
+//     /api/admin/import*              — Admin only (Import-Runs + manueller Trigger, v3)
 //     /api/projects|findings|stats    — Tenant-Pflicht (403 "kein-mandant")
 //     /api/obstacles|geocode          — global (zentrale Hindernis-DB / Geocoding)
 //   GET /:tenantSlug/:projectId       — Share-SPA-HTML (nach allen API-Routen)
@@ -17,6 +18,7 @@ import express from "express"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { createNominatim } from "./external/nominatim.js"
+import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
@@ -27,7 +29,7 @@ import { statsRouter } from "./routes/stats.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
-export const APP_VERSION = "2.0.0"
+export const APP_VERSION = "3.0.0"
 
 const SHARE_DIR = fileURLToPath(new URL("../public/share", import.meta.url))
 
@@ -80,6 +82,7 @@ export function createApp({
   }))
 
   app.use("/api/admin/tenants", adminTenantsRouter({ db }))
+  app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))
   app.use("/api/stats", requireTenant, statsRouter({ db }))

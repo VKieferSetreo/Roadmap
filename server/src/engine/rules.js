@@ -44,7 +44,7 @@ function overlapsZeitraum(obstacle, zeitraum) {
   const zVon = dateOnly(zeitraum?.von)
   const zBis = dateOnly(zeitraum?.bis)
   if (!zVon && !zBis) return false // kein Zeitraum geplant → keine Überlappung feststellbar
-  const oVon = dateOnly(obstacle.gueltigVon) ?? "0000-01-01"
+  const oVon = dateOnly(obstacle.gueltigVon) ?? dateOnly(obstacle.realerStart) ?? "0000-01-01"
   const oBis = dateOnly(obstacle.gueltigBis) ?? "9999-12-31"
   return oVon <= (zBis ?? "9999-12-31") && (zVon ?? "0000-01-01") <= oBis
 }
@@ -239,6 +239,11 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   const bis = dateOnly(obstacle.gueltigBis)
   const von = dateOnly(zeitraum?.von)
   if (bis && von && bis < von) return null
+  // Noch nicht wirksam: greift erst ab gueltigVon (Fallback realerStart) —
+  // liegt das NACH dem Ende des Transport-Zeitraums, ist es nicht relevant.
+  const wirksamAb = dateOnly(obstacle.gueltigVon) ?? dateOnly(obstacle.realerStart)
+  const zEnde = dateOnly(zeitraum?.bis)
+  if (wirksamAb && zEnde && wirksamAb > zEnde) return null
 
   const attrs = obstacle.attrs ?? {}
   let result

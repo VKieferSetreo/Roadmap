@@ -156,12 +156,12 @@ describe("baustelle", () => {
     expect(r.severity).toBe("warnung")
   })
 
-  it("keine Überlappung mit Zeitraum → hinweis", () => {
+  it("beginnt erst NACH dem Transport-Zeitraum → nicht relevant (null)", () => {
     const r = evaluate(
       ob("baustelle", { restbreiteM: 3.6 }, { gueltigVon: "2026-07-01", gueltigBis: "2026-08-01" }),
       TR, zeitraum,
     )
-    expect(r.severity).toBe("hinweis")
+    expect(r).toBeNull()
   })
 
   it("ohne geplanten Zeitraum → hinweis", () => {
@@ -199,5 +199,25 @@ describe("titel + formatierung", () => {
     expect(fmtKomma(3.8)).toBe("3,80")
     expect(fmtKomma(-0.4)).toBe("−0,40")
     expect(fmtKomma(12, 1)).toBe("12,0")
+  })
+})
+
+describe("Wirksamkeit — gueltigVon/realerStart vs Transport-Zeitraum", () => {
+  const zeitraum = { von: "2026-06-15T22:00", bis: "2026-06-17T14:00" }
+
+  it("greift erst nach Transport-Ende (gueltigVon) → null", () => {
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3 }, { gueltigVon: "2026-07-01" }), TR, zeitraum)).toBeNull()
+  })
+
+  it("greift erst nach Transport-Ende (nur realerStart) → null", () => {
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3 }, { realerStart: "2026-07-01" }), TR, zeitraum)).toBeNull()
+  })
+
+  it("greift vor Transport-Ende → relevant", () => {
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3 }, { realerStart: "2026-06-16" }), TR, zeitraum)).not.toBeNull()
+  })
+
+  it("ohne Transport-Zeitraum bleibt alles relevant", () => {
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3 }, { realerStart: "2027-01-01" }), TR, {})).not.toBeNull()
   })
 })

@@ -4,6 +4,7 @@
 import request from "supertest"
 import { describe, expect, it } from "vitest"
 import { totalKm } from "../src/engine/geometry.js"
+import { buildFachId, todayIso } from "../src/obstaclesRepo.js"
 import {
   cityPoints, createProject, createRoutedProject, jsonResponse, makeApp, midOf,
 } from "./helpers/testApp.js"
@@ -27,14 +28,23 @@ describe("auth (Gateway-Modus)", () => {
     expect(res.status).toBe(401)
   })
 
-  it("Lesen als Tenant-Mitglied ok, Schreiben auf obstacles braucht admin/roadmap", async () => {
+  it("Tenant-Mitglied: POST legt eigenen Eintrag an, global braucht admin/roadmap (v3)", async () => {
     const { app } = makeApp({ requireAuth: true })
     const asMember = (req) => req.set("X-Auth-User", "vki@setreo.de").set("X-Auth-Roles", "user")
 
     expect((await asMember(request(app).get("/api/projects"))).status).toBe(200)
     expect((await asMember(request(app).get("/api/obstacles"))).status).toBe(200)
+
+    // v3: Tenant-Nutzer dürfen eigene (tenant-gescopte) Einträge anlegen
+    const own = await asMember(request(app).post("/api/obstacles")).send({
+      kategorie: "ampel", name: "Eigene Ampel", lat: 50, lng: 8,
+    })
+    expect(own.status).toBe(201)
+    expect(own.body.herkunft).toBe("eigen")
+
+    // global anlegen bleibt admin/roadmap vorbehalten
     const denied = await asMember(request(app).post("/api/obstacles")).send({
-      kategorie: "ampel", lat: 50, lng: 8,
+      kategorie: "ampel", name: "Globale Ampel", lat: 50, lng: 8, global: true,
     })
     expect(denied.status).toBe(403)
 
@@ -42,13 +52,16 @@ describe("auth (Gateway-Modus)", () => {
       .post("/api/obstacles")
       .set("X-Auth-User", "max@setreo.de")
       .set("X-Auth-Roles", "roadmap")
-      .send({ kategorie: "ampel", lat: 50, lng: 8 })
+      .send({ kategorie: "ampel", name: "Globale Ampel", lat: 50, lng: 8, global: true })
     expect(allowed.status).toBe(201)
+    expect(allowed.body.herkunft).toBe("global")
   })
 
   it("Dev-Modus ohne Header → anonymer Admin auf Tenant setreo", async () => {
     const { app } = makeApp()
-    const res = await request(app).post("/api/obstacles").send({ kategorie: "ampel", lat: 50, lng: 8 })
+    const res = await request(app).post("/api/obstacles").send({
+      kategorie: "ampel", name: "Dev-Ampel", lat: 50, lng: 8,
+    })
     expect(res.status).toBe(201)
     const projects = await request(app).get("/api/projects")
     expect(projects.status).toBe(200)
@@ -319,7 +332,7 @@ describe("obstacles CRUD + Import (v2-Felder)", () => {
     expect((await request(app).post("/api/obstacles").send({ kategorie: "ampel", lat: "x", lng: 2 })).status).toBe(400)
   })
 
-  it("fachId/quellenId/realerStart werden gespeichert und geliefert", async () => {
+  it("fachId/quellenId/realerStart: explizit = passthrough, sonst v3-Defaults (0100 + auto)", async () => {
     const { app } = makeApp()
     const created = await request(app).post("/api/obstacles").send({
       kategorie: "baustelle", name: "B-Mobilithek", lat: 50, lng: 8,
@@ -331,13 +344,14 @@ describe("obstacles CRUD + Import (v2-Felder)", () => {
       fachId: "00010009010126", quellenId: "0009", realerStart: "2026-01-01",
     })
 
-    // Felder ohne Angabe → null (Contract: optional)
+    // v3: ohne Angabe → Kunden-Quelle 0100, fachId auto, realerStart = heute
     const plain = await request(app).post("/api/obstacles").send({
-      kategorie: "ampel", lat: 50, lng: 8,
+      kategorie: "ampel", name: "Ampel Süd", lat: 50, lng: 8,
     })
-    expect(plain.body.fachId).toBeNull()
-    expect(plain.body.quellenId).toBeNull()
-    expect(plain.body.realerStart).toBeNull()
+    expect(plain.body.quellenId).toBe("0100")
+    expect(plain.body.fachId).toBe(buildFachId(1, "0100", todayIso()))
+    expect(plain.body.realerStart).toBe(todayIso())
+    expect(plain.body.quelle).toEqual({ name: "Eigener Eintrag (Setreo)" })
 
     const patched = await request(app)
       .patch(`/api/obstacles/${created.body.id}`)
@@ -349,14 +363,14 @@ describe("obstacles CRUD + Import (v2-Felder)", () => {
   it("PATCH merged, DELETE → 204/404", async () => {
     const { app } = makeApp()
     const created = await request(app).post("/api/obstacles").send({
-      kategorie: "bruecke", name: "B1", lat: 50, lng: 8, attrs: { maxHoeheM: 4.0 },
+      kategorie: "bruecke", name: "Brücke B1", lat: 50, lng: 8, attrs: { maxHoeheM: 4.0 },
     })
     const id = created.body.id
     const patched = await request(app).patch(`/api/obstacles/${id}`).send({ attrs: { maxHoeheM: 4.5 }, aktiv: false })
     expect(patched.status).toBe(200)
     expect(patched.body.attrs.maxHoeheM).toBe(4.5)
     expect(patched.body.aktiv).toBe(false)
-    expect(patched.body.name).toBe("B1")
+    expect(patched.body.name).toBe("Brücke B1")
 
     const aktive = await request(app).get("/api/obstacles?aktiv=true")
     expect(aktive.body.obstacles).toHaveLength(0)
@@ -436,14 +450,20 @@ describe("geocode", () => {
 })
 
 describe("stats", () => {
-  it("aggregiert tenant-gescoped, Hindernisse global", async () => {
+  it("aggregiert tenant-gescoped, Hindernisse sichtbarkeits-gescoped (global + eigen)", async () => {
     const { app } = makeApp()
     const points = cityPoints("Hamburg", "München")
     const p = await createRoutedProject(app, { name: "Statprojekt", points })
     const mid = midOf(points)
+    // v3: POST ohne global → tenant-eigener Eintrag (setreo); demo wird erzwungen false
     await request(app).post("/api/obstacles").send({
       kategorie: "bruecke", name: "Statbrücke", lat: mid.lat, lng: mid.lng,
       attrs: { maxHoeheM: 3.8 }, demo: true,
+    })
+    // plus ein globaler Demo-Eintrag (admin) — Demo-Daten sind immer global
+    await request(app).post("/api/obstacles").send({
+      kategorie: "engstelle", name: "Globale Engstelle", lat: 51, lng: 9,
+      attrs: { maxBreiteM: 3.0 }, global: true, demo: true,
     })
     await request(app).post(`/api/projects/${p.id}/analysis`)
 
@@ -451,14 +471,14 @@ describe("stats", () => {
     expect(res.status).toBe(200)
     expect(res.body).toMatchObject({
       projekte: 1, fertig: 1, funde: 1, kritisch: 1, warnung: 0, hinweis: 0,
-      hindernisse: 1, hindernisseDemo: 1,
+      hindernisse: 2, hindernisseDemo: 1,
     })
     expect(res.body.letzteAnalyse).toBeTruthy()
 
-    // anderer Tenant: leeres Dashboard, aber globale Hindernisse sichtbar
+    // anderer Tenant: leeres Dashboard, NUR der globale Eintrag zählt (kein Leak)
     await request(app).post("/api/admin/tenants").send({ slug: "kunde-a", name: "Kunde A" })
     const other = await request(app).get("/api/stats").set("X-Tenant", "kunde-a")
-    expect(other.body).toMatchObject({ projekte: 0, funde: 0, hindernisse: 1 })
+    expect(other.body).toMatchObject({ projekte: 0, funde: 0, hindernisse: 1, hindernisseDemo: 1 })
     expect(other.body.letzteAnalyse).toBeNull()
   })
 })

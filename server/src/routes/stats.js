@@ -1,5 +1,6 @@
-// Dashboard-Aggregat — Projekte/Funde/letzte Analyse tenant-gescoped,
-// Hindernisse bleiben global (zentrale Setreo-Hindernis-DB).
+// Dashboard-Aggregat — Projekte/Funde/letzte Analyse tenant-gescoped.
+// Hindernisse (v3): sichtbarkeits-gescoped wie GET /api/obstacles —
+// globale Einträge + Kunden-Einträge des eigenen Mandanten (kein Leak fremder Zahlen).
 
 import { Router } from "express"
 import { asyncHandler, toIso } from "../util.js"
@@ -24,7 +25,8 @@ export function statsRouter({ db }) {
     const hindernisse = await db.query(
       `SELECT count(*) FILTER (WHERE aktiv)::int AS hindernisse,
               count(*) FILTER (WHERE aktiv AND demo)::int AS hindernisse_demo
-       FROM obstacles`,
+       FROM obstacles WHERE tenant_id IS NULL OR tenant_id = $1`,
+      [tenantId],
     )
     const letzte = await db.query(
       `SELECT max(r.finished_at) AS letzte FROM analysis_runs r

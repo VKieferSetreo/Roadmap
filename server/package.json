@@ -10,11 +10,13 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
+    "worker": "node src/worker/index.js",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js --demo",
     "test": "vitest run"
   },
   "dependencies": {
+    "croner": "^10.0.1",
     "express": "^4.21.2",
     "pg": "^8.13.1"
   },

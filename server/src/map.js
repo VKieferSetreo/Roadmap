@@ -18,6 +18,7 @@ export function rowToProject(row, findings = [], share = null) {
     ...(row.distanz_km != null && { distanzKm: Number(row.distanz_km) }),
     ...(row.fahrzeit_min != null && { fahrzeitMin: Number(row.fahrzeit_min) }),
     share, // ShareInfo | null (null = kein/revoked Share)
+    archiviertAm: toIso(row.archived_at) ?? null,
   }
 }
 
@@ -61,8 +62,38 @@ export function rowToObstacle(row) {
     realerStart: toIsoDate(row.realer_start) ?? null,
     aktiv: row.aktiv !== false,
     demo: row.demo === true,
+    // v3: tenant_id NULL = globaler Eintrag, gesetzt = Kunden-Eintrag des Mandanten
+    tenantId: row.tenant_id ?? null,
+    herkunft: row.tenant_id == null ? "global" : "eigen",
+    externeId: row.externe_id ?? null,
     createdAt: toIso(row.created_at),
     updatedAt: toIso(row.updated_at),
+  }
+}
+
+/** Quellen-Register (v3) — Admin-Sicht inkl. letzter Abruf. */
+export function rowToQuelle(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    typ: row.typ ?? null,
+    endpointUrl: row.endpoint_url ?? null,
+    abrufIntervall: row.abruf_intervall ?? null,
+    letzterAbruf: toIso(row.letzter_abruf) ?? null,
+    aktiv: row.aktiv !== false,
+  }
+}
+
+/** Import-Protokoll-Zeile (v3) — Run-Summary für Admin-Endpoints. */
+export function rowToImportRun(row) {
+  return {
+    id: row.id,
+    quelleId: row.quelle_id,
+    status: row.status,
+    stats: row.stats ?? {},
+    log: row.log ?? null,
+    startedAt: toIso(row.started_at),
+    finishedAt: toIso(row.finished_at) ?? null,
   }
 }
 

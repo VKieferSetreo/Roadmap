@@ -158,11 +158,18 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     const routes = body.routes !== undefined ? normalizeRoutes(body.routes) : row.routes
     const transport = body.transport ? { ...row.transport, ...body.transport } : row.transport
     const zeitraum = body.zeitraum ? { ...row.zeitraum, ...body.zeitraum } : row.zeitraum
+    // archiviert: true setzt den Zeitstempel (idempotent), false stellt wieder her
+    const archivedAt =
+      body.archiviert === undefined
+        ? row.archived_at
+        : body.archiviert
+          ? (row.archived_at ?? new Date())
+          : null
 
     const { rows } = await db.query(
       `UPDATE projects SET name = $2, routes = $3, transport = $4, zeitraum = $5,
-         updated_at = now() WHERE id = $1 RETURNING *`,
-      [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum)],
+         archived_at = $6, updated_at = now() WHERE id = $1 RETURNING *`,
+      [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt],
     )
     res.json(await present(req, rows[0]))
   }))

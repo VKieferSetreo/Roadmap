@@ -9,6 +9,15 @@ const now = () => new Date().toISOString()
 const ilike = (value, pattern) =>
   value != null && String(value).toLowerCase().includes(String(pattern).replaceAll("%", "").toLowerCase())
 
+/** Quellen-Register exakt wie migrations/003_v3.sql es seeded. */
+const DEFAULT_QUELLEN = [
+  ["0001", "Autobahn-API (verkehr.autobahn.de)", "api", "0 4 * * *"],
+  ["0002", "BASt SIB-Bauwerke", "datensatz", "quartalsweise"],
+  ["0003", "OSM / Overpass", "api", "monatlich"],
+  ["0009", "Mobilithek (DATEX II)", "api", "täglich"],
+  ["0100", "Kunden-Eintrag (manuell)", "manuell", null],
+]
+
 export function createFakeDb() {
   const state = {
     tenants: [],
@@ -18,6 +27,10 @@ export function createFakeDb() {
     findings: [],
     obstacles: [],
     runs: [],
+    quellen: DEFAULT_QUELLEN.map(([id, name, typ, abruf_intervall]) => ({
+      id, name, typ, endpoint_url: null, abruf_intervall, letzter_abruf: null, aktiv: true,
+    })),
+    importRuns: [],
     geocodeCache: new Map(),
     routeCache: new Map(),
   }
@@ -284,7 +297,7 @@ export function createFakeDb() {
 
     // ── obstacles ─────────────────────────────────────────────────────────────
     if (sql.startsWith("SELECT * FROM obstacles WHERE ($1::text IS NULL")) {
-      const [kategorie, aktiv, q] = params
+      const [kategorie, aktiv, q, tenantId] = params
       const rows = state.obstacles
         .filter((o) => kategorie == null || o.kategorie === kategorie)
         .filter((o) => aktiv == null || o.aktiv === aktiv)
@@ -294,19 +307,38 @@ export function createFakeDb() {
             ilike(o.name, q) || ilike(o.beschreibung, q) ||
             ilike(o.strassen_ref, q) || ilike(o.zustaendig, q),
         )
+        .filter((o) => o.tenant_id == null || o.tenant_id === tenantId)
         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
       return ok(rows)
     }
-    if (sql.startsWith("SELECT * FROM obstacles WHERE aktiv = true AND lat BETWEEN")) {
-      const [minLat, maxLat, minLng, maxLng] = params
+    if (sql.startsWith("SELECT * FROM obstacles WHERE aktiv = true AND (tenant_id IS NULL OR tenant_id = $1")) {
+      const [tenantId, minLat, maxLat, minLng, maxLng] = params
       return ok(
         state.obstacles.filter(
-          (o) => o.aktiv && o.lat >= minLat && o.lat <= maxLat && o.lng >= minLng && o.lng <= maxLng,
+          (o) =>
+            o.aktiv && (o.tenant_id == null || o.tenant_id === tenantId) &&
+            o.lat >= minLat && o.lat <= maxLat && o.lng >= minLng && o.lng <= maxLng,
         ),
+      )
+    }
+    if (sql.startsWith("SELECT * FROM obstacles WHERE quellen_id = $1 AND externe_id = $2")) {
+      return ok(
+        state.obstacles.filter((o) => o.quellen_id === params[0] && o.externe_id === params[1]),
       )
     }
     if (sql.startsWith("SELECT * FROM obstacles WHERE id = $1")) {
       return ok(state.obstacles.filter((o) => o.id === params[0]))
+    }
+    // fachId-Vergabe (obstaclesRepo): Advisory-Lock ist im Fake ein No-op,
+    // die Index-Ableitung läuft semantisch über den State.
+    if (sql.startsWith("SELECT pg_advisory_xact_lock")) {
+      return ok([{ pg_advisory_xact_lock: null }])
+    }
+    if (sql.startsWith("SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index")) {
+      const indexes = state.obstacles
+        .filter((o) => o.quellen_id === params[0] && /^\d{4}/.test(o.fach_id ?? ""))
+        .map((o) => Number(o.fach_id.slice(0, 4)))
+      return ok([{ max_index: indexes.length ? Math.max(...indexes) : 0 }])
     }
     if (sql.startsWith("INSERT INTO obstacles (kategorie,")) {
       const row = {
@@ -327,13 +359,22 @@ export function createFakeDb() {
         realer_start: params[13],
         aktiv: params[14],
         demo: params[15],
+        tenant_id: params[16] ?? null,
+        externe_id: params[17] ?? null,
         created_at: now(),
         updated_at: now(),
+      }
+      // UNIQUE obstacles_quelle_extern_ux (quellen_id, externe_id) WHERE externe_id IS NOT NULL
+      if (
+        row.externe_id != null &&
+        state.obstacles.some((o) => o.quellen_id === row.quellen_id && o.externe_id === row.externe_id)
+      ) {
+        throw new Error("fakeDb: unique violation obstacles_quelle_extern_ux")
       }
       state.obstacles.push(row)
       return ok([row])
     }
-    if (sql.startsWith("UPDATE obstacles SET kategorie = $2,")) {
+    if (sql.startsWith("UPDATE obstacles SET kategorie = $2,") && sql.includes("fach_id = $13")) {
       const row = state.obstacles.find((o) => o.id === params[0])
       if (!row) return ok([])
       Object.assign(row, {
@@ -357,10 +398,73 @@ export function createFakeDb() {
       })
       return ok([row])
     }
+    // Importer-Sachfeld-Update: fach_id/realer_start/aktiv/tenant bleiben unberührt
+    if (sql.startsWith("UPDATE obstacles SET kategorie = $2,")) {
+      const row = state.obstacles.find((o) => o.id === params[0])
+      if (!row) return ok([])
+      Object.assign(row, {
+        kategorie: params[1],
+        name: params[2],
+        beschreibung: params[3],
+        lat: params[4],
+        lng: params[5],
+        strassen_ref: params[6],
+        zustaendig: params[7],
+        quelle: params[8] != null ? J(params[8]) : null,
+        attrs: J(params[9]),
+        gueltig_von: params[10],
+        gueltig_bis: params[11],
+        updated_at: now(),
+      })
+      return ok([row])
+    }
     if (sql.startsWith("DELETE FROM obstacles WHERE id = $1")) {
       const before = state.obstacles.length
       state.obstacles = state.obstacles.filter((o) => o.id !== params[0])
       return ok([], before - state.obstacles.length)
+    }
+
+    // ── quellen / import_runs (v3) ────────────────────────────────────────────
+    if (sql.startsWith("SELECT * FROM quellen ORDER BY id ASC")) {
+      return ok([...state.quellen].sort((a, b) => (a.id < b.id ? -1 : 1)))
+    }
+    if (sql.startsWith("SELECT id FROM quellen LIMIT 1")) {
+      return ok(state.quellen.slice(0, 1).map((q) => ({ id: q.id })))
+    }
+    if (sql.startsWith("UPDATE quellen SET letzter_abruf = now() WHERE id = $1")) {
+      const row = state.quellen.find((q) => q.id === params[0])
+      if (!row) return ok([], 0)
+      row.letzter_abruf = now()
+      return ok([], 1)
+    }
+    if (sql.startsWith("INSERT INTO import_runs (quelle_id, status)")) {
+      const row = {
+        id: randomUUID(),
+        quelle_id: params[0],
+        status: "running",
+        stats: {},
+        log: null,
+        started_at: now(),
+        finished_at: null,
+      }
+      state.importRuns.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("UPDATE import_runs SET status = $2,")) {
+      const row = state.importRuns.find((r) => r.id === params[0])
+      if (!row) return ok([], 0)
+      Object.assign(row, {
+        status: params[1],
+        stats: params[2] != null ? J(params[2]) : {},
+        log: params[3],
+        finished_at: now(),
+      })
+      return ok([row])
+    }
+    if (sql.startsWith("SELECT * FROM import_runs ORDER BY started_at DESC LIMIT 50")) {
+      return ok(
+        [...state.importRuns].sort((a, b) => (a.started_at < b.started_at ? 1 : -1)).slice(0, 50),
+      )
     }
 
     // ── caches ────────────────────────────────────────────────────────────────
@@ -441,10 +545,12 @@ export function createFakeDb() {
       }])
     }
     if (sql.includes("AS hindernisse")) {
-      const aktiv = state.obstacles.filter((o) => o.aktiv)
+      const visible = state.obstacles.filter(
+        (o) => o.aktiv && (o.tenant_id == null || o.tenant_id === params[0]),
+      )
       return ok([{
-        hindernisse: aktiv.length,
-        hindernisse_demo: aktiv.filter((o) => o.demo).length,
+        hindernisse: visible.length,
+        hindernisse_demo: visible.filter((o) => o.demo).length,
       }])
     }
     if (sql.startsWith("SELECT max(r.finished_at) AS letzte")) {

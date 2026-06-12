@@ -1,65 +1,48 @@
-// Hindernis-Datenbank: CRUD + Bulk-Import (JSON-Liste oder GeoJSON-Punkte).
-// Schreibende Endpoints erfordern Rolle admin oder roadmap.
+// Hindernis-Datenbank v3: globale Einträge (tenant_id NULL) + Kunden-Einträge
+// (tenant_id gesetzt, nur im eigenen Mandanten sichtbar/wirksam).
+//
+// Rechte-Matrix (SPEC-backend-v3):
+//   GET            jeder — global + eigener Tenant, Response-Feld herkunft
+//   POST           jeder Tenant-Nutzer — legt tenant-eigen an (Quelle 0100, fachId auto);
+//                  admin/roadmap kann mit body {global: true} global anlegen
+//   PATCH/DELETE   eigene Tenant-Einträge: jeder Tenant-Nutzer; globale: admin/roadmap;
+//                  fremder Tenant → 404 (kein Existenz-Orakel)
+//   POST /import   wie bisher admin/roadmap, global
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
-import { KATEGORIEN } from "../engine/rules.js"
 import { rowToObstacle } from "../map.js"
-import { ApiError, asyncHandler, isFiniteNumber, isPlainObject, isUuid } from "../util.js"
+import {
+  assignFachId, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE, todayIso, validateObstacle,
+} from "../obstaclesRepo.js"
+import { ApiError, asyncHandler, isPlainObject, isUuid } from "../util.js"
 
 const LIST_SQL = `SELECT * FROM obstacles
   WHERE ($1::text IS NULL OR kategorie = $1)
     AND ($2::boolean IS NULL OR aktiv = $2)
     AND ($3::text IS NULL OR name ILIKE $3 OR beschreibung ILIKE $3
          OR strassen_ref ILIKE $3 OR zustaendig ILIKE $3)
+    AND (tenant_id IS NULL OR tenant_id = $4::uuid)
   ORDER BY created_at DESC`
 
-const INSERT_SQL = `INSERT INTO obstacles (kategorie, name, beschreibung, lat, lng, strassen_ref,
-    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start, aktiv, demo)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`
-
-/** Normalisiert + validiert ein Obstacle aus Request/Import. → {ok, value|reason} */
-export function validateObstacle(input) {
-  if (!isPlainObject(input)) return { ok: false, reason: "kein Objekt" }
-  if (!KATEGORIEN.includes(input.kategorie)) {
-    return { ok: false, reason: `ungültige kategorie: ${String(input.kategorie)}` }
-  }
-  const lat = input.lat
-  const lng = input.lng
-  if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) {
-    return { ok: false, reason: "lat/lng fehlen oder sind keine Zahlen" }
-  }
-  if (input.attrs !== undefined && !isPlainObject(input.attrs)) {
-    return { ok: false, reason: "attrs muss ein Objekt sein" }
-  }
-  return {
-    ok: true,
-    value: {
-      kategorie: input.kategorie,
-      name: typeof input.name === "string" ? input.name : null,
-      beschreibung: typeof input.beschreibung === "string" ? input.beschreibung : null,
-      lat,
-      lng,
-      strassenRef: typeof input.strassenRef === "string" ? input.strassenRef : null,
-      zustaendig: typeof input.zustaendig === "string" ? input.zustaendig : null,
-      quelle: isPlainObject(input.quelle) ? input.quelle : null,
-      attrs: input.attrs ?? {},
-      gueltigVon: input.gueltigVon ?? null,
-      gueltigBis: input.gueltigBis ?? null,
-      fachId: typeof input.fachId === "string" ? input.fachId : null,
-      quellenId: typeof input.quellenId === "string" ? input.quellenId : null,
-      realerStart: input.realerStart ?? null,
-      aktiv: input.aktiv !== false,
-      demo: input.demo === true,
-    },
-  }
+const mayWriteGlobal = (req) => {
+  const roles = req.user?.roles ?? []
+  return roles.includes("admin") || roles.includes("roadmap")
 }
 
-const insertParams = (o) => [
-  o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef, o.zustaendig,
-  o.quelle != null ? JSON.stringify(o.quelle) : null, JSON.stringify(o.attrs),
-  o.gueltigVon, o.gueltigBis, o.fachId, o.quellenId, o.realerStart, o.aktiv, o.demo,
-]
+/**
+ * Schreibrecht auf einen bestehenden Eintrag prüfen.
+ * Fremder Tenant → 404 (kein Leak), globaler Eintrag ohne admin/roadmap → 403.
+ */
+function assertWriteAccess(req, row) {
+  if (row.tenant_id != null) {
+    if (req.ctx?.tenant?.id !== row.tenant_id) {
+      throw new ApiError(404, "Hindernis nicht gefunden")
+    }
+    return // eigener Tenant-Eintrag: jede Rolle des Mandanten
+  }
+  if (!mayWriteGlobal(req)) throw new ApiError(403, "Keine Berechtigung")
+}
 
 /** GeoJSON-FeatureCollection (Punkte) → flache Obstacle-Inputs. */
 function geojsonToInputs(body) {
@@ -74,7 +57,7 @@ function geojsonToInputs(body) {
 
 export function obstaclesRouter({ db }) {
   const r = Router()
-  const writeGuard = requireRole("admin", "roadmap")
+  const importGuard = requireRole("admin", "roadmap")
 
   r.get("/", asyncHandler(async (req, res) => {
     const { kategorie, q, aktiv } = req.query
@@ -83,23 +66,51 @@ export function obstaclesRouter({ db }) {
       kategorie || null,
       aktivParam,
       q ? `%${q}%` : null,
+      req.ctx?.tenant?.id ?? null,
     ])
     res.json({ obstacles: rows.map(rowToObstacle) })
   }))
 
-  r.post("/", writeGuard, asyncHandler(async (req, res) => {
-    const check = validateObstacle(req.body)
+  r.post("/", asyncHandler(async (req, res) => {
+    const wantsGlobal = req.body?.global === true
+    if (wantsGlobal && !mayWriteGlobal(req)) {
+      throw new ApiError(403, "Globale Einträge nur mit Rolle admin/roadmap")
+    }
+    if (!wantsGlobal && !req.ctx?.tenant) throw new ApiError(403, "kein-mandant")
+
+    const check = validateObstacle(req.body, { strict: true })
     if (!check.ok) throw new ApiError(400, check.reason)
-    const { rows } = await db.query(INSERT_SQL, insertParams(check.value))
-    res.status(201).json(rowToObstacle(rows[0]))
+    const value = check.value
+
+    if (!wantsGlobal) {
+      // Kunden-Eintrag: tenant-eigen, Defaults nur wenn nicht gesetzt
+      value.tenantId = req.ctx.tenant.id
+      value.quellenId = value.quellenId ?? KUNDEN_QUELLE
+      value.quelle = value.quelle ?? { name: `Eigener Eintrag (${req.ctx.tenant.name})` }
+      value.demo = false
+    }
+
+    const row = await db.tx(async (q) => {
+      if (!value.fachId && value.quellenId) {
+        // realerStart Default = heute (= Datums-Segment der vergebenen fachId)
+        value.realerStart = value.realerStart ?? todayIso()
+        value.fachId = await assignFachId(q, {
+          quellenId: value.quellenId, realerStart: value.realerStart,
+        })
+      }
+      return insertObstacle(q, value)
+    })
+    res.status(201).json(rowToObstacle(row))
   }))
 
-  r.patch("/:id", writeGuard, asyncHandler(async (req, res) => {
+  r.patch("/:id", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Hindernis nicht gefunden")
     const { rows: existing } = await db.query("SELECT * FROM obstacles WHERE id = $1", [req.params.id])
     if (!existing[0]) throw new ApiError(404, "Hindernis nicht gefunden")
+    assertWriteAccess(req, existing[0])
 
-    // Merge auf camelCase-Ebene, dann komplett validieren und zurückschreiben
+    // Merge auf camelCase-Ebene, dann komplett validieren und zurückschreiben.
+    // tenant_id/externe_id sind NICHT patchbar (UPDATE fasst sie nicht an).
     const merged = { ...rowToObstacle(existing[0]), ...req.body }
     const check = validateObstacle(merged)
     if (!check.ok) throw new ApiError(400, check.reason)
@@ -109,19 +120,23 @@ export function obstaclesRouter({ db }) {
          gueltig_bis = $12, fach_id = $13, quellen_id = $14, realer_start = $15,
          aktiv = $16, demo = $17, updated_at = now()
        WHERE id = $1 RETURNING *`,
-      [req.params.id, ...insertParams(check.value)],
+      // insertParams = [kategorie … demo, tenant_id, externe_id] — die letzten beiden
+      // (Index 16/17) sind bewusst NICHT patchbar, daher slice auf die ersten 16.
+      [req.params.id, ...insertParams(check.value).slice(0, 16)],
     )
     res.json(rowToObstacle(rows[0]))
   }))
 
-  r.delete("/:id", writeGuard, asyncHandler(async (req, res) => {
+  r.delete("/:id", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Hindernis nicht gefunden")
-    const result = await db.query("DELETE FROM obstacles WHERE id = $1", [req.params.id])
-    if (result.rowCount === 0) throw new ApiError(404, "Hindernis nicht gefunden")
+    const { rows: existing } = await db.query("SELECT * FROM obstacles WHERE id = $1", [req.params.id])
+    if (!existing[0]) throw new ApiError(404, "Hindernis nicht gefunden")
+    assertWriteAccess(req, existing[0])
+    await db.query("DELETE FROM obstacles WHERE id = $1", [req.params.id])
     res.status(204).end()
   }))
 
-  r.post("/import", writeGuard, asyncHandler(async (req, res) => {
+  r.post("/import", importGuard, asyncHandler(async (req, res) => {
     const body = req.body
     let inputs
     if (isPlainObject(body) && body.type === "FeatureCollection") {
@@ -140,7 +155,7 @@ export function obstaclesRouter({ db }) {
         return
       }
       const check = validateObstacle(input)
-      if (check.ok) valid.push(check.value)
+      if (check.ok) valid.push(check.value) // tenantId/externeId bleiben null → global
       else reasons.push({ index, reason: check.reason })
     })
 

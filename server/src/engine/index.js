@@ -42,11 +42,14 @@ export async function analyze({ db, project, corridorM }) {
     const cum = cumulativeKm(geometry)
     distanzKm += totalKm(geometry)
 
-    // Bbox-Vorfilter in SQL, exaktes Korridor-Matching danach in JS
+    // Bbox-Vorfilter in SQL, exaktes Korridor-Matching danach in JS.
+    // v3: globale Hindernisse + Kunden-Einträge des Projekt-Tenants.
     const bbox = bboxWithBuffer(geometry, corridorM)
     const { rows } = await db.query(
-      "SELECT * FROM obstacles WHERE aktiv = true AND lat BETWEEN $1 AND $2 AND lng BETWEEN $3 AND $4",
-      [bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng],
+      `SELECT * FROM obstacles WHERE aktiv = true
+         AND (tenant_id IS NULL OR tenant_id = $1::uuid)
+         AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5`,
+      [project.tenantId ?? null, bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng],
     )
 
     for (const row of rows) {
