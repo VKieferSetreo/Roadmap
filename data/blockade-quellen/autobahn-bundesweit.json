@@ -1,0 +1,102 @@
+{
+  "bundesland": "Bund (Autobahnen, bundesweit)",
+  "stand": "2026-06-12",
+  "quellen": [
+    {
+      "quelle": "Autobahn (Bund) — Autobahnliste (JSON)",
+      "datentyp": "Stammdaten: verfügbare Autobahnen",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Alle A in der API, bundesweit",
+      "url": "https://autobahn.api.bund.dev",
+      "sonstiges": "Liefert roads[]; roadId-Quelle für alle anderen Endpunkte",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Autobahn (Bund) — Baustellen (JSON)",
+      "datentyp": "Baustellen je Autobahn",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/{roadId}/services/roadworks",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Baustellen der A (z.B. A1)",
+      "url": null,
+      "sonstiges": "{roadId} aus Autobahnliste; Felder isBlocked + max. Durchfahrtsbreite",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Autobahn (Bund) — Baustelle Detail (JSON)",
+      "datentyp": "Details einer Baustelle",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/details/roadworks/{roadworkId}",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Eine Baustelle",
+      "url": null,
+      "sonstiges": "{roadworkId} = identifier aus Liste; Drill-down",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Autobahn (Bund) — Verkehrsmeldungen (JSON)",
+      "datentyp": "Gefahren, Staus, Engstellen",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/{roadId}/services/warning",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Ad-hoc-Meldungen der A",
+      "url": null,
+      "sonstiges": "Enthält teils Sperr-Hinweise, die nicht in /closure stehen",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Autobahn (Bund) — Sperrungen (JSON)",
+      "datentyp": "Sperrungen, Gewichtslimits",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/{roadId}/services/closure",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Voll-/Teilsperrungen der A",
+      "url": null,
+      "sonstiges": "Kern-Feed GST; display_type CLOSURE / WEIGHT_LIMIT_35, Tonnage in description[]",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Autobahn (Bund) — Sperrung Detail (JSON)",
+      "datentyp": "Details zu einer Sperrung",
+      "strassentyp": [
+        "A"
+      ],
+      "format": "JSON",
+      "apiEndpunkt": "https://verkehr.autobahn.de/o/autobahn/details/closure/{closureId}",
+      "update": "k.A.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Eine Sperrung",
+      "url": null,
+      "sonstiges": "{closureId} = identifier aus /closure; einziger Sperr-Detail-Endpunkt",
+      "prio": "P1"
+    }
+  ]
+}

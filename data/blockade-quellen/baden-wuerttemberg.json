@@ -1,0 +1,62 @@
+{
+  "bundesland": "Baden-Württemberg",
+  "stand": "2026-06-12",
+  "quellen": [
+    {
+      "quelle": "MobiData BW — Baustellen (GeoJSON)",
+      "datentyp": "Baustellen, Sperrungen, Demos, Straßenfeste",
+      "strassentyp": ["B", "L", "K"],
+      "format": "GeoJSON",
+      "apiEndpunkt": "https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_geojson.json",
+      "update": "Echtzeit",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Alle klass. Straßen BW + Events",
+      "url": "https://mobidata-bw.de/dataset/baustelleninformationen-baden-wurttemberg",
+      "sonstiges": "Inkl. Demos und Straßenfeste (BEMaS)",
+      "prio": "P1"
+    },
+    {
+      "quelle": "MobiData BW — Baustellen (CIFS)",
+      "datentyp": "Baustellen, Sperrungen",
+      "strassentyp": ["B", "L", "K"],
+      "format": "CIFS",
+      "apiEndpunkt": "https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_cifs.json",
+      "update": "Echtzeit",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Wie GeoJSON",
+      "url": null,
+      "sonstiges": "CIFS = Common Incident Format",
+      "prio": "P1"
+    },
+    {
+      "quelle": "MobiData BW — Baustellen (DATEX II)",
+      "datentyp": "Baustellen, Sperrungen",
+      "strassentyp": ["B", "L", "K"],
+      "format": "DATEX2",
+      "apiEndpunkt": "https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_svtzbw.datex2.xml",
+      "update": "Echtzeit",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Wie GeoJSON",
+      "url": null,
+      "sonstiges": "Gleiche Daten, anderes Format",
+      "prio": "P1"
+    },
+    {
+      "quelle": "MobiData BW — Verkehrsmeldungen",
+      "datentyp": "Staus, Unfälle, Gefahren, Sperrungen",
+      "strassentyp": ["Alle"],
+      "format": "TIC3",
+      "apiEndpunkt": "https://api.mobidata-bw.de/datasets/traffic/incidents-bw/TIC3-Meldungen.xml",
+      "update": "10 Min.",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Ergänzend — kurzfristige Blockaden (Unfälle etc.)",
+      "url": null,
+      "sonstiges": "Verkehrsmeldungen ≠ geplante Baustellen; für Ad-hoc-Blockaden",
+      "prio": "P1"
+    },
+  ]
+}

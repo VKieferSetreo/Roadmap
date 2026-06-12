@@ -1,0 +1,48 @@
+{
+  "bundesland": "Berlin",
+  "stand": "2026-06-12",
+  "quellen": [
+    {
+      "quelle": "Berlin VIZ — Baustellen/Sperrungen (GeoJSON)",
+      "datentyp": "Baustellen, Sperrungen, Störungen, Veranstaltungen",
+      "strassentyp": ["Alle"],
+      "format": "GeoJSON",
+      "apiEndpunkt": "https://api.viz.berlin.de/geoserver/mdhwfs/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=mdhwfs:baustellen_sperrungen&outputFormat=application/json",
+      "update": "laufend",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Berliner Stadtgebiet, alle Störungstypen inkl. Events",
+      "url": "https://daten.berlin.de/datensaetze?groups=verkehr",
+      "sonstiges": "OGC-WFS (GeoServer), 1 Layer = alles. EPSG:25833 (UTM33N) → reprojizieren. Filter: subtype (Baustelle/Störung) + severity (Sperr-Schwere). validity = JSON-String dd.mm.yyyy. netrefs → Detailnetz-Kanten. Default-Output GML, GeoJSON via outputFormat. Disruptions, KEINE baulichen Lastdaten.",
+      "prio": "P1"
+    },
+    {
+      "quelle": "OpenStreetMap (Overpass) — Höhen/Gewichts/Breiten-Restriktionen",
+      "datentyp": "Bauliche Restriktionen: maxheight, maxweight, maxwidth, maxaxleload, Brücken/Tunnel",
+      "strassentyp": ["Alle"],
+      "format": "JSON",
+      "apiEndpunkt": "https://overpass-api.de/api/interpreter",
+      "update": "laufend (OSM)",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Berlin, nur soweit in OSM erfasst (lückenhaft)",
+      "url": "https://wiki.openstreetmap.org/wiki/Key:maxweight",
+      "sonstiges": "Lizenz ODbL — Attribution + Share-Alike (kommerziell relevant!). Overpass-QL via ?data=/POST. Tags: maxweight (Ist-Gewicht), maxweightrating:hgv (zul. Gesamtgewicht), maxheight, maxwidth, maxaxleload, bridge. Bsp: area[\"name\"=\"Berlin\"][\"admin_level\"=\"4\"]->.a; nwr(area.a)[\"maxheight\"]; nwr(area.a)[\"maxweight\"]; out geom; — Output OSM-JSON → GeoJSON via osmtogeojson. Abdeckung lückenhaft (fehlende Tags).",
+      "prio": "P1"
+    },
+    {
+      "quelle": "Detailnetz Berlin — Bauwerke (WFS)",
+      "datentyp": "Ingenieurbauwerke: Brücken, Tunnel + Netzbezüge",
+      "strassentyp": ["Alle"],
+      "format": "WFS",
+      "apiEndpunkt": "https://gdi.berlin.de/services/wfs/detailnetz?service=WFS&version=2.0.0&request=GetCapabilities",
+      "update": "laufend (Fachanwendung)",
+      "auth": "keine",
+      "kosten": "kostenlos",
+      "abdeckung": "Berlin, alle erfassten Brücken/Tunnel (Geometrie/Identität)",
+      "url": "https://daten.berlin.de/datensaetze/detailnetz-bauwerke-wfs",
+      "sonstiges": "Lizenz DL-DE/Zero-2.0 (keine Namensnennung nötig). NUR GML-Output (kein GeoJSON) → WFS/GML-Parser. FeatureType s_vms_detailnetz_spatial_bauwerke; exakte Felder via DescribeFeatureType. WICHTIG: enthält nur Bauwerks-Geometrie/-Identität, KEINE Traglast/Brückenklasse. netrefs der VIZ-Quelle matchen hierauf.",
+      "prio": "P2"
+    }
+  ]
+}
