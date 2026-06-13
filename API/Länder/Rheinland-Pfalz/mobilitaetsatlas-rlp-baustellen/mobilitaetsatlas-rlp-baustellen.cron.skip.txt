@@ -1,0 +1,1 @@
+SKIP: Hindernis-relevant (Baustellen/Sperrungen), aber kein offener maschinenlesbarer Feed — Portal ist reines JS-Karten-Frontend (/api /data /geojson /wfs alle 404, keine eingebetteten API-URLs). Realer Bezugsweg = Mobilithek bzw. LBM-DATEX-II-Knoten (gated, s. lbm-rlp-datex2-knoten). Kein Endpunkt zum Ziehen.

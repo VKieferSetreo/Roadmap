@@ -1,0 +1,9 @@
+SKIP — kein offener Baustellen-Endpunkt (🟡 Portal-Stub).
+
+offenedaten.frankfurt.de ist ein SPA ohne Maschinen-API (/api/3/action = 404).
+Der echte Frankfurt-WFS (planas.frankfurt.de/wfs/<layer>) gehört dem Stadtplanungsamt
+(Bebauungspläne etc.) und trägt KEINE Baustellen. Baustellen/Verkehrsmeldungen kommen
+vom Straßenverkehrsamt/IGLZ und fließen bundesweit als DATEX-II über die MOBILITHEK.
+
+BEZUGSWEG: Frankfurt-IGLZ-Baustellen über API/Bundesweit/mobilithek (DATEX-II).
+Kein eigenständiger Städte-Cron möglich.

@@ -1,0 +1,1 @@
+TLBV Baustelleninformationssystem Thüringen — GWT-Web-App mit Link11/CAPTCHA-Schutz, KEIN maschineller Zugriff (curl blockiert). TH-Baustellen kommen über Mobilithek/DATEX-II (RSA 21). Nicht offen abrufbar → kein Cron.

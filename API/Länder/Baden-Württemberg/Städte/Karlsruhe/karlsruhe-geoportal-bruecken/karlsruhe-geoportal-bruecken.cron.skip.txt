@@ -1,0 +1,10 @@
+SKIP — kein offener maschineller Endpunkt (🟡, Geodaten nur "auf Anfrage").
+
+Die "Brücken und Bauwerke"-Geodaten leben im Geoportal (Liegenschaftsamt Karlsruhe);
+WMS/WFS werden explizit nur "auf Anfrage" (geoportal@la.karlsruhe.de) abgegeben.
+transparenz.karlsruhe.de (CKAN) hat NULL Geodatensätze mit WFS/WMS/GeoJSON;
+geoportal.karlsruhe.de hat keinen GeoServer; kein öffentlicher ArcGIS-FeatureServer.
+
+BEZUGSWEG: per E-Mail beim Liegenschaftsamt anfragen. Hohe Projekt-Relevanz (Traglast/
+lichte Höhe), aber kein Cron möglich. Baustellen Karlsruhe laufen über
+karlsruhe-trk-baustellen (verifiziert, Cron gebaut).

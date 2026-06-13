@@ -1,0 +1,1 @@
+LASuV Baustellen Sachsen — nur WMS (GetMap/GetFeatureInfo), kein offener WFS (wfs_list_baustellen=HTTP 403). WMS liefert keine maschinell ziehbaren Features (nur Darstellung + Einzel-GetFeatureInfo), daher kein Voll-Bestand-Cron möglich. Sachsen-Baustellen kommen ansonsten über MDM/Mobilithek-DATEX. Skip mangels offenem Feature-Dienst.

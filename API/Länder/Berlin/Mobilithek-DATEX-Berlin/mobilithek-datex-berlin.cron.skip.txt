@@ -1,0 +1,1 @@
+Mobilithek DATEX Berlin — nationaler DATEX-II-Aggregator (T2), credential-gebunden (.env) → zentrale Mobilithek-Pipeline, kein separater Landes-Cron. Berlin-Baustellen kommen offen über VIZ-WFS (0114) + VIZ-GeoJSON-Feeds (0115).

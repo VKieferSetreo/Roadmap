@@ -1,0 +1,1 @@
+SKIP: Katalog/Verzeichnis offener Bund-APIs (bund.dev), kein Datenproduzent — liefert nur Metadaten/Links, keine Hindernisse.

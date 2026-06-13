@@ -1,0 +1,1 @@
+SKIP: Zentrales Open-Data-Portal Hessen (CKAN) — Meta-Katalog + Detektor-/Induktionsschleifen-Rohdaten (Zähl-/Belegungswerte). Kein diskreter Hindernis-Feed; relevante Hessen-Mobil-Restriktion separat als eigener Cron (0115).

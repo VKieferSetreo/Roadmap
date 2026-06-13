@@ -1,0 +1,1 @@
+LVermGeo ST INSPIRE Verkehrsnetze (TN) — reine Netzdaten, kein Producer.

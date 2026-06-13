@@ -1,0 +1,13 @@
+{
+  "name": "roadmap-api-crons",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone Cron-Jobs pro Datenquelle: pullen + ins Roadmap-Format v1.0 mappen + (optional) direkt in die obstacles-DB schreiben (ROADMAP_WRITE_DB=1). Nicht Teil der Engine.",
+  "scripts": {
+    "verify-all": "bash run-crons.sh"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

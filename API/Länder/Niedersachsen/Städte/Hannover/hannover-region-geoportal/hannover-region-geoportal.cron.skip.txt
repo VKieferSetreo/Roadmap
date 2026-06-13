@@ -1,0 +1,8 @@
+SKIP — kein offener Baustellen-Endpunkt (🟡 Portal-Stub).
+
+Region-Hannover-Geodatendienste bieten als Verkehr-WMS/WFS ausschließlich Bike-Citizens-
+Radnutzung Q1-Q4/2020 — KEINE Baustellen. LH-Hannover-"Open GeoData" = nur Stadtkarten,
+Orthophotos, 3D-Modell, Straßenverzeichnis. Kein offener Baustellen-Feed publiziert.
+
+BEZUGSWEG: HannIT (Mobilität & GIS) als Ansprechpartner; landesweit über Niedersachsen-
+OpenGeoData. Kein Städte-Cron möglich.

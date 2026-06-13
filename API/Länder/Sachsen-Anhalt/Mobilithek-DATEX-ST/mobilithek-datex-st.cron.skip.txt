@@ -1,0 +1,1 @@
+Mobilithek DATEX ST — nationaler DATEX-II-Aggregator (T2), credential-gebunden (.env) → zentrale Mobilithek-Pipeline. ST-Hindernisse offen über LSBB-Sperrinfo (0120).

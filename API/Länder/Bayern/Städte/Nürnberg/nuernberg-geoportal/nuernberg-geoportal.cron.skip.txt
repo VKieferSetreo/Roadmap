@@ -1,0 +1,10 @@
+SKIP — kein offener Baustellen-Endpunkt (🟡 Portal-Stub).
+
+Das Nürnberg-GeoPortal (Masterportal über ArcGIS-Server) hat einen VOLLEN offenen
+WFS-Servicekatalog (140 Dienste, 119 WFS), aber KEINE Baustellen/Sperrungen/
+Verkehrsbeeinträchtigung — nur POIs, Bebauungspläne, ÖPNV-Trassen, Denkmäler.
+Suche baustell/sperr/umleit/verkehrsbe = 0 Treffer. Das opendata.nuernberg.de-Portal
+ist login-gated.
+
+BEZUGSWEG für Baustellen Nürnberg: Landesdienste Bayern (BAYSIS / BayernInfo / SDDI-
+Katalog) — siehe API/Länder/Bayern. Kein Städte-Cron möglich.

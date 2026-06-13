@@ -1,0 +1,1 @@
+SKIP: Gated/portal-gebunden. Brückenkarte nur als Web-Karte/Portal, kein offener maschineller Rohdaten-Endpunkt. Nicht als Cron normalisierbar.

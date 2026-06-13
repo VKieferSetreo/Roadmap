@@ -1,0 +1,1 @@
+SKIP: Kein maschineller Rohdaten-Zugang. Der CKAN/GovData-Hub liefert nur Katalog-Metadaten (package_search), die eigentlichen lastbeschränkten Brücken sind ausschließlich als ArcGIS-WebApp-Karte zugänglich (kein offener WFS/GeoJSON-Download, Rohdaten lt. Datensatz "in Prüfung"/per Kontakt) — damit nicht als Cron normalisierbar.

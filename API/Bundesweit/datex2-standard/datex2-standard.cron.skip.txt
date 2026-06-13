@@ -1,0 +1,1 @@
+SKIP: DATEX-II ist ein Daten-STANDARD/Schema, kein Endpunkt. Konkrete DATEX-II-Feeds werden über Mobilithek/Länder-SVZ angebunden, nicht über diese Standard-Doku. Kein eigener Daten-Producer.

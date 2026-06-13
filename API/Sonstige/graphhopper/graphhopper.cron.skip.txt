@@ -1,0 +1,1 @@
+SKIP: Gated Routing-API (GraphHopper) — API-Key/kommerziell, liefert Routing, kein Hindernis-Bestand. Kein Producer fürs obstacle-Format.

@@ -1,0 +1,1 @@
+SKIP: Fachnetze = bedarfsabhängige GST-Umleitungen/Alternativrouten (Positiv-Netz) + Verwaltungsgrenzen — kein diskretes Strecken-Hindernis. Beschreibt befahrbare Routen, nicht Sperrungen/Restriktionen. Echte bayerische Bauwerks-Restriktion: BAYSIS-Bauwerke (0112).

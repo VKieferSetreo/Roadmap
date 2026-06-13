@@ -1,0 +1,1 @@
+SKIP: Geobasis-Dienste (ATKIS Basis-DLM/DLM50, ALKIS, INSPIRE) — topographisches Straßennetz ohne Restriktionsattribute. Kein Hindernis-Producer.

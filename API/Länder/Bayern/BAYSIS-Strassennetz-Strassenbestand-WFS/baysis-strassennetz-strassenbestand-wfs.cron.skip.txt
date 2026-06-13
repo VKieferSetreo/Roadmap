@@ -1,0 +1,1 @@
+SKIP: Klassifiziertes Straßennetz + Straßenbestand (ASB-Abschnitte/Stationen, B/St/K) — Netz/Bestandsdaten, kein Hindernis-Producer. Netzbezug für andere Quellen.

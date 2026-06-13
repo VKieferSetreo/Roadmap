@@ -1,0 +1,1 @@
+VMZ Niedersachsen — Verkehrsmeldungen via Mobilithek/DATEX II (credential-gebunden) — über die zentrale Mobilithek-Pipeline, nicht als Landes-Cron hier.

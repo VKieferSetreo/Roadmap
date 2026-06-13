@@ -1,0 +1,1 @@
+SKIP: Referenz-/Netzdaten (Bundesinformationssystem Straße — Straßennetz/Stationierung), kein diskretes Hindernis. Dient als ASB-Netzbezug für andere Quellen, produziert selbst keine Baustellen/Restriktionen.

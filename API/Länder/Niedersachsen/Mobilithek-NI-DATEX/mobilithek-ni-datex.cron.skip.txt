@@ -1,0 +1,1 @@
+Mobilithek NI DATEX — nationaler DATEX-II-Aggregator (T2), credential-gebunden (.env) → zentrale Mobilithek-Pipeline, kein separater Landes-Cron.

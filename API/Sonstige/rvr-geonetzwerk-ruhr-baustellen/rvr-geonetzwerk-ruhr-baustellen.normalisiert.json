@@ -1,0 +1,1384 @@
+{
+  "quelle": {
+    "id": "0302",
+    "name": "RVR / GEONETZWERK.RUHR — Baustellen"
+  },
+  "abgerufen_am": "2026-06-13T17:38:17.471Z",
+  "anzahl_verfuegbar": 20,
+  "anzahl_normalisiert": 20,
+  "db_geschrieben": {
+    "neu": 0,
+    "aktualisiert": 20
+  },
+  "beispiele": [
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4265",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Ausbau A 43",
+      "beschreibung": "Ausbau A 43 · Teilsperrung mit LSA",
+      "lat": 51.55222708525796,
+      "lng": 7.197078097553563,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.197078097553563,
+            51.55222708525796
+          ],
+          [
+            7.196582782965001,
+            51.551985662835236
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": "A43",
+      "strassenklasse": "A",
+      "baulasttraeger": "bund",
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2025-09-01",
+      "gueltig_bis": "2026-12-31",
+      "realer_start": "2025-09-01",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4265",
+        "beginn": "01.09.2025",
+        "ende": "31.12.2026",
+        "strasse": "Forellstr. A 43",
+        "massnahme": "Ausbau A 43",
+        "einschr": "Teilsperrung mit LSA",
+        "auftraggeber": null,
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4266",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Hausbau",
+      "beschreibung": "Hausbau · Vollsperrung Fahrbahn",
+      "lat": 51.511344060952965,
+      "lng": 7.157013943280526,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.157013943280526,
+            51.511344060952965
+          ],
+          [
+            7.156935037284122,
+            51.51151368320566
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2025-09-17",
+      "gueltig_bis": "2026-09-17",
+      "realer_start": "2025-09-17",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4266",
+        "beginn": "17.09.2025",
+        "ende": "17.09.2026",
+        "strasse": "Bergmannstr. 22",
+        "massnahme": "Hausbau",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Privat",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4289",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Umbau",
+      "beschreibung": "Umbau · Vollsperrung Fahrbahn",
+      "lat": 51.537246068638076,
+      "lng": 7.220684436899276,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.220684436899276,
+            51.537246068638076
+          ],
+          [
+            7.21878070980676,
+            51.53688444696836
+          ],
+          [
+            7.2185367715646445,
+            51.536853764425054
+          ],
+          [
+            7.218515691934512,
+            51.53702430464079
+          ],
+          [
+            7.2185315287038865,
+            51.53735727323548
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2025-11-05",
+      "gueltig_bis": "2026-07-31",
+      "realer_start": "2025-11-05",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4289",
+        "beginn": "05.11.2025",
+        "ende": "31.07.2026",
+        "strasse": "Bergelmanns Hof",
+        "massnahme": "Umbau",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadt Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    }
+  ],
+  "alle": [
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4265",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Ausbau A 43",
+      "beschreibung": "Ausbau A 43 · Teilsperrung mit LSA",
+      "lat": 51.55222708525796,
+      "lng": 7.197078097553563,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.197078097553563,
+            51.55222708525796
+          ],
+          [
+            7.196582782965001,
+            51.551985662835236
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": "A43",
+      "strassenklasse": "A",
+      "baulasttraeger": "bund",
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2025-09-01",
+      "gueltig_bis": "2026-12-31",
+      "realer_start": "2025-09-01",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4265",
+        "beginn": "01.09.2025",
+        "ende": "31.12.2026",
+        "strasse": "Forellstr. A 43",
+        "massnahme": "Ausbau A 43",
+        "einschr": "Teilsperrung mit LSA",
+        "auftraggeber": null,
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4266",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Hausbau",
+      "beschreibung": "Hausbau · Vollsperrung Fahrbahn",
+      "lat": 51.511344060952965,
+      "lng": 7.157013943280526,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.157013943280526,
+            51.511344060952965
+          ],
+          [
+            7.156935037284122,
+            51.51151368320566
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2025-09-17",
+      "gueltig_bis": "2026-09-17",
+      "realer_start": "2025-09-17",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4266",
+        "beginn": "17.09.2025",
+        "ende": "17.09.2026",
+        "strasse": "Bergmannstr. 22",
+        "massnahme": "Hausbau",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Privat",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4289",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Umbau",
+      "beschreibung": "Umbau · Vollsperrung Fahrbahn",
+      "lat": 51.537246068638076,
+      "lng": 7.220684436899276,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.220684436899276,
+            51.537246068638076
+          ],
+          [
+            7.21878070980676,
+            51.53688444696836
+          ],
+          [
+            7.2185367715646445,
+            51.536853764425054
+          ],
+          [
+            7.218515691934512,
+            51.53702430464079
+          ],
+          [
+            7.2185315287038865,
+            51.53735727323548
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2025-11-05",
+      "gueltig_bis": "2026-07-31",
+      "realer_start": "2025-11-05",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4289",
+        "beginn": "05.11.2025",
+        "ende": "31.07.2026",
+        "strasse": "Bergelmanns Hof",
+        "massnahme": "Umbau",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadt Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4713",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Umbau Schmiedesbach",
+      "beschreibung": "Umbau Schmiedesbach · Vollsperrung Fahrbahn / Gehweg",
+      "lat": 51.542708348547116,
+      "lng": 7.188613910054718,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.188613910054718,
+            51.542708348547116
+          ],
+          [
+            7.18846165961043,
+            51.5421844221257
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-02-16",
+      "gueltig_bis": "2026-06-27",
+      "realer_start": "2026-02-16",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4713",
+        "beginn": "16.02.2026",
+        "ende": "27.06.2026",
+        "strasse": "Vor dem Hofe",
+        "massnahme": "Umbau Schmiedesbach",
+        "einschr": "Vollsperrung Fahrbahn / Gehweg",
+        "auftraggeber": null,
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4716",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Fernwärme",
+      "beschreibung": "Fernwärme · Vollsperrung Fahrbahn",
+      "lat": 51.540750191245216,
+      "lng": 7.225234573353642,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.225234573353642,
+            51.540750191245216
+          ],
+          [
+            7.225385342125966,
+            51.54058161215656
+          ],
+          [
+            7.225609570296163,
+            51.540378173555375
+          ],
+          [
+            7.225880179501404,
+            51.54009450228754
+          ],
+          [
+            7.226211579621061,
+            51.53973081593838
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-03-03",
+      "gueltig_bis": "2026-06-30",
+      "realer_start": "2026-03-03",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4716",
+        "beginn": "03.03.2026",
+        "ende": "30.06.2026",
+        "strasse": "Schulstr. Ecke Schäferstr.",
+        "massnahme": "Fernwärme",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4724",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Tiefbauarbeiten Versorgungleitungen ",
+      "beschreibung": "Tiefbauarbeiten Versorgungleitungen  · Vollsperrung Fahrbahn, ",
+      "lat": 51.52761370362281,
+      "lng": 7.2523013018746845,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.2523013018746845,
+            51.52761370362281
+          ],
+          [
+            7.252512910361229,
+            51.52811145101114
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-03-30",
+      "gueltig_bis": "2026-07-31",
+      "realer_start": "2026-03-30",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4724",
+        "beginn": "30.03.2026",
+        "ende": "31.07.2026",
+        "strasse": "Voßstr. Gysenbergstr. Landwehrweg",
+        "massnahme": "Tiefbauarbeiten Versorgungleitungen ",
+        "einschr": "Vollsperrung Fahrbahn, ",
+        "auftraggeber": "Stadtwerke Herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4727",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Versorgungsleitungen",
+      "beschreibung": "Versorgungsleitungen · Teilsperrung/Vollsperrung Fahrbahn · Vollsperrung Fahrbahn Seitenarm Bochumer Str. ",
+      "lat": 51.52706592154349,
+      "lng": 7.218284554016736,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.218284554016736,
+            51.52706592154349
+          ],
+          [
+            7.219148398424822,
+            51.52783442475511
+          ],
+          [
+            7.219580331479385,
+            51.52821867404352
+          ],
+          [
+            7.219969396427787,
+            51.52859327843868
+          ],
+          [
+            7.220318746584663,
+            51.528877352281974
+          ],
+          [
+            7.220569342131077,
+            51.52910597090058
+          ],
+          [
+            7.220888438256692,
+            51.529056855601326
+          ],
+          [
+            7.2211667598164615,
+            51.5289441724362
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-04-01",
+      "gueltig_bis": "2026-07-30",
+      "realer_start": "2026-04-01",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4727",
+        "beginn": "01.04.2026",
+        "ende": "30.07.2026",
+        "strasse": "Flottmannstr. 2 - 12",
+        "massnahme": "Versorgungsleitungen",
+        "einschr": "Teilsperrung/Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke",
+        "bemerkung": "Vollsperrung Fahrbahn Seitenarm Bochumer Str. "
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4728",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Tiefbauarbeiten",
+      "beschreibung": "Tiefbauarbeiten · Vollsperrung Fahrbhahn",
+      "lat": 51.55616791380049,
+      "lng": 7.242248390689726,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.242248390689726,
+            51.55616791380049
+          ],
+          [
+            7.242485172874901,
+            51.556387283606654
+          ],
+          [
+            7.243069020417152,
+            51.55658487326167
+          ],
+          [
+            7.243379628950622,
+            51.5567603838263
+          ],
+          [
+            7.243603040684336,
+            51.556952573322064
+          ],
+          [
+            7.243842603289162,
+            51.55710004116864
+          ],
+          [
+            7.244038221429313,
+            51.557264835969285
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-03-20",
+      "gueltig_bis": "2026-07-31",
+      "realer_start": "2026-03-20",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4728",
+        "beginn": "20.03.2026",
+        "ende": "31.07.2026",
+        "strasse": "Heckerstr. 1/2 - 32/27",
+        "massnahme": "Tiefbauarbeiten",
+        "einschr": "Vollsperrung Fahrbhahn",
+        "auftraggeber": "Stadtwerke Herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4729",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Teilsperrung Gehweg",
+      "beschreibung": "Teilsperrung Gehweg · LSA bei Bedarf",
+      "lat": 51.54318432241811,
+      "lng": 7.199670968549973,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.199670968549973,
+            51.54318432241811
+          ],
+          [
+            7.2004577858636605,
+            51.54298057177917
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": "A42",
+      "strassenklasse": "A",
+      "baulasttraeger": "bund",
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2026-05-04",
+      "gueltig_bis": "2026-07-24",
+      "realer_start": "2026-05-04",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4729",
+        "beginn": "04.05.2026",
+        "ende": "24.07.2026",
+        "strasse": "Cranger Str. Brücke A 42 und DB Brücke",
+        "massnahme": "Teilsperrung Gehweg",
+        "einschr": null,
+        "auftraggeber": "Stadtwerke",
+        "bemerkung": "LSA bei Bedarf"
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4733",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Asphaltsanierung",
+      "beschreibung": "Asphaltsanierung · Vollsperrung Fahrbahn",
+      "lat": 51.529926576419115,
+      "lng": 7.227847054593499,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.227847054593499,
+            51.529926576419115
+          ],
+          [
+            7.223840145045054,
+            51.5291555474609
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-04-27",
+      "gueltig_bis": "2026-08-01",
+      "realer_start": "2026-04-27",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4733",
+        "beginn": "27.04.2026",
+        "ende": "01.08.2026",
+        "strasse": "Hölkeskampring zw. Altenhöfenerstr. und Jean-Vogel-Str.",
+        "massnahme": "Asphaltsanierung",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadt Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4734",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Fernwärme",
+      "beschreibung": "Fernwärme · Vollsperrung Fahrbahn",
+      "lat": 51.52482376501143,
+      "lng": 7.227583892927557,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.227583892927557,
+            51.52482376501143
+          ],
+          [
+            7.228038303300275,
+            51.525001491643835
+          ],
+          [
+            7.228104656834803,
+            51.52477767766787
+          ],
+          [
+            7.228134169671585,
+            51.52476013821502
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-04-30",
+      "gueltig_bis": "2026-07-10",
+      "realer_start": "2026-04-30",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4734",
+        "beginn": "30.04.2026",
+        "ende": "10.07.2026",
+        "strasse": "Jahnstr. Auf dem Beil, Altenhöfener Str.",
+        "massnahme": "Fernwärme",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke Herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4735",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Fernwärme",
+      "beschreibung": "Fernwärme · Vollsperrung Fahrbahn",
+      "lat": 51.546063140735214,
+      "lng": 7.21741263767395,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.21741263767395,
+            51.546063140735214
+          ],
+          [
+            7.2167984644269945,
+            51.54664732032398
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-05-18",
+      "gueltig_bis": "2026-07-20",
+      "realer_start": "2026-05-18",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4735",
+        "beginn": "18.05.2026",
+        "ende": "20.07.2026",
+        "strasse": "Bahnhofstr. 121 -129 und ggü.",
+        "massnahme": "Fernwärme",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke Herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4737",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Fernwärme",
+      "beschreibung": "Fernwärme · Vollsperrung Fahrbahn",
+      "lat": 51.54211006648108,
+      "lng": 7.225960416420315,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.225960416420315,
+            51.54211006648108
+          ],
+          [
+            7.22635122973242,
+            51.54170231512679
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-05-18",
+      "gueltig_bis": "2026-09-30",
+      "realer_start": "2026-05-18",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4737",
+        "beginn": "18.05.2026",
+        "ende": "30.09.2026",
+        "strasse": "Hermann-Löns-Str. 58 - 60",
+        "massnahme": "Fernwärme",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke Herne",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4739",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Asphaltdecke erneuern",
+      "beschreibung": "Asphaltdecke erneuern · Vollsperrung Fahrbahn",
+      "lat": 51.5329173359325,
+      "lng": 7.186998472852288,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.186998472852288,
+            51.5329173359325
+          ],
+          [
+            7.188648101477348,
+            51.53313166942355
+          ],
+          [
+            7.189236407517836,
+            51.53320370202976
+          ],
+          [
+            7.189538301135862,
+            51.533226347669306
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-06-01",
+      "gueltig_bis": "2026-06-26",
+      "realer_start": "2026-06-01",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4739",
+        "beginn": "01.06.2026",
+        "ende": "26.06.2026",
+        "strasse": "Horststrraße",
+        "massnahme": "Asphaltdecke erneuern",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadt Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4740",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Asphaltarbeiten",
+      "beschreibung": "Asphaltarbeiten · Einbahnstraße ",
+      "lat": 51.52504907147116,
+      "lng": 7.171957898533966,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.171957898533966,
+            51.52504907147116
+          ],
+          [
+            7.173405068561254,
+            51.52455004122587
+          ],
+          [
+            7.174968540159082,
+            51.524025824927655
+          ],
+          [
+            7.176632104925254,
+            51.523521129547554
+          ],
+          [
+            7.1785012703969935,
+            51.52292068422142
+          ],
+          [
+            7.179844232641752,
+            51.52250089104426
+          ],
+          [
+            7.17981506144424,
+            51.52250943103072
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2026-05-06",
+      "gueltig_bis": "2026-08-28",
+      "realer_start": "2026-05-06",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4740",
+        "beginn": "06.05.2026",
+        "ende": "28.08.2026",
+        "strasse": "Dorneburger Straße ",
+        "massnahme": "Asphaltarbeiten",
+        "einschr": "Einbahnstraße ",
+        "auftraggeber": "Stadt Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4721",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Kanalsanierung",
+      "beschreibung": "Kanalsanierung · Vollsperrung Fahrbahn ",
+      "lat": 51.53825458802786,
+      "lng": 7.192540042466558,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.192540042466558,
+            51.53825458802786
+          ],
+          [
+            7.192835918557449,
+            51.53843000775051
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-03-16",
+      "gueltig_bis": "2026-07-10",
+      "realer_start": "2026-03-16",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4721",
+        "beginn": "16.03.2026",
+        "ende": "10.07.2026",
+        "strasse": "Rottbruchstr/Beckumer Str.",
+        "massnahme": "Kanalsanierung",
+        "einschr": "Vollsperrung Fahrbahn ",
+        "auftraggeber": "SEH",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4743",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Versorgungsleitungen",
+      "beschreibung": "Versorgungsleitungen · Teilsperrung Fahrbahn mit LSA",
+      "lat": 51.52833935840288,
+      "lng": 7.252720438321692,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.252720438321692,
+            51.52833935840288
+          ],
+          [
+            7.252890548161669,
+            51.52879152367319
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2026-06-09",
+      "gueltig_bis": "2026-07-17",
+      "realer_start": "2026-06-09",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4743",
+        "beginn": "09.06.2026",
+        "ende": "17.07.2026",
+        "strasse": "Gysenbergstr. 81",
+        "massnahme": "Versorgungsleitungen",
+        "einschr": "Teilsperrung Fahrbahn mit LSA",
+        "auftraggeber": "Stadtwerke Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4749",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Kanalarbeiten ",
+      "beschreibung": "Kanalarbeiten  · Teilsperrung Fahrbahn",
+      "lat": 51.53076528051435,
+      "lng": 7.151673515346688,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.151673515346688,
+            51.53076528051435
+          ],
+          [
+            7.151890162617797,
+            51.530399992312056
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2026-06-08",
+      "gueltig_bis": "2026-06-19",
+      "realer_start": "2026-06-08",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4749",
+        "beginn": "08.06.2026",
+        "ende": "19.06.2026",
+        "strasse": "Schlachthofstr. 53",
+        "massnahme": "Kanalarbeiten ",
+        "einschr": "Teilsperrung Fahrbahn",
+        "auftraggeber": "SEH ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4750",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Tiefbauarbeiten",
+      "beschreibung": "Tiefbauarbeiten · Teilsperrung Fahrbahn mit Einbahnreglung",
+      "lat": 51.5159302135879,
+      "lng": 7.19049815227063,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.19049815227063,
+            51.5159302135879
+          ],
+          [
+            7.187006781153103,
+            51.51456335497369
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {},
+      "gueltig_von": "2026-06-10",
+      "gueltig_bis": "2026-06-27",
+      "realer_start": "2026-06-10",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4750",
+        "beginn": "10.06.2026",
+        "ende": "27.06.2026",
+        "strasse": "Herzogstraße",
+        "massnahme": "Tiefbauarbeiten",
+        "einschr": "Teilsperrung Fahrbahn mit Einbahnreglung",
+        "auftraggeber": null,
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    },
+    {
+      "quellen_id": "0302",
+      "externe_id": "baustelle.4751",
+      "kategorie": "baustelle",
+      "befristung": "temporaer",
+      "name": "Tiefbauarbeiten ",
+      "beschreibung": "Tiefbauarbeiten  · Vollsperrung Fahrbahn",
+      "lat": 51.54369229436578,
+      "lng": 7.2589394480987774,
+      "geom": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            7.2589394480987774,
+            51.54369229436578
+          ],
+          [
+            7.259549625489578,
+            51.543575452758176
+          ]
+        ]
+      },
+      "richtung": "beide",
+      "strassen_ref": null,
+      "strassenklasse": null,
+      "baulasttraeger": null,
+      "vnk": null,
+      "nnk": null,
+      "station_von": null,
+      "station_bis": null,
+      "attrs": {
+        "vollsperrung": true
+      },
+      "gueltig_von": "2026-06-08",
+      "gueltig_bis": "2026-08-29",
+      "realer_start": "2026-06-08",
+      "zeitfenster": null,
+      "quelle": {
+        "name": "RVR / GEONETZWERK.RUHR — Baustellen (Herne)",
+        "url": "https://geodaten.herne.de/geoserver/verkehr/baustellen",
+        "abgerufenAm": "2026-06-13T17:38:17.471Z"
+      },
+      "roh": {
+        "gml_id": "baustelle.4751",
+        "beginn": "08.06.2026",
+        "ende": "29.08.2026",
+        "strasse": "Bruno-Danek-Weg / Kirchstr. 59",
+        "massnahme": "Tiefbauarbeiten ",
+        "einschr": "Vollsperrung Fahrbahn",
+        "auftraggeber": "Stadtwerke Herne ",
+        "bemerkung": null
+      },
+      "status": "gemeldet",
+      "abgerufen_am": "2026-06-13T17:38:17.471Z"
+    }
+  ]
+}

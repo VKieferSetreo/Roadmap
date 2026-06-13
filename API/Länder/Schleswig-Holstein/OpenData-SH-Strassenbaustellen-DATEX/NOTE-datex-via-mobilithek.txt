@@ -1,0 +1,1 @@
+Inhaltlich identisch zur eigenen SH-Baustellen-Quelle (0117, selber WFS dienste.gdi-sh.de) — die DATEX-II-Variante läuft credential-gebunden über die zentrale Mobilithek-Pipeline. Kein separater Cron für diesen Sub-Ordner; siehe ../OpenData-SH-Strassenbaustellen-DATEX/baustellen-sh.cron.mjs.

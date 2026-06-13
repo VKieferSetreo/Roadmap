@@ -1,0 +1,1 @@
+VMZ Bremen — Verkehrsmeldungen via Mobilithek/DATEX, über zentrale Mobilithek-Pipeline, kein Landes-Cron.

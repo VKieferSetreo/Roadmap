@@ -1,0 +1,1 @@
+SKIP: Hindernis-relevant (GST-Brückenrestriktion), aber KEINE offene maschinenlesbare Brücken-/Negativliste vorhanden (Lücke RLP, anders als NRW/Hessen). Nur Info-Themenseiten (HTML), keine Daten-/Listendownloads. Echter Datenbezug nur via VEMAGS (Bund, restricted) oder direkter LBM-Anfrage. Kein Endpunkt zum Ziehen.

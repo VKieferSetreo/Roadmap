@@ -1,0 +1,1 @@
+SKIP: PDF-Positivkarten (GST-befahrbare Strecken je Gewichtsklasse 36/48/60/72 t) — bildhafte Routenkarten ohne Geometrie/Strukturdaten, je Landkreis × Gewichtsklasse. Sind Positiv-Netz (befahrbar), kein diskretes Hindernis; maschinell nur per Karten-Digitalisierung nutzbar. Die echte Hessen-Restriktion (gesperrte Brücken) liefert hessen-mobil-lastbeschraenkte-bruecken (0115).

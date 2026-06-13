@@ -1,0 +1,1 @@
+SKIP: Wasserstraßen-Informationsportal (ELWIS/WSV) — Binnenschifffahrt, kein Straßen-Hindernis; zudem portal-gebunden. Kein Producer fürs obstacle-Format.

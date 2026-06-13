@@ -1,0 +1,1 @@
+SKIP: SPARQL-Query-Engine über OSM (QLever) — alternativer Abfrageweg auf dieselben OSM-Daten, die bereits via Overpass (Quelle 0301) normalisiert werden. Redundant, kein eigener Producer.

@@ -1,0 +1,1 @@
+SKIP: Wetterwarnungen sind flächige, dynamische Kontext-/Referenzdaten (Warngebiete), kein diskretes Strecken-Hindernis — erst relevant, wenn wetterbedingte Sperrkriterien explizit modelliert werden (P3, derzeit nicht). Kein Hindernis-Producer im Sinne des obstacle-Formats.

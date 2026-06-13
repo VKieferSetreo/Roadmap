@@ -1,0 +1,10 @@
+SKIP — KEIN Baustellen-Datensatz vorhanden (🟡, nicht fixbar).
+
+Der Mannheim-Open-Data-Katalog (Opendatasoft, 41 Datensätze) hat KEINEN Baustellen-
+Datensatz: where=search('baustelle'/'bau'/'sperr') → total_count=0. 'verkehr' → 23
+Treffer, aber ausnahmslos Eco-Counter-Verkehrszähler + Straßennamen/-typen. Mannheim-
+Baustellen leben im separaten "Baustellen-Online-Portal" + Mobilitätsportal
+(gis-mannheim.de/mannheim_mobi/), NICHT als offener Datensatz exportiert.
+
+BEZUGSWEG: Mobilitätsportal-Backend / Geoportal-WFS direkt anfragen ODER landesweit
+über MobiData BW (siehe API/Länder/Baden-Württemberg). Kein Städte-Cron möglich.

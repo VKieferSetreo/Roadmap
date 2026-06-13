@@ -1,0 +1,1 @@
+GDI-SBV (Sächs. Straßenbauverwaltung Fachdaten, inkl. Bauwerke) — nur im Sächs./Komm. Verwaltungsnetz (SVN/KDN) erreichbar, NICHT aus dem öffentlichen Internet, Account + Freigabe nötig. Nicht offen testbar → kein Cron.

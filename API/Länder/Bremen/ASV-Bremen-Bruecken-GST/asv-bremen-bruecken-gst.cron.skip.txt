@@ -1,0 +1,1 @@
+ASV Bremen Brücken & GST — maßgebliche HB-Bauwerks-/GST-Stelle, aber KEIN offener Datendienst (Bauwerksportal Web-only, Daten nur per Anfrage). Nicht offen abrufbar → kein Cron.

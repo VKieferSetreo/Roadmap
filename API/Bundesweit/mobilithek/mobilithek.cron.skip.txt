@@ -1,0 +1,1 @@
+SKIP: Gated. Mobilithek (nationaler DATEX-II-Aggregator) erfordert Registrierung/Zertifikat je Datenangebot — kein offener anonymer Bulk-Endpunkt. Nicht als standalone-Cron ohne Account abrufbar.

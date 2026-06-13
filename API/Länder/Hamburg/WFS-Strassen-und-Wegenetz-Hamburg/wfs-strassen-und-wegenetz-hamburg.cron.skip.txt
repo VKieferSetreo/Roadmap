@@ -1,0 +1,1 @@
+Reines Knoten-Kanten-Straßennetz (HH-SIB, 28 FeatureTypes bab_ast/bundesstrassen_ast/befahrbare_fussgaengerzone etc.) — Netzdaten, KEIN Hindernis-Producer. Liefert Streckengeometrie + Netzknoten/Stationierung, keine Baustellen/Sperrungen/Bauwerksrestriktionen. Netzbezug nutzen wir DB-seitig zum Matching, nicht als eigene Quelle.

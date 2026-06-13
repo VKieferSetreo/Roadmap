@@ -1,0 +1,1 @@
+SKIP: Meta-Katalog (Open-Data-Portal BW), verweist nur auf andere Datensätze (MobiData-BW, LGL, Kommunal). Kein eigener Hindernis-Feed — die relevanten MobiData-Quellen werden direkt als eigene Crons gezogen.

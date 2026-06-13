@@ -1,0 +1,1 @@
+SKIP: Gated/portal-gebunden. GST-Genehmigungs-/Routing-Portal (Großraum- und Schwertransport) ohne offenen maschinellen Hindernis-Endpunkt. Nicht als Cron normalisierbar.

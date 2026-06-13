@@ -1,0 +1,1 @@
+SKIP: Referenzdaten (Wasserstands-Pegel der Bundeswasserstraßen), keine Strecken-Restriktion für Schwertransport. Kein Hindernis-Producer.

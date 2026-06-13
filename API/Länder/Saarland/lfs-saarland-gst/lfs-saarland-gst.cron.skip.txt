@@ -1,0 +1,1 @@
+SKIP: Hindernis-relevant (GST-Brückenrestriktion), aber KEINE offene GST-Negativ-/Brückenkarte (Lücke Saarland, wie RLP). LfS-Seiten antworten auf automatisierte Abrufe mit HTTP 403 (WAF/Bot-Schutz). Echter Datenbezug nur via VEMAGS (Bund, restricted) oder LfS-Kooperation. Kein Endpunkt zum Ziehen.

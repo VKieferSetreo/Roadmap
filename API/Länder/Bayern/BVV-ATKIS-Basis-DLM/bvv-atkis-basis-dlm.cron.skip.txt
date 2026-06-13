@@ -1,0 +1,1 @@
+SKIP: ATKIS Basis-DLM / Geobasis (topographisches Landschaftsmodell, Objektbereich Verkehr) + INSPIRE-WMS — Netzgeometrie ohne Bauwerks-Restriktion. Kein Hindernis-Producer.

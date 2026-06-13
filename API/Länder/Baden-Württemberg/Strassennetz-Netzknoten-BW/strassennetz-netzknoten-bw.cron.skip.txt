@@ -1,0 +1,1 @@
+SKIP: Klassifiziertes Straßennetz + Netzknoten (ASB-Stationierung) — Grundnetz/Referenzdaten, kein Hindernis-Producer. Dient als Netzbezug für andere Quellen, liefert selbst keine Baustellen/Restriktionen.

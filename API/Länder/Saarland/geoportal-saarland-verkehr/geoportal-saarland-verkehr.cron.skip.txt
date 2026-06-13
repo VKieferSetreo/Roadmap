@@ -1,0 +1,1 @@
+SKIP: Verkehrs-Geobasis (Straßennetz, Netzknoten, Rastplätze, Zählstellen, P+R, Ladestationen, ÖPNV-Haltestellen) + INSPIRE-Verkehrsnetze (ATKIS/OKSTRA) — reine Netzgeometrie, KEINE Brücken-Restriktions-Collection. Kein Hindernis-Producer; die offenen Saarland-Baustellen liefert baustellen-saarland-lfs (0116).

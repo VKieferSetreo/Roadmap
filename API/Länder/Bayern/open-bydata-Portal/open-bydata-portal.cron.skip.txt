@@ -1,0 +1,1 @@
+SKIP: Meta-Katalog (Open-Data-Portal Bayern), verlinkt nur BAYSIS-/BVV-/kommunale Datensätze. Kein eigener Hindernis-Feed.

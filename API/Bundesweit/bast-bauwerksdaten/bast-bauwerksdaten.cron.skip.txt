@@ -1,0 +1,1 @@
+SKIP: Gated/portal-gebunden. BASt SIB-Bauwerksdaten sind nicht offen maschinell abrufbar (kein offener WFS/Download) — Zugang über Behörden-Portal/Kontakt. Nicht als Cron normalisierbar.

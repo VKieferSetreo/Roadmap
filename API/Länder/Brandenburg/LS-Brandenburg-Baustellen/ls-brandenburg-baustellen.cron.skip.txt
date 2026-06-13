@@ -1,0 +1,1 @@
+LS Brandenburg Baustelleninformationssystem — interaktive Web-Karte, KEIN öffentlich dokumentierter WFS/GeoJSON/DATEX-Export (Feed nur per Anfrage an LS). BB-Baustellen kommen ansonsten über Mobilithek/DATEX-II (RSA-21-Meldepflicht). Nicht offen abrufbar → kein Cron.
