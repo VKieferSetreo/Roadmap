@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { extractStammdaten, makeNormalized } from "../src/connectors/_helpers.js"
+import { enrichFromText } from "../src/enrich.js"
 
 // Echter Autobahn-API-Beschreibungsblock (A7, wie im Karten-Popup gesehen).
 const A7 = [
@@ -43,6 +44,47 @@ describe("extractStammdaten", () => {
     expect(extractStammdaten(null)).toEqual({})
     expect(extractStammdaten("")).toEqual({})
     expect(extractStammdaten("Reinigungsarbeiten ohne Angaben")).toEqual({})
+  })
+
+  it("Achslast, Straßen-Ref und Richtung (Pfeil-Korridor)", () => {
+    const ex = extractStammdaten("A7: Hamburg → Kassel, zul. Achslast 11,5 t")
+    expect(ex.maxAchslastT).toBe(11.5)
+    expect(ex.strassenRef).toBe("A7")
+    expect(ex.richtung).toBe("Hamburg → Kassel")
+  })
+
+  it("Einzeldatum OHNE Gültigkeits-Kontext wird NICHT übernommen (z.B. 'Stand')", () => {
+    expect(extractStammdaten("Stand 15.03.2024").gueltigVon).toBeUndefined()
+    expect(extractStammdaten("gültig ab 15.03.2024").gueltigVon).toBe("2024-03-15")
+  })
+
+  it("Sperrart (Voll vor Halb) + Richtung aus echtem Baustellen-Text", () => {
+    const a = extractStammdaten("Die Straße ist in Fahrtrichtung stadtauswärts eingeengt.")
+    expect(a.richtung).toBe("stadtauswärts")
+    const b = extractStammdaten("halbseitige Sperrung: Verkehrsregelung durch Verkehrszeichen")
+    expect(b.halbseitig).toBe(true)
+    expect(b.vollsperrung).toBeUndefined()
+    expect(extractStammdaten("Vollsperrung der Fahrbahn").vollsperrung).toBe(true)
+    expect(extractStammdaten("in beide Fahrtrichtungen wechselseitig eingeengt").richtung).toBe("beide Richtungen")
+  })
+})
+
+describe("enrichFromText (Bestands-Anreicherung)", () => {
+  it("füllt Lücken, lässt vorhandene Werte unangetastet", () => {
+    const p = enrichFromText({
+      name: "A7 Baustelle", beschreibung: "Durchfahrtsbreite 3,5 m, gültig ab 01.07.2026",
+      attrs: { maxGewichtT: 40 }, gueltigVon: null, gueltigBis: null, strassenRef: null, richtung: null,
+    })
+    expect(p.changed).toBe(true)
+    expect(p.attrs.maxGewichtT).toBe(40) // bleibt
+    expect(p.attrs.restbreiteM).toBe(3.5) // neu
+    expect(p.gueltigVon).toBe("2026-07-01")
+    expect(p.strassenRef).toBe("A7")
+  })
+
+  it("nichts zu holen → changed=false", () => {
+    const p = enrichFromText({ name: "Brücke", beschreibung: "OSM highway=residential", attrs: { maxHoeheM: 3.8 } })
+    expect(p.changed).toBe(false)
   })
 })
 

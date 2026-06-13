@@ -54,6 +54,7 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   sperrlaengeM: { label: "Länge der Maßnahme", unit: "m" },
   zeitfenster: { label: "Zeitfenster" },
   vollsperrung: { label: "Vollsperrung" },
+  halbseitig: { label: "Halbseitige Sperrung" },
   anmeldungErforderlich: { label: "Anmeldung erforderlich" },
 }
 

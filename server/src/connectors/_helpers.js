@@ -69,10 +69,30 @@ function alleDaten(text) {
   return [...out].filter((d) => d >= "2000-01-01" && d <= "2100-12-31").sort()
 }
 
+/** Erstes Straßen-Kennzeichen (A/B/L/K + Nummer) aus Freitext → "B252", sonst null. */
+function strassenRefAus(text) {
+  const m = String(text).match(/\b(A|B|L|K)[\s-]?(\d{1,4})\b/)
+  return m ? `${m[1].toUpperCase()}${m[2]}` : null
+}
+
+/** Fahrtrichtung/Korridor aus Freitext → "Hamburg → Kassel" / "stadtauswärts" / "beide Richtungen". */
+function richtungAus(text) {
+  const s = String(text)
+  const pfeil = s.match(/([A-ZÄÖÜ][\wäöüß.\- ]{1,28}?)\s*(?:→|->|–>|—>)\s*([A-ZÄÖÜ][\wäöüß.\- ]{1,28}?)(?=[\n,;.()|]|$)/)
+  if (pfeil) return `${pfeil[1].trim()} → ${pfeil[2].trim()}`
+  if (/in beide (?:fahrt)?richtungen|beidseitig|wechselseitig/i.test(s)) return "beide Richtungen"
+  if (/stadtausw(?:ä|ae)rts/i.test(s)) return "stadtauswärts"
+  if (/stadteinw(?:ä|ae)rts/i.test(s)) return "stadteinwärts"
+  const fr = s.match(/(?:Fahrtrichtung|Richtung)\s+([A-ZÄÖÜ][\wäöüß.\- ]{1,28}?)(?=[\n,;.()|]|$)/i)
+  return fr ? fr[1].trim() : null
+}
+
 /**
  * Strukturierte Stammdaten aus Freitext ziehen. Liefert nur gefundene Felder:
- *   { restbreiteM?, maxHoeheM?, maxGewichtT?, sperrlaengeM?, gueltigVon?, gueltigBis?, zeitfenster? }
- * Konservativ: Maße brauchen ihr Schlüsselwort, Daten müssen plausibel sein.
+ *   { restbreiteM?, maxHoeheM?, maxGewichtT?, maxAchslastT?, sperrlaengeM?,
+ *     gueltigVon?, gueltigBis?, zeitfenster?, strassenRef?, richtung? }
+ * Konservativ: Maße brauchen ihr Schlüsselwort, ein EINZELNES Datum nur mit Gültigkeits-Kontext
+ * (sonst würde ein "Stand: …"-Datum fälschlich als Beginn gewertet). Lieber nichts als falsch.
  */
 export function extractStammdaten(text) {
   if (!text) return {}
@@ -86,6 +106,9 @@ export function extractStammdaten(text) {
   if (hoehe != null) out.maxHoeheM = hoehe
   const gewicht = tonnageAusText(s)
   if (gewicht != null) out.maxGewichtT = gewicht
+  // Achslast: "Achslast 10 t", "zul. Achslast 11,5 t".
+  const achslast = norm.match(/achslast[^0-9]{0,12}?(\d{1,2}(?:\.\d{1,2})?)\s*t\b/i)
+  if (achslast) out.maxAchslastT = Number(achslast[1])
   // Länge der Maßnahme/Baustelle: "Länge: 24.92 km" → Meter (informativ, kein Fahrzeug-Limit).
   const laengeKm = norm.match(/l(?:ä|ae)ng[e]?[^0-9]{0,8}?(\d{1,3}(?:\.\d{1,2})?)\s*km\b/i)
   const laengeM = norm.match(/l(?:ä|ae)ng[e]?[^0-9]{0,8}?(\d{1,4}(?:\.\d{1,2})?)\s*m\b/i)
@@ -96,11 +119,24 @@ export function extractStammdaten(text) {
   const zf = s.match(/(\d{1,2})[:.](\d{2})\s*(?:bis|-|–|—)\s*(\d{1,2})[:.](\d{2})/)
   if (zf) out.zeitfenster = `${zf[1].padStart(2, "0")}:${zf[2]}–${zf[3].padStart(2, "0")}:${zf[4]}`
 
-  // Datums-Heuristik: kleinstes = Start, größtes = Ende.
+  const ref = strassenRefAus(s)
+  if (ref) out.strassenRef = ref
+  const richtung = richtungAus(s)
+  if (richtung) out.richtung = richtung
+
+  // Sperrart (kontrolliertes Vokabular): Voll- vor Halbsperrung prüfen ("halbseitige Sperrung"
+  // enthält "Sperrung", ist aber KEINE Vollsperrung).
+  if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s)) out.vollsperrung = true
+  else if (/halbseitig|einseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen/i.test(s)) out.halbseitig = true
+
+  // Datums-Heuristik: kleinstes = Start, größtes = Ende. Einzeldatum nur mit Gültigkeits-Kontext.
   const daten = alleDaten(s)
-  if (daten.length >= 1) {
+  const hatKontext = /\b(g(?:ü|ue)ltig|gilt|zeitraum|vom|bis|ab\s|baubeginn|bauende|dauer|gesperrt|sperrung|wirksam)\b/i.test(s)
+  if (daten.length >= 2) {
     out.gueltigVon = daten[0]
-    if (daten.length >= 2 && daten[daten.length - 1] !== daten[0]) out.gueltigBis = daten[daten.length - 1]
+    if (daten[daten.length - 1] !== daten[0]) out.gueltigBis = daten[daten.length - 1]
+  } else if (daten.length === 1 && hatKontext) {
+    out.gueltigVon = daten[0]
   }
   return out
 }
@@ -143,13 +179,18 @@ export function makeNormalized({
   // Nur Lücken füllen — vom Connector explizit gesetzte Werte bleiben unangetastet.
   const ex = extractStammdaten([name, beschreibung].filter(Boolean).join(" · "))
   let extrahiert = false
-  for (const k of ["restbreiteM", "maxHoeheM", "maxGewichtT", "sperrlaengeM"]) {
+  for (const k of ["restbreiteM", "maxHoeheM", "maxGewichtT", "maxAchslastT", "sperrlaengeM"]) {
     if (ex[k] != null && cleanAttrs[k] == null) { cleanAttrs[k] = ex[k]; extrahiert = true }
+  }
+  for (const k of ["vollsperrung", "halbseitig"]) {
+    if (ex[k] === true && cleanAttrs[k] == null) { cleanAttrs[k] = true; extrahiert = true }
   }
   if (ex.zeitfenster && cleanAttrs.zeitfenster == null) { cleanAttrs.zeitfenster = ex.zeitfenster; extrahiert = true }
   let vonFinal = gueltigVon, bisFinal = gueltigBis
   if (vonFinal == null && ex.gueltigVon) { vonFinal = ex.gueltigVon; extrahiert = true }
   if (bisFinal == null && ex.gueltigBis) { bisFinal = ex.gueltigBis; extrahiert = true }
+  let refFinal = strassenRef
+  if ((refFinal == null || refFinal === "") && ex.strassenRef) { refFinal = ex.strassenRef; extrahiert = true }
 
   const besch = beschreibung != null ? String(beschreibung) : null
   return {
@@ -160,7 +201,7 @@ export function makeNormalized({
     beschreibung: extrahiert ? `${besch ? besch + " " : ""}· Angaben aus Meldungstext extrahiert` : besch,
     lat: nlat,
     lng: nlng,
-    strassenRef: strassenRef != null ? String(strassenRef) : null,
+    strassenRef: refFinal != null ? String(refFinal) : null,
     attrs: cleanAttrs,
     gueltigVon: dateOnly(vonFinal),
     gueltigBis: dateOnly(bisFinal),
