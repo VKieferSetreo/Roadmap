@@ -3,9 +3,10 @@
     "id": "0217",
     "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)"
   },
-  "abgerufen_am": "2026-06-13T17:29:32.163Z",
+  "abgerufen_am": "2026-06-13T17:47:05.281Z",
   "anzahl_verfuegbar": 27,
   "anzahl_normalisiert": 27,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0217",
@@ -39,7 +40,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 67.56252,
@@ -58,7 +59,7 @@
         "situationVersionTime": "2020-08-28T12:12:22.171+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -91,7 +92,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 65,
@@ -110,7 +111,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.684+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -144,7 +145,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 251.37639,
@@ -163,7 +164,7 @@
         "situationVersionTime": "2019-12-09T14:49:09.339+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     }
   ],
   "alle": [
@@ -199,7 +200,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 67.56252,
@@ -218,7 +219,7 @@
         "situationVersionTime": "2020-08-28T12:12:22.171+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -251,7 +252,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 65,
@@ -270,7 +271,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.684+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -304,7 +305,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 251.37639,
@@ -323,7 +324,7 @@
         "situationVersionTime": "2019-12-09T14:49:09.339+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -356,7 +357,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 93.41614,
@@ -375,7 +376,7 @@
         "situationVersionTime": "2020-09-29T08:22:17.443+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -408,7 +409,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 179.19458,
@@ -427,7 +428,7 @@
         "situationVersionTime": "2020-04-29T06:18:40.716+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -458,7 +459,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 779.7994,
@@ -477,7 +478,7 @@
         "situationVersionTime": "2020-07-27T12:09:27.117+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -509,7 +510,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 220,
@@ -528,7 +529,7 @@
         "situationVersionTime": "2020-06-10T11:50:56.525+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -560,7 +561,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 25.6242,
@@ -579,7 +580,7 @@
         "situationVersionTime": "2020-09-18T12:38:20.236+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -613,7 +614,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 196.03296,
@@ -632,7 +633,7 @@
         "situationVersionTime": "2020-10-02T11:22:30.275+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -665,7 +666,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 73.45368,
@@ -684,7 +685,7 @@
         "situationVersionTime": "2020-10-02T00:00:04.911+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -717,7 +718,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 303.8453,
@@ -736,7 +737,7 @@
         "situationVersionTime": "2020-08-05T09:39:19.062+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -770,7 +771,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 239.90305,
@@ -789,7 +790,7 @@
         "situationVersionTime": "2020-08-28T12:12:22.171+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -820,7 +821,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 160.65915,
@@ -839,7 +840,7 @@
         "situationVersionTime": "2020-10-08T13:17:04.082+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -873,7 +874,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 37.961205,
@@ -892,7 +893,7 @@
         "situationVersionTime": "2020-08-31T06:25:45.080+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -926,7 +927,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 43.199993,
@@ -945,7 +946,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.707+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -977,7 +978,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 161,
@@ -996,7 +997,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.740+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1030,7 +1031,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 30.743088,
@@ -1049,7 +1050,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.707+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1083,7 +1084,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 371.433,
@@ -1102,7 +1103,7 @@
         "situationVersionTime": "2020-09-15T07:50:31.986+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1134,7 +1135,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 22,
@@ -1153,7 +1154,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.740+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1187,7 +1188,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 68.76611,
@@ -1206,7 +1207,7 @@
         "situationVersionTime": "2019-04-12T17:18:32.469+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1239,7 +1240,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 195,
@@ -1258,7 +1259,7 @@
         "situationVersionTime": "2020-10-08T11:29:51.654+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1290,7 +1291,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 754.2702,
@@ -1309,7 +1310,7 @@
         "situationVersionTime": "2020-06-10T11:50:56.525+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1341,7 +1342,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 138.7772,
@@ -1360,7 +1361,7 @@
         "situationVersionTime": "2020-06-10T11:50:56.525+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1391,7 +1392,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 200.78613,
@@ -1410,7 +1411,7 @@
         "situationVersionTime": "2018-09-20T12:57:20.658+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1442,7 +1443,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 335.51657,
@@ -1461,7 +1462,7 @@
         "situationVersionTime": "2020-10-02T09:13:01.127+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1494,7 +1495,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 517.22144,
@@ -1513,7 +1514,7 @@
         "situationVersionTime": "2021-01-31T18:00:00.000+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     },
     {
       "quellen_id": "0217",
@@ -1544,7 +1545,7 @@
       "quelle": {
         "name": "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)",
         "url": "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten",
-        "abgerufenAm": "2026-06-13T17:29:32.163Z"
+        "abgerufenAm": "2026-06-13T17:47:05.281Z"
       },
       "roh": {
         "distanceAlong": 52.54976,
@@ -1563,7 +1564,7 @@
         "situationVersionTime": "2018-09-20T12:57:20.658+02:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:32.163Z"
+      "abgerufen_am": "2026-06-13T17:47:05.281Z"
     }
   ]
 }

@@ -3,9 +3,10 @@
     "id": "0120",
     "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)"
   },
-  "abgerufen_am": "2026-06-13T17:30:01.805Z",
+  "abgerufen_am": "2026-06-13T17:47:37.099Z",
   "anzahl_verfuegbar": 168,
   "anzahl_normalisiert": 168,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0120",
@@ -58,7 +59,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-1",
@@ -78,7 +79,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -163,7 +164,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-2",
@@ -183,7 +184,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -232,7 +233,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-3",
@@ -252,7 +253,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     }
   ],
   "alle": [
@@ -307,7 +308,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-1",
@@ -327,7 +328,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -412,7 +413,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-2",
@@ -432,7 +433,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -481,7 +482,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-3",
@@ -501,7 +502,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -562,7 +563,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-4",
@@ -582,7 +583,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -631,7 +632,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-5",
@@ -651,7 +652,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -700,7 +701,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-6",
@@ -720,7 +721,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -777,7 +778,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999220919161006440554-7",
@@ -797,7 +798,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -850,7 +851,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999230622094420441759-1",
@@ -870,7 +871,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -919,7 +920,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240220131005611923-1",
@@ -939,7 +940,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1016,7 +1017,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240220131005611923-2",
@@ -1036,7 +1037,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1089,7 +1090,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240220131005611923-3",
@@ -1109,7 +1110,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1162,7 +1163,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240423111010614962-1",
@@ -1182,7 +1183,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1231,7 +1232,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240423111010614962-2",
@@ -1251,7 +1252,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1296,7 +1297,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240730131004637538-1",
@@ -1316,7 +1317,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1457,7 +1458,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240807131004637823-1",
@@ -1477,7 +1478,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1557,7 +1558,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999240918132105638998-1",
@@ -1577,7 +1578,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -1730,7 +1731,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999241220121005641013-1",
@@ -1750,7 +1751,7 @@
         "to_date": "2027-08-01"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2391,7 +2392,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250311081143642088-1",
@@ -2411,7 +2412,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2476,7 +2477,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250328131004642609-1",
@@ -2496,7 +2497,7 @@
         "to_date": "2027-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2545,7 +2546,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250328131004642609-2",
@@ -2565,7 +2566,7 @@
         "to_date": "2027-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2650,7 +2651,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250328131004642609-3",
@@ -2670,7 +2671,7 @@
         "to_date": "2027-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2723,7 +2724,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250331112013642636-1",
@@ -2743,7 +2744,7 @@
         "to_date": "2029-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2848,7 +2849,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250401135153642673-1",
@@ -2868,7 +2869,7 @@
         "to_date": "2026-08-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -2941,7 +2942,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250604064502644008-1",
@@ -2961,7 +2962,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3010,7 +3011,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250606120941644070-1",
@@ -3030,7 +3031,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3095,7 +3096,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250620111009644548-1",
@@ -3115,7 +3116,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3176,7 +3177,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250624071548644633-1",
@@ -3196,7 +3197,7 @@
         "to_date": "2027-06-23"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3417,7 +3418,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250703144205644946-1",
@@ -3437,7 +3438,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3490,7 +3491,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250703144205644946-2",
@@ -3510,7 +3511,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3555,7 +3556,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999250703144205644946-3",
@@ -3575,7 +3576,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3739,7 +3740,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251014151022647013-1",
@@ -3759,7 +3760,7 @@
         "to_date": "2026-11-28"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -3908,7 +3909,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251022082728647095-1",
@@ -3928,7 +3929,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4048,7 +4049,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251113100459647504-1",
@@ -4068,7 +4069,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4153,7 +4154,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251120074834647687-1",
@@ -4173,7 +4174,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4246,7 +4247,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251120151003647743-1",
@@ -4266,7 +4267,7 @@
         "to_date": "2026-10-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4455,7 +4456,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251209163331648006-1",
@@ -4475,7 +4476,7 @@
         "to_date": "2026-12-23"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4832,7 +4833,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251210133549648020-1",
@@ -4852,7 +4853,7 @@
         "to_date": "2026-08-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -4909,7 +4910,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999251212091003648038-1",
@@ -4929,7 +4930,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5126,7 +5127,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260113150144648188-1",
@@ -5146,7 +5147,7 @@
         "to_date": "2026-08-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5419,7 +5420,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260116082910648202-1",
@@ -5439,7 +5440,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5507,7 +5508,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260211082129648494-1",
@@ -5527,7 +5528,7 @@
         "to_date": "2026-10-16"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5600,7 +5601,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260218120228648642-1",
@@ -5620,7 +5621,7 @@
         "to_date": "2026-10-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5693,7 +5694,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260223125434650156-1",
@@ -5713,7 +5714,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5782,7 +5783,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260225141004650231-1",
@@ -5802,7 +5803,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5855,7 +5856,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260225141004650231-2",
@@ -5875,7 +5876,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -5932,7 +5933,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260303121003650331-1",
@@ -5952,7 +5953,7 @@
         "to_date": "2026-07-07"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6001,7 +6002,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260310152148650485-1",
@@ -6021,7 +6022,7 @@
         "to_date": "2026-10-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6262,7 +6263,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260313131004650535-1",
@@ -6282,7 +6283,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6355,7 +6356,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260313131005650539-1",
@@ -6375,7 +6376,7 @@
         "to_date": "2026-06-17"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6424,7 +6425,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260313131005650539-2",
@@ -6444,7 +6445,7 @@
         "to_date": "2026-06-17"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6549,7 +6550,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260316064916650550-1",
@@ -6569,7 +6570,7 @@
         "to_date": "2026-08-28"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -6626,7 +6627,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260317081100650583-1",
@@ -6646,7 +6647,7 @@
         "to_date": "2026-09-11"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -7066,7 +7067,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260318131004650615-1",
@@ -7086,7 +7087,7 @@
         "to_date": "2026-12-11"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -7151,7 +7152,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260318131005650619-1",
@@ -7171,7 +7172,7 @@
         "to_date": "2026-11-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -7272,7 +7273,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260318131005650619-2",
@@ -7292,7 +7293,7 @@
         "to_date": "2026-11-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -7448,7 +7449,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260319075413650627-1",
@@ -7468,7 +7469,7 @@
         "to_date": "2026-09-04"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -8017,7 +8018,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260320071439650683-1",
@@ -8037,7 +8038,7 @@
         "to_date": "2027-05-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -8362,7 +8363,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260323103132650764-1",
@@ -8382,7 +8383,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -8559,7 +8560,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260323103132650764-2",
@@ -8579,7 +8580,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -8636,7 +8637,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260326095810650806-1",
@@ -8656,7 +8657,7 @@
         "to_date": "2026-10-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -8813,7 +8814,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260326095810650806-2",
@@ -8833,7 +8834,7 @@
         "to_date": "2026-10-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -9218,7 +9219,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260326113811650820-1",
@@ -9238,7 +9239,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -9647,7 +9648,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260327082635650831-1",
@@ -9667,7 +9668,7 @@
         "to_date": "2026-08-07"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -9731,7 +9732,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260327114047650870-1",
@@ -9751,7 +9752,7 @@
         "to_date": "2026-07-05"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -9812,7 +9813,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260409075230651112-1",
@@ -9832,7 +9833,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10388,7 +10389,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260409110544651126-1",
@@ -10408,7 +10409,7 @@
         "to_date": "2026-11-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10488,7 +10489,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260414141330651199-1",
@@ -10508,7 +10509,7 @@
         "to_date": "2027-11-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10652,7 +10653,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260414141330651199-2",
@@ -10672,7 +10673,7 @@
         "to_date": "2027-11-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10728,7 +10729,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260414141330651199-3",
@@ -10748,7 +10749,7 @@
         "to_date": "2027-11-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10832,7 +10833,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260416065725651224-1",
@@ -10852,7 +10853,7 @@
         "to_date": "2026-12-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -10928,7 +10929,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260417101003651256-1",
@@ -10948,7 +10949,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -11052,7 +11053,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260420134636651279-1",
@@ -11072,7 +11073,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -11117,7 +11118,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260422074610651316-1",
@@ -11137,7 +11138,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -11374,7 +11375,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260424073027651327-1",
@@ -11394,7 +11395,7 @@
         "to_date": "2026-07-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12114,7 +12115,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260424084833651334-1",
@@ -12134,7 +12135,7 @@
         "to_date": "2026-10-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12190,7 +12191,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260429165134651389-1",
@@ -12210,7 +12211,7 @@
         "to_date": "2026-09-04"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12275,7 +12276,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-1",
@@ -12295,7 +12296,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12448,7 +12449,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-2",
@@ -12468,7 +12469,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12513,7 +12514,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-3",
@@ -12533,7 +12534,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12578,7 +12579,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-4",
@@ -12598,7 +12599,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -12791,7 +12792,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-5",
@@ -12811,7 +12812,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13112,7 +13113,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-6",
@@ -13132,7 +13133,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13197,7 +13198,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-7",
@@ -13217,7 +13218,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13266,7 +13267,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-8",
@@ -13286,7 +13287,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13331,7 +13332,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-9",
@@ -13351,7 +13352,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13420,7 +13421,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-10",
@@ -13440,7 +13441,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -13565,7 +13566,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-11",
@@ -13585,7 +13586,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14082,7 +14083,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260504111342651442-12",
@@ -14102,7 +14103,7 @@
         "to_date": "2026-08-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14190,7 +14191,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260506095255651552-1",
@@ -14210,7 +14211,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14298,7 +14299,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260506095255651552-2",
@@ -14318,7 +14319,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14386,7 +14387,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260506095255651552-3",
@@ -14406,7 +14407,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14507,7 +14508,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260506111003651566-1",
@@ -14527,7 +14528,7 @@
         "to_date": "2026-11-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14719,7 +14720,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260507095404651578-1",
@@ -14739,7 +14740,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14787,7 +14788,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-1",
@@ -14807,7 +14808,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14855,7 +14856,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-2",
@@ -14875,7 +14876,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14919,7 +14920,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-3",
@@ -14939,7 +14940,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -14983,7 +14984,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-4",
@@ -15003,7 +15004,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15047,7 +15048,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-5",
@@ -15067,7 +15068,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15115,7 +15116,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260511133403651639-6",
@@ -15135,7 +15136,7 @@
         "to_date": "2026-11-21"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15195,7 +15196,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260515083720651705-1",
@@ -15215,7 +15216,7 @@
         "to_date": "2026-07-03"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15279,7 +15280,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260515083904651712-1",
@@ -15299,7 +15300,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15400,7 +15401,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260519102451651788-1",
@@ -15420,7 +15421,7 @@
         "to_date": "2027-12-29"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15477,7 +15478,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260520064119651802-1",
@@ -15497,7 +15498,7 @@
         "to_date": "2026-07-03"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15558,7 +15559,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260520101003651823-1",
@@ -15578,7 +15579,7 @@
         "to_date": "2026-07-24"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15623,7 +15624,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260520101006651831-1",
@@ -15643,7 +15644,7 @@
         "to_date": "2026-10-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15700,7 +15701,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260520101006651831-2",
@@ -15720,7 +15721,7 @@
         "to_date": "2026-10-02"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -15833,7 +15834,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260520112714651835-1",
@@ -15853,7 +15854,7 @@
         "to_date": "2026-10-01"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -16845,7 +16846,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260526093633651891-1",
@@ -16865,7 +16866,7 @@
         "to_date": "2026-07-20"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -16969,7 +16970,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260526102727651898-1",
@@ -16989,7 +16990,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -17122,7 +17123,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260528134747651940-1",
@@ -17142,7 +17143,7 @@
         "to_date": "2026-08-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -17210,7 +17211,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260529063553651961-1",
@@ -17230,7 +17231,7 @@
         "to_date": "2026-06-24"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -18142,7 +18143,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260602110455652063-1",
@@ -18162,7 +18163,7 @@
         "to_date": "2026-10-09"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -18478,7 +18479,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260602111215652070-1",
@@ -18498,7 +18499,7 @@
         "to_date": "2026-11-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -18551,7 +18552,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260602121004652077-1",
@@ -18571,7 +18572,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -18624,7 +18625,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260602121004652077-2",
@@ -18644,7 +18645,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -18700,7 +18701,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603093510652095-1",
@@ -18720,7 +18721,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -19888,7 +19889,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101042652102-1",
@@ -19908,7 +19909,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20108,7 +20109,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101314652109-1",
@@ -20128,7 +20129,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20200,7 +20201,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-1",
@@ -20220,7 +20221,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20316,7 +20317,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-2",
@@ -20336,7 +20337,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20404,7 +20405,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-3",
@@ -20424,7 +20425,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20508,7 +20509,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-4",
@@ -20528,7 +20529,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20576,7 +20577,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-5",
@@ -20596,7 +20597,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20660,7 +20661,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-6",
@@ -20680,7 +20681,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20752,7 +20753,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-7",
@@ -20772,7 +20773,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20816,7 +20817,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-8",
@@ -20836,7 +20837,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -20916,7 +20917,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603101853652116-9",
@@ -20936,7 +20937,7 @@
         "to_date": "2026-06-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -21708,7 +21709,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260603144811652123-1",
@@ -21728,7 +21729,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -21837,7 +21838,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260604111004652134-1",
@@ -21857,7 +21858,7 @@
         "to_date": "2026-11-23"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -21910,7 +21911,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605074239652142-1",
@@ -21930,7 +21931,7 @@
         "to_date": "2026-12-31"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -21979,7 +21980,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605083914652149-1",
@@ -21999,7 +22000,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22111,7 +22112,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605100630652163-1",
@@ -22131,7 +22132,7 @@
         "to_date": "2026-07-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22183,7 +22184,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605100630652163-2",
@@ -22203,7 +22204,7 @@
         "to_date": "2026-07-18"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22252,7 +22253,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605101004652170-1",
@@ -22272,7 +22273,7 @@
         "to_date": "2026-06-17"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22317,7 +22318,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605101004652170-2",
@@ -22337,7 +22338,7 @@
         "to_date": "2026-06-17"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22381,7 +22382,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605141003652181-1",
@@ -22401,7 +22402,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22445,7 +22446,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605141003652181-2",
@@ -22465,7 +22466,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22530,7 +22531,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260605151003652185-1",
@@ -22550,7 +22551,7 @@
         "to_date": "2026-06-26"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22710,7 +22711,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-1",
@@ -22730,7 +22731,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -22822,7 +22823,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-2",
@@ -22842,7 +22843,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23082,7 +23083,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-3",
@@ -23102,7 +23103,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23146,7 +23147,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-4",
@@ -23166,7 +23167,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23210,7 +23211,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-5",
@@ -23230,7 +23231,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23674,7 +23675,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-6",
@@ -23694,7 +23695,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23786,7 +23787,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-7",
@@ -23806,7 +23807,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -23906,7 +23907,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-8",
@@ -23926,7 +23927,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24074,7 +24075,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-9",
@@ -24094,7 +24095,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24138,7 +24139,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-10",
@@ -24158,7 +24159,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24270,7 +24271,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-11",
@@ -24290,7 +24291,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24334,7 +24335,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-12",
@@ -24354,7 +24355,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24402,7 +24403,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-13",
@@ -24422,7 +24423,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24498,7 +24499,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-14",
@@ -24518,7 +24519,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24578,7 +24579,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-15",
@@ -24598,7 +24599,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24758,7 +24759,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260609085400652212-16",
@@ -24778,7 +24779,7 @@
         "to_date": "2026-06-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -24846,7 +24847,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260610111405652229-1",
@@ -24866,7 +24867,7 @@
         "to_date": "2026-06-16"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25274,7 +25275,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260610155120652236-1",
@@ -25294,7 +25295,7 @@
         "to_date": "2026-11-13"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25398,7 +25399,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611081142652247-1",
@@ -25418,7 +25419,7 @@
         "to_date": "2026-06-22"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25594,7 +25595,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611081357652261-1",
@@ -25614,7 +25615,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25670,7 +25671,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611081841652268-1",
@@ -25690,7 +25691,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25778,7 +25779,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611081841652268-2",
@@ -25798,7 +25799,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25843,7 +25844,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611113319652275-1",
@@ -25863,7 +25864,7 @@
         "to_date": "2026-08-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -25908,7 +25909,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611113319652275-2",
@@ -25928,7 +25929,7 @@
         "to_date": "2026-08-14"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26025,7 +26026,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611115618652282-1",
@@ -26045,7 +26046,7 @@
         "to_date": "2026-12-15"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26274,7 +26275,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611120420652289-1",
@@ -26294,7 +26295,7 @@
         "to_date": "2026-06-19"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26347,7 +26348,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611130325652296-1",
@@ -26367,7 +26368,7 @@
         "to_date": "2026-06-20"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26471,7 +26472,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611144101652303-1",
@@ -26491,7 +26492,7 @@
         "to_date": "2026-07-17"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26780,7 +26781,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611144327652310-1",
@@ -26800,7 +26801,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     },
     {
       "quellen_id": "0120",
@@ -26880,7 +26881,7 @@
       "quelle": {
         "name": "LSBB Sperrinfo Sachsen-Anhalt (SPERRINFOSYS ST)",
         "url": "https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen",
-        "abgerufenAm": "2026-06-13T17:30:01.805Z"
+        "abgerufenAm": "2026-06-13T17:47:37.099Z"
       },
       "roh": {
         "gid": "999260611144602652317-1",
@@ -26900,7 +26901,7 @@
         "to_date": "2026-06-30"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:01.805Z"
+      "abgerufen_am": "2026-06-13T17:47:37.099Z"
     }
   ]
 }

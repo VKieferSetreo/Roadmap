@@ -24,20 +24,29 @@ export function baulasttraegerAusKlasse(klasse) {
   return { A: "bund", B: "bund", L: "land", K: "kreis", G: "kommune" }[klasse] ?? null
 }
 
-/** Erste Tonnage-Zahl aus Freitext, z.B. "...auf 3,5 t beschränkt" → 3.5. */
+/** Erste Tonnage-Zahl aus Freitext, z.B. "...auf 3,5 t beschränkt" → 3.5.
+ *  replaceAll (nicht replace) — sonst bleibt bei mehreren Kommas im Text das relevante
+ *  Komma unkonvertiert (z.B. "S140 (400/60,3/2,0) 3,5t" → fälschlich 5 statt 3,5 t). */
 export function tonnageAusText(text) {
   if (!text) return null
-  const m = String(text).replace(",", ".").match(/(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
+  const m = String(text).replaceAll(",", ".").match(/(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
   return m ? Number(m[1]) : null
 }
 
 /** Erste Höhen-/Meter-Zahl aus Freitext, z.B. "Durchfahrtshöhe 3,80 m" → 3.8. */
 export function meterAusText(text, schluessel = /(?:höhe|hoehe|breite|durchfahrt)/i) {
   if (!text) return null
-  const s = String(text).replace(",", ".")
+  const s = String(text).replaceAll(",", ".")
   if (schluessel && !schluessel.test(s)) return null
   const m = s.match(/(\d+(?:\.\d+)?)\s*m\b/)
   return m ? Number(m[1]) : null
+}
+
+/** Plausibilitäts-Check: liegt der Punkt in der DE-Bbox? Schützt vor kaputten Quell-Koords
+ *  (z.B. verstümmelte UTM-Werte, die nach WGS84 in den Atlantik reprojizieren). */
+export function inDeBbox(lat, lng) {
+  return lat != null && lng != null &&
+    lat >= 47.2 && lat <= 55.1 && lng >= 5.8 && lng <= 15.1
 }
 
 /**
@@ -53,6 +62,13 @@ export function makeObstacle({
   status = "gemeldet", abgerufenAm,
 }) {
   const klasse = strassenklasseAusRef(strassenRef)
+  // Kaputte Quell-Koordinaten (außerhalb DE-Bbox) verwerfen statt falsch zu kartieren.
+  let nlat = lat != null ? Number(lat) : null
+  let nlng = lng != null ? Number(lng) : null
+  if (nlat != null && nlng != null && !inDeBbox(nlat, nlng)) {
+    nlat = null
+    nlng = null
+  }
   return {
     quellen_id: quellenId,
     externe_id: externeId != null ? String(externeId) : null,
@@ -60,8 +76,8 @@ export function makeObstacle({
     befristung,
     name,
     beschreibung,
-    lat: lat != null ? Number(lat) : null,
-    lng: lng != null ? Number(lng) : null,
+    lat: nlat,
+    lng: nlng,
     geom,
     richtung,
     strassen_ref: strassenRef,

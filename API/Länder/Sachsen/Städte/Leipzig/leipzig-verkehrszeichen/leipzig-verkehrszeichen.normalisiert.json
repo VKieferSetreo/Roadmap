@@ -3,9 +3,10 @@
     "id": "0221",
     "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)"
   },
-  "abgerufen_am": "2026-06-13T17:28:48.622Z",
+  "abgerufen_am": "2026-06-13T17:55:54.442Z",
   "anzahl_verfuegbar": 215,
   "anzahl_normalisiert": 215,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0221",
@@ -26,7 +27,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -39,7 +40,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45288,
@@ -98,7 +99,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -132,7 +133,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45312,
@@ -191,7 +192,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -212,7 +213,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -225,7 +226,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45454,
@@ -284,7 +285,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     }
   ],
   "alle": [
@@ -307,7 +308,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -320,7 +321,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45288,
@@ -379,7 +380,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -413,7 +414,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45312,
@@ -472,7 +473,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -493,7 +494,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -506,7 +507,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45454,
@@ -565,7 +566,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -599,7 +600,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45527,
@@ -658,7 +659,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -692,7 +693,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45528,
@@ -751,7 +752,7 @@
         "fme_tstamp": "2026-03-04T09:04:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -785,7 +786,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45805,
@@ -844,7 +845,7 @@
         "fme_tstamp": "2026-03-04T09:04:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -878,7 +879,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 45820,
@@ -937,7 +938,7 @@
         "fme_tstamp": "2026-03-04T09:04:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -958,7 +959,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -971,7 +972,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 46079,
@@ -1030,7 +1031,7 @@
         "fme_tstamp": "2026-03-04T09:04:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1064,7 +1065,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 47480,
@@ -1123,7 +1124,7 @@
         "fme_tstamp": "2026-03-04T09:04:13+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1157,7 +1158,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 47588,
@@ -1216,7 +1217,7 @@
         "fme_tstamp": "2026-03-04T09:04:13+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1250,7 +1251,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 47609,
@@ -1309,7 +1310,7 @@
         "fme_tstamp": "2026-03-04T09:04:13+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1343,7 +1344,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 47852,
@@ -1402,7 +1403,7 @@
         "fme_tstamp": "2026-03-04T09:04:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1436,7 +1437,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 49133,
@@ -1495,7 +1496,7 @@
         "fme_tstamp": "2026-03-04T09:04:16+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1529,7 +1530,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 49143,
@@ -1588,7 +1589,7 @@
         "fme_tstamp": "2026-03-04T09:04:16+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1609,7 +1610,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -1622,7 +1623,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 49363,
@@ -1681,7 +1682,7 @@
         "fme_tstamp": "2026-03-04T09:04:17+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1715,7 +1716,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 49979,
@@ -1774,7 +1775,7 @@
         "fme_tstamp": "2026-03-04T09:04:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1808,7 +1809,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 49837,
@@ -1867,7 +1868,7 @@
         "fme_tstamp": "2026-03-04T09:04:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1901,7 +1902,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 50460,
@@ -1960,7 +1961,7 @@
         "fme_tstamp": "2026-03-04T09:04:19+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -1994,7 +1995,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51224,
@@ -2053,7 +2054,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2087,7 +2088,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51226,
@@ -2146,7 +2147,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2180,7 +2181,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51228,
@@ -2239,7 +2240,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2273,7 +2274,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51502,
@@ -2332,7 +2333,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2366,7 +2367,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51689,
@@ -2425,7 +2426,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2459,7 +2460,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51690,
@@ -2518,7 +2519,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2552,7 +2553,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 51696,
@@ -2611,7 +2612,7 @@
         "fme_tstamp": "2026-03-04T09:04:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2632,7 +2633,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -2645,7 +2646,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 53604,
@@ -2704,7 +2705,7 @@
         "fme_tstamp": "2026-03-04T09:04:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2738,7 +2739,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 53809,
@@ -2797,7 +2798,7 @@
         "fme_tstamp": "2026-03-04T09:04:26+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2831,7 +2832,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 53818,
@@ -2890,7 +2891,7 @@
         "fme_tstamp": "2026-03-04T09:04:26+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -2911,7 +2912,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -2924,7 +2925,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 55388,
@@ -2983,7 +2984,7 @@
         "fme_tstamp": "2026-03-04T09:04:29+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3017,7 +3018,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 56731,
@@ -3076,7 +3077,7 @@
         "fme_tstamp": "2026-03-04T09:04:31+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3110,7 +3111,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 57374,
@@ -3169,7 +3170,7 @@
         "fme_tstamp": "2026-03-04T09:04:33+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3190,7 +3191,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -3203,7 +3204,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 57855,
@@ -3262,7 +3263,7 @@
         "fme_tstamp": "2026-03-04T09:04:34+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3296,7 +3297,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 57901,
@@ -3355,7 +3356,7 @@
         "fme_tstamp": "2026-03-04T09:04:34+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3389,7 +3390,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 58132,
@@ -3448,7 +3449,7 @@
         "fme_tstamp": "2026-03-04T09:04:34+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3469,7 +3470,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "90° rechts der Fahrtrichtung",
@@ -3482,7 +3483,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 59100,
@@ -3541,7 +3542,7 @@
         "fme_tstamp": "2026-03-04T09:04:36+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3562,7 +3563,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -3575,7 +3576,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 59507,
@@ -3634,7 +3635,7 @@
         "fme_tstamp": "2026-03-04T09:04:37+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3668,7 +3669,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 60312,
@@ -3727,7 +3728,7 @@
         "fme_tstamp": "2026-03-04T09:04:38+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3748,7 +3749,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -3761,7 +3762,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 60978,
@@ -3820,7 +3821,7 @@
         "fme_tstamp": "2026-03-04T09:04:40+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3854,7 +3855,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 61643,
@@ -3913,7 +3914,7 @@
         "fme_tstamp": "2026-03-04T09:04:41+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -3934,7 +3935,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -3947,7 +3948,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 61707,
@@ -4006,7 +4007,7 @@
         "fme_tstamp": "2026-03-04T09:04:41+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4027,7 +4028,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -4040,7 +4041,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64779,
@@ -4099,7 +4100,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4133,7 +4134,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64808,
@@ -4192,7 +4193,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4226,7 +4227,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64812,
@@ -4285,7 +4286,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4319,7 +4320,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64814,
@@ -4378,7 +4379,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4412,7 +4413,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64820,
@@ -4471,7 +4472,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4505,7 +4506,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64823,
@@ -4564,7 +4565,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4598,7 +4599,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64829,
@@ -4657,7 +4658,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4691,7 +4692,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64832,
@@ -4750,7 +4751,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4784,7 +4785,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64836,
@@ -4843,7 +4844,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4877,7 +4878,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64839,
@@ -4936,7 +4937,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -4970,7 +4971,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64843,
@@ -5029,7 +5030,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5063,7 +5064,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64847,
@@ -5122,7 +5123,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5156,7 +5157,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64851,
@@ -5215,7 +5216,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5249,7 +5250,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64855,
@@ -5308,7 +5309,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5342,7 +5343,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64859,
@@ -5401,7 +5402,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5435,7 +5436,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64862,
@@ -5494,7 +5495,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5528,7 +5529,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64866,
@@ -5587,7 +5588,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5621,7 +5622,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64870,
@@ -5680,7 +5681,7 @@
         "fme_tstamp": "2026-03-04T09:04:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5714,7 +5715,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 64905,
@@ -5773,7 +5774,7 @@
         "fme_tstamp": "2026-03-04T09:04:48+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5807,7 +5808,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 65669,
@@ -5866,7 +5867,7 @@
         "fme_tstamp": "2026-03-04T09:04:49+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5900,7 +5901,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 65986,
@@ -5959,7 +5960,7 @@
         "fme_tstamp": "2026-03-04T09:04:50+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -5993,7 +5994,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 65989,
@@ -6052,7 +6053,7 @@
         "fme_tstamp": "2026-03-04T09:04:50+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6073,7 +6074,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -6086,7 +6087,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 67106,
@@ -6145,7 +6146,7 @@
         "fme_tstamp": "2026-03-04T09:04:52+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6166,7 +6167,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 1.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 1,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -6179,7 +6180,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 68413,
@@ -6238,7 +6239,7 @@
         "fme_tstamp": "2026-03-04T09:04:54+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6272,7 +6273,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 68723,
@@ -6331,7 +6332,7 @@
         "fme_tstamp": "2026-03-04T09:04:55+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6365,7 +6366,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 69040,
@@ -6424,7 +6425,7 @@
         "fme_tstamp": "2026-03-04T09:04:56+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6445,7 +6446,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 7.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 7,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -6458,7 +6459,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 69589,
@@ -6517,7 +6518,7 @@
         "fme_tstamp": "2026-03-04T09:04:57+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6551,7 +6552,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 72000,
@@ -6610,7 +6611,7 @@
         "fme_tstamp": "2026-03-04T09:05:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6644,7 +6645,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 73699,
@@ -6703,7 +6704,7 @@
         "fme_tstamp": "2026-03-04T09:05:05+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6724,7 +6725,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -6737,7 +6738,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 73993,
@@ -6796,7 +6797,7 @@
         "fme_tstamp": "2026-03-04T09:05:05+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6830,7 +6831,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 74480,
@@ -6889,7 +6890,7 @@
         "fme_tstamp": "2026-03-04T09:05:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -6923,7 +6924,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 74489,
@@ -6982,7 +6983,7 @@
         "fme_tstamp": "2026-03-04T09:05:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7016,7 +7017,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 74636,
@@ -7075,7 +7076,7 @@
         "fme_tstamp": "2026-03-04T09:05:07+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7109,7 +7110,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75316,
@@ -7168,7 +7169,7 @@
         "fme_tstamp": "2026-03-04T09:05:08+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7202,7 +7203,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75319,
@@ -7261,7 +7262,7 @@
         "fme_tstamp": "2026-03-04T09:05:08+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7295,7 +7296,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75482,
@@ -7354,7 +7355,7 @@
         "fme_tstamp": "2026-03-04T09:05:08+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7375,7 +7376,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "90° rechts der Fahrtrichtung",
@@ -7388,7 +7389,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75901,
@@ -7447,7 +7448,7 @@
         "fme_tstamp": "2026-03-04T09:05:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7468,7 +7469,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -7481,7 +7482,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75904,
@@ -7540,7 +7541,7 @@
         "fme_tstamp": "2026-03-04T09:05:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7574,7 +7575,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 75908,
@@ -7633,7 +7634,7 @@
         "fme_tstamp": "2026-03-04T09:05:09+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7667,7 +7668,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 76427,
@@ -7726,7 +7727,7 @@
         "fme_tstamp": "2026-03-04T09:05:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7760,7 +7761,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 76452,
@@ -7819,7 +7820,7 @@
         "fme_tstamp": "2026-03-04T09:05:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7840,7 +7841,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -7853,7 +7854,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 78234,
@@ -7912,7 +7913,7 @@
         "fme_tstamp": "2026-03-04T09:05:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -7933,7 +7934,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -7946,7 +7947,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 78243,
@@ -8005,7 +8006,7 @@
         "fme_tstamp": "2026-03-04T09:05:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8026,7 +8027,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -8039,7 +8040,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 78245,
@@ -8098,7 +8099,7 @@
         "fme_tstamp": "2026-03-04T09:05:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8119,7 +8120,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -8132,7 +8133,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 78246,
@@ -8191,7 +8192,7 @@
         "fme_tstamp": "2026-03-04T09:05:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8225,7 +8226,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 79015,
@@ -8284,7 +8285,7 @@
         "fme_tstamp": "2026-03-04T09:05:15+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8318,7 +8319,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 79018,
@@ -8377,7 +8378,7 @@
         "fme_tstamp": "2026-03-04T09:05:15+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8411,7 +8412,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 79592,
@@ -8470,7 +8471,7 @@
         "fme_tstamp": "2026-03-04T09:05:16+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8504,7 +8505,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 80278,
@@ -8563,7 +8564,7 @@
         "fme_tstamp": "2026-03-04T09:05:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8584,7 +8585,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -8597,7 +8598,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 81306,
@@ -8656,7 +8657,7 @@
         "fme_tstamp": "2026-03-04T09:05:20+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8690,7 +8691,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 81961,
@@ -8749,7 +8750,7 @@
         "fme_tstamp": "2026-03-04T09:05:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8783,7 +8784,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 81962,
@@ -8842,7 +8843,7 @@
         "fme_tstamp": "2026-03-04T09:05:21+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8876,7 +8877,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 82409,
@@ -8935,7 +8936,7 @@
         "fme_tstamp": "2026-03-04T09:05:22+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -8969,7 +8970,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 3054,
@@ -9028,7 +9029,7 @@
         "fme_tstamp": "2026-03-04T09:02:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9049,7 +9050,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -9062,7 +9063,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 3668,
@@ -9121,7 +9122,7 @@
         "fme_tstamp": "2026-03-04T09:02:48+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9155,7 +9156,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 3723,
@@ -9214,7 +9215,7 @@
         "fme_tstamp": "2026-03-04T09:02:48+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9248,7 +9249,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 4084,
@@ -9307,7 +9308,7 @@
         "fme_tstamp": "2026-03-04T09:02:49+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9341,7 +9342,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 4616,
@@ -9400,7 +9401,7 @@
         "fme_tstamp": "2026-03-04T09:02:50+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9421,7 +9422,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 7.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 7,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -9434,7 +9435,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 5182,
@@ -9493,7 +9494,7 @@
         "fme_tstamp": "2026-03-04T09:02:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9514,7 +9515,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -9527,7 +9528,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 5429,
@@ -9586,7 +9587,7 @@
         "fme_tstamp": "2026-03-04T09:02:52+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9620,7 +9621,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 5663,
@@ -9679,7 +9680,7 @@
         "fme_tstamp": "2026-03-04T09:02:52+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9713,7 +9714,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 6000,
@@ -9772,7 +9773,7 @@
         "fme_tstamp": "2026-03-04T09:02:53+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9806,7 +9807,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 6726,
@@ -9865,7 +9866,7 @@
         "fme_tstamp": "2026-03-04T09:02:54+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9886,7 +9887,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 5.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 5,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -9899,7 +9900,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 7235,
@@ -9958,7 +9959,7 @@
         "fme_tstamp": "2026-03-04T09:02:55+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -9979,7 +9980,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 5.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 5,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -9992,7 +9993,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 7499,
@@ -10051,7 +10052,7 @@
         "fme_tstamp": "2026-03-04T09:02:56+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10085,7 +10086,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 7885,
@@ -10144,7 +10145,7 @@
         "fme_tstamp": "2026-03-04T09:02:56+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10178,7 +10179,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 7936,
@@ -10237,7 +10238,7 @@
         "fme_tstamp": "2026-03-04T09:02:57+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10271,7 +10272,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 8238,
@@ -10330,7 +10331,7 @@
         "fme_tstamp": "2026-03-04T09:02:57+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10364,7 +10365,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 8241,
@@ -10423,7 +10424,7 @@
         "fme_tstamp": "2026-03-04T09:02:57+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10444,7 +10445,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -10457,7 +10458,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 10294,
@@ -10516,7 +10517,7 @@
         "fme_tstamp": "2026-03-04T09:03:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10550,7 +10551,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 10412,
@@ -10609,7 +10610,7 @@
         "fme_tstamp": "2026-03-04T09:03:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10630,7 +10631,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -10643,7 +10644,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11066,
@@ -10702,7 +10703,7 @@
         "fme_tstamp": "2026-03-04T09:03:03+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10736,7 +10737,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11216,
@@ -10795,7 +10796,7 @@
         "fme_tstamp": "2026-03-04T09:03:03+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10829,7 +10830,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11520,
@@ -10888,7 +10889,7 @@
         "fme_tstamp": "2026-03-04T09:03:03+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -10922,7 +10923,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11561,
@@ -10981,7 +10982,7 @@
         "fme_tstamp": "2026-03-04T09:03:04+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11015,7 +11016,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11562,
@@ -11074,7 +11075,7 @@
         "fme_tstamp": "2026-03-04T09:03:04+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11108,7 +11109,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 11791,
@@ -11167,7 +11168,7 @@
         "fme_tstamp": "2026-03-04T09:03:04+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11201,7 +11202,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 12729,
@@ -11260,7 +11261,7 @@
         "fme_tstamp": "2026-03-04T09:03:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11294,7 +11295,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 12731,
@@ -11353,7 +11354,7 @@
         "fme_tstamp": "2026-03-04T09:03:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11387,7 +11388,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 12732,
@@ -11446,7 +11447,7 @@
         "fme_tstamp": "2026-03-04T09:03:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11467,7 +11468,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -11480,7 +11481,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 12817,
@@ -11539,7 +11540,7 @@
         "fme_tstamp": "2026-03-04T09:03:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11560,7 +11561,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -11573,7 +11574,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 13050,
@@ -11632,7 +11633,7 @@
         "fme_tstamp": "2026-03-04T09:03:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11666,7 +11667,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 13206,
@@ -11725,7 +11726,7 @@
         "fme_tstamp": "2026-03-04T09:03:07+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11759,7 +11760,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 14721,
@@ -11818,7 +11819,7 @@
         "fme_tstamp": "2026-03-04T09:03:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11852,7 +11853,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 14776,
@@ -11911,7 +11912,7 @@
         "fme_tstamp": "2026-03-04T09:03:10+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -11945,7 +11946,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 15807,
@@ -12004,7 +12005,7 @@
         "fme_tstamp": "2026-03-04T09:03:12+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12025,7 +12026,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -12038,7 +12039,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 15949,
@@ -12097,7 +12098,7 @@
         "fme_tstamp": "2026-03-04T09:03:12+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12131,7 +12132,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 16024,
@@ -12190,7 +12191,7 @@
         "fme_tstamp": "2026-03-04T09:03:12+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12224,7 +12225,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 16851,
@@ -12283,7 +12284,7 @@
         "fme_tstamp": "2026-03-04T09:03:14+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12317,7 +12318,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 17547,
@@ -12376,7 +12377,7 @@
         "fme_tstamp": "2026-03-04T09:03:15+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12410,7 +12411,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 17796,
@@ -12469,7 +12470,7 @@
         "fme_tstamp": "2026-03-04T09:03:16+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12503,7 +12504,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 19070,
@@ -12562,7 +12563,7 @@
         "fme_tstamp": "2026-03-04T09:03:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12596,7 +12597,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 19226,
@@ -12655,7 +12656,7 @@
         "fme_tstamp": "2026-03-04T09:03:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12689,7 +12690,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 19232,
@@ -12748,7 +12749,7 @@
         "fme_tstamp": "2026-03-04T09:03:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12769,7 +12770,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -12782,7 +12783,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 19239,
@@ -12841,7 +12842,7 @@
         "fme_tstamp": "2026-03-04T09:03:18+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12875,7 +12876,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 20087,
@@ -12934,7 +12935,7 @@
         "fme_tstamp": "2026-03-04T09:03:20+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -12955,7 +12956,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 5.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 5,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -12968,7 +12969,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22281,
@@ -13027,7 +13028,7 @@
         "fme_tstamp": "2026-03-04T09:03:24+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13061,7 +13062,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22600,
@@ -13120,7 +13121,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13141,7 +13142,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13154,7 +13155,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22602,
@@ -13213,7 +13214,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13234,7 +13235,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13247,7 +13248,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22604,
@@ -13306,7 +13307,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13340,7 +13341,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22605,
@@ -13399,7 +13400,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13420,7 +13421,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13433,7 +13434,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22607,
@@ -13492,7 +13493,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13513,7 +13514,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13526,7 +13527,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22619,
@@ -13585,7 +13586,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13606,7 +13607,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13619,7 +13620,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22622,
@@ -13678,7 +13679,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13699,7 +13700,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13712,7 +13713,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 22640,
@@ -13771,7 +13772,7 @@
         "fme_tstamp": "2026-03-04T09:03:25+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13805,7 +13806,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 23507,
@@ -13864,7 +13865,7 @@
         "fme_tstamp": "2026-03-04T09:03:27+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13885,7 +13886,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -13898,7 +13899,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 25016,
@@ -13957,7 +13958,7 @@
         "fme_tstamp": "2026-03-04T09:03:30+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -13991,7 +13992,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 25495,
@@ -14050,7 +14051,7 @@
         "fme_tstamp": "2026-03-04T09:03:31+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14071,7 +14072,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14084,7 +14085,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 25943,
@@ -14143,7 +14144,7 @@
         "fme_tstamp": "2026-03-04T09:03:31+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14164,7 +14165,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14177,7 +14178,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 25972,
@@ -14236,7 +14237,7 @@
         "fme_tstamp": "2026-03-04T09:03:31+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14270,7 +14271,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 26469,
@@ -14329,7 +14330,7 @@
         "fme_tstamp": "2026-03-04T09:03:32+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14350,7 +14351,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14363,7 +14364,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 26774,
@@ -14422,7 +14423,7 @@
         "fme_tstamp": "2026-03-04T09:03:33+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14443,7 +14444,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14456,7 +14457,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 26924,
@@ -14515,7 +14516,7 @@
         "fme_tstamp": "2026-03-04T09:03:33+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14549,7 +14550,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 27293,
@@ -14608,7 +14609,7 @@
         "fme_tstamp": "2026-03-04T09:03:34+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14642,7 +14643,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 27613,
@@ -14701,7 +14702,7 @@
         "fme_tstamp": "2026-03-04T09:03:35+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14735,7 +14736,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 27978,
@@ -14794,7 +14795,7 @@
         "fme_tstamp": "2026-03-04T09:03:35+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14815,7 +14816,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14828,7 +14829,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 28068,
@@ -14887,7 +14888,7 @@
         "fme_tstamp": "2026-03-04T09:03:36+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -14908,7 +14909,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -14921,7 +14922,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 29586,
@@ -14980,7 +14981,7 @@
         "fme_tstamp": "2026-03-04T09:03:38+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15001,7 +15002,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -15014,7 +15015,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 29960,
@@ -15073,7 +15074,7 @@
         "fme_tstamp": "2026-03-04T09:03:39+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15094,7 +15095,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -15107,7 +15108,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 30265,
@@ -15166,7 +15167,7 @@
         "fme_tstamp": "2026-03-04T09:03:40+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15200,7 +15201,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 31242,
@@ -15259,7 +15260,7 @@
         "fme_tstamp": "2026-03-04T09:03:42+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15293,7 +15294,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 31465,
@@ -15352,7 +15353,7 @@
         "fme_tstamp": "2026-03-04T09:03:42+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15386,7 +15387,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 31487,
@@ -15445,7 +15446,7 @@
         "fme_tstamp": "2026-03-04T09:03:42+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15466,7 +15467,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 7.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 7,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -15479,7 +15480,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 32129,
@@ -15538,7 +15539,7 @@
         "fme_tstamp": "2026-03-04T09:03:43+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15572,7 +15573,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 32534,
@@ -15631,7 +15632,7 @@
         "fme_tstamp": "2026-03-04T09:03:44+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15665,7 +15666,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 32539,
@@ -15724,7 +15725,7 @@
         "fme_tstamp": "2026-03-04T09:03:44+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15758,7 +15759,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 33147,
@@ -15817,7 +15818,7 @@
         "fme_tstamp": "2026-03-04T09:03:45+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15851,7 +15852,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 34014,
@@ -15910,7 +15911,7 @@
         "fme_tstamp": "2026-03-04T09:03:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -15944,7 +15945,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 34260,
@@ -16003,7 +16004,7 @@
         "fme_tstamp": "2026-03-04T09:03:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16037,7 +16038,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 34266,
@@ -16096,7 +16097,7 @@
         "fme_tstamp": "2026-03-04T09:03:47+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16130,7 +16131,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 34965,
@@ -16189,7 +16190,7 @@
         "fme_tstamp": "2026-03-04T09:03:49+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16210,7 +16211,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -16223,7 +16224,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 35133,
@@ -16282,7 +16283,7 @@
         "fme_tstamp": "2026-03-04T09:03:49+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16316,7 +16317,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 35267,
@@ -16375,7 +16376,7 @@
         "fme_tstamp": "2026-03-04T09:03:49+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16409,7 +16410,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 35361,
@@ -16468,7 +16469,7 @@
         "fme_tstamp": "2026-03-04T09:03:50+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16502,7 +16503,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 35559,
@@ -16561,7 +16562,7 @@
         "fme_tstamp": "2026-03-04T09:03:50+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16582,7 +16583,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 5.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 5,5t tatsächliches Gewicht",
         "richtung": "90° rechts der Fahrtrichtung",
@@ -16595,7 +16596,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36029,
@@ -16654,7 +16655,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16688,7 +16689,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36245,
@@ -16747,7 +16748,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16781,7 +16782,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36324,
@@ -16840,7 +16841,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16874,7 +16875,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36329,
@@ -16933,7 +16934,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -16967,7 +16968,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36331,
@@ -17026,7 +17027,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17060,7 +17061,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36339,
@@ -17119,7 +17120,7 @@
         "fme_tstamp": "2026-03-04T09:03:51+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17153,7 +17154,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 36740,
@@ -17212,7 +17213,7 @@
         "fme_tstamp": "2026-03-04T09:03:52+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17246,7 +17247,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 37116,
@@ -17305,7 +17306,7 @@
         "fme_tstamp": "2026-03-04T09:03:53+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17339,7 +17340,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 37130,
@@ -17398,7 +17399,7 @@
         "fme_tstamp": "2026-03-04T09:03:53+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17432,7 +17433,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 38371,
@@ -17491,7 +17492,7 @@
         "fme_tstamp": "2026-03-04T09:03:55+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17525,7 +17526,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 38378,
@@ -17584,7 +17585,7 @@
         "fme_tstamp": "2026-03-04T09:03:55+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17618,7 +17619,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 38847,
@@ -17677,7 +17678,7 @@
         "fme_tstamp": "2026-03-04T09:03:56+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17711,7 +17712,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 38854,
@@ -17770,7 +17771,7 @@
         "fme_tstamp": "2026-03-04T09:03:56+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17791,7 +17792,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "zur Fahrtrichtung",
@@ -17804,7 +17805,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 39804,
@@ -17863,7 +17864,7 @@
         "fme_tstamp": "2026-03-04T09:03:58+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17884,7 +17885,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -17897,7 +17898,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40349,
@@ -17956,7 +17957,7 @@
         "fme_tstamp": "2026-03-04T09:03:59+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -17977,7 +17978,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -17990,7 +17991,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40537,
@@ -18049,7 +18050,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18083,7 +18084,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40549,
@@ -18142,7 +18143,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18163,7 +18164,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18176,7 +18177,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40720,
@@ -18235,7 +18236,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18256,7 +18257,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18269,7 +18270,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40964,
@@ -18328,7 +18329,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18349,7 +18350,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18362,7 +18363,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40974,
@@ -18421,7 +18422,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18442,7 +18443,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18455,7 +18456,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40979,
@@ -18514,7 +18515,7 @@
         "fme_tstamp": "2026-03-04T09:04:00+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18535,7 +18536,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18548,7 +18549,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40982,
@@ -18607,7 +18608,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18628,7 +18629,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18641,7 +18642,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40987,
@@ -18700,7 +18701,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18721,7 +18722,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18734,7 +18735,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40989,
@@ -18793,7 +18794,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18827,7 +18828,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 40999,
@@ -18886,7 +18887,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -18907,7 +18908,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -18920,7 +18921,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 41141,
@@ -18979,7 +18980,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19000,7 +19001,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19013,7 +19014,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 41142,
@@ -19072,7 +19073,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19093,7 +19094,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19106,7 +19107,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 41145,
@@ -19165,7 +19166,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19186,7 +19187,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19199,7 +19200,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 41159,
@@ -19258,7 +19259,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19279,7 +19280,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxBreiteM": 8,
+        "maxBreiteM": 1.8,
         "vzNr": "264",
         "vzBez": "Verbot für Fahrzeuge über 1,8m Breite einschließlich Ladung",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19292,7 +19293,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 41393,
@@ -19351,7 +19352,7 @@
         "fme_tstamp": "2026-03-04T09:04:01+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19384,7 +19385,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 42069,
@@ -19443,7 +19444,7 @@
         "fme_tstamp": "2026-03-04T09:04:03+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19477,7 +19478,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 42996,
@@ -19536,7 +19537,7 @@
         "fme_tstamp": "2026-03-04T09:04:04+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19570,7 +19571,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43206,
@@ -19629,7 +19630,7 @@
         "fme_tstamp": "2026-03-04T09:04:05+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19663,7 +19664,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43214,
@@ -19722,7 +19723,7 @@
         "fme_tstamp": "2026-03-04T09:04:05+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19743,7 +19744,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19756,7 +19757,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43419,
@@ -19815,7 +19816,7 @@
         "fme_tstamp": "2026-03-04T09:04:05+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19836,7 +19837,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 8,
+        "maxGewichtT": 2.8,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 2,8t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19849,7 +19850,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43874,
@@ -19908,7 +19909,7 @@
         "fme_tstamp": "2026-03-04T09:04:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -19929,7 +19930,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -19942,7 +19943,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43875,
@@ -20001,7 +20002,7 @@
         "fme_tstamp": "2026-03-04T09:04:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -20022,7 +20023,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -20035,7 +20036,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43943,
@@ -20094,7 +20095,7 @@
         "fme_tstamp": "2026-03-04T09:04:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -20115,7 +20116,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -20128,7 +20129,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 43945,
@@ -20187,7 +20188,7 @@
         "fme_tstamp": "2026-03-04T09:04:06+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     },
     {
       "quellen_id": "0221",
@@ -20208,7 +20209,7 @@
       "station_von": null,
       "station_bis": null,
       "attrs": {
-        "maxGewichtT": 5,
+        "maxGewichtT": 3.5,
         "vzNr": "262",
         "vzBez": "Verbot für Fahrzeuge über 3,5t tatsächliches Gewicht",
         "richtung": "entgegen der Fahrtrichtung",
@@ -20221,7 +20222,7 @@
       "quelle": {
         "name": "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)",
         "url": "https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig",
-        "abgerufenAm": "2026-06-13T17:28:48.622Z"
+        "abgerufenAm": "2026-06-13T17:55:54.442Z"
       },
       "roh": {
         "objectid": 44313,
@@ -20280,7 +20281,7 @@
         "fme_tstamp": "2026-03-04T09:04:07+01:00"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:48.622Z"
+      "abgerufen_am": "2026-06-13T17:55:54.442Z"
     }
   ]
 }

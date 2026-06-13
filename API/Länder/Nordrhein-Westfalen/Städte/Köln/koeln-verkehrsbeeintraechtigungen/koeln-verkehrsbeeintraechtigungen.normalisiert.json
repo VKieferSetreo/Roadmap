@@ -3,9 +3,10 @@
     "id": "0212",
     "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)"
   },
-  "abgerufen_am": "2026-06-13T17:28:59.920Z",
+  "abgerufen_am": "2026-06-13T17:47:12.590Z",
   "anzahl_verfuegbar": 188,
   "anzahl_normalisiert": 188,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0212",
@@ -35,7 +36,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18905/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 230729,
@@ -48,7 +49,7 @@
         "beschreibung": "Die Einfahrt in die Tiergartenstraße ist von der Riehler Straße nur bis zur Rotterdamer Straße möglich. Eine Einfahrt vom Niederländer Ufer ist nicht möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -78,7 +79,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17982/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 346325,
@@ -91,7 +92,7 @@
         "beschreibung": "Auf der Bonner Straße kommt es zu Verkehrsbeeinträchtigungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -121,7 +122,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19950/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 386378,
@@ -134,7 +135,7 @@
         "beschreibung": "Die Widdersdorfer Straße ist zwischen Eupener Straße und Mercedes-Allee in beide Fahrtrichtungen eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     }
   ],
   "alle": [
@@ -166,7 +167,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18905/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 230729,
@@ -179,7 +180,7 @@
         "beschreibung": "Die Einfahrt in die Tiergartenstraße ist von der Riehler Straße nur bis zur Rotterdamer Straße möglich. Eine Einfahrt vom Niederländer Ufer ist nicht möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -209,7 +210,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17982/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 346325,
@@ -222,7 +223,7 @@
         "beschreibung": "Auf der Bonner Straße kommt es zu Verkehrsbeeinträchtigungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -252,7 +253,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19950/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 386378,
@@ -265,7 +266,7 @@
         "beschreibung": "Die Widdersdorfer Straße ist zwischen Eupener Straße und Mercedes-Allee in beide Fahrtrichtungen eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -295,7 +296,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18779/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 388407,
@@ -308,7 +309,7 @@
         "beschreibung": "Die Neusser Straße ist zwischen Hohlbeinstraße und Lohsestraße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -338,7 +339,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20052/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 388424,
@@ -351,7 +352,7 @@
         "beschreibung": "Die Richmodstraße ist zwischen Neumarkt und Wolfsstraße in beide Fahrtrichtungen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -381,7 +382,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20059/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 388431,
@@ -394,7 +395,7 @@
         "beschreibung": "Der Bonner Wall ist zwischen Vorgebirgstraße und Bonner Straße in beide Fahrtrichtungen verschwenkt und eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -425,7 +426,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19148/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 388437,
@@ -438,7 +439,7 @@
         "beschreibung": "Die Merkenicher Hauptstraße ist im Bereich der Rheinbrücke voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -468,7 +469,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20124/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 388465,
@@ -481,7 +482,7 @@
         "beschreibung": "Die Boltensternstraße ist zwischen Barbarastraße und Stammheimer Straße in Fahrtrichtung Riehler Straße abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -511,7 +512,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18354/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 389221,
@@ -524,7 +525,7 @@
         "beschreibung": "Die Luxemburger Straße ist im Bereich der Einmündung Greinstraße in Fahrtrichtung stadtauswärts eingeengt. In die Greinstraße kann hier nicht eingefahren werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -554,7 +555,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20053/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 389226,
@@ -567,7 +568,7 @@
         "beschreibung": "Die Frankfurter Straße ist zwischen der Höhenberger Straße und der Straße An Sankt Elisabeth in Fahrtrichtung Olpener Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -597,7 +598,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19261/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 389234,
@@ -610,7 +611,7 @@
         "beschreibung": "Die Militärringstraße ist zwischen Konrad-Adenauer-Straße und Heinrich-Lübke-Ufer in Fahrtrichtung Oberländer Ufer abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -640,7 +641,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20074/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 389242,
@@ -653,7 +654,7 @@
         "beschreibung": "Die Luxemburger Straße ist zwischen der Paul-Schallück-Straße und der Hans-Carl-Nipperdey-Straße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -683,7 +684,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19673/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 390030,
@@ -696,7 +697,7 @@
         "beschreibung": "Die Magnusstraße ist zwischen Hohenzollernring und Friesenwall in Fahrtrichtung stadteinwärts eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -726,7 +727,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17509/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 390054,
@@ -739,7 +740,7 @@
         "beschreibung": "Die Straße An der Schanz ist im Einmündungsbereich zur Leidener Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -769,7 +770,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19210/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 390079,
@@ -782,7 +783,7 @@
         "beschreibung": "Die Riehler Straße ist in Fahrtrichtung Niehl zwischen Frohngasse und Tiergartenstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -812,7 +813,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/16765/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 391634,
@@ -825,7 +826,7 @@
         "beschreibung": "Zwischen 16 und 18 Uhr ist mit einem erhöhten Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -855,7 +856,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20180/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394056,
@@ -868,7 +869,7 @@
         "beschreibung": "Die Bahnhofstraße ist zwischen Glasstraße und Goethestraße in Fahrtrichtung Goethestraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -899,7 +900,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19877/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394060,
@@ -912,7 +913,7 @@
         "beschreibung": "Die Pantaleonsmühlengasse sowie die Michaelstraße sind zwischen Neue Weyerstraße und Am Weidenbach abschnittsweise voll gesperrt. Die Durchfahrt der Straße Am Weidenbach ist ebenfalls nicht möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -942,7 +943,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20164/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394440,
@@ -955,7 +956,7 @@
         "beschreibung": "Die Frankfurter Straße ist zwischen Alter Deutzer Postweg und Neuenhofstraße in Fahrtrichtung Gremberghoven eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -985,7 +986,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19715/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394459,
@@ -998,7 +999,7 @@
         "beschreibung": "Die Straße Am Vorgebirgstor ist zwischen Höninger Weg und Vorgebirgstraße in Fahrtrichtung Raderberg eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1028,7 +1029,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20222/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394491,
@@ -1041,7 +1042,7 @@
         "beschreibung": "Die Dürener Straße ist zwischen der Herbert-Lewin-Straße und dem Karl-Schwering-Platz in Fahrtrichtung stadtauswärts eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1071,7 +1072,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20281/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394532,
@@ -1084,7 +1085,7 @@
         "beschreibung": "Die Deutzer Brücke ist wechselseitig in beide Fahrtrichtungen abschnittsweise nacheinander eigeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1114,7 +1115,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20061/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394538,
@@ -1127,7 +1128,7 @@
         "beschreibung": "Der Kreuzungsbereich Straße des 17. Juni / Erna-Scheffler-Straße / Coritostraße ist in allen Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1157,7 +1158,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20169/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 394849,
@@ -1170,7 +1171,7 @@
         "beschreibung": "Die Philipp-Reis-Straße ist zwischen Friedrichstraße und Josefstraße in beiden Fahrtrichtungen wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1200,7 +1201,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19601/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 395239,
@@ -1213,7 +1214,7 @@
         "beschreibung": "Die Hauptstraße ist zwischen der Hombergstraße und der Frankstraße in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1243,7 +1244,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/16575/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 395651,
@@ -1256,7 +1257,7 @@
         "beschreibung": "Im Bereich der Anschlussstelle Köln-Wahn ist die Auffahrt in Richtung Bonn gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1286,7 +1287,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20267/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 397269,
@@ -1299,7 +1300,7 @@
         "beschreibung": "Es kommt zu Verbindungssperrungen an der Anschlussstelle Frankfurter Straße/Stadtautobahn B55a."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1330,7 +1331,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20270/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 397667,
@@ -1343,7 +1344,7 @@
         "beschreibung": "Die Straße Zum Forstbotanischen Garten ist zwischen Friedrich-Ebert-Straße und Schillingsrotter Straße voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1373,7 +1374,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18958/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 398072,
@@ -1386,7 +1387,7 @@
         "beschreibung": "Der Bereich um die Kreuzung Bonner Straße / Raderberggürtel / Bayenthalgürtel ist in allen Fahrtrichtungen eingeengt und verschwenkt. Die Bonner Straße ist in Fahrtrichtung stadteinwärts Einbahnstraße."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1416,7 +1417,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20212/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 398076,
@@ -1429,7 +1430,7 @@
         "beschreibung": "Die Krefelder Straße ist vor dem Einmündungsbereich zur Inneren Kanalstraße in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1459,7 +1460,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18614/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 398082,
@@ -1472,7 +1473,7 @@
         "beschreibung": "Der Gulliver-Tunnel ist zwischen Trankgasse, Am Domhof und Konrad-Adenauer-Ufer teilgesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1502,7 +1503,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19401/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 398450,
@@ -1515,7 +1516,7 @@
         "beschreibung": "Die Fahrbahn ist auf der Berrenrather Straße zwischen Neuenhöfer Allee und dem Sülzgürtel eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1545,7 +1546,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/01017/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400080,
@@ -1558,7 +1559,7 @@
         "beschreibung": "Aufgrund der Generalsanierung der Mülheimer Brücke kommt es zu Verkehrsbeeinträchtigungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1588,7 +1589,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20334/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400085,
@@ -1601,7 +1602,7 @@
         "beschreibung": "Der Chorweiler Zubringer zur Mercatorstraße ist in Fahrtrichtung stadtauswärts gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1631,7 +1632,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20265/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400087,
@@ -1644,7 +1645,7 @@
         "beschreibung": "Die Neusser Straße ist zwischen Lohsestraße und Innere Kanalstraße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1674,7 +1675,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20077/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400090,
@@ -1687,7 +1688,7 @@
         "beschreibung": "Die Abfahrt Zoobrücke ist in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1717,7 +1718,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/14887/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400092,
@@ -1730,7 +1731,7 @@
         "beschreibung": "Der Pfälzische Ring ist in Fahrtrichtung Bergischer Ring unter der Zoobrücke eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1760,7 +1761,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20368/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400100,
@@ -1773,7 +1774,7 @@
         "beschreibung": "Die Universitätsstraße ist in Höhe der Universität in beide Fahrtrichtungen eingeengt und verschwenkt. Von der Bachemer Straße kommend ist die Wendespur gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1803,7 +1804,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20284/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400456,
@@ -1816,7 +1817,7 @@
         "beschreibung": "Die Aachener Straße ist zwischen Am Raphol und der Straße Frechener Weg in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1846,7 +1847,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19455/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400462,
@@ -1859,7 +1860,7 @@
         "beschreibung": "Die Berrenrather Straße ist zwischen der Sülzburgstraße und der Gerolsteiner Straße in beide Fahrtrichtung eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1889,7 +1890,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17061/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400860,
@@ -1902,7 +1903,7 @@
         "beschreibung": "Wegen einer Veranstaltung in der LANXESS arena ist in der Zeit von 16 bis 18 Uhr und nach der Veranstaltung ab circa 19:35 Uhr rund um die Arena mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1932,7 +1933,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/09695/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400861,
@@ -1945,7 +1946,7 @@
         "beschreibung": "Zwei Stunden vor der Veranstaltung und nach der Veranstaltung ist mit einem erhöhten Verkehrsaufkommen und zähfließendem Verkehr zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -1975,7 +1976,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19108/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400870,
@@ -1988,7 +1989,7 @@
         "beschreibung": "Die Burgmauer ist zwischen der Neven-DuMont-Straße und der Tunisstraße in Fahrtrichtung Komödienstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2019,7 +2020,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18173/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 400875,
@@ -2032,7 +2033,7 @@
         "beschreibung": "Der Niehler Damm ist zwischen der Sebastianstraße und der Merkenicher Straße in beide Fahrtrichtungen voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2062,7 +2063,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20302/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401269,
@@ -2075,7 +2076,7 @@
         "beschreibung": "Die Weißer Straße ist zwischen Moselstraße und Siegstraße in beiden Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2105,7 +2106,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20315/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401282,
@@ -2118,7 +2119,7 @@
         "beschreibung": "Die Weinsbergstraße ist im Einmündungsbereich zur Fröbelstraße in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2148,7 +2149,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20324/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401286,
@@ -2161,7 +2162,7 @@
         "beschreibung": "Die Moltkestraße ist vor der Kreuzung Richard-Wagner-Straße in Fahrtrichtung Aachener Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2191,7 +2192,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20350/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401296,
@@ -2204,7 +2205,7 @@
         "beschreibung": "Die Piccoloministraße ist zwischen Honschaftsstraße und Buschfeldstraße in Fahrtrichtung Buschfeldstraße gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2234,7 +2235,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20197/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401678,
@@ -2247,7 +2248,7 @@
         "beschreibung": "Der Vingster Ring ist in Fahrtrichtung Gremberger Ring im Bereich Gremberghoven und Vingst eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2277,7 +2278,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20316/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401684,
@@ -2290,7 +2291,7 @@
         "beschreibung": "Die Weißer Straße ist zwischen Siegstraße und Moselstraße in Fahrtrichtung Grüngürtelstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2320,7 +2321,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20333/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401688,
@@ -2333,7 +2334,7 @@
         "beschreibung": "Die Mercartorstraße ist ab der Merianstraße Fahrtrichtung Chorweiler Zubringer gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2363,7 +2364,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20365/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401703,
@@ -2376,7 +2377,7 @@
         "beschreibung": "Der Raderberggürtel  ist in Fahrtrichtung Bayenthal eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2406,7 +2407,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20370/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 401706,
@@ -2419,7 +2420,7 @@
         "beschreibung": "Die Amsterdamer Straße ist zwischen Friedrich-Karl Straße und Pohlmannstraße in Fahrtrichtung Niehl eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2449,7 +2450,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20297/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402065,
@@ -2462,7 +2463,7 @@
         "beschreibung": "Die Durchfahrt der Straße Auf dem Sandberg ist zwischen der Poller Hauptstraße und der Siegburger Straße nicht möglich. Die Straße Auf dem Sandberg ist in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2492,7 +2493,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20176/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402077,
@@ -2505,7 +2506,7 @@
         "beschreibung": "Die Merowingerstraße ist im Einmündungsbereich Karolingerring in beide Fahrtrichtungen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2535,7 +2536,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20189/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402083,
@@ -2548,7 +2549,7 @@
         "beschreibung": "Die Innere Kanalstraße ist in Fahrtrichtung Lindenthal zwischen Vogelsangerstraße und Barthelstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2578,7 +2579,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20076/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402096,
@@ -2591,7 +2592,7 @@
         "beschreibung": "Die Abfahrt von der Zoobrücke in Fahrtrichtung Süden ist eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2621,7 +2622,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17789/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402098,
@@ -2634,7 +2635,7 @@
         "beschreibung": "Im Deutzer Bereich der Zoobrücke sind an den Auf- und Abfahrten Fahrbahneinengungen und Verschwenkungen in alle Fahrtrichtungen möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2664,7 +2665,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20360/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402101,
@@ -2677,7 +2678,7 @@
         "beschreibung": "Der Maarweg ist zwischen Scheidtweilerstraße und Aachener Straße in Fahrtrichtung Ehrenfeld eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2707,7 +2708,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17796/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402103,
@@ -2720,7 +2721,7 @@
         "beschreibung": "Die Deutz-Mülheimer Straße ist zwischen Messe-Kreisel und Barmer Straße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2750,7 +2751,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18753/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402468,
@@ -2763,7 +2764,7 @@
         "beschreibung": "Wegen eines Konzertes im RheinEnergieSTADION ist vor dem Konzert von 15:30 bis 19:30 Uhr und nach dem Konzert ab circa 22 Uhr mit Verkehrsbeeinträchtigungen zu rechen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2793,7 +2794,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20301/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402478,
@@ -2806,7 +2807,7 @@
         "beschreibung": "Die Brühler Straße ist zwischen der Mannsfelder Straße und der Gerhard-vom-Rath-Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2836,7 +2837,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20331/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402483,
@@ -2849,7 +2850,7 @@
         "beschreibung": "Die Riehler Straße ist zwischen Balthasarstraße und Wörthstraße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2879,7 +2880,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20335/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402486,
@@ -2892,7 +2893,7 @@
         "beschreibung": "Der Ehrenfeldgürtel ist zwischen Fridolinstraße und Jessestraße in Fahrtrichtung Parkgürtel eingeengt. Die Fridolinstraße ist vor der Einmündung in den Ehrenfeldgürtel in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2922,7 +2923,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20336/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402498,
@@ -2935,7 +2936,7 @@
         "beschreibung": "Die Turiner Straße ist zwischen Maximinenstraße und Unter Krahnenbäumen in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -2965,7 +2966,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20199/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402505,
@@ -2978,7 +2979,7 @@
         "beschreibung": "Im Kreuzungsbereich Aachener Straße / Brabanter Straße / Händelstraße kommt es zu Einengungen und Sperrungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3008,7 +3009,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19981/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402506,
@@ -3021,7 +3022,7 @@
         "beschreibung": "Auf der Longericher Hauptstraße kommt es zu Einengungen und Sperrungen einzelner Fahrbeziehungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3051,7 +3052,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17795/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402510,
@@ -3064,7 +3065,7 @@
         "beschreibung": "Die Mindener Straße ist zwischen Deutzer Freiheit und Siegesstraße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3094,7 +3095,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20372/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402514,
@@ -3107,7 +3108,7 @@
         "beschreibung": "Die Hauptstraße ist zwischen der Westfeldgasse und  Am Courts Garten in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3137,7 +3138,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20373/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402515,
@@ -3150,7 +3151,7 @@
         "beschreibung": "Die Straße Auf dem Sandberg ist zwischen der Siegburger Straße und Rolshover Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3180,7 +3181,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20180/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402887,
@@ -3193,7 +3194,7 @@
         "beschreibung": "Die Bahnhofstraße ist zwischen Glasstraße und Goethestraße in Fahrtrichtung Goethestraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3224,7 +3225,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19188/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402894,
@@ -3237,7 +3238,7 @@
         "beschreibung": "Die Wildenburgstraße ist zwischen Am Krieler Dom und Fustenburgstraße voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3267,7 +3268,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17798/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402905,
@@ -3280,7 +3281,7 @@
         "beschreibung": "Der Pfälzischer Ring ist zwischen Karlsruher Straße und Messe-Kreisel in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3310,7 +3311,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17794/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402910,
@@ -3323,7 +3324,7 @@
         "beschreibung": "Die Mindener Straße ist zwischen Urbanstraße und Auenweg in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3353,7 +3354,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20377/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 402916,
@@ -3366,7 +3367,7 @@
         "beschreibung": "Die Kreuzung an der Rolshover Straße und Dillenburger Straße ist in allen Fahrtrichtungen eingeengt und verschwenkt.Ein Abbiegen in die Dillenburger Straße ist abschnittsweise nicht möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3396,7 +3397,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20388/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403277,
@@ -3409,7 +3410,7 @@
         "beschreibung": "Von der Merianstraße kann man nicht in die Mercatorstraße in Fahrtrichtung stadtauswärts einfahren."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3439,7 +3440,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20337/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403278,
@@ -3452,7 +3453,7 @@
         "beschreibung": "Die Bahnhofstraße ist zwischen Klingerstraße und Goethestraße in Fahrtrichtung stadteinwärts Einbahnstraße. Von der Friedrichstraße kann nicht geradeaus auf die Schillerstraße gefahren werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3482,7 +3483,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20174/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403279,
@@ -3495,7 +3496,7 @@
         "beschreibung": "Die Weilerstraße ist zwischen der Straße An der Dränk und Frohnhofstraße in beide Fahrtrichtungen gesperrt.Umleitungen sind ausgeschildert."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3526,7 +3527,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/11330/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403282,
@@ -3539,7 +3540,7 @@
         "beschreibung": "Die Bonner Straße ist zwischen dem Chlodwigplatz und dem Bonner Wall in beiden Richtungen voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3569,7 +3570,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20390/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403284,
@@ -3582,7 +3583,7 @@
         "beschreibung": "Der Athener Ring ist ab der Florenzer Straße bis zur Höhe Kreisverkehr Athener Ring gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3612,7 +3613,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20427/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403287,
@@ -3625,7 +3626,7 @@
         "beschreibung": "Der Auenweg ist zwischen Charles-de-Gaulle-Platz und Opladener Sraße in beide Fahrtrichtungen eingeent."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3655,7 +3656,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20431/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403290,
@@ -3668,7 +3669,7 @@
         "beschreibung": "Die Straße Am Eifeltor ist zwischen der Auffahrt zur Autobahn 4 und der Kalscheurener Straße in Fahrtrichtung Hürth eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3698,7 +3699,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18274/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403291,
@@ -3711,7 +3712,7 @@
         "beschreibung": "Rund um die LANXESS arena ist vor Beginn sowie nach Ende einer jeweiligen Veranstaltung mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3741,7 +3742,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19596/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403292,
@@ -3754,7 +3755,7 @@
         "beschreibung": "Die Brühler Straße ist zwischen Mannsfelder Straße und Bonner Straße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3784,7 +3785,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20269/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403677,
@@ -3797,7 +3798,7 @@
         "beschreibung": "Der Deutzer Ring ist zwischen Gießener Straße und Betzdorfer Straße in Fahrtrichtung Östliche Zubringerstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3827,7 +3828,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20403/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403680,
@@ -3840,7 +3841,7 @@
         "beschreibung": "Die Straße Zum Botanischen Garten ist zwischen Schillingsrotter Straße und Friedrich-Ebert-Straße an der Kreuzung zur Schillingsrotter Straße gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3870,7 +3871,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/14785/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403681,
@@ -3883,7 +3884,7 @@
         "beschreibung": "Die Neuköllner Straße ist kurz hinter der Einmündung Agrippastraße in Fahrtrichtung Blaubach eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3913,7 +3914,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20406/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403682,
@@ -3926,7 +3927,7 @@
         "beschreibung": "Die Amsterdamer Straße ist zwischen der Xantener Straße und dem Riehler Gürtel in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3956,7 +3957,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20179/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403684,
@@ -3969,7 +3970,7 @@
         "beschreibung": "Die Neusser Landstraße ist zwischen Lievergesberg und Dornstraße in beide Fahrtrichtung eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -3999,7 +4000,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20420/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403686,
@@ -4012,7 +4013,7 @@
         "beschreibung": "Die Auffahrt zur Autobahn 4 ist abschnittsweise in beiden Fahrtrichtungen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4042,7 +4043,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20274/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403688,
@@ -4055,7 +4056,7 @@
         "beschreibung": "Die Luxemburger Straße ist zwischen Arnulfstraße und Lotharstraße in Fahrtrichtung stadtauswärts eingeengt und verschwenkt"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4085,7 +4086,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20436/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403691,
@@ -4098,7 +4099,7 @@
         "beschreibung": "Die Stadtautobahn (Bundesstraße 55a) ist auf Höhe der Frankfurter Straße in beie Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4128,7 +4129,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20343/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 403692,
@@ -4141,7 +4142,7 @@
         "beschreibung": "Von der Nord-Süd-Fahrt kann in Fahrtrichtung Süden nicht auf die Cäcilienstraße gefahren werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4171,7 +4172,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20384/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404076,
@@ -4184,7 +4185,7 @@
         "beschreibung": "Im Kreuzungsbereich Theodor-Heuss-Straße und Frankfurter Straße sind Fahrbahneinengungen in alle Fahrtrichtungen möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4214,7 +4215,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20393/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404078,
@@ -4227,7 +4228,7 @@
         "beschreibung": "Die Frankfurter Straße ist zwischen Peter-Joseph-Schumacher-Weg und Burgallee abschnittsweise in beiden Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4257,7 +4258,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20174/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404079,
@@ -4270,7 +4271,7 @@
         "beschreibung": "Die Weilerstraße ist zwischen der Straße An der Dränk und Frohnhofstraße in beide Fahrtrichtungen gesperrt.Umleitungen sind ausgeschildert."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4300,7 +4301,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19308/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404082,
@@ -4313,7 +4314,7 @@
         "beschreibung": "Die Straße Cäcilienkloster ist zwischen der Cäcilienstraße und der Jabachstraße gesperrt. Umleitungen sind ausgeschildert."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4343,7 +4344,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20326/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404085,
@@ -4356,7 +4357,7 @@
         "beschreibung": "Die Industriestraße ist zwischen der Geestemünder Straße und der Emdener Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4386,7 +4387,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19605/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404086,
@@ -4399,7 +4400,7 @@
         "beschreibung": "Die Stadtautobahn B55a /Tunnel Kalk ist zwischen den Anschlussstellen Buchheim und Buchforst in beide Fahrtrichtungen wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4429,7 +4430,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20327/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404087,
@@ -4442,7 +4443,7 @@
         "beschreibung": "Die Industriestraße ist zwischen dem Niehler Ei und der Geestemünder Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4472,7 +4473,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20428/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404088,
@@ -4485,7 +4486,7 @@
         "beschreibung": "Die Weilerstraße ist zwischen Volkhofener Straße und der Straße Am Baggerfeld in beide Fahrtrichtungen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4515,7 +4516,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20430/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404089,
@@ -4528,7 +4529,7 @@
         "beschreibung": "Die Auffahrt zur Autobahn 57 von der Inneren Kanalstraße ist gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4558,7 +4559,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20433/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404091,
@@ -4571,7 +4572,7 @@
         "beschreibung": "Die Horbeller Straße ist im Einmündungsbereich zur Toyota-Allee in Fahrtrichtung stadtauswärts gesperrt und in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4601,7 +4602,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18513/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404092,
@@ -4614,7 +4615,7 @@
         "beschreibung": "Die Nord-Süd-Fahrt ist zwischen dem Offenbachplatz und der Neuköllner Straße im Bereich der Unterführung in beide Fahrtrichtungen abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4644,7 +4645,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/12664/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404093,
@@ -4657,7 +4658,7 @@
         "beschreibung": "Der Herkulestunnel ist in beide Fahrtrichtungen abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4687,7 +4688,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20449/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404094,
@@ -4700,7 +4701,7 @@
         "beschreibung": "Der Parkgürtel ist zwischen Longericher Straße und Escher Straße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4731,7 +4732,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20382/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404474,
@@ -4744,7 +4745,7 @@
         "beschreibung": "Die Siebachstraße ist zwischen der Wilhelmstraße und der Steinbergerstraße in Fahrtrichtung Cranachstraße voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4774,7 +4775,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19858/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404486,
@@ -4787,7 +4788,7 @@
         "beschreibung": "Die L84 ist zwischen Abfahrt A59 und Frankfurter Straße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4817,7 +4818,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/12935/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404488,
@@ -4830,7 +4831,7 @@
         "beschreibung": "In der Altstadt/Nord und Neustadt/Nord ist aufgrund einer Kundgebung mit erheblichen Verkehrsbeeinträchtigungen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4860,7 +4861,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19189/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404489,
@@ -4873,7 +4874,7 @@
         "beschreibung": "Der Blaubach ist in Fahrtrichtung stadteinwärts zwischen dem Perlengraben und der Tel-Aviv-Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4904,7 +4905,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20434/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404490,
@@ -4917,7 +4918,7 @@
         "beschreibung": "Die Brauweilerstraße ist im Bereich des Bahnhofs Lövenich in beiden Fahrtrichtungen zunächst eingeengt und verschwenkt und später voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4947,7 +4948,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20191/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404491,
@@ -4960,7 +4961,7 @@
         "beschreibung": "Vom Auenweg/Opladener Straße ist die Weiterfahrt über die Mindener Straße in Fahrtrichtung Siegburger Straße gesperrt. Die Wendespur der Mindener Straße zur Deutzer Brücke in Höhe Hermann-Pünder-Straße ist gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -4990,7 +4991,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20437/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404492,
@@ -5003,7 +5004,7 @@
         "beschreibung": "Auf der Bergisch Gladbacher Straße ist die Auffahrt zur Autobahn 3 in Fahrtrichtung Oberhausen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5033,7 +5034,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20445/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404493,
@@ -5046,7 +5047,7 @@
         "beschreibung": "Die Mercatorstraße ist im Bereich der Unterführung zur Militärringstraße in beiden Fahrtrichtungen abschnittsweise eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5076,7 +5077,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20448/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404494,
@@ -5089,7 +5090,7 @@
         "beschreibung": "Die Subbelrather Straße  ist zwischen Everhardstraße und Innere Kanalstraße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5119,7 +5120,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20386/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404876,
@@ -5132,7 +5133,7 @@
         "beschreibung": "Die Steinstraße ist zwischen Humboldtstraße und Frankfurter Straße in Fahrtrichtung Maarhäuser Weg eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5162,7 +5163,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20392/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404877,
@@ -5175,7 +5176,7 @@
         "beschreibung": "Die Rösrather Straße ist zwischen Karl-Schüßler-Stareße und Fockerweg in beide Fahrtrichtungen abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5205,7 +5206,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17834/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404878,
@@ -5218,7 +5219,7 @@
         "beschreibung": "Die Zoobrücke ist rechtsrheinisch in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5248,7 +5249,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17168/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404881,
@@ -5261,7 +5262,7 @@
         "beschreibung": "Der Rheinufertunnel ist in beide Fahrtrichtungen abschnittweise und wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5291,7 +5292,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20405/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404882,
@@ -5304,7 +5305,7 @@
         "beschreibung": "Die Humboldtstraße ist zwischen Leostraße und Theodor-Heuss-Straße auf höhe Kurt-Schumacher-Straße in beide Fahrtrichtungen wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5334,7 +5335,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20412/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404884,
@@ -5347,7 +5348,7 @@
         "beschreibung": "Die Frankfurter Straße ist zwischen Zündorfer Straße und Waldstraße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5377,7 +5378,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20424/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404887,
@@ -5390,7 +5391,7 @@
         "beschreibung": "Die Weinsbergstraße ist zwischen Melatengürtel und Oskar-Jäger-Straße in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5420,7 +5421,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20215/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404890,
@@ -5433,7 +5434,7 @@
         "beschreibung": "Der Ebertplatz ist zwischen Theodor-Heuss-Ring und Lübecker Straße in Fahrtrichtung Hansaring eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5463,7 +5464,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18336/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404891,
@@ -5476,7 +5477,7 @@
         "beschreibung": "Rund um die LANXESS arena ist vor Beginn sowie nach Ende einer jeweiligen Veranstaltung mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5506,7 +5507,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20440/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404892,
@@ -5519,7 +5520,7 @@
         "beschreibung": "Das Agrippinaufer als auch die Bayenstraße sind zwischen Dreikönigenstraße und Südbrücke in beide Fahrtrichtungen abschnittsweise und wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5549,7 +5550,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20450/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 404894,
@@ -5562,7 +5563,7 @@
         "beschreibung": "Der Parkgürtel ist zwischen Escher Straße und Geldernstraße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5592,7 +5593,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20389/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405277,
@@ -5605,7 +5606,7 @@
         "beschreibung": "Die Straße Robert-Perthel-Straße ist zwischen der Straße Longericher Straße und Hugo-Junkers-Straße in beide Fahrtrichtungen abschnittsweise und wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5635,7 +5636,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20394/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405278,
@@ -5648,7 +5649,7 @@
         "beschreibung": "Die Weinsbergstraße ist im Kreuzungsbereich Melatengürtel in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5678,7 +5679,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20400/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405279,
@@ -5691,7 +5692,7 @@
         "beschreibung": "Die Bergisch Gladbacher Straße ist in Fahrtrichtung stadtauwärts zwischen Von-Quadt-Straße und Otto-Kayser-Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5721,7 +5722,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20409/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405282,
@@ -5734,7 +5735,7 @@
         "beschreibung": "Die Hahnenstraße ist zwischen Benesisstraße und Pfeilstraße in Fahrtrichtung Rudolfplatz eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5764,7 +5765,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20411/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405283,
@@ -5777,7 +5778,7 @@
         "beschreibung": "Die Brühler Straße ist im Kreuzungsbereich Gürtel in beiden Fahrtrichtungen abschnittsweise eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5807,7 +5808,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20089/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405285,
@@ -5820,7 +5821,7 @@
         "beschreibung": "Die Aachener Straße ist zwischen Vogelsanger Weg und Kirchweg in beide Fahrtrichtungen abschnittsweise eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5850,7 +5851,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18679/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405288,
@@ -5863,7 +5864,7 @@
         "beschreibung": "Im gesamten Stadtgebiet kommt es aufgrund mehrere Demonstrationszüge zu Verkehrsbeeinträchtigungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5893,7 +5894,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20429/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405289,
@@ -5906,7 +5907,7 @@
         "beschreibung": "Die Tunisstraße ist zwischen Elstergasse und Glockengasse in Fahrtrichtung Offenbachplatz eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5936,7 +5937,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20447/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405293,
@@ -5949,7 +5950,7 @@
         "beschreibung": "Der Mülheimer Zubringer ist zwischen Clevischer Ring und Schönrather Straße in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -5979,7 +5980,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19213/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405677,
@@ -5992,7 +5993,7 @@
         "beschreibung": "Die Neusser Straße ist in Fahrtrichtung stadteinwärts auf Höhe der Straße Niehler Kirchweg eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6022,7 +6023,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20397/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405679,
@@ -6035,7 +6036,7 @@
         "beschreibung": "Die Universitätsstraße ist im Bereich Zülpicher Straße in Fahrtrichtung Zollstock eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6065,7 +6066,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20408/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405682,
@@ -6078,7 +6079,7 @@
         "beschreibung": "Die Friedrich-Karl-Straße ist im Einmündungsbereich von der Boltensternstraße kommend für Rechtsabbieger eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6108,7 +6109,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20414/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405684,
@@ -6121,7 +6122,7 @@
         "beschreibung": "Der Dellbrücker Mauspfad ist zwischen Dabringhauser Straße und Auf der Jüchen auf Höhe der Neuapostolischen Kirche in Fahrtrichtung Nord eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6151,7 +6152,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20089/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405685,
@@ -6164,7 +6165,7 @@
         "beschreibung": "Die Aachener Straße ist zwischen Vogelsanger Weg und Kirchweg in beide Fahrtrichtungen abschnittsweise eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6194,7 +6195,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20426/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405688,
@@ -6207,7 +6208,7 @@
         "beschreibung": "Die Cäcilienstraße ist zwischen der Fleischmengergasse und der Straße Cäcilienkloster in Fahrtrichtung Pipinstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6237,7 +6238,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17335/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405690,
@@ -6250,7 +6251,7 @@
         "beschreibung": "Im Autobahnkreuz Köln-Ost ist die Überfahrt von der Autobahn 3 aus Richtung Frankfurt kommend auf die Bundesstraße 55a in Fahrtrichtung Köln-Zentrum gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6280,7 +6281,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17676/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 405691,
@@ -6293,7 +6294,7 @@
         "beschreibung": "Rund um die LANXESS arena ist vor Beginn sowie nach Ende der jeweiligen Veranstaltung mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6323,7 +6324,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20132/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406074,
@@ -6336,7 +6337,7 @@
         "beschreibung": "Die Neusser Straße ist zwischen Ebertplatz und Schillingstaße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6366,7 +6367,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/14683/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406080,
@@ -6379,7 +6380,7 @@
         "beschreibung": "Der Verbindungstunnel zwischen der Boltensternstraße und der Straße An der Schanz ist in beide Fahrtrichtungen wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6409,7 +6410,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19354/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406082,
@@ -6422,7 +6423,7 @@
         "beschreibung": "Die Straße Cäcilienkloster ist zwischen Cäcilienstraße und Jabachstraße voll geperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6452,7 +6453,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20189/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406083,
@@ -6465,7 +6466,7 @@
         "beschreibung": "Die Innere Kanalstraße ist in Fahrtrichtung Lindenthal zwischen Vogelsangerstraße und Barthelstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6495,7 +6496,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20325/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406084,
@@ -6508,7 +6509,7 @@
         "beschreibung": "Die Industriestraße ist zwischen der Geestemünder Straße und dem Niehler Ei in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6538,7 +6539,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20419/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406086,
@@ -6551,7 +6552,7 @@
         "beschreibung": "Die Opladener Straße ist zwischen Auenweg und Deutz-Mühlheimer Straße auf Höhe Ottoplatz in beide Fahrtrichtungen gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6581,7 +6582,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20115/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406087,
@@ -6594,7 +6595,7 @@
         "beschreibung": "Die Neusser Straße ist zwischen Blücherstraße und Scharnhorststraße in beide Fahrtrichtungen eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6624,7 +6625,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18679/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406088,
@@ -6637,7 +6638,7 @@
         "beschreibung": "Im gesamten Stadtgebiet kommt es aufgrund mehrere Demonstrationszüge zu Verkehrsbeeinträchtigungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6667,7 +6668,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/16407/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406091,
@@ -6680,7 +6681,7 @@
         "beschreibung": "Aufgrund einer Veranstaltung in der LANXESS arena ist mit Verkehrsbeeinträchtigungen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6710,7 +6711,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20246/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406092,
@@ -6723,7 +6724,7 @@
         "beschreibung": "Die Weyerstraße ist zwischen Neue Weyerstraße und Barbarossaplatz in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6753,7 +6754,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20443/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406093,
@@ -6766,7 +6767,7 @@
         "beschreibung": "Die Deutzer Brücke ist auf der linksrheinischen Seite in beiden Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6796,7 +6797,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20258/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406475,
@@ -6809,7 +6810,7 @@
         "beschreibung": "Die Luxemburger Straße ist zwischen Weißhausstraße und Eifelwall in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6839,7 +6840,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20391/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406477,
@@ -6852,7 +6853,7 @@
         "beschreibung": "Die Frankfurter Straße ist im Einmündungsbereich zur Heidelberger Straße in Fahrtrichtung stadteinwärts gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6882,7 +6883,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19562/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406478,
@@ -6895,7 +6896,7 @@
         "beschreibung": "Die Maternusstraße ist zwischen Brückenstraße und Augustastraße in beiden Fahrtrichtungen eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6925,7 +6926,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20122/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406878,
@@ -6938,7 +6939,7 @@
         "beschreibung": "Der Bayenthalgürtel ist zwischen Bonner Straße und Schillerstraße in Fahrtrichtung Bonner Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -6968,7 +6969,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20398/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406879,
@@ -6981,7 +6982,7 @@
         "beschreibung": "Der Clevischer Ring ist zwischen Markgrafenstraße und Berliner Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7011,7 +7012,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20353/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406882,
@@ -7024,7 +7025,7 @@
         "beschreibung": "Die Neuköllner Straße ist zwischen Agrippastraße und Cäcilienstraße in Fahrtrichtung Altstadt / Nord eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7054,7 +7055,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20189/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406883,
@@ -7067,7 +7068,7 @@
         "beschreibung": "Die Innere Kanalstraße ist in Fahrtrichtung Lindenthal zwischen Vogelsangerstraße und Barthelstraße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7097,7 +7098,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20417/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406884,
@@ -7110,7 +7111,7 @@
         "beschreibung": "Die Trankgasse ist im Tunnelbereich abschnittsweise beidseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7140,7 +7141,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20422/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406886,
@@ -7153,7 +7154,7 @@
         "beschreibung": "Die Dürener Straße ist zwischen der Universitätsstraße und der Militärringstraße in beiden Fahrtrichtungen abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7183,7 +7184,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20383/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406889,
@@ -7196,7 +7197,7 @@
         "beschreibung": "Der Vingster Ring ist in Fahrtrichtung Süden zwischen Lustheider Straße und Ostheimer Straße im Eimündungsbereich zur Ostheimer Straße gesperrt. Die Kreuzung Ostheimer Straße / Vingster Ring ist in allen Fahrtrichtungen eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7226,7 +7227,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20432/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406890,
@@ -7239,7 +7240,7 @@
         "beschreibung": "Der Deutzer Ring ist zwischen Gießener Straße und Betzdorfer Straße in Fahrtrichtung Severinsbrücke eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7269,7 +7270,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17995/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 406892,
@@ -7282,7 +7283,7 @@
         "beschreibung": "Wegen Arbeiten im Kreuzungsbereich der Nord-Süd-Fahrt/Cäcilienstraße sind Fahrbahneinengungen und Sperrungen erforderlich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7313,7 +7314,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20354/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407273,
@@ -7326,7 +7327,7 @@
         "beschreibung": "Die Straße Am Flachsrosterweg ist im Bereich des Brückenbauwerks voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7356,7 +7357,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20387/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407276,
@@ -7369,7 +7370,7 @@
         "beschreibung": "Die Waldstraße ist zwischen Akazienweg und Himbeerweg in beide Fahrtrichtungen eingeengt. Der Wiesenweg ist im Einmündungsbereich zur Waldstraße gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7399,7 +7400,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20406/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407282,
@@ -7412,7 +7413,7 @@
         "beschreibung": "Die Amsterdamer Straße ist zwischen der Xantener Straße und dem Riehler Gürtel in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7442,7 +7443,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20413/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407283,
@@ -7455,7 +7456,7 @@
         "beschreibung": "Die Straße Perlengraben ist zwischen Rothgerberbach und Mengelbergstraße in beiden Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7485,7 +7486,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20421/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407286,
@@ -7498,7 +7499,7 @@
         "beschreibung": "Die Aachener Straße ist zwischen Melatengürtel und Maarweg in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7528,7 +7529,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20425/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407288,
@@ -7541,7 +7542,7 @@
         "beschreibung": "Die Oplandener Straße ist zwischen Mindener Straße Neuhöfferstraße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7571,7 +7572,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/13343/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407290,
@@ -7584,7 +7585,7 @@
         "beschreibung": "Rund um die LANXESS arena ist vor Beginn sowie nach Ende einer jeweiligen Veranstaltung mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7614,7 +7615,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/17461/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407291,
@@ -7627,7 +7628,7 @@
         "beschreibung": "Rund um die LANXESS arena ist vor Beginn sowie nach Ende der jeweiligen Veranstaltung mit erhöhtem Verkehrsaufkommen zu rechnen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7657,7 +7658,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/01249/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407292,
@@ -7670,7 +7671,7 @@
         "beschreibung": "Wegen Wartungsarbeiten in den Tunnelbereichen von Nord-Süd-Fahrt und Tunissstraße sind Fahrbahneinengungen erforderlich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7700,7 +7701,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20441/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407293,
@@ -7713,7 +7714,7 @@
         "beschreibung": "Die Deutzer Brücke ist auf höhe Kennedyplatz in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7743,7 +7744,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20444/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407294,
@@ -7756,7 +7757,7 @@
         "beschreibung": "Die Östliche Zubringerstraße ist im Einmündungsbereich zur Deutz-Kalker Straße in Fahrtrichtung Opladener Straße eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7787,7 +7788,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/19794/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407677,
@@ -7800,7 +7801,7 @@
         "beschreibung": "Die Probsteigasse ist zwischen der Christophstraße und der Blumenstraße in Fahrtrichtung Kyotostraße abschnittsweise voll gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7830,7 +7831,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20402/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407680,
@@ -7843,7 +7844,7 @@
         "beschreibung": "Die Rondorfer Hauptstraße ist im Bereich der Einmündung Kapellenstraße abschnittsweise eingeengt und verschwenkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7873,7 +7874,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18762/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407681,
@@ -7886,7 +7887,7 @@
         "beschreibung": "In dem Tunnel zwischen der Turiner Straße und der Ursulastraße kommt es wechselseitig zu Fahrbahneingungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7916,7 +7917,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20352/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407682,
@@ -7929,7 +7930,7 @@
         "beschreibung": "Der Blaubach ist zwischen Hohe Pforte und Neuköllner Straße in Fahrtrichtung stadtauswärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -7959,7 +7960,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20179/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407684,
@@ -7972,7 +7973,7 @@
         "beschreibung": "Die Neusser Landstraße ist zwischen Lievergesberg und Dornstraße in beide Fahrtrichtung eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8002,7 +8003,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20423/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407686,
@@ -8015,7 +8016,7 @@
         "beschreibung": "Die Luxemburger Straße ist zwischen Gabelsberger Straße  und Moselstraße in beide Fahrtrichtungen wechselseitig eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8045,7 +8046,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20361/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407688,
@@ -8058,7 +8059,7 @@
         "beschreibung": "Die Steinstraße ist zwischen Hohenstaufenstraße und Ensener Weg in beide Fahrtrichtungen eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8088,7 +8089,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20238/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407689,
@@ -8101,7 +8102,7 @@
         "beschreibung": "Die Feltenstraße ist im Einmündungsbereich zur Äußeren Kanalstraße sowie zur Subbelrather Straße gesperrt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8131,7 +8132,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/12664/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407690,
@@ -8144,7 +8145,7 @@
         "beschreibung": "Der Herkulestunnel ist in beide Fahrtrichtungen abschnittsweise eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8174,7 +8175,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/20446/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407693,
@@ -8187,7 +8188,7 @@
         "beschreibung": "Die Zülpicher Straße ist zwischen Heinsbergstraße und Zülpicher Platz in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     },
     {
       "quellen_id": "0212",
@@ -8217,7 +8218,7 @@
       "quelle": {
         "name": "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)",
         "url": "https://www.stadt-koeln.de/leben-in-koeln/verkehr/verkehrskalender/stoerungen/18869/index.html",
-        "abgerufenAm": "2026-06-13T17:28:59.920Z"
+        "abgerufenAm": "2026-06-13T17:47:12.590Z"
       },
       "roh": {
         "objectid": 407694,
@@ -8230,7 +8231,7 @@
         "beschreibung": "Die Subbelrather Straße ist zwischen Alpenerstraße und Hackländerstraße in Fahrtrichtung stadteinwärts eingeengt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:59.920Z"
+      "abgerufen_am": "2026-06-13T17:47:12.590Z"
     }
   ]
 }

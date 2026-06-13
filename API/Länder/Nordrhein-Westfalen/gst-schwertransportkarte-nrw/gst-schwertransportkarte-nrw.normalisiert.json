@@ -3,9 +3,10 @@
     "id": "0124",
     "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)"
   },
-  "abgerufen_am": "2026-06-13T17:31:23.764Z",
+  "abgerufen_am": "2026-06-13T17:47:31.604Z",
   "anzahl_verfuegbar": 157,
   "anzahl_normalisiert": 157,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0124",
@@ -35,7 +36,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 8,
@@ -48,7 +49,7 @@
         "oben": "*O:  L 307"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -78,7 +79,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 12,
@@ -91,7 +92,7 @@
         "oben": "*O:  L 927"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -121,7 +122,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 13,
@@ -134,7 +135,7 @@
         "oben": "*O:  L 177"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     }
   ],
   "alle": [
@@ -166,7 +167,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 8,
@@ -179,7 +180,7 @@
         "oben": "*O:  L 307"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -209,7 +210,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 12,
@@ -222,7 +223,7 @@
         "oben": "*O:  L 927"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -252,7 +253,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 13,
@@ -265,7 +266,7 @@
         "oben": "*O:  L 177"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -295,7 +296,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 14,
@@ -308,7 +309,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -338,7 +339,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 15,
@@ -351,7 +352,7 @@
         "oben": "*O:  L 651"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -381,7 +382,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 18,
@@ -394,7 +395,7 @@
         "oben": "*O:  B 55"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -424,7 +425,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 23,
@@ -437,7 +438,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -467,7 +468,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 24,
@@ -480,7 +481,7 @@
         "oben": "*O:  B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -510,7 +511,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 25,
@@ -523,7 +524,7 @@
         "oben": "*O:  L 1"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -553,7 +554,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 31,
@@ -566,7 +567,7 @@
         "oben": "*O:  B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -596,7 +597,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 32,
@@ -609,7 +610,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -639,7 +640,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 33,
@@ -652,7 +653,7 @@
         "oben": "*O:  B 1"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -682,7 +683,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 34,
@@ -695,7 +696,7 @@
         "oben": "*O:  L 512"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -725,7 +726,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 35,
@@ -738,7 +739,7 @@
         "oben": "*O:  L 318"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -768,7 +769,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 38,
@@ -781,7 +782,7 @@
         "oben": "*O:  L 143"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -811,7 +812,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 39,
@@ -824,7 +825,7 @@
         "oben": "*O:  B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -854,7 +855,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 40,
@@ -867,7 +868,7 @@
         "oben": "*O:  K 23"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -897,7 +898,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 41,
@@ -910,7 +911,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -940,7 +941,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 48,
@@ -953,7 +954,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -983,7 +984,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 52,
@@ -996,7 +997,7 @@
         "oben": "*O:  L 746"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1026,7 +1027,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 54,
@@ -1039,7 +1040,7 @@
         "oben": "*O:  K 4"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1069,7 +1070,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 56,
@@ -1082,7 +1083,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1112,7 +1113,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 60,
@@ -1125,7 +1126,7 @@
         "oben": "*O:  L 924"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1155,7 +1156,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 69,
@@ -1168,7 +1169,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1198,7 +1199,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 71,
@@ -1211,7 +1212,7 @@
         "oben": "*O:  K 36"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1241,7 +1242,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 74,
@@ -1254,7 +1255,7 @@
         "oben": "*O:  L 546"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1284,7 +1285,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 76,
@@ -1297,7 +1298,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1327,7 +1328,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 79,
@@ -1340,7 +1341,7 @@
         "oben": "*O:  L 409"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1370,7 +1371,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 81,
@@ -1383,7 +1384,7 @@
         "oben": "*O:  L 663"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1413,7 +1414,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 83,
@@ -1426,7 +1427,7 @@
         "oben": "*O:  K 2"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1456,7 +1457,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 87,
@@ -1469,7 +1470,7 @@
         "oben": "*O:  B 266"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1499,7 +1500,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 95,
@@ -1512,7 +1513,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1542,7 +1543,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 99,
@@ -1555,7 +1556,7 @@
         "oben": "*O:  L 546"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1585,7 +1586,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 101,
@@ -1598,7 +1599,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1628,7 +1629,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 105,
@@ -1641,7 +1642,7 @@
         "oben": "O:  L 268"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1671,7 +1672,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 106,
@@ -1684,7 +1685,7 @@
         "oben": "*O:  L 927"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1714,7 +1715,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 107,
@@ -1727,7 +1728,7 @@
         "oben": "*O:  K 32"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1757,7 +1758,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 109,
@@ -1770,7 +1771,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1800,7 +1801,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 110,
@@ -1813,7 +1814,7 @@
         "oben": "*O:  L 663"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1843,7 +1844,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 113,
@@ -1856,7 +1857,7 @@
         "oben": "*O:  L 288"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1886,7 +1887,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 114,
@@ -1899,7 +1900,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1929,7 +1930,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 117,
@@ -1942,7 +1943,7 @@
         "oben": "O:  B 62"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -1972,7 +1973,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 118,
@@ -1985,7 +1986,7 @@
         "oben": "*O:  L 267"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2015,7 +2016,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 123,
@@ -2028,7 +2029,7 @@
         "oben": "*O:  B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2058,7 +2059,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 125,
@@ -2071,7 +2072,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2101,7 +2102,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 129,
@@ -2114,7 +2115,7 @@
         "oben": "O:  Sonstige Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2144,7 +2145,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 132,
@@ -2157,7 +2158,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2187,7 +2188,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 134,
@@ -2200,7 +2201,7 @@
         "oben": "*O:  L 427"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2230,7 +2231,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 136,
@@ -2243,7 +2244,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2273,7 +2274,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 137,
@@ -2286,7 +2287,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2316,7 +2317,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 138,
@@ -2329,7 +2330,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2359,7 +2360,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 141,
@@ -2372,7 +2373,7 @@
         "oben": "*O:  L 877"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2402,7 +2403,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 142,
@@ -2415,7 +2416,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2445,7 +2446,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 143,
@@ -2458,7 +2459,7 @@
         "oben": "O:  Sonstige Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2488,7 +2489,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 151,
@@ -2501,7 +2502,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2531,7 +2532,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 152,
@@ -2544,7 +2545,7 @@
         "oben": "*O:  L 890"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2574,7 +2575,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 157,
@@ -2587,7 +2588,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2617,7 +2618,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 158,
@@ -2630,7 +2631,7 @@
         "oben": "*O:  B 508"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2660,7 +2661,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 160,
@@ -2673,7 +2674,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2703,7 +2704,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 163,
@@ -2716,7 +2717,7 @@
         "oben": "*O:  L 156"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2746,7 +2747,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 164,
@@ -2759,7 +2760,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2789,7 +2790,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 166,
@@ -2802,7 +2803,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2832,7 +2833,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 176,
@@ -2845,7 +2846,7 @@
         "oben": "*O:  B 55"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2875,7 +2876,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 179,
@@ -2888,7 +2889,7 @@
         "oben": "*O:  K 39"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2918,7 +2919,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 181,
@@ -2931,7 +2932,7 @@
         "oben": "*O:  L 702"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -2961,7 +2962,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 182,
@@ -2974,7 +2975,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3004,7 +3005,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 183,
@@ -3017,7 +3018,7 @@
         "oben": "*O:  L 367"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3047,7 +3048,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 187,
@@ -3060,7 +3061,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3090,7 +3091,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 191,
@@ -3103,7 +3104,7 @@
         "oben": "*O:  L 924"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3133,7 +3134,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 195,
@@ -3146,7 +3147,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3176,7 +3177,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 197,
@@ -3189,7 +3190,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3219,7 +3220,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 198,
@@ -3232,7 +3233,7 @@
         "oben": "*O:  K 5"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3262,7 +3263,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 202,
@@ -3275,7 +3276,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3305,7 +3306,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 209,
@@ -3318,7 +3319,7 @@
         "oben": "*O:  B 234"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3348,7 +3349,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 210,
@@ -3361,7 +3362,7 @@
         "oben": "*O:  L 81"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3391,7 +3392,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 211,
@@ -3404,7 +3405,7 @@
         "oben": "*O:  L 231"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3434,7 +3435,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 212,
@@ -3447,7 +3448,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3477,7 +3478,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 213,
@@ -3490,7 +3491,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3520,7 +3521,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 214,
@@ -3533,7 +3534,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3563,7 +3564,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 217,
@@ -3576,7 +3577,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3606,7 +3607,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 220,
@@ -3619,7 +3620,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3649,7 +3650,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 221,
@@ -3662,7 +3663,7 @@
         "oben": "*O:  B 234"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3692,7 +3693,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 223,
@@ -3705,7 +3706,7 @@
         "oben": "*O:  L 936"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3735,7 +3736,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 224,
@@ -3748,7 +3749,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3778,7 +3779,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 230,
@@ -3791,7 +3792,7 @@
         "oben": "*O:  L 288"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3821,7 +3822,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 233,
@@ -3834,7 +3835,7 @@
         "oben": "*O:  B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3864,7 +3865,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 234,
@@ -3877,7 +3878,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3907,7 +3908,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 240,
@@ -3920,7 +3921,7 @@
         "oben": "*O:  B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3950,7 +3951,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 242,
@@ -3963,7 +3964,7 @@
         "oben": "*O:  K 16"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -3993,7 +3994,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 246,
@@ -4006,7 +4007,7 @@
         "oben": "*O:  L 746"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4036,7 +4037,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 247,
@@ -4049,7 +4050,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4079,7 +4080,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 248,
@@ -4092,7 +4093,7 @@
         "oben": "O:  WiWeg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4122,7 +4123,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 250,
@@ -4135,7 +4136,7 @@
         "oben": "*O:  L 143"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4165,7 +4166,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 254,
@@ -4178,7 +4179,7 @@
         "oben": "*O:  L 143"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4208,7 +4209,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 260,
@@ -4221,7 +4222,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4251,7 +4252,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 261,
@@ -4264,7 +4265,7 @@
         "oben": "O:  Forstw."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4294,7 +4295,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 262,
@@ -4307,7 +4308,7 @@
         "oben": "*O:  L 316"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4337,7 +4338,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 265,
@@ -4350,7 +4351,7 @@
         "oben": "*O:  B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4380,7 +4381,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 268,
@@ -4393,7 +4394,7 @@
         "oben": "*O:  L 769"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4423,7 +4424,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 273,
@@ -4436,7 +4437,7 @@
         "oben": "*O:  K 27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4466,7 +4467,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 275,
@@ -4479,7 +4480,7 @@
         "oben": "*O: L 189"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4509,7 +4510,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 276,
@@ -4522,7 +4523,7 @@
         "oben": "*O: L 341"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4552,7 +4553,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 277,
@@ -4565,7 +4566,7 @@
         "oben": "*O: L 821"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4595,7 +4596,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 278,
@@ -4608,7 +4609,7 @@
         "oben": "*O: B 229"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4638,7 +4639,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 279,
@@ -4651,7 +4652,7 @@
         "oben": "*O: L 400"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4681,7 +4682,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 280,
@@ -4694,7 +4695,7 @@
         "oben": "*O: B 64"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4724,7 +4725,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 281,
@@ -4737,7 +4738,7 @@
         "oben": "*O: B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4767,7 +4768,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 282,
@@ -4780,7 +4781,7 @@
         "oben": "*O: K 32"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4810,7 +4811,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 283,
@@ -4823,7 +4824,7 @@
         "oben": "*O: L 572"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4853,7 +4854,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 287,
@@ -4866,7 +4867,7 @@
         "oben": "*O: L 617"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4896,7 +4897,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 288,
@@ -4909,7 +4910,7 @@
         "oben": "*O: L 193"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4939,7 +4940,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 289,
@@ -4952,7 +4953,7 @@
         "oben": "*O: L 968"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -4982,7 +4983,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 292,
@@ -4995,7 +4996,7 @@
         "oben": "*O: L 144"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5025,7 +5026,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 293,
@@ -5038,7 +5039,7 @@
         "oben": "O: L 286n"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5068,7 +5069,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 294,
@@ -5081,7 +5082,7 @@
         "oben": "*O:  L 228"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5111,7 +5112,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 296,
@@ -5124,7 +5125,7 @@
         "oben": "*O: B 288"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5154,7 +5155,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 297,
@@ -5167,7 +5168,7 @@
         "oben": "O:  G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5197,7 +5198,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 301,
@@ -5210,7 +5211,7 @@
         "oben": "*O: L 216"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5240,7 +5241,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 307,
@@ -5253,7 +5254,7 @@
         "oben": "*O: L 682"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5283,7 +5284,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 308,
@@ -5296,7 +5297,7 @@
         "oben": "*O: L 683"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5326,7 +5327,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 309,
@@ -5339,7 +5340,7 @@
         "oben": "*O: L 270"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5369,7 +5370,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 310,
@@ -5382,7 +5383,7 @@
         "oben": "*O: L 703"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5412,7 +5413,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 311,
@@ -5425,7 +5426,7 @@
         "oben": "*O: B 1"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5455,7 +5456,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 313,
@@ -5468,7 +5469,7 @@
         "oben": "*O: L 712"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5498,7 +5499,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 314,
@@ -5511,7 +5512,7 @@
         "oben": "*O: B 1"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5541,7 +5542,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 315,
@@ -5554,7 +5555,7 @@
         "oben": "*O:  L 667"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5584,7 +5585,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 316,
@@ -5597,7 +5598,7 @@
         "oben": "*O: L 361"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5627,7 +5628,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 318,
@@ -5640,7 +5641,7 @@
         "oben": "*O: L 861"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5670,7 +5671,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 319,
@@ -5683,7 +5684,7 @@
         "oben": "*O:  L 698"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5713,7 +5714,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 320,
@@ -5726,7 +5727,7 @@
         "oben": "*O: B 62"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5756,7 +5757,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 321,
@@ -5769,7 +5770,7 @@
         "oben": "*O: L 686"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5799,7 +5800,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 322,
@@ -5812,7 +5813,7 @@
         "oben": "*O: B 54"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5842,7 +5843,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 323,
@@ -5855,7 +5856,7 @@
         "oben": "*O: L 97"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5885,7 +5886,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 324,
@@ -5898,7 +5899,7 @@
         "oben": "*O: L 361"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5928,7 +5929,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 325,
@@ -5941,7 +5942,7 @@
         "oben": "*O: B 229"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -5971,7 +5972,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 327,
@@ -5984,7 +5985,7 @@
         "oben": "*O:  L 143"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6014,7 +6015,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 328,
@@ -6027,7 +6028,7 @@
         "oben": "*O: L 699"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6057,7 +6058,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 329,
@@ -6070,7 +6071,7 @@
         "oben": "*O: L 707"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6100,7 +6101,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 330,
@@ -6113,7 +6114,7 @@
         "oben": "*O: L 729"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6143,7 +6144,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 331,
@@ -6156,7 +6157,7 @@
         "oben": "*O: L 821"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6187,7 +6188,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 332,
@@ -6200,7 +6201,7 @@
         "oben": "O: G"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6230,7 +6231,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 333,
@@ -6243,7 +6244,7 @@
         "oben": "O: B 252"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6273,7 +6274,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 334,
@@ -6286,7 +6287,7 @@
         "oben": "O: L 512"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6316,7 +6317,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 335,
@@ -6329,7 +6330,7 @@
         "oben": "O: B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6359,7 +6360,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 336,
@@ -6372,7 +6373,7 @@
         "oben": "O: B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6402,7 +6403,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 337,
@@ -6415,7 +6416,7 @@
         "oben": "O: B 236 (Ast)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6445,7 +6446,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 339,
@@ -6458,7 +6459,7 @@
         "oben": "O: B 236 (Ast)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6488,7 +6489,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 340,
@@ -6501,7 +6502,7 @@
         "oben": "*O: L 162"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6531,7 +6532,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 341,
@@ -6544,7 +6545,7 @@
         "oben": "*O: K 22"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6574,7 +6575,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 343,
@@ -6587,7 +6588,7 @@
         "oben": "*O: B 481"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6617,7 +6618,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 344,
@@ -6630,7 +6631,7 @@
         "oben": "*O: B 481"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6660,7 +6661,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 345,
@@ -6673,7 +6674,7 @@
         "oben": "*O: L 705"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6703,7 +6704,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 346,
@@ -6716,7 +6717,7 @@
         "oben": "*O: L 510"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6746,7 +6747,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 347,
@@ -6759,7 +6760,7 @@
         "oben": "*O: L 160"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6789,7 +6790,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 348,
@@ -6802,7 +6803,7 @@
         "oben": "*O: L 357"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6832,7 +6833,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 349,
@@ -6845,7 +6846,7 @@
         "oben": "*O: B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     },
     {
       "quellen_id": "0124",
@@ -6875,7 +6876,7 @@
       "quelle": {
         "name": "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)",
         "url": "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0",
-        "abgerufenAm": "2026-06-13T17:31:23.764Z"
+        "abgerufenAm": "2026-06-13T17:47:31.604Z"
       },
       "roh": {
         "fid": 350,
@@ -6888,7 +6889,7 @@
         "oben": "*O: B 236"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:23.764Z"
+      "abgerufen_am": "2026-06-13T17:47:31.604Z"
     }
   ]
 }

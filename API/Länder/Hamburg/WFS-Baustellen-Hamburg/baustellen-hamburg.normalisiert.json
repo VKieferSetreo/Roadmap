@@ -3,9 +3,10 @@
     "id": "0112",
     "name": "Baustellen Hamburg (stadtweit, BVM/LGV)"
   },
-  "abgerufen_am": "2026-06-13T17:25:52.476Z",
+  "abgerufen_am": "2026-06-13T17:47:12.832Z",
   "anzahl_verfuegbar": 127,
   "anzahl_normalisiert": 127,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0112",
@@ -35,7 +36,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Gründgensstraße, U5 – Notausgangsbau",
@@ -59,7 +60,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -89,7 +90,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Steilshooper Allee, U5 – Notausgangsbau",
@@ -112,7 +113,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -142,7 +143,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Brücken-Straßen für Tunnel Altona",
@@ -164,7 +165,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     }
   ],
   "alle": [
@@ -196,7 +197,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Gründgensstraße, U5 – Notausgangsbau",
@@ -220,7 +221,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -250,7 +251,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Steilshooper Allee, U5 – Notausgangsbau",
@@ -273,7 +274,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -303,7 +304,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Brücken-Straßen für Tunnel Altona",
@@ -325,7 +326,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -355,7 +356,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Köhlbrandbrücke / Instandhaltungsmaßnahmen",
@@ -378,7 +379,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -408,7 +409,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Reiherstiegschleuse / Erneuerung Schleuse, Brücke und Straße",
@@ -430,7 +431,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -460,7 +461,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Moorburger Elbdeich / Brückenneubau",
@@ -481,7 +482,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -511,7 +512,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Tatenberger Brücke / Ersatzneubau",
@@ -532,7 +533,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -562,7 +563,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "ZOB Rahlstedt /Modernisierung und Erweiterung",
@@ -587,7 +588,7 @@
         "parkraumeinschraenkung": "Die Grundstücke und Parkplätze Rahlstedter Bahnhofsstraße Nr. 6 bis 14 sind über die Busanlage ausschließlich fußläufig erreichbar."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -617,7 +618,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Nordheimstraße, U5 – Haltestellenbau",
@@ -641,7 +642,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze in der Steenkoppel."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -671,7 +672,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 / Osdorfer Weg - Deckel Altona",
@@ -692,7 +693,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -722,7 +723,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bovestraße / S4",
@@ -746,7 +747,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -776,7 +777,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Radwegbrücke Immenhöven / Neubau",
@@ -798,7 +799,7 @@
         "parkraumeinschraenkung": "Im Rahmen der Maßnahme kann es im Straßenbereich zu Einschränkungen der Parkmöglichkeiten kommen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -828,7 +829,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Klütjenfelder Hochstraße / Grundinstandsetzung (zweiter Bauabschnitt)",
@@ -851,7 +852,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -881,7 +882,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Estedeich / Trinkwasser",
@@ -906,7 +907,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -936,7 +937,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Sülldorfer Kirchenweg - Grundinstandsetzung",
@@ -958,7 +959,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -988,7 +989,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 / Walderseestraße - Behringstraße / Deckel Altona",
@@ -1009,7 +1010,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1039,7 +1040,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wiebischenkamp / Trinkwasser",
@@ -1061,7 +1062,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1091,7 +1092,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 / Neubau Tunnel Altona",
@@ -1113,7 +1114,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1143,7 +1144,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Moorfleeter Deich / Grundinstandsetzung der Hochwasserschutzanlage",
@@ -1168,7 +1169,7 @@
         "parkraumeinschraenkung": "Während der Bauzeit ist ein parken auf der Straße im Baustellenbereich nicht möglich.\n(keine ausgewiesenen Parkplätze)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1198,7 +1199,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bredowstraße / Abwasser",
@@ -1222,7 +1223,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1252,7 +1253,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Stresemannstraße / Max-Brauer-Allee - Eisenbahnüberführung Sternbrücke / Neubau",
@@ -1275,7 +1276,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1305,7 +1306,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Peter-Timm-Straße / Sanierung Gasdruckregelanlage",
@@ -1327,7 +1328,7 @@
         "parkraumeinschraenkung": "Halteverbote im Parkstreifen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1357,7 +1358,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wellingsbütteler Landstraße / Leitungs- und Straßenarbeiten",
@@ -1382,7 +1383,7 @@
         "parkraumeinschraenkung": "Einschränkung durch Baufelder"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1412,7 +1413,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Scheideholzweg / Ersatz-Neubau Gasdruckregelanlage",
@@ -1434,7 +1435,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1464,7 +1465,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Neubau U4 Horner Geest",
@@ -1490,7 +1491,7 @@
         "parkraumeinschraenkung": "Es entfallen öffentliche Parkplätze im Bereich Rennbahnstraße, Meurerweg, Am Gojenboom, Bauerberg, Sandkamp und Manshardtstraße."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1520,7 +1521,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hummelsbütteler Kirchenweg / Neubau Rampe",
@@ -1541,7 +1542,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1571,7 +1572,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 26 + A 7 AS HH-Hausbruch / Neubau inkl. AK HH-Hafen und Ausbau A 7",
@@ -1594,7 +1595,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1624,7 +1625,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bahrenfelder Chaussee / Vorarbeiten für Tunnel Altona",
@@ -1647,7 +1648,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1677,7 +1678,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Dessauer Straße / Zufahrt Terminalflächen Grasbrook",
@@ -1699,7 +1700,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1729,7 +1730,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Überseering, U5 – Haltestellenbau",
@@ -1753,7 +1754,7 @@
         "parkraumeinschraenkung": "Es entfallen sämtliche Parkplätze im Überseering (West) und in der Sydneystraße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1783,7 +1784,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Rübenkamp, U5 – Notausgangsbau",
@@ -1806,7 +1807,7 @@
         "parkraumeinschraenkung": "Für die Dauer der Arbeiten entfallen die Parkplätze auf beiden Seiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1836,7 +1837,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Alsterdorf /Abwasserschächte",
@@ -1858,7 +1859,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1888,7 +1889,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wellingsbütteler Landstraße/Wellingsbüttler Weg - Grundinstandsetzung + Leitungsarbeiten",
@@ -1913,7 +1914,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1943,7 +1944,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bahnbrücke Kattwyk / Sperrung des Geh- und Radwegs",
@@ -1965,7 +1966,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -1995,7 +1996,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Kopie: A 1, HH-Stillhorn / verschiedene Arbeiten",
@@ -2017,7 +2018,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2047,7 +2048,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 1, HH-Stillhorn / verschiedene Arbeiten",
@@ -2069,7 +2070,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2099,7 +2100,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Kopie: A 1, HH-Stillhorn / verschiedene Arbeiten",
@@ -2121,7 +2122,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2151,7 +2152,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Schleswiger Damm / Neubau Lärmschutzwand",
@@ -2172,7 +2173,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2202,7 +2203,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bramfelder Chaussee/Bramfelder Dorfplatz, U5 – Haltestellenbau",
@@ -2227,7 +2228,7 @@
         "parkraumeinschraenkung": "Für die Dauer der Arbeiten entfallen Parkplätze im Bramfelder Dorfplatz."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2257,7 +2258,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Elversweg 46 / Erneuerung der Fahrbahn",
@@ -2279,7 +2280,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2309,7 +2310,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Billstraße, Gustav-Kunst-Straße, Großmannstr. / Abwasser",
@@ -2335,7 +2336,7 @@
         "parkraumeinschraenkung": "Parkplätze entfallen teilweise."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2365,7 +2366,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 24 / Mäharbeiten",
@@ -2386,7 +2387,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2416,7 +2417,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 - AS HH-Bahrenfeld / Sperrung Aus- und Auffahrt RiFaSüd",
@@ -2438,7 +2439,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2468,7 +2469,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Sierichstraße / Trinkwasser",
@@ -2491,7 +2492,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2521,7 +2522,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wohnviertel Farmsen / Wärmeversorgung",
@@ -2545,7 +2546,7 @@
         "parkraumeinschraenkung": "Mieterparkplätze im Baubereich werden nicht aufrecht erhalten werden können. Betroffene Nutzer werden vorher informiert.  Öffentliche Parkplätze werden ebenfalls im Bereich des Baufeldes entfallen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2575,7 +2576,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hohenzollernring/ Schachtsanierung Abwasser",
@@ -2598,7 +2599,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2629,7 +2630,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 / Instandsetzung &amp; Ausbau K 20 &amp; K 30",
@@ -2653,7 +2654,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2683,7 +2684,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Elbchaussee (Betty-Levi-Passage bis Hohenzollernring) / Leitungsarbeiten und Straßenbau",
@@ -2708,7 +2709,7 @@
         "parkraumeinschraenkung": "Im Zuge der Vollsperrung zwischen Betty-Levy-Passage und Hohenzollernring"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2738,7 +2739,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Vierlandenstraße / Rektor-Ritter-Straße / Abwasser",
@@ -2762,7 +2763,7 @@
         "parkraumeinschraenkung": "Einrichtung von Halteverbotsstrecken"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2792,7 +2793,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hohe Liedt / Neubau",
@@ -2813,7 +2814,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2843,7 +2844,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hamburger Wasserstoffindustrienetz | Abschnitt A.1 | Vollhöfner Weiden",
@@ -2865,7 +2866,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2895,7 +2896,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hammer Deich/Borstelmannsweg / Abwasser",
@@ -2918,7 +2919,7 @@
         "parkraumeinschraenkung": "Parkplätze entfallen Teilweise. Im Bereich Luisenweg 4 Wochen Vollsperrung und im Borstelmannsweg 4 Wochen Einbahnstraßeregelung."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -2948,7 +2949,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Krähenweg / Arbeiten bzgl. Abwasserentsorgung",
@@ -2971,7 +2972,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3001,7 +3002,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bogenstraße / Bau Fernwärmeleitung",
@@ -3024,7 +3025,7 @@
         "parkraumeinschraenkung": "Die Parkplätze entlang des Baufeldes entfallen für die Dauer der Bauphase."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3054,7 +3055,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hamburger Wasserstoffindustrienetz | Abschnitt A.2 Los 3 | Am Genter Ufer bis Finkenwerder Norderdeich",
@@ -3077,7 +3078,7 @@
         "parkraumeinschraenkung": "Die Baustelle erfordert Raum für Fahrzeuge, Geräte und Material. Damit die Hamburger Energienetze sicher arbeiten können, stehen Parkflächen während der Bauzeit nur eingeschränkt zur Verfügung. Das Unternehmen wird die Behinderungen so klein wie möglich halten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3107,7 +3108,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hamburger Wasserstoffindustrienetz | Airbuswerk Finkenwerder bis Finkenwerder Norderdeich, südl. Hochwasserschutzanlage",
@@ -3131,7 +3132,7 @@
         "parkraumeinschraenkung": "Die Baustelle erfordert Raum für Fahrzeuge, Geräte und Material. Damit die Hamburger Energienetze sicher arbeiten können, stehen Parkflächen während der Bauzeit nur eingeschränkt zur Verfügung. Das Unternehmen wird die Behinderungen so klein wie möglich halten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3161,7 +3162,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Marktstraße / Arbeiten bzgl. Abwasserentsorgung",
@@ -3183,7 +3184,7 @@
         "parkraumeinschraenkung": "Halteverbote, Seitenparkstreifen wird für die Bauzeit aufgehoben."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3213,7 +3214,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Jüthornstraße / Erneuerung Fahrbahn",
@@ -3239,7 +3240,7 @@
         "parkraumeinschraenkung": "Die Parkplätze innerhalb der Baufelder können während der jeweiligen Bauphase nicht genutzt werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3269,7 +3270,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 1 - Norderelbbrücke / Bauwerkssicherung",
@@ -3292,7 +3293,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3322,7 +3323,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Gründgensstraße, U5 – Haltestellenbau",
@@ -3347,7 +3348,7 @@
         "parkraumeinschraenkung": "Es entfallen Parkplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3377,7 +3378,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Dammtorstraße / Abwasser",
@@ -3400,7 +3401,7 @@
         "parkraumeinschraenkung": "Aufhebung seitliche Parkplätze vor den Geschäften (Warenanlieferungsverkehr) sowie Parkplätze im Dammtorwall teilweise aufgehoben"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3430,7 +3431,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Vierlandenstraße / Fahrbahnerneuerung",
@@ -3455,7 +3456,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3485,7 +3486,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wartenaubrücke / Denkmalgerechte Instandsetzung",
@@ -3509,7 +3510,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3539,7 +3540,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "B431-Sülldorfer Landstraße / Deckschichtsanierung",
@@ -3560,7 +3561,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3590,7 +3591,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Eppendorfer Marktplatz / Umbau",
@@ -3615,7 +3616,7 @@
         "parkraumeinschraenkung": "Die Parkplätze innerhalb der Baufelder können während der jeweiligen Bauphase nicht genutzt werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3645,7 +3646,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Rodigallee / Trinkwasser",
@@ -3669,7 +3670,7 @@
         "parkraumeinschraenkung": "Halteverbote in Parkbuchten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3699,7 +3700,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Wattkorn / Instandsetzung",
@@ -3721,7 +3722,7 @@
         "parkraumeinschraenkung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3751,7 +3752,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Fabriciusstraße, U5 – Notausgangsbau",
@@ -3774,7 +3775,7 @@
         "parkraumeinschraenkung": "Für die Dauer der Arbeiten entfallen die Parkplätze auf beiden Seiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3804,7 +3805,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hamburger Wasserstoffindustrienetz | Abschnitt A.2 Los 2 | Finkenwerder Norderdeich/Steendiek bis Finkenwerder Landscheideweg",
@@ -3827,7 +3828,7 @@
         "parkraumeinschraenkung": "Die Baustelle erfordert Raum für Fahrzeuge, Geräte und Material. Damit die Hamburger Energienetze sicher arbeiten können, stehen Parkflächen während der Bauzeit nur eingeschränkt zur Verfügung. Das Unternehmen wird die Behinderungen so klein wie möglich halten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3857,7 +3858,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Grevenhofbrücke / Brückenarbeiten",
@@ -3879,7 +3880,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3909,7 +3910,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Saarlandstraße / Instandsetzung",
@@ -3933,7 +3934,7 @@
         "parkraumeinschraenkung": "Während der Bauarbeiten in den Nebenfahrbahnen (jeweils nördlich bzw. südlich \"Alte Wöhr\") entfallen die dortigen Stellplätze. Während der Asphaltdeckensanierung im Südring (Dauer ca. eine Woche) ist das Parken dort ebenfalls nicht möglich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -3963,7 +3964,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Kronsaalsweg/ Deckensanierung",
@@ -3984,7 +3985,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4014,7 +4015,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Johannisbollwerk / Abwasser",
@@ -4037,7 +4038,7 @@
         "parkraumeinschraenkung": "Im Bereich der BE Fläche und innerhalb der Vekrhsführung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4067,7 +4068,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Kreuzung Kellinghusenstraße / Bau Fernwärmeleitung",
@@ -4091,7 +4092,7 @@
         "parkraumeinschraenkung": "Die Parkplätze im Bereich der Baustellenflächen entfallen für die Dauer der Arbeiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4121,7 +4122,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Louis-Braille-Platz / Umgestaltung",
@@ -4147,7 +4148,7 @@
         "parkraumeinschraenkung": "Durch die Umgestaltung des Parkplatzes an der Wagnerstraße zum Louis-Braille-Platz entfallen in diesem Bereich alle Parkstände. Entsprechen der festgestellten Belegung der Parkstände sollen die funktionalen Parkstände, am Holsteinischen Kamp wieder hergestellt werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4177,7 +4178,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Zellmannstraße / Hamburger Wasserstoffindustrienetz",
@@ -4201,7 +4202,7 @@
         "parkraumeinschraenkung": "Die Baustelle erfordert Raum für Fahrzeuge, Geräte und Material auf dem Parkplatz der Duckdalben. Damit die Hamburger Energienetze sicher arbeiten können, stehen Parkflächen während der Bauzeit nur eingeschränkt zur Verfügung. Das Unternehmen wird die Behinderungen so klein wie möglich halten und hat dies mit den Anliegern im Vorfeld abgestimmt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4231,7 +4232,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Transportsiel Altona Teil 2 / Abwasser",
@@ -4253,7 +4254,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4283,7 +4284,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Rethe-Doppelklappbrücke / Fahrbahninstandsetzung",
@@ -4305,7 +4306,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4335,7 +4336,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hamburger Wasserstoffindustrienetz | Abschnitt A.1A Los 3 | Moorburger Hinterdeich",
@@ -4358,7 +4359,7 @@
         "parkraumeinschraenkung": "Heykenstieg Straße: Vollsperrung über die gesamte Bauzeit wegen der BE-Fläche und Rohrleitungsbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4389,7 +4390,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Sieker Landstraße / Errichtung einer Lärmschutzwand",
@@ -4410,7 +4411,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4440,7 +4441,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bürgerweide / Berlinertordammbrücke - Grundinstandsetzung",
@@ -4464,7 +4465,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4494,7 +4495,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Heukoppel, U5 / Notausgangsbau",
@@ -4518,7 +4519,7 @@
         "parkraumeinschraenkung": "Im Baufeld entfallen Stellplätze"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4548,7 +4549,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Fritz-Flinte-Ring / Erschließung",
@@ -4571,7 +4572,7 @@
         "parkraumeinschraenkung": "Beidseitige Halteverbotszonen für den gesamten Bauzeitraum."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4601,7 +4602,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Anschluss Bäderland Neubau Hermelinweg 8 und Anschluss Turnhalle Hermelinweg 10",
@@ -4623,7 +4624,7 @@
         "parkraumeinschraenkung": "Es werden ca. 5-6 Parkplätze als Baufeld und BE-Fläche in Anspruch genommen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4653,7 +4654,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Hellkamp / Fernwärmearbeiten",
@@ -4676,7 +4677,7 @@
         "parkraumeinschraenkung": "Die Parkplätze im Bereich des Baufelds im Hellkamp (Hausnummern 11 bis 19 bzw. 12 bis 18) entfallen weiterhin; ebenso vor der Romberstraße 1 und 4 entfallen die Parkmöglichkeiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4706,7 +4707,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Budapester Straße / Erneuerung Rad- und Gehwege",
@@ -4731,7 +4732,7 @@
         "parkraumeinschraenkung": "Der Parkraum ist temporär eingeschränkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4761,7 +4762,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Neue Elbbrücke / Instandsetzung Fahrbahnübergänge",
@@ -4785,7 +4786,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4815,7 +4816,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Klosterallee, Innocentiastraße / Leitungsarbeiten",
@@ -4838,7 +4839,7 @@
         "parkraumeinschraenkung": "Im Umfeld der Baufelder/Baustelleneinrichtungsflächen werden Halteverbotszonen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4868,7 +4869,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "ZOB-Harburg 1. u. 2. BA (bereits abgeschlossen), 3.BA und 4. BA (Hannoversche Straße) in Bau",
@@ -4893,7 +4894,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4923,7 +4924,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "St. Pauli Hafenstraße / Abwasser",
@@ -4946,7 +4947,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -4976,7 +4977,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Traute-Lafrenz-Straße / Fernwärmeausbau",
@@ -5002,7 +5003,7 @@
         "parkraumeinschraenkung": "Im Baustellenbereich entfallen alle Parkplätze des öffentlichen Raums. Hier besteht ein Halteverbot."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5032,7 +5033,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Billhorner Mühlenweg / Abwasser",
@@ -5057,7 +5058,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5087,7 +5088,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Osterstraße, Schulweg / Fernwärmeabeiten",
@@ -5111,7 +5112,7 @@
         "parkraumeinschraenkung": "Im Bereich der Busersatzhaltestelle (Schulweg 27 bis 33) entfallen die Parkplätze für die Dauer der Bauarbeiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5141,7 +5142,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Saseler Straße / Erneuerung Radweg",
@@ -5165,7 +5166,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5195,7 +5196,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "2. BA Farmsen Los 3 Meilerstraße von Feldschmiede bis Surenland",
@@ -5218,7 +5219,7 @@
         "parkraumeinschraenkung": "In jedem Baufeld werden unter Vollsperrung Parkplätze temporär nicht nutzbar sein.\nBauphase 1: Meilerstraße von der Feldschmiede bis Ortseinweg\nBauphase 2: Meilerstraße von Ortsteinweg bis Meilerstraße 35\nBauphase 3: Meilerstraße 35 bis zum Wendehammer Meilerstraße\nBauphase 4: vom Wendehammer Meilerstraße bis zum Surenland 82d"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5248,7 +5249,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Lerchenfeld, Schürbeker Bogen / Sanierung Straßenzug",
@@ -5274,7 +5275,7 @@
         "parkraumeinschraenkung": "Die Parkplätze entlang des Straßenzugs können in den Abschnitten nicht genutzt werden, in denen gerade gebaut wird."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5304,7 +5305,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Fernwärmearbeiten Bogenstraße/Schlankreye",
@@ -5329,7 +5330,7 @@
         "parkraumeinschraenkung": "Die Parkplätze entlang des Baufeldes entfallen für die Dauer der Bauarbeiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5359,7 +5360,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Große Elbstraße / Instandsetzung Pumpwerk",
@@ -5383,7 +5384,7 @@
         "parkraumeinschraenkung": "Halteverbote"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5413,7 +5414,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bundesstraße + Sedanstraße/ Erschließung",
@@ -5434,7 +5435,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5464,7 +5465,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Weg beim Jäger West / Fernwärmeausbau",
@@ -5490,7 +5491,7 @@
         "parkraumeinschraenkung": "Im Baustellenbereich entfallen alle Parkplätze des öffentlichen Raums. Hier besteht ein Halteverbot."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5520,7 +5521,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Otto-Brenner-Straße / Veloroute 10",
@@ -5544,7 +5545,7 @@
         "parkraumeinschraenkung": "Aufgrund der Bautätigkeit und den hiermit zusammenhängenden Baustelleneinrichtungs- und Sicherungsflächen kommt es zu Parkraumeinschränkungen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5574,7 +5575,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Haakestraße / Fahrbahninstandsetzung",
@@ -5598,7 +5599,7 @@
         "parkraumeinschraenkung": "Es werden Halteverbotszonen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5628,7 +5629,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Eißendorfer Straße / Umbau Haltestelle",
@@ -5654,7 +5655,7 @@
         "parkraumeinschraenkung": "Sowohl in der Eißendorfer Straße im Abschnitt der Hausnummern 102 bis 118 als auch in den Einmündungsbereichen des Kirchenhangs und des Mehringwegs werden für die gesamte Dauer der Bauzeit Halteverbotszonen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5684,7 +5685,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 25 / Deckschichtsanierung",
@@ -5706,7 +5707,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5736,7 +5737,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Rodigallee / Grundinstandsetzung Fahrbahn",
@@ -5762,7 +5763,7 @@
         "parkraumeinschraenkung": "Die Parkplätze innerhalb der Baufelder können während der jeweiligen Bauphase nicht genutzt werden."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5792,7 +5793,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Farmsener Landstraße / Bau eines Zweirichtungsradweges",
@@ -5818,7 +5819,7 @@
         "parkraumeinschraenkung": "Für den Bau des Radwegs entfallen die bestehenden Längsparkstände zwischen dem Kreisverkehr und dem Flethmannskamp."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5848,7 +5849,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "B 75 Bremer Straße / Grundinstandsetzung Straße",
@@ -5871,7 +5872,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5901,7 +5902,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Elbgaustraße / Veloroute 14",
@@ -5927,7 +5928,7 @@
         "parkraumeinschraenkung": "Die öffentlichen Parkstände in den jeweiligen Baufeldern stehen während der Baumaßnahme nicht zur Verfügung."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -5957,7 +5958,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Kupferdamm / Grundinstandsetzung",
@@ -5983,7 +5984,7 @@
         "parkraumeinschraenkung": "Für Anlieger mit einem privaten Stellplatz auf ihrem Grundstück, der aufgrund der Sperrung nicht genutzt werden kann, steht in begrenztem Umfang für die Zeit der Sperrung ein Ersatzparkplatz im Pulverhofsweg zur Verfügung. Sofern Sie diesen Ersatzparkplatz nutzen möchten, wenden Sie sich bitte an das Baubüro (Baucontainer) der ausführenden Baufirma im Kroneweg."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6013,7 +6014,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Halskestraße - Ausbau Veloroute 9",
@@ -6037,7 +6038,7 @@
         "parkraumeinschraenkung": "Während der Baumaßnahme werden Parkflächen im Baufeld reduziert."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6067,7 +6068,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Lokstedter Weg / Erneuerung der Geh -und Radwege",
@@ -6092,7 +6093,7 @@
         "parkraumeinschraenkung": "Der Parkraum ist temporär eingeschränkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6122,7 +6123,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Am Stadtrand / Erneuerung Fahrbahn",
@@ -6147,7 +6148,7 @@
         "parkraumeinschraenkung": "Der Parkraum ist temporär eingeschränkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6177,7 +6178,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Reiherstieg Hauptdeich / Erhöhung",
@@ -6199,7 +6200,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6229,7 +6230,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Andreas-Meyer-Straße / Erneuerung der Fahrbahndeckschichten",
@@ -6254,7 +6255,7 @@
         "parkraumeinschraenkung": "Innerhalb des Baufelds stehen keine Parkflächen zur Verfügung. Bitte nutzen Sie umliegende Parkmöglichkeiten."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6284,7 +6285,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7 - AS HH-Stellingen bis AS HH-Heimfeld / 55 Stundensperrung TLZ-Bau &amp; K20",
@@ -6306,7 +6307,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6336,7 +6337,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Methfesselstraße / Fernwärmeausbau",
@@ -6359,7 +6360,7 @@
         "parkraumeinschraenkung": "Die Parkplätze entlang des Baufeldes entfallen für die Dauer der Bauarbeiten. Zudem gibt es Halteverbote vor der Methfesselstraße 15."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6389,7 +6390,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Fernwärmemaßnahmen in der Großen Bahnstraße zwischen Holstenkamp und Frühlingstraße",
@@ -6412,7 +6413,7 @@
         "parkraumeinschraenkung": "Die Parkplätze im unmittelbaren Baustellenbereich sowie in der Frohbösestraße entfallen während der Arbeiten. Zusätzlich stehen in der Großen Bahnstraße zwischen Frohbösestraße und Kieler Straße einseitig keine Parkmöglichkeiten zur Verfügung."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6442,7 +6443,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Isebekpark, Heymannstraße / Bau Fernwärmeleitungen",
@@ -6465,7 +6466,7 @@
         "parkraumeinschraenkung": "Die Parkplätze im Bereich der Heymannstraße 16 bis 22 entfallen beidseitig für die Dauer der Bauarbeiten. Zudem entfallen die beiden Parkplätze am Kaiser-Friedrich-Ufer auf Höhe der Kreuzung zur Goebenbrücke."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6495,7 +6496,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "A 7, A 26, Waltershofer Straße / Neubau Autobahnkreuz",
@@ -6517,7 +6518,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6547,7 +6548,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Moorlandbogen / Fahrbahnerneuerung",
@@ -6571,7 +6572,7 @@
         "parkraumeinschraenkung": "Es sind Halteverbotszonen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6601,7 +6602,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Elbgaustraße, Farnhornweg / Sanierung",
@@ -6627,7 +6628,7 @@
         "parkraumeinschraenkung": "Eingeschränkte Parkmöglichkeiten\nParkflächen innerhalb des Baustellenbereichs stehen nicht zur Verfügung. Auf den Umleitungsstrecken für die Busse sind Halteverbote leider unvermeidlich."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6657,7 +6658,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Neckersstücken / Fahrbahnerneuerung",
@@ -6681,7 +6682,7 @@
         "parkraumeinschraenkung": "Es sind Halteverbotszonen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6711,7 +6712,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Nincoper Deich / Erneuerung Fahrbahndeckschicht",
@@ -6737,7 +6738,7 @@
         "parkraumeinschraenkung": "Der Parkraum ist temporär eingeschränkt."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6767,7 +6768,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Bergstedter Chaussee / Sanierung Fahrbahn",
@@ -6792,7 +6793,7 @@
         "parkraumeinschraenkung": "Parken: Entlang der Umleitungsstrecken des Busverkehrs werden zur Gewährleistung eines reibungslosen Betriebs vorübergehend Halteverbote in den Anliegerstraßen eingerichtet."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6822,7 +6823,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Traute-Lafrenz-Straße Kreuzung Maienweg / Fernwärmeausbau",
@@ -6847,7 +6848,7 @@
         "parkraumeinschraenkung": "Im Baustellenbereich entfallen alle Parkplätze des öffentlichen Raums. Hier besteht ein Halteverbot."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6877,7 +6878,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Heinrich-Stubbe-Weg / Herstellung eines Kreisverkehrs",
@@ -6900,7 +6901,7 @@
         "istparkraumeingeschraenkt": "false"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     },
     {
       "quellen_id": "0112",
@@ -6930,7 +6931,7 @@
       "quelle": {
         "name": "Baustellen Hamburg (stadtweit, BVM/LGV)",
         "url": "https://suche.transparenz.hamburg.de/dataset/baustellen-hamburg",
-        "abgerufenAm": "2026-06-13T17:25:52.476Z"
+        "abgerufenAm": "2026-06-13T17:47:12.832Z"
       },
       "roh": {
         "titel": "Altonaer Straße/Umbau Ampel",
@@ -6955,7 +6956,7 @@
         "parkraumeinschraenkung": "Für die gesamte Bauzeit werden Halteverbote im Baubereich der Altonaer Straße eingerichtet, um die provisorischen Fußgängerquerungen einzurichten.\nIn den Bauphasen 2 und 3 wird die östliche Nebenfahrbahn auf der Nordseite der Altonaer Straße gesperrt, um die Arbeiten auf der Nordseite der Fußgängerlichtsignalanlage, im Einmündungsbereich Vereinsstraße und die Fahrbahnsanierung umzusetzen. (Dauer 3,8 Wochen)\nIn der Bauphase 3 (Vollsperrung) werden Halteverbote in der Bartelsstraße eingerichtet, um dort Wendemöglichkeiten zu schaffen."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:25:52.476Z"
+      "abgerufen_am": "2026-06-13T17:47:12.832Z"
     }
   ]
 }

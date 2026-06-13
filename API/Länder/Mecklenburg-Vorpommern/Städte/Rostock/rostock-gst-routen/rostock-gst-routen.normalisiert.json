@@ -3,9 +3,10 @@
     "id": "0223",
     "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)"
   },
-  "abgerufen_am": "2026-06-13T17:30:06.316Z",
+  "abgerufen_am": "2026-06-13T17:47:22.144Z",
   "anzahl_verfuegbar": 19,
   "anzahl_normalisiert": 19,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0223",
@@ -38,7 +39,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "9018339a-313f-11e5-ad9c-0050569b7e95",
@@ -47,7 +48,7 @@
         "bezeichnung": "Gewölbebrücke Gutenbergstraße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -80,7 +81,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b5d88f0-313f-11e5-ad46-0050569b7e95",
@@ -89,7 +90,7 @@
         "bezeichnung": "A.-Kivi-Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -122,7 +123,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b024d8c-313f-11e5-ad3b-0050569b7e95",
@@ -131,7 +132,7 @@
         "bezeichnung": "Moorbrücke West"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     }
   ],
   "alle": [
@@ -166,7 +167,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "9018339a-313f-11e5-ad9c-0050569b7e95",
@@ -175,7 +176,7 @@
         "bezeichnung": "Gewölbebrücke Gutenbergstraße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -208,7 +209,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b5d88f0-313f-11e5-ad46-0050569b7e95",
@@ -217,7 +218,7 @@
         "bezeichnung": "A.-Kivi-Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -250,7 +251,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b024d8c-313f-11e5-ad3b-0050569b7e95",
@@ -259,7 +260,7 @@
         "bezeichnung": "Moorbrücke West"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -292,7 +293,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "90372066-313f-11e5-ad9f-0050569b7e95",
@@ -301,7 +302,7 @@
         "bezeichnung": "Warnowallee TBW Nord"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -334,7 +335,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "82df440e-f454-11e7-97c3-0050569946ac",
@@ -343,7 +344,7 @@
         "bezeichnung": "Warnowallee TBW Süd"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -376,7 +377,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b3f5ec0-313f-11e5-ad43-0050569b7e95",
@@ -385,7 +386,7 @@
         "bezeichnung": "St. Petersburger Straße über Schmarler Bach"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -418,7 +419,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b3e9170-313f-11e5-ad40-0050569b7e95",
@@ -427,7 +428,7 @@
         "bezeichnung": "Brücke Rennbahnallee"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -460,7 +461,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "88848db8-313f-11e5-ad13-0050569b7e95",
@@ -469,7 +470,7 @@
         "bezeichnung": "St an der Nordwestwand Goethebrücke"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -502,7 +503,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b203892-313f-11e5-ad3d-0050569b7e95",
@@ -511,7 +512,7 @@
         "bezeichnung": "Gewölbebrücke Schröderstraße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -544,7 +545,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8aa3fd90-313f-11e5-ad2d-0050569b7e95",
@@ -553,7 +554,7 @@
         "bezeichnung": "Geh- und Radwegb. mit Busspur ü.Schmarler Bach"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -586,7 +587,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b3f19a6-313f-11e5-ad42-0050569b7e95",
@@ -595,7 +596,7 @@
         "bezeichnung": "Brücke Schmarler Damm ü. DB AG"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -628,7 +629,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8b020688-313f-11e5-ad3a-0050569b7e95",
@@ -637,7 +638,7 @@
         "bezeichnung": "Moorbrücke Ost"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -670,7 +671,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "1d212b44-401f-4c1f-a975-3124868e3232",
@@ -679,7 +680,7 @@
         "bezeichnung": "LSW Mecklenburger Allee"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -712,7 +713,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8ac68f54-313f-11e5-ad37-0050569b7e95",
@@ -721,7 +722,7 @@
         "bezeichnung": "Wehrbrücke Mühlendamm, TBW Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -754,7 +755,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "0f99c6f0-04b1-45e2-98de-f59421ebaf42",
@@ -763,7 +764,7 @@
         "bezeichnung": "Wehrbrücke Mühlendamm, TBW Geh- und Radweg Süd"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -796,7 +797,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "c486d491-39a4-431a-acb2-4c8f6d05cdb2",
@@ -805,7 +806,7 @@
         "bezeichnung": "Petribrücke, Klappenkeller (Teil Geh-und Radweg)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -838,7 +839,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "8aa44f3e-313f-11e5-ad2e-0050569b7e95",
@@ -847,7 +848,7 @@
         "bezeichnung": "Petribrücke, Flussfelder (Teil Geh-und Radweg)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -880,7 +881,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "be2b8187-9961-4e11-8a55-b965fc75e22d",
@@ -889,7 +890,7 @@
         "bezeichnung": "LSW Gewerbegebiet Brinckmanshöhe"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     },
     {
       "quellen_id": "0223",
@@ -922,7 +923,7 @@
       "quelle": {
         "name": "Rostock — GST gesperrte Ingenieurbauwerke (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten",
-        "abgerufenAm": "2026-06-13T17:30:06.316Z"
+        "abgerufenAm": "2026-06-13T17:47:22.144Z"
       },
       "roh": {
         "uuid": "e7e7d75e-99f6-4536-80b5-e3c70eda9dd9",
@@ -931,7 +932,7 @@
         "bezeichnung": "St an der Nordostwand Goethebrücke"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:06.316Z"
+      "abgerufen_am": "2026-06-13T17:47:22.144Z"
     }
   ]
 }

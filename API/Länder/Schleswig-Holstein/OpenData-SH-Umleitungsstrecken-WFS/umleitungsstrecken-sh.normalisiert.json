@@ -3,9 +3,10 @@
     "id": "0118",
     "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)"
   },
-  "abgerufen_am": "2026-06-13T17:28:29.098Z",
+  "abgerufen_am": "2026-06-13T17:47:29.715Z",
   "anzahl_verfuegbar": 173,
   "anzahl_normalisiert": 173,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0118",
@@ -434,7 +435,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.1",
@@ -449,7 +450,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -694,7 +695,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.2",
@@ -709,7 +710,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -1174,7 +1175,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.3",
@@ -1189,7 +1190,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     }
   ],
   "alle": [
@@ -1620,7 +1621,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.1",
@@ -1635,7 +1636,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -1880,7 +1881,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.2",
@@ -1895,7 +1896,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -2360,7 +2361,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.3",
@@ -2375,7 +2376,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -3020,7 +3021,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.4",
@@ -3035,7 +3036,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -3548,7 +3549,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.5",
@@ -3563,7 +3564,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -3750,7 +3751,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.6",
@@ -3765,7 +3766,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -4174,7 +4175,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.7",
@@ -4189,7 +4190,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -4598,7 +4599,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.8",
@@ -4613,7 +4614,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -5159,7 +5160,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.9",
@@ -5174,7 +5175,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -5720,7 +5721,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.10",
@@ -5735,7 +5736,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -6281,7 +6282,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.11",
@@ -6296,7 +6297,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -6842,7 +6843,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.12",
@@ -6857,7 +6858,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -7403,7 +7404,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.13",
@@ -7418,7 +7419,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -7964,7 +7965,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.14",
@@ -7979,7 +7980,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -8525,7 +8526,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.15",
@@ -8540,7 +8541,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -9086,7 +9087,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.16",
@@ -9101,7 +9102,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -9647,7 +9648,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.17",
@@ -9662,7 +9663,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -9831,7 +9832,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.18",
@@ -9846,7 +9847,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -10015,7 +10016,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.19",
@@ -10030,7 +10031,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -10395,7 +10396,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.20",
@@ -10410,7 +10411,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -10775,7 +10776,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.21",
@@ -10790,7 +10791,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -11547,7 +11548,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.22",
@@ -11562,7 +11563,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -12263,7 +12264,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.23",
@@ -12278,7 +12279,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -12403,7 +12404,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.24",
@@ -12418,7 +12419,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -12491,7 +12492,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.25",
@@ -12506,7 +12507,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -12591,7 +12592,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.26",
@@ -12606,7 +12607,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -13253,7 +13254,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.27",
@@ -13268,7 +13269,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -13915,7 +13916,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.28",
@@ -13930,7 +13931,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -14183,7 +14184,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.29",
@@ -14198,7 +14199,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -15477,7 +15478,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.30",
@@ -15492,7 +15493,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -16771,7 +16772,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.31",
@@ -16786,7 +16787,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -18065,7 +18066,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.32",
@@ -18080,7 +18081,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -19039,7 +19040,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.33",
@@ -19054,7 +19055,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -19295,7 +19296,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.34",
@@ -19310,7 +19311,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -19499,7 +19500,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.35",
@@ -19514,7 +19515,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -19703,7 +19704,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.36",
@@ -19718,7 +19719,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -19995,7 +19996,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.37",
@@ -20010,7 +20011,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -20317,7 +20318,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.38",
@@ -20332,7 +20333,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -20639,7 +20640,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.39",
@@ -20654,7 +20655,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -20961,7 +20962,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.40",
@@ -20976,7 +20977,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -21283,7 +21284,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.41",
@@ -21298,7 +21299,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -21699,7 +21700,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.42",
@@ -21714,7 +21715,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -22417,7 +22418,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.43",
@@ -22432,7 +22433,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -22769,7 +22770,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.44",
@@ -22784,7 +22785,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -22937,7 +22938,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.45",
@@ -22952,7 +22953,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -23519,7 +23520,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.46",
@@ -23534,7 +23535,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -23683,7 +23684,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.47",
@@ -23698,7 +23699,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -23778,7 +23779,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.48",
@@ -23793,7 +23794,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25628,7 +25629,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.49",
@@ -25643,7 +25644,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25696,7 +25697,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.50",
@@ -25711,7 +25712,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25764,7 +25765,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.51",
@@ -25779,7 +25780,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25832,7 +25833,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.52",
@@ -25847,7 +25848,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25900,7 +25901,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.53",
@@ -25915,7 +25916,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -25968,7 +25969,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.54",
@@ -25983,7 +25984,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -26036,7 +26037,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.55",
@@ -26051,7 +26052,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -26104,7 +26105,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.56",
@@ -26119,7 +26120,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -26172,7 +26173,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.57",
@@ -26187,7 +26188,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -27044,7 +27045,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.58",
@@ -27059,7 +27060,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -27916,7 +27917,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.59",
@@ -27931,7 +27932,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -28732,7 +28733,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.60",
@@ -28747,7 +28748,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -29844,7 +29845,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.61",
@@ -29859,7 +29860,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -30554,7 +30555,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.62",
@@ -30569,7 +30570,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -33418,7 +33419,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.63",
@@ -33433,7 +33434,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -36282,7 +36283,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.64",
@@ -36297,7 +36298,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -39146,7 +39147,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.65",
@@ -39161,7 +39162,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -42010,7 +42011,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.66",
@@ -42025,7 +42026,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -44874,7 +44875,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.67",
@@ -44889,7 +44890,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -47738,7 +47739,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.68",
@@ -47753,7 +47754,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -50602,7 +50603,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.69",
@@ -50617,7 +50618,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -53466,7 +53467,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.70",
@@ -53481,7 +53482,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -56330,7 +56331,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.71",
@@ -56345,7 +56346,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -59194,7 +59195,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.72",
@@ -59209,7 +59210,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -59456,7 +59457,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.73",
@@ -59471,7 +59472,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -59954,7 +59955,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.74",
@@ -59969,7 +59970,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -60386,7 +60387,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.75",
@@ -60401,7 +60402,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -60972,7 +60973,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.76",
@@ -60987,7 +60988,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -61116,7 +61117,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.77",
@@ -61131,7 +61132,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -61284,7 +61285,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.78",
@@ -61299,7 +61300,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -62026,7 +62027,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.79",
@@ -62041,7 +62042,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -62734,7 +62735,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.80",
@@ -62749,7 +62750,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -63418,7 +63419,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.81",
@@ -63433,7 +63434,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -64102,7 +64103,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.82",
@@ -64117,7 +64118,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -64786,7 +64787,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.83",
@@ -64801,7 +64802,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -65470,7 +65471,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.84",
@@ -65485,7 +65486,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -66154,7 +66155,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.85",
@@ -66169,7 +66170,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -67484,7 +67485,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.86",
@@ -67499,7 +67500,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -67580,7 +67581,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.87",
@@ -67595,7 +67596,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -67676,7 +67677,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.88",
@@ -67691,7 +67692,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -68280,7 +68281,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.89",
@@ -68295,7 +68296,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -68452,7 +68453,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.90",
@@ -68467,7 +68468,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -68540,7 +68541,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.91",
@@ -68555,7 +68556,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -68660,7 +68661,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.92",
@@ -68675,7 +68676,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -69152,7 +69153,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.93",
@@ -69167,7 +69168,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -69668,7 +69669,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.94",
@@ -69683,7 +69684,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71082,7 +71083,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.95",
@@ -71097,7 +71098,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71158,7 +71159,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.96",
@@ -71173,7 +71174,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71234,7 +71235,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.97",
@@ -71249,7 +71250,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71310,7 +71311,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.98",
@@ -71325,7 +71326,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71386,7 +71387,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.99",
@@ -71401,7 +71402,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71474,7 +71475,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.100",
@@ -71489,7 +71490,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71562,7 +71563,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.101",
@@ -71577,7 +71578,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71644,7 +71645,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.102",
@@ -71659,7 +71660,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71726,7 +71727,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.103",
@@ -71741,7 +71742,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71830,7 +71831,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.104",
@@ -71845,7 +71846,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -71898,7 +71899,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.105",
@@ -71913,7 +71914,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -72182,7 +72183,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.106",
@@ -72197,7 +72198,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -72378,7 +72379,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.107",
@@ -72393,7 +72394,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -73678,7 +73679,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.108",
@@ -73693,7 +73694,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -74978,7 +74979,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.109",
@@ -74993,7 +74994,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -75466,7 +75467,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.110",
@@ -75481,7 +75482,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -76100,7 +76101,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.111",
@@ -76115,7 +76116,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -76734,7 +76735,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.112",
@@ -76749,7 +76750,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -77368,7 +77369,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.113",
@@ -77383,7 +77384,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -77704,7 +77705,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.114",
@@ -77719,7 +77720,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -78040,7 +78041,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.115",
@@ -78055,7 +78056,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -78376,7 +78377,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.116",
@@ -78391,7 +78392,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -78712,7 +78713,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.117",
@@ -78727,7 +78728,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -79346,7 +79347,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.118",
@@ -79361,7 +79362,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -79980,7 +79981,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.119",
@@ -79995,7 +79996,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -80110,7 +80111,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.120",
@@ -80125,7 +80126,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -80310,7 +80311,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.121",
@@ -80325,7 +80326,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -80510,7 +80511,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.122",
@@ -80525,7 +80526,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -80642,7 +80643,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.123",
@@ -80657,7 +80658,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -80914,7 +80915,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.124",
@@ -80929,7 +80930,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -81062,7 +81063,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.125",
@@ -81077,7 +81078,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -81210,7 +81211,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.126",
@@ -81225,7 +81226,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -81884,7 +81885,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.127",
@@ -81899,7 +81900,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -82558,7 +82559,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.128",
@@ -82573,7 +82574,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -83232,7 +83233,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.129",
@@ -83247,7 +83248,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -83906,7 +83907,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.130",
@@ -83921,7 +83922,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -84580,7 +84581,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.131",
@@ -84595,7 +84596,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -85254,7 +85255,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.132",
@@ -85269,7 +85270,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -85454,7 +85455,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.133",
@@ -85469,7 +85470,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -85542,7 +85543,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.134",
@@ -85557,7 +85558,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -85688,7 +85689,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.135",
@@ -85703,7 +85704,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -85908,7 +85909,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.136",
@@ -85923,7 +85924,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -86268,7 +86269,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.137",
@@ -86283,7 +86284,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -86628,7 +86629,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.138",
@@ -86643,7 +86644,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -86988,7 +86989,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.139",
@@ -87003,7 +87004,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -87180,7 +87181,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.140",
@@ -87195,7 +87196,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -87844,7 +87845,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.141",
@@ -87859,7 +87860,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -88180,7 +88181,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.142",
@@ -88195,7 +88196,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -88516,7 +88517,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.143",
@@ -88531,7 +88532,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -88852,7 +88853,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.144",
@@ -88867,7 +88868,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89002,7 +89003,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.145",
@@ -89017,7 +89018,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89152,7 +89153,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.146",
@@ -89167,7 +89168,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89272,7 +89273,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.147",
@@ -89287,7 +89288,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89392,7 +89393,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.148",
@@ -89407,7 +89408,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89512,7 +89513,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.149",
@@ -89527,7 +89528,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89688,7 +89689,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.150",
@@ -89703,7 +89704,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -89864,7 +89865,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.151",
@@ -89879,7 +89880,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -90040,7 +90041,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.152",
@@ -90055,7 +90056,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -90216,7 +90217,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.153",
@@ -90231,7 +90232,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -90480,7 +90481,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.154",
@@ -90495,7 +90496,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -90744,7 +90745,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.155",
@@ -90759,7 +90760,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -91008,7 +91009,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.156",
@@ -91023,7 +91024,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -91886,7 +91887,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.157",
@@ -91901,7 +91902,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -92764,7 +92765,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.158",
@@ -92779,7 +92780,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -93642,7 +93643,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.159",
@@ -93657,7 +93658,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -94520,7 +94521,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.160",
@@ -94535,7 +94536,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -95398,7 +95399,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.161",
@@ -95413,7 +95414,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -96276,7 +96277,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.162",
@@ -96291,7 +96292,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -97154,7 +97155,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.163",
@@ -97169,7 +97170,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -98032,7 +98033,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.164",
@@ -98047,7 +98048,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -98910,7 +98911,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.165",
@@ -98925,7 +98926,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -99788,7 +99789,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.166",
@@ -99803,7 +99804,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -100304,7 +100305,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.167",
@@ -100319,7 +100320,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -100492,7 +100493,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.168",
@@ -100507,7 +100508,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -102160,7 +102161,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.169",
@@ -102175,7 +102176,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -102940,7 +102941,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.170",
@@ -102955,7 +102956,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -103720,7 +103721,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.171",
@@ -103735,7 +103736,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -103928,7 +103929,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.172",
@@ -103943,7 +103944,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     },
     {
       "quellen_id": "0118",
@@ -104064,7 +104065,7 @@
       "quelle": {
         "name": "Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH)",
         "url": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen",
-        "abgerufenAm": "2026-06-13T17:28:29.098Z"
+        "abgerufenAm": "2026-06-13T17:47:29.715Z"
       },
       "roh": {
         "GmlID": "Umleitungsstrecken.173",
@@ -104079,7 +104080,7 @@
         "GEWICHTSBESCHRÄNKUNG_IN_T": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:29.098Z"
+      "abgerufen_am": "2026-06-13T17:47:29.715Z"
     }
   ]
 }

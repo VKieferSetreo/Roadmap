@@ -3,9 +3,10 @@
     "id": "0214",
     "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)"
   },
-  "abgerufen_am": "2026-06-13T17:28:39.762Z",
+  "abgerufen_am": "2026-06-13T17:55:54.906Z",
   "anzahl_verfuegbar": 44,
   "anzahl_normalisiert": 44,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0214",
@@ -38,7 +39,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Während der gesamten Bauzeit ist mit Fahrbahnverschwenkungen und -einengungen in beiden Fahrtrichtungen zu rechnen. Fahrspursperrungen finden in der Regel außerhalb der Hauptverkehrszeit statt.",
@@ -54,7 +55,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -87,7 +88,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnverschwenkungen und -einengungen in beide Fahrtrichtungen. Fahrspursperrungen finden in der Regel außerhalb der Hauptverkehrszeit statt. Wechsel der Verkehrszustände während der Bauzeit.",
@@ -103,7 +104,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -136,7 +137,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnreduzierung auf jeweils eine Spur in beiden Fahrtrichtungen.",
@@ -152,7 +153,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     }
   ],
   "alle": [
@@ -187,7 +188,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Während der gesamten Bauzeit ist mit Fahrbahnverschwenkungen und -einengungen in beiden Fahrtrichtungen zu rechnen. Fahrspursperrungen finden in der Regel außerhalb der Hauptverkehrszeit statt.",
@@ -203,7 +204,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -236,7 +237,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnverschwenkungen und -einengungen in beide Fahrtrichtungen. Fahrspursperrungen finden in der Regel außerhalb der Hauptverkehrszeit statt. Wechsel der Verkehrszustände während der Bauzeit.",
@@ -252,7 +253,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -285,7 +286,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnreduzierung auf jeweils eine Spur in beiden Fahrtrichtungen.",
@@ -301,7 +302,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -335,7 +336,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung der Auffahrtsrampe von der B14 zum Charlottenplatz. Erschwerte Durchfahrt am Charlottenplatz. Keine Zufahrt vom Charlottenplatz in Richtung B27 Degerloch. Fahrtrichtung geradeaus und rechts am Charlottenplatz gesperrt. Weiterführung für Radverkehr und Bus eingerichtet.",
@@ -351,7 +352,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -384,7 +385,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Fahrbahnverschwenkung in beide Richtungen.",
@@ -400,7 +401,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -434,7 +435,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Abschnittsweise Vollsperrungen. Eine Umleitung ist ausgeschildert.",
@@ -450,7 +451,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -483,7 +484,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Fahrbahnverschwenkung in beide Richtungen ",
@@ -499,7 +500,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -533,7 +534,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert.",
@@ -549,7 +550,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -582,7 +583,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnsperrung, Fahrbahneinengung und Fahrbahnverschwenkung über mehrere Bauabschnitte. Eine Umleitung ist jeweils ausgeschildert.",
@@ -598,7 +599,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -631,7 +632,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Verschwenkung sowie Reduzierung der Fahrspur in beiden Fahrtrichtungen.",
@@ -647,7 +648,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -680,7 +681,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Fahrbahnverschwenkung. Eine Umleitung ist ausgeschildert.",
@@ -696,7 +697,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -729,7 +730,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Fahrbahnverschwenkung stadteinwärts",
@@ -745,7 +746,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -779,7 +780,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert.",
@@ -795,7 +796,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -828,7 +829,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Ampelgeregelte Engstelle.",
@@ -844,7 +845,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -877,7 +878,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Teilsperrung. Einbahnstraßenregelung in Richtung Filderhauptstraße. Eine Umleitung ist ausgeschildert.",
@@ -893,7 +894,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -927,7 +928,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert.",
@@ -943,7 +944,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -977,7 +978,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert",
@@ -993,7 +994,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1026,7 +1027,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Ampelgeregelte Engstelle.",
@@ -1042,7 +1043,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1076,7 +1077,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert.",
@@ -1092,7 +1093,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1125,7 +1126,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Teilsperrung. Einbahnstraßenregelung in Richtung Flotowstraße",
@@ -1141,7 +1142,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1175,7 +1176,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung in mehreren Bauabschnitten. Eine Umleitung ist ausgeschildert.",
@@ -1191,7 +1192,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1225,7 +1226,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung",
@@ -1241,7 +1242,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1275,7 +1276,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung in mehreren Bauphasen. Eine Umleitung ist ausgeschildert.",
@@ -1291,7 +1292,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1324,7 +1325,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Sperrung der Abfahrt aus Fahrtrichtung Stuttgart. Eine Umleitung ist ausgeschildert.",
@@ -1340,7 +1341,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1374,7 +1375,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Die Bauarbeiten werden in mehreren Bauphasen unter Vollsperrung der Straße durchgeführt. ",
@@ -1390,7 +1391,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1424,7 +1425,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnreduzierung auf der Otto-Hirsch-Brücke. Zufahrt zum Mittelkai während der gesamten Bauzeit gesperrt. Eine Umleitung ist ausgeschildert.",
@@ -1440,7 +1441,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1473,7 +1474,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Halbseitige Straßensperrung mit Einbahnstraßenreglung in mehreren Bauabschnitten.",
@@ -1489,7 +1490,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1523,7 +1524,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung wird ausgeschildert.",
@@ -1539,7 +1540,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1573,7 +1574,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung",
@@ -1589,7 +1590,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1623,7 +1624,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. TIefgarage in der Stauffenbergstraße nicht erreichbar.",
@@ -1639,7 +1640,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1673,7 +1674,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Bauabschnittsweise Vollsperrung",
@@ -1689,7 +1690,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1723,7 +1724,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung",
@@ -1739,7 +1740,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1773,7 +1774,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung in mehreren Bauabschnitten. Eine Umleitung ist ausgeschildert",
@@ -1789,7 +1790,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1822,7 +1823,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Teilsperrung. Einbahnstraßenregelung in Richtung Vaihingen. Für die Gegenrichtung ist eine Umleitung ausgeschildert.",
@@ -1838,7 +1839,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1871,7 +1872,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Ampelgeregelte Engstelle.",
@@ -1887,7 +1888,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1921,7 +1922,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung auf nur eine Fahrspur je Fahrtrichtung sowie Vollsperrung der Ein- und Ausfahrt Gänsheidestraße/obere Pischekstraße. Der Radweg entlang der Pischekstraße ist gesperrt.",
@@ -1937,7 +1938,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -1970,7 +1971,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnreduzierung in Fahrtrichtung Zentrum",
@@ -1986,7 +1987,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2019,7 +2020,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung und Fahrbahnverschwenkung",
@@ -2035,7 +2036,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2069,7 +2070,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert.",
@@ -2085,7 +2086,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2119,7 +2120,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung des Kreuzungsbereichs. Eine Umleitung ist ausgeschildert.",
@@ -2135,7 +2136,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2168,7 +2169,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahnreduzierung in Fahrtrichtung Bad Cannstatt.",
@@ -2184,7 +2185,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2193,8 +2194,8 @@
       "befristung": "temporaer",
       "name": "Wiener Straße",
       "beschreibung": "Straßenbauarbeiten — Vollsperrung. Eine Umleitung ist ausgeschildert",
-      "lat": 4.9412234164271265,
-      "lng": 9.096207772544926,
+      "lat": null,
+      "lng": null,
       "geom": null,
       "richtung": "beide",
       "strassen_ref": null,
@@ -2218,7 +2219,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung. Eine Umleitung ist ausgeschildert",
@@ -2234,7 +2235,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2268,7 +2269,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Vollsperrung, eine großräumige Umleitung wird eingerichtet.",
@@ -2284,7 +2285,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     },
     {
       "quellen_id": "0214",
@@ -2318,7 +2319,7 @@
       "quelle": {
         "name": "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)",
         "url": "https://opendata.stuttgart.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:28:39.762Z"
+        "abgerufenAm": "2026-06-13T17:55:54.906Z"
       },
       "roh": {
         "VERKEHRSAUSWIRKUNG": "Fahrbahneinengung auf nur eine Fahrspur in Fahrtrichtung stadteinwärts. Der Radweg entlang der Pischekstraße ist gesperrt.",
@@ -2334,7 +2335,7 @@
         "SE_ANNO_CAD_DATA": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:28:39.762Z"
+      "abgerufen_am": "2026-06-13T17:55:54.906Z"
     }
   ]
 }

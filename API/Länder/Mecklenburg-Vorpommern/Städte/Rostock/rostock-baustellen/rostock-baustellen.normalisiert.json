@@ -3,9 +3,10 @@
     "id": "0222",
     "name": "Rostock — Baustellen (OpenData.HRO)"
   },
-  "abgerufen_am": "2026-06-13T17:30:33.199Z",
+  "abgerufen_am": "2026-06-13T17:47:19.674Z",
   "anzahl_verfuegbar": 255,
   "anzahl_normalisiert": 255,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0222",
@@ -38,7 +39,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "00634f2b-281d-4303-9f5d-20c102cd55dc",
@@ -59,7 +60,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -90,7 +91,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "00cd0883-0d15-4c0f-ae22-f3ddcd6ba2cd",
@@ -111,7 +112,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -144,7 +145,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "033067d8-6b98-43ad-8477-e785908ce84a",
@@ -165,7 +166,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     }
   ],
   "alle": [
@@ -200,7 +201,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "00634f2b-281d-4303-9f5d-20c102cd55dc",
@@ -221,7 +222,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -252,7 +253,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "00cd0883-0d15-4c0f-ae22-f3ddcd6ba2cd",
@@ -273,7 +274,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -306,7 +307,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "033067d8-6b98-43ad-8477-e785908ce84a",
@@ -327,7 +328,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -360,7 +361,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0340fd2b-ece8-4b3b-a43f-29ec75ab7181",
@@ -381,7 +382,7 @@
         "baumassnahme": "Trennung Hausanschluss Gas"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -414,7 +415,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "062725bc-e587-470a-8bef-ae3d2b6176fc",
@@ -435,7 +436,7 @@
         "baumassnahme": "Neubau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -468,7 +469,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "08839cb5-022d-4a4a-95b2-9b0a514821b6",
@@ -489,7 +490,7 @@
         "baumassnahme": "Neubau Wohnhaus"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -522,7 +523,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0977cda7-0389-470f-b5e6-8e4d8da6006b",
@@ -543,7 +544,7 @@
         "baumassnahme": "Fernwärmehausanschluss Für Patriotischer Weg 66"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -576,7 +577,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0a51ef0c-7817-4c5d-aaa8-25ab7b81686b",
@@ -597,7 +598,7 @@
         "baumassnahme": "Trennung Hausanschlüsse Trinkwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -630,7 +631,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0bfabe6b-c638-4132-bc50-da082eb62f29",
@@ -651,7 +652,7 @@
         "baumassnahme": "Wartungs- und Instandsetzungsarbeiten an Wechselverkehrszeichen (WVZ) - AQ0 und AQ1"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -684,7 +685,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0c1190e5-30d0-4823-93e4-1e8826a7ccb7",
@@ -705,7 +706,7 @@
         "baumassnahme": "Netzausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -738,7 +739,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0c6066a2-affd-4707-b957-769f5cbd8282",
@@ -759,7 +760,7 @@
         "baumassnahme": "Markierungsarbeiten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -792,7 +793,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0c8110a8-92dc-4baa-b9df-ffe0f3b60582",
@@ -813,7 +814,7 @@
         "baumassnahme": "Anschluss an Hauptleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -846,7 +847,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0e7d29ec-bc40-4713-bb9c-158aa867f037",
@@ -867,7 +868,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -900,7 +901,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0e9f7528-803f-4504-bada-2ef400494653",
@@ -921,7 +922,7 @@
         "baumassnahme": "Havarie Rohrbruch"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -952,7 +953,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "0f447e54-b865-45fb-a966-2c1aee753ae0",
@@ -973,7 +974,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1006,7 +1007,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "11a25e33-abc9-46eb-a8f6-9f008f790c3b",
@@ -1027,7 +1028,7 @@
         "baumassnahme": "Fernwärmeausbau und Oberflächenwiederherstellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1060,7 +1061,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1206b011-6114-4271-b0c4-1e34c32efe48",
@@ -1081,7 +1082,7 @@
         "baumassnahme": "Grundhafte Erneuerung 2. BA"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1114,7 +1115,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "13884ace-c869-4689-831c-8439c0676ee0",
@@ -1135,7 +1136,7 @@
         "baumassnahme": "Baugrundprüfung - Bohrungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1169,7 +1170,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "13f2ef1b-424a-49e0-b642-feb0607519af",
@@ -1190,7 +1191,7 @@
         "baumassnahme": "Trennung Hausanschluss Gas"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1221,7 +1222,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1430a855-17f8-4ac4-8a94-bac5deab2a5c",
@@ -1242,7 +1243,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1275,7 +1276,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "144347e5-7291-455b-8bf1-332424887a17",
@@ -1296,7 +1297,7 @@
         "baumassnahme": "Gerüststellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1328,7 +1329,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "15be416a-abd1-4042-9d19-061c8e7e020d",
@@ -1349,7 +1350,7 @@
         "baumassnahme": "Einrichtung einer LSA für die sichere Führung von Rad- und Fußverkehr im Zuge der Baumaßnahmen am Werftdreieck"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1380,7 +1381,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "15ed9705-5d87-4b31-9bae-5d7dfe4e8b93",
@@ -1401,7 +1402,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1435,7 +1436,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "169fa2e7-f03f-4767-9353-979bcc1a04b7",
@@ -1456,7 +1457,7 @@
         "baumassnahme": "Sanierung TW, RW, SW, Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1489,7 +1490,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "17239856-0102-48eb-a972-d34f98b3276a",
@@ -1510,7 +1511,7 @@
         "baumassnahme": "Oberflächenwiederherstellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1543,7 +1544,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1777f31b-3d0a-4ccd-9c81-646f8eb4a4d6",
@@ -1564,7 +1565,7 @@
         "baumassnahme": "Reparatur Abwasserleitung (Havarie)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1595,7 +1596,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "18e04f75-61df-4f52-9d50-543d66bf0172",
@@ -1616,7 +1617,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1649,7 +1650,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "194b6977-0973-4f39-a35a-72ad72d61c37",
@@ -1670,7 +1671,7 @@
         "baumassnahme": "Herstellung Hausanschluss Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1703,7 +1704,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "19f6dca8-7bb8-4f7e-bbd6-bcad62067dce",
@@ -1724,7 +1725,7 @@
         "baumassnahme": "Herstellung Hausanschluss Trinkwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1755,7 +1756,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1a7c9f2f-5e39-4610-843f-7a4af584c602",
@@ -1776,7 +1777,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1809,7 +1810,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1b0ddfa6-8913-4375-a21e-a00d1536829c",
@@ -1830,7 +1831,7 @@
         "baumassnahme": "Sanierung Balkonanlagen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1863,7 +1864,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1dbe604d-75c1-485f-ac50-3a27f81eb616",
@@ -1884,7 +1885,7 @@
         "baumassnahme": "Sanierung Wohnhaus Nr. 16 -BE-Fläche"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1915,7 +1916,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1de42e2e-3e2e-461b-8fb0-ed5278b36fb9",
@@ -1936,7 +1937,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -1969,7 +1970,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "1e4c1287-bca7-4afe-bb9d-a0ad07119b21",
@@ -1990,7 +1991,7 @@
         "baumassnahme": "Neubau Trinkwasserleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2023,7 +2024,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2112bd8f-7914-4df3-8ef5-0922c2bcd1da",
@@ -2044,7 +2045,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2075,7 +2076,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "22a4d6ce-ecf7-4344-a01a-65b7c53fa39f",
@@ -2096,7 +2097,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2129,7 +2130,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "22e3ddf1-7bb9-4614-88c6-967afe8e0790",
@@ -2150,7 +2151,7 @@
         "baumassnahme": "Hausneubau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2181,7 +2182,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "232778f9-ea92-47d6-b75c-b6f5906dce1b",
@@ -2202,7 +2203,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2233,7 +2234,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "23563835-631f-4af2-be81-f423b957e3fc",
@@ -2254,7 +2255,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2285,7 +2286,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "25faa325-2096-4ceb-af98-69fcc87772d8",
@@ -2306,7 +2307,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2340,7 +2341,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "25fb2bca-ee7c-488e-b5c4-39e2124612dc",
@@ -2361,7 +2362,7 @@
         "baumassnahme": "Gewässersanierung und -ausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2394,7 +2395,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2622f7a7-f3eb-4f19-8ba0-06d992a5cde1",
@@ -2415,7 +2416,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2448,7 +2449,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "294c7377-8273-47ec-8a5f-73ed093aaac8",
@@ -2469,7 +2470,7 @@
         "baumassnahme": "Anschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2500,7 +2501,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2a53f4ae-121f-4db5-a623-9c3455f9ed4f",
@@ -2521,7 +2522,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2552,7 +2553,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2afe0dfe-67fa-4381-b94b-82f0f43a0420",
@@ -2573,7 +2574,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2606,7 +2607,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2afe41c7-926b-488d-9c4b-45278be4abb2",
@@ -2627,7 +2628,7 @@
         "baumassnahme": "Erneuerung Niederspannung für die SWRAG"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2658,7 +2659,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2b07c490-fa7b-4cae-beab-9c43b6430be0",
@@ -2679,7 +2680,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2710,7 +2711,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2b2a5eee-25dd-47f8-a9e6-44b735cc8a47",
@@ -2731,7 +2732,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2764,7 +2765,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2b83f105-1fe1-4de2-8efd-88f3bb8b533d",
@@ -2785,7 +2786,7 @@
         "baumassnahme": "Brückenbauwerk Radschnellweg über E.-Schlesinger-Straße"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2818,7 +2819,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2b892cc2-4530-4b47-8d43-002648285955",
@@ -2839,7 +2840,7 @@
         "baumassnahme": "vorbereitende Arbeiten für Neubau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2870,7 +2871,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "2d970eca-1b37-4d46-bbd4-9651d929b6d8",
@@ -2891,7 +2892,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2923,7 +2924,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "30c9d714-e9ed-4b44-9dee-449f07e54a0f",
@@ -2944,7 +2945,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -2975,7 +2976,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "30e62e7b-e396-4e3b-a907-725a599bd58e",
@@ -2996,7 +2997,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3029,7 +3030,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "31e69f5d-b1c7-4258-b84b-65d860314076",
@@ -3050,7 +3051,7 @@
         "baumassnahme": "Umverlegung Druckleitung MW und SW"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3083,7 +3084,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "321d8c02-6b63-48ce-949e-e12d4abcb415",
@@ -3104,7 +3105,7 @@
         "baumassnahme": "FW-Anschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3137,7 +3138,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "3259b326-d707-4aac-8072-2a09ee467c23",
@@ -3158,7 +3159,7 @@
         "baumassnahme": "Sanierung/Neubau Wohnhaus"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3191,7 +3192,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "332e0912-5ea7-4e2a-88a3-7f5364ebebba",
@@ -3212,7 +3213,7 @@
         "baumassnahme": "Baustelleneinrichtung für Gebäudesanierung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3245,7 +3246,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "33a973dd-9d2c-4073-a171-f227f39c2842",
@@ -3266,7 +3267,7 @@
         "baumassnahme": "Sanierungsmaßnahmen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3299,7 +3300,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "3576bf15-1ef2-4d5f-a105-ea1dae0aba03",
@@ -3320,7 +3321,7 @@
         "baumassnahme": "Lückenschluss Gehweg"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3353,7 +3354,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "393e5d3a-0394-420b-8080-df35f2839fee",
@@ -3374,7 +3375,7 @@
         "baumassnahme": "Austausch Feuerlöschhydranten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3405,7 +3406,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "39622b09-c7b5-4151-abe6-7dd92209ea90",
@@ -3426,7 +3427,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3457,7 +3458,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "3c349304-aeb8-41b6-a76f-926731665bb3",
@@ -3478,7 +3479,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3511,7 +3512,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "3c5cf25a-cedd-4ece-94a3-fdf4c663fd4b",
@@ -3532,7 +3533,7 @@
         "baumassnahme": "Einrichtung Behinderten-Parkplatz"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3566,7 +3567,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "3f62b12c-5bd3-47e6-80c8-7c5c35aaae55",
@@ -3587,7 +3588,7 @@
         "baumassnahme": "Netzerweiterung Fernwärmeerschließung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3620,7 +3621,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4007d1c5-f6f3-47d1-986d-4c7643fd63b7",
@@ -3641,7 +3642,7 @@
         "baumassnahme": "Gehwegsanierung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3674,7 +3675,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "408cf5aa-fbbe-4eae-9d41-d6cca876c351",
@@ -3695,7 +3696,7 @@
         "baumassnahme": "Containerstellung und Be- und Entladen Handwerkerfahrzeuge für Haus Nr. 92"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3729,7 +3730,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "448a9399-d4a0-4ab2-9b49-9cd7f0557d71",
@@ -3750,7 +3751,7 @@
         "baumassnahme": "Fernwärmeleitung und Fernwärmehausanschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3783,7 +3784,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "45dd84bf-1cdf-4f34-a4b9-c3c6a611b511",
@@ -3804,7 +3805,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3837,7 +3838,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "466ee38e-3daa-4365-a9a2-014627329a2b",
@@ -3858,7 +3859,7 @@
         "baumassnahme": "Instandsetzung Fußgängerbrücke"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3891,7 +3892,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "46e2cb48-b74e-480d-9803-0a3bf7970fa0",
@@ -3912,7 +3913,7 @@
         "baumassnahme": "Baustellenzufahrt Neubau Hort"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3943,7 +3944,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "473949db-c75b-45f8-b6bf-cd47d6c036f9",
@@ -3964,7 +3965,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -3995,7 +3996,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4775e36d-b876-4d80-97cd-07a19fca4bd3",
@@ -4016,7 +4017,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4047,7 +4048,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "47c39a12-4430-4ee2-bd66-f3d556e32f69",
@@ -4068,7 +4069,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4101,7 +4102,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "47d15096-016d-4381-8d9f-284f3da50c64",
@@ -4122,7 +4123,7 @@
         "baumassnahme": "Gebäudesanierung Haus Nr. 46 -BE-Fäche"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4155,7 +4156,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "48dd33b1-b19b-4c23-8eb4-6e4f0b9845e3",
@@ -4176,7 +4177,7 @@
         "baumassnahme": "Verlegung Mittelspannungsleitungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4210,7 +4211,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "49e787d9-65ce-47f3-88bb-93e0b98ca434",
@@ -4231,7 +4232,7 @@
         "baumassnahme": "Neubau Mehrfamilienhaus"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4264,7 +4265,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4b323d2a-ae8f-49b2-89d8-5c0983d555ed",
@@ -4285,7 +4286,7 @@
         "baumassnahme": "Herstellung Hausanschluss Trinkwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4318,7 +4319,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4c0fce48-7936-4233-8bfd-f503598ad7eb",
@@ -4339,7 +4340,7 @@
         "baumassnahme": "Umverlegung der Straßenbahnanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4372,7 +4373,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4c9791ef-00cb-4368-8565-1cf6f843e299",
@@ -4393,7 +4394,7 @@
         "baumassnahme": "Erneuerung Straßenbeleuchtung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4424,7 +4425,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4d08aa4e-717e-4547-b3f9-8298e71a0658",
@@ -4445,7 +4446,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4476,7 +4477,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "4d154039-05cf-467d-870c-1d1f65d59ea3",
@@ -4497,7 +4498,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4530,7 +4531,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "52502b5b-46cf-46da-9582-0f6bfdb219e5",
@@ -4551,7 +4552,7 @@
         "baumassnahme": "Neubau Wohnhaus"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4584,7 +4585,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "53203309-60a9-48f4-b325-5aca7c591346",
@@ -4605,7 +4606,7 @@
         "baumassnahme": "Baustelleneinrichtung / Containerstellplatz"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4638,7 +4639,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "53547988-3e7b-43ec-aca9-ee60e45c5a21",
@@ -4659,7 +4660,7 @@
         "baumassnahme": "Neubau Elektroleitungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4692,7 +4693,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "53a72bc5-117f-43bf-b46f-4e5b0b3ac2ad",
@@ -4713,7 +4714,7 @@
         "baumassnahme": "Anbau Aufzüge"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4747,7 +4748,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "541465c2-7af6-424f-94e8-39bc7d3a26cf",
@@ -4768,7 +4769,7 @@
         "baumassnahme": "Sanierung Fernwärmeleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4801,7 +4802,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5726f501-70dc-4d09-8ba5-8da1292c914d",
@@ -4822,7 +4823,7 @@
         "baumassnahme": "Einbau Sicherheitspoller"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4855,7 +4856,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "57a937d9-0add-4f8b-8ce0-08a12c838b65",
@@ -4876,7 +4877,7 @@
         "baumassnahme": "Erschließung Sporthalle"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4907,7 +4908,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "58655340-d02b-4003-8d5e-8cb2a9b31c3e",
@@ -4928,7 +4929,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -4959,7 +4960,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "58f32ec6-9211-43ca-a013-29ce376d0973",
@@ -4980,7 +4981,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5014,7 +5015,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "591966e1-8f9b-439e-a063-0d47cb715ca9",
@@ -5035,7 +5036,7 @@
         "baumassnahme": "Neubau Gasleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5068,7 +5069,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5942899c-e613-4526-b0d6-1df9c4d31d81",
@@ -5089,7 +5090,7 @@
         "baumassnahme": "Neunbau Kinder- und Jugendnotdienst -urspr. AO 24-1205-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5122,7 +5123,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5b51a17f-3e3d-40ef-aaa1-8565da1fc3f7",
@@ -5143,7 +5144,7 @@
         "baumassnahme": "Havarie FW-HA"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5176,7 +5177,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5e6e52f5-8657-4193-983f-82ded523f8ff",
@@ -5197,7 +5198,7 @@
         "baumassnahme": "Fernwärmeausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5230,7 +5231,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5f566e99-525b-4e82-8aed-387fe6f70b30",
@@ -5251,7 +5252,7 @@
         "baumassnahme": "Neubau FGÜ"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5284,7 +5285,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5ff509bd-b1f0-4732-b43f-f460a8c578bd",
@@ -5305,7 +5306,7 @@
         "baumassnahme": "Gebäudesanierung mit Gerüst und Containerstellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5338,7 +5339,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "5ffd61fc-070e-4a9c-94b5-fe52702b6564",
@@ -5359,7 +5360,7 @@
         "baumassnahme": "Fernwärmeanschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5390,7 +5391,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "60fc9ce0-5abc-425f-b553-c08c6cda43e0",
@@ -5411,7 +5412,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5444,7 +5445,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "63a6d0e0-ddf0-44d9-85b1-4034ce7da1f7",
@@ -5465,7 +5466,7 @@
         "baumassnahme": "Sanierung Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5496,7 +5497,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "63d25878-b487-4ef6-9804-e211eb48157b",
@@ -5517,7 +5518,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5548,7 +5549,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "67b01fa2-f451-4c87-9a02-8632b661eda3",
@@ -5569,7 +5570,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5602,7 +5603,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6822200f-b25a-4f46-83fc-4ee2add455c8",
@@ -5623,7 +5624,7 @@
         "baumassnahme": "Grundhafter Ausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5657,7 +5658,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "687e8942-73c8-4483-8f51-fb698dc143f1",
@@ -5678,7 +5679,7 @@
         "baumassnahme": "Straßensanierung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5712,7 +5713,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6c3f587b-c3f6-4ef7-a8e2-4cb05924dea3",
@@ -5733,7 +5734,7 @@
         "baumassnahme": "Neubau Kesselbornpark -Prov. Zustand für Bauphase-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5764,7 +5765,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6c44d8e5-1d67-4894-b685-49535132214f",
@@ -5785,7 +5786,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5818,7 +5819,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6d44b062-a8cb-45fd-bfc4-91988c07a00f",
@@ -5839,7 +5840,7 @@
         "baumassnahme": "Durchlass Hefegraben"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5870,7 +5871,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6f3d9996-dd8f-45b9-8f3d-d27c2e6dac8d",
@@ -5891,7 +5892,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5922,7 +5923,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "6f763937-d222-422f-892b-70f363fb3007",
@@ -5943,7 +5944,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -5974,7 +5975,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "707d6d74-1143-4364-8ad2-df0fb7a2a399",
@@ -5995,7 +5996,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6026,7 +6027,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "72bc833b-1e58-4efc-ae6e-f3318e9017e0",
@@ -6047,7 +6048,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6080,7 +6081,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "74fabd5f-4d4a-4529-b31b-68b0638bbc57",
@@ -6101,7 +6102,7 @@
         "baumassnahme": "Fassadenarbeiten - BE-Fläche Bauwagen, WC- für Haus Nr"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6134,7 +6135,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "76ffbc25-f50f-4dfa-8e3a-245a4e9d9b68",
@@ -6155,7 +6156,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6188,7 +6189,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "772aa1fe-f7dd-4ca3-a8b1-913f0d7c5f2b",
@@ -6209,7 +6210,7 @@
         "baumassnahme": "Neubau Wohnhäuser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6240,7 +6241,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "77ee4654-4167-4f7e-be5c-47e9a3e7a71b",
@@ -6261,7 +6262,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6292,7 +6293,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "78073159-e8d0-4b6b-96cc-008240736466",
@@ -6313,7 +6314,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6344,7 +6345,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "78ad8417-42bd-4800-9f14-41334a147ffe",
@@ -6365,7 +6366,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6399,7 +6400,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "79277b16-a889-41f3-af9d-a8e3e660498a",
@@ -6420,7 +6421,7 @@
         "baumassnahme": "Kanal- und Trinkwasserleitungserneuerung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6453,7 +6454,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "79ce8919-d4ec-457a-a1a2-94bfac9b16bf",
@@ -6474,7 +6475,7 @@
         "baumassnahme": "Rüstungsstellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6507,7 +6508,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "7aca1714-6f10-44fe-83ee-9358d3bb614c",
@@ -6528,7 +6529,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6559,7 +6560,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "7b88f502-4c05-4275-86e7-1a3d95dd06b2",
@@ -6580,7 +6581,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6611,7 +6612,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "7e191eda-fd64-44c8-9f26-c36e5f441f8d",
@@ -6632,7 +6633,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6663,7 +6664,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "805451e8-ac9e-4b77-b5f3-c95fbfe9abf5",
@@ -6684,7 +6685,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6717,7 +6718,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "80859248-4773-4b53-9602-c99ef67aa0bb",
@@ -6738,7 +6739,7 @@
         "baumassnahme": "FW-Hausanschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6772,7 +6773,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "80dc9697-6c32-421a-b559-29828828ff97",
@@ -6793,7 +6794,7 @@
         "baumassnahme": "Fernwärmeausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6824,7 +6825,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "81380b22-fb8d-4932-9e40-b60c05482ed6",
@@ -6845,7 +6846,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6876,7 +6877,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "81e73d79-4306-4871-a5dc-4e95ea58a49a",
@@ -6897,7 +6898,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6930,7 +6931,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "82548dbf-22d5-4274-b888-349217b9b5ff",
@@ -6951,7 +6952,7 @@
         "baumassnahme": "Erneuerung Stromleitungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -6984,7 +6985,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8281f94d-04a4-43d2-b860-fef43cb38293",
@@ -7005,7 +7006,7 @@
         "baumassnahme": "Sanierung Außenanlagen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7038,7 +7039,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "835ea0ea-14b5-415a-86ce-cb9c0c2f6807",
@@ -7059,7 +7060,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7093,7 +7094,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "83c2b5e8-860e-4eb6-8010-93b0452a445c",
@@ -7114,7 +7115,7 @@
         "baumassnahme": "FW-Erweiterung und Hausanschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7145,7 +7146,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "84b30b9d-b60f-4bdc-97ac-38ff77d69a62",
@@ -7166,7 +7167,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7199,7 +7200,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "84ec4035-50ad-4a89-82eb-831cc389d767",
@@ -7220,7 +7221,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7251,7 +7252,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "85053e8e-7a8f-4b1c-9567-129558569aa8",
@@ -7272,7 +7273,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7303,7 +7304,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "87c8f562-8a62-4f45-b0a5-b01ad11c2ca5",
@@ -7324,7 +7325,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7357,7 +7358,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "88565c2e-e7f9-4443-9629-3cb222d9b9d2",
@@ -7378,7 +7379,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7411,7 +7412,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8b30c973-e15c-4628-a6bc-7e55418f8e3c",
@@ -7432,7 +7433,7 @@
         "baumassnahme": "Arbeiten von kürzerer Dauer -Tagesbaustelle-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7465,7 +7466,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8c38a937-6827-4f59-bf3a-095007981b73",
@@ -7486,7 +7487,7 @@
         "baumassnahme": "Einrichtung Behinderten-Parkplatz"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7519,7 +7520,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8c95c564-1cdc-4129-9bd8-42c7e046a83c",
@@ -7540,7 +7541,7 @@
         "baumassnahme": "Reparatur Anschluss Mischwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7571,7 +7572,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8da93e35-1bc7-4414-8895-ea0441035f49",
@@ -7592,7 +7593,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7625,7 +7626,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8f45a541-28ab-4335-bcf9-ea921360c56e",
@@ -7646,7 +7647,7 @@
         "baumassnahme": "Einrichtung Behinderten-Parkplatz"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7677,7 +7678,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "8fb3ea21-b516-498f-9f9d-2b45c547a6fb",
@@ -7698,7 +7699,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7731,7 +7732,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "91aa1a63-04e2-4260-a768-533850afa3c0",
@@ -7752,7 +7753,7 @@
         "baumassnahme": "Neubau Amtsgebäude"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7785,7 +7786,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "91cb94cf-b546-4bcf-85d8-e336e2289d0a",
@@ -7806,7 +7807,7 @@
         "baumassnahme": "Sanierung Abwasserdruckrohrleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7839,7 +7840,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "91d1e08c-8ae8-440a-8c57-296eae179757",
@@ -7860,7 +7861,7 @@
         "baumassnahme": "Neubau Volkstheater - Erweiterung des Baufeldes gem. VZ-Plan 3-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7891,7 +7892,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "936baf89-4d94-4e0c-a2e9-51614d6c639b",
@@ -7912,7 +7913,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7943,7 +7944,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9470f055-42cb-4a1c-8423-2db82136a427",
@@ -7964,7 +7965,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -7997,7 +7998,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "95453c3a-e604-4d6a-bd17-2cc267da5653",
@@ -8018,7 +8019,7 @@
         "baumassnahme": "Aufstellfläche Bauschuttcontainer"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8049,7 +8050,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "959962ce-bbab-4db3-94df-cdb37f4fdd51",
@@ -8070,7 +8071,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8103,7 +8104,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "95a89345-9a7d-4e15-9220-f9ca11e697b3",
@@ -8124,7 +8125,7 @@
         "baumassnahme": "Sanierung Balkone, Containerstellung, WC, Materiallager"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8157,7 +8158,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9687ea84-8dc0-4658-8af8-18655ed40dd2",
@@ -8178,7 +8179,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8209,7 +8210,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9881eda9-3e60-4511-b376-01e4b909f924",
@@ -8230,7 +8231,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8263,7 +8264,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9917d786-9496-4ffa-8cdd-2401047440ee",
@@ -8284,7 +8285,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8315,7 +8316,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9a750ecf-84ab-4643-b3ae-09da9ec16e40",
@@ -8336,7 +8337,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8369,7 +8370,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9b95acd1-b9dd-499b-943e-e2f3583f0a78",
@@ -8390,7 +8391,7 @@
         "baumassnahme": "Sanierung Eingang Trotzenburg"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8423,7 +8424,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9bd004cf-d551-4519-8135-8996d54c8bb2",
@@ -8444,7 +8445,7 @@
         "baumassnahme": "Erdwärmebohrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8477,7 +8478,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9d2085a8-eb07-45b3-95f4-ef75b42db50a",
@@ -8498,7 +8499,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8531,7 +8532,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9ee196cc-1635-477d-8f25-746b87a7de21",
@@ -8552,7 +8553,7 @@
         "baumassnahme": "Gebäudeneubau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8585,7 +8586,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9ee5bda8-5d7b-4b76-a7d1-60eac6eb5f29",
@@ -8606,7 +8607,7 @@
         "baumassnahme": "Anpassung Hausanschlüsse"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8639,7 +8640,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "9fe71c57-de01-451d-8ae1-1c2559f3ccf9",
@@ -8660,7 +8661,7 @@
         "baumassnahme": "Sanierung Trinkwasserleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8693,7 +8694,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a2823e10-04f8-42cc-ae00-a78fd867ea4b",
@@ -8714,7 +8715,7 @@
         "baumassnahme": "Gerüststellung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8745,7 +8746,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a2e31e5c-76d9-4780-9cdf-3d1c5428526b",
@@ -8766,7 +8767,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8799,7 +8800,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a35b6830-bc09-4f27-a2de-59efe3ba295d",
@@ -8820,7 +8821,7 @@
         "baumassnahme": "Gebäudesanierung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8851,7 +8852,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a4e11983-0063-4cd5-8e88-af7b80332698",
@@ -8872,7 +8873,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8905,7 +8906,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a5495cde-a82d-471f-97f2-929c5c157cb4",
@@ -8926,7 +8927,7 @@
         "baumassnahme": "Gleiserneuerung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -8957,7 +8958,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a5e0417d-72c4-4774-8b8e-469002762dc9",
@@ -8978,7 +8979,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9011,7 +9012,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a5e39340-036e-40bc-9ff8-2d72d64d3fd2",
@@ -9032,7 +9033,7 @@
         "baumassnahme": "Erneuerung Grünflächen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9063,7 +9064,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "a6cf6f28-062f-456d-a158-28c24e2f173c",
@@ -9084,7 +9085,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9116,7 +9117,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ab0bb8bb-449c-4ca5-b827-c8cbd80be615",
@@ -9137,7 +9138,7 @@
         "baumassnahme": "RUN & DANCE 17.07.2026"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9168,7 +9169,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ae16752f-0d4d-404d-abc5-478a6f7e684c",
@@ -9189,7 +9190,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9222,7 +9223,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ae219bb3-13a3-43d0-93f6-2b698efbd1c4",
@@ -9243,7 +9244,7 @@
         "baumassnahme": "Sanierung Kaikante - Stadthafen LP 86-91"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9274,7 +9275,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "aefcd20a-1c86-4115-985e-6b670fa1ba8e",
@@ -9295,7 +9296,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9326,7 +9327,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "af73505e-2ef9-407b-8d5d-101fb96a6842",
@@ -9347,7 +9348,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9380,7 +9381,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "afb78c5a-611c-4693-8f05-7a1be2842161",
@@ -9401,7 +9402,7 @@
         "baumassnahme": "Baustellenzufahrt für Neubau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9432,7 +9433,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b1ee58de-3bc6-4436-99a4-ec2e7e103d9b",
@@ -9453,7 +9454,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9486,7 +9487,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b47dad8e-0721-4a84-8a03-6e3714bbcd10",
@@ -9507,7 +9508,7 @@
         "baumassnahme": "Errichtung Kabelbrücke"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9540,7 +9541,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b49d38a9-baa8-401d-880c-98905d7a7766",
@@ -9561,7 +9562,7 @@
         "baumassnahme": "Reparatur Gasleitung (Havarie)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9594,7 +9595,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b522fdc6-30ae-4634-a1e4-bc0f6d010868",
@@ -9615,7 +9616,7 @@
         "baumassnahme": "Vorbereitungen Ausweichfiliale OSPA"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9646,7 +9647,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b5383753-326a-46e2-8704-c5c4ab9bc110",
@@ -9667,7 +9668,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9700,7 +9701,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b5a7259f-597e-4df9-9e28-ec8c1df5b6a1",
@@ -9721,7 +9722,7 @@
         "baumassnahme": "Ertüchtigung Feuerwehrzufahrten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9755,7 +9756,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b6eaaa8e-1c08-4006-9c16-175ad238ed98",
@@ -9776,7 +9777,7 @@
         "baumassnahme": "Neubau Entwässerungsleitachse 2. BA"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9809,7 +9810,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "b6f1a4c4-d880-4d79-a141-8f1238396911",
@@ -9830,7 +9831,7 @@
         "baumassnahme": "Baustellenzufahrt"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9863,7 +9864,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ba77fd11-ff1e-4214-9ab9-8de091131dbf",
@@ -9884,7 +9885,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9917,7 +9918,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bb94bb12-ca7a-41b2-abd9-f958ced2dfaf",
@@ -9938,7 +9939,7 @@
         "baumassnahme": "Abbau Gerüst"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -9972,7 +9973,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bbbf0514-49fe-42fb-9abd-72b0836ccb42",
@@ -9993,7 +9994,7 @@
         "baumassnahme": "Sanierung MW-/TW-Leitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10026,7 +10027,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bc001544-7a4c-472b-af05-a3d4376f4fca",
@@ -10047,7 +10048,7 @@
         "baumassnahme": "Anschluss Ladesäule"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10080,7 +10081,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bd111d57-abba-49e5-be8f-d63212be858d",
@@ -10101,7 +10102,7 @@
         "baumassnahme": "Baustelleneinrichtung für Fassadenarbeiten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10134,7 +10135,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bdada1fc-9cdb-492d-912e-1f565e88982b",
@@ -10155,7 +10156,7 @@
         "baumassnahme": "Abbruch und Sanierung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10186,7 +10187,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bee10946-9ba5-425c-8a16-73f972bde19d",
@@ -10207,7 +10208,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10240,7 +10241,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "bff7d8f3-1d2b-4a51-a910-f8f13cef3f85",
@@ -10261,7 +10262,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10294,7 +10295,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c05f83a9-de65-4dc7-8d4d-c9a82569f263",
@@ -10315,7 +10316,7 @@
         "baumassnahme": "Neubau Hausanschluss Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10348,7 +10349,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c11c8b90-6c97-40b8-9d75-9154e4d50792",
@@ -10369,7 +10370,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10400,7 +10401,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c32da9dd-787a-40d7-ab25-0ef0844a9ed2",
@@ -10421,7 +10422,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10454,7 +10455,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c3d907d4-9e0b-41d7-972b-249c2ea6b678",
@@ -10475,7 +10476,7 @@
         "baumassnahme": "Neubau Hauskomplex"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10508,7 +10509,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c4625aa9-5f2f-474c-b80b-f0fcd11e140d",
@@ -10529,7 +10530,7 @@
         "baumassnahme": "Sanierung Straßenbeleuchtung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10562,7 +10563,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c5f406fb-404a-4525-ab42-19694778b421",
@@ -10583,7 +10584,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10617,7 +10618,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c6832157-7349-4844-9177-5afa778c0065",
@@ -10638,7 +10639,7 @@
         "baumassnahme": "Antennenmontage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10671,7 +10672,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c6e7798e-b77a-46aa-a0fc-69bbff966cf6",
@@ -10692,7 +10693,7 @@
         "baumassnahme": "Sanierung Wohnhaus -BE-Fläche, Be- und Entladen für Materiallieferung-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10725,7 +10726,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c84e8973-c1c8-47d3-941a-41b38ffba136",
@@ -10746,7 +10747,7 @@
         "baumassnahme": "Neubau Mehrfamilienhaus -urspr. Az."
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10779,7 +10780,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "c87e43af-2481-4a2c-aa3b-594edb7c0c99",
@@ -10800,7 +10801,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10833,7 +10834,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "cc570873-1337-464f-b5ea-8bb387c65515",
@@ -10854,7 +10855,7 @@
         "baumassnahme": "BE-Fläche Keller- und Sockelsanierung Haus Nr. 9"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10887,7 +10888,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ccb6f4f1-7df8-4341-8c1a-613282f5335e",
@@ -10908,7 +10909,7 @@
         "baumassnahme": "Sanierung -BE-Fläche sowie Be- und Entladen-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10939,7 +10940,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "cdb65273-556d-4fe2-befd-19222cd17ddd",
@@ -10960,7 +10961,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -10993,7 +10994,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "cfe9ae20-9005-4ca0-8762-3c8a26d0d716",
@@ -11014,7 +11015,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11047,7 +11048,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d01c9a87-1a3d-489e-9714-3b1b5fdacd3b",
@@ -11068,7 +11069,7 @@
         "baumassnahme": "Reparatur Trinkwasserleitung (Havarie)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11101,7 +11102,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d0252a5b-5b01-4c25-a6c2-77d243bbd805",
@@ -11122,7 +11123,7 @@
         "baumassnahme": "Sanierungsarbeiten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11155,7 +11156,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d02680a3-fa10-496d-93d9-30767020bb6e",
@@ -11176,7 +11177,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11209,7 +11210,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d0a4f3f9-5c05-4885-8b17-b49b414aedd2",
@@ -11230,7 +11231,7 @@
         "baumassnahme": "Neubau Wohnhaus (Baustellenzufahrt)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11263,7 +11264,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d0f0e822-7b1a-4d0d-a676-efda526a4154",
@@ -11284,7 +11285,7 @@
         "baumassnahme": "Markierungsarbeiten"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11318,7 +11319,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d1ac7f96-e1bf-4706-ad9e-3d03bab889f2",
@@ -11339,7 +11340,7 @@
         "baumassnahme": "Fernwärme-Verlegung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11371,7 +11372,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d2bfa248-dd47-4185-be21-24e4968d7152",
@@ -11392,7 +11393,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11425,7 +11426,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d3a51ee3-6448-427e-9db4-37f82e704bb4",
@@ -11446,7 +11447,7 @@
         "baumassnahme": "Sicherung Baustellenausfahrt"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11479,7 +11480,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d55385fe-11d4-4bb6-bf42-48b198fe0a9e",
@@ -11500,7 +11501,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11533,7 +11534,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d633823c-0038-47e1-a592-bc02fff27036",
@@ -11554,7 +11555,7 @@
         "baumassnahme": "Reparatur Fernwärmeleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11587,7 +11588,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d6cc5f59-1b3b-4ccf-aa42-bfed7eb56d00",
@@ -11608,7 +11609,7 @@
         "baumassnahme": "Sanierung Gas und Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11642,7 +11643,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d79bdb97-574f-4db9-a23f-3ec2421337d2",
@@ -11663,7 +11664,7 @@
         "baumassnahme": "Knotenpunktausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11696,7 +11697,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d7a56848-f65f-486d-b00f-f1ff4dd9b538",
@@ -11717,7 +11718,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11750,7 +11751,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d7cced31-b312-471a-a939-684640b3e761",
@@ -11771,7 +11772,7 @@
         "baumassnahme": "Gehwegsanierung -abschnittsweise-, hier Anpassung der LSA 104"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11804,7 +11805,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d83094b2-6ccd-43de-a097-2bfa4d00ed71",
@@ -11825,7 +11826,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11858,7 +11859,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "d9f7187e-2339-43f8-aaef-48f4254130e9",
@@ -11879,7 +11880,7 @@
         "baumassnahme": "Sanierungsarbeiten -BE-Fläche für Lieferungen, Gerüststellung & Container-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11912,7 +11913,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "dba64729-a745-48cf-b59b-3e8401f4d3b1",
@@ -11933,7 +11934,7 @@
         "baumassnahme": "Medienversorgung City Cube"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -11966,7 +11967,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "dd7d6801-3dba-4655-b8aa-08637df756c5",
@@ -11987,7 +11988,7 @@
         "baumassnahme": "Sanierung Wohnhaus -BE-Fläche und Be- und Entladen-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12020,7 +12021,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ddd24ed9-c5df-4f37-99d0-e8cb7c6dd4c7",
@@ -12041,7 +12042,7 @@
         "baumassnahme": "Sanierung Trinkwasseranschluss"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12074,7 +12075,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "df33c257-83e6-4362-a7f3-ba79cdb1f872",
@@ -12095,7 +12096,7 @@
         "baumassnahme": "Fernwärmeverlegung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12128,7 +12129,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "df99c633-c28c-4359-b688-8288577b1e32",
@@ -12149,7 +12150,7 @@
         "baumassnahme": "Umverlegung Stromkabel"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12182,7 +12183,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e0c41813-f339-4508-b723-cef06470555b",
@@ -12203,7 +12204,7 @@
         "baumassnahme": "Sicherstellung Bauzufahrt"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12234,7 +12235,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e1bbe56d-4365-4067-91f7-39866e46a967",
@@ -12255,7 +12256,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12288,7 +12289,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e1e232da-796b-45ed-a72b-e698c03b9013",
@@ -12309,7 +12310,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12342,7 +12343,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e329540a-f025-40ca-9f34-fa6b4583c79c",
@@ -12363,7 +12364,7 @@
         "baumassnahme": "Kernsanierung Wohnhaus -Lieferverkehr-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12396,7 +12397,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e40f1e99-1d30-49cd-b128-f92eb965a70e",
@@ -12417,7 +12418,7 @@
         "baumassnahme": "Verlegung Kabelschutzrohre"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12450,7 +12451,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e4a4b48f-608c-4727-96eb-efb0c7f8a091",
@@ -12471,7 +12472,7 @@
         "baumassnahme": "Kabelverlegung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12504,7 +12505,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e5a52ffc-59dd-466a-b1bb-242452a4ad8b",
@@ -12525,7 +12526,7 @@
         "baumassnahme": "Neubau Radweg"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12558,7 +12559,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e788d488-e2fe-4ccc-97e0-c2c4238532ea",
@@ -12579,7 +12580,7 @@
         "baumassnahme": "Umverlegung FW-Leitung & Abbruch Brückenbauwerk"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12610,7 +12611,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "e9a82024-ec0e-4802-bbc3-76ca5baa665f",
@@ -12631,7 +12632,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12664,7 +12665,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ea845ffd-8d4d-4765-a94b-ff43c0d3aa3c",
@@ -12685,7 +12686,7 @@
         "baumassnahme": "Kanalvermessung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12719,7 +12720,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "eb7b4639-27ba-46ef-9337-42da67b9ec0b",
@@ -12740,7 +12741,7 @@
         "baumassnahme": "Grundhafte Sanierung in 2 Abschnitten, Herstellung Bushaltestellen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12773,7 +12774,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ec7a0c36-581b-4894-8530-4ffae0ce853e",
@@ -12794,7 +12795,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12827,7 +12828,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "eccbca91-6996-457d-8c52-91b1f53a66f1",
@@ -12848,7 +12849,7 @@
         "baumassnahme": "Erneuerung Grundstücksanschluss Trinkwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12882,7 +12883,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "efabd14b-5c87-44dd-8ee5-efa7dff4b3ed",
@@ -12903,7 +12904,7 @@
         "baumassnahme": "Sanierung Fernwärme"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12937,7 +12938,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f0b57706-7961-4316-98e1-3f78043edfa2",
@@ -12958,7 +12959,7 @@
         "baumassnahme": "SW- und TW-Anschlüsse"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -12991,7 +12992,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f3bf4996-2e57-400d-ba81-1d20c07f0a04",
@@ -13012,7 +13013,7 @@
         "baumassnahme": "Trennung Grundstücksanschluss Trinkwasser"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13046,7 +13047,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f3ca8414-1306-4e41-8f83-18bf48e62fd2",
@@ -13067,7 +13068,7 @@
         "baumassnahme": "Reparatur Trinkwasserleitung (Havarie)"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13100,7 +13101,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f5d92704-2266-4bce-bb29-e45092f6a67f",
@@ -13121,7 +13122,7 @@
         "baumassnahme": "Fahrbahn- und Gehweginstandsetzung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13152,7 +13153,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f6be3072-da57-4619-998f-e1bd9f3e14af",
@@ -13173,7 +13174,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13204,7 +13205,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f6fffbf7-f166-47bb-a909-4cd0750af9dd",
@@ -13225,7 +13226,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13256,7 +13257,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f73bdd5d-3305-40bf-a226-77c6f9e2cfc9",
@@ -13277,7 +13278,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13308,7 +13309,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f87903d7-2e7b-4f14-884f-24f26c32d921",
@@ -13329,7 +13330,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13362,7 +13363,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f92d1af4-3ab4-425b-949c-a8f02161f792",
@@ -13383,7 +13384,7 @@
         "baumassnahme": "Breitbandausbau -Baugrube-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13416,7 +13417,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f9898c53-b6ca-4043-bf8b-ee926c609777",
@@ -13437,7 +13438,7 @@
         "baumassnahme": "Sanierung Gebäude Haus Nr. 40 -hier temporäre Kranstellung-"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13468,7 +13469,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "f9ca8031-b80d-4164-a37f-d30cef8e06ac",
@@ -13489,7 +13490,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13520,7 +13521,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "faf5c080-1a23-4421-b281-25bd88344026",
@@ -13541,7 +13542,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13574,7 +13575,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "fb3f26df-f8e2-470c-af69-38197ab335b0",
@@ -13595,7 +13596,7 @@
         "baumassnahme": "Breitbandausbau"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13626,7 +13627,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "fda13a8f-dd86-4c32-add2-2c3614639e95",
@@ -13647,7 +13648,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13680,7 +13681,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "fda97cf4-e687-4a69-9812-5fc8e1bf8bcf",
@@ -13701,7 +13702,7 @@
         "baumassnahme": "Verlegung Gasleitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13734,7 +13735,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "fe895cdb-d5b1-46b1-ba86-7119356bef9c",
@@ -13755,7 +13756,7 @@
         "baumassnahme": "Neubau Fernwärme-Leitung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     },
     {
       "quellen_id": "0222",
@@ -13786,7 +13787,7 @@
       "quelle": {
         "name": "Rostock — Baustellen (OpenData.HRO)",
         "url": "https://www.opendata-hro.de/dataset/baustellen",
-        "abgerufenAm": "2026-06-13T17:30:33.199Z"
+        "abgerufenAm": "2026-06-13T17:47:19.674Z"
       },
       "roh": {
         "uuid": "ffef9333-3f8f-476e-8169-ed7ab6e606df",
@@ -13807,7 +13808,7 @@
         "baumassnahme": null
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:30:33.199Z"
+      "abgerufen_am": "2026-06-13T17:47:19.674Z"
     }
   ]
 }

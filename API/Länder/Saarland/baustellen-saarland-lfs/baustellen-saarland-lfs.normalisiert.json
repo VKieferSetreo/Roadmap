@@ -3,9 +3,10 @@
     "id": "0127",
     "name": "baustellen.saarland (Landesbetrieb für Straßenbau)"
   },
-  "abgerufen_am": "2026-06-13T17:31:25.336Z",
+  "abgerufen_am": "2026-06-13T17:47:23.175Z",
   "anzahl_verfuegbar": 32,
   "anzahl_normalisiert": 32,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0127",
@@ -345,7 +346,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -358,7 +359,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -412,7 +413,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -425,7 +426,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -467,7 +468,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -480,7 +481,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     }
   ],
   "alle": [
@@ -822,7 +823,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -835,7 +836,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -889,7 +890,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -902,7 +903,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -944,7 +945,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -957,7 +958,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1027,7 +1028,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1040,7 +1041,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1174,7 +1175,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1187,7 +1188,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1583,7 +1584,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1596,7 +1597,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1728,7 +1729,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1741,7 +1742,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1893,7 +1894,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1906,7 +1907,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -1948,7 +1949,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -1961,7 +1962,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2005,7 +2006,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2018,7 +2019,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2120,7 +2121,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2133,7 +2134,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2335,7 +2336,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2348,7 +2349,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2600,7 +2601,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2613,7 +2614,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2717,7 +2718,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2730,7 +2731,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2786,7 +2787,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2799,7 +2800,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -2841,7 +2842,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -2854,7 +2855,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -3040,7 +3041,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -3053,7 +3054,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -3117,7 +3118,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -3130,7 +3131,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -3594,7 +3595,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -3607,7 +3608,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -3771,7 +3772,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -3784,7 +3785,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -3880,7 +3881,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -3893,7 +3894,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -4063,7 +4064,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -4076,7 +4077,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -4266,7 +4267,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -4279,7 +4280,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -4493,7 +4494,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -4506,7 +4507,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -4802,7 +4803,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -4815,7 +4816,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -5093,7 +5094,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -5106,7 +5107,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -5512,7 +5513,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -5525,7 +5526,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -5653,7 +5654,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -5666,7 +5667,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -5920,7 +5921,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -5933,7 +5934,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -6179,7 +6180,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -6192,7 +6193,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -6234,7 +6235,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -6247,7 +6248,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     },
     {
       "quellen_id": "0127",
@@ -6311,7 +6312,7 @@
       "quelle": {
         "name": "baustellen.saarland (Landesbetrieb für Straßenbau)",
         "url": "https://baustellen.saarland/",
-        "abgerufenAm": "2026-06-13T17:31:25.336Z"
+        "abgerufenAm": "2026-06-13T17:47:23.175Z"
       },
       "roh": {
         "roadclosed": "false",
@@ -6324,7 +6325,7 @@
         "event": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.336Z"
+      "abgerufen_am": "2026-06-13T17:47:23.175Z"
     }
   ]
 }

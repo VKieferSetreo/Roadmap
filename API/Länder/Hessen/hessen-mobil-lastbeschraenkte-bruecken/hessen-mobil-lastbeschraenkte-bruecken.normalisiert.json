@@ -3,9 +3,10 @@
     "id": "0126",
     "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)"
   },
-  "abgerufen_am": "2026-06-13T17:31:25.290Z",
+  "abgerufen_am": "2026-06-13T17:47:23.391Z",
   "anzahl_verfuegbar": 136,
   "anzahl_normalisiert": 136,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0126",
@@ -35,7 +36,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5024519",
@@ -49,7 +50,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -79,7 +80,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4825501",
@@ -93,7 +94,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -123,7 +124,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5617584",
@@ -137,7 +138,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     }
   ],
   "alle": [
@@ -169,7 +170,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5024519",
@@ -183,7 +184,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -213,7 +214,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4825501",
@@ -227,7 +228,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -257,7 +258,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5617584",
@@ -271,7 +272,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -301,7 +302,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5917726",
@@ -315,7 +316,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -345,7 +346,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5917726",
@@ -359,7 +360,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -389,7 +390,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6013504",
@@ -403,7 +404,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -433,7 +434,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6013926",
@@ -447,7 +448,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -477,7 +478,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5021517",
@@ -491,7 +492,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -521,7 +522,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5122504",
@@ -535,7 +536,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -565,7 +566,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5123505",
@@ -579,7 +580,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -609,7 +610,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5122507",
@@ -623,7 +624,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -653,7 +654,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6317630",
@@ -667,7 +668,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -697,7 +698,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6317632",
@@ -711,7 +712,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -741,7 +742,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6317628",
@@ -755,7 +756,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -785,7 +786,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5916577",
@@ -799,7 +800,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -829,7 +830,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6316552",
@@ -843,7 +844,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -873,7 +874,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5416516",
@@ -887,7 +888,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -917,7 +918,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5416564",
@@ -931,7 +932,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -961,7 +962,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5417515",
@@ -975,7 +976,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1005,7 +1006,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5417540",
@@ -1019,7 +1020,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1049,7 +1050,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5415555",
@@ -1063,7 +1064,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1093,7 +1094,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5417516",
@@ -1107,7 +1108,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1137,7 +1138,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5417562",
@@ -1151,7 +1152,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1181,7 +1182,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5125513",
@@ -1195,7 +1196,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1225,7 +1226,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5614505",
@@ -1239,7 +1240,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1269,7 +1270,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5614505",
@@ -1283,7 +1284,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1313,7 +1314,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5818616",
@@ -1327,7 +1328,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1357,7 +1358,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5814509",
@@ -1371,7 +1372,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1401,7 +1402,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4822582",
@@ -1415,7 +1416,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1445,7 +1446,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5520513",
@@ -1459,7 +1460,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1489,7 +1490,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5813507",
@@ -1503,7 +1504,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1533,7 +1534,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5814524",
@@ -1547,7 +1548,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1577,7 +1578,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5317510",
@@ -1591,7 +1592,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1621,7 +1622,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5223519",
@@ -1635,7 +1636,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1665,7 +1666,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5224511",
@@ -1679,7 +1680,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1709,7 +1710,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6418741",
@@ -1723,7 +1724,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1753,7 +1754,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4923641",
@@ -1767,7 +1768,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1797,7 +1798,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4921514",
@@ -1811,7 +1812,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1841,7 +1842,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5623542",
@@ -1855,7 +1856,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1885,7 +1886,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5714512",
@@ -1899,7 +1900,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1929,7 +1930,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4826536",
@@ -1943,7 +1944,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -1973,7 +1974,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4722570",
@@ -1987,7 +1988,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2017,7 +2018,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5325524",
@@ -2031,7 +2032,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2061,7 +2062,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5126504",
@@ -2075,7 +2076,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2105,7 +2106,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5126503",
@@ -2119,7 +2120,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2149,7 +2150,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5023506",
@@ -2163,7 +2164,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2193,7 +2194,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4824540",
@@ -2207,7 +2208,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2237,7 +2238,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4725519",
@@ -2251,7 +2252,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2281,7 +2282,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5718523",
@@ -2295,7 +2296,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2325,7 +2326,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5819516",
@@ -2339,7 +2340,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2369,7 +2370,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5819512",
@@ -2383,7 +2384,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2413,7 +2414,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5023564",
@@ -2427,7 +2428,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2457,7 +2458,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4922543",
@@ -2471,7 +2472,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2501,7 +2502,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5118531",
@@ -2515,7 +2516,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2545,7 +2546,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5119506",
@@ -2559,7 +2560,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2589,7 +2590,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5219514",
@@ -2603,7 +2604,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2633,7 +2634,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5615520",
@@ -2647,7 +2648,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2677,7 +2678,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6013926",
@@ -2691,7 +2692,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2721,7 +2722,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5913512",
@@ -2735,7 +2736,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2765,7 +2766,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5714514",
@@ -2779,7 +2780,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2809,7 +2810,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5417528",
@@ -2823,7 +2824,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2853,7 +2854,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5416543",
@@ -2867,7 +2868,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2897,7 +2898,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5621543",
@@ -2911,7 +2912,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2941,7 +2942,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5716614",
@@ -2955,7 +2956,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -2985,7 +2986,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6118548",
@@ -2999,7 +3000,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3029,7 +3030,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616515",
@@ -3043,7 +3044,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3073,7 +3074,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4625656",
@@ -3087,7 +3088,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3117,7 +3118,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4625655",
@@ -3131,7 +3132,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3161,7 +3162,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5914520",
@@ -3175,7 +3176,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3205,7 +3206,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4623683",
@@ -3219,7 +3220,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3249,7 +3250,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5219517",
@@ -3263,7 +3264,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3293,7 +3294,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5324534",
@@ -3307,7 +3308,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3337,7 +3338,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4918509",
@@ -3351,7 +3352,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3381,7 +3382,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5916506",
@@ -3395,7 +3396,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3425,7 +3426,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4625671",
@@ -3439,7 +3440,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3469,7 +3470,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4625630",
@@ -3483,7 +3484,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3513,7 +3514,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6317629",
@@ -3527,7 +3528,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3557,7 +3558,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5124528",
@@ -3571,7 +3572,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3601,7 +3602,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5515548",
@@ -3615,7 +3616,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3645,7 +3646,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5514534",
@@ -3659,7 +3660,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3689,7 +3690,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5514535",
@@ -3703,7 +3704,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3733,7 +3734,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5424562",
@@ -3747,7 +3748,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3777,7 +3778,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6418741",
@@ -3791,7 +3792,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3821,7 +3822,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616513",
@@ -3835,7 +3836,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3865,7 +3866,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5714510",
@@ -3879,7 +3880,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3909,7 +3910,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4926508",
@@ -3923,7 +3924,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3953,7 +3954,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4523713",
@@ -3967,7 +3968,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -3997,7 +3998,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4822523",
@@ -4011,7 +4012,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4041,7 +4042,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4822524",
@@ -4055,7 +4056,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4085,7 +4086,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4722552",
@@ -4099,7 +4100,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4129,7 +4130,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4621537",
@@ -4143,7 +4144,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4173,7 +4174,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5623507",
@@ -4187,7 +4188,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4217,7 +4218,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5119506",
@@ -4231,7 +4232,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4261,7 +4262,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5021557",
@@ -4275,7 +4276,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4305,7 +4306,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5414510",
@@ -4319,7 +4320,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4349,7 +4350,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5514557",
@@ -4363,7 +4364,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4393,7 +4394,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5415536",
@@ -4407,7 +4408,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4437,7 +4438,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5415512",
@@ -4451,7 +4452,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4481,7 +4482,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5816557",
@@ -4495,7 +4496,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4525,7 +4526,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5514526",
@@ -4539,7 +4540,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4569,7 +4570,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5514524",
@@ -4583,7 +4584,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4613,7 +4614,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5816528",
@@ -4627,7 +4628,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4657,7 +4658,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5623533",
@@ -4671,7 +4672,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4701,7 +4702,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5821501",
@@ -4715,7 +4716,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4745,7 +4746,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616531",
@@ -4759,7 +4760,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4789,7 +4790,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4926581",
@@ -4803,7 +4804,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4833,7 +4834,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616517",
@@ -4847,7 +4848,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4877,7 +4878,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616526",
@@ -4891,7 +4892,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4921,7 +4922,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5616520",
@@ -4935,7 +4936,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -4965,7 +4966,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5315527",
@@ -4979,7 +4980,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5009,7 +5010,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5221544",
@@ -5023,7 +5024,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5053,7 +5054,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5814528",
@@ -5067,7 +5068,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5097,7 +5098,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6318710",
@@ -5111,7 +5112,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5141,7 +5142,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4925546",
@@ -5155,7 +5156,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5185,7 +5186,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5124539",
@@ -5199,7 +5200,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5229,7 +5230,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4826559",
@@ -5243,7 +5244,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5273,7 +5274,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5217519",
@@ -5287,7 +5288,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5317,7 +5318,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5115765",
@@ -5331,7 +5332,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5361,7 +5362,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4725569",
@@ -5375,7 +5376,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5405,7 +5406,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5517503",
@@ -5419,7 +5420,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5449,7 +5450,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4825550",
@@ -5463,7 +5464,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5493,7 +5494,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5219512",
@@ -5507,7 +5508,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5537,7 +5538,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "6318761",
@@ -5551,7 +5552,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5581,7 +5582,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5519509",
@@ -5595,7 +5596,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5625,7 +5626,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5619505",
@@ -5639,7 +5640,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5669,7 +5670,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5419537",
@@ -5683,7 +5684,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5713,7 +5714,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5419529",
@@ -5727,7 +5728,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5757,7 +5758,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5321527",
@@ -5771,7 +5772,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5801,7 +5802,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4826550",
@@ -5815,7 +5816,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5845,7 +5846,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4826551",
@@ -5859,7 +5860,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5889,7 +5890,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4917613",
@@ -5903,7 +5904,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5933,7 +5934,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5121508",
@@ -5947,7 +5948,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -5977,7 +5978,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "4917603",
@@ -5991,7 +5992,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -6021,7 +6022,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5421517",
@@ -6035,7 +6036,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -6065,7 +6066,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5717708",
@@ -6079,7 +6080,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     },
     {
       "quellen_id": "0126",
@@ -6109,7 +6110,7 @@
       "quelle": {
         "name": "Hessen Mobil — Lastbeschränkte Brücken (GST-gesperrt)",
         "url": "https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen",
-        "abgerufenAm": "2026-06-13T17:31:25.290Z"
+        "abgerufenAm": "2026-06-13T17:47:23.391Z"
       },
       "roh": {
         "bauwerksnummer": "5813592",
@@ -6123,7 +6124,7 @@
         "stand": "2026-02-27"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:31:25.290Z"
+      "abgerufen_am": "2026-06-13T17:47:23.391Z"
     }
   ]
 }

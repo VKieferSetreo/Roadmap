@@ -3,9 +3,10 @@
     "id": "0119",
     "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)"
   },
-  "abgerufen_am": "2026-06-13T17:29:16.484Z",
+  "abgerufen_am": "2026-06-13T17:47:31.625Z",
   "anzahl_verfuegbar": 107,
   "anzahl_normalisiert": 107,
+  "db_geschrieben": null,
   "beispiele": [
     {
       "quellen_id": "0119",
@@ -37,7 +38,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK VR: K1 L 21 - Erneuerung an der Decke",
@@ -52,7 +53,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -82,7 +83,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B208 Schönhof - Radwegneubau",
@@ -97,7 +98,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -127,7 +128,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B111 Ortsdurchfahrt Zinnowitz, West - Straßenausbau",
@@ -142,7 +143,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     }
   ],
   "alle": [
@@ -176,7 +177,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK VR: K1 L 21 - Erneuerung an der Decke",
@@ -191,7 +192,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -221,7 +222,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B208 Schönhof - Radwegneubau",
@@ -236,7 +237,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -266,7 +267,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B111 Ortsdurchfahrt Zinnowitz, West - Straßenausbau",
@@ -281,7 +282,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -311,7 +312,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L35 Kreisverkehr Jarmen - Straßenausbau",
@@ -326,7 +327,7 @@
         "erlaeuterung": "halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -356,7 +357,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L283 Penkun, 3. Bauabschnitt - Straßenausbau",
@@ -371,7 +372,7 @@
         "erlaeuterung": "sonstige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -403,7 +404,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B192 Ortsdurchfahrt Waren (Müritz) - Brückeninstandsetzung",
@@ -418,7 +419,7 @@
         "erlaeuterung": "Verkehrsraumeinschränkungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -448,7 +449,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K30 Hasenhäge - Radwegneubau",
@@ -463,7 +464,7 @@
         "erlaeuterung": "halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -472,8 +473,8 @@
       "befristung": "temporaer",
       "name": "B104 Abzweig Kreisstraße 28, Bahnübergang - Akute Verkehrsgefährdung",
       "beschreibung": "Akute Verkehrsgefährdung — Verkehrsraumeinschränkungen — Herabsetzung der zulässigen Höchstgeschwindigkeit aufgrund von Fahrbahnschäden",
-      "lat": 53.65806612026458,
-      "lng": 11.314868606894121,
+      "lat": 53.658066120264564,
+      "lng": 11.314868606894123,
       "geom": null,
       "richtung": "beide",
       "strassen_ref": "B104",
@@ -493,7 +494,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B104 Abzweig Kreisstraße 28, Bahnübergang - Akute Verkehrsgefährdung",
@@ -508,7 +509,7 @@
         "erlaeuterung": "Verkehrsraumeinschränkungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -540,7 +541,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L103 Ortsdurchfahrt Dorf Mecklenburg, Bahnhofstraße - Straßenausbau",
@@ -555,7 +556,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -586,7 +587,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K122 Suckow - Straßenausbau",
@@ -601,7 +602,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -633,7 +634,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K112 Ortslage Plate - Straßenausbau",
@@ -648,7 +649,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -678,7 +679,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L04 Zapel - Bauwerksarbeiten",
@@ -693,7 +694,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -724,7 +725,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK NWM: K46 Klein Trebbow - Straßenausbau",
@@ -739,7 +740,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -769,7 +770,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B192 Warin, Brücke über den Mühlenbach - Brückenersatzneubau",
@@ -784,7 +785,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -816,7 +817,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L11 Kuchelmiß - Brückeninstandsetzung",
@@ -831,7 +832,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -863,7 +864,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L27 Ortsdurchfahrt Groß Tetzleben - Straßenneubau",
@@ -878,7 +879,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -910,7 +911,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G1 Wittenburg - Tiefbau-/Fundamentarbeiten neben der Fahrbahn",
@@ -925,7 +926,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -956,7 +957,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B193 Neustrelitz - Fahrbahninstandsetzung",
@@ -971,7 +972,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1002,7 +1003,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K59 Ortslage Dütschow - Straßenausbau",
@@ -1017,7 +1018,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1047,7 +1048,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B196 Ortslage Baabe - Erneuerung der Fahrbahn",
@@ -1062,7 +1063,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1094,7 +1095,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L262 Ortsdurchfahrt Kröslin - Straßenausbau",
@@ -1109,7 +1110,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1139,7 +1140,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B104 Cambs - Radwegneubau",
@@ -1154,7 +1155,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1184,7 +1185,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L05 Püttelkow - Radwegneubau",
@@ -1199,7 +1200,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1230,7 +1231,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G1 Ludwigslust - Tunnelneubau",
@@ -1245,7 +1246,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1277,7 +1278,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L041 Ortsdurchfahrt Drönnewitz - Erneuerung der Fahrbahn",
@@ -1292,7 +1293,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1322,7 +1323,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1337,7 +1338,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1367,7 +1368,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1382,7 +1383,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1413,7 +1414,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L202 Ortsdurchfahrt Malchin, Turnplatz - Straßenausbau",
@@ -1428,7 +1429,7 @@
         "erlaeuterung": "Verkehrsraumeinschränkungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1460,7 +1461,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L121 Kirchdorf - Erneuerung der Fahrbahn",
@@ -1475,7 +1476,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1505,7 +1506,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1520,7 +1521,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1550,7 +1551,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1565,7 +1566,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1596,7 +1597,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G1 Lübz - Akute Verkehrsgefährdung",
@@ -1611,7 +1612,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1641,7 +1642,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1656,7 +1657,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1686,7 +1687,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -1701,7 +1702,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1731,7 +1732,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1746,7 +1747,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1776,7 +1777,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1791,7 +1792,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1821,7 +1822,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1836,7 +1837,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1866,7 +1867,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -1881,7 +1882,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1911,7 +1912,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1926,7 +1927,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -1956,7 +1957,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -1971,7 +1972,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2001,7 +2002,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2016,7 +2017,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2046,7 +2047,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2061,7 +2062,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2091,7 +2092,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2106,7 +2107,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2136,7 +2137,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2151,7 +2152,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2181,7 +2182,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2196,7 +2197,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2226,7 +2227,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2241,7 +2242,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2271,7 +2272,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2286,7 +2287,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2316,7 +2317,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2331,7 +2332,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2361,7 +2362,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2376,7 +2377,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2407,7 +2408,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B194 Poggendorf - Erneuerung an der Decke",
@@ -2422,7 +2423,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2452,7 +2453,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B198 Ortsumgehung Mirow - Straßenneubau",
@@ -2467,7 +2468,7 @@
         "erlaeuterung": "Verkehrsraumeinschränkungen"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2498,7 +2499,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G6 Am Alten Friedhof - Leitungsarbeiten",
@@ -2513,7 +2514,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2543,7 +2544,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B105 Ribnitz-Damgarten - Absicherung Baustellenzufahrt",
@@ -2558,7 +2559,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2588,7 +2589,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2603,7 +2604,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2633,7 +2634,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2648,7 +2649,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2678,7 +2679,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -2693,7 +2694,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2723,7 +2724,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2738,7 +2739,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2768,7 +2769,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L21 Duvendiek - Radwegneubau",
@@ -2783,7 +2784,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2813,7 +2814,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "B105 Ortsdurchfahrt Grevesmühlen - Fahrbahninstandsetzung",
@@ -2828,7 +2829,7 @@
         "erlaeuterung": "zeitweise halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2858,7 +2859,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2873,7 +2874,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2903,7 +2904,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2918,7 +2919,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2948,7 +2949,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -2963,7 +2964,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -2993,7 +2994,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3008,7 +3009,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3038,7 +3039,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -3053,7 +3054,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3084,7 +3085,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L222 Ortsdurchfahrt Franzburg - Straßenumbau",
@@ -3099,7 +3100,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3129,7 +3130,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L22 Klockenhagen - Absicherung Baustellenzufahrt",
@@ -3144,7 +3145,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3174,7 +3175,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L191 Dummerstorf - Radwegneubau",
@@ -3189,7 +3190,7 @@
         "erlaeuterung": "halbseitige Sperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3220,7 +3221,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G1 Plate - Straßenumbau",
@@ -3235,7 +3236,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3265,7 +3266,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L19 Dettmannsdorf - Absicherung Baustellenzufahrt",
@@ -3280,7 +3281,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3310,7 +3311,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3325,7 +3326,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3355,7 +3356,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3370,7 +3371,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3400,7 +3401,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3415,7 +3416,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3445,7 +3446,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3460,7 +3461,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3490,7 +3491,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -3505,7 +3506,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3535,7 +3536,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -3550,7 +3551,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3580,7 +3581,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -3595,7 +3596,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3625,7 +3626,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3640,7 +3641,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3670,7 +3671,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -3685,7 +3686,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3713,7 +3714,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Sonstiges",
@@ -3728,7 +3729,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3758,7 +3759,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Umbau einer Anschlussstelle",
@@ -3773,7 +3774,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3801,7 +3802,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Sonstiges",
@@ -3816,7 +3817,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3847,7 +3848,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK MSE: K74 Ortsdurchfahrt Ihlenfeld - Straßenausbau",
@@ -3862,7 +3863,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3892,7 +3893,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L30 Altenkirchen - Erneuerung an der Decke",
@@ -3907,7 +3908,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3937,7 +3938,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L21 bei Klockenhagen - Absicherung Baustellenzufahrt",
@@ -3952,7 +3953,7 @@
         "erlaeuterung": "halbseitige Sperrung mit Lichtzeichenanlage"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -3982,7 +3983,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Sonstiges",
@@ -3997,7 +3998,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4029,7 +4030,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K27 Ortslage Luckwitz - Straßenausbau",
@@ -4044,7 +4045,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4075,7 +4076,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "G4 Pestalozziweg - Leitungsarbeiten",
@@ -4090,7 +4091,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4120,7 +4121,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Sonstiges",
@@ -4135,7 +4136,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4165,7 +4166,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4180,7 +4181,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4210,7 +4211,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4225,7 +4226,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4257,7 +4258,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK NWM: K26 Gadebusch - Erneuerung an der Decke",
@@ -4272,7 +4273,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4302,7 +4303,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4317,7 +4318,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4347,7 +4348,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4362,7 +4363,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4392,7 +4393,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -4407,7 +4408,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4437,7 +4438,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -4452,7 +4453,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4482,7 +4483,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -4497,7 +4498,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4527,7 +4528,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4542,7 +4543,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4572,7 +4573,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -4587,7 +4588,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4617,7 +4618,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A14  - Sonstiges",
@@ -4632,7 +4633,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4662,7 +4663,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Brückeninstandsetzung",
@@ -4677,7 +4678,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4707,7 +4708,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Brückeninstandsetzung",
@@ -4722,7 +4723,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4752,7 +4753,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A24  - Umbau einer Anschlussstelle",
@@ -4767,7 +4768,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4797,7 +4798,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "A20  - Sonstiges",
@@ -4812,7 +4813,7 @@
         "erlaeuterung": ""
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4844,7 +4845,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L211 Bartelshagen II - Erneuerung an der Decke",
@@ -4859,7 +4860,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4891,7 +4892,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L262 Wolgast, Breite Straße - Straßenumbau",
@@ -4906,7 +4907,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4938,7 +4939,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "L203 Sülten - Durchlasserneuerung",
@@ -4953,7 +4954,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     },
     {
       "quellen_id": "0119",
@@ -4985,7 +4986,7 @@
       "quelle": {
         "name": "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)",
         "url": "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr",
-        "abgerufenAm": "2026-06-13T17:29:16.484Z"
+        "abgerufenAm": "2026-06-13T17:47:31.625Z"
       },
       "roh": {
         "bsname": "LK LUP: K22 B 321 - Erneuerung an der Decke",
@@ -5000,7 +5001,7 @@
         "erlaeuterung": "Vollsperrung"
       },
       "status": "gemeldet",
-      "abgerufen_am": "2026-06-13T17:29:16.484Z"
+      "abgerufen_am": "2026-06-13T17:47:31.625Z"
     }
   ]
 }
