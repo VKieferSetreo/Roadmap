@@ -9,7 +9,12 @@
 import { makeNormalized } from "./_helpers.js"
 
 const QUELLE_NAME = "Overpass API (OpenStreetMap)"
-const ENDPOINT = "https://overpass-api.de/api/interpreter"
+// Mehrere Instanzen — bei Rate-Limit (429) wird die nächste probiert.
+const ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+]
 const UA = "Roadmap-Setreo-Cron/1.0 (klattigmaximilian@gmail.com)"
 
 // Tags, die ein Strecken-Hindernis markieren.
@@ -34,15 +39,34 @@ function queryFuerLand(iso) {
   return `[out:json][timeout:180];area["ISO3166-2"="${iso}"][admin_level=4]->.a;(${tagFilter});out tags geom;`
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+/** Overpass-Query mit Mirror-Rotation + Backoff bei 429 (Rate-Limit) / Fehlern. */
 async function overpass(query, timeoutMs) {
-  const r = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "user-agent": UA, "content-type": "application/x-www-form-urlencoded" },
-    body: "data=" + encodeURIComponent(query),
-    signal: AbortSignal.timeout(timeoutMs),
-  })
-  if (!r.ok) throw new Error(`Overpass HTTP ${r.status}`)
-  return r.json()
+  let lastErr
+  // bis zu 3 Versuche, je Versuch eine andere Instanz; bei 429 vor dem nächsten warten.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const endpoint = ENDPOINTS[attempt % ENDPOINTS.length]
+    try {
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: { "user-agent": UA, "content-type": "application/x-www-form-urlencoded" },
+        body: "data=" + encodeURIComponent(query),
+        signal: AbortSignal.timeout(timeoutMs),
+      })
+      if (r.status === 429) {
+        lastErr = new Error("Overpass HTTP 429 (Rate-Limit)")
+        await sleep(8000 * (attempt + 1)) // 8s, 16s, 24s
+        continue
+      }
+      if (!r.ok) throw new Error(`Overpass HTTP ${r.status}`)
+      return r.json()
+    } catch (e) {
+      lastErr = e
+      await sleep(3000)
+    }
+  }
+  throw lastErr ?? new Error("Overpass: alle Instanzen fehlgeschlagen")
 }
 
 /** OSM-Maßangabe → Zahl. Sentinels ("none"/"default"/"no_sign"/"unsigned") = keine echte Grenze. */
@@ -86,7 +110,7 @@ export const overpassApiConnector = {
     let verfuegbar = 0
 
     for (const [i, { name: land, iso }] of BUNDESLAENDER.entries()) {
-      if (i > 0) await new Promise((r) => setTimeout(r, 1500)) // Rate-Limit-Höflichkeit
+      if (i > 0) await sleep(4000) // Rate-Limit-Höflichkeit zwischen den Bundesländern
       let data
       try {
         data = await overpass(queryFuerLand(iso), timeoutMs)
