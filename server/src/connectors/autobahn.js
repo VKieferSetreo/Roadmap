@@ -3,6 +3,7 @@
 // Timeout/Fehler je Road tolerant (fetchJson → null → Road übersprungen + Log).
 
 import { fetchJson } from "../external/http.js"
+import { extractStammdaten } from "./_helpers.js"
 
 export const AUTOBAHN_DEFAULT_ROADS = "A1,A2,A3,A5,A7,A8,A9,A24"
 
@@ -30,16 +31,34 @@ export function normalizeRoadwork(rw, road, url) {
     .filter((s) => typeof s === "string" && s.trim())
     .join("\n") || null
   const start = isoDateOrNull(rw.startTimestamp)
+  const ende = isoDateOrNull(rw.endTimestamp)
+
+  // Strip-down: Breite/Höhe/Gewicht/Länge + Gültigkeit/Zeitfenster stecken bei der Autobahn-API NUR
+  // im Beschreibungstext ("Maximale Durchfahrtsbreite: 10.75 m", "15.06.26 von 07:00 bis 19:00 Uhr").
+  const ex = extractStammdaten(beschreibung)
+  const attrs = {}
+  for (const k of ["restbreiteM", "maxHoeheM", "maxGewichtT", "sperrlaengeM"]) {
+    if (ex[k] != null) attrs[k] = ex[k]
+  }
+  if (ex.zeitfenster) attrs.zeitfenster = ex.zeitfenster
+  const gueltigVon = start ?? ex.gueltigVon ?? null
+  const gueltigBis = ende ?? ex.gueltigBis ?? null
+  const realerStart = start ?? ex.gueltigVon ?? null
+  const extrahiert = Object.keys(attrs).length > 0 || (!start && ex.gueltigVon) || (!ende && ex.gueltigBis)
+
   return {
     externeId: rw.identifier,
     kategorie: "baustelle",
     name: typeof rw.title === "string" && rw.title.trim() ? rw.title.trim() : `Baustelle ${road}`,
-    beschreibung,
+    beschreibung: extrahiert && beschreibung
+      ? `${beschreibung}\n· Angaben aus Meldungstext extrahiert`
+      : beschreibung,
     lat,
     lng,
     strassenRef: road,
-    attrs: {},
-    ...(start && { gueltigVon: start, realerStart: start }),
+    attrs,
+    ...(gueltigVon && { gueltigVon, realerStart }),
+    ...(gueltigBis && { gueltigBis }),
     quelle: {
       name: `Autobahn-API · ${road} Roadworks`,
       url,

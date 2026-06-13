@@ -138,17 +138,32 @@ export function makeNormalized({
   const cleanAttrs = Object.fromEntries(
     Object.entries(attrs || {}).filter(([, v]) => v != null && (typeof v === "number" || typeof v === "boolean")),
   )
+
+  // Strip-down: fehlende Grenzwerte/Zeiträume aus dem Freitext (Name + Beschreibung) nachziehen.
+  // Nur Lücken füllen — vom Connector explizit gesetzte Werte bleiben unangetastet.
+  const ex = extractStammdaten([name, beschreibung].filter(Boolean).join(" · "))
+  let extrahiert = false
+  for (const k of ["restbreiteM", "maxHoeheM", "maxGewichtT", "sperrlaengeM"]) {
+    if (ex[k] != null && cleanAttrs[k] == null) { cleanAttrs[k] = ex[k]; extrahiert = true }
+  }
+  if (ex.zeitfenster && cleanAttrs.zeitfenster == null) { cleanAttrs.zeitfenster = ex.zeitfenster; extrahiert = true }
+  let vonFinal = gueltigVon, bisFinal = gueltigBis
+  if (vonFinal == null && ex.gueltigVon) { vonFinal = ex.gueltigVon; extrahiert = true }
+  if (bisFinal == null && ex.gueltigBis) { bisFinal = ex.gueltigBis; extrahiert = true }
+
+  const besch = beschreibung != null ? String(beschreibung) : null
   return {
     externeId: externeId != null ? String(externeId) : null,
     kategorie,
     name: name != null ? String(name).slice(0, 240) : null,
-    beschreibung: beschreibung != null ? String(beschreibung) : null,
+    // Hinweis anhängen, dass strukturierte Angaben aus dem Text generiert wurden (kein Live-Wert).
+    beschreibung: extrahiert ? `${besch ? besch + " " : ""}· Angaben aus Meldungstext extrahiert` : besch,
     lat: nlat,
     lng: nlng,
     strassenRef: strassenRef != null ? String(strassenRef) : null,
     attrs: cleanAttrs,
-    gueltigVon: dateOnly(gueltigVon),
-    gueltigBis: dateOnly(gueltigBis),
+    gueltigVon: dateOnly(vonFinal),
+    gueltigBis: dateOnly(bisFinal),
     realerStart: dateOnly(realerStart),
     quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: new Date().toISOString() },
   }

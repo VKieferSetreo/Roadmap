@@ -51,6 +51,8 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   steigungPct: { label: "Steigung", unit: "%" },
   radiusM: { label: "Außenradius", unit: "m" },
   maxLaengeM: { label: "Max. Länge", unit: "m" },
+  sperrlaengeM: { label: "Länge der Maßnahme", unit: "m" },
+  zeitfenster: { label: "Zeitfenster" },
   vollsperrung: { label: "Vollsperrung" },
   anmeldungErforderlich: { label: "Anmeldung erforderlich" },
 }
