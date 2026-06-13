@@ -38,7 +38,9 @@ describe("runImport (Mock-Connector)", () => {
     const run = await runImport({ db, connector: mockConnector([ITEM_A, ITEM_B]), log: quiet })
 
     expect(run.status).toBe("ok")
-    expect(run.stats).toEqual({ gefunden: 2, neu: 2, aktualisiert: 0, uebersprungen: 0 })
+    expect(run.stats).toEqual({
+      gefunden: 2, neu: 2, aktualisiert: 0, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0,
+    })
     expect(run.finished_at).toBeTruthy()
 
     expect(db.state.obstacles).toHaveLength(2)
@@ -61,7 +63,9 @@ describe("runImport (Mock-Connector)", () => {
     const changed = { ...ITEM_A, name: "Baustelle A2 (verlängert)", lat: 52.31, gueltigBis: "2026-09-30" }
     const run = await runImport({ db, connector: mockConnector([changed, ITEM_B]), log: quiet })
 
-    expect(run.stats).toEqual({ gefunden: 2, neu: 1, aktualisiert: 1, uebersprungen: 0 })
+    expect(run.stats).toEqual({
+      gefunden: 2, neu: 1, aktualisiert: 1, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0,
+    })
     expect(db.state.obstacles).toHaveLength(2)
     const updated = db.state.obstacles.find((o) => o.externe_id === "ext-a")
     expect(updated.name).toBe("Baustelle A2 (verlängert)")
@@ -94,7 +98,9 @@ describe("runImport (Mock-Connector)", () => {
       ]),
       log: quiet,
     })
-    expect(run.stats).toEqual({ gefunden: 4, neu: 1, aktualisiert: 0, uebersprungen: 3 })
+    expect(run.stats).toEqual({
+      gefunden: 4, neu: 1, aktualisiert: 0, uebersprungen: 3, deaktiviert: 0, reaktiviert: 0,
+    })
     expect(run.log).toContain("externeId fehlt")
     expect(run.log).toContain("ungültige kategorie")
     expect(db.state.obstacles).toHaveLength(1)
@@ -109,7 +115,9 @@ describe("runImport (Mock-Connector)", () => {
     const run = await runImport({ db, connector: broken, log: quiet })
     expect(run.status).toBe("error")
     expect(run.log).toContain("API down")
-    expect(run.stats).toEqual({ gefunden: 0, neu: 0, aktualisiert: 0, uebersprungen: 0 })
+    expect(run.stats).toEqual({
+      gefunden: 0, neu: 0, aktualisiert: 0, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0,
+    })
     expect(db.state.obstacles).toHaveLength(0)
     // auch Fehl-Runs aktualisieren letzter_abruf (Quelle wurde kontaktiert)
     expect(db.state.quellen.find((q) => q.id === "0009").letzter_abruf).toBeTruthy()

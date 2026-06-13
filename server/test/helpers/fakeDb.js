@@ -31,6 +31,7 @@ export function createFakeDb() {
       id, name, typ, endpoint_url: null, abruf_intervall, letzter_abruf: null, aktiv: true,
     })),
     importRuns: [],
+    notifications: [],
     geocodeCache: new Map(),
     routeCache: new Map(),
   }
@@ -208,6 +209,10 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT * FROM projects WHERE id = $1")) {
       return ok(state.projects.filter((p) => p.id === params[0]))
     }
+    // Auto-Rerun: alle ausgewerteten, nicht-archivierten Projekte
+    if (sql.startsWith("SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'")) {
+      return ok(state.projects.filter((p) => p.archived_at == null && p.status === "fertig"))
+    }
     if (sql.startsWith("UPDATE projects SET name = $2,")) {
       const row = state.projects.find((p) => p.id === params[0])
       if (!row) return ok([])
@@ -256,6 +261,18 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT * FROM findings WHERE project_id = $1")) {
       return ok(
         state.findings.filter((f) => f.project_id === params[0]).sort((a, b) => a.km - b.km),
+      )
+    }
+    // Auto-Rerun-Diff: schlanke Fund-Projektion
+    if (sql.startsWith("SELECT obstacle_id, severity, titel, kategorie, km, route_name")) {
+      return ok(
+        state.findings
+          .filter((f) => f.project_id === params[0])
+          .map((f) => ({
+            obstacle_id: f.obstacle_id, severity: f.severity, titel: f.titel,
+            kategorie: f.kategorie, km: f.km, route_name: f.route_name,
+            strassen_ref: f.strassen_ref, gueltig_von: f.gueltig_von, gueltig_bis: f.gueltig_bis,
+          })),
       )
     }
     if (sql.startsWith("SELECT f.*, p.name AS projekt_name FROM findings f")) {
@@ -437,6 +454,43 @@ export function createFakeDb() {
       state.obstacles = state.obstacles.filter((o) => o.id !== params[0])
       return ok([], before - state.obstacles.length)
     }
+    // Vollbestand-Reconcile: Wiederkehrer reaktivieren
+    if (sql.startsWith("UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = $1")) {
+      const row = state.obstacles.find((o) => o.id === params[0])
+      if (!row) return ok([], 0)
+      row.aktiv = true
+      row.updated_at = now()
+      return ok([row], 1)
+    }
+    // Vollbestand-Reconcile: im Feed Fehlende deaktivieren
+    if (sql.startsWith("UPDATE obstacles SET aktiv = false, updated_at = now() WHERE quellen_id")) {
+      const [quellenId, seen] = params
+      const matched = state.obstacles.filter(
+        (o) => o.quellen_id === quellenId && o.aktiv === true &&
+          o.externe_id != null && !seen.includes(o.externe_id),
+      )
+      for (const o of matched) {
+        o.aktiv = false
+        o.updated_at = now()
+      }
+      return ok([], matched.length)
+    }
+    // Hygiene: abgelaufene (gueltig_bis + Karenz) deaktivieren
+    if (sql.startsWith("UPDATE obstacles SET aktiv = false, updated_at = now() WHERE aktiv = true")) {
+      const graceDays = Number(params[0] ?? 7)
+      const cutoff = new Date(Date.now() - graceDays * 86_400_000).toISOString().slice(0, 10)
+      const matched = state.obstacles.filter(
+        (o) => o.aktiv && o.gueltig_bis != null && String(o.gueltig_bis).slice(0, 10) < cutoff,
+      )
+      for (const o of matched) {
+        o.aktiv = false
+        o.updated_at = now()
+      }
+      return ok(matched.map((o) => ({
+        id: o.id, tenant_id: o.tenant_id, quellen_id: o.quellen_id,
+        name: o.name, gueltig_bis: o.gueltig_bis,
+      })))
+    }
 
     // ── quellen / import_runs (v3) ────────────────────────────────────────────
     if (sql.startsWith("SELECT * FROM quellen ORDER BY id ASC")) {
@@ -479,6 +533,46 @@ export function createFakeDb() {
       return ok(
         [...state.importRuns].sort((a, b) => (a.started_at < b.started_at ? 1 : -1)).slice(0, 50),
       )
+    }
+
+    // ── notifications (v3.1: Nachrichtenzentrum/Glocke) ───────────────────────
+    if (sql.startsWith("INSERT INTO notifications")) {
+      const row = {
+        id: randomUUID(),
+        tenant_id: params[0], project_id: params[1], projekt_name: params[2],
+        typ: params[3], severity: params[4], obstacle_id: params[5], kategorie: params[6],
+        titel: params[7], beschreibung: params[8], km: params[9], route_name: params[10],
+        strassen_ref: params[11], gueltig_von: params[12], gueltig_bis: params[13],
+        created_at: now(), read_at: null, emailed_at: null,
+      }
+      state.notifications.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("SELECT * FROM notifications WHERE tenant_id = $1 ORDER BY created_at DESC")) {
+      return ok(
+        state.notifications
+          .filter((n) => n.tenant_id === params[0])
+          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+          .slice(0, 100),
+      )
+    }
+    if (sql.startsWith("SELECT count(*)::int AS n FROM notifications WHERE tenant_id = $1 AND read_at IS NULL")) {
+      return ok([{
+        n: state.notifications.filter((n) => n.tenant_id === params[0] && n.read_at == null).length,
+      }])
+    }
+    if (sql.startsWith("UPDATE notifications SET read_at = now() WHERE id = $1 AND tenant_id = $2")) {
+      const row = state.notifications.find(
+        (n) => n.id === params[0] && n.tenant_id === params[1] && n.read_at == null,
+      )
+      if (!row) return ok([], 0)
+      row.read_at = now()
+      return ok([], 1)
+    }
+    if (sql.startsWith("UPDATE notifications SET read_at = now() WHERE tenant_id = $1 AND read_at IS NULL")) {
+      const rows = state.notifications.filter((n) => n.tenant_id === params[0] && n.read_at == null)
+      for (const n of rows) n.read_at = now()
+      return ok([], rows.length)
     }
 
     // ── caches ────────────────────────────────────────────────────────────────

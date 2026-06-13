@@ -29,3 +29,18 @@ export function toIsoDate(v) {
 export const isPlainObject = (v) => v != null && typeof v === "object" && !Array.isArray(v)
 
 export const isFiniteNumber = (v) => typeof v === "number" && Number.isFinite(v)
+
+/**
+ * Schutz gegen unbegrenzt hängende Hintergrund-Operationen (z.B. ein hängendes
+ * rerunAffectedProjects, das sonst den Worker-Rerun-Lock oder den Sync-Job ewig
+ * blockieren würde). Verliert das Race der Timeout → Reject; der Aufrufer gibt
+ * den Lock im finally frei. Die Original-Promise läuft im Hintergrund weiter,
+ * aber das System ist nicht mehr verklemmt.
+ */
+export function withTimeout(promise, ms, label = "Operation") {
+  let timer
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label}: Timeout nach ${ms} ms`)), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}

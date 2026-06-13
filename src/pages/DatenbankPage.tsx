@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/Input"
 import { Select } from "@/components/ui/Select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { SyncBar } from "@/components/db/SyncBar"
 import { FindingMapDialog } from "@/components/map/FindingMapDialog"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { useProjectStore } from "@/store/projects"
@@ -39,6 +40,8 @@ export function DatenbankPage() {
         width="wide"
       >
         <div className="flex flex-col gap-4">
+          {mode === "live" ? <SyncBar /> : null}
+
           <Tabs value={tab} onValueChange={(v) => setTab(v as DbTab)}>
             <TabsList>
               <TabsTrigger value="funde">

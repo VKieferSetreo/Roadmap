@@ -97,6 +97,28 @@ export function rowToImportRun(row) {
   }
 }
 
+/** Benachrichtigung (Nachrichtenzentrum/Glocke) — DB-Row → API. */
+export function rowToNotification(row) {
+  return {
+    id: row.id,
+    projektId: row.project_id ?? null,
+    projektName: row.projekt_name ?? null,
+    typ: row.typ,
+    severity: row.severity ?? null,
+    obstacleId: row.obstacle_id ?? null,
+    kategorie: row.kategorie ?? null,
+    titel: row.titel ?? "",
+    beschreibung: row.beschreibung ?? null,
+    km: row.km != null ? Number(row.km) : null,
+    routeName: row.route_name ?? null,
+    strassenRef: row.strassen_ref ?? null,
+    gueltigVon: toIsoDate(row.gueltig_von) ?? null,
+    gueltigBis: toIsoDate(row.gueltig_bis) ?? null,
+    createdAt: toIso(row.created_at),
+    readAt: toIso(row.read_at) ?? null,
+  }
+}
+
 /**
  * Gestrippte Public-Share-Sicht: KEINE Stammdaten (transport/zeitraum), KEINE
  * Admin-Felder (status, tenantId, share, createdAt). Nur Karte + Auswertung.

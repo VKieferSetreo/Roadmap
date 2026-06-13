@@ -3,6 +3,7 @@
 
 import axiosClient from "./client"
 import type {
+  AppNotification,
   AppStats,
   Finding,
   FindingKategorie,
@@ -12,6 +13,8 @@ import type {
   Project,
   ProjectRoute,
   ShareInfo,
+  SyncJob,
+  SyncStatus,
   Tenant,
   TransportData,
   TransportZeitraum,
@@ -121,6 +124,33 @@ export const api = {
     axiosClient<Obstacle>({ url: "/obstacles", method: "POST", data: payload }),
 
   stats: () => axiosClient<AppStats>({ url: "/stats", method: "GET" }),
+
+  // ── Sync ("Alle Quellen aktualisieren") ────────────────────────────────────
+  sync: {
+    /** Status der Quellen + zuletzt aktualisiert (DB-Tab-Kopf). */
+    status: () => axiosClient<SyncStatus>({ url: "/sync/status", method: "GET" }),
+    /** Sync starten (oder laufenden Job zurückbekommen). */
+    start: () => axiosClient<SyncJob>({ url: "/sync", method: "POST" }),
+    /** Fortschritt pollen. */
+    job: (id: string) => axiosClient<SyncJob>({ url: `/sync/${id}`, method: "GET" }),
+  },
+
+  // ── Nachrichtenzentrum / Glocke ────────────────────────────────────────────
+  notifications: {
+    list: () =>
+      axiosClient<{ notifications: AppNotification[]; unreadCount: number }>({
+        url: "/notifications",
+        method: "GET",
+      }),
+    unreadCount: () =>
+      axiosClient<{ count: number }>({ url: "/notifications/unread-count", method: "GET" }).then(
+        (r) => r.count,
+      ),
+    read: (id: string) =>
+      axiosClient<{ updated: number }>({ url: `/notifications/${id}/read`, method: "POST" }),
+    readAll: () =>
+      axiosClient<{ updated: number }>({ url: "/notifications/read-all", method: "POST" }),
+  },
 }
 
 export type { FindingSeverity }

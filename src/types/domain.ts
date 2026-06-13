@@ -193,6 +193,83 @@ export interface AppStats {
   letzteAnalyse?: string
 }
 
+// ── Nachrichtenzentrum / Glocke ───────────────────────────────────────────────
+
+export type NotificationTyp = "neu" | "weggefallen" | "geaendert"
+export type NotificationSeverity = FindingSeverity | "info"
+
+/** Eine Benachrichtigung aus dem automatischen Re-Auswerten (GET /api/notifications). */
+export interface AppNotification {
+  id: string
+  projektId?: string | null
+  projektName?: string | null
+  typ: NotificationTyp
+  severity?: NotificationSeverity | null
+  obstacleId?: string | null
+  kategorie?: FindingKategorie | null
+  titel: string
+  beschreibung?: string | null
+  km?: number | null
+  routeName?: string | null
+  strassenRef?: string | null
+  gueltigVon?: string | null
+  gueltigBis?: string | null
+  createdAt: string
+  readAt?: string | null
+}
+
+// ── Sync („Alle Quellen aktualisieren") ───────────────────────────────────────
+
+/** Quellen-Status für die DB-Tab-Kopfzeile (GET /api/sync/status). */
+export interface SyncSourceStatus {
+  id: string
+  name: string
+  typ?: string | null
+  abrufIntervall?: string | null
+  letzterAbruf?: string | null
+  aktiv: boolean
+  /** Ist ein lauffähiger Connector registriert (nicht nur im Register gelistet)? */
+  connector: boolean
+  /** Liefert der Connector den vollen Bestand (Reconcile aktiv)? */
+  vollbestand: boolean
+}
+
+export interface SyncStatus {
+  quellen: SyncSourceStatus[]
+  connectorAnzahl: number
+  zuletztAktualisiert: string | null
+  /** Läuft gerade ein Sync? Dann dessen Job-ID (zum Anhängen an den Fortschritt). */
+  activeJobId: string | null
+}
+
+export interface SyncImportRun {
+  quelleId: string
+  status: "ok" | "error" | string
+  stats?: Record<string, number>
+  error?: string
+}
+
+/** Fortschritt eines Sync-Laufs (POST /api/sync, GET /api/sync/:id). */
+export interface SyncJob {
+  id: string
+  status: "running" | "done" | "error"
+  phase: "import" | "hygiene" | "rerun"
+  total: number
+  done: number
+  current: { quelleId?: string; name: string } | null
+  deaktiviertAbgelaufen: number
+  rerun: {
+    geprueft: number
+    neuAusgewertet: number
+    mitAenderung: number
+    benachrichtigungen: number
+  } | null
+  runs: SyncImportRun[]
+  startedAt: string
+  finishedAt: string | null
+  error: string | null
+}
+
 /** Default-Stammdaten für ein frisch angelegtes Projekt (typischer Schwertransport). */
 export const DEFAULT_TRANSPORT: TransportData = {
   laenge: 24.5,

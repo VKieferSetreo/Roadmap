@@ -5,10 +5,12 @@
 import { Building2, LogOut, Menu } from "lucide-react"
 import { toast } from "sonner"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { useSettingsStore } from "@/store/settings"
 import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
+import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
 import { handleLogout, initialsFromEmail } from "@/lib/auth"
 
@@ -20,6 +22,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const tenants = useContextStore((s) => s.tenants)
   const switchTenant = useContextStore((s) => s.switchTenant)
   const loadProjects = useProjectStore((s) => s.loadProjects)
+  const mode = useDataSourceStore((s) => s.mode)
+  // Glocke nur live + mit Mandant (Nachrichten sind mandantenbezogen)
+  const showBell = mode === "live" && (isAdmin || Boolean(tenant))
   // Echte Anmelde-Identität (SSO vom Hub) hat Vorrang vor dem lokalen Platzhalter.
   const email = identity?.email ?? profile.email
   const init = initialsFromEmail(email)
@@ -73,6 +78,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
           </select>
         </div>
       ) : null}
+
+      {/* Glocke / Nachrichtenzentrum */}
+      {showBell ? <NotificationBell /> : null}
 
       {/* Profil-Menü: Avatar klicken → E-Mail + Abmelden */}
       <DropdownMenu

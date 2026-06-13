@@ -56,6 +56,8 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
   const [attrs, setAttrs] = useState<Record<string, number>>({})
   const [realerStart, setRealerStart] = useState("")
   const [gueltigBis, setGueltigBis] = useState("")
+  // Pflicht-Entscheidung: befristet (mit Enddatum) ODER offen (dauerhaft).
+  const [befristet, setBefristet] = useState(true)
   const [busy, setBusy] = useState(false)
 
   // Bei jedem Öffnen frisch starten (heutiges Datum als realer Start)
@@ -67,6 +69,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
     setAttrs({})
     setRealerStart(new Date().toISOString().slice(0, 10))
     setGueltigBis("")
+    setBefristet(true)
   }, [position])
 
   if (!position) return null
@@ -76,6 +79,10 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
   const submit = async () => {
     if (name.trim().length < 3) {
       toast.error("Bitte eine Bezeichnung angeben (min. 3 Zeichen).")
+      return
+    }
+    if (befristet && !gueltigBis) {
+      toast.error("Bitte ein Enddatum angeben oder „Offen“ wählen.")
       return
     }
     setBusy(true)
@@ -89,7 +96,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         attrs,
         realerStart: realerStart || undefined,
         gueltigVon: realerStart || undefined,
-        gueltigBis: gueltigBis || undefined,
+        gueltigBis: befristet ? gueltigBis : undefined,
       })
       onClose()
       onCreated()
@@ -190,7 +197,33 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
             />
           </div>
           <div>
-            <Label htmlFor="ob-bis">Gültig bis (leer = unbefristet)</Label>
+            <Label>Gültigkeit</Label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {[
+                { v: true, label: "Befristet" },
+                { v: false, label: "Offen" },
+              ].map((opt) => (
+                <button
+                  key={String(opt.v)}
+                  type="button"
+                  onClick={() => setBefristet(opt.v)}
+                  className={
+                    "h-9 rounded-md border text-sm font-medium transition-colors " +
+                    (befristet === opt.v
+                      ? "border-primary-300 bg-primary-50 text-primary-700"
+                      : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50")
+                  }
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {befristet ? (
+          <div>
+            <Label htmlFor="ob-bis">Gültig bis</Label>
             <Input
               id="ob-bis"
               type="date"
@@ -198,8 +231,16 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
               min={realerStart || undefined}
               onChange={(e) => setGueltigBis(e.target.value)}
             />
+            <p className="mt-1 text-[11px] text-neutral-400">
+              Wird 7 Tage nach Ablauf automatisch aus der Datenbank entfernt.
+            </p>
           </div>
-        </div>
+        ) : (
+          <p className="rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-500">
+            <span className="font-medium text-neutral-600">Offen</span> — bleibt dauerhaft in der
+            Datenbank, bis der Eintrag manuell entfernt wird.
+          </p>
+        )}
 
         <div>
           <Label htmlFor="ob-desc">Beschreibung (optional)</Label>

@@ -52,6 +52,9 @@ export const autobahnConnector = {
   quelleId: "0001",
   name: "Autobahn-API (verkehr.autobahn.de)",
   schedule: "0 4 * * *",
+  // Die Roadworks-API liefert je Road den vollen aktuellen Baustellen-Bestand →
+  // Reconcile erlaubt: fällt eine Baustelle aus dem Feed, wird sie deaktiviert.
+  vollbestand: true,
 
   /** ctx: { fetchImpl, env, timeoutMs, log } → { obstacles: NormalizedObstacle[] } */
   async fetch({ fetchImpl = globalThis.fetch, env = {}, timeoutMs = 4000, log = () => {} } = {}) {

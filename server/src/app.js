@@ -22,10 +22,12 @@ import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
+import { notificationsRouter } from "./routes/notifications.js"
 import { obstaclesRouter } from "./routes/obstacles.js"
 import { projectsRouter } from "./routes/projects.js"
 import { shareRouter } from "./routes/share.js"
 import { statsRouter } from "./routes/stats.js"
+import { syncRouter } from "./routes/sync.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -92,8 +94,11 @@ export function createApp({
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))
   app.use("/api/stats", requireTenant, statsRouter({ db }))
+  app.use("/api/notifications", requireTenant, notificationsRouter({ db }))
   app.use("/api/obstacles", obstaclesRouter({ db }))
   app.use("/api/geocode", geoRouter({ db, nominatim }))
+  // Sync ("alle Quellen aktualisieren") — jeder eingeloggte Nutzer, kein Tenant-Zwang
+  app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env }))
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Nicht gefunden" }))
 
