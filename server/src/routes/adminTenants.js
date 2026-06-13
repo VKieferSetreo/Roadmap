@@ -1,6 +1,7 @@
 // Mandanten-Verwaltung — ausschließlich Setreo-Admin (Rolle "admin").
 // Slug serverseitig hart validiert (Regex + Reserved-Liste), E-Mail gehört
 // immer genau EINEM Tenant (UNIQUE auf tenant_members.email → 409 mit Hinweis).
+// Kunden-Accounts werden gegen setreo-auth-extern provisioniert (PUT /internal/users).
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
@@ -8,8 +9,9 @@ import { getTenantById, listTenants, rowToTenant, slugError } from "../tenants.j
 import { ApiError, asyncHandler, isUuid } from "../util.js"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const MIN_PASSWORD_LEN = 10
 
-export function adminTenantsRouter({ db }) {
+export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExtern = null }) {
   const r = Router()
   r.use(requireRole("admin"))
 
@@ -85,6 +87,65 @@ export function adminTenantsRouter({ db }) {
       }
     })
     res.json(rowToTenant(tenant, emails, await projectCount(db, tenant.id)))
+  }))
+
+  /** Kunden-Nutzer anlegen: Konto in setreo-auth-extern provisionieren (Upsert,
+   *  setzt bei Bestand das Passwort neu) + Mitgliedschaft im Mandanten eintragen. */
+  r.post("/:id/users", asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const tenant = await getTenantById(db, req.params.id)
+    if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
+    if (!authExtern?.url || !authExtern?.secret) {
+      throw new ApiError(503, "Externer Auth-Service nicht konfiguriert")
+    }
+
+    const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : ""
+    const password = typeof req.body?.password === "string" ? req.body.password : ""
+    if (!EMAIL_RE.test(email)) throw new ApiError(400, `ungültige E-Mail: ${email || "(leer)"}`)
+    if (password.length < MIN_PASSWORD_LEN) {
+      throw new ApiError(400, `Passwort muss mindestens ${MIN_PASSWORD_LEN} Zeichen haben`)
+    }
+
+    // Ein Nutzer gehört genau einem Tenant — Fremd-Zuordnung blocken BEVOR provisioniert wird
+    const conflict = await db.query(
+      "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id <> $2",
+      [email, tenant.id],
+    )
+    if (conflict.rows.length) {
+      throw new ApiError(409, `${email} ist bereits einem anderen Mandanten zugeordnet`)
+    }
+
+    let resp
+    try {
+      resp = await fetchImpl(`${authExtern.url}/internal/users`, {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          "x-provision-secret": authExtern.secret,
+        },
+        body: JSON.stringify({ email, password }),
+      })
+    } catch {
+      throw new ApiError(502, "Auth-Service (extern) nicht erreichbar")
+    }
+    if (resp.status === 422) {
+      throw new ApiError(400, "Passwort vom Auth-Service abgelehnt (Mindestlänge)")
+    }
+    if (!resp.ok) throw new ApiError(502, `Auth-Service-Fehler (${resp.status})`)
+    const created = resp.status === 201
+
+    const already = await db.query(
+      "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2",
+      [email, tenant.id],
+    )
+    if (!already.rows.length) {
+      await db.query("INSERT INTO tenant_members (tenant_id, email) VALUES ($1, $2)", [tenant.id, email])
+    }
+    res.status(created ? 201 : 200).json({
+      email,
+      created,
+      tenant: rowToTenant(tenant, await memberEmails(db, tenant.id), await projectCount(db, tenant.id)),
+    })
   }))
 
   return r

@@ -1,11 +1,23 @@
 // Mandanten-Verwaltung (nur Setreo-Admin): Mandanten anlegen/umbenennen/löschen +
-// Mitglieder (E-Mail-Zuordnung) pflegen. Accounts selbst werden im Hub (setreo-auth)
-// angelegt — hier passiert die Zuordnung E-Mail → Mandant.
+// Mitglieder (E-Mail-Zuordnung) pflegen. Zwei Konto-Wege:
+//   intern  — Hub-Konto (setreo-auth) im Hub anlegen, hier nur E-Mail zuordnen
+//   extern  — Kunden-Zugang (setreo-auth-extern) direkt hier anlegen,
+//             Login über app.setreo-cloud.com
 
 import { useState } from "react"
 import { Navigate } from "react-router-dom"
 import { toast } from "sonner"
-import { Building2, Check, FolderKanban, Pencil, Plus, Trash2, Users, X } from "lucide-react"
+import {
+  Building2,
+  Check,
+  FolderKanban,
+  KeyRound,
+  Pencil,
+  Plus,
+  Trash2,
+  Users,
+  X,
+} from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
@@ -299,11 +311,87 @@ function TenantCard({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
             </div>
           </div>
           <p className="mt-2 text-[11px] text-neutral-400">
-            Login-Konten werden im Hub (Nutzerverwaltung) angelegt — hier nur die Zuordnung zum
-            Mandanten.
+            Interne Konten (Hub) werden in der Hub-Nutzerverwaltung angelegt — hier nur die
+            Zuordnung zum Mandanten.
           </p>
         </div>
+
+        {/* Kunden-Zugang (setreo-auth-extern) */}
+        <ExternalAccessForm tenant={tenant} onChanged={onChanged} />
       </CardContent>
     </Card>
+  )
+}
+
+/** Externer Kunden-Zugang: legt das Konto in setreo-auth-extern an (Upsert =
+ *  Passwort-Reset bei Bestand) und trägt die E-Mail als Mitglied ein. */
+function ExternalAccessForm({ tenant, onChanged }: { tenant: Tenant; onChanged: () => void }) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [busy, setBusy] = useState(false)
+
+  const create = async () => {
+    const mail = email.trim().toLowerCase()
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) {
+      toast.error("Bitte eine gültige E-Mail-Adresse angeben.")
+      return
+    }
+    if (password.length < 10) {
+      toast.error("Passwort: mindestens 10 Zeichen.")
+      return
+    }
+    setBusy(true)
+    try {
+      const res = await api.createTenantUser(tenant.id, mail, password)
+      onChanged()
+      setEmail("")
+      setPassword("")
+      toast.success(
+        res.created
+          ? `Zugang für ${mail} angelegt — Login: app.setreo-cloud.com`
+          : `Passwort für ${mail} neu gesetzt.`,
+      )
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Zugang konnte nicht angelegt werden.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="border-t border-neutral-100 pt-3">
+      <p className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-neutral-400">
+        <KeyRound className="h-3.5 w-3.5" /> Kunden-Zugang (app.setreo-cloud.com)
+      </p>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Input
+          type="email"
+          autoComplete="off"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="nutzer@kunde.de"
+          className="h-7 w-52 text-xs"
+          aria-label={`Kunden-Zugang für ${tenant.name}: E-Mail`}
+        />
+        <Input
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") void create()
+          }}
+          placeholder="Passwort (min. 10 Zeichen)"
+          className="h-7 w-52 text-xs"
+          aria-label={`Kunden-Zugang für ${tenant.name}: Passwort`}
+        />
+        <Button size="sm" variant="outline" onClick={() => void create()} disabled={busy}>
+          <Plus className="h-3.5 w-3.5" /> Zugang anlegen
+        </Button>
+      </div>
+      <p className="mt-2 text-[11px] text-neutral-400">
+        Eigenes, getrenntes Login für externe Nutzer — bestehende E-Mail erhält ein neues Passwort.
+      </p>
+    </div>
   )
 }

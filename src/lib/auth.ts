@@ -1,6 +1,7 @@
-// Logout läuft über das setreo-auth-Gateway (GET /auth/logout an der Domain-Root,
+// Logout läuft über das Auth-Gateway (GET /auth/logout an der Domain-Root,
 // NICHT unter /roadmap — absoluter Pfad, am Router/Vite-base vorbei).
-// Lokal (Dev) gibt es kein Gateway → Hinweis statt 404.
+// Funktioniert host-genau auf BEIDEN Einstiegen: setreo-intern.com → setreo-auth,
+// app.setreo-cloud.com → setreo-auth-extern. Lokal (Dev) → Hinweis statt 404.
 
 import { toast } from "sonner"
 

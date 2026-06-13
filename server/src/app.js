@@ -42,6 +42,12 @@ export function createApp({
   shareBaseUrl = process.env.SHARE_BASE_URL ?? "https://setreo-cloud.com",
   sessionSalt = process.env.SESSION_SALT ?? "roadmap-dev-salt",
   shareDir = SHARE_DIR,
+  // setreo-auth-extern (Kunden-Accounts): ohne Konfiguration antwortet
+  // POST /api/admin/tenants/:id/users mit 503 — Rest der API unberührt.
+  authExtern = {
+    url: (process.env.AUTH_EXTERN_URL ?? "").replace(/\/$/, ""),
+    secret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "",
+  },
 } = {}) {
   const nominatim = createNominatim({ fetchImpl, timeoutMs })
 
@@ -81,7 +87,7 @@ export function createApp({
     })
   }))
 
-  app.use("/api/admin/tenants", adminTenantsRouter({ db }))
+  app.use("/api/admin/tenants", adminTenantsRouter({ db, fetchImpl, authExtern }))
   app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))

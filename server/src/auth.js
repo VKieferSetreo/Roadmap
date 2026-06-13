@@ -11,18 +11,29 @@ import { asyncHandler } from "./util.js"
 
 export function authMiddleware({ requireAuth }) {
   return (req, res, next) => {
-    const email = req.get("x-auth-user")
+    // setreo-auth setzt X-Auth-User = User-ID (UUID) und X-Auth-Email = E-Mail.
+    // Fürs tenant_members-Mapping zählt die E-Mail — X-Auth-Email bevorzugen,
+    // Fallback X-Auth-User (Tests/ältere Gateways schicken dort die E-Mail).
+    const userId = req.get("x-auth-user")
+    const email = (req.get("x-auth-email") ?? userId ?? "").trim()
+    // Auth-Quelle, vom Proxy gestempelt: "intern" (setreo-auth/Hub) oder "extern"
+    // (setreo-auth-extern auf app.setreo-cloud.com). Clients können den Header
+    // nicht fälschen — der Proxy strippt eingehende X-Auth-*. Fehlt er → intern.
+    const gateway = (req.get("x-auth-gateway") ?? "intern").trim().toLowerCase()
     if (!email) {
       if (requireAuth) return res.status(401).json({ error: "Nicht angemeldet" })
       // Dev ohne Gateway: anonymer Dev-User mit vollen Rechten
-      req.user = { email: "dev@local", roles: ["admin"] }
+      req.user = { email: "dev@local", roles: ["admin"], gateway: "intern" }
       return next()
     }
-    const roles = (req.get("x-auth-roles") ?? "")
+    let roles = (req.get("x-auth-roles") ?? "")
       .split(",")
       .map((r) => r.trim().toLowerCase())
       .filter(Boolean)
-    req.user = { email, roles }
+    // Externe Identitäten bekommen NIE interne Rollen — egal was im Header steht.
+    // "admin" existiert nur im internen Gateway; extern zählt allein tenant_members.
+    if (gateway === "extern") roles = ["extern"]
+    req.user = { email, roles, gateway }
     next()
   }
 }

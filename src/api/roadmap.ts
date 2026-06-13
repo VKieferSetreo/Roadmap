@@ -96,6 +96,15 @@ export const api = {
   setTenantMembers: (id: string, emails: string[]) =>
     axiosClient<Tenant>({ url: `/admin/tenants/${id}/members`, method: "PUT", data: { emails } }),
 
+  /** Kunden-Zugang anlegen: Konto in setreo-auth-extern + Mitgliedschaft im Mandanten.
+   *  created=false ⇒ Konto existierte, Passwort wurde neu gesetzt. */
+  createTenantUser: (id: string, email: string, password: string) =>
+    axiosClient<{ email: string; created: boolean; tenant: Tenant }>({
+      url: `/admin/tenants/${id}/users`,
+      method: "POST",
+      data: { email, password },
+    }),
+
   // ── Datenbank ──────────────────────────────────────────────────────────────
   searchFindings: (params: { q?: string; kategorie?: string; severity?: string }) =>
     axiosClient<{ findings: DbFinding[] }>({ url: "/findings", method: "GET", params }).then(

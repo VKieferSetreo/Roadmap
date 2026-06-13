@@ -94,6 +94,20 @@ export function createFakeDb() {
       state.shares = state.shares.filter((s) => s.tenant_id !== params[0])
       return ok([], before - state.tenants.length)
     }
+    if (sql.startsWith("SELECT email FROM tenant_members WHERE email = $1 AND tenant_id <> $2")) {
+      return ok(
+        state.members
+          .filter((m) => m.email === params[0] && m.tenant_id !== params[1])
+          .map((m) => ({ email: m.email })),
+      )
+    }
+    if (sql.startsWith("SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2")) {
+      return ok(
+        state.members
+          .filter((m) => m.email === params[0] && m.tenant_id === params[1])
+          .map((m) => ({ email: m.email })),
+      )
+    }
     if (sql.startsWith("SELECT email FROM tenant_members WHERE email = ANY")) {
       const [emails, tenantId] = params
       return ok(
