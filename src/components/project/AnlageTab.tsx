@@ -365,7 +365,7 @@ export function AnlageTab({ project }: { project: Project }) {
         </CardContent>
       </Card>
 
-      {/* ── Aktionsleiste ── */}
+      {/* ── Auswertung-Block (Status + Aktionen) ── */}
       <Card>
         <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {running ? (
@@ -442,14 +442,17 @@ export function AnlageTab({ project }: { project: Project }) {
               </div>
             </>
           )}
-          {/* ── Veröffentlichen — fester Footer derselben Card (kein Layout-Springen) ── */}
-          {project.status === "fertig" && mode === "live" && !running ? (
-            <div className="w-full border-t border-neutral-100 pt-3">
-              <PublishCard project={project} />
-            </div>
-          ) : null}
         </CardContent>
       </Card>
+
+      {/* ── Veröffentlichen — eigener Block (getrennt von der Auswertung) ── */}
+      {project.status === "fertig" && mode === "live" && !running ? (
+        <Card>
+          <CardContent className="p-4">
+            <PublishCard project={project} />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   )
 }
