@@ -1,0 +1,54 @@
+// Connector Quelle 0218: Bonn — Baustellen (stadtplan.bonn.de GeoJSON ?Thema=).
+// Port aus bonn-baustellen-stadtplan.cron.mjs. Tagesaktuelle Baustellen (Thema=14403,
+// GeoJSON Point EPSG:4326), ganzer Datensatz in einem Abruf.
+
+import { makeNormalized, getJson, ersterPunkt, dateOnly } from "./_helpers.js"
+
+const PORTAL = "https://opengeodata-bonn.de/baustellen-tagesaktuell-mit-ortsangabe-bonn/"
+const QUELLE_NAME = "Bonn — Baustellen (stadtplan.bonn.de)"
+const URL = "https://stadtplan.bonn.de/geojson?Thema=14403"
+
+// "Hermann-Wandersleb-Ring (B56)" → "B56"
+function refAusBezeichnung(b) {
+  const m = String(b ?? "").match(/\b([ABLK]\s?\d{1,4})\b/)
+  return m ? m[1].replace(/\s/, "") : null
+}
+
+export const bonnBaustellenConnector = {
+  quelleId: "0218",
+  name: QUELLE_NAME,
+  schedule: "0 8,12,18 * * *",
+  // Tagesaktueller Voll-Datensatz in einem Abruf.
+  vollbestand: true,
+
+  async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
+    const data = await getJson(URL, { timeoutMs, headers: { "user-agent": "Mozilla/5.0 (compatible; roadmap-connector/1.0)" } })
+    const feats = data?.features ?? []
+    const obstacles = []
+    for (const f of feats) {
+      const p = f.properties ?? {}
+      const sperrung = String(p.sperrung ?? "")
+      const vollsperrung = /vollsperrung/i.test(sperrung) || undefined
+      const istSperrung = /sperrung/i.test(sperrung)
+      const [lng, lat] = ersterPunkt(f.geometry)
+      obstacles.push(makeNormalized({
+        externeId: p.baustelle_id ?? f.id,
+        kategorie: istSperrung ? "sperrung" : "baustelle",
+        name: p.bezeichnung ?? p.adresse ?? "Baustelle Bonn",
+        beschreibung: [p.massnahme, p.sperrung, p.adresse].filter(Boolean).join(" — ").trim() || null,
+        lat, lng,
+        strassenRef: refAusBezeichnung(p.bezeichnung),
+        attrs: {
+          vollsperrung,
+        },
+        realerStart: dateOnly(p.von),
+        gueltigVon: dateOnly(p.von),
+        gueltigBis: dateOnly(p.bis),
+        quelleName: QUELLE_NAME,
+        quelleUrl: PORTAL,
+      }))
+    }
+    log(`Bonn: ${feats.length} Features → ${obstacles.length} obstacles`)
+    return { obstacles }
+  },
+}

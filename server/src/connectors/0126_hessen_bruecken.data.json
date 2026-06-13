@@ -1,0 +1,1368 @@
+{
+  "quelle": "Hessen Mobil — für anhörpflichtigen Schwerlastverkehr zusätzlich gesperrte Brücken",
+  "stand": "2026-02-27",
+  "datentyp": "GST-gesperrte Brücken (B/L/K)",
+  "anzahl": 136,
+  "bruecken": [
+    {
+      "bauwerksnummer": "5024519",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF B 83 und DB bei Bebra",
+      "ort": "Bebra",
+      "strasse_oben_uef": "B 27",
+      "strasse_unten_uf": "B 83",
+      "von_nk": "5024027O",
+      "nach_nk": "5024028O"
+    },
+    {
+      "bauwerksnummer": "4825501",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Ulfe bei Wichmannshausen",
+      "ort": "Wichmannshausen",
+      "strasse_oben_uef": "B 27",
+      "strasse_unten_uf": "",
+      "von_nk": "4825032O",
+      "nach_nk": "4825002O"
+    },
+    {
+      "bauwerksnummer": "5617584",
+      "teilbauwerk": "0",
+      "bauwerksname": "Dittenbachdurchlass",
+      "ort": "Wernborn",
+      "strasse_oben_uef": "B 275",
+      "strasse_unten_uf": "",
+      "von_nk": "5617022O",
+      "nach_nk": "5617023O"
+    },
+    {
+      "bauwerksnummer": "5917726",
+      "teilbauwerk": "1",
+      "bauwerksname": "UF K807 + Main + K808 - Mainbrücke Schwanheim-/Überbau FR Schwanheim/Kelsterbach",
+      "ort": "Ffm-Schwanheim",
+      "strasse_oben_uef": "B 40",
+      "strasse_unten_uf": "K 807",
+      "von_nk": "5917072O",
+      "nach_nk": "5917073O"
+    },
+    {
+      "bauwerksnummer": "5917726",
+      "teilbauwerk": "2",
+      "bauwerksname": "UF K807 + Main + K808 - Mainbrücke Schwanheim-/Überbau FR Frankfurt",
+      "ort": "Ffm-Schwanheim",
+      "strasse_oben_uef": "B 40",
+      "strasse_unten_uf": "K 807",
+      "von_nk": "5917072O",
+      "nach_nk": "5917073O"
+    },
+    {
+      "bauwerksnummer": "6013504",
+      "teilbauwerk": "1",
+      "bauwerksname": "UF Gehweg",
+      "ort": "bei Rüdesheim",
+      "strasse_oben_uef": "B 42",
+      "strasse_unten_uf": "Gehweg",
+      "von_nk": "6013011O",
+      "nach_nk": "6013001O"
+    },
+    {
+      "bauwerksnummer": "6013926",
+      "teilbauwerk": "B",
+      "bauwerksname": "UF Engergraben/B42",
+      "ort": "Rüdesheim am Rhein / Rüdesheim",
+      "strasse_oben_uef": "B 42",
+      "strasse_unten_uf": "",
+      "von_nk": "6013011O",
+      "nach_nk": "6013001O"
+    },
+    {
+      "bauwerksnummer": "5021517",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF DB",
+      "ort": "Leimsfeld",
+      "strasse_oben_uef": "B 254",
+      "strasse_unten_uf": "",
+      "von_nk": "5021053O",
+      "nach_nk": "5021012O"
+    },
+    {
+      "bauwerksnummer": "5122504",
+      "teilbauwerk": "1",
+      "bauwerksname": "UF Buchenbach",
+      "ort": "Asterode",
+      "strasse_oben_uef": "B 454",
+      "strasse_unten_uf": "",
+      "von_nk": "5122017O",
+      "nach_nk": "5122018O"
+    },
+    {
+      "bauwerksnummer": "5123505",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Kisselbach in Heddersdorf",
+      "ort": "Heddersdorf",
+      "strasse_oben_uef": "B 454",
+      "strasse_unten_uf": "",
+      "von_nk": "5123013O",
+      "nach_nk": "5123012O"
+    },
+    {
+      "bauwerksnummer": "5122507",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Urbach",
+      "ort": "Neukirchen",
+      "strasse_oben_uef": "B 454",
+      "strasse_unten_uf": "",
+      "von_nk": "5122015O",
+      "nach_nk": "5122014O"
+    },
+    {
+      "bauwerksnummer": "6317630",
+      "teilbauwerk": "0",
+      "bauwerksname": "LAENGSVERDOLUNG STADTBACH",
+      "ort": "Heppenheim",
+      "strasse_oben_uef": "B 460",
+      "strasse_unten_uf": "",
+      "von_nk": "6317063O",
+      "nach_nk": "6318066O"
+    },
+    {
+      "bauwerksnummer": "6317632",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF STADTBACH HEPPENHEIM (B 460)/UF Stadtbach Heppenheim - Ost oben",
+      "ort": "64646 Heppenheim",
+      "strasse_oben_uef": "B 460",
+      "strasse_unten_uf": "",
+      "von_nk": "6317063O",
+      "nach_nk": "6318066O"
+    },
+    {
+      "bauwerksnummer": "6317628",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF STADTBACH/UF Stadtbach Heppenheim - West unten",
+      "ort": "Heppenheim",
+      "strasse_oben_uef": "B 460",
+      "strasse_unten_uf": "",
+      "von_nk": "6317063O",
+      "nach_nk": "6318066O"
+    },
+    {
+      "bauwerksnummer": "5916577",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF L3011 + DB Rheingaubrücke",
+      "ort": "Hofheim",
+      "strasse_oben_uef": "B 519",
+      "strasse_unten_uf": "L 3011",
+      "von_nk": "5916089O",
+      "nach_nk": "5916043O"
+    },
+    {
+      "bauwerksnummer": "6316552",
+      "teilbauwerk": "C",
+      "bauwerksname": "NIBELUNGENBR. WORMS (B 47)/Vorlandbrücke Hessen",
+      "ort": "67547 Worms",
+      "strasse_oben_uef": "B 47",
+      "strasse_unten_uf": "",
+      "von_nk": "6316009",
+      "nach_nk": "6316018"
+    },
+    {
+      "bauwerksnummer": "5416516",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF DB, L 3052 u. Lahn",
+      "ort": "Leun",
+      "strasse_oben_uef": "B 49",
+      "strasse_unten_uf": "L 3052",
+      "von_nk": "5416032O",
+      "nach_nk": "5416036O"
+    },
+    {
+      "bauwerksnummer": "5416564",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF B 277",
+      "ort": "Wetzlar",
+      "strasse_oben_uef": "B 49",
+      "strasse_unten_uf": "B 277",
+      "von_nk": "5416033O",
+      "nach_nk": "5417054O"
+    },
+    {
+      "bauwerksnummer": "5417515",
+      "teilbauwerk": "0",
+      "bauwerksname": "Lahnbrücke am Taubenstein,UF Lahn,L 3020,Stadtstr./UF Lahn, L 3020 u. Stadtstrasse \"Taubenstein\"",
+      "ort": "Wetzlar",
+      "strasse_oben_uef": "B 49",
+      "strasse_unten_uf": "L 3020",
+      "von_nk": "5417054O",
+      "nach_nk": "5417008O"
+    },
+    {
+      "bauwerksnummer": "5417540",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF DB",
+      "ort": "Dorlar",
+      "strasse_oben_uef": "B 49",
+      "strasse_unten_uf": "",
+      "von_nk": "5417006O",
+      "nach_nk": "5417056O"
+    },
+    {
+      "bauwerksnummer": "5415555",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Gemeindestrasse",
+      "ort": "Biskirchen",
+      "strasse_oben_uef": "B 49",
+      "strasse_unten_uf": "Gemeindestr.",
+      "von_nk": "5415040O",
+      "nach_nk": "5415039O"
+    },
+    {
+      "bauwerksnummer": "5417516",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF L 3020",
+      "ort": "Garbenheim",
+      "strasse_oben_uef": "B 49 (Ast)",
+      "strasse_unten_uf": "L 3020",
+      "von_nk": "5417008A",
+      "nach_nk": "5417008B"
+    },
+    {
+      "bauwerksnummer": "5417562",
+      "teilbauwerk": "1+2",
+      "bauwerksname": "UF Lahn,Eselswiese FR Klein-Linden",
+      "ort": "Giessen/West",
+      "strasse_oben_uef": "B 429",
+      "strasse_unten_uf": "",
+      "von_nk": "5417056A",
+      "nach_nk": "5417057O"
+    },
+    {
+      "bauwerksnummer": "5125513",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Ulster bei Philippsthal",
+      "ort": "Philippstal",
+      "strasse_oben_uef": "B 62",
+      "strasse_unten_uf": "",
+      "von_nk": "5125008O",
+      "nach_nk": "5125007O"
+    },
+    {
+      "bauwerksnummer": "5614505",
+      "teilbauwerk": "1",
+      "bauwerksname": "UF Lahn/Ri.FB Limburg nach Elz",
+      "ort": "Limburg",
+      "strasse_oben_uef": "B8",
+      "strasse_unten_uf": "Gemeindestr.",
+      "von_nk": "5614051O",
+      "nach_nk": "5614057O"
+    },
+    {
+      "bauwerksnummer": "5614505",
+      "teilbauwerk": "2",
+      "bauwerksname": "UF Lahn/Ri.FB von Elz nach Limburg",
+      "ort": "Limburg",
+      "strasse_oben_uef": "B8",
+      "strasse_unten_uf": "Gemeindestr.",
+      "von_nk": "5614051O",
+      "nach_nk": "5614057O"
+    },
+    {
+      "bauwerksnummer": "5818616",
+      "teilbauwerk": "B",
+      "bauwerksname": "UF Kilianstädterstraße -Mainkur-/UF B8 und DB",
+      "ort": "Fechenheim",
+      "strasse_oben_uef": "B 8 (Ast)",
+      "strasse_unten_uf": "B8",
+      "von_nk": "5818093B",
+      "nach_nk": "5818093G"
+    },
+    {
+      "bauwerksnummer": "5814509",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Aarbach",
+      "ort": "in Adolfseck",
+      "strasse_oben_uef": "B 54",
+      "strasse_unten_uf": "",
+      "von_nk": "5814046O",
+      "nach_nk": "5814027O"
+    },
+    {
+      "bauwerksnummer": "4822582",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF L 3223",
+      "ort": "Gensungen",
+      "strasse_oben_uef": "L 3220",
+      "strasse_unten_uf": "L 3223",
+      "von_nk": "4822016O",
+      "nach_nk": "4822084O"
+    },
+    {
+      "bauwerksnummer": "5520513",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF ECKARDSBACH in Eichelsachsen/UF ECKARDSBACH",
+      "ort": "Schotten/Eichelsachsen",
+      "strasse_oben_uef": "L 3183",
+      "strasse_unten_uf": "",
+      "von_nk": "5520022O",
+      "nach_nk": "5520023O"
+    },
+    {
+      "bauwerksnummer": "5813507",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Gladbach",
+      "ort": "bei Geroldstein",
+      "strasse_oben_uef": "L 3033",
+      "strasse_unten_uf": "",
+      "von_nk": "5813035O",
+      "nach_nk": "5813041O"
+    },
+    {
+      "bauwerksnummer": "5814524",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Dornbach",
+      "ort": "Bad Schwalbach / Ramschied",
+      "strasse_oben_uef": "L 3033",
+      "strasse_unten_uf": "",
+      "von_nk": "5814015O",
+      "nach_nk": "5814014O"
+    },
+    {
+      "bauwerksnummer": "5317510",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Bieber",
+      "ort": "Fellingshausen",
+      "strasse_oben_uef": "L 3474",
+      "strasse_unten_uf": "",
+      "von_nk": "5317008O",
+      "nach_nk": "5317011O"
+    },
+    {
+      "bauwerksnummer": "5223519",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Aula in Niederaula",
+      "ort": "Niederaula",
+      "strasse_oben_uef": "L 3471",
+      "strasse_unten_uf": "",
+      "von_nk": "5223017O",
+      "nach_nk": "5123006O"
+    },
+    {
+      "bauwerksnummer": "5224511",
+      "teilbauwerk": "0",
+      "bauwerksname": "UEF L 3433",
+      "ort": "Burghaun",
+      "strasse_oben_uef": "L 3433",
+      "strasse_unten_uf": "B27",
+      "von_nk": "5324035O",
+      "nach_nk": "5224019O"
+    },
+    {
+      "bauwerksnummer": "6418741",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF LIEBERSBACH IN BIRKENAU/UF LIEBERSBACH",
+      "ort": "Birkenau",
+      "strasse_oben_uef": "L 3408",
+      "strasse_unten_uf": "",
+      "von_nk": "6418017O",
+      "nach_nk": "6418215O"
+    },
+    {
+      "bauwerksnummer": "4923641",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF K 34 und Lingelbach",
+      "ort": "Rengshausen",
+      "strasse_oben_uef": "L 3465",
+      "strasse_unten_uf": "K 34",
+      "von_nk": "4922016L",
+      "nach_nk": "4923028O"
+    },
+    {
+      "bauwerksnummer": "4921514",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF DB",
+      "ort": "Borken",
+      "strasse_oben_uef": "L 3384",
+      "strasse_unten_uf": "",
+      "von_nk": "4921042O",
+      "nach_nk": "4921029O"
+    },
+    {
+      "bauwerksnummer": "5623542",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF ELMBACH bei Elm/UF ELMBACH",
+      "ort": "Schlüchtern/Elm",
+      "strasse_oben_uef": "L 3329",
+      "strasse_unten_uf": "",
+      "von_nk": "5623030O",
+      "nach_nk": "5623029O"
+    },
+    {
+      "bauwerksnummer": "5714512",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Lahnerbach",
+      "ort": "bei Burg Hohenstein",
+      "strasse_oben_uef": "L 3321",
+      "strasse_unten_uf": "",
+      "von_nk": "5713008O",
+      "nach_nk": "5714024O"
+    },
+    {
+      "bauwerksnummer": "4826536",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Schlierbach (Forsthaus)",
+      "ort": "Oberdünzebach",
+      "strasse_oben_uef": "L 3300",
+      "strasse_unten_uf": "",
+      "von_nk": "4826009O",
+      "nach_nk": "4826020O"
+    },
+    {
+      "bauwerksnummer": "4722570",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF KVG & Zufahrt VW Parkplatz",
+      "ort": "Altenbauna",
+      "strasse_oben_uef": "L 3311",
+      "strasse_unten_uf": "G+R",
+      "von_nk": "4722059C",
+      "nach_nk": "4722064G"
+    },
+    {
+      "bauwerksnummer": "5325524",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Naesse",
+      "ort": "Hofbieber",
+      "strasse_oben_uef": "L 3258",
+      "strasse_unten_uf": "WiWeg",
+      "von_nk": "5425047O",
+      "nach_nk": "5325012O"
+    },
+    {
+      "bauwerksnummer": "5126504",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Werra in Heringen/UF Werra",
+      "ort": "Heringen",
+      "strasse_oben_uef": "L 3255",
+      "strasse_unten_uf": "",
+      "von_nk": "5125014O",
+      "nach_nk": "5126003O"
+    },
+    {
+      "bauwerksnummer": "5126503",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Flutgraben in Heringen/UF Flutgraben",
+      "ort": "Heringen",
+      "strasse_oben_uef": "L 3255",
+      "strasse_unten_uf": "",
+      "von_nk": "5125014O",
+      "nach_nk": "5126003O"
+    },
+    {
+      "bauwerksnummer": "5023506",
+      "teilbauwerk": "0",
+      "bauwerksname": "Flutgraben in Ersrode/UF Flutgraben in Ersrode",
+      "ort": "Ersrode",
+      "strasse_oben_uef": "L 3253",
+      "strasse_unten_uf": "",
+      "von_nk": "5023013O",
+      "nach_nk": "5023009O"
+    },
+    {
+      "bauwerksnummer": "4824540",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF L 3249, DB u. Wehre bei Küchen",
+      "ort": "Küchen",
+      "strasse_oben_uef": "L 3249",
+      "strasse_unten_uf": "L 3249",
+      "von_nk": "4824014O",
+      "nach_nk": "4724027O"
+    },
+    {
+      "bauwerksnummer": "4725519",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Regenwasser-Überlauf in Kammerbach",
+      "ort": "Kammerbach",
+      "strasse_oben_uef": "L 3239",
+      "strasse_unten_uf": "",
+      "von_nk": "4725043O",
+      "nach_nk": "4725036O"
+    },
+    {
+      "bauwerksnummer": "5718523",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF LOHGRABEN bei Rodheim/UF LOHGRABEN",
+      "ort": "Rosbach v.d.Höhe/Rodheim",
+      "strasse_oben_uef": "L 3204",
+      "strasse_unten_uf": "",
+      "von_nk": "5718012O",
+      "nach_nk": "5718005O"
+    },
+    {
+      "bauwerksnummer": "5819516",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF L 3268 bei Rückingen/UF L 3268",
+      "ort": "Erlensee/Rückingen",
+      "strasse_oben_uef": "L 3193 (Ast)",
+      "strasse_unten_uf": "L 3193",
+      "von_nk": "5819050I",
+      "nach_nk": "5819050F"
+    },
+    {
+      "bauwerksnummer": "5819512",
+      "teilbauwerk": "1+2",
+      "bauwerksname": "UF KINZIG bei Wolfgang/UF KINZIG",
+      "ort": "Hanau/Wolfgang",
+      "strasse_oben_uef": "L 3193",
+      "strasse_unten_uf": "",
+      "von_nk": "5819072O",
+      "nach_nk": "5819064O"
+    },
+    {
+      "bauwerksnummer": "5023564",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Gleis in Raboldshausen",
+      "ort": "Raboldshausen",
+      "strasse_oben_uef": "L 3155",
+      "strasse_unten_uf": "",
+      "von_nk": "5022014O",
+      "nach_nk": "5023016O"
+    },
+    {
+      "bauwerksnummer": "4922543",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Schwalm",
+      "ort": "bei Uttershausen",
+      "strasse_oben_uef": "L 3148",
+      "strasse_unten_uf": "",
+      "von_nk": "4922058O",
+      "nach_nk": "4922049O"
+    },
+    {
+      "bauwerksnummer": "5118531",
+      "teilbauwerk": "2",
+      "bauwerksname": "UF DB Marburg/Nord",
+      "ort": "Marburg",
+      "strasse_oben_uef": "L 3089",
+      "strasse_unten_uf": "",
+      "von_nk": "5118016K",
+      "nach_nk": "5118057O"
+    },
+    {
+      "bauwerksnummer": "5119506",
+      "teilbauwerk": "0",
+      "bauwerksname": "Muehlgrabenbruecke bei Rauschenberg",
+      "ort": "Rauschenberg",
+      "strasse_oben_uef": "L 3077",
+      "strasse_unten_uf": "",
+      "von_nk": "5119014O",
+      "nach_nk": "5119043O"
+    },
+    {
+      "bauwerksnummer": "5219514",
+      "teilbauwerk": "0",
+      "bauwerksname": "Ohmbrücke bei Amöneburg",
+      "ort": "Amöneburg",
+      "strasse_oben_uef": "L 3073",
+      "strasse_unten_uf": "",
+      "von_nk": "5219035O",
+      "nach_nk": "5219036O"
+    },
+    {
+      "bauwerksnummer": "5615520",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Ansbach",
+      "ort": "Villmar",
+      "strasse_oben_uef": "L 3063",
+      "strasse_unten_uf": "",
+      "von_nk": "5514066O",
+      "nach_nk": "5615001O"
+    },
+    {
+      "bauwerksnummer": "6013926",
+      "teilbauwerk": "A",
+      "bauwerksname": "UF Engergraben/L3034",
+      "ort": "Rüdesheim am Rhein / Rüdesheim",
+      "strasse_oben_uef": "L 3034",
+      "strasse_unten_uf": "",
+      "von_nk": "6013013O",
+      "nach_nk": "6013002O"
+    },
+    {
+      "bauwerksnummer": "5913512",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Wisper",
+      "ort": "bei Lorch",
+      "strasse_oben_uef": "L 3033",
+      "strasse_unten_uf": "",
+      "von_nk": "5913006O",
+      "nach_nk": "5913007O"
+    },
+    {
+      "bauwerksnummer": "5714514",
+      "teilbauwerk": "0",
+      "bauwerksname": "UFMühlgraben",
+      "ort": "bei Kettenbach",
+      "strasse_oben_uef": "L 3031",
+      "strasse_unten_uf": "",
+      "von_nk": "5714012O",
+      "nach_nk": "5714017O"
+    },
+    {
+      "bauwerksnummer": "5417528",
+      "teilbauwerk": "A+B",
+      "bauwerksname": "UF Lahn u Gemeindestraße",
+      "ort": "Dorlar",
+      "strasse_oben_uef": "L 3020",
+      "strasse_unten_uf": "",
+      "von_nk": "5417004O",
+      "nach_nk": "5417003O"
+    },
+    {
+      "bauwerksnummer": "5416543",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Grundbach",
+      "ort": "Oberbiel",
+      "strasse_oben_uef": "L 3020",
+      "strasse_unten_uf": "",
+      "von_nk": "5416042O",
+      "nach_nk": "5416035O"
+    },
+    {
+      "bauwerksnummer": "5621543",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF BRACHT bei Bösgesäß/UF BRACHT",
+      "ort": "Birstein/Bösgesäß",
+      "strasse_oben_uef": "K 922",
+      "strasse_unten_uf": "",
+      "von_nk": "5621050O",
+      "nach_nk": "5621029O"
+    },
+    {
+      "bauwerksnummer": "5716614",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Niedgesbach",
+      "ort": "Finsterthal",
+      "strasse_oben_uef": "K 750",
+      "strasse_unten_uf": "",
+      "von_nk": "5716006O",
+      "nach_nk": "5616043O"
+    },
+    {
+      "bauwerksnummer": "6118548",
+      "teilbauwerk": "0",
+      "bauwerksname": "UEF K 128",
+      "ort": "bei Gundernhausen",
+      "strasse_oben_uef": "K 128",
+      "strasse_unten_uf": "B 26",
+      "von_nk": "6118050O",
+      "nach_nk": "6118024O"
+    },
+    {
+      "bauwerksnummer": "5616515",
+      "teilbauwerk": "2",
+      "bauwerksname": "UF Sattelbach/i.Z.d. K739 von Gemünden nach Grävenwiesbach",
+      "ort": "Niederlauken",
+      "strasse_oben_uef": "K 739",
+      "strasse_unten_uf": "",
+      "von_nk": "5616018O",
+      "nach_nk": "5616031O"
+    },
+    {
+      "bauwerksnummer": "4625656",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Bach bei Werleshausen",
+      "ort": "Werleshausen",
+      "strasse_oben_uef": "K 67",
+      "strasse_unten_uf": "",
+      "von_nk": "4625062O",
+      "nach_nk": "4625063O"
+    },
+    {
+      "bauwerksnummer": "4625655",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Bach bei Werleshausen",
+      "ort": "Werleshausen",
+      "strasse_oben_uef": "K 67",
+      "strasse_unten_uf": "",
+      "von_nk": "4625062O",
+      "nach_nk": "4625063O"
+    },
+    {
+      "bauwerksnummer": "5914520",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Wallufbach",
+      "ort": "in Niederwalluf",
+      "strasse_oben_uef": "K 638",
+      "strasse_unten_uf": "",
+      "von_nk": "5914033O",
+      "nach_nk": "5915102O"
+    },
+    {
+      "bauwerksnummer": "4623683",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Osterbach",
+      "ort": "in Knickhagen",
+      "strasse_oben_uef": "K 40",
+      "strasse_unten_uf": "",
+      "von_nk": "4623335O",
+      "nach_nk": "4523203O"
+    },
+    {
+      "bauwerksnummer": "5219517",
+      "teilbauwerk": "0",
+      "bauwerksname": "Ohmbruecke bei Schweinsberg",
+      "ort": "Schweinsberg",
+      "strasse_oben_uef": "K 24",
+      "strasse_unten_uf": "",
+      "von_nk": "5219037O",
+      "nach_nk": "5219040C"
+    },
+    {
+      "bauwerksnummer": "5324534",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Flutgraben",
+      "ort": "Nüst",
+      "strasse_oben_uef": "K 12",
+      "strasse_unten_uf": "",
+      "von_nk": "5324012O",
+      "nach_nk": "5324021O"
+    },
+    {
+      "bauwerksnummer": "4918509",
+      "teilbauwerk": "0",
+      "bauwerksname": "UEF Gemeindestraße (Bahnhofstraße)",
+      "ort": "Allendorf (Eder)/Rennerthausen",
+      "strasse_oben_uef": "",
+      "strasse_unten_uf": "",
+      "von_nk": "G",
+      "nach_nk": "B253"
+    },
+    {
+      "bauwerksnummer": "5916506",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF WICKERBACH",
+      "ort": "Wicker",
+      "strasse_oben_uef": "B 40",
+      "strasse_unten_uf": "5916097O",
+      "von_nk": "5916060O",
+      "nach_nk": "7,5"
+    },
+    {
+      "bauwerksnummer": "4625671",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Fußweg in Witzenhausen",
+      "ort": "Witzenhausen",
+      "strasse_oben_uef": "B 451",
+      "strasse_unten_uf": "Geh- und Radweg 4625068O",
+      "von_nk": "4625094A",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "4625630",
+      "teilbauwerk": "A+B+C",
+      "bauwerksname": "UF Werra in Witzenhausen",
+      "ort": "Witzenhausen",
+      "strasse_oben_uef": "B 451",
+      "strasse_unten_uf": "4625068O",
+      "von_nk": "4625094A",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "6317629",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF STADTBACH",
+      "ort": "Heppenheim",
+      "strasse_oben_uef": "B 460",
+      "strasse_unten_uf": "6317063O",
+      "von_nk": "6318066O",
+      "nach_nk": "40 *)"
+    },
+    {
+      "bauwerksnummer": "5124528",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Kreisbahn und Solz bei Malkomes",
+      "ort": "Malkomes",
+      "strasse_oben_uef": "B 62",
+      "strasse_unten_uf": "5124024O",
+      "von_nk": "5125042O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "5515548",
+      "teilbauwerk": "A+B+C",
+      "bauwerksname": "UF Lahn u. DB",
+      "ort": "Gräveneck",
+      "strasse_oben_uef": "L 3452",
+      "strasse_unten_uf": "5515042O",
+      "von_nk": "5515043O",
+      "nach_nk": "9"
+    },
+    {
+      "bauwerksnummer": "5514534",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Emsbach",
+      "ort": "Eschhofen",
+      "strasse_oben_uef": "L 3448",
+      "strasse_unten_uf": "5614020O",
+      "von_nk": "5514046O",
+      "nach_nk": "9"
+    },
+    {
+      "bauwerksnummer": "5514535",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Lahn",
+      "ort": "Dehrn",
+      "strasse_oben_uef": "L 3448",
+      "strasse_unten_uf": "5614020O",
+      "von_nk": "5514046O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5424562",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Haune",
+      "ort": "Margretenhaun",
+      "strasse_oben_uef": "L 3429",
+      "strasse_unten_uf": "5424087O",
+      "von_nk": "5424098O",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "6418741",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF LIEBERSBACH IN BIRKENAU/UF LIEBERSBACH",
+      "ort": "69488 Birkenau",
+      "strasse_oben_uef": "L 3408",
+      "strasse_unten_uf": "6418017O",
+      "von_nk": "6418215O",
+      "nach_nk": "11"
+    },
+    {
+      "bauwerksnummer": "5616513",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Wiesbach",
+      "ort": "Mönstadt",
+      "strasse_oben_uef": "L 3375",
+      "strasse_unten_uf": "5616003O",
+      "von_nk": "5616004O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5714510",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Aarbach",
+      "ort": "in Michelbach",
+      "strasse_oben_uef": "L 3373",
+      "strasse_unten_uf": "5814043A",
+      "von_nk": "5714007O",
+      "nach_nk": "30"
+    },
+    {
+      "bauwerksnummer": "4926508",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF des Nessebach bei Wommen",
+      "ort": "Wommen",
+      "strasse_oben_uef": "L 3251",
+      "strasse_unten_uf": "4926001O",
+      "von_nk": "4926002O",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "4523713",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Mühlbach",
+      "ort": "in Wilhelmshausen",
+      "strasse_oben_uef": "L 3233",
+      "strasse_unten_uf": "4523203O",
+      "von_nk": "24 *)",
+      "nach_nk": "10"
+    },
+    {
+      "bauwerksnummer": "4822523",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Eder",
+      "ort": "in Altenbrunslar",
+      "strasse_oben_uef": "L 3222",
+      "strasse_unten_uf": "4822032O",
+      "von_nk": "4822022O",
+      "nach_nk": "18"
+    },
+    {
+      "bauwerksnummer": "4822524",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Flutgraben",
+      "ort": "in Altenbrunslar",
+      "strasse_oben_uef": "L 3222",
+      "strasse_unten_uf": "4822032O",
+      "von_nk": "4822022O",
+      "nach_nk": "18"
+    },
+    {
+      "bauwerksnummer": "4722552",
+      "teilbauwerk": "0",
+      "bauwerksname": "Längsverdolung des Pilgerbaches i.Z. der L 3221/UF Pilgerbach",
+      "ort": "in Grifte",
+      "strasse_oben_uef": "L 3221",
+      "strasse_unten_uf": "4722008O",
+      "von_nk": "4722085O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "4621537",
+      "teilbauwerk": "1",
+      "bauwerksname": "UF Warme",
+      "ort": "in Zierenberg",
+      "strasse_oben_uef": "L 3214",
+      "strasse_unten_uf": "4621045O",
+      "von_nk": "4621053O",
+      "nach_nk": "13"
+    },
+    {
+      "bauwerksnummer": "5623507",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF RAMHOLZBACH in Vollmerz/UF RAMHOLZBACH",
+      "ort": "Schlüchtern/Vollmerz",
+      "strasse_oben_uef": "L 3207",
+      "strasse_unten_uf": "5623009O",
+      "von_nk": "5623013O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5119506",
+      "teilbauwerk": "0",
+      "bauwerksname": "Muehlgrabenbruecke bei Rauschenberg",
+      "ort": "Rauschenberg",
+      "strasse_oben_uef": "L 3077",
+      "strasse_unten_uf": "5119014O",
+      "von_nk": "5119043O",
+      "nach_nk": "11 *)"
+    },
+    {
+      "bauwerksnummer": "5021557",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Schlierbach",
+      "ort": "in Schlierbach",
+      "strasse_oben_uef": "L 3067",
+      "strasse_unten_uf": "5021015O",
+      "von_nk": "5021039O",
+      "nach_nk": "6"
+    },
+    {
+      "bauwerksnummer": "5414510",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Elbbach",
+      "ort": "Dorchheim",
+      "strasse_oben_uef": "L 3046",
+      "strasse_unten_uf": "5414030O",
+      "von_nk": "5414036O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5514557",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Steinbach",
+      "ort": "Heuchelheim",
+      "strasse_oben_uef": "L 3046",
+      "strasse_unten_uf": "5414036O",
+      "von_nk": "5514076A",
+      "nach_nk": "18"
+    },
+    {
+      "bauwerksnummer": "5415536",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Kallenbach",
+      "ort": "Obershausen",
+      "strasse_oben_uef": "L 3044",
+      "strasse_unten_uf": "5415023O",
+      "von_nk": "5415016O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5415512",
+      "teilbauwerk": "C",
+      "bauwerksname": "UF Leyenbach",
+      "ort": "Odersberg",
+      "strasse_oben_uef": "L 3044",
+      "strasse_unten_uf": "5415006O",
+      "von_nk": "5315049O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5816557",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Dattenbach",
+      "ort": "Ehlhalten",
+      "strasse_oben_uef": "L 3027",
+      "strasse_unten_uf": "5816072O",
+      "von_nk": "5816032O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5514526",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Tiefenbach",
+      "ort": "Niedertiefenbach",
+      "strasse_oben_uef": "L 3022",
+      "strasse_unten_uf": "5514043O",
+      "von_nk": "5514038O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5514524",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Lahn",
+      "ort": "Runkel",
+      "strasse_oben_uef": "L 3020",
+      "strasse_unten_uf": "5514078O",
+      "von_nk": "5514083O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "5816528",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Dattenbach",
+      "ort": "Ehlhalten",
+      "strasse_oben_uef": "L 3011",
+      "strasse_unten_uf": "5816033O",
+      "von_nk": "12",
+      "nach_nk": "110kN"
+    },
+    {
+      "bauwerksnummer": "5623533",
+      "teilbauwerk": "B",
+      "bauwerksname": "UF DEUTSCHE BUNDESBAHN bei Drasenberg/UF DEUTSCHE BUNDESBAHN",
+      "ort": "Schlüchtern/Drasenberg",
+      "strasse_oben_uef": "K 928",
+      "strasse_unten_uf": "5623058O",
+      "von_nk": "5623034O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "5821501",
+      "teilbauwerk": "1+2",
+      "bauwerksname": "UF LOCHGRABEN bei Lützelhausen/UF LOCHGRABEN",
+      "ort": "Linsengericht/Lützelhausen",
+      "strasse_oben_uef": "K 897",
+      "strasse_unten_uf": "5821015O",
+      "von_nk": "5821016O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5616531",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Taunusbahn",
+      "ort": "Hundstadt",
+      "strasse_oben_uef": "K 760",
+      "strasse_unten_uf": "5616012O",
+      "von_nk": "5616010O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "4926581",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Breitzbach in Breitzbach",
+      "ort": "Breitzbach",
+      "strasse_oben_uef": "K 76",
+      "strasse_unten_uf": "4926033O",
+      "von_nk": "4926034O",
+      "nach_nk": "30"
+    },
+    {
+      "bauwerksnummer": "5616517",
+      "teilbauwerk": "2+4",
+      "bauwerksname": "UF Steinkratzbach (Steinkerzbach)/(Alt)",
+      "ort": "Naunstadt",
+      "strasse_oben_uef": "K 759",
+      "strasse_unten_uf": "5616011O",
+      "von_nk": "5616012O",
+      "nach_nk": "9"
+    },
+    {
+      "bauwerksnummer": "5616526",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Weil",
+      "ort": "Altweilnau (Landsteiner Mühle)",
+      "strasse_oben_uef": "K 750",
+      "strasse_unten_uf": "5716006O",
+      "von_nk": "5616043O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5616520",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Weil",
+      "ort": "Emmershausen",
+      "strasse_oben_uef": "K 739",
+      "strasse_unten_uf": "5616019O",
+      "von_nk": "5616018O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5315527",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Muehlbach",
+      "ort": "Gusternhain",
+      "strasse_oben_uef": "K 72",
+      "strasse_unten_uf": "5315021O",
+      "von_nk": "5315029O",
+      "nach_nk": "3"
+    },
+    {
+      "bauwerksnummer": "5221544",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Erlenbach",
+      "ort": "Schwabenrod",
+      "strasse_oben_uef": "K 68",
+      "strasse_unten_uf": "5221031O",
+      "von_nk": "5221030O",
+      "nach_nk": "11"
+    },
+    {
+      "bauwerksnummer": "5814528",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Aarbach",
+      "ort": "bei Hettenhain",
+      "strasse_oben_uef": "K 663",
+      "strasse_unten_uf": "5814049B",
+      "von_nk": "5814047O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "6318710",
+      "teilbauwerk": "0",
+      "bauwerksname": "UNTERKELLERUNG",
+      "ort": "in Ober-Hambach",
+      "strasse_oben_uef": "K 57",
+      "strasse_unten_uf": "6317062O",
+      "von_nk": "6318081O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "4925546",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Sontra bei Rockensüß/UF Sontra",
+      "ort": "Rockensüß",
+      "strasse_oben_uef": "K 50",
+      "strasse_unten_uf": "4925022O",
+      "von_nk": "4925006O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5124539",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Fuß- und Radweg bei Schenksolz",
+      "ort": "Schenksolz",
+      "strasse_oben_uef": "K5",
+      "strasse_unten_uf": "Geh- und Radweg 5124047O",
+      "von_nk": "5124048O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "4826559",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF des Schlierbaches bei Völkershausen",
+      "ort": "Völkershausen",
+      "strasse_oben_uef": "K 49",
+      "strasse_unten_uf": "4826009O",
+      "von_nk": "4826013O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5217519",
+      "teilbauwerk": "0",
+      "bauwerksname": "Krebsbachbruecke bei Altenvers",
+      "ort": "Altenvers",
+      "strasse_oben_uef": "K 48",
+      "strasse_unten_uf": "5217043O",
+      "von_nk": "5217032O",
+      "nach_nk": "10"
+    },
+    {
+      "bauwerksnummer": "5115765",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Dill",
+      "ort": "Dillbrecht",
+      "strasse_oben_uef": "K 47",
+      "strasse_unten_uf": "5115254O",
+      "von_nk": "5115253O",
+      "nach_nk": "9"
+    },
+    {
+      "bauwerksnummer": "4725569",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Berka bei Wellingerode",
+      "ort": "Wellingerode",
+      "strasse_oben_uef": "K 38",
+      "strasse_unten_uf": "4725003O",
+      "von_nk": "4725015O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5517503",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF KLEEBACH bei Ebergöns/UF KLEEBACH",
+      "ort": "Butzbach/Ebergöns",
+      "strasse_oben_uef": "K 364",
+      "strasse_unten_uf": "5517014O",
+      "von_nk": "5517013O",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "4825550",
+      "teilbauwerk": "A",
+      "bauwerksname": "UF Schweinsbach in Eltmannshausen",
+      "ort": "Eltmannshausen",
+      "strasse_oben_uef": "K 34",
+      "strasse_unten_uf": "4825025O",
+      "von_nk": "4825019A",
+      "nach_nk": "4,5"
+    },
+    {
+      "bauwerksnummer": "5219512",
+      "teilbauwerk": "0",
+      "bauwerksname": "Hist. Ohmbrücke bei Amoeneburg(Kulturdenkmal)",
+      "ort": "Amöneburg",
+      "strasse_oben_uef": "K 29",
+      "strasse_unten_uf": "5219032O",
+      "von_nk": "5219035O",
+      "nach_nk": "2,8"
+    },
+    {
+      "bauwerksnummer": "6318761",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF-WESCHNITZ",
+      "ort": "in Rimbach",
+      "strasse_oben_uef": "K 24",
+      "strasse_unten_uf": "6318100O",
+      "von_nk": "6318101O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5519509",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Rodheimer Bach",
+      "ort": "Rodheim",
+      "strasse_oben_uef": "K 188",
+      "strasse_unten_uf": "5519048O",
+      "von_nk": "5519038O",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "5619505",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF BACH in Weckesheim/UF BACH",
+      "ort": "Reichelsheim/Weckesheim",
+      "strasse_oben_uef": "K 179",
+      "strasse_unten_uf": "5619002O",
+      "von_nk": "5619001A",
+      "nach_nk": "3,5"
+    },
+    {
+      "bauwerksnummer": "5419537",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Graben",
+      "ort": "Queckborn",
+      "strasse_oben_uef": "K 150",
+      "strasse_unten_uf": "5419006O",
+      "von_nk": "5419032O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5419529",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Wetter",
+      "ort": "Wetterfeld",
+      "strasse_oben_uef": "K 146",
+      "strasse_unten_uf": "5419022O",
+      "von_nk": "5419035O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5321527",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Katharinenbach",
+      "ort": "Köddingen",
+      "strasse_oben_uef": "K 129",
+      "strasse_unten_uf": "5321010O",
+      "von_nk": "5321011O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "4826550",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Flutgraben bei Frieda",
+      "ort": "Frieda",
+      "strasse_oben_uef": "K 12",
+      "strasse_unten_uf": "4826016O",
+      "von_nk": "4826035O",
+      "nach_nk": "18"
+    },
+    {
+      "bauwerksnummer": "4826551",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Werra bei Frieda",
+      "ort": "Frieda",
+      "strasse_oben_uef": "K 12",
+      "strasse_unten_uf": "4826016O",
+      "von_nk": "4826035O",
+      "nach_nk": "12"
+    },
+    {
+      "bauwerksnummer": "4917613",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Eder bei Battenfeld/Ederbrücke",
+      "ort": "Battenfeld",
+      "strasse_oben_uef": "K 119",
+      "strasse_unten_uf": "4917105O",
+      "von_nk": "4917122C",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5121508",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Schwalm",
+      "ort": "bei Heidelbach",
+      "strasse_oben_uef": "K 115",
+      "strasse_unten_uf": "5121006O",
+      "von_nk": "5121007O",
+      "nach_nk": "6"
+    },
+    {
+      "bauwerksnummer": "4917603",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Flutgraben bei Reddighausen/Flutgrabenbrücke",
+      "ort": "Reddighausen",
+      "strasse_oben_uef": "K 115",
+      "strasse_unten_uf": "4917111O",
+      "von_nk": "4917109O",
+      "nach_nk": "16"
+    },
+    {
+      "bauwerksnummer": "5421517",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Lauter",
+      "ort": "Hopfmannsfeld",
+      "strasse_oben_uef": "K 112",
+      "strasse_unten_uf": "5421014O",
+      "von_nk": "5321029O",
+      "nach_nk": "11"
+    },
+    {
+      "bauwerksnummer": "5717708",
+      "teilbauwerk": "0",
+      "bauwerksname": "UEF Gemeindestraße -Jacob Lengfelder Str-",
+      "ort": "Bad Homburg",
+      "strasse_oben_uef": "",
+      "strasse_unten_uf": "",
+      "von_nk": "Jakob-Lengfelder-Straße L 3003",
+      "nach_nk": "30 *)"
+    },
+    {
+      "bauwerksnummer": "5813592",
+      "teilbauwerk": "0",
+      "bauwerksname": "UF Wisper",
+      "ort": "Heidenrod / Geroldstein",
+      "strasse_oben_uef": "",
+      "strasse_unten_uf": "",
+      "von_nk": "Dickschieder Weg",
+      "nach_nk": "16"
+    }
+  ]
+}

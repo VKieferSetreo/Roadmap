@@ -14,6 +14,7 @@
 
 import { readFileSync } from "node:fs"
 import { request as httpsRequest } from "node:https"
+import { gunzip } from "node:zlib"
 import { parseDatex2 } from "./datex2.js"
 
 const DEFAULT_SCHEDULE = "0 8,12,18 * * *" // 3× täglich (Max-Vorgabe)
@@ -29,8 +30,9 @@ function readPem(value) {
   }
 }
 
-/** mTLS-GET → XML-Text (oder null bei Fehler/Timeout). node:https kann Client-Zertifikate nativ. */
-function mtlsGet(url, { cert, key, passphrase, timeoutMs = 30000 }) {
+/** mTLS-GET (Client-Pull, TSSB §6.2.1) → { status, xml, lastModified }. node:https kann
+ *  Client-Zertifikate nativ; gzip-Body wird entpackt, 204/304 sauber als „kein Inhalt". */
+function mtlsGet(url, { cert, key, ca, passphrase, ifModifiedSince, timeoutMs = 30000 }) {
   return new Promise((resolve) => {
     const u = new URL(url)
     const req = httpsRequest(
@@ -41,25 +43,41 @@ function mtlsGet(url, { cert, key, passphrase, timeoutMs = 30000 }) {
         method: "GET",
         cert,
         key,
+        ca: ca || undefined, // Ausstellerzertifikat aus der .p12 (MOBILITHEK_CA)
         passphrase: passphrase || undefined,
-        headers: { accept: "application/xml, text/xml, */*" },
+        headers: {
+          accept: "application/xml, text/xml, */*",
+          "accept-encoding": "gzip", // TSSB §6.2.1: Body ist gzip-komprimiert
+          ...(ifModifiedSince ? { "if-modified-since": ifModifiedSince } : {}),
+        },
         timeout: timeoutMs,
       },
       (res) => {
-        if (res.statusCode && res.statusCode >= 400) {
+        const code = res.statusCode || 0
+        // 204 = kein Paket im Puffer · 304 = nichts Neues (Delta-Polling) → kein Fehler, nur leer
+        if (code === 204 || code === 304) {
           res.resume()
-          return resolve(null)
+          return resolve({ status: code, xml: null, lastModified: res.headers["last-modified"] || null })
         }
-        let body = ""
-        res.setEncoding("utf8")
-        res.on("data", (c) => (body += c))
-        res.on("end", () => resolve(body))
+        if (code >= 400) {
+          res.resume()
+          return resolve({ status: code, xml: null, lastModified: null })
+        }
+        const chunks = []
+        res.on("data", (c) => chunks.push(c))
+        res.on("end", () => {
+          const buf = Buffer.concat(chunks)
+          const gz = (res.headers["content-encoding"] || "").includes("gzip")
+          const done = (xml) => resolve({ status: code, xml, lastModified: res.headers["last-modified"] || null })
+          if (gz) gunzip(buf, (err, out) => done(err ? null : out.toString("utf8")))
+          else done(buf.toString("utf8"))
+        })
       },
     )
-    req.on("error", () => resolve(null))
+    req.on("error", () => resolve({ status: 0, xml: null, lastModified: null }))
     req.on("timeout", () => {
       req.destroy()
-      resolve(null)
+      resolve({ status: 0, xml: null, lastModified: null })
     })
     req.end()
   })
@@ -75,7 +93,12 @@ export function mobilithekFeeds(env = process.env) {
   }
 }
 
-/** Baut einen Connector für EIN gebuchtes Mobilithek-Angebot. */
+// Last-Modified je Subskription (In-Memory) → If-Modified-Since-Delta-Polling (spart Bandbreite).
+const lastModifiedBySub = new Map()
+
+/** Baut einen Connector für EIN gebuchtes Mobilithek-Angebot.
+ *  `url` = der Client-Pull-Endpunkt mit subscriptionID, z.B.
+ *  https://mobilithek.info:8443/mobilithek/api/V1.0/subscription?subscriptionID=<ID> */
 export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAULT_SCHEDULE }) {
   return {
     quelleId,
@@ -86,16 +109,25 @@ export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAUL
     async fetch({ env = process.env, timeoutMs = 30000, log = () => {} } = {}) {
       const cert = readPem(env.MOBILITHEK_CERT)
       const key = readPem(env.MOBILITHEK_KEY)
+      const ca = readPem(env.MOBILITHEK_CA)
       if (!cert || !key) {
         log(`${quelleId}: kein Mobilithek-Zertifikat hinterlegt — übersprungen (Account ausstehend)`)
         return { obstacles: [] }
       }
-      const xml = await mtlsGet(url, { cert, key, passphrase: env.MOBILITHEK_PASSPHRASE, timeoutMs })
-      if (!xml) {
-        log(`${quelleId}: kein/leerer DATEX-II-Response (Endpunkt/Zertifikat prüfen)`)
+      const res = await mtlsGet(url, {
+        cert, key, ca, passphrase: env.MOBILITHEK_PASSPHRASE,
+        ifModifiedSince: lastModifiedBySub.get(url) || undefined, timeoutMs,
+      })
+      if (res.status === 304 || res.status === 204) {
+        log(`${quelleId}: ${res.status === 304 ? "nichts Neues (304)" : "kein Paket im Puffer (204)"} — Bestand unverändert`)
+        return { obstacles: [], unveraendert: true } // Importer macht ohne Items keinen destruktiven Reconcile
+      }
+      if (res.status >= 400 || !res.xml) {
+        log(`${quelleId}: Fehler/leer (HTTP ${res.status}) — Endpunkt/Zertifikat/Subskription prüfen`)
         return { obstacles: [] }
       }
-      const obstacles = parseDatex2(xml, { quelleName: name, quelleUrl: url })
+      if (res.lastModified) lastModifiedBySub.set(url, res.lastModified)
+      const obstacles = parseDatex2(res.xml, { quelleName: name, quelleUrl: url })
       log(`${quelleId}: ${obstacles.length} DATEX-II-Records normalisiert`)
       return { obstacles }
     },

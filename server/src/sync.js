@@ -12,7 +12,7 @@
 // der Job-Status verloren (der Import selbst ist transaktional und unkritisch).
 
 import { randomUUID } from "node:crypto"
-import { allConnectors } from "./connectors/index.js"
+import { enabledConnectors } from "./connectors/index.js"
 import { rerunAffectedProjects } from "./engine/rerunAll.js"
 import { rowToImportRun } from "./map.js"
 import { withTimeout } from "./util.js"
@@ -52,7 +52,7 @@ export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env 
   const running = activeSyncJob()
   if (running && running.status === "running") return running
 
-  const connectors = allConnectors()
+  const connectors = enabledConnectors(env)
   const id = randomUUID()
   const job = {
     id,

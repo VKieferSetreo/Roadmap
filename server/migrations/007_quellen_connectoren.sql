@@ -1,0 +1,42 @@
+-- 007 — Quellen-Register für die 36 portierten Connectoren (FK-Anker für import_runs +
+-- Tier/Provenienz für die Priorisierung, docs/research/hierarchie-priorisierung.md).
+-- Idempotent (ON CONFLICT). Schedule 3×/Tag.
+
+INSERT INTO quellen (id, name, typ, tier, provenienz, abruf_intervall) VALUES
+  ('0001', '0001_autobahn_api.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0110', '0110_gst_routen_hamburg.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0111', '0111_brueckenbauwerke_hamburg.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0112', '0112_baustellen_hamburg.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0113', '0113_bedarfsumleitungen_hamburg.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0114', '0114_viz_berlin_baustellen.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0115', '0115_viz_berlin_geojson_feeds.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0116', '0116_detailnetz_berlin_bauwerke.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0117', '0117_baustellen_sh.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0118', '0118_umleitungsstrecken_sh.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0119', '0119_baustellen_mv.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0120', '0120_lsbb_sperrinfo.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0121', '0121_gst_negativkarte_sachsen.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0122', '0122_mobidata_bw_lms.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0123', '0123_baysis_bauwerke.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0124', '0124_gst_schwertransportkarte_nrw.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0125', '0125_opengeodata_nrw_bauwerke.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0126', '0126_hessen_bruecken.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0127', '0127_baustellen_saarland.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0128', '0128_mobidata_bw_baustellen.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *'),
+  ('0210', '0210_muenchen_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0211', '0211_aachen_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0212', '0212_koeln_verkehrsbeeintraechtigungen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0213', '0213_dresden_verkehrseinschraenkungen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0214', '0214_stuttgart_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0215', '0215_muenster_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0216', '0216_dortmund_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0217', '0217_duesseldorf_verkehrsmeldungen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0218', '0218_bonn_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0219', '0219_karlsruhe_trk_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0220', '0220_leipzig_verkehrsraumeinschraenkungen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0221', '0221_leipzig_verkehrszeichen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0222', '0222_rostock_baustellen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0223', '0223_rostock_gst_routen.js', 'api', 'T4', 'amtlich', '0 8,12,18 * * *'),
+  ('0301', 'Baden-Württemberg', 'api', 'T5', 'crowdsourced', '0 8,12,18 * * *'),
+  ('0302', '0302_rvr_geonetzwerk_ruhr_baustellen.js', 'api', 'T1', 'amtlich', '0 8,12,18 * * *')
+ON CONFLICT (id) DO UPDATE SET tier = EXCLUDED.tier, provenienz = EXCLUDED.provenienz, abruf_intervall = EXCLUDED.abruf_intervall;

@@ -169,7 +169,7 @@ describe("Sync-API", () => {
     const { app } = makeApp()
     const res = await request(app).get("/api/sync/status")
     expect(res.status).toBe(200)
-    expect(res.body.connectorAnzahl).toBe(1)
+    expect(res.body.connectorAnzahl).toBe(36)
     const autobahn = res.body.quellen.find((q) => q.id === "0001")
     expect(autobahn.connector).toBe(true)
     expect(autobahn.vollbestand).toBe(true)

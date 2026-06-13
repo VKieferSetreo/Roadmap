@@ -1,0 +1,76 @@
+// Connector Quelle 0115: Berlin VIZ — GeoJSON-Feeds (Verkehrsredaktion + Landesmeldestelle TIC3).
+// Port aus API/Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds/viz-berlin-geojson-feeds.cron.mjs.
+// Zwei statische GeoJSON-Feeds (1 GET je Feed, EPSG:4326, keine Pagination). Geometrie = Point
+// ODER GeometryCollection (Point + LineString). validity = Objekt { from, to } (dd.mm.yyyy [HH:MM]).
+
+import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText } from "./_helpers.js"
+
+const QUELLE_NAME = "Berlin VIZ — GeoJSON-Feeds (Verkehrsredaktion + TIC3)"
+const FEEDS = [
+  { url: "https://api.viz.berlin.de/daten/baustellen_sperrungen_viz.json", herkunft: "Verkehrsredaktion" },
+  { url: "https://api.viz.berlin.de/tic3/baustellen_sperrungen_tic.json", herkunft: "Landesmeldestelle (TIC3)" },
+]
+
+function katAus(subtype) {
+  const s = String(subtype ?? "").toLowerCase()
+  if (s.includes("baustelle")) return "baustelle"
+  if (s.includes("sperrung")) return "sperrung"
+  return "sperrung"
+}
+function geomPunkt(geometry) {
+  if (!geometry) return [null, null]
+  const geoms = geometry.type === "GeometryCollection" ? geometry.geometries : [geometry]
+  let point = [null, null], line = null
+  for (const g of geoms) {
+    if (g.type === "Point" && point[0] == null) point = g.coordinates
+    if ((g.type === "LineString" || g.type === "MultiLineString") && !line) line = g
+  }
+  if (point[0] == null && line) { let c = line.coordinates; while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]; point = c }
+  return point
+}
+function validity(v) {
+  if (!v || typeof v !== "object") return { von: null, bis: null }
+  return { von: dateOnly(v.from), bis: dateOnly(v.to) }
+}
+function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?(\d{1,4})\b/); return m ? `${m[1]}${m[2]}` : null }
+
+export const vizBerlinGeojsonFeedsConnector = {
+  quelleId: "0115",
+  name: QUELLE_NAME,
+  schedule: "0 8,12,18 * * *",
+  vollbestand: true,
+
+  async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
+    const obstacles = []
+    for (const { url, herkunft } of FEEDS) {
+      const fc = await getJson(url, { timeoutMs })
+      const feats = fc?.features ?? []
+      log(`${herkunft}: ${feats.length} Features`)
+      for (const f of feats) {
+        const p = f.properties ?? {}
+        const point = geomPunkt(f.geometry)
+        const { von, bis } = validity(p.validity)
+        const text = [p.section, p.content].filter(Boolean).join(" — ")
+        const kat = katAus(p.subtype)
+        const tonnage = tonnageAusText(text)
+        obstacles.push(makeNormalized({
+          externeId: p.id ?? f.id,
+          kategorie: tonnage ? "gewicht" : kat,
+          name: p.street || p.section || `${p.subtype ?? "Meldung"} Berlin`,
+          beschreibung: text || null,
+          lat: point[1], lng: point[0],
+          strassenRef: refAus(`${p.street ?? ""} ${p.section ?? ""}`),
+          attrs: {
+            maxGewichtT: tonnage ?? undefined,
+            restbreiteM: meterAusText(text, /breite/i) ?? undefined,
+            vollsperrung: /vollsperr|gesperrt/i.test(text) || undefined,
+          },
+          gueltigVon: von, gueltigBis: bis, realerStart: von,
+          quelleName: QUELLE_NAME,
+          quelleUrl: url,
+        }))
+      }
+    }
+    return { obstacles }
+  },
+}
