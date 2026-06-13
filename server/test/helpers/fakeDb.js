@@ -327,7 +327,7 @@ export function createFakeDb() {
     }
 
     // ── obstacles ─────────────────────────────────────────────────────────────
-    if (sql.startsWith("SELECT * FROM obstacles WHERE ($1::text IS NULL")) {
+    if (sql.includes("FROM obstacles WHERE ($1::text IS NULL")) {
       const [kategorie, aktiv, q, tenantId] = params
       const rows = state.obstacles
         .filter((o) => kategorie == null || o.kategorie === kategorie)
@@ -342,7 +342,7 @@ export function createFakeDb() {
         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
       return ok(rows)
     }
-    if (sql.startsWith("SELECT * FROM obstacles WHERE aktiv = true AND (tenant_id IS NULL OR tenant_id = $1")) {
+    if (sql.includes("FROM obstacles WHERE aktiv = true AND (tenant_id IS NULL OR tenant_id = $1")) {
       const [tenantId, minLat, maxLat, minLng, maxLng] = params
       return ok(
         state.obstacles.filter(

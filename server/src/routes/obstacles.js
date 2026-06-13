@@ -13,11 +13,13 @@ import { Router } from "express"
 import { requireRole } from "../auth.js"
 import { rowToObstacle } from "../map.js"
 import {
-  assignFachId, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE, todayIso, validateObstacle,
+  assignFachId, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE, OBSTACLE_COLS,
+  todayIso, validateObstacle,
 } from "../obstaclesRepo.js"
 import { ApiError, asyncHandler, isPlainObject, isUuid } from "../util.js"
 
-const LIST_SQL = `SELECT * FROM obstacles
+// Schlanke Spalten (ohne roh/geom-Blobs) — die Übersichtskarte zieht ALLE Hindernisse.
+const LIST_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles
   WHERE ($1::text IS NULL OR kategorie = $1)
     AND ($2::boolean IS NULL OR aktiv = $2)
     AND ($3::text IS NULL OR name ILIKE $3 OR beschreibung ILIKE $3

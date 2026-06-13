@@ -13,6 +13,14 @@ import { isFiniteNumber, isPlainObject } from "./util.js"
 /** Quellen-ID für manuelle Kunden-Einträge (Quellen-Register '0100'). */
 export const KUNDEN_QUELLE = "0100"
 
+// Schlanke Spaltenliste für Lese-Queries: genau das, was rowToObstacle (map.js)
+// braucht — OHNE die schweren jsonb-Blobs (roh, geom, zeitfenster). Wichtig für
+// Performance: die Analyse einer langen Strecke matcht tausende Hindernisse im
+// Bbox; SELECT * würde die Roh-Payloads aller Treffer übertragen → Timeout.
+export const OBSTACLE_COLS = `id, kategorie, name, beschreibung, lat, lng, strassen_ref,
+  zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start,
+  aktiv, demo, tenant_id, externe_id, created_at, updated_at`
+
 const QUELLEN_ID_RE = /^\d{4}$/
 const FACH_ID_RE = /^\d{14}$/
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/

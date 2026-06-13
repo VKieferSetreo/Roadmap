@@ -97,9 +97,37 @@ async function persistEvents(db, project, events) {
   })
 }
 
+// Wie viele Projekt-Reruns gleichzeitig laufen. Parallel (Max-Wunsch), aber
+// gedeckelt, damit der pg-Pool (max 10) nicht erschöpft wird und die API
+// während eines Syncs weiter Requests bedienen kann.
+const RERUN_CONCURRENCY = 4
+
+/** Ein Projekt neu auswerten + Fund-Diff → Benachrichtigungen. */
+async function rerunOne({ db, row, corridorM, log }) {
+  const project = rowToProject(row, [], null)
+  const before = await db.query(FINDINGS_SQL, [row.id])
+  const beforeMap = indexByObstacle(before.rows)
+
+  try {
+    await runAnalysis({ db, project, corridorM })
+  } catch (err) {
+    log(`rerun ${row.id} (${project.name}) fehlgeschlagen: ${err?.message ?? err}`)
+    return { done: false, events: 0 }
+  }
+
+  const after = await db.query(FINDINGS_SQL, [row.id])
+  const events = diffFindings(beforeMap, indexByObstacle(after.rows))
+  if (events.length > 0) {
+    await persistEvents(db, project, events)
+    log(`${project.name}: ${events.length} Änderung(en) → Benachrichtigungen`)
+  }
+  return { done: true, events: events.length }
+}
+
 /**
  * Fährt alle nicht-archivierten, bereits ausgewerteten Projekte (status='fertig')
- * mit ≥1 nutzbarer Strecke neu und erzeugt Benachrichtigungen aus dem Fund-Diff.
+ * mit ≥1 nutzbarer Strecke PARALLEL (gebündelt) neu und erzeugt Benachrichtigungen
+ * aus dem Fund-Diff.
  *
  * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen}>}
  */
@@ -107,38 +135,29 @@ export async function rerunAffectedProjects({ db, corridorM = 120, log = () => {
   const { rows } = await db.query(
     "SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'",
   )
-  let geprueft = 0
+  const eligible = rows.filter((row) => usableRoutes(rowToProject(row, [], null).routes).length > 0)
+
   let neuAusgewertet = 0
   let mitAenderung = 0
   let benachrichtigungen = 0
 
-  for (const row of rows) {
-    const project = rowToProject(row, [], null)
-    if (usableRoutes(project.routes).length === 0) continue
-    geprueft += 1
-
-    const before = await db.query(FINDINGS_SQL, [row.id])
-    const beforeMap = indexByObstacle(before.rows)
-
-    try {
-      await runAnalysis({ db, project, corridorM })
-    } catch (err) {
-      log(`rerun ${row.id} (${project.name}) fehlgeschlagen: ${err?.message ?? err}`)
-      continue
-    }
-    neuAusgewertet += 1
-
-    const after = await db.query(FINDINGS_SQL, [row.id])
-    const afterMap = indexByObstacle(after.rows)
-
-    const events = diffFindings(beforeMap, afterMap)
-    if (events.length > 0) {
-      mitAenderung += 1
-      await persistEvents(db, project, events)
-      benachrichtigungen += events.length
-      log(`${project.name}: ${events.length} Änderung(en) → Benachrichtigungen`)
+  for (let i = 0; i < eligible.length; i += RERUN_CONCURRENCY) {
+    const batch = eligible.slice(i, i + RERUN_CONCURRENCY)
+    const results = await Promise.all(batch.map((row) => rerunOne({ db, row, corridorM, log })))
+    for (const r of results) {
+      if (r.done) neuAusgewertet += 1
+      if (r.events > 0) {
+        mitAenderung += 1
+        benachrichtigungen += r.events
+      }
     }
   }
 
-  return { engineVersion: ENGINE_VERSION, geprueft, neuAusgewertet, mitAenderung, benachrichtigungen }
+  return {
+    engineVersion: ENGINE_VERSION,
+    geprueft: eligible.length,
+    neuAusgewertet,
+    mitAenderung,
+    benachrichtigungen,
+  }
 }

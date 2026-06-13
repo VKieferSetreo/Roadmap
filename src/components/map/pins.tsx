@@ -5,6 +5,7 @@
 import L from "leaflet"
 import { renderToStaticMarkup } from "react-dom/server"
 import {
+  Ban,
   Construction,
   MapPin as MapPinIcon,
   Mountain,
@@ -28,6 +29,7 @@ const SHAPE_BY_KATEGORIE: Record<FindingKategorie, PinShape> = {
   gewicht: "diamond", // physikalisch
   steigung: "diamond", // physikalisch
   baustelle: "triangle", // temporär / Achtung
+  sperrung: "triangle", // Sperrung / Achtung
   kreisverkehr: "circle", // Verkehrssteuerung
   ampel: "circle",
   bahnuebergang: "circle",
@@ -40,6 +42,7 @@ const ICON_BY_KATEGORIE: Record<FindingKategorie, LucideIcon> = {
   gewicht: Weight,
   steigung: TrendingUp,
   baustelle: Construction,
+  sperrung: Ban,
   kreisverkehr: RotateCw,
   ampel: TrafficCone,
   bahnuebergang: TrainFront,
@@ -84,7 +87,9 @@ function iconSvg(Icon: LucideIcon, size = 16): string {
 }
 
 function iconHtmlForKategorie(kategorie: FindingKategorie): string {
-  return CUSTOM_KAT_SVG[kategorie] ?? iconSvg(ICON_BY_KATEGORIE[kategorie])
+  // Fallback-Icon, falls eine (neue/unbekannte) Kategorie kein Mapping hat —
+  // sonst würde renderToStaticMarkup(<undefined/>) crashen (React #130).
+  return CUSTOM_KAT_SVG[kategorie] ?? iconSvg(ICON_BY_KATEGORIE[kategorie] ?? MapPinIcon)
 }
 
 // Einheitliche Pin-Geometrie: alle Forms 36×42, Hauptkörper-Center (18, 16),
@@ -135,20 +140,32 @@ function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected:
   </svg>`
 }
 
+// DivIcons sind nur von (kategorie, color, selected) abhängig → cachen. Die
+// Hindernis-Übersichtskarte rendert tausende Pins; ohne Cache liefe pro Pin ein
+// teures renderToStaticMarkup → Browser-Freeze. Eine DivIcon-Instanz darf von
+// beliebig vielen Markern geteilt werden (Leaflet baut das DOM je Marker neu).
+const pinCache = new Map<string, L.DivIcon>()
+
 export function findingPinIcon(
   kategorie: FindingKategorie,
   color: string,
   selected: boolean,
 ): L.DivIcon {
-  const shape = SHAPE_BY_KATEGORIE[kategorie]
+  const key = `${kategorie}|${color}|${selected ? 1 : 0}`
+  const cached = pinCache.get(key)
+  if (cached) return cached
+
+  const shape = SHAPE_BY_KATEGORIE[kategorie] ?? "circle"
   const html = pinShapeSvg(shape, color, iconHtmlForKategorie(kategorie), selected)
-  return L.divIcon({
+  const icon = L.divIcon({
     className: "rm-pin",
     html,
     iconSize: [PIN_W, PIN_H],
     iconAnchor: [PIN_ANCHOR_X, PIN_ANCHOR_Y],
     popupAnchor: [0, -PIN_H + 4],
   })
+  pinCache.set(key, icon)
+  return icon
 }
 
 // ── Start-Pin: Lokations-Marke in der Strecken-Farbe ─────────────────────────

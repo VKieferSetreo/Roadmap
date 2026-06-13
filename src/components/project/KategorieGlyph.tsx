@@ -3,7 +3,7 @@
 // Wird frontendweit verwendet: Karten-Pins, Dashboard-Liste, Detail-Overlay etc.
 
 import type { FindingKategorie } from "@/types/domain"
-import { CUSTOM_KAT_SVG, KATEGORIE_META } from "./findingMeta"
+import { CUSTOM_KAT_SVG, katMeta } from "./findingMeta"
 import { cn } from "@/lib/cn"
 
 interface KategorieGlyphProps {
@@ -23,6 +23,6 @@ export function KategorieGlyph({ kategorie, className }: KategorieGlyphProps) {
       />
     )
   }
-  const Icon = KATEGORIE_META[kategorie].icon
+  const Icon = katMeta(kategorie).icon
   return <Icon className={cn("h-4 w-4", className)} />
 }

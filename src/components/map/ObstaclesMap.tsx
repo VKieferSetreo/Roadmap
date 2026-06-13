@@ -4,7 +4,7 @@
 
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { KATEGORIE_META } from "@/components/project/findingMeta"
+import { katMeta } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { Obstacle } from "@/types/domain"
@@ -49,7 +49,7 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
               <div className="min-w-[200px]">
                 <p className="font-semibold text-neutral-900">{o.name}</p>
                 <p className="mt-0.5 text-xs text-neutral-500">
-                  {KATEGORIE_META[o.kategorie].label}
+                  {katMeta(o.kategorie).label}
                   {o.strassenRef ? ` · ${o.strassenRef}` : ""}
                   {o.fachId ? ` · ID ${o.fachId}` : ""}
                 </p>

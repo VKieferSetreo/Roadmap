@@ -111,6 +111,13 @@ function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSo
           aktualisiertAm: "vor 1 h",
         },
       ]
+    case "sperrung":
+      return [
+        { name: `Autobahn-API · ${road} Closure`, url: ahApiClosure, aktualisiertAm: "vor 15 min" },
+        { name: "OSM · Sperrung/Umleitung (Position)", url: osm, aktualisiertAm: "vor 1 h" },
+      ]
+    default:
+      return [{ name: "OSM · Position", url: osm, aktualisiertAm: "vor 1 h" }]
   }
 }
 

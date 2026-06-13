@@ -35,6 +35,10 @@ const ATTR_FELDER: Record<
     { key: "restbreiteM", label: "Restbreite", unit: "m", step: 0.05 },
     { key: "maxHoeheM", label: "Höhenbegrenzung", unit: "m", step: 0.05 },
   ],
+  sperrung: [
+    { key: "restbreiteM", label: "Restbreite", unit: "m", step: 0.05 },
+    { key: "maxGewichtT", label: "Zul. Gesamtlast", unit: "t" },
+  ],
   steigung: [{ key: "steigungPct", label: "Steigung", unit: "%", step: 0.5 }],
   kreisverkehr: [{ key: "radiusM", label: "Außenradius", unit: "m" }],
   bahnuebergang: [{ key: "maxHoeheM", label: "Oberleitungshöhe", unit: "m", step: 0.05 }],

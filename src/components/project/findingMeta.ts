@@ -2,7 +2,9 @@
 // Genutzt von Karte (Marker-Glyphen), Dashboard (Badges/Icons) und Detail-Overlay.
 
 import {
+  Ban,
   Construction,
+  MapPin,
   MoveHorizontal,
   RotateCw,
   TrafficCone,
@@ -22,9 +24,19 @@ export const KATEGORIE_META: Record<FindingKategorie, { label: string; icon: Luc
   gewicht: { label: "Gewicht", icon: Weight },
   kreisverkehr: { label: "Kreisverkehr", icon: RotateCw },
   baustelle: { label: "Baustelle", icon: Construction },
+  sperrung: { label: "Sperrung", icon: Ban },
   bahnuebergang: { label: "Bahnübergang", icon: TrainFront },
   steigung: { label: "Steigung", icon: TrendingUp },
   ampel: { label: "Signalanlage", icon: TrafficCone },
+}
+
+/** Fallback für unbekannte Kategorien (z.B. neue Backend-Kategorie ohne FE-Update)
+ *  — verhindert Render-Crashes (React #130) bei unerwarteten Werten. */
+export const FALLBACK_KAT_META = { label: "Hindernis", icon: MapPin } as const
+
+/** Sichere Meta-Auflösung: kennt die Kategorie nicht → Fallback statt undefined. */
+export function katMeta(kategorie: string): { label: string; icon: LucideIcon } {
+  return KATEGORIE_META[kategorie as FindingKategorie] ?? FALLBACK_KAT_META
 }
 
 /** Custom-SVG-Glyphen für Kategorien wo kein passendes Lucide-Icon existiert.

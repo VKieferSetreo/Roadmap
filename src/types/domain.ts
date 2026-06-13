@@ -37,6 +37,7 @@ export type FindingKategorie =
   | "bruecke"
   | "engstelle"
   | "baustelle"
+  | "sperrung"
   | "gewicht"
   | "bahnuebergang"
   | "kreisverkehr"

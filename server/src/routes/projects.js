@@ -192,7 +192,9 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
       await runAnalysis({ db, project: rowToProject(row, [], null), corridorM })
     } catch (err) {
       if (err instanceof ApiError) throw err
-      // Projekt bleibt unverändert (Persistenz ist transaktional)
+      // Projekt bleibt unverändert (Persistenz ist transaktional). Loggen, damit
+      // echte Engine-/DB-Fehler in den Prod-Logs sichtbar sind (502 wird sonst nicht geloggt).
+      console.error(`[analysis ${req.params.id}] fehlgeschlagen:`, err)
       throw new ApiError(502, `Analyse fehlgeschlagen: ${err.message}`)
     }
     const fresh = await loadProjectRow(db, row.id, req.ctx.tenant.id)

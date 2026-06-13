@@ -34,7 +34,13 @@ function progress(job: SyncJob | undefined): { pct: number; label: string } {
   if (job.phase === "rerun") return { pct: 95, label: "Auswertungen werden neu gefahren …" }
   if (job.phase === "hygiene") return { pct: 88, label: "Abgelaufene Einträge werden aufgeräumt …" }
   const base = job.total ? Math.round((job.done / job.total) * 80) : 10
-  return { pct: Math.max(8, base), label: job.current ? `Lade ${job.current.name} …` : "Wird vorbereitet …" }
+  const pos = Math.min(job.done + 1, job.total)
+  return {
+    pct: Math.max(8, base),
+    label: job.current
+      ? `Quelle ${pos}/${job.total} · ${job.current.name}`
+      : "Wird vorbereitet …",
+  }
 }
 
 export function SyncBar() {
@@ -128,37 +134,8 @@ export function SyncBar() {
         </Button>
       </div>
 
-      {/* Quellen-Chips */}
-      {quellen.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5">
-          {quellen.map((q) => (
-            <span
-              key={q.id}
-              title={
-                q.connector
-                  ? `${q.name} · zuletzt: ${formatStamp(q.letzterAbruf ?? null)}`
-                  : `${q.name} · kein aktiver Connector`
-              }
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px]",
-                q.connector
-                  ? "border-neutral-200 bg-white text-neutral-600"
-                  : "border-neutral-100 bg-neutral-50 text-neutral-400",
-              )}
-            >
-              <span
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  q.connector ? "bg-status-done-text" : "bg-neutral-300",
-                )}
-              />
-              {q.name.replace(/\s*\(.*\)\s*$/, "")}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {/* Fortschritt */}
+      {/* Fortschritt — Quellen werden SEQUENZIELL gezogen (eine nach der anderen),
+          damit der Balken sauber und nachvollziehbar läuft. */}
       {jobId && job.data ? (
         <div className="flex flex-col gap-1.5">
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
