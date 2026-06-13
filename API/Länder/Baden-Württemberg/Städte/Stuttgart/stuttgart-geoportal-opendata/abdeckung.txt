@@ -1,0 +1,15 @@
+QUELLE:         Stuttgart — Open Data / Geoportal
+BETREIBER:      Landeshauptstadt Stuttgart
+EBENE:          Stadt:Stuttgart,Baden-Württemberg
+DATENTYP:       Stadtpläne, Basiskarten, Themen Planung/Umwelt/Verkehr/Freizeit; Open Geodata & Testdaten
+STRASSENTYP:    innerorts
+FORMAT:         WMS/WMTS (Darstellung), WFS/WCS (Download) — produktabhängig
+ENDPUNKT:       -
+DOKU:           https://www.stuttgart.de/en/leben/bauen/geoportal/open-data-und-testdaten
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (dl-de / CC-BY)
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Geoportal + Open-Data-Portal bestätigt, dedizierter offener Baustellen-Endpunkt NICHT nachgewiesen (apiEndpunkt=null). Für Stuttgart Baustellen am ehesten über MobiData BW / daten.bw / Land BW (siehe API/Länder/Baden-Württemberg/.../MobiData-BW-Baustellen-BEMaS).

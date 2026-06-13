@@ -1,0 +1,15 @@
+QUELLE:         LBM RLP — Brücken & Schwertransporte (Restriktions-Stelle)
+BETREIBER:      Landesbetrieb Mobilität RLP (LBM)
+EBENE:          Land:Rheinland-Pfalz
+DATENTYP:       Brückenprüfung/Traglast (statischer Nachweis je Bauwerk), GST-Genehmigungs-/Anhörungsverfahren. KEINE öffentliche maschinenlesbare Negativ-/Brückenliste (anders als NRW/Hessen)
+STRASSENTYP:    A / B / L / K
+FORMAT:         Web-Info (Themenseiten); operative Daten in LBM-/SIB-Systemen (nicht offen)
+ENDPUNKT:       -
+DOKU:           https://lbm.rlp.de/themen/bruecken
+ZUGANG:         eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         nicht offen
+UPDATE:         laufend (Bauwerksprüfung)
+STATUS:         verifiziert
+NOTIZ:          LÜCKE RLP: keine offene GST-Negativ-/Brückenkarte wie NRW (gst-schwertransportkarte-nrw) oder Hessen (hessen-mobil-lastbeschraenkte-bruecken) auffindbar. Themenseiten live (HTTP 200), aber nur Info — keine Daten-/Listen-Downloads. GST-Routenprüfung läuft über VEMAGS (Bundeskatalog Q4, restricted); Genehmigungen erteilen Kreisverwaltungen/kreisfreie Städte. Direkter Datenbezug nur per LBM-Anfrage/Kooperation. GST-Themenseite: https://lbm.rlp.de/themen/verkehrsrecht/grossraum-und-schwerverkehr . Kein Live-API-Call möglich → doku-link.txt.

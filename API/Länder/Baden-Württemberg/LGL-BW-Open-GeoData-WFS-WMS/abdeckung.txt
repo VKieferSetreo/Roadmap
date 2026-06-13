@@ -1,0 +1,21 @@
+QUELLE:         LGL-BW Open GeoData / GDI-BW — Geobasis (WFS / WMS)
+BETREIBER:      Landesamt für Geoinformation und Landentwicklung BW (LGL-BW), benutzerservice@lgl.bwl.de
+EBENE:          Land:Baden-Württemberg
+DATENTYP:       Geobasis — ATKIS Basis-DLM / DLM50 (Objektart Verkehr/Straßen), Straßennetzkarten, ALKIS; INSPIRE-Dienste
+STRASSENTYP:    Alle (topographisches Verkehrsnetz)
+FORMAT:         WMS / WMTS / WFS / WCS / GeoPackage / Shapefile
+ENDPUNKT:       -   (GetCapabilities-Pfad NICHT öffentlich aufgelöst — über GDI-BW-Katalog beziehen)
+DOKU:           https://www.lgl-bw.de/Produkte/Geodatendienste/index.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open Data mit Namensnennung (Quellenangabe LGL-BW; Lizenz-Code je Produkt: dl-de/by oder CC BY)
+UPDATE:         periodisch (Geobasis-Fortführung)
+STATUS:         zu-bestätigen
+NOTIZ:          Existenz + Namenskonventionen bestätigt, exakte GetCapabilities-URLs noch aufzulösen
+                (KEINE URL erfunden). Bestätigte Layer-Namenskonvention laut Recherche:
+                WMS_INSP_BW_Verkehrsnetz_ALKIS, WFS_INSP_BW_Verkehrsnetz_ATKIS_DLM50.
+                Auflösung über: Open-GeoData-Portal https://opengeodata.lgl-bw.de/ und
+                Geoportal-BW-Katalog https://metadaten.geoportal-bw.de/ .
+                ATKIS Basis-DLM Verkehrsnetz = Netz-Geometrie + Klassifizierung; Höhen/Restriktionen
+                NICHT Hauptmerkmal. Sonderformate/-zuschnitte ggf. aufwandsabhängiges Service-Entgelt.

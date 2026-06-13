@@ -1,0 +1,15 @@
+QUELLE:         Karlsruhe Geoportal — Brücken & Bauwerke / Verkehrstechnik
+BETREIBER:      Stadt Karlsruhe, Liegenschaftsamt/Geoinformation (Geoportal Karlsruhe — separat vom Transparenzportal-CKAN)
+EBENE:          Stadt:Karlsruhe,Baden-Württemberg
+DATENTYP:       explizite Kategorien 'Brücken und Bauwerke', 'Verkehrstechnik', 'Baustellenmanagement' — potenziell Brücken-Standorte, Bauwerksdaten, Verkehrszeichen/Signalanlagen
+STRASSENTYP:    innerorts
+FORMAT:         WMS / WFS / GeoJSON / CSV (produktabhängig; manche WMS 'für internen Gebrauch auf Anfrage')
+ENDPUNKT:       -
+DOKU:           https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/fachplaene
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open Data (Landesinformationsfreiheitsgesetz / OpenGovernment); interne Dienste 'auf Anfrage'
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Kategorien bestätigt, konkrete Brücken-WFS-URL NICHT isoliert (Geoportal != Transparenzportal-CKAN) (apiEndpunkt=null). EINE DER WENIGEN Städte mit ausgewiesener 'Brücken und Bauwerke'-Geodaten-Kategorie — selten offen! Hier gezielt nach Traglast/lichter Höhe nachhaken. Ergänzt den verifizierten Karlsruhe-Baustellen-Feed (karlsruhe-trk-baustellen). HOHE Projekt-Relevanz.

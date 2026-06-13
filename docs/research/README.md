@@ -11,7 +11,8 @@
 
 - **~140 Einzelquellen** katalogisiert (Ziel 50+ deutlich übertroffen).
 - **Abdeckung:** Bund + **alle 16 Bundesländer** + ~22 Großstädte/kommunale Aggregatoren + OSM +
-  5 kommerzielle Anbieter + Geodaten-Standards. → **~100 % Flächenabdeckung DE** für die
+  freie OSS-Routing-Engines + Geodaten-Standards (kostenpflichtige Kommerzielle entfernt). →
+  **~100 % Flächenabdeckung DE** für die
   *temporären* Daten; *dauerhafte* Bauwerksdaten sind die strukturelle Lücke (s.u.).
 - Endpunkte wo möglich **live verifiziert** (GetCapabilities / curl 200 / Doku). Unsichere stehen
   als `apiEndpunkt: null` + `verifiziert: zu-bestätigen` — **keine erfundenen URLs**.
@@ -27,7 +28,7 @@
 | [`quellen-laender-nord.md`](./quellen-laender-nord.md) | NI, HB, HH, SH | 22 | sehr hoch (Hamburg = GST-Routen-WFS!) |
 | [`quellen-laender-ost.md`](./quellen-laender-ost.md) | BE, BB, MV, SN, ST, TH | 32 | hoch (Berlin VIZ, Sachsen, MV) |
 | [`quellen-kommunal.md`](./quellen-kommunal.md) | Großstädte + übertragbare Muster | 22 | hoch (München, Karlsruhe, Rostock-GST) |
-| [`quellen-osm-geodaten-kommerziell.md`](./quellen-osm-geodaten-kommerziell.md) | OSM/Overpass, INSPIRE/WFS, PTV/HERE/TomTom/ORS | ~12 | OSM offen, kommerziell Free-Tier |
+| [`quellen-osm-geodaten-kommerziell.md`](./quellen-osm-geodaten-kommerziell.md) | OSM/Overpass, INSPIRE/WFS, freie Engines (ORS/GraphHopper) | ~9 | OSM offen, Engines OSS/frei |
 | [`hierarchie-priorisierung.md`](./hierarchie-priorisierung.md) | **Priorisierungs-/Konflikt-Logik** (Konzept) | — | Konzept fertig |
 
 ## 7 Kern-Erkenntnisse (das Wichtigste)
@@ -54,9 +55,9 @@
    `maxweight` ~87 k, `hgv` ~83 k (gut), aber `maxwidth` ~15 k und **`maxaxleload` nur ~2,3 k**
    (zu dünn für Brückenstatik). ODbL. Gut als Basis-Layer + Cross-Check, nicht als alleinige
    Bauwerksquelle.
-6. **Kommerziell als Veredelung.** PTV / HERE / TomTom / OpenRouteService / GraphHopper haben die
-   beste GST-Attributtiefe (Tunnelklassen, Achslast, Gefahrgut, Zeitfenster) mit großzügigen
-   Free-Tiers — ideal als Cross-Check/Lückenfüller, nicht als Primärquelle (Lizenzbindung).
+6. **Freie Routing-Engines statt teurer Kommerzieller.** Kostenpflichtige Anbieter (PTV/HERE/TomTom)
+   wurden auf Max-Wunsch (2026-06-13) aus dem Katalog entfernt. Verbleiben **OpenRouteService** und
+   **GraphHopper** (OSS, self-hostbar, kostenlos) mit LKW-/GST-Profil als optionaler Routing-/Cross-Check-Layer.
 7. **„Land > Bund" stimmt so nicht** — siehe Hierarchie-Logik: Vorrang nach **Baulastträger /
    Straßenklasse**. Für **Bundesautobahnen ist die Autobahn GmbH des Bundes autoritativ**, nicht
    das Land; Land ist genauer nur für L-/K-/Gemeindestraßen.

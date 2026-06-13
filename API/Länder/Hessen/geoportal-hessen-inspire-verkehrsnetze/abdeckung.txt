@@ -1,0 +1,15 @@
+QUELLE:         Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkehrsnetze (ATKIS Basis-DLM, ALKIS, OKSTRA)
+BETREIBER:      HVBG (Hessische Verwaltung für Bodenmanagement und Geoinformation) / GDI-Hessen
+EBENE:          Land:Hessen
+DATENTYP:       Straßennetz-Topologie / Verkehrsnetze (INSPIRE Transport Networks: RoadLink, RoadArea, RoadServiceArea …). Keine Bauwerks-Restriktionsattribute (Traglast/Höhe)
+STRASSENTYP:    je Datenmodell (ATKIS topografisch; OKSTRA = klassifiziertes Netz A/B/L/K)
+FORMAT:         OGC API Features (GeoJSON) + WFS 2.0.0 (GML); Atom (INSPIRE Download)
+ENDPUNKT:       https://www.geoportal.hessen.de/spatial-objects/723/collections/tn-ro:RoadLink/items?f=json&limit=1
+DOKU:           https://www.geoportal.hessen.de/spatial-objects/723
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         offene Geodaten Hessen (i.d.R. dl-de/by-2-0 bzw. dl-de/zero — je Datensatz; Rechtsbasis HODaG; automatisierter Abruf kostenfrei)
+UPDATE:         periodisch (GDI-HE)
+STATUS:         verifiziert
+NOTIZ:          OAF live getestet: /spatial-objects/723 (ATKIS Basis-DLM Verkehrsnetze) liefert GeoJSON. Collections u.a. tn-ro:RoadLink (Straßenabschnitt), tn-ro:RoadArea, tn-ro:RoadServiceArea, plus Bahn/Wasser/Luft. /722 = ALKIS-Variante. Backend-WFS-GetCapabilities (13 FeatureTypes) → doku.xml (von https://inspire-hessen.de/ows/services/org.2.734621f7-...wfs). Liefert Netzgeometrie/Topologie, NICHT Brücken-Traglast/Höhe (die stecken in SIB-Hessen → hessen-mobil-lastbeschraenkte-bruecken). Dienst-Inventar über /spatial-objects/ (214 Dienste). Mapbender wfs.php?featuretype_id= funktioniert NICHT mit der spatial-objects-ID — OAF-Pfad nutzen.

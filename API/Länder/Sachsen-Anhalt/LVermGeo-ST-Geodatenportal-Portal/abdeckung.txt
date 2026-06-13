@@ -1,0 +1,15 @@
+QUELLE: Geodatenportal Sachsen-Anhalt (LVermGeo) — Open-Data-Rubrik
+BETREIBER: Landesamt für Vermessung und Geoinformation Sachsen-Anhalt (LVermGeo)
+EBENE: Land (Sachsen-Anhalt)
+DATENTYP: ATKIS-Bauwerke (Brücken-Geometrie), Basis-DLM, weitere Geobasis — KEINE Traglast
+STRASSENTYP: Alle (je Datensatz)
+FORMAT: WFS 2.0 / ATOM-Download / WMS
+ENDPUNKT: null (je Dienst in OpenData-Rubrik wählen; viele Nicht-OpenData-Dienste sind 403)
+DOKU: https://www.lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: dl-de/by-2.0 ("© GeoBasis-DE/LVermGeo LSA")
+UPDATE: regelmäßig
+STATUS: zu-bestätigen
+NOTIZ: Portal ja; exakte Bauwerks-WFS-URL je Dienst in OpenData-Rubrik auflösen. Bauwerks-WFS = nur Geometrie/Identität, KEINE Traglast/Brückenklasse.

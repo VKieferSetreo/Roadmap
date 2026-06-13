@@ -1,0 +1,15 @@
+QUELLE: INSPIRE-WFS MV Verkehrsnetze ATKIS Basis-DLM + WFS Basis-DLM NAS-konform
+BETREIBER: Landesamt für innere Verwaltung M-V (LAiV M-V), geodatenservice@laiv-mv.de
+EBENE: Land (Mecklenburg-Vorpommern)
+DATENTYP: Verkehrsnetz-Topologie (INSPIRE TN), Basis-DLM (~70 Objektarten inkl. Straßen, Bahn, Wasser) — KEINE Traglast
+STRASSENTYP: Alle (Netzgeometrie)
+FORMAT: WFS 2.0 (GML)
+ENDPUNKT: null (Metadaten-IDs: 495d1f90-4b52-438f-9a0a-7f8d9de548f3 TN; 7420e63e-… Basis-DLM NAS — exakte Dienst-URL über GeoPortal.MV CapabilitiesViewer auflösen)
+DOKU: https://www.geoportal-mv.de/portal/Geowebdienste/CapabilitiesViewer
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: dl-de/by-2.0 (Geobasis MV)
+UPDATE: regelmäßig
+STATUS: zu-bestätigen
+NOTIZ: Metadaten bestätigt, raw Dienst-URL noch über GeoPortal.MV CapabilitiesViewer aufzulösen. Geobasis-Open-Data MV. Netzgeometrie; Bauwerke separat. Datenübersicht: https://www.geoportal-mv.de/portal/Geodatenviewer/Datenuebersicht

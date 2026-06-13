@@ -1,0 +1,22 @@
+QUELLE:         Bayerische Vermessungsverwaltung (LDBV/BVV) — ATKIS Basis-DLM / Geobasis
+BETREIBER:      Landesamt für Digitalisierung, Breitband und Vermessung (LDBV) / BVV
+EBENE:          Land:Bayern
+DATENTYP:       ATKIS Basis-DLM (topographisches Landschaftsmodell inkl. Objektbereich Verkehr/Straßen); INSPIRE-WMS "Verkehrsnetze ATKIS Basis-DLM"
+STRASSENTYP:    Alle (Topographie)
+FORMAT:         Download (Shapefile / GeoPackage) / WFS / WMS / WMTS
+ENDPUNKT:       -   (konkreter WFS/Download-Endpunkt über OpenData-/Dienste-Seite aufzulösen)
+DOKU:           https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 — "Datenquelle: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de"
+UPDATE:         periodisch (Geobasis-Fortführung)
+STATUS:         zu-bestätigen
+NOTIZ:          OpenData + CC BY 4.0 bestätigt; exakte Dienst-/Download-URLs zu-bestätigen
+                (KEINE URL erfunden). Auflösen über:
+                Dienste:        https://www.ldbv.bayern.de/produkte/dienste/geodatendienste.html
+                ATKIS Download: https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm
+                INSPIRE-WMS Verkehrsnetze (Record):
+                https://inspire-geoportal.ec.europa.eu/srv/api/records/459d9c1c-4996-4076-8de3-5540ff16886a
+                Günstiger lizenziert als das BW-INSPIRE-Pendant (A6). Netz-Geometrie + Klassifizierung;
+                Höhen/Restriktionen NICHT Hauptmerkmal.

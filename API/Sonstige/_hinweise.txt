@@ -1,0 +1,39 @@
+# API/Sonstige — Hinweise: Eintraege OHNE eigenen API-Ordner
+# Quelle der Wahrheit: docs/research/quellen-osm-geodaten-kommerziell.md
+# Hier stehen reine METHODEN / historische / Tooling-Eintraege, die KEINE eigene
+# katalogisierbare Schnittstelle haben und daher bewusst keinen Ordner bekommen.
+
+[OGC-Zugriffsmuster (WFS / WMS / OGC API Features)] — METHODE, kein Endpunkt
+  Generisches Zugriffsmuster auf nahezu alle Landes-/Kommunal-Geodienste, KEIN
+  einzelner Anbieter. Immer zuerst GetCapabilities/collections abfragen, dann
+  gezielt FeatureType/Collection laden.
+    - WFS:              ...?SERVICE=WFS&REQUEST=GetCapabilities  -> Liste FeatureTypes
+    - OGC API Features: .../collections  ->  .../collections/{id}/items?f=json&bbox=...
+    - WMS (Raster):     ...?SERVICE=WMS&REQUEST=GetCapabilities
+  Konkrete Beispiel-Anwendung dieses Musters liegt als echter Ordner unter
+  inspire-transport-networks/ (BKG DLM250 WFS, live GetCapabilities). Bei jeder
+  Landesquelle (Ordner unter ../Länder/) nach GetCapabilities/collections suchen.
+
+[prop2osm (gis-ops)] — TOOLING, keine API
+  Dienstleistung/Tooling, das proprietaere Datensaetze (TomTom/HERE) in FOSS-Routing-
+  Engines (ORS/GraphHopper) routbar macht. Relevant nur, falls kommerzielle Attribute
+  mit eigener Engine kombiniert werden sollen.
+    https://github.com/gis-ops/prop2osm-public
+
+[mCLOUD] — HISTORISCH, abgeloest
+  Das frueher relevante mCLOUD-Portal des BMDV (REST-Export https://mcloud.de/export/,
+  RDF/DCAT-AP.de/CSV) wurde 2022 von der Mobilithek abgeloest (ebenso MDM/Mobility Data
+  Marketplace). NICHT als aktive Quelle einplanen. Mobilithek liegt unter
+  ../Bundesweit/mobilithek/ (NAP des Bundes), NICHT hier in Sonstige.
+
+[OSM-Tag->Hindernis-Mapping (Kerntabelle)] — WISSEN, keine API
+  Die Tag->Hindernis-Zuordnung (maxheight/maxwidth/maxweight/maxaxleload, hgv, bridge,
+  tunnel, ford, railway=level_crossing, junction=roundabout, traffic_calming, hazmat,
+  incline) + Conditional-Restrictions-Syntax steht in der Research-Datei
+  (docs/research/quellen-osm-geodaten-kommerziell.md, Abschnitt 1.0). Wird ueber die
+  konkreten OSM-APIs (overpass-api/, geofabrik-extrakte/, qlever-osm-sparql/) abgefragt.
+
+# Lizenz-Querschnitt: ALLE OSM-abgeleiteten Quellen hier (overpass, geofabrik,
+# osm-planet-diffs, qlever, nominatim, ORS, GraphHopper) stehen unter ODbL 1.0 —
+# Attribution "© OpenStreetMap contributors" Pflicht, Share-Alike nur bei Weitergabe
+# einer abgeleiteten DATENBANK (nicht bei berechneten Routen / Produced Works).

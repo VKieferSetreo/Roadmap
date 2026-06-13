@@ -1,0 +1,6 @@
+Köln — Verkehrsbeeinträchtigungen Stadt Köln
+Portal (Drupal/DKAN — kein maschinelles CKAN-API):
+  https://offenedaten-koeln.de/dataset/verkehrsbeeinträchtigungen-stadt-köln
+Resource (GeoJSON, Direkt-Link manuell von hier ziehen):
+  https://offenedaten-koeln.de/dataset/verkehrsbeeinträchtigungen-stadt-köln/resource/9c1897d1-de5b-47ea-92ef-1858bc1040df
+Hinweis: /api/3/action liefert HTML (Antibot), nicht JSON. Kein test.sh möglich ohne stabilen Resource-Link.

@@ -1,0 +1,20 @@
+QUELLE:         BAYSIS Fachnetze (+ Verkehrsdaten / Verwaltungsgrenzen) — WFS / WMS
+BETREIBER:      Bayerische Straßenbauverwaltung (gisportal-stmb.bayern.de)
+EBENE:          Land:Bayern
+DATENTYP:       Fachnetze = bedarfsabhängige Umleitungen (GST-Alternativrouten); zusätzlich
+                Verkehrszähldaten (Stand 2021) + Verwaltungsgrenzen (Staatl. Bauämter/Straßenmeistereien)
+STRASSENTYP:    abhängig vom Layer
+FORMAT:         WFS (GML / GeoJSON) / WMS
+ENDPUNKT:       https://gisportal-stmb.bayern.de/server/services/WFS/BAYSIS_Fachnetze/MapServer/WFSServer
+DOKU:           https://www.baysis.bayern.de/internet/geodaten_dienste/wfs/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (BAYSIS)
+UPDATE:         je Layer (Fachnetze/Verwaltungsgrenzen periodisch; Verkehrsdaten Stand 2021)
+STATUS:         verifiziert
+NOTIZ:          FeatureType live bestätigt (2026-06-13): BAYSIS_Fachnetze:bedarfsumleitungen.
+                "Fachnetze" (bedarfsabhängige Umleitungen) ggf. als kuratierte Lkw-/Schwerlast-
+                tauglichere Alternativrouten nutzbar. Weitere Dienste derselben Familie:
+                .../WFS/BAYSIS_Verkehrsdaten/MapServer/WFSServer (Zähldaten 2021),
+                .../WFS/BAYSIS_Verwaltungsgrenzen/MapServer/WFSServer.

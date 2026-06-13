@@ -1,0 +1,4 @@
+Portal-Quelle ohne dokumentierten API-Feed (nur interaktive Web-Karte; Feed per E-Mail erfragen):
+Baustelleninformationssystem LS BB: https://www.ls.brandenburg.de/ls/de/bauen/baustelleninformationssystem/
+Straßennetzviewer LS BB: https://www.ls.brandenburg.de/ls/de/service/strassennetzviewer/
+Feed-Anfrage: LS-Baustellen-Infosystem@LS.Brandenburg.de , Tel. 03342 249 2997

@@ -1,0 +1,6 @@
+Frankfurt am Main — Straßenverkehrsamt / IGLZ
+Portal: https://offenedaten.frankfurt.de/dataset?tags=Verkehrsdaten
+Org: https://offenedaten.frankfurt.de/organization/strassenverkehrsamt
+Region: https://www.region-frankfurt.de/Services/Geoportal
+Alternativ (DATEX-II, Bund): Mobilithek — siehe API/Bundesweit/mobilithek
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

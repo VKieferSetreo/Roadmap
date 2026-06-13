@@ -1,0 +1,15 @@
+QUELLE: Detailnetz Berlin — Ingenieurbauwerke (Brücken, Tunnel)
+BETREIBER: Senatsverwaltung / GDI Berlin
+EBENE: Land (Berlin)
+DATENTYP: Brücken, Tunnel (Geometrie/Identität) + Straßenabschnitte + Verbindungspunkte — KEINE Traglast/Brückenklasse
+STRASSENTYP: Alle (Berliner Detailnetz)
+FORMAT: WFS 2.0 (GML)
+ENDPUNKT: https://gdi.berlin.de/services/wfs/detailnetz?service=WFS&version=2.0.0&request=GetCapabilities
+DOKU: https://daten.berlin.de/datensaetze/detailnetz-bauwerke-wfs
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: DL-DE/Zero-2.0 (keine Namensnennung nötig)
+UPDATE: laufend (Fachanwendung)
+STATUS: verifiziert
+NOTIZ: Neuer gdi.berlin.de-Host (FIS-Broker abgeschaltet 01.12.2025). Layer detailnetz:b_bauwerke (Brücken/Tunnel), detailnetz:c_strassenabschnitte, detailnetz:a_verbindungspunkte. NUR Geometrie/Identität, KEINE Traglast. netrefs der VIZ-Quelle matchen hierauf. Output nur GML → WFS/GML-Parser. GetCapabilities live HTTP 200, Layer-Namen bestätigt.

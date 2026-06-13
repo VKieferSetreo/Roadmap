@@ -1,0 +1,15 @@
+QUELLE:         ASV Bremen — Amt für Straßen und Verkehr (Brücken & GST-Stelle)
+BETREIBER:      Amt für Straßen und Verkehr Bremen (Abt. 5 Ingenieurbau + Verkehrsbehörde/GST-Stelle)
+EBENE:          Land:Bremen
+DATENTYP:       502 Brücken-Bauteile + Tunnel, Stützwände, Lärmschutz, Schilderbrücken (Entwurf/Bau/Erhaltung/Prüfung); Großraum-/Schwertransport-Genehmigungen
+STRASSENTYP:    Alle (öffentliche Straßen HB)
+FORMAT:         Web (Bauwerksportal bruecken.bremen.de); kein offener WFS dokumentiert
+ENDPUNKT:       -   (kein offener Datendienst publiziert)
+DOKU:           https://www.asv.bremen.de/aufgaben/bruecken-und-ingenieurbau-1714
+ZUGANG:         eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         restricted (Behördendaten)
+UPDATE:         laufend (Fachsystem)
+STATUS:         zu-bestätigen
+NOTIZ:          Maßgebliche Stelle für HB-Bauwerksrestriktionen + GST-Genehmigung — Daten per Anfrage, NICHT offen. Kein API-Key/Account-Self-Service, sondern Kontaktformular/Ansprechpartner Abt. 5; GST-Stelle für Routendaten. Bauwerksportal: https://bruecken.bremen.de . Bremerhaven separat (eigene Zuständigkeit).

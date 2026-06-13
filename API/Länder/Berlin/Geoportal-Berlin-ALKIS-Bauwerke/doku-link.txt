@@ -1,0 +1,4 @@
+Portal-Quelle ohne festen API-Endpunkt (FIS-Broker-Migration → gdi.berlin.de, je Datensatz auflösen):
+Geodatensuche Berlin (Metadaten-Katalog): https://gdi.berlin.de/geonetwork/srv/ger/catalog.search#/home
+Geoportal Berlin Viewer: https://gdi.berlin.de/viewer/main/
+Geodaten Berlin (SenSBW): https://www.berlin.de/sen/sbw/stadtdaten/geodaten-berlin/

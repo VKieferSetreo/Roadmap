@@ -1,0 +1,139 @@
+== Beispiel-Spec aus dem Katalog: Autobahn OpenAPI (gekürzt) ==
+openapi: "3.0.0"
+info:
+  version: 1.0.1
+  title: Autobahn App API
+  contact:
+    url: https://www.autobahn.de/datenschutz/
+    email: kontakt@autobahn.de
+    name: Die Autobahn GmbH des Bundes
+  x-office: Bundesministerium für Digitales und Verkehr
+  description: |
+    Was passiert auf Deutschlands Bundesstraßen? API für aktuelle Verwaltungsdaten zu Baustellen, Staus und Ladestationen. Außerdem Zugang zu Verkehrsüberwachungskameras und vielen weiteren Datensätzen.
+servers:
+  - url: https://verkehr.autobahn.de/o/autobahn
+
+paths:
+
+  /:
+    get:
+      operationId: list-autobahnen
+      summary: Liste verfügbarer Autobahnen
+      description: Gibt eine Liste der verfügbaren Autobahnen zurück.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roads"
+
+  /{roadId}/services/roadworks:
+    get:
+      operationId: list-roadworks
+      summary: Liste aktueller Baustellen
+      description: Gibt eine Liste der aktuellen Baustellen zu einer Autobahn zurück.
+      parameters:
+        - name: roadId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/RoadId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadworks"
+        "204":
+          description: Not found.
+        "400":
+          description: Internal server error.
+        "404":
+          description: Not found.
+
+  /details/roadworks/{roadworkId}:
+    get:
+      operationId: get-roadwork
+      summary: Details einer Baustelle
+      description: Gibt Details zu einer konkreten Baustelle zurück.
+      parameters:
+        - name: roadworkId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: byte
+            example: "Uk9BRFdPUktTX19tZG0ubndfXzAyLTgwMDAwIEQgNzEgMTkgMDkvS0xCV1JO"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roadwork"
+        "204":
+          description: Not found.
+        "400":
+          description: Internal server error.
+        "404":
+          description: Not found.
+
+  /{roadId}/services/webcam:
+    get:
+      operationId: list-webcams
+      summary: Liste verfügbarer Webcams
+      description: Gibt eine Liste der Webcams zu einer Autobahn zurück.
+      parameters:
+        - name: roadId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/RoadId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webcams"
+        "204":
+          description: Not found.
+        "400":
+          description: Internal server error.
+        "404":
+          description: Not found.
+
+  # https://verkehr.autobahn.de/o/autobahn/details/webcam/%5BID%5D
+  /details/webcam/{webcamId}:
+    get:
+      operationId: get-webcam
+      summary: Details einer Webcam
+      description: Gibt Details einer konkreten Webcam zurück.
+      parameters:
+        - name: webcamId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: byte
+            example: "V0VCQ0FNX19OUldfU2lsYS1TaWduYWxiYXVfMTAxMDgxNDE3MjM4ODYzOTk5MTU="
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webcam"
+        "204":
+          description: Not found.
+        "400":
+          description: Internal server error.
+        "404":
+          description: Not found.
+
+  /{roadId}/services/parking_lorry:
+    get:
+      oper
+...(gekürzt)

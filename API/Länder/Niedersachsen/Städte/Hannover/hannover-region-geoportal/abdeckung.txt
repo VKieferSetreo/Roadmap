@@ -1,0 +1,15 @@
+QUELLE:         Hannover (Region) — Geoportal / HannIT
+BETREIBER:      Region Hannover (Geodatenportal) / HannIT (kommunaler IT-Dienstleister, Mobilität & GIS); LH Hannover FB Planen & Stadtentwicklung
+EBENE:          Stadt:Hannover,Niedersachsen
+DATENTYP:       gebündelte Geodaten/Geodienste; Verkehr/Infrastruktur; INSPIRE-Verkehrsnetze (Region Hannover, 21 Kommunen)
+STRASSENTYP:    innerorts
+FORMAT:         WMS / WFS / ATOM-Feeds (INSPIRE-konform via pmINSPIRE)
+ENDPUNKT:       -
+DOKU:           https://hannit.de/bereiche/mobilitaet-und-gis/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open GeoData (dl-de / CC-BY je Dienst)
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Geoportal + Geodatendienste bestätigt, dedizierter Baustellen-Endpunkt nicht isoliert (apiEndpunkt=null für Baustellen). Region Hannover = überregionaler kommunaler Verbund (Muster wie RVR/TRK). HannIT betreut Mobilität/GIS — Ansprechpartner für Baustellen-Feed. Niedersachsen-OpenGeoData (ArcGIS Hub) ergänzt landesweit.

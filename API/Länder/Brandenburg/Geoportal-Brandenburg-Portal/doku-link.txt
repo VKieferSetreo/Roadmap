@@ -1,0 +1,4 @@
+Portal/Metadatenkatalog ohne festen API-Endpunkt (Dienste je Thema auflösen):
+Geoportal Brandenburg (GDI-BB): https://geoportal.brandenburg.de/
+Geobroker LGB: https://geobroker.geobasis-bb.de/
+MetaVer (Open-Data-Geodaten): https://metaver.de/

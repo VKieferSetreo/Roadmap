@@ -1,0 +1,15 @@
+QUELLE:         Leipzig — Verkehrszeichen-Kataster
+BETREIBER:      Stadt Leipzig, Amt für Geoinformation und Bodenordnung (geodienste.leipzig.de, GeoServer)
+EBENE:          Stadt:Leipzig,Sachsen
+DATENTYP:       Verkehrszeichen-Kataster (enthält Höhen-/Breiten-/Gewichts-/Achslast-Beschränkungszeichen — VZ 262/263/264/265/266)
+STRASSENTYP:    innerorts
+FORMAT:         WFS / GeoJSON / CSV
+ENDPUNKT:       https://geodienste.leipzig.de/l3/OpenData/wfs?VERSION=2.0.0&REQUEST=GetFeature&typeName=OpenData:verkehrszeichen&outputFormat=application/json
+DOKU:           https://geodienste.leipzig.de/l3/OpenData/wfs?REQUEST=GetCapabilities&SERVICE=WFS&VERSION=2.0.0  (Portal: https://opendata.leipzig.de/dataset/verkehrszeichen-stadt-leipzig)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         im CKAN nicht explizit gesetzt — bei Stadt Leipzig bestätigen
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          Live getestet (FeatureCollection, EPSG:25833). HOCHWERTIG für GST: VZ 262 (zul. Gesamtmasse), 263 (Achslast), 264 (Breite), 265 (Höhe), 266 (Länge) verorten exakt die GST-relevanten Durchfahrtsbeschränkungen innerorts. Felder u.a.: objectid, so_id, so_sym_tx, so_av_tx (Anlagen-/Schildbezeichnung), so_seg_sn (Straßenname), so_beg/so_end (Gültigkeit), Geometrie Punkt. Layer-Name "verkehrszeichen" (klein). Sauberste strukturierte Quelle für innerörtliche Restriktionen.

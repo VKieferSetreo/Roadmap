@@ -1,0 +1,15 @@
+QUELLE:         Transparenzportal Bremen — Offene Daten
+BETREIBER:      Senatorin für Finanzen Bremen
+EBENE:          Land:Bremen
+DATENTYP:       Querschnitt (Umwelt, Geo, Verkehr, Statistik); Verkehr-/Brücken-Datensätze über Kategorie-/Stichwortsuche
+STRASSENTYP:    Alle (je Datensatz)
+FORMAT:         CSV/JSON/XML; Geo-Datensätze verweisen auf WFS/WMS
+ENDPUNKT:       https://www.transparenz.bremen.de/daten-1467   (Gesamtübersicht offene Daten: /daten/offene-daten-bremen-gesamtuebersicht-aller-offenen-datensaetze-8249)
+DOKU:           https://www.transparenz.bremen.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Datensätze i.d.R. CC BY 3.0 / dl-de/by; Portalseiten CC BY-NC-ND
+UPDATE:         laufend
+STATUS:         zu-bestätigen
+NOTIZ:          Such-/Übersichtsseiten liefern HTML (HTTP 200); konkrete Verkehr/Brücken-Datensätze + deren JSON/XML/WFS-Download über die Suche auflösen → zu-bestätigen. Eher dünn bei Verkehr/Brücken; GeoPortal/GIS-Hub (GeoPortal-Bremen-GIS-Hub-GDI-HB) ist der ergiebigere Geo-Einstieg.

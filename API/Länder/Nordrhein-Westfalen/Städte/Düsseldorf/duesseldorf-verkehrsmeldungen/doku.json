@@ -1,0 +1,44 @@
+{
+  "Resource": "2056000",
+  "Name": "Verkehrsmeldungen Stadt Düsseldorf",
+  "Description": "Verkehrsmeldungen (Baustellen, verkehrsrelevante Veranstaltungen, Verkehrsstörungen) im strategischen Verkehrsnetz der Stadt Düsseldorf. \r\nEs werden zu den Texten auch die jeweiligen TMC Alert-C-Codes geliefert (je nach Meldung können 1 bis 3 Codes generiert werden).",
+  "ValidFrom": "2013-06-05T00:00:00.000+02:00",
+  "ValidUntil": "",
+  "MdmBrokering": true,
+  "Owner": "",
+  "DataCategory": "Baustelleninformationen",
+  "DataCategoryDetail": [],
+  "TransportMode": [
+    "Pkw",
+    "Lkw"
+  ],
+  "UpdateInterval": "1 min",
+  "ConditionsOfUse": "Keine Bedingungen",
+  "ModelContract": "https:\/\/service.mdm-portal.de\/mdm-portal-application\/downloadContractFile.do?pubId=2056000",
+  "GeographicalCoverage": [{
+    "NutsCode": "DEA11",
+    "NutsName": "D&uuml;sseldorf, Kreisfreie Stadt"
+  }],
+  "RoadNetworkCoverage": {
+    "RoadNetworkCoverage": [
+      "Bundes- und Landesstraßen",
+      "Gemeindestraßen"
+    ],
+    "AdditionalDescription": ""
+  },
+  "GeoReferenceMethod": ["sonstige"],
+  "AccessInformation": [{
+    "DataFormatSyntax": "XML",
+    "DataFormatModel": "DATEX II Version 2.x",
+    "AccessProtocol": "OTS2",
+    "AccessUrl": "",
+    "DataFormatDescription": "",
+    "SchemaDefinitionFileUrl": "http:\/\/bast.s3.amazonaws.com\/schema\/1370440443922\/MDM-Profile_TrafficMessages.xsd"
+  }],
+  "DataValidity": "",
+  "QsText": "",
+  "Supplier": {
+    "Name": "Landeshauptstadt Düsseldorf",
+    "Homepage": "http:\/\/www.duesseldorf.de"
+  }
+}

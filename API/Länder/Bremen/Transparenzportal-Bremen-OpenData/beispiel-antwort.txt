@@ -1,0 +1,7 @@
+== Transparenzportal Bremen — Daten-Suche (HTTP-Status) ==
+HTTP 200 | text/html; charset=utf-8
+
+== Gesamtübersicht offene Daten (HTTP-Status) ==
+HTTP 200 | text/html; charset=utf-8
+
+Nächster Schritt: Verkehr/Brücken-Datensatz in der Suche öffnen → JSON/XML/WFS-Download-URL kopieren.

@@ -1,0 +1,1067 @@
+<?xml version='1.0' encoding='UTF-8'?><WFS_Capabilities xmlns="http://www.opengis.net/wfs/2.0" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>INSPIRE-WFS TH Verkehrsnetze Straßverkehrsnetz ATKIS Basis-DLM</ows:Title>
+    <ows:Abstract>Dieser Dienst stellt für das INSPIRE-Thema Verkehrsnetze, Unterthema Straßverkehrsnetz aus ATKIS Basis-DLM umgesetzte Daten bereit.</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword xml:lang="ger">INSPIRE-WMS_TH_Straßverkehrsnetz_ATKIS_Basis-DLM</ows:Keyword>
+      <ows:Keyword xml:lang="ger">Straßverkehrsnetz</ows:Keyword>
+      <ows:Keyword xml:lang="eng">Road Transport Network</ows:Keyword>
+      <ows:Keyword xml:lang="ger">ATKIS</ows:Keyword>
+      <ows:Keyword xml:lang="ger">Basis-DLM</ows:Keyword>
+      <ows:Keyword xml:lang="ger">Amtliches Topographisch-Kartographisches Informationssystem</ows:Keyword>
+      <ows:Keyword xml:lang="ger">Digitales Basis-Landschaftsmodell</ows:Keyword>
+      <ows:Keyword xml:lang="ger">Verkehrsnetze</ows:Keyword>
+      <ows:Keyword xml:lang="eng">Transport Networks</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType codeSpace="http://www.opengeospatial.org/">WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>Dieses Angebot kann gemäß der "Datenlizenz Deutschland – Namensnennung – Version 2.0" (https://www.govdata.de/dl-de/by-2-0) genutzt werden. { "id": "dl-de/by-2-0", "name": "Datenlizenz Deutschland – Namensnennung – Version 2.0", "url": "https://www.govdata.de/dl-de/by-2-0 ", "quelle": "© GDI-Th" }</ows:Fees>
+    <ows:AccessConstraints>Es gelten keine Beschränkungen.</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>Thüringer Ministerium für Digitales und Infrastruktur</ows:ProviderName>
+    <ows:ProviderSite xlink:href="https://geoportal.thueringen.de"/>
+    <ows:ServiceContact>
+      <ows:IndividualName>Kompetenzzentrum Geodateninfrastruktur Thüringen</ows:IndividualName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 361 57-4176926</ows:Voice>
+          <ows:Facsimile/>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Hohenwindenstr. 13 a</ows:DeliveryPoint>
+          <ows:City>Erfurt</ows:City>
+          <ows:AdministrativeArea>Erfurt</ows:AdministrativeArea>
+          <ows:PostalCode>99086</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>kompetenzzentrum.gdi-th@tlbg.thueringen.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="https://geoportal.thueringen.de"/>
+        <ows:HoursOfService>24x7</ows:HoursOfService>
+        <ows:ContactInstructions>Thüringer Ministerium für Digitales und Infrastruktur</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>pointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:AllowedValues>
+          <ows:Value>2.0.0</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:AllowedValues>
+          <ows:Value>text/xml</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="Sections">
+        <ows:AllowedValues>
+          <ows:Value>ServiceIdentification</ows:Value>
+          <ows:Value>ServiceProvider</ows:Value>
+          <ows:Value>OperationsMetadata</ows:Value>
+          <ows:Value>FeatureTypeList</ows:Value>
+          <ows:Value>Filter_Capabilities</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="ListStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetPropertyValue">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Parameter name="version">
+      <ows:AllowedValues>
+        <ows:Value>2.0.0</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="srsName">
+      <ows:AllowedValues>
+        <ows:Value>urn:ogc:def:crs:EPSG::25832</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::4326</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31467</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31468</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::25833</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::4258</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3038</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3039</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3040</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3041</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3042</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3043</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3044</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3045</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3046</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3047</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="outputFormat">
+      <ows:AllowedValues>
+        <ows:Value>text/xml; subtype="gml/3.2.1"</ows:Value>
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="resolve">
+      <ows:AllowedValues>
+        <ows:Value>none</ows:Value>
+        <ows:Value>local</ows:Value>
+        <ows:Value>remote</ows:Value>
+        <ows:Value>all</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Constraint name="ImplementsSimpleWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsBasicWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTransactionalWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsLockingWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="KVPEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="XMLEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="SOAPEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsInheritance">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsRemoteResolve">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsResultPaging">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsStandardJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsSpatialJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTemporalJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsFeatureVersioning">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ManageStoredQueries">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="CountDefault">
+      <ows:NoValues/>
+      <ows:DefaultValue>25000</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ResolveLocalScope">
+      <ows:NoValues/>
+      <ows:DefaultValue>*</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="QueryExpressions">
+      <ows:AllowedValues>
+        <ows:Value>wfs:Query</ows:Value>
+        <ows:Value>wfs:StoredQuery</ows:Value>
+      </ows:AllowedValues>
+    </ows:Constraint>
+    <ows:ExtendedCapabilities xmlns:ows="http://www.opengis.net/ows/1.1">
+            
+      <inspire_dls:ExtendedCapabilities xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd     http://inspire.ec.europa.eu/schemas/inspire_dls/1.0 http://inspire.ec.europa.eu/schemas/inspire_dls/1.0/inspire_dls.xsd">
+                
+        <inspire_common:ResourceLocator>
+                    
+          <inspire_common:URL>https://geoportal.thueringen.de</inspire_common:URL>
+                    
+          <inspire_common:MediaType>text/html</inspire_common:MediaType>
+                
+        </inspire_common:ResourceLocator>
+                
+        <inspire_common:ResourceType>service</inspire_common:ResourceType>
+                
+        <inspire_common:TemporalReference>
+                    
+          <inspire_common:DateOfCreation>2010-12-21</inspire_common:DateOfCreation>
+                
+        </inspire_common:TemporalReference>
+                
+        <inspire_common:Conformity>
+                    
+          <inspire_common:Specification>
+                        
+            <inspire_common:Title>VERORDNUNG (EG) Nr. 1089/2010 DER KOMMISSION vom 23. November 2010 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Interoperabilität von Geodatensätzen und -diensten</inspire_common:Title>
+                        
+            <inspire_common:DateOfPublication>2010-12-08</inspire_common:DateOfPublication>
+                        
+            <inspire_common:URI>OJ:L:2010:323:0011:0102:DE:PDF</inspire_common:URI>
+                        
+            <inspire_common:ResourceLocator>
+                            
+              <inspire_common:URL>http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2010:323:0011:0102:DE:PDF</inspire_common:URL>
+                            
+              <inspire_common:MediaType>application/pdf</inspire_common:MediaType>
+                        
+            </inspire_common:ResourceLocator>
+                    
+          </inspire_common:Specification>
+                    
+          <inspire_common:Degree>notEvaluated</inspire_common:Degree>
+                
+        </inspire_common:Conformity>
+                
+        <inspire_common:MetadataPointOfContact>
+                    
+          <inspire_common:OrganisationName>Geodateninfrastruktur Thüringen</inspire_common:OrganisationName>
+                    
+          <inspire_common:EmailAddress>ringo.staudt@tlbg.thueringen.de</inspire_common:EmailAddress>
+                
+        </inspire_common:MetadataPointOfContact>
+                
+        <inspire_common:MetadataDate>2010-12-10</inspire_common:MetadataDate>
+				
+        <inspire_common:SpatialDataServiceType>download</inspire_common:SpatialDataServiceType>
+				
+        <inspire_common:MandatoryKeyword>
+					
+          <inspire_common:KeywordValue>infoFeatureAccessService</inspire_common:KeywordValue>
+				
+        </inspire_common:MandatoryKeyword>
+                
+        <inspire_common:Keyword>
+                    
+          <inspire_common:OriginatingControlledVocabulary>
+                        
+            <inspire_common:Title>INSPIRE themes</inspire_common:Title>
+                        
+            <inspire_common:DateOfPublication>2008-06-01</inspire_common:DateOfPublication>
+                    
+          </inspire_common:OriginatingControlledVocabulary>
+                    
+          <inspire_common:KeywordValue>Road Transport Network</inspire_common:KeywordValue>
+                
+        </inspire_common:Keyword>
+                
+        <inspire_common:SupportedLanguages>
+                    
+          <inspire_common:DefaultLanguage>
+                        
+            <inspire_common:Language>ger</inspire_common:Language>
+                    
+          </inspire_common:DefaultLanguage>
+                    
+          <inspire_common:SupportedLanguage>
+                        
+            <inspire_common:Language>ger</inspire_common:Language>
+                    
+          </inspire_common:SupportedLanguage>
+                
+        </inspire_common:SupportedLanguages>
+                
+        <inspire_common:ResponseLanguage>
+                    
+          <inspire_common:Language>ger</inspire_common:Language>
+                
+        </inspire_common:ResponseLanguage>
+                
+        <inspire_common:MetadataUrl>
+                    
+          <inspire_common:URL>https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e8563581-2b71-40be-b7a8-0abd02893bc7</inspire_common:URL>
+                    
+          <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
+                
+        </inspire_common:MetadataUrl>			
+            
+      </inspire_dls:ExtendedCapabilities>
+        
+    </ows:ExtendedCapabilities>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:ERoad</Name>
+      <Title>tn-ro:ERoad</Title>
+      <Abstract>Eine durch ihre Europastraßennummer gekennzeichnete Gruppe von Straßenrouten und/oder einzelnen Straßenabschnitten, die eine Strecke bilden, die Teil des internationalen Europastraßennetzes ist.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Europastraße</ows:Keyword>
+        <ows:Keyword xml:lang="eng">E-Road</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:FormOfWay</Name>
+      <Title>tn-ro:FormOfWay</Title>
+      <Abstract>Eine Klassifikation, die auf den physischen Eigenschaften des Straßenabschnitts beruht.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Nutzungsart der Straße</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Form Of Way</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:FunctionalRoadClass</Name>
+      <Title>tn-ro:FunctionalRoadClass</Title>
+      <Abstract>Eine Klassifikation, die auf der Bedeutung der Funktion beruht, die der Straße im Straßenverkehrsnetz zukommt. </Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Funktionsklasse der Straße</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Functional Road Class</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:NumberOfLanes</Name>
+      <Title>tn-ro:NumberOfLanes</Title>
+      <Abstract>Die Anzahl der Fahrstreifen eines Straßenabschnitts.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Anzahl der Fahrstreifen</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Number Of Lanes</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:Road</Name>
+      <Title>tn-ro:Road</Title>
+      <Abstract> Eine Gruppe von Straßenrouten und/oder einzelnen Straßenabschnitten, die durch einen oder mehrere thematische Identifikatoren und/oder eine oder mehrere Eigenschaften gekennzeichnet ist.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Straße</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadArea</Name>
+      <Title>tn-ro:RoadArea</Title>
+      <Abstract>Das Gelände innerhalb der Straßenränder einschließlich des Verkehrsbereichs und anderer Teile der Straße.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Straßenfläche</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road Area</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadLink</Name>
+      <Title>tn-ro:RoadLink</Title>
+      <Abstract>Ein lineares Geo-Objekt, das die Geometrie und Konnektivität eines Straßenverkehrsnetzes zwischen zwei Punkten im Netz beschreibt. Straßenabschnitte können Wege, Fahrradwege, Straßen mit einer Fahrbahn, Straßen mit mehreren Fahrbahnen und sogar Bewegungsbahnen über Verkehrsflächen sein.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Straßenabschnitt </ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road Link</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadServiceArea</Name>
+      <Title>tn-ro:RoadServiceArea</Title>
+      <Abstract>Ein Gelände, das an eine Straße angegliedert ist und dazu dient, bestimmte Funktionen in Bezug auf diese Straße zu erfüllen.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Servicegelände</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road Service Area</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadSurfaceCategory</Name>
+      <Title>tn-ro:RoadSurfaceCategory</Title>
+      <Abstract>Kennzeichnung der Beschaffenheit des Belags eines zugehörigen Straßenelements. Gibt an, ob eine Straße befestigt ist oder nicht.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Kategorie der Straßenbefestigung</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road Surface Category</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadWidth</Name>
+      <Title>tn-ro:RoadWidth</Title>
+      <Abstract>Die Breite der Straße, angegeben als Mittelwert.</Abstract>
+      <ows:Keywords>
+        <ows:Keyword xml:lang="ger">Straßenbreite</ows:Keyword>
+        <ows:Keyword xml:lang="eng">Road Width</ows:Keyword>
+      </ows:Keywords>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::25832</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4258</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3038</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3039</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3040</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3041</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3042</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3043</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3046</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3047</OtherCRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=e98cb550-e246-4b9b-8a29-49029a51f5cc"/>
+    </FeatureType>
+  </FeatureTypeList>
+  <fes:Filter_Capabilities>
+    <fes:Conformance>
+      <fes:Constraint name="ImplementsQuery">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsAdHocQuery">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsFunctions">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsResourceId">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinStandardFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsStandardFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinSpatialFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSpatialFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinTemporalFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsTemporalFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsVersionNav">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSorting">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsExtendedOperators">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinimumXPath">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSchemaElementFunc">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+    </fes:Conformance>
+    <fes:Id_Capabilities>
+      <fes:ResourceIdentifier name="fes:ResourceId"/>
+    </fes:Id_Capabilities>
+    <fes:Scalar_Capabilities>
+      <fes:LogicalOperators/>
+      <fes:ComparisonOperators>
+        <fes:ComparisonOperator name="PropertyIsEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsNotEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsLessThan"/>
+        <fes:ComparisonOperator name="PropertyIsGreaterThan"/>
+        <fes:ComparisonOperator name="PropertyIsLessThanOrEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsGreaterThanOrEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsLike"/>
+        <fes:ComparisonOperator name="PropertyIsNull"/>
+        <fes:ComparisonOperator name="PropertyIsNil"/>
+        <fes:ComparisonOperator name="PropertyIsBetween"/>
+      </fes:ComparisonOperators>
+    </fes:Scalar_Capabilities>
+    <fes:Spatial_Capabilities>
+      <fes:GeometryOperands xmlns:gml="http://www.opengis.net/gml" xmlns:gml32="http://www.opengis.net/gml">
+        <fes:GeometryOperand name="gml:Box"/>
+        <fes:GeometryOperand name="gml:Envelope"/>
+        <fes:GeometryOperand name="gml:Point"/>
+        <fes:GeometryOperand name="gml:LineString"/>
+        <fes:GeometryOperand name="gml:Curve"/>
+        <fes:GeometryOperand name="gml:Polygon"/>
+        <fes:GeometryOperand name="gml:Surface"/>
+        <fes:GeometryOperand name="gml:MultiPoint"/>
+        <fes:GeometryOperand name="gml:MultiLineString"/>
+        <fes:GeometryOperand name="gml:MultiCurve"/>
+        <fes:GeometryOperand name="gml:MultiPolygon"/>
+        <fes:GeometryOperand name="gml:MultiSurface"/>
+        <fes:GeometryOperand name="gml:CompositeCurve"/>
+        <fes:GeometryOperand name="gml:CompositeSurface"/>
+        <fes:GeometryOperand name="gml32:Envelope"/>
+        <fes:GeometryOperand name="gml32:Point"/>
+        <fes:GeometryOperand name="gml32:Curve"/>
+        <fes:GeometryOperand name="gml32:Surface"/>
+        <fes:GeometryOperand name="gml32:MultiPoint"/>
+        <fes:GeometryOperand name="gml32:MultiCurve"/>
+        <fes:GeometryOperand name="gml32:MultiSurface"/>
+        <fes:GeometryOperand name="gml32:CompositeCurve"/>
+        <fes:GeometryOperand name="gml32:CompositeSurface"/>
+      </fes:GeometryOperands>
+      <fes:SpatialOperators>
+        <fes:SpatialOperator name="BBOX"/>
+        <fes:SpatialOperator name="Equals"/>
+        <fes:SpatialOperator name="Disjoint"/>
+        <fes:SpatialOperator name="Intersects"/>
+        <fes:SpatialOperator name="Touches"/>
+        <fes:SpatialOperator name="Crosses"/>
+        <fes:SpatialOperator name="Within"/>
+        <fes:SpatialOperator name="Contains"/>
+        <fes:SpatialOperator name="Overlaps"/>
+        <fes:SpatialOperator name="Beyond"/>
+        <fes:SpatialOperator name="DWithin"/>
+      </fes:SpatialOperators>
+    </fes:Spatial_Capabilities>
+    <fes:Functions>
+      <fes:Function name="Area">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Area">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Centroid">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Centroid">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="env">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="ExtraProp">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GeometryFromWKT">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GeometryFromWKT">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GetCurrentScale">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+      </fes:Function>
+      <fes:Function name="HatchingDistance">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IDiv">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IMod">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InteriorPoint">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InteriorPoint">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InvertGeometry">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InvertGeometry">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsCurve">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsCurve">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsPoint">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsPoint">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsSurface">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsSurface">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Length">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Length">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Lower">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="MoveGeometry">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="MoveGeometry">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="normalize">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="soundex">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Upper">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+    </fes:Functions>
+  </fes:Filter_Capabilities>
+</WFS_Capabilities>

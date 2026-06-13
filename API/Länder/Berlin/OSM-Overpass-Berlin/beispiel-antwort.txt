@@ -1,0 +1,50 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-13T14:41:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 4389552,
+  "nodes": [
+    26754227,
+    285867416,
+    4329803362,
+    26754329,
+    285867409,
+    194408638
+  ],
+  "tags": {
+    "destination": "Schöneberg;Kreuzberg",
+    "destination:ref": "B 96",
+    "highway": "trunk",
+    "image": "https://commons.wikimedia.org/wiki/File:Tiergartentunnel_Einfahrt_M-C-Str.jpg",
+    "lanes": "2",
+    "lit": "yes",
+    "maxheight": "4",
+    "maxspeed": "50",
+    "motorroad": "yes",
+    "name": "Tunnel Tiergarten Spreebogen",
+    "name:etymology:wikidata": "Q694020",
+    "name:etymology:wikipedia": "de:Großer Tiergarten",
+    "oneway": "yes",
+    "postal_code": "10557",
+    "ref": "B 96",
+    "shoulder": "no",
+    "sidewalk": "no",
+    "surface": "asphalt",
+    "toll": "no",
+    "wikidata": "Q14912349",
+    "wikimedia_commons": "Category:Tiergartentunnel (road tunnel)",
+    "wikipedia": "de:Tunnel Tiergarten Spreebogen",
+    "zone:traffic": "DE:urban"
+  }
+}
+
+  ]
+}
+

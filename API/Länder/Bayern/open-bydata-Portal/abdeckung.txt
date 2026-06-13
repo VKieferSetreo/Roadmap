@@ -1,0 +1,19 @@
+QUELLE:         open.bydata — Open-Data-Portal Bayern (Meta-Katalog)
+BETREIBER:      Bayerisches Digitalministerium / Kompetenzstelle Open Data Bayern
+EBENE:          Land:Bayern
+DATENTYP:       Meta-Katalog (verlinkt BAYSIS-, BVV-, kommunale Datensätze)
+STRASSENTYP:    -
+FORMAT:         Web-Portal
+ENDPUNKT:       https://open.bydata.de/
+DOKU:           https://open.bydata.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          Discovery-Werkzeug für neue kommunale Restriktions-/Brücken-Datensätze.
+                Portal ist JS-gerendert (SPA); CKAN-API an den Standardpfaden /api/3/action/* und
+                /ckan/api/3/action/* liefert HTML statt JSON (geprüft 2026-06-13) → eine direkte
+                CKAN/DCAT-API ist NICHT bestätigt. Datensatz-Detailseiten /datasets/<uuid> sind nur
+                client-seitig renderbar. In der Implementierung ggf. DCAT-Harvest-Endpunkt suchen.

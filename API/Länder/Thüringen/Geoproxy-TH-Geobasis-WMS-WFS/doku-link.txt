@@ -1,0 +1,4 @@
+Portal/Dienstkatalog ohne festen Einzel-Endpunkt (Geobasis-WMS/WFS je Thema auflösen):
+Geoproxy Thüringen: https://www.geoportal-th.de/de-de/Geoproxy
+Geoproxy Viewer: https://geoportal.thueringen.de/geoproxy
+Metadatenkatalog GeoMIS-Th: https://geomis.geoportal-th.de/

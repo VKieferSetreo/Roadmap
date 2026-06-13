@@ -1,0 +1,15 @@
+QUELLE:         Rostock — Großraum- und Schwertransportrouten (OpenData.HRO) ⭐ Direkt-Treffer
+BETREIBER:      Hanse- und Universitätsstadt Rostock, Kataster-, Vermessungs- und Liegenschaftsamt (geo.sv.rostock.de)
+EBENE:          Stadt:Rostock,Mecklenburg-Vorpommern
+DATENTYP:       (a) empfohlene GST-Wege Rostock + Umgebung; (b) städtische Ingenieurbauwerke OHNE Befahrungsmöglichkeit durch GST (für GST gesperrte Brücken/Bauwerke gem. § 34 StVZO — Achslast/Gesamtmasse über zulässig)
+STRASSENTYP:    innerorts + Umland (kommunale Straßen)
+FORMAT:         GeoJSON / WFS / WMS / GML / KML / GeoRSS / CSV / XLSX / SHP
+ENDPUNKT:       https://geo.sv.rostock.de/download/opendata/grossraum_schwertransportrouten/grossraum_schwertransportrouten_ingenieurbauwerke.json  (Wege: ..._wege.json; WFS: https://geo.sv.rostock.de/geodienste/grossraum_schwertransportrouten/wfs)
+DOKU:           https://www.opendata-hro.de/api/3/action/package_show?id=grossraum_schwertransportrouten  (Portal: https://www.opendata-hro.de/dataset/grossraum_schwertransportrouten)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC-Zero (CC0) — voll frei, keine Namensnennung
+UPDATE:         laufend gepflegt
+STATUS:         verifiziert
+NOTIZ:          Live getestet (Ingenieurbauwerke: 19 Features, Point, WGS84). Felder Bauwerke: uuid, bauwerksnummer (z.B. "BW 161"), art (Brücke), bezeichnung. BESTES kommunales Muster-Vorbild: eine Stadt veröffentlicht GST-Routen + gesperrte Bauwerke explizit offen. Als Schema-/UX-Referenz fürs Projekt nutzen. Standard-CKAN. Verwandt: rostock-baustellen (CC0), HRO-Datensatz "durchlaesse" (Durchlässe/Culverts).

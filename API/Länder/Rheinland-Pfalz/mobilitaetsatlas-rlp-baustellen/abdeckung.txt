@@ -1,0 +1,15 @@
+QUELLE:         Mobilitätsatlas RLP / BaustellenInfo digital — Baustellen & Verkehrsmeldungen
+BETREIBER:      Land RLP (MWTEK) + LBM RLP; BaustellenInfo bündelt LBM + Kreise/Kommunen
+EBENE:          Land:Rheinland-Pfalz
+DATENTYP:       Baustellen (Land, Autobahn GmbH, Kommunen), Sperrungen, Verkehrsmeldungen, Verkehrszählungen, Unfallhäufungsstellen, Ladesäulen, ÖV-Haltestellen
+STRASSENTYP:    Alle (A/B/L/K + kommunal — meldende Baulastträger)
+FORMAT:         Web-Portal/Karte (JS); Datenweitergabe an Mobilithek → DATEX II via LBM-Knoten
+ENDPUNKT:       -
+DOKU:           https://baustelleninfo.rlp.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Bezugsweg (Mobilithek) zu prüfen
+UPDATE:         Echtzeit-nah
+STATUS:         zu-bestätigen
+NOTIZ:          Portal live (HTTP 200), aber KEIN offener maschinenlesbarer Feed gefunden: getestet /api /data /geojson /wfs /rest/baustellen → alle 404; HTML enthält keine eingebetteten JSON/GeoJSON/API-URLs (nur "wms"-Erwähnung), kein abgreifbarer JS-Bundle-Endpunkt. Mobilitätsatlas (lbm.rlp.de/themen/verkehrssteuerung/mobilitaetsatlas) ist Karten-Frontend. Realer maschineller Bezugsweg: Mobilithek (Bundeskatalog) bzw. LBM-DATEX-II-Knoten (siehe lbm-rlp-datex2-knoten). Kein test.sh-Live-Call möglich → doku-link.txt.

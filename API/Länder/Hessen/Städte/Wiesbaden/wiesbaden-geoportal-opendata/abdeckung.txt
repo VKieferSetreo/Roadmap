@@ -1,0 +1,15 @@
+QUELLE:         Wiesbaden — Geoportal / Open Data
+BETREIBER:      Landeshauptstadt Wiesbaden
+EBENE:          Stadt:Wiesbaden,Hessen
+DATENTYP:       v.a. Bauleitplanung (WMS/WFS, täglich); Spielplätze, Grünflächen, Verkehrsplanung, geplante Bauprojekte. Baustellen NICHT eindeutig als offener Datensatz
+STRASSENTYP:    innerorts
+FORMAT:         WMS / WFS
+ENDPUNKT:       -
+DOKU:           https://geoportal.wiesbaden.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open Data Wiesbaden (dl-de / CC-BY)
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Geoportal + Open-Data-Seite bestätigt; Baustellen NICHT eindeutig als offener Datensatz nachgewiesen (Open-Data-Fokus = Bauleitplanung) (apiEndpunkt=null). Hessen-Muster: Stadt-Open-Data dünn; mehr über Geoportal Hessen / hvbg.hessen.de und Regionalverband FrankfurtRheinMain. Baustellen Wiesbaden ggf. nur über Geoportal/Verkehrsleitzentrale.

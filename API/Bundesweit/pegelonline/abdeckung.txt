@@ -1,0 +1,15 @@
+QUELLE:         PEGELONLINE — Gewässerkundliches Informationssystem (WSV)
+BETREIBER:      Wasserstraßen- und Schifffahrtsverwaltung (WSV) / ITZBund
+DATENTYP:       Wasserstände an >640 Pegeln an Bundeswasserstraßen (indirekt: aktuelle lichte Höhe unter Brücken über Wasserstraßen schwankt mit Wasserstand)
+EBENE:          Bundesweit
+STRASSENTYP:    n/a (Wasserstraßen)
+FORMAT:         REST-JSON
+ENDPUNKT:       https://www.pegelonline.wsv.de/webservices/rest-api/v2  (u.a. /stations.json, /stations/{station}.json, /stations/{station}/{timeseries}/measurements.json, /waters.json)
+DOKU:           https://www.pegelonline.wsv.de/webservice/guideRestapi  (Doku: https://www.pegelonline.wsv.de/webservice/dokuRestapi | bund.dev: https://pegel-online.api.bund.dev/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         offen (Bundesbehörde; GovData-gelistet)
+UPDATE:         nahezu Echtzeit; bis 30 Tage rückwirkend; HTTP-Caching
+STATUS:         verifiziert
+NOTIZ:          Live getestet (stations.json liefert UUIDs/Geo/Wasser). Für Straßen-GST nur Spezialfall (dynamische Durchfahrtshöhe unter Wasserstraßenbrücken). Saubere, frei nutzbare REST-API.

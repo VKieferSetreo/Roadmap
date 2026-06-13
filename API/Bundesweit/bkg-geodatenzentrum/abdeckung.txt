@@ -1,0 +1,15 @@
+QUELLE:         BKG Geodatenzentrum — INSPIRE Verkehrsnetze (DLM250)
+BETREIBER:      Bundesamt für Kartographie und Geodäsie (BKG), ZSGT i.A. der AdV
+DATENTYP:       Straßen- und Schienennetz-Topologie (Verkehrsnetze) aus ATKIS DLM250 (1:250.000). Nur Netz/Geometrie — KEINE Restriktionsattribute (keine Traglast/lichte Höhe)
+EBENE:          Bundesweit
+STRASSENTYP:    Alle (Netzklassen DLM250, generalisiert 1:250.000)
+FORMAT:         WFS, WMS (OGC, INSPIRE-konform)
+ENDPUNKT:       WFS: https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?service=WFS&request=GetCapabilities  | WMS: https://sgx.geodatenzentrum.de/wms_dlm250_inspire?service=WMS&request=GetCapabilities
+DOKU:           https://gdz.bkg.bund.de/index.php/default/inspire/inspire-verkehrsnetze.html  (Geodatenzentrum: https://gdz.bkg.bund.de/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         BKG Open Data; Namensnennung (GeoNutzV / dl-de) — pro Dienst prüfen
+UPDATE:         periodisch (ATKIS-Fortführung)
+STATUS:         verifiziert
+NOTIZ:          Live getestet — WFS wfs_dlm250_inspire liefert tn-ro:RoadLink (Straße) und tn-ra:RailwayLink (Schiene). INSPIRE-Feature-Types (tn-ro/tn-ra). WFS 2.0 erfordert typeNames. Maßstab 1:250.000 ist zu grob fürs feine Routing — nützlich als bundesweite einheitliche Netz-Basisgeometrie/Referenz.

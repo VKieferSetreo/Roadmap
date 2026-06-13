@@ -1,0 +1,15 @@
+QUELLE:         Köln — Verkehrsbeeinträchtigungen Stadt Köln
+BETREIBER:      Stadt Köln (Offene Daten Köln, Drupal/DKAN-Portal)
+EBENE:          Stadt:Köln,Nordrhein-Westfalen
+DATENTYP:       Verkehrsbeeinträchtigungen durch Baustellen, Großveranstaltungen, Messen, Sperrungen (TYP-codiert: "Baustelle", "Baustelle, Verbot der Einfahrt", "Aktuelle Verkehrsnachricht: Achtung")
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON (EPSG:4326), über Drupal/DKAN-Resource
+ENDPUNKT:       -  (kein stabiler maschineller API-Endpunkt; GeoJSON nur über Portal-Resource-Seite, /api/3/action liefert HTML statt JSON)
+DOKU:           https://offenedaten-koeln.de/dataset/verkehrsbeeinträchtigungen-stadt-köln
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Offene Daten Köln (i.d.R. dl-de-by / CC-BY — je Datensatz prüfen)
+UPDATE:         laufend
+STATUS:         zu-bestätigen
+NOTIZ:          Existenz + Felder per Doku verifiziert, ABER exakter Direkt-GeoJSON-Link zu-bestätigen. Köln-Portal ist Drupal-OpenData (KEIN klassisches CKAN-API) — /api/3/action und /api/action liefern HTML (Antibot-Form), nicht JSON; geratener static-file-Pfad lieferte HTTP 404. Resource-Seite: https://offenedaten-koeln.de/dataset/verkehrsbeeinträchtigungen-stadt-köln/resource/9c1897d1-de5b-47ea-92ef-1858bc1040df . Alternativ ArcGIS-Hub-Showcase "Baustellenkalender" (ESRI). Direkt-Link manuell von der Resource-Seite ziehen.

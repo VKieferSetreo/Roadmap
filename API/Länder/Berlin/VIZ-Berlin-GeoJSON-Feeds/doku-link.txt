@@ -1,0 +1,4 @@
+Doku/Datensatz-Portal (kein dediziertes API-Doku-Dokument; Feed ist selbst die Schnittstelle):
+GovData: https://www.govdata.de/suche/daten/baustellen-sperrungen-und-sonstige-storungen-von-besonderem-verkehrlichem-interesse
+Berlin Open Data: https://daten.berlin.de/datensaetze?groups=verkehr
+VIZ Berlin: https://viz.berlin.de/

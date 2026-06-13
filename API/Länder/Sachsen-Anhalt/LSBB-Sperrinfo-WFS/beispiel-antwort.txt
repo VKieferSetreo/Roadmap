@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "roadworks",
+"features": [
+{ "type": "Feature", "properties": { "gid": "999220919161006440554-1", "feature_id": "999220919161006440554", "kind": "B", "kind_description": "Verkehrsraumeinschränkung", "street": "Magdeburger Ring - Umverlegung 2. NSV BA 4 Los 6", "street_class": "G", "location": "Magdeburg", "cause": "Umverlegung Magdeburger Ring - Los 6 - BA 4 der 2. Nord-Süd-Verbindung", "diversion": "Gellertstraße - Freiligrathstraße - Olvenstedter Straße - Adelheidring Umleitung für Abfahrt FR Norden zur B1 - über Olvenst. Straße und Ebendorfer Straße Auffahrt in FR Norden aus Tunnel Ernst-Reuter", "bab_text": "", "bab_nr": "", "bab_direction1_description": "", "bab_direction2_description": "", "from_date": "2022-09-19", "to_date": "2026-07-31" }, "geometry": { "type": "LineString", "coordinates": [ [ 11.626329001429092, 52.135807997328094 ], [ 11.626369004822534, 52.135853995790413 ], [ 11.626915004999802, 52.136466000836975 ], [ 11.627434004063163, 52.137024997644367 ] ] } }
+]
+}
+

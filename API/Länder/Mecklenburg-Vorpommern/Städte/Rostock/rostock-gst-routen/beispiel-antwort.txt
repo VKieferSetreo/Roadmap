@@ -1,0 +1,20 @@
+== Rostock gesperrte Ingenieurbauwerke für GST (GeoJSON) ==
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "uuid": "9018339a-313f-11e5-ad9c-0050569b7e95", "bauwerksnummer": "BW 161", "art": "Brücke", "bezeichnung": "Gewölbebrücke Gutenbergstraße" }, "geometry": { "type": "Point", "coordinates": [ 12.1590586, 54.1034453 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b5d88f0-313f-11e5-ad46-0050569b7e95", "bauwerksnummer": "BW 139", "art": "Brücke", "bezeichnung": "A.-Kivi-Straße" }, "geometry": { "type": "Point", "coordinates": [ 12.0618354, 54.1261821 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b024d8c-313f-11e5-ad3b-0050569b7e95", "bauwerksnummer": "BW 115", "art": "Brücke", "bezeichnung": "Moorbrücke West" }, "geometry": { "type": "Point", "coordinates": [ 12.152704, 54.090734 ] } },
+{ "type": "Feature", "properties": { "uuid": "90372066-313f-11e5-ad9f-0050569b7e95", "bauwerksnummer": "BW 137/1", "art": "Brücke", "bezeichnung": "Warnowallee TBW Nord" }, "geometry": { "type": "Point", "coordinates": [ 12.0659801, 54.1378987 ] } },
+{ "type": "Feature", "properties": { "uuid": "82df440e-f454-11e7-97c3-0050569946ac", "bauwerksnummer": "BW 137/2", "art": "Brücke", "bezeichnung": "Warnowallee TBW Süd" }, "geometry": { "type": "Point", "coordinates": [ 12.0659789, 54.1378117 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b3f5ec0-313f-11e5-ad43-0050569b7e95", "bauwerksnummer": "BW 132", "art": "Brücke", "bezeichnung": "St. Petersburger Straße über Schmarler Bach" }, "geometry": { "type": "Point", "coordinates": [ 12.0574994, 54.1297025 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b3e9170-313f-11e5-ad40-0050569b7e95", "bauwerksnummer": "BW 121", "art": "Brücke", "bezeichnung": "Brücke Rennbahnallee" }, "geometry": { "type": "Point", "coordinates": [ 12.0876267, 54.0761302 ] } },
+{ "type": "Feature", "properties": { "uuid": "88848db8-313f-11e5-ad13-0050569b7e95", "bauwerksnummer": "St 12(1)", "art": "Stützwand", "bezeichnung": "St an der Nordwestwand Goethebrücke" }, "geometry": { "type": "Point", "coordinates": [ 12.12657, 54.080891 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b203892-313f-11e5-ad3d-0050569b7e95", "bauwerksnummer": "BW 118", "art": "Brücke", "bezeichnung": "Gewölbebrücke Schröderstraße" }, "geometry": { "type": "Point", "coordinates": [ 12.1278196, 54.0864303 ] } },
+{ "type": "Feature", "properties": { "uuid": "8aa3fd90-313f-11e5-ad2d-0050569b7e95", "bauwerksnummer": "BW 10", "art": "Brücke", "bezeichnung": "Geh- und Radwegb. mit Busspur ü.Schmarler Bach" }, "geometry": { "type": "Point", "coordinates": [ 12.0678187, 54.1348295 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b3f19a6-313f-11e5-ad42-0050569b7e95", "bauwerksnummer": "BW 131", "art": "Brücke", "bezeichnung": "Brücke Schmarler Damm ü. DB AG" }, "geometry": { "type": "Point", "coordinates": [ 12.0736186, 54.1180522 ] } },
+{ "type": "Feature", "properties": { "uuid": "8b020688-313f-11e5-ad3a-0050569b7e95", "bauwerksnummer": "BW 114", "art": "Brücke", "bezeichnung": "Moorbrücke Ost" }, "geometry": { "type": "Point", "coordinates": [ 12.155879, 54.090526 ] } },
+{ "type": "Feature", "properties": { "uuid": "1d212b44-401f-4c1f-a975-3124868e3232", "bauwerksnummer": "LSW 28", "art": "Lärmschutzwand", "bezeichnung": "LSW Mecklenburger Allee" }, "geometry": { "type": "Point", "coordinates": [ 12.051075, 54.153924 ] } },
+{ "type": "Feature", "properties": { "uuid": "8ac68f54-313f-11e5-ad37-0050569b7e95", "bauwerksnummer": "BW 111(A)", "art": "Brücke", "bezeichnung": "Wehrbrücke Mühlendamm, TBW Straße" }, "geometry": { "type": "Point", "coordinates": [ 12.150995, 54.084674 ] } },
+{ "type": "Feature", "properties": { "uuid": "0f99c6f0-04b1-45e2-98de-f59421ebaf42", "bauwerksnummer": "BW 111(B)", "art": "Brücke", "bezeichnung": "Wehrbrücke Mühlendamm, TBW Geh- und Radweg Süd" }, "geometry": { "type": "Point", "coordinates": [ 12.150909, 54.084638 ] } },
+{ "type": "Feature", "properties": { "uuid": "c486d491-39

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wfs:FeatureCollection timeStamp="2026-06-13T16:44:04.091+02:00" numberReturned="1" numberMatched="509353" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0" xmlns="http://inspire.ec.europa.eu/schemas/tn/4.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/tn/4.0 https://isk.geobasis-bb.de/schema/inspire.ec.europa.eu/schemas/tn/4.0/TransportNetwork.xsd http://www.opengis.net/wfs/2.0 https://isk.geobasis-bb.de/schema/ogc/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 https://isk.geobasis-bb.de/schema/ogc/gml/3.2.1/gml.xsd">
+<wfs:boundedBy>
+<gml:Envelope srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:lowerCorner>373920.288 5699359.911</gml:lowerCorner>
+<gml:upperCorner>374129.717 5699883.171</gml:upperCorner>
+</gml:Envelope>
+</wfs:boundedBy>
+<wfs:member>
+<tn-ro:RoadLink gml:id="RoadLink_DEBBATP00000lDNZ">
+<gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">https://registry.gdi-de.org/id/de.bb.inspire.tn.atkis-bdlm/RoadLink_DEBBATP00000lDNZ</gml:identifier>
+<net:beginLifespanVersion>2019-11-21T05:07:36Z</net:beginLifespanVersion>
+<net:inspireId>
+<base:Identifier>
+<base:localId>RoadLink_DEBBATP00000lDNZ</base:localId>
+<base:namespace>https://registry.gdi-de.org/id/de.bb.inspire.tn.atkis-bdlm</base:namespace>
+</base:Identifier>
+</net:inspireId>
+<net:inNetwork xlink:href="https://registry.gdi-de.org/id/de.bb.inspire.tn.atkis-bdlm/RoadTransportNetwork"/>
+<net:centrelineGeometry>
+<gml:LineString gml:id="V.vrt_o42003__without_o42005_o42003__p0000103000_o42002.id_1.5501256.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:posList>374129.717 5699883.171 374123.087 5699847.239 374107.112 5699788.519 374086.739 5699730.840 374070.420 5699689.948 374001.133 5699526.341 373971.288 5699439.980 373953.002 5699378.584 373950.981 5699371.797 373947.873 5699366.572 373940.464 5699360.883 373935.032 5699359.911 373920.288 5699360.170</gml:posList>
+</gml:LineString>
+</net:centrelineGeometry>
+<net:fictitious>false</net:fictitious>
+<geographicalName>
+<gn:GeographicalName>
+<gn:language>deu</gn:language>
+<gn:nativeness xlink:href="http://inspire.ec.europa.eu/codelist/NativenessValue/endonym"/>
+<gn:nameStatus xlink:href="http://inspire.ec.europa.eu/codelist/NameStatusValue/official"/>
+<gn:sourceOfName>Basis-DLM</gn:sourceOfName>
+<gn:pronunciation nilReason="other:unpopulated" xsi:nil="true"/>
+<gn:spelling>
+<gn:SpellingOfName>
+<gn:text>Am Anger</gn:text>
+<gn:script>Latn</gn:script>
+</gn:SpellingOfName>
+</gn:spelling>
+</gn:GeographicalName>
+</geographicalName>
+<validFrom nilReason="other:unpopulated" xsi:nil="true"/>
+<validTo nilReason="other:unpopulated" xsi:nil="true"/>
+</tn-ro:RoadLink>
+</wfs:member>
+</wfs:FeatureCollection>

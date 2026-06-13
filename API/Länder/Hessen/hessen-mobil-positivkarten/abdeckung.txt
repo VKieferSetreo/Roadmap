@@ -1,0 +1,15 @@
+QUELLE:         Hessen Mobil — Positivkarten GST (Gewichts-/Höhenklassen)
+BETREIBER:      Hessen Mobil
+EBENE:          Land:Hessen
+DATENTYP:       GST-befahrbare Strecken nach Gewichtsklassen (36/48/60/72 t) bei max. Höhe 4,20 m; Farbcode orange = nur mit BF3-Begleitung, violett = Verbotsstrecken
+STRASSENTYP:    B / L / K (Hessen-Mobil-Netz, je Landkreis/kreisfreie Stadt)
+FORMAT:         PDF-Karten (je Landkreis × Gewichtsklasse; "_h"-Variante = höhenbeschränkt)
+ENDPUNKT:       https://mobil.hessen.de/sites/mobil.hessen.de/files/2023-03/darmstadt_72t.pdf
+DOKU:           https://mobil.hessen.de/verkehr/grossraum-und-schwertransporte/positivkarten
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Behörden-Planungshilfe (nicht offen lizenziert); ergänzt, ersetzt nicht die RGST-2013-Tabellen
+UPDATE:         periodisch (Dateistand 2023-03)
+STATUS:         verifiziert
+NOTIZ:          FORMAT AUFGELÖST (Katalog sagte "zu-bestätigen"): es sind PDF-Karten, je Regierungsbezirk (Darmstadt/Gießen/Kassel) auf eigenen Unterseiten, dort je Landkreis/Stadt × Gewichtsklasse 36t/48t/60t/72t, jeweils Normal- und "_h"-Variante (höhenbeschränkt). Beispiel-PDF live getestet (HTTP 200, 511 KB, application/pdf) → als doku.pdf gespeichert. Kein GIS/Geometrie-Export — nur PDF. Dateibenennung: <landkreis>_<gewicht>[_h].pdf unter /sites/mobil.hessen.de/files/2023-03/ . Subpages: /positivkarten/regierungsbezirk-{darmstadt,giessen,kassel}. Liefert routenrelevante GST-Klassen, aber nur bildhaft (Parsing/Digitalisierung nötig). Kontakt: schwertransporte@mobil.hessen.de

@@ -1,0 +1,61 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-13T14:44:01Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 4054069,
+  "nodes": [
+    50004411,
+    267754963,
+    7190321904,
+    21483128,
+    267754919,
+    267754920,
+    267754921,
+    21483129,
+    267754923,
+    267754924,
+    21483130,
+    267754926,
+    267754927,
+    21483131,
+    267754929,
+    267754930,
+    267754931,
+    267754932,
+    21483132,
+    21483133,
+    7190321905,
+    21483135,
+    7190321906,
+    7190321907,
+    7190321908,
+    21483136,
+    7190321903,
+    2938506741
+  ],
+  "tags": {
+    "highway": "motorway",
+    "int_ref": "E 30;E 55",
+    "lanes": "3",
+    "lit": "no",
+    "loc_name": "Berliner Ring",
+    "maxheight": "default",
+    "maxspeed": "none",
+    "oneway": "yes",
+    "ref": "A 10",
+    "reg_name": "Berliner Ring",
+    "start_date": "1938",
+    "surface": "asphalt"
+  }
+}
+
+  ]
+}
+

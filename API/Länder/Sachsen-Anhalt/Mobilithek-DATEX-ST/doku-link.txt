@@ -1,0 +1,4 @@
+Mobilithek-Plattform (Registrierung + X.509-Zertifikat, kein offener Endpunkt):
+Mobilithek: https://mobilithek.info
+MetaVer (Open-Data ST): https://metaver.de/
+DATEX-II: https://www.datex2.eu/

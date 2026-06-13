@@ -1,0 +1,15 @@
+QUELLE:         Mannheim — Open Data (Opendatasoft) + Geoportal + Mobilitätsportal
+BETREIBER:      Stadt Mannheim
+EBENE:          Stadt:Mannheim,Baden-Württemberg
+DATENTYP:       offen v.a. Verkehrszähler (Eco-Counter), Straßennamen/Straßentypen. BAUSTELLEN leben im separaten "Baustellen-Online-Portal" (Aufgrabungs-/Genehmigungsanträge) + Mobilitätsportal — NICHT als offener Datensatz exportiert
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON / CSV / Opendatasoft-API (Open Data); WMS/WFS (Geoportal)
+ENDPUNKT:       https://mannheim.opendatasoft.com/api/explore/v2.1/catalog/datasets  (Discovery; z.B. strassentypen-in-mannheim, strassennamen-in-mannheim)
+DOKU:           https://mannheim.opendatasoft.com/api/explore/v2.1/catalog/datasets  (Portal: https://mannheim.opendatasoft.com/explore/; Geoportal: https://geoportal-mannheim.de/; Mobilitätsportal: https://gis-mannheim.de/mannheim_mobi/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de-by 2.0
+UPDATE:         je Datensatz
+STATUS:         zu-bestätigen
+NOTIZ:          Katalog-API live verifiziert (41 Datensätze). ABER: Volltextsuche "baustelle" → 0 Treffer → KEIN offener Baustellen-Datensatz vorhanden (Status daher zu-bestätigen für Baustellen). Selbes Opendatasoft-Muster wie Dortmund (saubere REST-API). Für Baustellen Mannheim: Mobilitätsportal-Backend / Geoportal-WFS prüfen oder über MobiData BW (Land BW) abgreifen. test.sh ruft Katalog-Discovery (offen, liefert Datensatzliste).

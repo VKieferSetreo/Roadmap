@@ -1,0 +1,8 @@
+VMZ Bremen — Web-Portal. Kein dokumentierter maschinenlesbarer Endpunkt.
+LIZENZ CC BY-NC-ND (Nicht-Kommerziell, Keine Bearbeitung) — für kommerzielle Nutzung klären!
+
+Portal:            https://www.vmz.bremen.de/
+Baustellenübersicht: https://vmz.bremen.de/baustellen/baustellenuebersicht/
+NI-Layer:          https://vmz.bremen.de/verkehrslage/niedersachsen/
+RSS-Pfad (liefert HTML, kein echter Feed): https://www.vmz.bremen.de/verkehrslage/aktuell/feed.rss
+Kontakt:           VMZ Bremen — strukturierten Feed/DATEX + Nutzungsfreigabe anfragen

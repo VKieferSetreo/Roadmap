@@ -1,0 +1,15 @@
+QUELLE:         GeoPortal Bremen + GIS-Hub (GDI-HB)
+BETREIBER:      Landesamt GeoInformation Bremen (LGeoBrem); GIS-Hub: Senatorin Umwelt/Klima/Wissenschaft + Senatorin Bau/Mobilität/Stadtentwicklung
+EBENE:          Land:Bremen
+DATENTYP:       Geobasis, Luftbilder, 3D-Bauwerke (Brücken), Detailnetz mit Ingenieurbauwerken (Brücken/Tunnel, Netzabschnitts-Referenz), DOM5
+STRASSENTYP:    Alle (Stadt-/Landesnetz HB)
+FORMAT:         WMS, WFS (über GeoPortal-Layer); GIS-Hub = ArcGIS Enterprise Portal (FeatureServer/REST)
+ENDPUNKT:       https://geoportal.bremen.de/geoportal/   (Layer-WFS je Datensatz; GIS-Hub: https://gis-hub.bremen.de/portal/home/index.html)
+DOKU:           https://www.gdi.bremen.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY / dl-de/by-2.0 / basemap.de (je Layer), Quellenvermerk "© Freie Hansestadt Bremen"
+UPDATE:         GIS-Hub: täglich gepflegt
+STATUS:         zu-bestätigen
+NOTIZ:          "Detailnetz Bauwerke" (Brücken/Tunnel + Netzabschnitts-Referenz) = Gegenstück zum Berliner Detailnetz, sehr GST-relevant. Alle Portale HTTP 200 live; konkrete Verkehr/Brücken-WFS-Endpunkt-URLs NICHT per Suche enumerierbar → im GeoPortal-Layer / MetaVer (metaver.de) auflösen, nicht raten. WFS DOM5 Land Bremen (AdV-MIS): https://advmis.geodatenzentrum.de/trefferanzeige?docuuid=cca82373-c633-43dd-a833-acb044db09c3

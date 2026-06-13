@@ -1,0 +1,5 @@
+Bonn — Baustellen tagesaktuell + geplant (OpenGeoData:Bonn / stadtplan.bonn.de)
+Portal tagesaktuell: https://opengeodata-bonn.de/baustellen-tagesaktuell-mit-ortsangabe-bonn/
+Portal geplant 30T/1J: https://opengeodata-bonn.de/geplante-straßenbaustellen-30-tage-und-1-jahr-mit-ortsangabe-bonn/
+API-Muster: https://stadtplan.bonn.de/geojson?Thema=<id>  (tagesaktuell = Thema=14403)
+Keine separate maschinenlesbare Doku-Datei vorhanden — Endpunkt ist ein einfaches GeoJSON-Pattern (siehe test.sh).

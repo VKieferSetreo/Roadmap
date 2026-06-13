@@ -1,0 +1,7 @@
+== GeoPortal Bremen (HTTP-Status) ==
+HTTP 200 | text/html
+
+== GIS-Hub Bremen (HTTP-Status) ==
+HTTP 200 | text/html
+
+Nächster Schritt: Layer 'Detailnetz Bauwerke' im GeoPortal/MetaVer öffnen → WFS-URL kopieren.

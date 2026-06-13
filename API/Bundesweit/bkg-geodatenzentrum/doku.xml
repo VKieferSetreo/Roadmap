@@ -1,0 +1,3287 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WFS_Capabilities version="2.0.0" xmlns="http://www.opengis.net/wfs/2.0" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:ogc="http://www.opengis.net/ogc" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>INSPIRE-WFS Digital Landscape Model 1:250 000</ows:Title>
+    <ows:Abstract>
+      INSPIRE Direct Access Download Service for Digital Landscape Model 1:250 000. 
+      This service provides from ATKIS DLM250 transformed datasets for the INSPIRE themes Transport Networks, Hydrography (Networks and Physical Water), Administrative Units and Protected Sites.
+      The data provided through this service covers the area of Germany.
+    </ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>WFS</ows:Keyword>
+      <ows:Keyword>INSPIRE</ows:Keyword>
+      <ows:Keyword>INSPIRE:DownloadService</ows:Keyword>
+      <ows:Keyword>infoFeatureAccessService</ows:Keyword>
+      <ows:Keyword>DownloadService</ows:Keyword>
+      <ows:Keyword>INSPIRE-WFS_Hydro-Netzwerk_ATKIS_DLM250</ows:Keyword>
+      <ows:Keyword>INSPIRE-WFS_Hydro-Physische_Gewaesser_ATKIS_DLM250</ows:Keyword>
+      <ows:Keyword>INSPIRE-WFS_Verkehrsnetze_ATKIS_DLM250</ows:Keyword>
+      <ows:Keyword>INSPIRE-WFS_Verwaltungseinheiten_ATKIS_DLM250</ows:Keyword>
+      <ows:Keyword>INSPIRE-WFS_Schutzgebiete_ATKIS_DLM250</ows:Keyword>
+      <ows:Keyword>ATKIS</ows:Keyword>
+      <ows:Keyword>DLM250</ows:Keyword>
+      <ows:Keyword>Amtliches Topographisch-Kartographisches Informationssystem</ows:Keyword>
+      <ows:Keyword>Digitales Landschaftsmodell 250</ows:Keyword>
+      <ows:Keyword>Gewässernetz</ows:Keyword>
+      <ows:Keyword>Hydrography</ows:Keyword>
+      <ows:Keyword>Hydro - Netzwerk</ows:Keyword>
+      <ows:Keyword>Hydro - Network</ows:Keyword>
+      <ows:Keyword>Hydro - Physische Gewässer</ows:Keyword>
+      <ows:Keyword>Hydro - Physical Waters</ows:Keyword>
+      <ows:Keyword>Verkehrsnetze</ows:Keyword>
+      <ows:Keyword>Transport Networks</ows:Keyword>
+      <ows:Keyword>Verwaltungseinheiten</ows:Keyword>
+      <ows:Keyword>Administrative Units</ows:Keyword>
+      <ows:Keyword>Schutzgebiete</ows:Keyword>
+      <ows:Keyword>Protected Sites</ows:Keyword>
+      <ows:Keyword>Deutschland</ows:Keyword>
+      <ows:Keyword>Germany</ows:Keyword>
+      <ows:Keyword>BKG</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType codeSpace="http://www.opengeospatial.org/">WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>
+      This service can be used free of charge corresponding to the Ordinance to Determine the Conditions for Use for the Provision of Spatial Data of the Federation 
+      (Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes – GeoNutzV), 
+      as published on 19 March 2013 (Bundesgesetzblatt Jahrgang 2013 Teil I Nr. 14). For more details see: https://sg.geodatenzentrum.de/web_public/gdz/lizenz/geonutzv_eng.pdf.
+      Source reference has to be maintained. 
+      | Source reference: &amp;#169; GeoBasis-DE / BKG &amp;lt;year of last data download&amp;gt;
+    </ows:Fees>
+    <ows:AccessConstraints>no limitations to public access</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>Dienstleistungszentrum des Bundes für Geoinformation und Geodäsie</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.geodatenzentrum.de"/>
+    <ows:ServiceContact>
+      <ows:PositionName>Technischer Administrator</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 (0) 341 5634 333</ows:Voice>
+          <ows:Facsimile>+49 (0) 341 5634 415</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Karl-Rothe-Str. 10-14</ows:DeliveryPoint>
+          <ows:City>Leipzig</ows:City>
+          <ows:AdministrativeArea>DE-SN</ows:AdministrativeArea>
+          <ows:PostalCode>04105</ows:PostalCode>
+          <ows:Country>Deutschland</ows:Country>
+          <ows:ElectronicMailAddress>dlz@bkg.bund.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.geodatenzentrum.de"/>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:AllowedValues>
+          <ows:Value>2.0.0</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:AllowedValues>
+          <ows:Value>text/xml</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="Sections">
+        <ows:AllowedValues>
+          <ows:Value>ServiceIdentification</ows:Value>
+          <ows:Value>ServiceProvider</ows:Value>
+          <ows:Value>OperationsMetadata</ows:Value>
+          <ows:Value>FeatureTypeList</ows:Value>
+          <ows:Value>Filter_Capabilities</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="ListStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetPropertyValue">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?"/>
+          <ows:Post xlink:href="https://sgx.geodatenzentrum.de/wfs_dlm250_inspire"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Parameter name="version">
+      <ows:AllowedValues>
+        <ows:Value>2.0.0</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="srsName">
+      <ows:AllowedValues>
+        <ows:Value>urn:ogc:def:crs:EPSG::4258</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::4326</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3857</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3034</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3035</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31466</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31467</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31468</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::31469</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::5676</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::5677</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::5678</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::5679</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::2397</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::2398</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::2399</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::25832</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::25833</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::4647</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::5650</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::32632</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::32633</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3044</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::3045</ows:Value>
+        <ows:Value>urn:ogc:def:crs:EPSG::4839</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="outputFormat">
+      <ows:AllowedValues>
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+        <ows:Value>application/geo+json</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="resolve">
+      <ows:AllowedValues>
+        <ows:Value>none</ows:Value>
+        <ows:Value>local</ows:Value>
+        <ows:Value>remote</ows:Value>
+        <ows:Value>all</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Constraint name="ImplementsSimpleWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsBasicWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTransactionalWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsLockingWFS">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="KVPEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="XMLEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="SOAPEncoding">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsInheritance">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsRemoteResolve">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsResultPaging">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsStandardJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsSpatialJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>TRUE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsTemporalJoins">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ImplementsFeatureVersioning">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ManageStoredQueries">
+      <ows:NoValues/>
+      <ows:DefaultValue>FALSE</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="CountDefault">
+      <ows:NoValues/>
+      <ows:DefaultValue>10000</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="ResolveLocalScope">
+      <ows:NoValues/>
+      <ows:DefaultValue>*</ows:DefaultValue>
+    </ows:Constraint>
+    <ows:Constraint name="QueryExpressions">
+      <ows:AllowedValues>
+        <ows:Value>wfs:Query</ows:Value>
+        <ows:Value>wfs:StoredQuery</ows:Value>
+      </ows:AllowedValues>
+    </ows:Constraint>
+    <ows:ExtendedCapabilities xmlns="http://www.deegree.org/services/metadata" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <inspire_dls:ExtendedCapabilities>
+        <inspire_common:MetadataUrl>
+          <inspire_common:URL>http://gdk.gdi-de.org/inspire/srv/eng/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;OutputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=CE94CE46-9843-4D14-80C3-89446AD2FFBC</inspire_common:URL>
+          <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
+        
+        </inspire_common:MetadataUrl>
+        <inspire_common:SupportedLanguages>
+          <inspire_common:DefaultLanguage>
+            <inspire_common:Language>eng</inspire_common:Language>
+          
+          </inspire_common:DefaultLanguage>
+        
+        </inspire_common:SupportedLanguages>
+        <inspire_common:ResponseLanguage>
+          <inspire_common:Language>eng</inspire_common:Language>
+        
+        </inspire_common:ResponseLanguage>
+        <inspire_dls:SpatialDataSetIdentifier>
+          <inspire_common:Code>DEBKG00M00000207</inspire_common:Code>
+          <inspire_common:Namespace>https://registry.gdi-de.org/id/de.bund.bkg.csw/</inspire_common:Namespace>
+        
+        </inspire_dls:SpatialDataSetIdentifier>
+        <inspire_dls:SpatialDataSetIdentifier>
+          <inspire_common:Code>DEBKG00M00000208</inspire_common:Code>
+          <inspire_common:Namespace>https://registry.gdi-de.org/id/de.bund.bkg.csw/</inspire_common:Namespace>
+        
+        </inspire_dls:SpatialDataSetIdentifier>
+        <inspire_dls:SpatialDataSetIdentifier>
+          <inspire_common:Code>DEBKG00M00000209</inspire_common:Code>
+          <inspire_common:Namespace>https://registry.gdi-de.org/id/de.bund.bkg.csw/</inspire_common:Namespace>
+        
+        </inspire_dls:SpatialDataSetIdentifier>
+        <inspire_dls:SpatialDataSetIdentifier>
+          <inspire_common:Code>DEBKG00M00000210</inspire_common:Code>
+          <inspire_common:Namespace>https://registry.gdi-de.org/id/de.bund.bkg.csw/</inspire_common:Namespace>
+        
+        </inspire_dls:SpatialDataSetIdentifier>
+      
+      </inspire_dls:ExtendedCapabilities>
+    
+    </ows:ExtendedCapabilities>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Crossing</Name>
+      <Title>Crossing</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.329976 48.153716</ows:LowerCorner>
+        <ows:UpperCorner>14.554040 54.897010</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:DamOrWeir</Name>
+      <Title>Dam or Weir</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.093006 47.480822</ows:LowerCorner>
+        <ows:UpperCorner>14.968446 54.724836</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Embankment</Name>
+      <Title>Embankment</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.270157 47.977364</ows:LowerCorner>
+        <ows:UpperCorner>14.756740 55.034668</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Falls</Name>
+      <Title>Falls</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.308860 47.297390</ows:LowerCorner>
+        <ows:UpperCorner>14.242396 52.211870</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:LandWaterBoundary</Name>
+      <Title>Land Water Boundary</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.639255 53.243064</ows:LowerCorner>
+        <ows:UpperCorner>14.271663 55.058777</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Lock</Name>
+      <Title>Lock</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.139770 47.556529</ows:LowerCorner>
+        <ows:UpperCorner>14.745060 54.910099</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Shore</Name>
+      <Title>Shore</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.622727 53.224986</ows:LowerCorner>
+        <ows:UpperCorner>9.825044 55.048924</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:ShorelineConstruction</Name>
+      <Title>Shoreline Construction</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.081441 47.540194</ows:LowerCorner>
+        <ows:UpperCorner>14.955419 55.050204</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:StandingWater</Name>
+      <Title>Standing Water</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.945029 47.285241</ows:LowerCorner>
+        <ows:UpperCorner>14.993788 54.910287</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Watercourse</Name>
+      <Title>Watercourse</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.878025 47.273147</ows:LowerCorner>
+        <ows:UpperCorner>14.978899 54.910120</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="http://inspire.ec.europa.eu/schemas/hy-p/4.0">hy-p:Wetland</Name>
+      <Title>Wetland</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.030050 47.480576</ows:LowerCorner>
+        <ows:UpperCorner>14.995938 55.050506</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="http://inspire.ec.europa.eu/schemas/hy-n/4.0">hy-n:HydroNode</Name>
+      <Title>Hydro Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.093006 47.480822</ows:LowerCorner>
+        <ows:UpperCorner>14.968446 54.910099</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="http://inspire.ec.europa.eu/schemas/hy-n/4.0">hy-n:WatercourseLink</Name>
+      <Title>Watercourse Link</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.878025 47.273147</ows:LowerCorner>
+        <ows:UpperCorner>14.978899 54.910120</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000208"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:AerodromeArea</Name>
+      <Title>Aerodrome Area</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.016144 47.663957</ows:LowerCorner>
+        <ows:UpperCorner>14.959220 54.921846</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:AerodromeCategory</Name>
+      <Title>Aerodrome Category</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:AerodromeNode</Name>
+      <Title>Aerodrome Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.037208 47.484011</ows:LowerCorner>
+        <ows:UpperCorner>14.969481 54.913588</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:AerodromeType</Name>
+      <Title>Aerodrome Type</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:ConditionOfAirFacility</Name>
+      <Title>Condition of Air Facility</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="http://inspire.ec.europa.eu/schemas/tn-a/4.0">tn-a:FieldElevation</Name>
+      <Title>Field Elevation</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-a="http://www.locationframework.eu/schemas/AirTransportNetwork/1.0">elf-tn-a:AerodromeArea</Name>
+      <Title>Aerodrome Area</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.016144 47.663957</ows:LowerCorner>
+        <ows:UpperCorner>14.959220 54.921846</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-a="http://www.locationframework.eu/schemas/AirTransportNetwork/1.0">elf-tn-a:AerodromeNode</Name>
+      <Title>Aerodrome Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.037208 47.484011</ows:LowerCorner>
+        <ows:UpperCorner>14.969481 54.913588</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-a="http://www.locationframework.eu/schemas/AirTransportNetwork/1.0">elf-tn-a:FunctionalUseCategory</Name>
+      <Title>Functional Use Category</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-a="http://www.locationframework.eu/schemas/AirTransportNetwork/1.0">elf-tn-a:RunwayLine</Name>
+      <Title>Runway Line</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.020115 47.666016</ows:LowerCorner>
+        <ows:UpperCorner>14.954319 54.919505</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-a="http://www.locationframework.eu/schemas/AirTransportNetwork/1.0">elf-tn-a:TransportationUseCategory</Name>
+      <Title>Transportation Use Category</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:DesignSpeed</Name>
+      <Title>Design Speed</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:NominalTrackGauge</Name>
+      <Title>Nominal Track Gauge</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:NumberOfTracks</Name>
+      <Title>Number of Tracks</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayElectrification</Name>
+      <Title>Railway Electrification</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayLine</Name>
+      <Title>Railway Line</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayLink</Name>
+      <Title>Railway Link</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.980463 47.397609</ows:LowerCorner>
+        <ows:UpperCorner>15.032297 54.907976</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayNode</Name>
+      <Title>Railway Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.016206 47.422139</ows:LowerCorner>
+        <ows:UpperCorner>14.966649 54.903062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayStationCode</Name>
+      <Title>Railway Station Code</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayStationNode</Name>
+      <Title>Railway Station Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.035891 47.411407</ows:LowerCorner>
+        <ows:UpperCorner>14.977741 54.905215</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayType</Name>
+      <Title>Railway Type</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="http://inspire.ec.europa.eu/schemas/tn-ra/4.0">tn-ra:RailwayUse</Name>
+      <Title>Railway Use</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ra="http://www.locationframework.eu/schemas/RailwayTransportNetwork/1.0">elf-tn-ra:DesignSpeed</Name>
+      <Title>Design Speed</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ra="http://www.locationframework.eu/schemas/RailwayTransportNetwork/1.0">elf-tn-ra:RailwayClass</Name>
+      <Title>Railway Class</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ra="http://www.locationframework.eu/schemas/RailwayTransportNetwork/1.0">elf-tn-ra:RailwayElectrification</Name>
+      <Title>Railway Electrification</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ra="http://www.locationframework.eu/schemas/RailwayTransportNetwork/1.0">elf-tn-ra:RailwayLink</Name>
+      <Title>Railway Link</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.980463 47.397609</ows:LowerCorner>
+        <ows:UpperCorner>15.032297 54.907976</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ra="http://www.locationframework.eu/schemas/RailwayTransportNetwork/1.0">elf-tn-ra:RailwayStationNode</Name>
+      <Title>Railway Station Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.035891 47.411407</ows:LowerCorner>
+        <ows:UpperCorner>14.977741 54.905215</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:ERoad</Name>
+      <Title>ERoad</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:FormOfWay</Name>
+      <Title>Form of Way</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:FunctionalRoadClass</Name>
+      <Title>Functional Road Class</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:NumberOfLanes</Name>
+      <Title>Number of Lanes</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:Road</Name>
+      <Title>Road</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadLink</Name>
+      <Title>Road Link</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866755 47.278294</ows:LowerCorner>
+        <ows:UpperCorner>15.029593 55.052382</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadNode</Name>
+      <Title>Road Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.873078 47.353369</ows:LowerCorner>
+        <ows:UpperCorner>15.024934 55.018464</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadServiceType</Name>
+      <Title>Road Service Type</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0">tn-ro:RoadSurfaceCategory</Name>
+      <Title>Road Surface Category</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ro="http://www.locationframework.eu/schemas/RoadTransportNetwork/1.0">elf-tn-ro:InterchangePoint</Name>
+      <Title>Interchange Point</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.075520 47.549213</ows:LowerCorner>
+        <ows:UpperCorner>14.963715 54.772755</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-ro="http://www.locationframework.eu/schemas/RoadTransportNetwork/1.0">elf-tn-ro:RoadLink</Name>
+      <Title>Road Link</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866755 47.278294</ows:LowerCorner>
+        <ows:UpperCorner>15.029593 55.052382</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="http://inspire.ec.europa.eu/schemas/tn-w/4.0">tn-w:ConditionOfWaterFacility</Name>
+      <Title>Condition of Water Facility</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="http://inspire.ec.europa.eu/schemas/tn-w/4.0">tn-w:FerryCrossing</Name>
+      <Title>Ferry Crossing</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="http://inspire.ec.europa.eu/schemas/tn-w/4.0">tn-w:PortArea</Name>
+      <Title>Port Area</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.247760 48.027503</ows:LowerCorner>
+        <ows:UpperCorner>13.716320 54.810547</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="http://inspire.ec.europa.eu/schemas/tn-w/4.0">tn-w:PortNode</Name>
+      <Title>Port Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.108963 47.543668</ows:LowerCorner>
+        <ows:UpperCorner>14.652434 55.016470</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-w="http://www.locationframework.eu/schemas/WaterTransportNetwork/1.0">elf-tn-w:FerryCrossing</Name>
+      <Title>Ferry Crossing</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-w="http://www.locationframework.eu/schemas/WaterTransportNetwork/1.0">elf-tn-w:PortArea</Name>
+      <Title>Port Area</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.247760 48.027503</ows:LowerCorner>
+        <ows:UpperCorner>13.716320 54.810547</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-w="http://www.locationframework.eu/schemas/WaterTransportNetwork/1.0">elf-tn-w:PortNode</Name>
+      <Title>Port Node</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.108963 47.543668</ows:LowerCorner>
+        <ows:UpperCorner>14.652434 55.016470</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-tn-w="http://www.locationframework.eu/schemas/WaterTransportNetwork/1.0">elf-tn-w:PortType</Name>
+      <Title>Port Type</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="http://inspire.ec.europa.eu/schemas/tn/4.0">tn:AccessRestriction</Name>
+      <Title>Access Restriction</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="http://inspire.ec.europa.eu/schemas/tn/4.0">tn:ConditionOfFacility</Name>
+      <Title>Condition of Facility</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="http://inspire.ec.europa.eu/schemas/tn/4.0">tn:VerticalPosition</Name>
+      <Title>Vertical Position</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000207"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0">au:AdministrativeBoundary</Name>
+      <Title>Administrative Boundary</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866251 47.270114</ows:LowerCorner>
+        <ows:UpperCorner>15.041832 55.099169</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000210"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0">au:AdministrativeUnit</Name>
+      <Title>Administrative Unit</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866251 47.270114</ows:LowerCorner>
+        <ows:UpperCorner>15.041832 55.099169</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000210"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-au="http://www.locationframework.eu/schemas/AdministrativeUnits/1.0">elf-au:AdministrativeUnit</Name>
+      <Title>Administrative Unit</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866251 47.270114</ows:LowerCorner>
+        <ows:UpperCorner>15.041832 55.099169</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000210"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:elf-au="http://www.locationframework.eu/schemas/AdministrativeUnits/1.0">elf-au:AdministrativeUnitArea</Name>
+      <Title>Administrative Unit Area</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.866251 47.270114</ows:LowerCorner>
+        <ows:UpperCorner>15.041832 55.099169</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000210"/>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ps="http://inspire.ec.europa.eu/schemas/ps/4.0">ps:ProtectedSite</Name>
+      <Title>Protected Site</Title>
+      <DefaultCRS>urn:ogc:def:crs:EPSG::4258</DefaultCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4326</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3857</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3034</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3035</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31466</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31467</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31468</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::31469</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5676</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5677</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5678</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5679</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2397</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2398</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::2399</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25832</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::25833</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4647</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::5650</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32632</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::32633</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3044</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::3045</OtherCRS>
+      <OtherCRS>urn:ogc:def:crs:EPSG::4839</OtherCRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/geo+json</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.067974 47.389694</ows:LowerCorner>
+        <ows:UpperCorner>14.825166 55.099169</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.csw/DEBKG00M00000209"/>
+    </FeatureType>
+  </FeatureTypeList>
+  <fes:Filter_Capabilities>
+    <fes:Conformance>
+      <fes:Constraint name="ImplementsQuery">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsAdHocQuery">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsFunctions">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsResourceId">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinStandardFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsStandardFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinSpatialFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSpatialFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinTemporalFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsTemporalFilter">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsVersionNav">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSorting">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsExtendedOperators">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsMinimumXPath">
+        <ows:NoValues/>
+        <ows:DefaultValue>TRUE</ows:DefaultValue>
+      </fes:Constraint>
+      <fes:Constraint name="ImplementsSchemaElementFunc">
+        <ows:NoValues/>
+        <ows:DefaultValue>FALSE</ows:DefaultValue>
+      </fes:Constraint>
+    </fes:Conformance>
+    <fes:Id_Capabilities>
+      <fes:ResourceIdentifier name="fes:ResourceId"/>
+    </fes:Id_Capabilities>
+    <fes:Scalar_Capabilities>
+      <fes:LogicalOperators/>
+      <fes:ComparisonOperators>
+        <fes:ComparisonOperator name="PropertyIsEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsNotEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsLessThan"/>
+        <fes:ComparisonOperator name="PropertyIsGreaterThan"/>
+        <fes:ComparisonOperator name="PropertyIsLessThanOrEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsGreaterThanOrEqualTo"/>
+        <fes:ComparisonOperator name="PropertyIsLike"/>
+        <fes:ComparisonOperator name="PropertyIsNull"/>
+        <fes:ComparisonOperator name="PropertyIsNil"/>
+        <fes:ComparisonOperator name="PropertyIsBetween"/>
+      </fes:ComparisonOperators>
+    </fes:Scalar_Capabilities>
+    <fes:Spatial_Capabilities>
+      <fes:GeometryOperands xmlns:gml="http://www.opengis.net/gml" xmlns:gml32="http://www.opengis.net/gml/3.2">
+        <fes:GeometryOperand name="gml:Box"/>
+        <fes:GeometryOperand name="gml:Envelope"/>
+        <fes:GeometryOperand name="gml:Point"/>
+        <fes:GeometryOperand name="gml:LineString"/>
+        <fes:GeometryOperand name="gml:Curve"/>
+        <fes:GeometryOperand name="gml:Polygon"/>
+        <fes:GeometryOperand name="gml:Surface"/>
+        <fes:GeometryOperand name="gml:MultiPoint"/>
+        <fes:GeometryOperand name="gml:MultiLineString"/>
+        <fes:GeometryOperand name="gml:MultiCurve"/>
+        <fes:GeometryOperand name="gml:MultiPolygon"/>
+        <fes:GeometryOperand name="gml:MultiSurface"/>
+        <fes:GeometryOperand name="gml:CompositeCurve"/>
+        <fes:GeometryOperand name="gml:CompositeSurface"/>
+        <fes:GeometryOperand name="gml32:Envelope"/>
+        <fes:GeometryOperand name="gml32:Point"/>
+        <fes:GeometryOperand name="gml32:LineString"/>
+        <fes:GeometryOperand name="gml32:Curve"/>
+        <fes:GeometryOperand name="gml32:Polygon"/>
+        <fes:GeometryOperand name="gml32:Surface"/>
+        <fes:GeometryOperand name="gml32:MultiPoint"/>
+        <fes:GeometryOperand name="gml32:MultiLineString"/>
+        <fes:GeometryOperand name="gml32:MultiCurve"/>
+        <fes:GeometryOperand name="gml32:MultiPolygon"/>
+        <fes:GeometryOperand name="gml32:MultiSurface"/>
+        <fes:GeometryOperand name="gml32:CompositeCurve"/>
+        <fes:GeometryOperand name="gml32:CompositeSurface"/>
+      </fes:GeometryOperands>
+      <fes:SpatialOperators>
+        <fes:SpatialOperator name="BBOX"/>
+        <fes:SpatialOperator name="Equals"/>
+        <fes:SpatialOperator name="Disjoint"/>
+        <fes:SpatialOperator name="Intersects"/>
+        <fes:SpatialOperator name="Touches"/>
+        <fes:SpatialOperator name="Crosses"/>
+        <fes:SpatialOperator name="Within"/>
+        <fes:SpatialOperator name="Contains"/>
+        <fes:SpatialOperator name="Overlaps"/>
+        <fes:SpatialOperator name="Beyond"/>
+        <fes:SpatialOperator name="DWithin"/>
+      </fes:SpatialOperators>
+    </fes:Spatial_Capabilities>
+    <fes:Temporal_Capabilities>
+      <fes:TemporalOperands xmlns:gml="http://www.opengis.net/gml" xmlns:gml32="http://www.opengis.net/gml/3.2">
+        <fes:TemporalOperand name="gml:TimeInstant"/>
+        <fes:TemporalOperand name="gml:TimePeriod"/>
+        <fes:TemporalOperand name="gml32:TimeInstant"/>
+        <fes:TemporalOperand name="gml32:TimePeriod"/>
+      </fes:TemporalOperands>
+      <fes:TemporalOperators>
+        <fes:TemporalOperator name="After"/>
+        <fes:TemporalOperator name="Before"/>
+        <fes:TemporalOperator name="During"/>
+        <fes:TemporalOperator name="TEquals"/>
+      </fes:TemporalOperators>
+    </fes:Temporal_Capabilities>
+    <fes:Functions>
+      <fes:Function name="Area">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Area">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Centroid">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Centroid">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="env">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="ExtraProp">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:anyType</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GeometryFromWKT">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GeometryFromWKT">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:string</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="GetCurrentScale">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+      </fes:Function>
+      <fes:Function name="HatchingDistance">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IDiv">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IMod">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+          <fes:Argument name="arg2">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InteriorPoint">
+        <fes:Returns xmlns:gml="http://www.opengis.net/gml">gml:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="InteriorPoint">
+        <fes:Returns xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:Point</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsCurve">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsCurve">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsPoint">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsPoint">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsSurface">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="IsSurface">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:boolean</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Length">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Length">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Lower">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="MoveGeometry">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml="http://www.opengis.net/gml">gml:_Geometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="MoveGeometry">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:gml32="http://www.opengis.net/gml/3.2">gml32:AbstractGeometry</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+      <fes:Function name="Upper">
+        <fes:Returns xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:integer</fes:Returns>
+        <fes:Arguments>
+          <fes:Argument name="arg1">
+            <fes:Type xmlns:xsd="http://www.w3.org/2001/XMLSchema">xsd:double</fes:Type>
+          </fes:Argument>
+        </fes:Arguments>
+      </fes:Function>
+    </fes:Functions>
+  </fes:Filter_Capabilities>
+</WFS_Capabilities>

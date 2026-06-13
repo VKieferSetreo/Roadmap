@@ -1,0 +1,26 @@
+== Straßenbrücken (WFS 1.1.0, maxFeatures=1, GML) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd https://registry.gdi-de.org/id/de.hh.up https://geodienste.hamburg.de/HH_WFS_Brueckenbauwerke?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=de.hh.up:strassenbruecken&amp;NAMESPACE=xmlns(de.hh.up=https%3A%2F%2Fregistry.gdi-de.org%2Fid%2Fde.hh.up)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2026-06-13T14:48:42Z" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <de.hh.up:strassenbruecken xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" gml:id="DE.HH.UP_STRASSENBRUECKEN_1">
+      <de.hh.up:anzid>PRIVAT017-0</de.hh.up:anzid>
+      <de.hh.up:idnr>1</de.hh.up:idnr>
+      <de.hh.up:bauwerksnummer>PRIV017</de.hh.up:bauwerksnummer>
+      <de.hh.up:internebauwerksnummer>PRIVAT017</de.hh.up:internebauwerksnummer>
+      <de.hh.up:teilbauwerksnummer>0</de.hh.up:teilbauwerksnummer>
+      <de.hh.up:bauwerksname>Brücke Kleingartenverein Einigkeit Hamburg Neuland/Brücke Kleingartenverein Eingkeit Harburg Neuland</de.hh.up:bauwerksname>
+      <de.hh.up:bauwerksart>Balkenbrücke / Mittelträger / Trapezplatte                                      </de.hh.up:bauwerksart>
+      <de.hh.up:stadium>Bauwerk unter Verkehr                                                           </de.hh.up:stadium>
+      <de.hh.up:amt>Bezirk Harburg                                                                  </de.hh.up:amt>
+      <de.hh.up:meisterei>Sonstige                                                                        </de.hh.up:meisterei>
+      <de.hh.up:gis_utm_rechts>566510.29</de.hh.up:gis_utm_rechts>
+      <de.hh.up:gis_utm_hoch>5924650.87</de.hh.up:gis_utm_hoch>
+      <de.hh.up:geom>
+        <!--Inlined geometry 'DE.HH.UP_STRASSENBRUECKEN_1_DE.HH.UP_GEOM'-->
+        <gml:Point gml:id="DE.HH.UP_STRASSENBRUECKEN_1_DE.HH.UP_GEOM" srsName="EPSG:25832">
+          <gml:pos>566510.290 5924650.870</gml:pos>
+        </gml:Point>
+      </de.hh.up:geom>
+    </de.hh.up:strassenbruecken>
+  </gml:featureMember>
+</wfs:FeatureCollection>

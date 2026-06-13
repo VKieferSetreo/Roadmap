@@ -1,0 +1,15 @@
+QUELLE:         opendata.hessen.de — zentrales Open-Data-Portal Hessen (CKAN), inkl. Open Traffic Data
+BETREIBER:      Land Hessen (Hessen Digitales); Verkehrsdaten von Hessen Mobil / Kommunen
+EBENE:          Land:Hessen
+DATENTYP:       Detektor-/Induktionsschleifen-Rohdaten (Zähl-/Belegungswerte, 1-min), Verkehrs-/Geodatensätze; Sucheinstieg für Hessen-Mobil-Datensätze (Baustellen/Straßennetz/Bauwerke)
+STRASSENTYP:    überwiegend kommunal/Knotenpunkte (Open Traffic Data); je Datensatz
+FORMAT:         CKAN-API (JSON); je Datensatz CSV (ZIP), WFS/WMS/XML/GML
+ENDPUNKT:       https://opendata.hessen.de/api/3/action/package_search?rows=1&fq=groups:verkehr
+DOKU:           https://opendata.hessen.de/pages/open-data-in-hessen
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         offen (HODaG; je Datensatz dl-de/by-2-0 o.ä.)
+UPDATE:         jährlich/laufend je Datensatz (Open Traffic Data 2022–2025)
+STATUS:         verifiziert
+NOTIZ:          CKAN-API live getestet, success:true, 30 Datensätze in Gruppe "verkehr". WICHTIG: Anti-Bot-Wall (within.website) blockt BROWSER-User-Agents (HTTP 200 HTML-Challenge), lässt aber den Standard-curl-UA durch → KEINEN Browser-UA setzen! (Katalog notierte fälschlich "403 bei Bot-Fetch" — tatsächlich umgekehrt.) Über package_search nach weiteren Hessen-Mobil-Datensätzen (Baustellen/Bauwerke/Straßennetz) filtern: ?q=...&fq=groups:verkehr . Für GST-Restriktionen randständig (Detektor-Rohdaten), aber guter Sucheinstieg.

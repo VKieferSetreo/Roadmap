@@ -1,0 +1,4 @@
+Karlsruhe Geoportal — Brücken & Bauwerke / Verkehrstechnik
+Geoportal Fachpläne: https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/fachplaene
+eService/Open Data: https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

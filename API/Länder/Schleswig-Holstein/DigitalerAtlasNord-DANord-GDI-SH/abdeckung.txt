@@ -1,0 +1,15 @@
+QUELLE:         DigitalerAtlasNord (DANord) — Präsentationskomponente GDI-SH
+BETREIBER:      Landesamt für Vermessung und Geoinformation SH (LVermGeo SH), Kooperation Land/Kommunen
+EBENE:          Land:Schleswig-Holstein
+DATENTYP:       zentraler Geo-Viewer; interaktive Baustellen-Übersicht (Bundes-/Land-/teils Kreisstraßen + BAB); Geobasis-WMS (DTK5/25/50/100, Orthophotos)
+STRASSENTYP:    A/B/L/K (Baustellen-Viewer)
+FORMAT:         WMS (Geobasis), Web-Viewer
+ENDPUNKT:       https://www.gdi-sh.de/DE/home   (Viewer; Baustellen-Daten = WFS_SH_Baustelleninformationen)
+DOKU:           https://gdk.gdi-de.org/geonetwork/srv/api/records/9f5b9d4a-b613-4de4-a905-47c67c82fc92
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (Geobasis)
+UPDATE:         laufend
+STATUS:         zu-bestätigen
+NOTIZ:          DANord-Baustellen-Viewer = SH-Entsprechung zum Verkehrsportal; die DATEN dahinter sind der offene WFS dienste.gdi-sh.de/WFS_SH_Baustelleninformationen (siehe OpenData-SH-Strassenbaustellen-DATEX, 🟢). GDI-SH-Portal HTTP 200 live; konkreter Geobasis-WMS-Endpunkt (DTK/Orthophoto) nicht erraten — über LVermGeo-SH-Geodienste-Seite auflösen. DANord-Portal: https://www.gdi-sh.de/DE/AufgabenZiele/DANord . LBVSH-Baustellenseite: https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LBVSH/Service/Baustellen

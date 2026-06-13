@@ -1,0 +1,10 @@
+# LBM RLP — Brücken & Schwertransporte (keine offenen Daten)
+
+Brücken (Themenseite):  https://lbm.rlp.de/themen/bruecken
+GST / Schwerverkehr:    https://lbm.rlp.de/themen/verkehrsrecht/grossraum-und-schwerverkehr
+
+LÜCKE: Keine öffentliche lastbeschränkte-Brücken-Liste/-Karte (im Ggs. zu NRW + Hessen).
+Echte GST-Brückenrestriktion nur über:
+  - VEMAGS-INS-GST (bundesweit, restricted — Bundeskatalog Q4)
+  - direkte LBM-Anfrage/Kooperation
+Geprüft 2026-06-13: Themenseiten erreichbar (HTTP 200), aber keine Datendownloads.

@@ -1,0 +1,15 @@
+QUELLE: VIZ Berlin — "Verkehrsredaktion" + "Landesmeldestelle (TIC3)" GeoJSON-Feeds
+BETREIBER: VIZ Berlin (publiziert auch via Mobilithek/GovData)
+EBENE: Land (Berlin)
+DATENTYP: Baustellen, Sperrungen (FeatureCollection)
+STRASSENTYP: Alle (Berliner Stadtgebiet)
+FORMAT: GeoJSON (statisch generierte JSON-Datei, EPSG:4326) — einfacher als WFS
+ENDPUNKT: https://api.viz.berlin.de/tic3/baustellen_sperrungen_tic.json
+DOKU: https://www.govdata.de/suche/daten/baustellen-sperrungen-und-sonstige-storungen-von-besonderem-verkehrlichem-interesse
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: Berlin Open Data; via Mobilithek publiziert
+UPDATE: laufend (Distribution lt. GovData zuletzt 19.03.2026 gepflegt)
+STATUS: verifiziert
+NOTIZ: Zwei Feeds — Verkehrsredaktion https://api.viz.berlin.de/daten/baustellen_sperrungen_viz.json und Landesmeldestelle (TIC3) https://api.viz.berlin.de/tic3/baustellen_sperrungen_tic.json. Einfachste Integration (1 GET → fertiges GeoJSON, EPSG:4326). properties.subtype/severity/validity/street/section. Beide live HTTP 200.

@@ -1,0 +1,15 @@
+QUELLE:         BASt Brückenkarte / Brückenstatistik (Bundesfernstraßen)
+BETREIBER:      Bundesanstalt für Straßenwesen (BASt) / BMV
+DATENTYP:       Brücken der Bundesfernstraßen — Lage, Baustoff, Zustandsnote (1-4), Bauwerksdaten; Download zur Weiterverwendung
+EBENE:          Bundesweit
+STRASSENTYP:    A + B (Bundesfernstraßen)
+FORMAT:         Web-Karte mit Export/Download (Format zu-bestätigen, vermutl. CSV/GeoJSON)
+ENDPUNKT:       -
+DOKU:           https://www.bmv.de/SharedDocs/DE/Artikel/StB/brueckenkarte.html?nn=12830  (Brückenstatistik: https://www.bast.de/DE/Ingenieurbau/Fachthemen/brueckenstatistik/brueckenstatistik.html | GDI-DE: https://gdk.gdi-de.org/geonetwork/srv/api/records/699335644490391552)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC-BY 4.0 (offene Daten, laut GDI-DE-Metadaten)
+UPDATE:         halbjährlich
+STATUS:         zu-bestätigen
+NOTIZ:          Einzige offene bundesweite Brücken-Stammdatenquelle. Kein bestätigter offener REST/WFS-Endpunkt — Karte hinter via.bund.de, direkter Deep-Link löst auf Fehlerseite auf (NICHT erfunden eingetragen). Datenbezug = Export-Funktion in der Web-Karte (manuell). UNBESTÄTIGT, ob Export GST-relevante Felder (Tragfähigkeit/lichte Höhe) enthält — wahrscheinlich nur Zustand/Lage/Baustoff (Statik liegt in SIB-Bauwerke → bast-bauwerksdaten). doku-link.txt mit Portal-Links.

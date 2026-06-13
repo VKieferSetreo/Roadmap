@@ -1,0 +1,6 @@
+== VMZ Bremen Portal (HTTP-Status) ==
+HTTP 200 | text/html; charset=utf-8
+
+== 'RSS'-Pfad Content-Type-Probe (erwartet text/html, kein RSS) ==
+HTTP 200 | text/html; charset=utf-8
+

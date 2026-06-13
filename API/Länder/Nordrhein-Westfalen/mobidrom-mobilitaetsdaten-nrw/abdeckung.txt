@@ -1,0 +1,15 @@
+QUELLE:         NRW.Mobidrom Datenplattform / mobilitaetsdaten.nrw (CKAN) + Verkehr.NRW / DATEX-II
+BETREIBER:      NRW.Mobidrom GmbH (Landesgesellschaft); Verkehr.NRW vom Land NRW / Straßen.NRW
+EBENE:          Land:Nordrhein-Westfalen
+DATENTYP:       Baustellen, Sperrungen, temporäre Verkehrsbeschränkungen, Verkehrslage, Park+Ride, ÖPNV/Sharing/Parken (DATEX-II-Datenprofile)
+STRASSENTYP:    Alle (A + Land + kommunal — alle meldenden Baulastträger; ab 2027 Pflicht für alle NRW-Baulastträger)
+FORMAT:         CKAN-Katalog (JSON) + je Datensatz DATEX II (XML), GTFS/GTFS-RT, GBFS, MDS, TRIAS
+ENDPUNKT:       https://www.mobilitaetsdaten.nrw/api/open-data-ckan-facade/ckan/dataset
+DOKU:           https://www.mobidrom.nrw/produkte/mobidrom-datenplattform/daten-bereitstellen
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (über Plattform ausgewiesen) — kostenfrei/diskriminierungsfrei lt. MOBIDROM
+UPDATE:         Echtzeit-nah / kontinuierlich; Katalog laufend (zuletzt 2026-06-11)
+STATUS:         verifiziert
+NOTIZ:          CKAN-Endpunkt AUFGELÖST (Katalog sagte "zu-bestätigen/null"). Frontend ist CKAN mit JS-Service-Worker; die echte API liegt hinter einer Facade: /api/open-data-ckan-facade/ckan/dataset → liefert current_package_list_with_resources als JSON (live getestet, success:true). package_search/action-Pfade geben 500 (Facade exponiert nur /ckan/dataset). Je Datensatz stehen DATEX-II/GTFS-Distribution-URLs in result[].resources. Beispiel-Datensatz: gebndelte-daten-parkride-nrw. Für GST relevant: nach Roadworks/Closures-DATEX-Datensätzen im result-Array filtern. Produkt-Kontakt: pascal.wett@mobidrom.nrw. NRW liefert zusätzlich an die Mobilithek (→ Bundeskatalog).

@@ -1,0 +1,15 @@
+QUELLE:         Lastbeschränkte Brücken NRW — Schwertransportkarte (via GovData/open.NRW-Hub)
+BETREIBER:      Straßen.NRW / Autobahn GmbH (NRW); veröffentlicht über open.NRW (CKAN), gespiegelt auf GovData
+DATENTYP:       Bauwerke (Brücken), die für Schwertransporte gesperrt sind (GST-Negativkarte). Direkt GST-relevant
+EBENE:          Bundesweit (GovData = föderaler Kataloghub; Datensatz-Inhalt NRW)
+STRASSENTYP:    A + Landstraßen NRW (Zuständigkeit Straßen.NRW + Autobahn GmbH)
+FORMAT:         Web-Karte (ArcGIS WebApp, giscloud.nrw.de); CKAN-Katalog-API als maschineller Sucheinstieg; Rohdaten "in Prüfung" (per Kontakt)
+ENDPUNKT:       CKAN-Hub: https://www.open.nrw/api/3/action/package_search?q=schwertransport  (Karte: https://www.giscloud.nrw.de/arcgis/apps/webappviewer/index.html?id=35c61ce20f2c4639a333be830891e207)
+DOKU:           https://www.govdata.de/suche/daten/lastbeschrankte-brucken-nrw-schwertransportkarte  (open.NRW: https://www.open.nrw/dataset/lastbeschr__nkte_br__cken_nrw___schwertransportkarte__1653989836)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         open.NRW/GovData — other-open / i.d.R. dl-de; pro Datensatz prüfen
+UPDATE:         laufend gepflegt (Negativkarte)
+STATUS:         zu-bestätigen
+NOTIZ:          Live getestet ist der CKAN-Hub (open.NRW package_search findet den Datensatz). ABER die eigentlichen Brücken-Rohdaten sind nur als ArcGIS-Web-Karte zugänglich (kein bestätigter offener WFS/Download — ArcGIS-REST-Directory nicht offen browsebar; Rohdaten lt. Datensatz "in Prüfung"/per Kontakt). WICHTIGES MUSTER: SIB-Bauwerke-Daten sind nicht offen, aber mehrere Länder publizieren GST-Negativkarten — die praktisch zugänglichste Brückenrestriktions-Quelle. GovData/data.gov.de = zentraler Sucheinstieg für alle 16 Landes-Negativkarten (-> Länder-Katalog).

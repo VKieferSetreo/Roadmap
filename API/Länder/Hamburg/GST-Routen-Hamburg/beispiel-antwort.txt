@@ -1,0 +1,15 @@
+== OGC API Features — GST-Netz GeoJSON (limit=1) ==
+{"type":"FeatureCollection","numberReturned":1,"numberMatched":3892,"timeStamp":"2026-06-13T14:48:03Z","features":[{"type":"Feature","id":1459718,"geometry":{"type":"LineString","coordinates":[[9.993579816811785,53.45360153604528],[9.993362515176038,53.45350414032968]]},"properties":{"wegenummer":"75 (8773)","strassenname":"BAB A253 abgestuft zur B 75","fahrstreifenanzahl_in_stationierungsrichtung":1,"fahrstreifenanzahl_in_beide_richtungen":0,"fahrstreifenanzahl_gegen_stationierungsrichtung":0,"bahnigkeit":1,"geschwindigkeit":"80 km/h","wegeart":"Bundesstraße - Ast (Freie Strecke)","richtung":"in Stationierungsrichtung"}}],"links":[{"href":"https://api.hamburg.de/datasets/v1/grossraum_und_schwertransport_routen/collections/grossraum_schwertransport_netz/items?limit=1&f=json","rel":"self","type":"application/geo+json","title":"Dieses Dokument"},{"href":"https://api.hamburg.de/datasets/v1/grossraum_und_schwertransport_routen/collections/grossraum_schwertransport_netz/items?limit=1&f=html","rel":"alternate","type":"text/html","title":"Dieses Dokument als HTML"},{"href":"https://api.hamburg.de/datasets/v1/grossraum_und_schwertransport_routen/collections/grossraum_schwertransport_netz/items?f=json&limit=1&offset=1","rel":"next","type":"application/geo+json","title":"Nächste Seite"}]}
+== Alternativ WFS 1.1.0 GetFeature (maxFeatures=1, GML) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd https://registry.gdi-de.org/id/de.hh.up https://geodienste.hamburg.de/HH_WFS_Grossraum_und_Schwertransport_Routen?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=de.hh.up:grossraum_schwertransport_netz&amp;NAMESPACE=xmlns(de.hh.up=https%3A%2F%2Fregistry.gdi-de.org%2Fid%2Fde.hh.up)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2026-06-13T14:48:03Z" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <de.hh.up:grossraum_schwertransport_netz xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" gml:id="DE.HH.UP_GROSSRAUM_SCHWERTRANSPORT_NETZ_1459718">
+      <de.hh.up:wegenummer>75 (8773)</de.hh.up:wegenummer>
+      <de.hh.up:strassenname>BAB A253 abgestuft zur B 75</de.hh.up:strassenname>
+      <de.hh.up:fahrstreifenanzahl_in_stationierungsrichtung>1</de.hh.up:fahrstreifenanzahl_in_stationierungsrichtung>
+      <de.hh.up:fahrstreifenanzahl_in_beide_richtungen>0</de.hh.up:fahrstreifenanzahl_in_beide_richtungen>
+      <de.hh.up:fahrstreifenanzahl_gegen_stationierungsrichtung>0</de.hh.up:fahrstreifenanzahl_gegen_stationierungsrichtung>
+      <de.hh.up:bahnigkeit>1</de.hh.up:bahnigkeit>
+      <de.hh.up:geschwindigkeit>80 km/h</de.hh.up:geschwindigkeit>
+      <de.hh.up:wegeart>Bu

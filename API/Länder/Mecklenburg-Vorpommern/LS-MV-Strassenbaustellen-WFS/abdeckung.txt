@@ -1,0 +1,15 @@
+QUELLE: Straßenbaustellen MV (WFS) — wfs_baustellenmv
+BETREIBER: Landesamt für Straßenbau und Verkehr M-V (LS M-V / SBV), Rostock
+EBENE: Land (Mecklenburg-Vorpommern)
+DATENTYP: verkehrseinschränkende Baustellen auf Bundes- und Landesstraßen
+STRASSENTYP: A/B/L (+ wichtige K, lt. Themenkarte)
+FORMAT: WFS 1.0/1.1/2.0
+ENDPUNKT: https://www.geodaten-mv.de/dienste/wfs_baustellenmv?service=WFS&request=GetCapabilities
+DOKU: https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: AccessConstraints = "Urheberrecht" (keine harte Sperre; Nutzungsbedingungen LS M-V für kommerziell prüfen — lsmv@sbv.mv-regierung.de)
+UPDATE: tagesaktuell (Anbieterdaten)
+STATUS: verifiziert
+NOTIZ: Technisch beste MV-Direktquelle für Baustellen. Layer baustellen:Baustellen. WMS-Variante https://www.geodaten-mv.de/dienste/baustellen_lsbv_wms (live 200). GetCapabilities live HTTP 200, Layer bestätigt. "Urheberrecht" = Lizenz für kommerziell vor Nutzung klären.

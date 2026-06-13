@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:baustellen="http://www.geodaten-mv.de/ns/baustellen/1.0.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.geodaten-mv.de/ns/baustellen/1.0.0 https://www.geodaten-mv.de/dienste/wfs_baustellenmv?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=baustellen:Baustellen&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B%20version%3D3.2 http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+   timeStamp="2026-06-13T16:45:21" numberMatched="unknown" numberReturned="1"
+   next="https://www.geodaten-mv.de/dienste/wfs_baustellenmv?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;typeNames=baustellen%3ABaustellen&amp;count=1&amp;STARTINDEX=1">
+      <wfs:boundedBy>
+      	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::25833">
+      		<gml:lowerCorner>327319.007811 6016622.586500</gml:lowerCorner>
+      		<gml:upperCorner>327319.007811 6016622.586500</gml:upperCorner>
+      	</gml:Envelope>
+      </wfs:boundedBy>
+    <wfs:member>
+      <baustellen:Baustellen gml:id="Baustellen.13002464">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::25833">
+        		<gml:lowerCorner>327319.007811 6016622.586500</gml:lowerCorner>
+        		<gml:upperCorner>327319.007811 6016622.586500</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <baustellen:geometry>
+          <gml:Point gml:id="Baustellen.13002464.1" srsName="urn:ogc:def:crs:EPSG::25833">
+            <gml:pos>327319.007811 6016622.586500</gml:pos>
+          </gml:Point>
+        </baustellen:geometry>
+        <baustellen:bsname>LK VR: K1 L 21 - Erneuerung an der Decke</baustellen:bsname>
+        <baustellen:vonort>L 21</baustellen:vonort>
+        <baustellen:nachort>Neuhaus</baustellen:nachort>
+        <baustellen:baubeginn>2026-04-09 00:00:00</baustellen:baubeginn>
+        <baustellen:bauende>2026-07-07 00:00:00</baustellen:bauende>
+        <baustellen:verkehrslenkung>L 21 bis Dierhagen Dorf und Kreisstraße 1 über Dierhagen Strand bis Neuhaus und umgekehrt</baustellen:verkehrslenkung>
+        <baustellen:sperrart>Erneuerung an der Decke</baustellen:sperrart>
+        <baustellen:sperrlaenge>1048</baustellen:sperrlaenge>
+        <baustellen:anderemassnahmen>Verkehrsraumeinschränkungen auf der L 21 werden gesondert veröffentlicht, sobald die entsprechenden Zeiträume dafür feststehen.</baustellen:anderemassnahmen>
+        <baustellen:erlaeuterung>Vollsperrung</baustellen:erlaeuterung>
+      </baustellen:Baustellen>
+    </wfs:member>
+</wfs:FeatureCollection>
+
+

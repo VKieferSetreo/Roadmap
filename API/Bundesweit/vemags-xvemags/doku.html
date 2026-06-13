@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="de-DE">
+<head>
+    <meta charset="utf-8">
+
+<!-- 
+	Based on the TYPO3 Bootstrap Package by Benjamin Kott - https://www.bootstrap-package.com/
+
+	This website is powered by TYPO3 - inspiring people to share!
+	TYPO3 is a free open source Content Management Framework initially created by Kasper Skaarhoj and licensed under GNU/GPL.
+	TYPO3 is copyright 1998-2026 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
+	Information and contribution at https://typo3.org/
+-->
+
+<link rel="icon" href="/_assets/dc1fd3a7b63c950b64e5c22e1271a490/Icons/favicon.ico" type="image/vnd.microsoft.icon">
+<title>INS-GST Webservice - vemags</title>
+<meta http-equiv="x-ua-compatible" content="IE=edge">
+<meta name="generator" content="TYPO3 CMS">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="robots" content="index,follow">
+<meta name="twitter:card" content="summary">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="google" content="notranslate">
+
+<link rel="stylesheet" href="/typo3temp/assets/bootstrappackage/fonts/284ba9c5345a729d38fc3d3bb72eea6caaef6180abbc77928e15e42297d05f8b/webfont.css?1781336108" media="all">
+<link rel="stylesheet" href="/typo3temp/assets/compressed/merged-3be56b70f4a38492ef55b81a06c5f4f0-a87d6c2850a23a4afee6a28cc69b9670.css?1781249648" media="all">
+<link rel="stylesheet" href="/typo3temp/assets/compressed/merged-53c82069704cbe62ae520a0052cf9da0-a20f1fb1c1d0320cb7073f8478722633.css?1781249648" media="all">
+
+
+
+
+
+
+<link rel="prev" href="/ins-gst-modul/informationen/"><link rel="next" href="/ins-gst-modul/fachliche-pruefmodule/"><link rel="preload" as="style" href="//www.vemags.de/fileadmin/sg_cookie_optin/siteroot-1/cookieOptin.css?1752131436" media="all" crossorigin="anonymous">
+<link rel="stylesheet" href="//www.vemags.de/fileadmin/sg_cookie_optin/siteroot-1/cookieOptin.css?1752131436" media="all" crossorigin="anonymous">
+<script id="cookieOptinData" type="application/json">{"cookieGroups":[{"groupName":"essential","label":"Essenziell","description":"Essenzielle Cookies werden f\u00fcr grundlegende Funktionen der Webseite ben\u00f6tigt. Dadurch ist gew\u00e4hrleistet, dass die Webseite einwandfrei funktioniert.","required":true,"cookieData":[{"Name":"cookie_optin","Provider":"TYPO3","Purpose":"Enth\u00e4lt die gew\u00e4hlten Tracking-Optin-Einstellungen.","Lifetime":"1 Jahr","index":0,"crdate":1752131378,"tstamp":1752131435,"pseudo":false}],"scriptData":[],"loadingHTML":"","loadingJavaScript":""},{"groupName":"iframes","label":"Externe Inhalte","description":"Wir verwenden auf unserer Website externe Inhalte, um Ihnen zus\u00e4tzliche Informationen anzubieten.","required":false,"cookieData":[{"Name":"APISID","Provider":"YouTube (Google)","Purpose":"Dient der Profilerstellung auf Basis von Interessen des Nutzers, um personalisierte Werbung in Google-Diensten anzuzeigen.","Lifetime":"2 Jahre","index":0,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"HSID","Provider":"YouTube (Google)","Purpose":"Enth\u00e4lt verschl\u00fcsselte Informationen \u00fcber den Google-Account des Nutzers und dient zur Authentifizierung sowie zum Schutz vor Angriffen.","Lifetime":"2 Jahre","index":1,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"NID","Provider":"YouTube (Google)","Purpose":"Wird verwendet, um Einstellungen und Informationen wie bevorzugte Sprache, SafeSearch-Filter und andere Personalisierungen zu speichern.","Lifetime":"6 Monate","index":2,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SAPISID","Provider":"YouTube (Google)","Purpose":"Erm\u00f6glicht Google, Nutzerinformationen aus verschiedenen Google-Diensten zu kombinieren und zu personalisieren.","Lifetime":"2 Jahre","index":3,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SID","Provider":"YouTube (Google)","Purpose":"Dient der Sicherheits\u00fcberpr\u00fcfung, der Authentifizierung und zum Schutz der Nutzerdaten bei Zugriffen auf Google-Konten.","Lifetime":"2 Jahre","index":4,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SIDCC","Provider":"YouTube (Google)","Purpose":"Dient zur Sicherheits\u00fcberpr\u00fcfung von Anfragen, um betr\u00fcgerische Angriffe wie CSRF zu verhindern.","Lifetime":"1 Jahr","index":5,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SSID","Provider":"YouTube (Google)","Purpose":"Speichert Informationen \u00fcber das Nutzerverhalten zur Personalisierung von Werbung und Inhalten.","Lifetime":"2 Jahre","index":6,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PAPISID","Provider":"YouTube (Google)","Purpose":"Wird zur Erstellung eines Nutzerprofils auf Basis von Interessen verwendet, um relevante und personalisierte Werbung anzuzeigen.","Lifetime":"2 Jahre","index":7,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PSID","Provider":"YouTube (Google)","Purpose":"Wird verwendet zur Authentifizierung von Nutzern sowie zur Personalisierung von Werbeinhalten.","Lifetime":"2 Jahre","index":8,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PSIDCC","Provider":"YouTube (Google)","Purpose":"Dient Sicherheitszwecken, etwa zur Verhinderung von Angriffen auf Nutzerdaten.","Lifetime":"1 Jahr","index":9,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PAPISID","Provider":"YouTube (Google)","Purpose":"Wird f\u00fcr Remarketing verwendet, um interessenbasierte Werbung auf Webseiten Dritter anzuzeigen.","Lifetime":"2 Jahre","index":10,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PSID","Provider":"YouTube (Google)","Purpose":"Erstellt ein Nutzerprofil basierend auf Interessen und Interaktionen f\u00fcr personalisierte Werbung auf Google-Diensten.","Lifetime":"2 Jahre","index":11,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PSIDCC","Provider":"YouTube (Google)","Purpose":"Wird verwendet, um die Sicherheit der Nutzersitzung zu gew\u00e4hrleisten und vor missbr\u00e4uchlichen Zugriffen zu sch\u00fctzen.","Lifetime":"1 Jahr","index":12,"crdate":1752131378,"tstamp":1752131435,"pseudo":false}]}],"cssData":{"color_box":"#FFFFFF","color_headline":"#373737","color_text":"#373737","color_confirmation_background":"#2E6B96","color_confirmation_text":"#FFFFFF","color_checkbox":"#143D59","color_checkbox_required":"#575757","color_button_all":"#143D59","color_button_all_hover":"#2E6B96","color_button_all_text":"#FFFFFF","color_button_specific":"#575757","color_button_specific_hover":"#929292","color_button_specific_text":"#FFFFFF","color_button_essential":"#575757","color_button_essential_hover":"#929292","color_button_essential_text":"#FFFFFF","color_button_close":"#FFFFFF","color_button_close_hover":"#FFFFFF","color_button_close_text":"#373737","color_list":"#575757","color_list_text":"#FFFFFF","color_table":"#FFFFFF","color_Table_data_text":"#373737","color_table_header":"#F3F3F3","color_table_header_text":"#373737","color_full_box":"#143D59","color_full_headline":"#FFFFFF","color_full_text":"#FFFFFF","color_full_button_close":"#143D59","color_full_button_close_hover":"#143D59","color_full_button_close_text":"#FFFFFF","iframe_color_consent_box_background":"#D6D6D6","iframe_color_button_load_one":"#143D59","iframe_color_button_load_one_hover":"#2E6B96","iframe_color_button_load_one_text":"#FFFFFF","iframe_color_open_settings":"#373737","banner_color_box":"#DDDDDD","banner_color_text":"#373737","banner_color_link_text":"#373737","banner_color_button_settings":"#575757","banner_color_button_settings_hover":"#929292","banner_color_button_settings_text":"#FFFFFF","banner_color_button_accept_essential":"#575757","banner_color_button_accept_essential_hover":"#929292","banner_color_button_accept_essential_text":"#FFFFFF","banner_color_button_accept":"#143D59","banner_color_button_accept_hover":"#2E6B96","banner_color_button_accept_text":"#FFFFFF","color_fingerprint_image":"#FFFFFF","color_fingerprint_background":"#143D59","color_focus_outline":"#F5b51A"},"footerLinks":[{"url":"\/https:datenschutzerklaerung\/?disableOptIn=1&cHash=1490138f851b1c7d365c0b9ceda74bcd","name":"Datenschutzerkl\u00e4rung","uid":228,"index":0}],"iFrameGroup":{"groupName":"iframes","label":"Externe Inhalte","description":"Wir verwenden auf unserer Website externe Inhalte, um Ihnen zus\u00e4tzliche Informationen anzubieten.","required":false,"cookieData":[{"Name":"APISID","Provider":"YouTube (Google)","Purpose":"Dient der Profilerstellung auf Basis von Interessen des Nutzers, um personalisierte Werbung in Google-Diensten anzuzeigen.","Lifetime":"2 Jahre","index":0,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"HSID","Provider":"YouTube (Google)","Purpose":"Enth\u00e4lt verschl\u00fcsselte Informationen \u00fcber den Google-Account des Nutzers und dient zur Authentifizierung sowie zum Schutz vor Angriffen.","Lifetime":"2 Jahre","index":1,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"NID","Provider":"YouTube (Google)","Purpose":"Wird verwendet, um Einstellungen und Informationen wie bevorzugte Sprache, SafeSearch-Filter und andere Personalisierungen zu speichern.","Lifetime":"6 Monate","index":2,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SAPISID","Provider":"YouTube (Google)","Purpose":"Erm\u00f6glicht Google, Nutzerinformationen aus verschiedenen Google-Diensten zu kombinieren und zu personalisieren.","Lifetime":"2 Jahre","index":3,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SID","Provider":"YouTube (Google)","Purpose":"Dient der Sicherheits\u00fcberpr\u00fcfung, der Authentifizierung und zum Schutz der Nutzerdaten bei Zugriffen auf Google-Konten.","Lifetime":"2 Jahre","index":4,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SIDCC","Provider":"YouTube (Google)","Purpose":"Dient zur Sicherheits\u00fcberpr\u00fcfung von Anfragen, um betr\u00fcgerische Angriffe wie CSRF zu verhindern.","Lifetime":"1 Jahr","index":5,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"SSID","Provider":"YouTube (Google)","Purpose":"Speichert Informationen \u00fcber das Nutzerverhalten zur Personalisierung von Werbung und Inhalten.","Lifetime":"2 Jahre","index":6,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PAPISID","Provider":"YouTube (Google)","Purpose":"Wird zur Erstellung eines Nutzerprofils auf Basis von Interessen verwendet, um relevante und personalisierte Werbung anzuzeigen.","Lifetime":"2 Jahre","index":7,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PSID","Provider":"YouTube (Google)","Purpose":"Wird verwendet zur Authentifizierung von Nutzern sowie zur Personalisierung von Werbeinhalten.","Lifetime":"2 Jahre","index":8,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-1PSIDCC","Provider":"YouTube (Google)","Purpose":"Dient Sicherheitszwecken, etwa zur Verhinderung von Angriffen auf Nutzerdaten.","Lifetime":"1 Jahr","index":9,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PAPISID","Provider":"YouTube (Google)","Purpose":"Wird f\u00fcr Remarketing verwendet, um interessenbasierte Werbung auf Webseiten Dritter anzuzeigen.","Lifetime":"2 Jahre","index":10,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PSID","Provider":"YouTube (Google)","Purpose":"Erstellt ein Nutzerprofil basierend auf Interessen und Interaktionen f\u00fcr personalisierte Werbung auf Google-Diensten.","Lifetime":"2 Jahre","index":11,"crdate":1752131378,"tstamp":1752131435,"pseudo":false},{"Name":"__Secure-3PSIDCC","Provider":"YouTube (Google)","Purpose":"Wird verwendet, um die Sicherheit der Nutzersitzung zu gew\u00e4hrleisten und vor missbr\u00e4uchlichen Zugriffen zu sch\u00fctzen.","Lifetime":"1 Jahr","index":12,"crdate":1752131378,"tstamp":1752131435,"pseudo":false}]},"settings":{"banner_enable":true,"banner_force_min_width":0,"version":1,"banner_position":0,"banner_show_settings_button":true,"cookie_lifetime":365,"session_only_essential_cookies":false,"iframe_enabled":true,"minify_generated_data":true,"show_button_close":false,"activate_testing_mode":false,"disable_powered_by":true,"disable_for_this_language":false,"set_cookie_for_domain":"","save_history_webhook":"https:\/\/www.vemags.de\/?saveOptinHistory","cookiebanner_whitelist_regex":"","banner_show_again_interval":14,"identifier":1,"language":0,"render_assets_inline":false,"consider_do_not_track":false,"domains_to_delete_cookies_for":"","subdomain_support":false,"overwrite_baseurl":"","unified_cookie_name":true,"disable_usage_statistics":false,"fingerprint_position":1,"iframe_replacement_background_image":"","monochrome_enabled":false,"show_fingerprint":true,"disable_automatic_loading":false,"auto_action_for_bots":0},"textEntries":{"header":"Datenschutzeinstellungen","description":"Wir verwenden auf unserer Website Cookies, um die Benutzerfreundlichkeit zu erh\u00f6hen. Mit dem Klicken auf ALLE AKZEPTIEREN erkl\u00e4ren Sie sich damit einverstanden, dass wir Cookies verwenden d\u00fcrfen. Detaillierte Informationen, wie man der Verwendung von Cookies jederzeit widersprechen kann, findet man hier:","accept_all_text":"Alle akzeptieren","accept_specific_text":"Speichern & schlie\u00dfen","accept_essential_text":"Nur essenzielle Cookies akzeptieren","extend_box_link_text":"Weitere Informationen anzeigen","extend_box_link_text_close":"Weitere Informationen verstecken","extend_table_link_text":"Cookie-Informationen anzeigen","extend_table_link_text_close":"Cookie-Informationen verstecken","cookie_name_text":"Name","cookie_provider_text":"Anbieter","cookie_purpose_text":"Zweck","cookie_lifetime_text":"Laufzeit","iframe_button_allow_all_text":"Alle externen Inhalte erlauben","iframe_button_allow_one_text":"Einmalig erlauben","iframe_button_reject_text":"Nicht erlauben","iframe_button_load_one_text":"Externen Inhalt laden","iframe_open_settings_text":"Einstellungen anzeigen","iframe_button_load_one_description":"Dieser Inhalt wird von YouTube bereitgestellt.","banner_button_accept_text":"Akzeptieren","banner_button_accept_essential_text":"Ablehnen","banner_button_settings_text":"Einstellungen","banner_description":"Wir verwenden auf unserer Website Cookies, um die Funktion YouTube Videos bereitzustellen. Mit dem Klicken auf AKZEPTIEREN erkl\u00e4ren Sie sich damit einverstanden, dass wir Cookies verwenden d\u00fcrfen. Detaillierte Informationen, wie man der Verwendung von Cookies jederzeit widersprechen kann, findet man hier:","save_confirmation_text":"Cookie-Einstellungen erfolgreich gespeichert","user_hash_text":"User-Hash","dependent_groups_text":"Abh\u00e4ngig von:","fingerprint_aria_label_text":"Cookies verwalten"},"placeholders":{"iframe_consent_description":"<p class=\"sg-cookie-optin-box-flash-message\"><\/p>"},"mustacheData":{"template":{"template_html":"<!--googleoff: index-->\r\n<div data-nosnippet class=\"sg-cookie-optin-box\">\r\n\t{{#settings.show_button_close}}\r\n\t\t<span class=\"sg-cookie-optin-box-close-button\">\u2715<\/span>\r\n\t{{\/settings.show_button_close}}\r\n\r\n\t<strong class=\"sg-cookie-optin-box-header\">{{{textEntries.header}}}<\/strong>\r\n\t<p class=\"sg-cookie-optin-box-description\">{{{textEntries.description}}}<\/p>\r\n\r\n\t<ul class=\"sg-cookie-optin-box-cookie-list\">\r\n\t\t{{#cookieGroups}}\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-list-item\">\r\n\t\t\t\t<label >\r\n\t\t\t\t\t<input class=\"sg-cookie-optin-checkbox\"\r\n\t\t\t\t\t   type=\"checkbox\"\r\n\t\t\t\t\t   name=\"cookies[]\"\r\n\t\t\t\t\t   value=\"{{groupName}}\"\r\n\t\t\t\t\t   {{#required}}checked=\"1\"{{\/required}}\r\n\t\t\t\t\t   {{#required}}disabled=\"1\"{{\/required}}>\r\n\t\t\t\t\t<span class=\"sg-cookie-optin-checkbox-label\" role=\"checkbox\"\r\n\t\t\t\t\t\t  {{#required}}aria-checked=\"true\"{{\/required}}\r\n\t\t\t\t\t\t  {{^required}}aria-checked=\"false\"{{\/required}}>{{{label}}}<\/span>\r\n\t\t\t\t<\/label>\r\n\t\t\t<\/li>\r\n\t\t{{\/cookieGroups}}\r\n\t<\/ul>\r\n\r\n\t<div class=\"sg-cookie-optin-box-button\">\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-all\">{{{textEntries.accept_all_text}}}<\/button>\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-specific\">{{{textEntries.accept_specific_text}}}<\/button>\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-essential\">{{{textEntries.accept_essential_text}}}<\/button>\r\n\t<\/div>\r\n\r\n\t<ul class=\"sg-cookie-optin-box-cookie-detail-list\" aria-hidden=\"true\">\r\n\t\t{{#cookieGroups}}\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-detail-list-item\">\r\n\t\t\t\t<strong class=\"sg-cookie-optin-box-cookie-detail-header\">{{{label}}}<\/strong>\r\n\t\t\t\t<p class=\"sg-cookie-optin-box-cookie-detail-description\">{{{description}}}<\/p>\r\n\t\t\t\t{{#dependentGroups}}\r\n\t\t\t\t<div class=\"sg-cookie-optin-dependent-groups\">{{{textEntries.dependent_groups_text}}} {{dependentGroupTitles}}<\/div>\r\n\t\t\t\t{{\/dependentGroups}}\r\n\r\n\t\t\t\t<div class=\"sg-cookie-optin-box-cookie-detail-sublist\" aria-hidden=\"true\">\r\n\t\t\t\t\t{{#cookieData}}\r\n\t\t\t\t\t\t{{^pseudo}}\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t{{#index}}<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>{{\/index}}\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">{{{textEntries.cookie_name_text}}}<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">{{{Name}}}<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">{{{textEntries.cookie_provider_text}}}<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">{{{Provider}}}<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">{{{textEntries.cookie_lifetime_text}}}<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">{{{Lifetime}}}<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">{{{textEntries.cookie_purpose_text}}}<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">{{{Purpose}}}<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t{{\/pseudo}}\r\n\t\t\t\t\t{{\/cookieData}}\r\n\t\t\t\t<\/div>\r\n\r\n\t\t\t\t{{#cookieData}}\r\n\t\t\t\t\t{{^index}}<a role=\"button\" class=\"sg-cookie-optin-box-sublist-open-more-link\" href=\"#\">{{{textEntries.extend_table_link_text}}}\r\n\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t<svg class=\"sg-cookie-optin-box-sublist-open-more-symbol\" fill='currentColor' xmlns='http:\/\/www.w3.org\/2000\/svg'\r\n\t\t\t\t\t\t\t\t viewBox='0 0 512 512' aria-hidden=\"true\" focusable=\"false\">\r\n\t\t\t\t\t\t\t\t<path d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z'\/>\r\n\t\t\t\t\t\t\t<\/svg>\r\n\t\t\t\t\t\t<\/span>\r\n\t\t\t\t\t<\/a>{{\/index}}\r\n\t\t\t\t{{\/cookieData}}\r\n\t\t\t<\/li>\r\n\t\t{{\/cookieGroups}}\r\n\t<\/ul>\r\n\r\n\t<div class=\"sg-cookie-optin-box-open-more\">\r\n\t\t<a class=\"sg-cookie-optin-box-open-more-link\" href=\"#\">{{{textEntries.extend_box_link_text}}}\r\n\t\t\t<span>\r\n\t\t\t\t<svg class=\"sg-cookie-optin-box-sublist-open-more-symbol\" fill='currentColor' xmlns='http:\/\/www.w3.org\/2000\/svg'\r\n\t\t\t\t\t viewBox='0 0 512 512' aria-hidden=\"true\" focusable=\"false\">\r\n\t\t\t\t\t<path d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z'\/>\r\n\t\t\t\t<\/svg>\r\n\t\t\t<\/span>\r\n\t\t<\/a>\r\n\t<\/div>\r\n<\/div>\r\n<!--googleon: index-->\r\n","template_overwritten":1,"template_selection":0,"markup":"<!--googleoff: index-->\r\n<div data-nosnippet class=\"sg-cookie-optin-box\">\r\n\r\n\t<strong class=\"sg-cookie-optin-box-header\">Datenschutzeinstellungen<\/strong>\r\n\t<p class=\"sg-cookie-optin-box-description\">Wir verwenden auf unserer Website Cookies, um die Benutzerfreundlichkeit zu erh\u00f6hen. Mit dem Klicken auf ALLE AKZEPTIEREN erkl\u00e4ren Sie sich damit einverstanden, dass wir Cookies verwenden d\u00fcrfen. Detaillierte Informationen, wie man der Verwendung von Cookies jederzeit widersprechen kann, findet man hier:<\/p>\r\n\r\n\t<ul class=\"sg-cookie-optin-box-cookie-list\">\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-list-item\">\r\n\t\t\t\t<label >\r\n\t\t\t\t\t<input class=\"sg-cookie-optin-checkbox\"\r\n\t\t\t\t\t   type=\"checkbox\"\r\n\t\t\t\t\t   name=\"cookies[]\"\r\n\t\t\t\t\t   value=\"essential\"\r\n\t\t\t\t\t   checked=\"1\"\r\n\t\t\t\t\t   disabled=\"1\">\r\n\t\t\t\t\t<span class=\"sg-cookie-optin-checkbox-label\" role=\"checkbox\"\r\n\t\t\t\t\t\t  aria-checked=\"true\"\r\n\t\t\t\t\t\t  >Essenziell<\/span>\r\n\t\t\t\t<\/label>\r\n\t\t\t<\/li>\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-list-item\">\r\n\t\t\t\t<label >\r\n\t\t\t\t\t<input class=\"sg-cookie-optin-checkbox\"\r\n\t\t\t\t\t   type=\"checkbox\"\r\n\t\t\t\t\t   name=\"cookies[]\"\r\n\t\t\t\t\t   value=\"iframes\"\r\n\t\t\t\t\t   \r\n\t\t\t\t\t   >\r\n\t\t\t\t\t<span class=\"sg-cookie-optin-checkbox-label\" role=\"checkbox\"\r\n\t\t\t\t\t\t  \r\n\t\t\t\t\t\t  aria-checked=\"false\">Externe Inhalte<\/span>\r\n\t\t\t\t<\/label>\r\n\t\t\t<\/li>\r\n\t<\/ul>\r\n\r\n\t<div class=\"sg-cookie-optin-box-button\">\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-all\">Alle akzeptieren<\/button>\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-specific\">Speichern & schlie\u00dfen<\/button>\r\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-essential\">Nur essenzielle Cookies akzeptieren<\/button>\r\n\t<\/div>\r\n\r\n\t<ul class=\"sg-cookie-optin-box-cookie-detail-list\" aria-hidden=\"true\">\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-detail-list-item\">\r\n\t\t\t\t<strong class=\"sg-cookie-optin-box-cookie-detail-header\">Essenziell<\/strong>\r\n\t\t\t\t<p class=\"sg-cookie-optin-box-cookie-detail-description\">Essenzielle Cookies werden f\u00fcr grundlegende Funktionen der Webseite ben\u00f6tigt. Dadurch ist gew\u00e4hrleistet, dass die Webseite einwandfrei funktioniert.<\/p>\r\n\r\n\t\t\t\t<div class=\"sg-cookie-optin-box-cookie-detail-sublist\" aria-hidden=\"true\">\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">cookie_optin<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">TYPO3<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">1 Jahr<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Enth\u00e4lt die gew\u00e4hlten Tracking-Optin-Einstellungen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t<\/div>\r\n\r\n\t\t\t\t\t<a role=\"button\" class=\"sg-cookie-optin-box-sublist-open-more-link\" href=\"#\">Cookie-Informationen anzeigen\r\n\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t<svg class=\"sg-cookie-optin-box-sublist-open-more-symbol\" fill='currentColor' xmlns='http:\/\/www.w3.org\/2000\/svg'\r\n\t\t\t\t\t\t\t\t viewBox='0 0 512 512' aria-hidden=\"true\" focusable=\"false\">\r\n\t\t\t\t\t\t\t\t<path d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z'\/>\r\n\t\t\t\t\t\t\t<\/svg>\r\n\t\t\t\t\t\t<\/span>\r\n\t\t\t\t\t<\/a>\r\n\t\t\t<\/li>\r\n\t\t\t<li class=\"sg-cookie-optin-box-cookie-detail-list-item\">\r\n\t\t\t\t<strong class=\"sg-cookie-optin-box-cookie-detail-header\">Externe Inhalte<\/strong>\r\n\t\t\t\t<p class=\"sg-cookie-optin-box-cookie-detail-description\">Wir verwenden auf unserer Website externe Inhalte, um Ihnen zus\u00e4tzliche Informationen anzubieten.<\/p>\r\n\r\n\t\t\t\t<div class=\"sg-cookie-optin-box-cookie-detail-sublist\" aria-hidden=\"true\">\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">APISID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Dient der Profilerstellung auf Basis von Interessen des Nutzers, um personalisierte Werbung in Google-Diensten anzuzeigen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">HSID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Enth\u00e4lt verschl\u00fcsselte Informationen \u00fcber den Google-Account des Nutzers und dient zur Authentifizierung sowie zum Schutz vor Angriffen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">NID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">6 Monate<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Wird verwendet, um Einstellungen und Informationen wie bevorzugte Sprache, SafeSearch-Filter und andere Personalisierungen zu speichern.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">SAPISID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Erm\u00f6glicht Google, Nutzerinformationen aus verschiedenen Google-Diensten zu kombinieren und zu personalisieren.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">SID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Dient der Sicherheits\u00fcberpr\u00fcfung, der Authentifizierung und zum Schutz der Nutzerdaten bei Zugriffen auf Google-Konten.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">SIDCC<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">1 Jahr<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Dient zur Sicherheits\u00fcberpr\u00fcfung von Anfragen, um betr\u00fcgerische Angriffe wie CSRF zu verhindern.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">SSID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Speichert Informationen \u00fcber das Nutzerverhalten zur Personalisierung von Werbung und Inhalten.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-1PAPISID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Wird zur Erstellung eines Nutzerprofils auf Basis von Interessen verwendet, um relevante und personalisierte Werbung anzuzeigen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-1PSID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Wird verwendet zur Authentifizierung von Nutzern sowie zur Personalisierung von Werbeinhalten.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-1PSIDCC<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">1 Jahr<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Dient Sicherheitszwecken, etwa zur Verhinderung von Angriffen auf Nutzerdaten.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-3PAPISID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Wird f\u00fcr Remarketing verwendet, um interessenbasierte Werbung auf Webseiten Dritter anzuzeigen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-3PSID<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">2 Jahre<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Erstellt ein Nutzerprofil basierend auf Interessen und Interaktionen f\u00fcr personalisierte Werbung auf Google-Diensten.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t\t\t\t<table role=\"grid\">\r\n\t\t\t\t\t\t\t\t<tbody role=\"rowgroup\">\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\" class=\"divider\"><td role=\"cell\" colspan=\"2\">&nbsp;<\/td><\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Name<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">__Secure-3PSIDCC<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Anbieter<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">YouTube (Google)<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Laufzeit<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\">1 Jahr<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t\t<tr role=\"row\">\r\n\t\t\t\t\t\t\t\t\t\t<th scope=\"row\">Zweck<\/th>\r\n\t\t\t\t\t\t\t\t\t\t<td role=\"cell\" class=\"sg-cookie-optin-box-table-reason\">Wird verwendet, um die Sicherheit der Nutzersitzung zu gew\u00e4hrleisten und vor missbr\u00e4uchlichen Zugriffen zu sch\u00fctzen.<\/td>\r\n\t\t\t\t\t\t\t\t\t<\/tr>\r\n\t\t\t\t\t\t\t\t<\/tbody>\r\n\t\t\t\t\t\t\t<\/table>\r\n\t\t\t\t<\/div>\r\n\r\n\t\t\t\t\t<a role=\"button\" class=\"sg-cookie-optin-box-sublist-open-more-link\" href=\"#\">Cookie-Informationen anzeigen\r\n\t\t\t\t\t\t<span>\r\n\t\t\t\t\t\t\t<svg class=\"sg-cookie-optin-box-sublist-open-more-symbol\" fill='currentColor' xmlns='http:\/\/www.w3.org\/2000\/svg'\r\n\t\t\t\t\t\t\t\t viewBox='0 0 512 512' aria-hidden=\"true\" focusable=\"false\">\r\n\t\t\t\t\t\t\t\t<path d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z'\/>\r\n\t\t\t\t\t\t\t<\/svg>\r\n\t\t\t\t\t\t<\/span>\r\n\t\t\t\t\t<\/a>\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t<\/li>\r\n\t<\/ul>\r\n\r\n\t<div class=\"sg-cookie-optin-box-open-more\">\r\n\t\t<a class=\"sg-cookie-optin-box-open-more-link\" href=\"#\">Weitere Informationen anzeigen\r\n\t\t\t<span>\r\n\t\t\t\t<svg class=\"sg-cookie-optin-box-sublist-open-more-symbol\" fill='currentColor' xmlns='http:\/\/www.w3.org\/2000\/svg'\r\n\t\t\t\t\t viewBox='0 0 512 512' aria-hidden=\"true\" focusable=\"false\">\r\n\t\t\t\t\t<path d='M504 256c0 137-111 248-248 248S8 393 8 256 119 8 256 8s248 111 248 248zM273 369.9l135.5-135.5c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L256 285.1 154.4 183.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L239 369.9c9.4 9.4 24.6 9.4 34 0z'\/>\r\n\t\t\t\t<\/svg>\r\n\t\t\t<\/span>\r\n\t\t<\/a>\r\n\t<\/div>\r\n<\/div>\r\n<!--googleon: index-->\r\n"},"banner":{"banner_html":"<div class=\"sg-cookie-optin-banner {{^settings.banner_position}}sg-cookie-optin-banner-bottom{{\/settings.banner_position}}\">\n\t<div class=\"sg-cookie-optin-box\">\n\t\t<div class=\"sg-cookie-optin-banner-content\">\n\t\t\t<p class=\"sg-cookie-optin-banner-description\">\n\t\t\t\t{{{textEntries.banner_description}}}\n\n\t\t\t\t{{#footerLinks}}\n\t\t\t\t\t{{#index}}\n\t\t\t\t\t\t(\n\t\t\t\t\t{{\/index}}\n\t\t\t\t{{\/footerLinks}}\n\n\t\t\t\t{{#footerLinks}}\n\t\t\t\t\t{{#index}}\n\t\t\t\t\t\t<span class=\"sg-cookie-optin-box-footer-divider\"> | <\/span>\n\t\t\t\t\t{{\/index}}\n\n\t\t\t\t\t<a class=\"sg-cookie-optin-box-footer-link\" href=\"{{url}}\" target=\"_blank\">{{{name}}}<\/a>\n\t\t\t\t{{\/footerLinks}}\n\n\t\t\t\t{{#footerLinks}}\n\t\t\t\t\t{{#index}}\n\t\t\t\t\t\t)\n\t\t\t\t\t{{\/index}}\n\t\t\t\t{{\/footerLinks}}\n\t\t\t<\/p>\n\n\t\t\t<div class=\"sg-cookie-optin-banner-button\">\n\t\t\t\t{{#settings.banner_show_settings_button}}\n\t\t\t\t\t<button class=\"sg-cookie-optin-banner-button-settings\">{{{textEntries.banner_button_settings_text}}}<\/button>\n\t\t\t\t{{\/settings.banner_show_settings_button}}\n\n\t\t\t\t<button class=\"sg-cookie-optin-banner-button-accept-essential\">{{{textEntries.banner_button_accept_essential_text}}}<\/button>\n\t\t\t\t<button class=\"sg-cookie-optin-banner-button-accept\">{{{textEntries.banner_button_accept_text}}}<\/button>\n\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n","banner_overwritten":0,"markup":"<div class=\"sg-cookie-optin-banner sg-cookie-optin-banner-bottom\">\n\t<div class=\"sg-cookie-optin-box\">\n\t\t<div class=\"sg-cookie-optin-banner-content\">\n\t\t\t<p class=\"sg-cookie-optin-banner-description\">\n\t\t\t\tWir verwenden auf unserer Website Cookies, um die Funktion YouTube Videos bereitzustellen. Mit dem Klicken auf AKZEPTIEREN erkl\u00e4ren Sie sich damit einverstanden, dass wir Cookies verwenden d\u00fcrfen. Detaillierte Informationen, wie man der Verwendung von Cookies jederzeit widersprechen kann, findet man hier:\n\n\n\n\t\t\t\t\t<a class=\"sg-cookie-optin-box-footer-link\" href=\"\/https:datenschutzerklaerung\/?disableOptIn=1&amp;cHash=1490138f851b1c7d365c0b9ceda74bcd\" target=\"_blank\">Datenschutzerkl\u00e4rung<\/a>\n\n\t\t\t<\/p>\n\n\t\t\t<div class=\"sg-cookie-optin-banner-button\">\n\t\t\t\t\t<button class=\"sg-cookie-optin-banner-button-settings\">Einstellungen<\/button>\n\n\t\t\t\t<button class=\"sg-cookie-optin-banner-button-accept-essential\">Ablehnen<\/button>\n\t\t\t\t<button class=\"sg-cookie-optin-banner-button-accept\">Akzeptieren<\/button>\n\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n"},"iframe":{"iframe_html":"<div class=\"sg-cookie-optin-box\">\n\t{{#settings.show_button_close}}\n\t\t<span class=\"sg-cookie-optin-box-close-button\">\u2715<\/span>\n\t{{\/settings.show_button_close}}\n\n\t<strong class=\"sg-cookie-optin-box-header\">{{{iFrameGroup.label}}}<\/strong>\n\t<p class=\"sg-cookie-optin-box-description\">{{{iFrameGroup.description}}}<\/p>\n\n\t<div class=\"sg-cookie-optin-box-button\">\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-all\">{{{textEntries.iframe_button_allow_all_text}}}<\/button>\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-specific\">{{{textEntries.iframe_button_allow_one_text}}}<\/button>\n\t\t<button  class=\"sg-cookie-optin-box-button-iframe-reject\">{{{textEntries.iframe_button_reject_text}}}<\/button>\n\t<\/div>\n\n\t{{{placeholders.iframe_consent_description}}}\n\n\t<div class=\"sg-cookie-optin-box-footer\">\n\t\t<div class=\"sg-cookie-optin-box-copyright\">\n\t\t\t<a  class=\"sg-cookie-optin-box-copyright-link{{#settings.disable_powered_by}} sg-cookie-optin-box-copyright-link-hidden{{\/settings.disable_powered_by}}\"\n\t\t\t   href=\"https:\/\/www.sgalinski.de\/typo3-produkte-webentwicklung\/sgalinski-cookie-optin\/\"\n\t\t\t   rel=\"noopener\"\n\t\t\t   target=\"_blank\">\n\t\t\t\tPowered by<br>sgalinski Cookie Consent\n\t\t\t<\/a>\n\t\t<\/div>\n\n\t\t<div class=\"sg-cookie-optin-box-footer-links\">\n\t\t\t{{#footerLinks}}\n\t\t\t{{#index}}\n\t\t\t<span class=\"sg-cookie-optin-box-footer-divider\"> | <\/span>\n\t\t\t{{\/index}}\n\t\t\t<a  class=\"sg-cookie-optin-box-footer-link\" href=\"{{url}}\" target=\"_blank\">{{{name}}}<\/a>\n\t\t\t{{\/footerLinks}}\n\t\t<\/div>\n\t<\/div>\n<\/div>\n","iframe_overwritten":0,"markup":"<div class=\"sg-cookie-optin-box\">\n\n\t<strong class=\"sg-cookie-optin-box-header\">Externe Inhalte<\/strong>\n\t<p class=\"sg-cookie-optin-box-description\">Wir verwenden auf unserer Website externe Inhalte, um Ihnen zus\u00e4tzliche Informationen anzubieten.<\/p>\n\n\t<div class=\"sg-cookie-optin-box-button\">\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-all\">Alle externen Inhalte erlauben<\/button>\n\t\t<button  class=\"sg-cookie-optin-box-button-accept-specific\">Einmalig erlauben<\/button>\n\t\t<button  class=\"sg-cookie-optin-box-button-iframe-reject\">Nicht erlauben<\/button>\n\t<\/div>\n\n\t<p class=\"sg-cookie-optin-box-flash-message\"><\/p>\n\n\t<div class=\"sg-cookie-optin-box-footer\">\n\t\t<div class=\"sg-cookie-optin-box-copyright\">\n\t\t\t<a  class=\"sg-cookie-optin-box-copyright-link sg-cookie-optin-box-copyright-link-hidden\"\n\t\t\t   href=\"https:\/\/www.sgalinski.de\/typo3-produkte-webentwicklung\/sgalinski-cookie-optin\/\"\n\t\t\t   rel=\"noopener\"\n\t\t\t   target=\"_blank\">\n\t\t\t\tPowered by<br>sgalinski Cookie Consent\n\t\t\t<\/a>\n\t\t<\/div>\n\n\t\t<div class=\"sg-cookie-optin-box-footer-links\">\n\t\t\t<a  class=\"sg-cookie-optin-box-footer-link\" href=\"\/https:datenschutzerklaerung\/?disableOptIn=1&amp;cHash=1490138f851b1c7d365c0b9ceda74bcd\" target=\"_blank\">Datenschutzerkl\u00e4rung<\/a>\n\t\t<\/div>\n\t<\/div>\n<\/div>\n"},"iframeReplacement":{"iframe_replacement_html":"{{{placeholders.iframe_consent_description}}}\r\n<div>\r\n \r\n<\/div>\r\n<button class=\"sg-cookie-optin-iframe-consent-accept\">{{{textEntries.iframe_button_load_one_text}}}<\/button>\r\n","iframe_replacement_overwritten":1,"markup":"<p class=\"sg-cookie-optin-box-flash-message\"><\/p>\r\n<div>\r\n \r\n<\/div>\r\n<button class=\"sg-cookie-optin-iframe-consent-accept\">Externen Inhalt laden<\/button>\r\n"},"iframeWhitelist":{"iframe_whitelist_regex":"^https:\\\/\\\/www\\.google\\.com\\\/recaptcha\\\/","markup":"^https:\\\/\\\/www\\.google\\.com\\\/recaptcha\\\/"},"services":[]}}</script>
+<link rel="preload" as="script" href="//www.vemags.de/fileadmin/sg_cookie_optin/siteroot-1/cookieOptin.js?1752131436" data-ignore="1" crossorigin="anonymous">
+					<script src="//www.vemags.de/fileadmin/sg_cookie_optin/siteroot-1/cookieOptin.js?1752131436" data-ignore="1" crossorigin="anonymous"></script>
+<link rel="canonical" href="https://www.vemags.de/ins-gst-modul/ins-gst-webservice-3/">
+</head>
+<body id="p290" class="page-290 pagelevel-2 language-0 backendlayout-special_feature layout-default">
+
+<div id="top"></div>
+<div class="body-bg body-bg-top">
+
+    
+
+
+
+    
+
+
+
+    
+
+    
+        <a class="visually-hidden-focusable page-skip-link" href="#mainnavigation">
+            <span>Skip to main navigation</span>
+        </a>
+    
+        <a class="visually-hidden-focusable page-skip-link" href="#page-content">
+            <span>Skip to main content</span>
+        </a>
+    
+        <a class="visually-hidden-focusable page-skip-link" href="#page-footer">
+            <span>Skip to page footer</span>
+        </a>
+    
+
+
+
+
+    
+
+
+
+
+<header id="page-header" class="bp-page-header navbar navbar-mainnavigation navbar-default navbar-has-image navbar-top navbar-fixed-top">
+    <div class="container container-mainnavigation">
+        
+<a class="navbar-brand navbar-brand-image" title="Zur Startseite von Vemags" href="/">
+    
+            <img class="navbar-brand-logo-normal" src="/_assets/dc1fd3a7b63c950b64e5c22e1271a490/Images/vemags_logo.svg" alt="Logo von Vemags" height="30" width="204">
+            
+                <img class="navbar-brand-logo-inverted" src="/_assets/dc1fd3a7b63c950b64e5c22e1271a490/Images/vemags_logo.jpg" alt="Logo von Vemags" height="30" width="204">
+            
+        
+</a>
+
+
+        
+            
+<button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mainnavigation" aria-controls="mainnavigation" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+
+
+            <nav aria-label="Main navigation" id="mainnavigation" class="collapse navbar-collapse">
+                
+
+
+
+                
+
+    <ul class="navbar-nav">
+        
+            
+
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    <li class="nav-item nav-style-simple">
+                        <a
+                            id="nav-item-204"
+                            href="/ueber-vemags/"
+                            class="nav-link nav-link-main"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                Über VEMAGS®
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-204"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "Über VEMAGS®"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-simple">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/ueber-vemags/allgemeine-informationen/" title="Allgemeine Informationen">
+                                
+                                <span class="nav-link-text">
+                                    Allgemeine Informationen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/ueber-vemags/organigramme/" title="Organigramme">
+                                
+                                <span class="nav-link-text">
+                                    Organigramme
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/ueber-vemags/nutzen-fuer-die-anwender/" title="Nutzer und Anwender">
+                                
+                                <span class="nav-link-text">
+                                    Nutzer und Anwender
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+            
+
+                    
+                    
+                        
+                    
+                        
+                    
+                    <li class="nav-item nav-style-simple">
+                        <a
+                            id="nav-item-203"
+                            href="/in-kontakt/"
+                            class="nav-link nav-link-main"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                In Kontakt
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-203"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "In Kontakt"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-simple">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/in-kontakt/landesbeauftragte-verfahrens-modul/" title="Landesbeauftragte Verfahrens-Modul">
+                                
+                                <span class="nav-link-text">
+                                    Landesbeauftragte Verfahrens-Modul
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/in-kontakt/landesbeauftragte-statikmodul/" title="Landesbeauftragte Statik-Modul">
+                                
+                                <span class="nav-link-text">
+                                    Landesbeauftragte Statik-Modul
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+            
+
+                    
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                    <li class="nav-item nav-style-mega">
+                        <a
+                            id="nav-item-254"
+                            href="/im-dialog-1/"
+                            class="nav-link nav-link-main"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                Im Dialog
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-254"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "Im Dialog"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-mega">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2023/" title="VEMAGS® Dialogtour 2023">
+                                
+                                <span class="nav-link-text">
+                                    VEMAGS® Dialogtour 2023
+                                    
+                                </span>
+                            </a>
+                            
+    
+        <ul class="dropdown-nav" data-level="3">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2023/workshops-2022-/-2023/" title="Workshops 2022 / 2023">
+                                
+                                <span class="nav-link-text">
+                                    Workshops 2022 / 2023
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2023/informationsveranstaltung-2023/" title="Informationsveranstaltung 2023">
+                                
+                                <span class="nav-link-text">
+                                    Informationsveranstaltung 2023
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2024/" title="VEMAGS® Dialogtour 2024">
+                                
+                                <span class="nav-link-text">
+                                    VEMAGS® Dialogtour 2024
+                                    
+                                </span>
+                            </a>
+                            
+    
+        <ul class="dropdown-nav" data-level="3">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2024/workshops-2024/" title="Workshops 2024">
+                                
+                                <span class="nav-link-text">
+                                    Workshops 2024
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2026/" title="VEMAGS® Dialogtour 2026">
+                                
+                                <span class="nav-link-text">
+                                    VEMAGS® Dialogtour 2026
+                                    
+                                </span>
+                            </a>
+                            
+    
+        <ul class="dropdown-nav" data-level="3">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/im-dialog-1/vemagsr-dialogtour-2023/informationsveranstaltung-2023-1/" title="Umfrage 2026">
+                                
+                                <span class="nav-link-text">
+                                    Umfrage 2026
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+            
+
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    <li class="nav-item nav-style-simple">
+                        <a
+                            id="nav-item-213"
+                            href="/verfahrens-modul/"
+                            class="nav-link nav-link-main"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                Verfahrens-Modul
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-213"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "Verfahrens-Modul"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-simple">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/informationen/" title="Informationen">
+                                
+                                <span class="nav-link-text">
+                                    Informationen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/systemanforderung/" title="Systemanforderung">
+                                
+                                <span class="nav-link-text">
+                                    Systemanforderung
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/registrierung/" title="Registrierung">
+                                
+                                <span class="nav-link-text">
+                                    Registrierung
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="https://applikation.vemags.de" target="_blank" rel="noopener noreferrer" title="VEMAGS® starten">
+                                
+                                <span class="nav-link-text">
+                                    VEMAGS® starten
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/nutzerinformationen/" title="Nutzerinformationen">
+                                
+                                <span class="nav-link-text">
+                                    Nutzerinformationen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/nutzerinformationen-vorschau-release-75/" title="Neu: Vorschau Release 7.5">
+                                
+                                <span class="nav-link-text">
+                                    Neu: Vorschau Release 7.5
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/elektronische-signatur/" title="Elektronische Signatur">
+                                
+                                <span class="nav-link-text">
+                                    Elektronische Signatur
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/hinweise-zur-kartennutzung/" title="Hinweise zur Kartennutzung">
+                                
+                                <span class="nav-link-text">
+                                    Hinweise zur Kartennutzung
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/digitaler-beifahrer/" title="Digitaler Beifahrer">
+                                
+                                <span class="nav-link-text">
+                                    Digitaler Beifahrer
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/gebuehrenrechner/" title="Gebührenrechner">
+                                
+                                <span class="nav-link-text">
+                                    Gebührenrechner
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/nutzungsbedingungen/" title="Nutzungsbedingungen">
+                                
+                                <span class="nav-link-text">
+                                    Nutzungsbedingungen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/kooperationspartner/" title="Kooperationspartner">
+                                
+                                <span class="nav-link-text">
+                                    Kooperationspartner
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/verfahrens-modul/faq/" title="FAQ">
+                                
+                                <span class="nav-link-text">
+                                    FAQ
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+            
+
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    <li class="nav-item nav-style-simple">
+                        <a
+                            id="nav-item-225"
+                            href="/ins-gst-modul/"
+                            class="nav-link nav-link-main active"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                INS-GST-Modul
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-225"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "INS-GST-Modul"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-simple">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/ins-gst-modul/informationen/" title="Informationen">
+                                
+                                <span class="nav-link-text">
+                                    Informationen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown active" href="/ins-gst-modul/ins-gst-webservice-3/" title="INS-GST Webservice">
+                                
+                                <span class="nav-link-text">
+                                    INS-GST Webservice
+                                     <span class="visually-hidden">(current)</span>
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/ins-gst-modul/fachliche-pruefmodule/" title="Fachliche Prüfmodule">
+                                
+                                <span class="nav-link-text">
+                                    Fachliche Prüfmodule
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+            
+
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    <li class="nav-item nav-style-simple">
+                        <a
+                            id="nav-item-226"
+                            href="/statik-modul/"
+                            class="nav-link nav-link-main"
+                            
+                            
+                            aria-current="false"
+                            >
+                            
+                            <span class="nav-link-text">
+                                Statik-Modul
+                                
+                            </span>
+                        </a>
+                        
+                            <button
+                                type="button"
+                                id="nav-toggle-226"
+                                class="nav-link nav-link-toggle"
+                                data-bs-toggle="dropdown"
+                                data-bs-display="static"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                >
+                                <span class="nav-link-indicator" aria-hidden="true"></span>
+                                <span class="nav-link-text visually-hidden">Submenu for "Statik-Modul"</span>
+                            </button>
+                        
+                        <div class="dropdown-menu dropdown-menu-simple">
+                            
+    
+        <ul class="dropdown-nav" data-level="2">
+            
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/statik-modul/informationen/" title="Informationen">
+                                
+                                <span class="nav-link-text">
+                                    Informationen
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/statik-modul/landesbeauftragte-vemags-statik-modul/" title="Landesbeauftragte VEMAGS Statik-Modul">
+                                
+                                <span class="nav-link-text">
+                                    Landesbeauftragte VEMAGS Statik-Modul
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+                
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dropdown" href="/statik-modul/downloads/" title="Downloads">
+                                
+                                <span class="nav-link-text">
+                                    Downloads
+                                    
+                                </span>
+                            </a>
+                            
+    
+
+                        </li>
+                    
+            
+        </ul>
+    
+
+
+
+
+                        </div>
+                    </li>
+
+                
+        
+    </ul>
+
+
+
+                
+
+
+
+            </nav>
+        
+    </div>
+</header>
+
+
+
+    
+
+    
+
+
+    
+    
+        <nav class="breadcrumb-section" aria-label="Breadcrumb">
+            <div class="container">
+                <p class="visually-hidden" id="breadcrumb">You are here:</p>
+                <ol class="breadcrumb">
+                    
+                        
+                        
+                        <li class="breadcrumb-item">
+                            
+                                    <a class="breadcrumb-link" href="/" title="Startseite">
+                                        
+    <span class="breadcrumb-link-title">
+        
+        <span class="breadcrumb-text">Startseite</span>
+    </span>
+
+                                    </a>
+                                
+                        </li>
+                    
+                        
+                        
+                        <li class="breadcrumb-item">
+                            
+                                    <a class="breadcrumb-link" href="/ins-gst-modul/" title="INS-GST-Modul">
+                                        
+    <span class="breadcrumb-link-title">
+        
+        <span class="breadcrumb-text">INS-GST-Modul</span>
+    </span>
+
+                                    </a>
+                                
+                        </li>
+                    
+                        
+                        
+                            
+                        
+                        <li class="breadcrumb-item active" aria-current="page">
+                            
+                                    
+    <span class="breadcrumb-link-title">
+        
+        <span class="breadcrumb-text">INS-GST Webservice</span>
+    </span>
+
+                                
+                        </li>
+                    
+                    
+                </ol>
+            </div>
+        </nav>
+    
+
+
+
+
+    <main id="page-content" class="bp-page-content main-section">
+        <!--TYPO3SEARCH_begin-->
+        
+
+    
+
+
+
+
+
+
+
+
+        <div id="c1211" class=" frame frame-default frame-type-text frame-layout-default frame-size-default frame-height-default frame-background-tertiary frame-space-before-none frame-space-after-none frame-option-ruler-after frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    <p><span class="text-primary"><strong>VEMAGS®-INS-GST-Modul</strong></span></p>
+<h1><strong>VEMAGS INS-GST-Webservice</strong></h1>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+
+    <div class="section section-default">
+        
+
+
+
+
+
+
+
+
+        <div id="c1300" class=" frame frame-default frame-type-ce_columns2 frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+    
+
+
+
+
+
+
+
+<div class="row">
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-4">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1303" class=" frame frame-default frame-type-header frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+        <div class="frame-header">
+            
+
+    
+            <h2 class="element-header  text-right">
+                <span>Leistung des Service</span>
+            </h2>
+        
+
+
+
+            
+
+
+
+            
+
+
+
+        </div>
+    
+
+
+
+    
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-8">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1304" class=" frame frame-default frame-type-text frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    <p>Eine erste Anwendung im Rahmen von VEMAGS® ist die Nutzung der Möglichkeiten von INS-GST zur Ermittlung der auf einem Fahrtweg durchlaufenen ASB-Abschnitte. Dafür wurde ein Webservice realisiert, der die beantragte Route mit den dazugehörigen ASB-Teilabschnitten anreichert. Dieses Ergebnis kann als Input für die Abfrage von beliebigen gemäß ASB verorteten Daten verwendet werden – zum Beispiel in einem fachlichen Prüfmodul.</p>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+    
+</div>
+
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+        <div id="c1209" class=" frame frame-default frame-type-div frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+    
+
+    <hr>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+        <div id="c1301" class=" frame frame-default frame-type-ce_columns2 frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+    
+
+
+
+
+
+
+
+<div class="row">
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-4">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1305" class=" frame frame-default frame-type-header frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+        <div class="frame-header">
+            
+
+    
+            <h2 class="element-header  text-right">
+                <span>Einbindung in das Verfahren VEMAGS®</span>
+            </h2>
+        
+
+
+
+            
+
+
+
+            
+
+
+
+        </div>
+    
+
+
+
+    
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-8">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1306" class=" frame frame-default frame-type-text frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    <p>In der nachfolgenden Abbildung ist die Einbindung des Webservice von INS-GST in VEMAGS® dargestellt. Im ersten Schritt wird mithilfe von VEMAGS® Pre-INS ein Fahrtweg festgelegt, welcher sich aus sogenannten Links zusammensetzt. Dieser wird in der VEMAGS® Datenbank gespeichert und zusätzlich an den Webservice von INS-GST („INS-GST-Service“) übermittelt, welcher dann für jeden Link die entsprechenden ASB-Teilabschnitte ermittelt. Optional kann der INS-Service auch Meta-Informationen, die Geometrien der ASB-Strecken sowie Informationen zu Auffälligkeiten beim Mapping zurückliefern. Diese Informationen können dann von den fachlichen Prüfmodulen genutzt werden.</p>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1205" class=" frame frame-default frame-type-image frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    
+
+
+    
+    
+    
+
+    <div class="gallery-row">
+        
+            <div class="gallery-item gallery-item-size-1">
+                
+
+
+
+
+        
+<figure class="image">
+    
+            
+                    <a class="lightbox" rel="lightbox-group-1205" href="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_94baf87eb9.png" data-lightbox-width="1200" data-lightbox-height="542" data-lightbox-title="" data-lightbox-alt="" data-lightbox-caption="">
+                        <span class="visually-hidden">
+                            
+                                    Show larger version
+                                
+                        </span>
+                        
+<picture>
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="default" data-maxwidth="1280" media="(min-width: 1400px)" srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_d99e594e1c.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="xlarge" data-maxwidth="1100" media="(min-width: 1200px)" srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_d44edfbb9c.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="large" data-maxwidth="920" media="(min-width: 992px)" srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_c9e1ac7bf7.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="medium" data-maxwidth="680" media="(min-width: 768px)" srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_5e0b3d708a.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="small" data-maxwidth="500" media="(min-width: 576px)" srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_8723cd1918.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="extrasmall" data-maxwidth="374"  srcset="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_aab51c7239.png 1x">
+        
+    
+    
+    
+    
+    
+            
+        
+    
+    
+    <img loading="lazy" src="/fileadmin/_processed_/7/a/csm_INS_Datenfluss_VM-INS-FP_210701_73c2db951b.png" width="1280" height="579" title="" alt="">
+</picture>
+
+
+                    </a>
+                
+        
+    
+</figure>
+
+
+    
+
+
+            </div>
+        
+    </div>
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1206" class=" frame frame-default frame-type-text frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    <p>Mit dem Start der GST-Straßennetzgrundlage wird das Projekt VEMAGS® um eine wesentliche Funktion erweitert. Indem der Antragsteller unter Nutzung des Pre-INS seinen Fahrtweg geografisch beschreibt ist nun der Informationsfluss aus dem VEMAGS®-Verfahrens-Modul bis hin zur fachlichen Beurteilung von Großraum- und Schwertransporten hergestellt. Dies ist eine wesentliche Kernfunktionalität zur Automatisierung und damit Beschleunigung der Bearbeitung von GST-Anträgen.</p>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+    
+</div>
+
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+        <div id="c1210" class=" frame frame-default frame-type-div frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+    
+
+    <hr>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+        <div id="c1302" class=" frame frame-default frame-type-ce_columns2 frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+    
+
+
+
+
+
+
+
+<div class="row">
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-4">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1307" class=" frame frame-default frame-type-header frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+        <div class="frame-header">
+            
+
+    
+            <h2 class="element-header  text-right">
+                <span>Mapping</span>
+            </h2>
+        
+
+
+
+            
+
+
+
+            
+
+
+
+        </div>
+    
+
+
+
+    
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+
+
+
+
+
+
+
+
+
+
+<div class="ce-col col-md-8">
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1308" class=" frame frame-default frame-type-text frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    <p>In der nachfolgenden Abbildung ist die Einbindung des Webservice von INS-GST in VEMAGS® dargestellt. Im ersten Schritt wird mithilfe von VEMAGS® Pre-INS ein Fahrtweg festgelegt, welcher sich aus sogenannten Links zusammensetzt. Dieser wird in der VEMAGS® Datenbank gespeichert und zusätzlich an den Webservice von INS-GST („INS-GST-Service“) übermittelt, welcher dann für jeden Link die entsprechenden ASB-Teilabschnitte ermittelt. Optional kann der INS-Service auch Meta-Informationen, die Geometrien der ASB-Strecken sowie Informationen zu Auffälligkeiten beim Mapping zurückliefern. Diese Informationen können dann von den fachlichen Prüfmodulen genutzt werden.</p>
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+        
+
+
+
+
+
+
+    
+        
+        
+        
+    
+
+
+
+        <div id="c1208" class=" frame frame-default frame-type-image frame-layout-default frame-size-default frame-height-default frame-background-none frame-space-before-none frame-space-after-none frame-no-backgroundimage">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    
+
+
+
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+    
+    
+
+
+
+    
+
+    
+
+
+
+    
+
+    
+
+
+    
+    
+    
+
+    <div class="gallery-row">
+        
+            <div class="gallery-item gallery-item-size-1">
+                
+
+
+
+
+        
+<figure class="image">
+    
+            
+                    <a class="lightbox" rel="lightbox-group-1208" href="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_09b7ee20c6.png" data-lightbox-width="1200" data-lightbox-height="607" data-lightbox-title="" data-lightbox-alt="" data-lightbox-caption="">
+                        <span class="visually-hidden">
+                            
+                                    Show larger version
+                                
+                        </span>
+                        
+<picture>
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="default" data-maxwidth="1280" media="(min-width: 1400px)" srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_8f43ddbb28.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="xlarge" data-maxwidth="1100" media="(min-width: 1200px)" srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_54cb41fc0b.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="large" data-maxwidth="920" media="(min-width: 992px)" srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_2d3a2b50e5.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="medium" data-maxwidth="680" media="(min-width: 768px)" srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_4f3cbb5882.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="small" data-maxwidth="500" media="(min-width: 576px)" srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_8945bdb46d.png 1x">
+        
+    
+        
+        
+        
+        
+            
+            
+            
+                
+                
+                    
+                    
+                    
+                    
+                            
+                        
+                    
+                
+            
+            <source data-variant="extrasmall" data-maxwidth="374"  srcset="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_0b31449609.png 1x">
+        
+    
+    
+    
+    
+    
+            
+        
+    
+    
+    <img loading="lazy" src="/fileadmin/_processed_/4/4/csm_INS_Darstellung_Mapping_210701_3c01247e64.png" width="1280" height="648" title="" alt="">
+</picture>
+
+
+                    </a>
+                
+        
+    
+</figure>
+
+
+    
+
+
+            </div>
+        
+    </div>
+
+
+
+
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    
+</div>
+
+
+    
+    
+</div>
+
+
+
+    
+
+
+
+    
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+
+
+
+    </div>
+
+    <div class="section section-primary">
+        <div class="container">
+            <div class="section-row">
+                <div class="section-column section-column-half">
+                    
+                </div>
+                <div class="section-column section-column-half">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section section-primary">
+        <div class="container">
+            <div class="section-row">
+                <div class="section-column section-column-half">
+                    
+                </div>
+                <div class="section-column section-column-half">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-default">
+        
+    </div>
+
+    <div class="section section-light">
+        <div class="container">
+            <div class="section-row">
+                <div class="section-column section-column-half">
+                    
+                </div>
+                <div class="section-column section-column-half">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section section-light">
+        <div class="container">
+            <div class="section-row">
+                <div class="section-column section-column-half">
+                    
+                </div>
+                <div class="section-column section-column-half">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+        <!--TYPO3SEARCH_end-->
+    </main>
+
+    <footer id="page-footer" class="bp-page-footer">
+        
+
+
+
+        
+
+    
+<section class="section footer-section footer-section-content">
+    <div class="container">
+        <div class="section-row">
+            <div class="section-column footer-section-content-column footer-section-content-column-left">
+                
+            </div>
+            <div class="section-column footer-section-content-column footer-section-content-column-middle">
+                
+            </div>
+            <div class="section-column footer-section-content-column footer-section-content-column-right">
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+        
+
+    <section class="section footer-section footer-section-meta">
+        <div class="frame frame-background-none frame-space-before-none frame-space-after-none">
+            <div class="frame-group-container">
+                <div class="frame-group-inner">
+                    <div class="frame-container frame-container-default">
+                        <div class="frame-inner">
+                            
+                                <div class="footer-menu-section footer-menu-section-has-navigation">
+                                    
+                                        <div class="footer-navigation">
+                                            
+
+    
+        
+            
+            <ul class="footer-navigation-list footer-navigation-list-level-1">
+                
+                    <li class="footer-navigation-item footer-navigation-item-level-1">
+                        <a class="footer-navigation-link footer-navigation-link-level-1" href="/alle-downloads/" title="Alle Downloads">
+                            
+                            <span class="footer-navigation-link-text">
+                                Alle Downloads
+                            </span>
+                        </a>
+                        
+                    </li>
+                
+                    <li class="footer-navigation-item footer-navigation-item-level-1">
+                        <a class="footer-navigation-link footer-navigation-link-level-1" href="/alle-meldungen/" title="Alle Meldungen">
+                            
+                            <span class="footer-navigation-link-text">
+                                Alle Meldungen
+                            </span>
+                        </a>
+                        
+                    </li>
+                
+                    <li class="footer-navigation-item footer-navigation-item-level-1">
+                        <a class="footer-navigation-link footer-navigation-link-level-1" href="/in-kontakt/" title="In Kontakt">
+                            
+                            <span class="footer-navigation-link-text">
+                                In Kontakt
+                            </span>
+                        </a>
+                        
+                    </li>
+                
+                    <li class="footer-navigation-item footer-navigation-item-level-1">
+                        <a class="footer-navigation-link footer-navigation-link-level-1" href="/impressum-vemags/" title="Impressum">
+                            
+                            <span class="footer-navigation-link-text">
+                                Impressum
+                            </span>
+                        </a>
+                        
+                    </li>
+                
+                    <li class="footer-navigation-item footer-navigation-item-level-1">
+                        <a class="footer-navigation-link footer-navigation-link-level-1" href="/datenschutzerklaerung/" title="Datenschutz">
+                            
+                            <span class="footer-navigation-link-text">
+                                Datenschutz
+                            </span>
+                        </a>
+                        
+                    </li>
+                
+            </ul>
+        
+    
+    
+
+
+
+                                        </div>
+                                    
+                                    
+                                </div>
+                            
+                            
+                                <div class="footer-info-section">
+                                    
+                                        <div class="footer-meta">
+                                            
+
+
+
+                                        </div>
+                                    
+                                    
+                                    
+                                    
+                                        <div class="footer-sociallinks">
+                                            
+
+    <div class="sociallinks">
+        <ul class="sociallinks-list">
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+
+
+                                        </div>
+                                    
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+        
+
+
+
+    </footer>
+    
+<a class="scroll-top" title="Scroll to top" href="#top">
+    <span class="scroll-top-icon"></span>
+</a>
+
+
+    
+
+
+
+
+</div>
+<script src="/typo3temp/assets/compressed/merged-0c5c468676f69cca9cdcc79aee1a95fc-9dc19cf566801361ec70e41992ebe77c.js?1781249648"></script>
+
+
+
+</body>
+</html>

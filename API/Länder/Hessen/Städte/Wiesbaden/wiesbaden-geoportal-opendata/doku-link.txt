@@ -1,0 +1,4 @@
+Wiesbaden — Geoportal / Open Data
+Open Data: https://www.wiesbaden.de/leben-in-wiesbaden/stadtportraet/open-data/wi-open-data
+Geoportal: https://geoportal.wiesbaden.de/
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

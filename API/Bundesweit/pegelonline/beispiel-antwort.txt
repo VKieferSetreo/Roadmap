@@ -1,0 +1,167 @@
+== Stationen (stations.json, gekürzt) ==
+[
+  {
+    "uuid": "b475386c-30cc-453a-b3b7-1d17ace13595",
+    "number": "48300105",
+    "shortname": "CELLE",
+    "longname": "CELLE",
+    "km": 1.74,
+    "agency": "VERDEN",
+    "longitude": 10.062164,
+    "latitude": 52.622706,
+    "water": {
+      "shortname": "ALLER",
+      "longname": "ALLER"
+    }
+  },
+  {
+    "uuid": "8b4f9f7c-3376-4dd8-95c1-de55b1be4dfd",
+    "number": "48700103",
+    "shortname": "MARKLENDORF",
+    "longname": "MARKLENDORF",
+    "km": 38.47,
+    "agency": "VERDEN",
+    "longitude": 9.703456,
+    "latitude": 52.682757,
+    "water": {
+      "shortname": "ALLER",
+      "longname": "ALLER"
+    }
+  },
+  {
+    "uuid": "522286e2-b2b3-4d0d-9a11-01b3ea418c76",
+    "number": "48900102",
+    "shortname": "AHLDEN",
+    "longname": "AHLDEN",
+    "km": 58.71,
+    "agency": "VERDEN",
+    "longitude": 9.570881,
+    "latitude": 52.762431,
+    "water": {
+      "shortname": "ALLER",
+      "longname": "ALLER"
+    }
+  },
+  {
+    "uuid": "5aaed954-de4e-4528-8f65-f3f530bc8325",
+    "number": "48900204",
+    "shortname": "RETHEM",
+    "longname": "RETHEM",
+    "km": 82.32,
+    "agency": "VERDEN",
+    "longitude": 9.382841,
+    "latitude": 52.789098,
+    "water": {
+      "shortname": "ALLER",
+      "longname": "ALLER"
+    }
+  },
+  {
+    "uuid": "47174d8f-1b8e-4599-8a59-b580dd55bc87",
+    "number": "48900237",
+    "shortname": "EITZE",
+    "longname": "EITZE",
+    "km": 107.75,
+    "agency": "VERDEN",
+    "longitude": 9.276769,
+    "latitude": 52.904065,
+    "water": {
+      "shortname": "ALLER",
+      "longname": "ALLER"
+    }
+  },
+  {
+    "uuid": "6c6f84c2-b7ea-4720-8ecd-a83c100c6291",
+    "number": "123456785",
+    "shortname": "DORDRECHT",
+    "longname": "DORDRECHT",
+    "km": 975.0,
+    "agency": "RIJKSWATERSTAAT",
+    "water": {
+      "shortname": "ALTE_MAAS",
+      "longname": "ALTE MAAS"
+    }
+  },
+  {
+    "uuid": "ee52ce62-212c-4735-b438-26fbdc37e3e2",
+    "number": "586640",
+    "shortname": "BERLIN-PLÖTZENSEE OP",
+    "longname": "BERLIN-PLÖTZENSEE OP",
+    "km": 7.4,
+    "agency": "STANDORT BERLIN",
+    "longitude": 13.323142,
+    "latitude": 52.543700,
+    "water": {
+      "shortname": "BSK",
+      "longname": "BERLIN-SPANDAUER-SCHIFFFAHRTSKANAL"
+    }
+  },
+  {
+    "uuid": "45721a68-566c-4e2a-a6c7-a7595982a779",
+    "number": "586650",
+    "shortname": "BERLIN-PLÖTZENSEE UP",
+    "longname": "BERLIN-PLÖTZENSEE UP",
+    "km": 7.5,
+    "agency": "STANDORT BERLIN",
+    "longitude": 13.323859,
+    "latitude": 52.543036,
+    "water": {
+      "shortname": "BSK",
+      "longname": "BERLIN-SPANDAUER-SCHIFFFAHRTSKANAL"
+    }
+  },
+  {
+    "uuid": "aa9179c1-17ef-4c61-a48a-74193fa7bfdf",
+    "number": "906",
+    "shortname": "KONSTANZ",
+    "longname": "KONSTANZ",
+    "km": 0.0,
+    "agency": "REGIERUNGSPRÄSIDIUM FREIBURG",
+    "longitude": 9.181039,
+    "latitude": 47.660750,
+    "water": {
+      "shortname": "BODENSEE",
+      "longname": "BODENSEE"
+    }
+  },
+  {
+    "uuid": "28ec91e8-90c0-44d1-8fd2-b0b64c00c43b",
+    "number": "126013",
+    "shortname": "ABBENFLETH SPERRWERK",
+    "longname": "ABBENFLETH SPERRWERK",
+    "km": 2.95,
+    "agency": "STANDORT HAMBURG",
+    "longitude": 9.494307,
+    "latitude": 53.668963,
+    "water": {
+      "shortname": "BSE",
+      "longname": "BÜTZFLETHER SÜDERELBE"
+    }
+  },
+  {
+    "uuid": "6b595707-8c47-4bc7-a803-dbc327775c26",
+    "number": "586810",
+    "shortname": "BERLIN-SCHMÖCKWITZ",
+    "longname": "BERLIN-SCHMÖCKWITZ",
+    "km": 0.3,
+    "agency": "STANDORT BERLIN",
+    "longitude": 13.653581,
+    "latitude": 52.374398,
+    "water": {
+      "shortname": "DAW",
+      "longname": "DAHME-WASSERSTRASSE"
+    }
+  },
+  {
+    "uuid": "c9a6c3bf-02d4-4945-83e8-b7c6cf9701fa",
+    "number": "586280",
+    "shortname": "NEUE MÜHLE SCHLEUSE UP",
+    "longname": "NEUE MÜHLE SCHLEUSE UP",
+    "km": 9.4,
+    "agency": "STANDORT BERLIN",
+    "longitude": 13.649641,
+    "latitude": 52.297475,
+    "water": {
+      "shortname": "DAW",
+      "long
+...(gekürzt)

@@ -1,7 +1,7 @@
 # Datenquellen-Katalog — OSM + GEODATEN-INFRASTRUKTUR + KOMMERZIELL
 
 > **Projekt:** Roadmap (Setreo) — Routenanalyse für Großraum- und Schwertransporte (GST) in DE.
-> **Scope dieses Dokuments:** (1) OpenStreetMap (Tags, Zugriffswege, Lizenz), (2) Geodaten-Standards (INSPIRE, OGC, GovData/Mobilithek), (3) Kommerzielle Anbieter mit Truck-/GST-Attributen (PTV, HERE, TomTom, GraphHopper, openrouteservice).
+> **Scope dieses Dokuments:** (1) OpenStreetMap (Tags, Zugriffswege, Lizenz), (2) Geodaten-Standards (INSPIRE, OGC, GovData/Mobilithek), (3) Freie/OSS-Routing-Engines mit Truck-/GST-Profil (openrouteservice, GraphHopper). Kostenpflichtige Kommerzielle (PTV/HERE/TomTom) auf Max-Wunsch entfernt (2026-06-13).
 > **Stand:** 2026-06-13. Recherche via WebSearch + WebFetch. Endpunkte wo möglich live verifiziert.
 > **Lesehilfe:** `verifiziert=ja` = Endpunkt/Existenz live (curl) oder per offizieller Doku bestätigt. `zu-bestätigen` = Portal/Produkt gefunden, exakter Endpunkt/Pricing nicht live geprüft.
 > **Rechte-Hinweis:** Lizenz/Zugang sind ehrlich markiert. „Erlaubt oder nicht" ist hier NICHT das Kriterium — alle echten Quellen werden gelistet.
@@ -14,9 +14,6 @@
 |------|--------|---------|----------|--------|
 | **P1** | OSM via Overpass API | OSM | maxheight/width/weight/axleload, hgv, bridge, tunnel, level_crossing, roundabout | verifiziert (live) |
 | **P1** | Geofabrik DE-Extrakte (.osm.pbf) | OSM | komplettes DE-Datenset, täglich, für Bulk/eigene DB | verifiziert |
-| **P1** | PTV Developer (Vector Maps / Route API) | Kommerziell | Truck-Restrictions (alle Dimensionen + ADR + Tunnel B-E) | verifiziert (Doku) |
-| **P1** | HERE Routing API v8 (Truck) | Kommerziell | grossWeight, weightPerAxle, height/width/length, hazmat, tunnelCategory | verifiziert (Doku) |
-| **P2** | TomTom Orbis Routing API (Truck) | Kommerziell | maxheight/maxweight, hazmat, ADR-Tunnel | verifiziert (Doku/Pricing) |
 | **P2** | openrouteservice (driving-hgv) | Kommerziell/OSS | height/width/length/weight/axleload + hazmat | verifiziert (Doku) |
 | **P2** | GraphHopper Directions (truck/custom_model) | Kommerziell/OSS | max_height/width/weight, axle_load, hazmat | verifiziert (Doku) |
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
@@ -285,77 +282,7 @@ Dieser Abschnitt beschreibt **Zugriffsmuster** (Standards) und **Kataloge**, üb
 
 # ABSCHNITT 3 — KOMMERZIELLE ANBIETER (Truck-/GST-Attribute)
 
-Diese Anbieter liefern **fertig attribuierte** Truck-Restriktionen + Routing — Premium-Daten (TomTom/HERE-basiert, eigene Erhebung), die OSMs Lücken (v.a. Achslast/Breite/Verlässlichkeit) schließen. Kostenmodelle 2026 verifiziert.
-
-## 3.1 PTV Developer (PTV Logistics) — der Logistik-/GST-Spezialist
-
-- **quelle:** PTV Developer (Nachfolger der xServer/xRoute/xMap-Welt)
-- **betreiber:** PTV Logistics GmbH (Karlsruhe) — historisch der DE-Marktführer für LKW-/Tour-Optimierung
-- **datentyp:** **Truck Restrictions** umfassend: Höhe, Breite, Länge, Achslast, Gesamtgewicht + zul. Gewicht, Kingpin-zu-Hinterachse, Achszahl, Anhänger-Limits, **Gefahrgut** (hazmat, wassergefährdend, brennbar), **Tunnel-Kategorien B–E**, LKW-Durchfahrtsverbote/Anlieger-Ausnahmen, Zeitfenster (`time_domain_descriptions`), Richtungsabhängigkeit. Restriction-Types 1–20.
-- **strassentyp:** Alle (kommerzielles Premium-Netz, DE flächendeckend)
-- **format:** REST-JSON (Route API, Distance Matrix), **Vector Tiles** (Vector Maps API mit Truck-Overlay)
-- **apiEndpunkt (verifiziert):**
-  - Vector-Tiles Truck-Overlay: `https://api.myptv.com/maps/overlays/v1/vector-tiles/…`
-  - Basis-Host: `https://api.myptv.com/` (Route, Geocoding, Matrix etc.)
-- **update:** kommerziell gepflegt (Karten-Releases, Truck-Attribute aktuell gehalten)
-- **auth:** **API-Key** (Registrierung im Developer-Portal)
-- **kosten:** **Free-Tier: 100.000 Transaktionen/Monat**; darüber Pay-as-you-grow; Enterprise-Verträge. Premium-Content (Truck-Attribute) z.T. an Plan gebunden → bei PTV verifizieren.
-- **lizenz:** kommerziell (PTV-Nutzungsbedingungen)
-- **abdeckung:** DE + Europa + global (Truck-Attribute am stärksten in EU)
-- **zugang:** kommerziell — Registrierung Developer-Portal, API-Key, Free-Tier zum Testen
-- **verifiziert:** ja (Doku: Truck-Restrictions-Konzept + Endpoint + 100k-Free bestätigt)
-- **url:** `https://developer.myptv.com/` · `https://www.ptvlogistics.com/en/ptv-developer-maps-API`
-- **prio:** **P1** (fachlich am nächsten an GST/Schwertransport-Logik)
-- **Abdeckungslücken/Notizen:** PTV ist der **fachlich beste Match** für GST in DE (Truck-Attribute, Tunnel B-E, Achslast, Gefahrgut, Zeitfenster out-of-the-box). Klären: ob die **rohen Truck-Attribute** (nicht nur Routing-Ergebnis) extrahierbar sind und zu welchem Plan. Vector-Maps-Truck-Overlay liefert die Attribute strukturiert (Type/Subtype/Zeitfenster/Richtung).
-
----
-
-## 3.2 HERE Technologies — Routing API v8 (Truck)
-
-- **quelle:** HERE Routing API v8 (+ Map Attributes / Road Attributes)
-- **betreiber:** HERE Technologies
-- **datentyp:** Truck-Routing mit physischen Restriktionen: `grossWeight`, `weightPerAxle` (alternativ pro Achsgruppe), `height`, `width`, `length`, Achszahl, Anhängerzahl; rechtliche Restriktionen (für Trucks gesperrte Segmente/Manöver); **`shippedHazardousGoods`** (z.B. `explosive`, `harmfulToWater`), **`tunnelCategory`** (ADR). API gibt **„notices"** über verletzte Restriktionen entlang der Route zurück.
-- **strassentyp:** Alle (HERE-Premium-Netz, DE flächendeckend)
-- **format:** REST-JSON
-- **apiEndpunkt (verifiziert):**
-  - Routing: `https://router.hereapi.com/v8/routes`
-  - Matrix: `https://matrix.router.hereapi.com/v8/…`
-  - Truck-Profil-Syntax: `truck[<param>]=<wert>` bzw. `vehicle[...]`
-- **update:** kommerziell gepflegt
-- **auth:** **API-Key** (HERE Platform Account)
-- **kosten:** **Freemium: 250.000 Transaktionen/Monat kostenlos** (ohne Kreditkarte, kommerzielle Nutzung erlaubt); Base-Plan Pay-as-you-grow ~**1 $/1.000** zusätzliche Transaktionen; Pro-Plan ~449 $/Monat (1 Mio inkl.).
-- **lizenz:** kommerziell (HERE-Terms)
-- **abdeckung:** global, DE sehr gut
-- **zugang:** kommerziell mit großzügigem Free-Tier
-- **verifiziert:** ja (Doku-Params + Pricing 2026 bestätigt)
-- **url:** `https://www.here.com/docs/bundle/routing-api-developer-guide-v8/` · `https://www.here.com/get-started/pricing`
-- **prio:** **P1**
-- **Abdeckungslücken/Notizen:** Sehr starkes, gut dokumentiertes Truck-Routing mit Restriktions-Notices — ideal als **Validierungs-/Cross-Check-Layer** gegen OSM. Liefert primär Routing-Ergebnisse; rohe Road-Attribute separat (HERE Map Attributes / Tiles) und ggf. teurer. 250k/Monat Free deckt Prototyping locker.
-
----
-
-## 3.3 TomTom — Orbis Maps Routing API (Truck)
-
-- **quelle:** TomTom Routing API (auf TomTom **Orbis Maps**)
-- **betreiber:** TomTom International B.V.
-- **datentyp:** Truck-Routing mit Fahrzeugdimensionen (maxheight, maxweight, Gewicht/Achse, Länge/Breite), `vehicleCommercial`-Flag, **Gefahrgut-Klasse + ADR-Tunnel-Restriktionen**. Datensatz mit Truck-Restriktions-Attributen (maxheight/maxweight, truck-spezifische Tempolimits).
-- **strassentyp:** Alle (Orbis-Premium-Netz)
-- **format:** REST-JSON
-- **apiEndpunkt (verifiziert):**
-  - Calculate Route (Orbis): `https://api.tomtom.com/maps/orbis/routing/calculateRoute/…`
-  - Developer-Portal-Doku: `https://developer.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v2/calculate-route`
-- **update:** kommerziell gepflegt (Orbis = aktuell größte TomTom-Kartenbasis)
-- **auth:** **API-Key**
-- **kosten:** **Freemium: 2.500 Non-Tile-Requests/Tag + 50.000 Tile-Requests/Tag kostenlos** (geteiltes Kontingent über alle Produkte); Routing **$0,75 / 1.000 Requests**; „Pay-as-you-grow" prepaid; alle Tiers kommerziell nutzbar.
-- **lizenz:** kommerziell (TomTom-Terms)
-- **abdeckung:** global, DE gut
-- **zugang:** kommerziell mit Free-Tier
-- **verifiziert:** ja (Doku + Pricing 2026 bestätigt)
-- **url:** `https://developer.tomtom.com/pricing` · `https://developer.tomtom.com/routing-api/documentation/tomtom-orbis-maps/v2/calculate-route`
-- **prio:** P2
-- **Abdeckungslücken/Notizen:** Solide Alternative/Cross-Check zu HERE. Free-Tier kleiner (2,5k/Tag vs HERE 250k/Monat). Routing-zentriert; rohe Attribut-Extraktion über Map-Tiles/SDK.
-
----
+Hier nur **freie / Open-Source-Routing-Engines** mit LKW-/GST-Profil (self-hostbar, kostenlos). Kostenpflichtige kommerzielle Anbieter (PTV, HERE, TomTom) wurden auf Wunsch von Max (2026-06-13) aus dem Katalog entfernt.
 
 ## 3.4 openrouteservice (ORS) — driving-hgv (OSS + Hosted)
 
@@ -406,7 +333,7 @@ Diese Anbieter liefern **fertig attribuierte** Truck-Restriktionen + Routing —
 
 ## 3.6 Spezial-/Heavy-Anbieter (Hinweis)
 
-- **PTV** ist faktisch der DE-„Heavy/Spezial"-Anbieter (s. 3.1) inkl. echter GST-Tour-Logik.
+- (Kostenpflichtige Heavy/Spezial-Anbieter wie PTV wurden auf Max-Wunsch entfernt — nicht weiter betrachtet.)
 - Daneben existieren GST-/Routing-Aggregatoren und Behörden-Verfahren (VEMAGS, ESTW etc.) — diese sind im **separaten Recherche-Strang „Schwertransport-Aggregatoren"** (`quellen-schwertransport-aggregatoren.md`) abgedeckt, daher hier nicht dupliziert.
 - **prop2osm (gis-ops):** Dienstleistung/Tooling, das proprietäre Datensätze (TomTom/HERE) in FOSS-Routing-Engines (ORS/GraphHopper) routbar macht — relevant falls man kommerzielle Attribute mit eigener Engine kombinieren will. URL: `https://github.com/gis-ops/prop2osm-public`.
 
@@ -418,11 +345,11 @@ Diese Anbieter liefern **fertig attribuierte** Truck-Restriktionen + Routing —
 **Empfohlene Schichtung (Daten-Strategie):**
 1. **Basis-Layer:** OSM (Geofabrik-PBF → eigene PostGIS) für dauerhafte Restriktionen — breit, gratis, täglich, ODbL.
 2. **Routbar machen:** ORS/GraphHopper self-host auf demselben OSM-Stand (driving-hgv).
-3. **Veredeln/Validieren:** PTV (fachlich bester GST-Match) + HERE (250k/Monat Free, gute Notices) als Premium-/Cross-Check-Layer — v.a. für **Achslast, Tunnel-Kategorien, Gefahrgut, Verlässlichkeit**, wo OSM dünn ist.
+3. **Veredeln/Validieren:** Achslast/Tunnel-Kategorien/Gefahrgut (wo OSM dünn ist) aus **amtlichen** Quellen ziehen (BASt SIB-Bauwerke, Länder-Brückenbücher, GST-Negativkarten) statt kostenpflichtiger Kommerzieller.
 4. **Kataloge zur Quellenfindung:** GovData (CKAN-API) + Mobilithek + INSPIRE/OGC-WFS für amtliche Landes-Detaildaten (Brückenlast/Schwertransportkarten).
 
 **Größte Lücken:**
-- **Achslast** (`maxaxleload`) in OSM extrem dünn (2.269 DE) → kritisch für GST-Brückenstatik. Muss aus amtlichen Brückenbüchern (SIB-Bauwerke/Land) oder PTV/HERE kommen.
+- **Achslast** (`maxaxleload`) in OSM extrem dünn (2.269 DE) → kritisch für GST-Brückenstatik. Muss aus amtlichen Brückenbüchern (SIB-Bauwerke/Land-Brückenlisten) kommen.
 - **Schleppkurven/Kreisverkehr-Radien** nirgends als Attribut → aus Geometrie ableiten.
 - **Steigung** unzuverlässig → DGM/Höhenmodell extern.
 - **ODbL-Share-Alike** rechtlich prüfen, falls angereicherte DB als Datenprodukt weitergegeben wird.
@@ -433,4 +360,4 @@ Diese Anbieter liefern **fertig attribuierte** Truck-Restriktionen + Routing —
 
 OSM: wiki.openstreetmap.org (Key:maxheight, maxweight, maxwidth, maxaxleload, hgv, Overpass_API, QLever, Conditional_restrictions), taginfo.geofabrik.de/europe:germany (live counts), download.geofabrik.de/europe/germany.html, planet.openstreetmap.org, nominatim.org, opendatacommons.org/licenses/odbl. **Overpass live getestet** (overpass-api.de/api/interpreter, 2026-06-13).
 Geodaten-Std: gdi-de.org, gdk.gdi-de.org, mobilithek.info, govdata.de, INSPIRE-MIF Technical Guidelines (Transport Networks v3.1).
-Kommerziell: developer.myptv.com, ptvlogistics.com, here.com/docs + here.com/get-started/pricing, developer.tomtom.com/pricing + routing-api docs, openrouteservice.org + giscience.github.io/openrouteservice, docs.graphhopper.com.
+Freie Engines: openrouteservice.org + giscience.github.io/openrouteservice, docs.graphhopper.com.

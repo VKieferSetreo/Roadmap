@@ -1,0 +1,15 @@
+QUELLE:         GovData.de (Offene-Daten-Portal Deutschland, CKAN-API)
+BETREIBER:      Bund/Laender gemeinsam (FITKO)
+EBENE:          Sonstige
+DATENTYP:       Metadaten-KATALOG ueber ALLE Verwaltungs-Datensaetze DE (inkl. Verkehr/Geo) — Index, keine Primaerdaten. Fuehrt zu Landes-/Kommunal-WFS/Downloads (z.B. Bruecke, Schwertransport, lastbeschraenkt, Durchfahrtshoehe).
+STRASSENTYP:    n/a (Katalog)
+FORMAT:         Metadaten nach DCAT-AP.de; CKAN-API (Action-API) -> JSON
+ENDPUNKT:       https://www.govdata.de/ckan/api/3/action/package_search?q=...
+DOKU:           https://docs.ckan.org/en/latest/api/index.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (oft dl-de/by-2.0, dl-de/zero, CC BY 4.0); API-Nutzung frei
+UPDATE:         kontinuierlich (harvestet Landes-/Kommunalportale)
+STATUS:         verifiziert
+NOTIZ:          P2 — Such-Strategie: package_search mit Stichworten (Bruecke, Schwertransport, lastbeschraenkt, Durchfahrtshoehe, LKW) + Filter fq=groups:tran (Verkehr). GovData ist Katalog/Index, NICHT selbst Datenquelle. Endpunkt resolved intern zu ckan.govdata.de. LIVE GETESTET 2026-06-13: package_search q=Bruecke -> count 210, success:true, Treffer u.a. "Bruecke" (Land Rheinland-Pfalz / Geoportal RLP).

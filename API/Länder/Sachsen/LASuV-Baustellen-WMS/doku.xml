@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?><WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:esri_wms="http://www.esri.com/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.3.0" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.esri.com/wms https://geodienste.sachsen.de/wms_list_baustellen/guest?version=1.3.0%26service=WMS%26request=GetSchemaExtension">
+	<Service>
+		<Name>WMS</Name>
+		<Title>Baustelleninformationen</Title>
+		<Abstract>Der Dienst stellt Daten aus dem Fachverfahren SPERRINFOSYS dar. Er beinhaltet Informationen über tagesaktuelle Maßnahmen sowie zukünftige Sperrungen und Umleitungen. Die Daten werden aus den angebundenen Systemen der zuständigen Verkehrsbehörden des Landesamtes für Straßenbau und Verkehr, der Landkreise, der Kreisfreien Städte und der Großen Kreisstädte in die zentrale Geo-Datenbank übermittelt. Weitere Informationen zum Dienst erhalten Sie im GeoMIS.Sachsen oder über die Metadatenanzeige, welche über folgende URL direkt aufrufbar ist: https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/1df0701f-be33-4d96-ab02-6b884fb071a8.</Abstract>
+		<KeywordList>
+			<Keyword>Sperrung</Keyword>
+			<Keyword>Umleitung</Keyword>
+			<Keyword>Baustellen</Keyword>
+			<Keyword>Sperrinfosys</Keyword>
+			<Keyword>Verkehrsraumeinschränkung</Keyword>
+			<Keyword>Verkehrsraumeinschränkungen</Keyword>
+			<Keyword>Verkehrsbeschränkung</Keyword>
+			<Keyword>Verkehrsbeschränkungen</Keyword>
+			<Keyword>Baustelleninformationssystem</Keyword>
+			<Keyword>landesweit</Keyword>
+			<Keyword>DE-SN</Keyword>
+			<Keyword>DE</Keyword>
+			<Keyword>SN</Keyword>
+			<Keyword>Bundesland Freistaat Sachsen</Keyword>
+			<Keyword>Sperrungen</Keyword>
+			<Keyword>Umleitungen</Keyword>
+		</KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>GDI-Servicezentrum</ContactPerson>
+				<ContactOrganization>Landesamt für Geobasisinformation Sachsen (GeoSN)</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition/>
+			<ContactAddress>
+				<AddressType/>
+				<Address>Olbrichtplatz 3</Address>
+				<City>Dresden</City>
+				<StateOrProvince>Freistaat Sachsen</StateOrProvince>
+				<PostCode>01099</PostCode>
+				<Country>Deutschland</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>+49 351 8283-8420</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>+49 351 8283-6110</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>servicedesk@geosn.sachsen.de</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees>Die Nutzung ist kostenfrei.</Fees>
+		<AccessConstraints>Der Dienst kann gemäß den Nutzungsbestimmungen von Creatice Commons Lizenz - Namensnennung 4.0 International (https://creativecommons.org/licenses/by/4.0/) unter Angabe des Quellenvermerks: "Baustelleninformationssystem Sachsen" genutzt werden.</AccessConstraints>
+		<MaxWidth>4096</MaxWidth>
+		<MaxHeight>4096</MaxHeight>
+	</Service>
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/png</Format>
+				<Format>image/png8</Format>
+				<Format>image/png24</Format>
+				<Format>image/png32</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/tiff</Format>
+				<Format>image/gif</Format>
+				<Format>image/svg+xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetMap>
+			<GetFeatureInfo>
+				<Format>application/vnd.esri.wms_raw_xml</Format>
+				<Format>application/vnd.esri.wms_featureinfo_xml</Format>
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<Format>application%2Fgeo%2Bjson</Format>
+				<Format>application/geo+json</Format>
+				<Format>text/xml</Format>
+				<Format>text/html</Format>
+				<Format>text/plain</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetFeatureInfo>
+			<esri_wms:GetStyles>
+				<Format>application/vnd.ogc.sld+xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Get>
+					</HTTP>
+				</DCPType>
+			</esri_wms:GetStyles>
+		</Request>
+		<Exception>
+			<Format>application/vnd.ogc.se_xml</Format>
+			<Format>application/vnd.ogc.se_inimage</Format>
+			<Format>application/vnd.ogc.se_blank</Format>
+			<Format>text/xml</Format>
+			<Format>XML</Format>
+		</Exception>
+		<Layer>
+			<Title>Baustelleninformation</Title>
+			<CRS>EPSG:4326</CRS>
+			<CRS>EPSG:25833</CRS>
+			<CRS>EPSG:4258</CRS>
+			<CRS>EPSG:25832</CRS>
+			<CRS>EPSG:31469</CRS>
+			<CRS>EPSG:31468</CRS>
+			<CRS>EPSG:31467</CRS>
+			<CRS>EPSG:31466</CRS>
+			<CRS>EPSG:3034</CRS>
+			<CRS>EPSG:3035</CRS>
+			<CRS>EPSG:3044</CRS>
+			<CRS>EPSG:3045</CRS>
+			<CRS>EPSG:3857</CRS>
+			<CRS>EPSG:3398</CRS>
+			<CRS>EPSG:3399</CRS>
+			<CRS>EPSG:2180</CRS>
+			<CRS>EPSG:5514</CRS>
+			<CRS>EPSG:5650</CRS>
+			<EX_GeographicBoundingBox>
+				<westBoundLongitude>11.7</westBoundLongitude>
+				<eastBoundLongitude>15.1</eastBoundLongitude>
+				<southBoundLatitude>50.1</southBoundLatitude>
+				<northBoundLatitude>51.7</northBoundLatitude>
+			</EX_GeographicBoundingBox>
+			<BoundingBox CRS="EPSG:4326" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+			<BoundingBox CRS="EPSG:25833" maxx="507152" maxy="5732828" minx="264013" miny="5549754"/>
+			<BoundingBox CRS="EPSG:4258" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+			<BoundingBox CRS="EPSG:25832" maxx="936115" maxy="5745305" minx="686577" miny="5553241"/>
+			<BoundingBox CRS="EPSG:31469" maxx="5734676" maxy="5507292" minx="5551530" miny="5264055"/>
+			<BoundingBox CRS="EPSG:31468" maxx="5734076" maxy="4721882" minx="5551571" miny="4478642"/>
+			<BoundingBox CRS="EPSG:31467" maxx="5747168" maxy="3936365" minx="5555025" miny="3686725"/>
+			<BoundingBox CRS="EPSG:31466" maxx="5768848" maxy="3150628" minx="5567116" miny="2893967"/>
+			<BoundingBox CRS="EPSG:3034" maxx="2779509" maxy="4352095" minx="2597233" miny="4113494"/>
+			<BoundingBox CRS="EPSG:3035" maxx="3188939" maxy="4685588" minx="3000042" miny="4438519"/>
+			<BoundingBox CRS="EPSG:3044" maxx="5745305" maxy="936115" minx="5553241" miny="686577"/>
+			<BoundingBox CRS="EPSG:3045" maxx="5732828" maxy="507152" minx="5549754" miny="264013"/>
+			<BoundingBox CRS="EPSG:3857" maxx="1680924" maxy="6746062" minx="1302438" miny="6463612"/>
+			<BoundingBox CRS="EPSG:3398" maxx="5733926" maxy="4721749" minx="5551444" miny="4478539"/>
+			<BoundingBox CRS="EPSG:3399" maxx="5734533" maxy="5507154" minx="5551406" miny="5263947"/>
+			<BoundingBox CRS="EPSG:2180" maxx="451212" maxy="230606" minx="255368" miny="-21675"/>
+			<BoundingBox CRS="EPSG:5514" maxx="-671845" maxy="-836278" minx="-934966" miny="-1048039"/>
+			<BoundingBox CRS="EPSG:5650" maxx="33507152" maxy="5732828" minx="33264013" miny="5549754"/>
+			<Layer queryable="1">
+				<Name>umleitungen</Name>
+				<Title>Umleitungen</Title>
+				<Abstract>Die Kartenebene stellt die offiziellen, von den Verkehrsbehörden ausgewiesenen bzw. ausgeschilderten Umleitungsstrecken für die Verkehrsteilnehmer dar. Informationen zum Grund der Umleitungsstrecke, der Dauer und weitere Informationen erhalten Sie über die Sachdaten, die Sie direkt an der gelb hinterlegten Umleitung abfragen können.</Abstract>
+				<CRS>EPSG:4326</CRS>
+				<CRS>EPSG:25833</CRS>
+				<CRS>EPSG:4258</CRS>
+				<CRS>EPSG:25832</CRS>
+				<CRS>EPSG:31469</CRS>
+				<CRS>EPSG:31468</CRS>
+				<CRS>EPSG:31467</CRS>
+				<CRS>EPSG:31466</CRS>
+				<CRS>EPSG:3034</CRS>
+				<CRS>EPSG:3035</CRS>
+				<CRS>EPSG:3044</CRS>
+				<CRS>EPSG:3045</CRS>
+				<CRS>EPSG:3857</CRS>
+				<CRS>EPSG:3398</CRS>
+				<CRS>EPSG:3399</CRS>
+				<CRS>EPSG:2180</CRS>
+				<CRS>EPSG:5514</CRS>
+				<CRS>EPSG:5650</CRS>
+				<EX_GeographicBoundingBox>
+					<westBoundLongitude>11.7</westBoundLongitude>
+					<eastBoundLongitude>15.1</eastBoundLongitude>
+					<southBoundLatitude>50.1</southBoundLatitude>
+					<northBoundLatitude>51.7</northBoundLatitude>
+				</EX_GeographicBoundingBox>
+				<BoundingBox CRS="EPSG:4326" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+				<BoundingBox CRS="EPSG:25833" maxx="507152" maxy="5732828" minx="264013" miny="5549754"/>
+				<BoundingBox CRS="EPSG:4258" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+				<BoundingBox CRS="EPSG:25832" maxx="936115" maxy="5745305" minx="686577" miny="5553241"/>
+				<BoundingBox CRS="EPSG:31469" maxx="5734676" maxy="5507292" minx="5551530" miny="5264055"/>
+				<BoundingBox CRS="EPSG:31468" maxx="5734076" maxy="4721882" minx="5551571" miny="4478642"/>
+				<BoundingBox CRS="EPSG:31467" maxx="5747168" maxy="3936365" minx="5555025" miny="3686725"/>
+				<BoundingBox CRS="EPSG:31466" maxx="5768848" maxy="3150628" minx="5567116" miny="2893967"/>
+				<BoundingBox CRS="EPSG:3034" maxx="2779509" maxy="4352095" minx="2597233" miny="4113494"/>
+				<BoundingBox CRS="EPSG:3035" maxx="3188939" maxy="4685588" minx="3000042" miny="4438519"/>
+				<BoundingBox CRS="EPSG:3044" maxx="5745305" maxy="936115" minx="5553241" miny="686577"/>
+				<BoundingBox CRS="EPSG:3045" maxx="5732828" maxy="507152" minx="5549754" miny="264013"/>
+				<BoundingBox CRS="EPSG:3857" maxx="1680924" maxy="6746062" minx="1302438" miny="6463612"/>
+				<BoundingBox CRS="EPSG:3398" maxx="5733926" maxy="4721749" minx="5551444" miny="4478539"/>
+				<BoundingBox CRS="EPSG:3399" maxx="5734533" maxy="5507154" minx="5551406" miny="5263947"/>
+				<BoundingBox CRS="EPSG:2180" maxx="451212" maxy="230606" minx="255368" miny="-21675"/>
+				<BoundingBox CRS="EPSG:5514" maxx="-671845" maxy="-836278" minx="-934966" miny="-1048039"/>
+				<BoundingBox CRS="EPSG:5650" maxx="33507152" maxy="5732828" minx="33264013" miny="5549754"/>
+				<MetadataURL xmlns:xlink="http://www.w3.org/1999/xlink" type="ISO19115:2003">
+					<Format>text/html</Format>
+					<OnlineResource xlink:href="https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/ca03fef4-0e1d-46f9-8f36-a29512bd22e2" xlink:type="simple"/>
+				</MetadataURL>
+				<MetadataURL xmlns:xlink="http://www.w3.org/1999/xlink" type="ISO19115:2003">
+					<Format>text/xml</Format>
+					<OnlineResource xlink:href="https://www.geomis.sachsen.de/geomis-csw/api?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=ca03fef4-0e1d-46f9-8f36-a29512bd22e2" xlink:type="simple"/>
+				</MetadataURL>
+				<Style>
+					<Name>default</Name>
+					<Title>Umleitungen</Title>
+					<LegendURL height="115" width="300">
+						<Format>image/png</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geoportal.sachsen.de/portal/legenden/list/baustellen/legende_umleitungen.png" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+				<MaxScaleDenominator>1133929</MaxScaleDenominator>
+			</Layer>
+			<Layer queryable="1">
+				<Name>sperrungen</Name>
+				<Title>Sperrungen</Title>
+				<Abstract>Die Kartenebene stellt die temporären Absperrungen von Verkehrsflächen dar, die von Verkehrsteilnehmern nicht bzw. beschränkt genutzt werden können. Informationen zum Grund der Sperrung, der Dauer und weitere Informationen erhalten Sie über die Sachdaten, die Sie direkt am Kartensymbol abfragen können.</Abstract>
+				<CRS>EPSG:4326</CRS>
+				<CRS>EPSG:25833</CRS>
+				<CRS>EPSG:4258</CRS>
+				<CRS>EPSG:25832</CRS>
+				<CRS>EPSG:31469</CRS>
+				<CRS>EPSG:31468</CRS>
+				<CRS>EPSG:31467</CRS>
+				<CRS>EPSG:31466</CRS>
+				<CRS>EPSG:3034</CRS>
+				<CRS>EPSG:3035</CRS>
+				<CRS>EPSG:3044</CRS>
+				<CRS>EPSG:3045</CRS>
+				<CRS>EPSG:3857</CRS>
+				<CRS>EPSG:3398</CRS>
+				<CRS>EPSG:3399</CRS>
+				<CRS>EPSG:2180</CRS>
+				<CRS>EPSG:5514</CRS>
+				<CRS>EPSG:5650</CRS>
+				<EX_GeographicBoundingBox>
+					<westBoundLongitude>11.7</westBoundLongitude>
+					<eastBoundLongitude>15.1</eastBoundLongitude>
+					<southBoundLatitude>50.1</southBoundLatitude>
+					<northBoundLatitude>51.7</northBoundLatitude>
+				</EX_GeographicBoundingBox>
+				<BoundingBox CRS="EPSG:4326" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+				<BoundingBox CRS="EPSG:25833" maxx="507152" maxy="5732828" minx="264013" miny="5549754"/>
+				<BoundingBox CRS="EPSG:4258" maxx="51.7" maxy="15.1" minx="50.1" miny="11.7"/>
+				<BoundingBox CRS="EPSG:25832" maxx="936115" maxy="5745305" minx="686577" miny="5553241"/>
+				<BoundingBox CRS="EPSG:31469" maxx="5734676" maxy="5507292" minx="5551530" miny="5264055"/>
+				<BoundingBox CRS="EPSG:31468" maxx="5734076" maxy="4721882" minx="5551571" miny="4478642"/>
+				<BoundingBox CRS="EPSG:31467" maxx="5747168" maxy="3936365" minx="5555025" miny="3686725"/>
+				<BoundingBox CRS="EPSG:31466" maxx="5768848" maxy="3150628" minx="5567116" miny="2893967"/>
+				<BoundingBox CRS="EPSG:3034" maxx="2779509" maxy="4352095" minx="2597233" miny="4113494"/>
+				<BoundingBox CRS="EPSG:3035" maxx="3188939" maxy="4685588" minx="3000042" miny="4438519"/>
+				<BoundingBox CRS="EPSG:3044" maxx="5745305" maxy="936115" minx="5553241" miny="686577"/>
+				<BoundingBox CRS="EPSG:3045" maxx="5732828" maxy="507152" minx="5549754" miny="264013"/>
+				<BoundingBox CRS="EPSG:3857" maxx="1680924" maxy="6746062" minx="1302438" miny="6463612"/>
+				<BoundingBox CRS="EPSG:3398" maxx="5733926" maxy="4721749" minx="5551444" miny="4478539"/>
+				<BoundingBox CRS="EPSG:3399" maxx="5734533" maxy="5507154" minx="5551406" miny="5263947"/>
+				<BoundingBox CRS="EPSG:2180" maxx="451212" maxy="230606" minx="255368" miny="-21675"/>
+				<BoundingBox CRS="EPSG:5514" maxx="-671845" maxy="-836278" minx="-934966" miny="-1048039"/>
+				<BoundingBox CRS="EPSG:5650" maxx="33507152" maxy="5732828" minx="33264013" miny="5549754"/>
+				<MetadataURL xmlns:xlink="http://www.w3.org/1999/xlink" type="ISO19115:2003">
+					<Format>text/html</Format>
+					<OnlineResource xlink:href="https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/ca03fef4-0e1d-46f9-8f36-a29512bd22e2" xlink:type="simple"/>
+				</MetadataURL>
+				<MetadataURL xmlns:xlink="http://www.w3.org/1999/xlink" type="ISO19115:2003">
+					<Format>text/xml</Format>
+					<OnlineResource xlink:href="https://www.geomis.sachsen.de/geomis-csw/api?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=ca03fef4-0e1d-46f9-8f36-a29512bd22e2" xlink:type="simple"/>
+				</MetadataURL>
+				<Style>
+					<Name>default</Name>
+					<Title>Sperrungen</Title>
+					<LegendURL height="310" width="300">
+						<Format>image/png</Format>
+						<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geoportal.sachsen.de/portal/legenden/list/baustellen/legende_sperrungen.png" xlink:type="simple"/>
+					</LegendURL>
+				</Style>
+				<MaxScaleDenominator>1133929</MaxScaleDenominator>
+			</Layer>
+		</Layer>
+	</Capability>
+</WMS_Capabilities>

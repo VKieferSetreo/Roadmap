@@ -1,0 +1,22 @@
+QUELLE:         MobiData BW IPL — Baustelleninformationen (BEMaS)
+BETREIBER:      NVBW (Nahverkehrsgesellschaft BW) i.A. Verkehrsministerium BW; Quellsystem BEMaS
+EBENE:          Land:Baden-Württemberg
+DATENTYP:       Baustellen / Arbeitsstellen (geplant + aktuell, kurz- und langfristig)
+STRASSENTYP:    B / L / K   (KEINE A — BAB bei Autobahn GmbH)
+FORMAT:         CIFS-JSON / GeoJSON / DATEX II XML / CSV (WFS-Export)
+ENDPUNKT:       https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_geojson.json
+DOKU:           https://mobidata-bw.de/dataset/baustelleninformationen-baden-wurttemberg
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2.0 (Datenlizenz Deutschland Namensnennung 2.0)
+UPDATE:         laufend (betrieblich gepflegt)
+STATUS:         verifiziert
+NOTIZ:          Weitere Endpunkte derselben Quelle —
+                CIFS:    https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_cifs.json
+                GeoJSON: https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_geojson.json
+                DATEX II:https://api.mobidata-bw.de/datasets/traffic/roadworks/roadworks_svzbw.datex2.xml
+                CSV/WFS: https://api.mobidata-bw.de/geoserver/MobiData-BW/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=MobiData-BW%3Aroadworks&maxFeatures=20000&outputFormat=csv
+                GeoJSON = direkt geometrie-fähig für Routen-Verschnitt. Numerische Restriktionen
+                (Höhe/Breite/Gewicht) i.d.R. NICHT als saubere Felder — eher Freitext in Meldung
+                → Parsing nötig (analog Autobahn-API). User-Agent-Header empfohlen.

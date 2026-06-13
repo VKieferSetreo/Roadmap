@@ -1,0 +1,15 @@
+QUELLE:         Mobilithek (Bund) — NI als Datengeber (DATEX-II Baustellen/Verkehr)
+BETREIBER:      BMDV (Plattform); Datengeber = NI-Behörden / Autobahn GmbH
+EBENE:          Land:Niedersachsen
+DATENTYP:       Baustellen, Sperrungen, temporäre Restriktionen (DATEX II)
+STRASSENTYP:    A/B (Bundesfern); Landesanteil je Veröffentlichung
+FORMAT:         DATEX II (v2/v3, XML)
+ENDPUNKT:       https://mobilithek.info/   (konkrete NI-Datenpaket-URL nach Registrierung)
+DOKU:           https://mobilithek.info/
+ZUGANG:         registrierung
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datenpaket (oft dl-de/by-2-0)
+UPDATE:         kontinuierlich
+STATUS:         zu-bestätigen
+NOTIZ:          Querverweis Bund-Dokument (siehe Bundesweit). Für NI primär Baustellen-DATEX. NI-spezifisches Datenpaket nach Mobilithek-Konto auswählbar. Siehe mobilithek-ni.env.

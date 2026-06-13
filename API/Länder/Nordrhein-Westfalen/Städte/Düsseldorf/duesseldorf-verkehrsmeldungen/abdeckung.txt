@@ -1,0 +1,15 @@
+QUELLE:         Düsseldorf — Verkehrsmeldungen (Mobilitätsdaten)
+BETREIBER:      Landeshauptstadt Düsseldorf, Amt für Verkehrsmanagement
+EBENE:          Stadt:Düsseldorf,Nordrhein-Westfalen
+DATENTYP:       Baustellen, verkehrsrelevante Ereignisse, Verkehrsstörungen (strategisches Verkehrsnetz), DATEX-II-Schema
+STRASSENTYP:    innerorts (strategisches Verkehrsnetz)
+FORMAT:         GeoJSON / XML (DATEX-II) / KML / CSV / JSON  (statische, regelmäßig regenerierte Dateien)
+ENDPUNKT:       https://opendata.duesseldorf.de/sites/default/files/publ-2056000_Verkehrsmeldungen_Geodaten.geojson  (XML/DATEX-II: ..._Verkehrsmeldungen.xml; KML/CSV/JSON analog)
+DOKU:           https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten  (GovData: https://www.govdata.de/web/guest/daten/-/details/verkehrsmeldungen-mobilitatsdaten)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open.NRW / dl-de-by (exakte Variante bei Düsseldorf bestätigen)
+UPDATE:         häufig (statische Dateien werden regelmäßig regeneriert)
+STATUS:         verifiziert
+NOTIZ:          Live getestet (GeoJSON HTTP 200). DATEX-II-Felder: latitude, longitude, roadName, roadNumber, situationRecord_type, comment, lane, numberOfLanesRestricted, trafficConstrictionType, roadOrCarriagewayOrLaneManagementType, overallStart/EndTime, situationVersionTime. trafficConstrictionType + roadOrCarriagewayOrLaneManagementType sind strukturierte DATEX-II-Enums (Spurreduktion, roadBlocked, roadClosed). ACHTUNG: statische Files (kein Live-WFS) — Aktualität via situationVersionTime prüfen.

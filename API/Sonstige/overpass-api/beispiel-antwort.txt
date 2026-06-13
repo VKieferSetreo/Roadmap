@@ -1,0 +1,135 @@
+== maxheight-Ways in Berlin-Mitte-Bbox ==
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-13T14:40:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 26288770,
+  "bounds": {
+    "minlat": 52.5207397,
+    "minlon": 13.3778257,
+    "maxlat": 52.5207409,
+    "maxlon": 13.3781359
+  },
+  "geometry": [
+    { "lat": 52.5207409, "lon": 13.3778257 },
+    { "lat": 52.5207405, "lon": 13.3778778 },
+    { "lat": 52.5207397, "lon": 13.3781359 }
+  ],
+  "tags": {
+    "access": "destination",
+    "highway": "service",
+    "lit": "yes",
+    "maxheight": "3.8",
+    "maxweight": "7.5",
+    "maxwidth": "2.5",
+    "oneway": "yes",
+    "source:ref": "http://www.bundesbaugesellschaft.de/dt/ues.htm",
+    "surface": "asphalt",
+    "tunnel": "building_passage"
+  }
+},
+{
+  "type": "way",
+  "id": 31113277,
+  "bounds": {
+    "minlat": 52.5241568,
+    "minlon": 13.3793842,
+    "maxlat": 52.5241674,
+    "maxlon": 13.3795060
+  },
+  "geometry": [
+    { "lat": 52.5241568, "lon": 13.3793842 },
+    { "lat": 52.5241650, "lon": 13.3794847 },
+    { "lat": 52.5241674, "lon": 13.3795060 }
+  ],
+  "tags": {
+    "highway": "service",
+    "lit": "yes",
+    "maxheight": "1.8",
+    "service": "driveway",
+    "surface": "sett"
+  }
+},
+{
+  "type": "way",
+  "id": 32508516,
+  "bounds": {
+    "minlat": 52.5159440,
+    "minlon": 13.3934622,
+    "maxlat": 52.5161933,
+    "maxlon": 13.3946827
+  },
+  "geometry": [
+    { "lat": 52.5159440, "lon": 13.3934622 },
+    { "lat": 52.5160461, "lon": 13.3940709 },
+    { "lat": 52.5161933, "lon": 13.3946827 }
+  ],
+  "tags": {
+    "highway": "service",
+    "layer": "-1",
+    "maxheight": "2.1",
+    "service": "parking_aisle",
+    "tunnel": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 38345709,
+  "bounds": {
+    "minlat": 52.5162646,
+    "minlon": 13.3776089,
+    "maxlat": 52.5162752,
+    "maxlon": 13.3777979
+  },
+  "geometry": [
+    { "lat": 52.5162752, "lon": 13.3777979 },
+    { "lat": 52.5162726, "lon": 13.3777517 },
+    { "lat": 52.5162646, "lon": 13.3776089 }
+  ],
+  "tags": {
+    "emergency": "no",
+    "highway": "footway",
+    "lit": "yes",
+    "maxheight": "none",
+    "noname": "yes",
+    "segregated": "no",
+    "sett:length": "0.05",
+    "smoothness": "good",
+    "surface": "sett",
+    "tunnel": "building_passage",
+    "vehicle": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 72260323,
+  "bounds": {
+    "minlat": 52.5233956,
+    "minlon": 13.3915954,
+    "maxlat": 52.5234355,
+    "maxlon": 13.3915974
+  },
+  "geometry": [
+    { "lat": 52.5233956, "lon": 13.3915974 },
+    { "lat": 52.5234355, "lon": 13.3915954 }
+  ],
+  "tags": {
+    "access": "private",
+    "covered": "yes",
+    "highway": "service",
+    "maxheight": "3.5",
+    "service": "driveway",
+    "surface": "asphalt"
+  }
+}
+
+  ]
+}
+

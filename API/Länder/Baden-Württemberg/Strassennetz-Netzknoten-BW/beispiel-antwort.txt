@@ -1,0 +1,4 @@
+# HTTP-Status + Content-Type + erste 2 Bytes (PK = gültiges ZIP):
+HTTP 206  type=application/zip
+# Magic: PK
+# (Vollständigen Download in der Implementierung ohne -r 0-1 ausführen.)

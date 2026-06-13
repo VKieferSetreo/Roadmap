@@ -1,0 +1,11 @@
+# LfS Saarland — GST / Schwertransport (keine offenen Daten)
+
+LfS FAQ (GST):  https://www.saarland.de/lfs/DE/service/faq/haeufige_Fragen_und_Antworten_node.html
+LfS Home:       https://www.saarland.de/lfs/DE/home/home_node.html
+
+LÜCKE (wie RLP): Keine öffentliche GST-Negativ-/Brückenkarte (im Ggs. zu NRW + Hessen).
+Echte GST-Brückenrestriktion nur über:
+  - VEMAGS-INS-GST (bundesweit, restricted — Bundeskatalog Q4)
+  - LfS-Anfrage/Kooperation
+Hinweis: saarland.de antwortet auf automatisierte Abrufe mit HTTP 403 (WAF/Bot-Schutz,
+auch mit Browser-User-Agent — geprüft 2026-06-13). Seiten nur im echten Browser erreichbar.

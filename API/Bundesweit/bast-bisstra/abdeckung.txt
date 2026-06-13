@@ -1,0 +1,15 @@
+QUELLE:         BASt BISStra — Bundesfernstraßennetz (ASB-basiert), Geodienste
+BETREIBER:      Bundesanstalt für Straßenwesen (BASt), GeoK BASt, Bergisch Gladbach
+DATENTYP:       Straßennetz Bundesfernstraßen mit ASB-Bezug — Netzknoten (NK), Nullpunkte (NP), Sektoren, Geometrien. Netz-Grundriss/Stationierung, an den Restriktionen gehängt werden. KEINE Bauwerksattribute (Traglast/lichte Höhe)
+EBENE:          Bundesweit
+STRASSENTYP:    A + B (Bundesfernstraßen = BAB + Bundesstraßen). KEINE L/K
+FORMAT:         WFS, WMS (OGC), zusätzlich Datensatz-Download (ZIP)
+ENDPUNKT:       WFS: https://inspire.bast.de/bisstra/strasse_wfs?service=WFS&request=GetCapabilities  | WMS: https://inspire.bast.de/bisstra/strasse_wms?service=WMS&request=GetCapabilities&version=1.3.0
+DOKU:           https://www.bast.de/DE/Themen/Digitales/HF_1/Massnahmen/bisstra.html  (Download-Datensatz: https://www.bast.de/SharedDocs/Daten-TB/Daten-BISStra.html | GDI-DE: https://gdk.gdi-de.org/geonetwork/srv/api/records/E068415C-D7B1-4D96-B8A0-FA1C23DF5CC7)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Nutzungs-Disclaimer im WMS: "nicht für Produktionszwecke oder Navigation geeignet". Für Produktivsystem explizite Freigabe bei BASt einholen (post@bast.de)
+UPDATE:         periodisch (Netzdaten)
+STATUS:         verifiziert
+NOTIZ:          Live getestet — WFS strasse_wfs liefert tbl_BFStr_NK (21101 Netzknoten). WFS 2.0 erfordert typeNames (plural). Layer u.a. tbl_BFStr_NK, tbl_BFStr_NP, tbl_BFStr_Sektor_BA. WICHTIG: nur Netz/Geometrie, KEINE Brücken-Traglast/lichte Höhe (die liegen in SIB-Bauwerke → bast-bauwerksdaten). BISStra = Netz-Anker, nicht Restriktionsquelle.

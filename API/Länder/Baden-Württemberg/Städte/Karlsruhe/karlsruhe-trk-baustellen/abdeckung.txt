@@ -1,0 +1,15 @@
+QUELLE:         Karlsruhe / TechnologieRegion Karlsruhe (TRK) — Baustellen
+BETREIBER:      Stadt Karlsruhe / TechnologieRegion Karlsruhe, Tiefbauamt (TBA); Daten über TRK-GeoServer (mobil.trk.de); Katalog: Transparenzportal Karlsruhe (CKAN)
+EBENE:          Stadt:Karlsruhe,Baden-Württemberg
+DATENTYP:       Baustellen aktuell + Vorschau (regionaler Aggregator über 8 Kommunen + Elsass)
+STRASSENTYP:    innerorts (8+ Kommunen, grenzüberschreitend)
+FORMAT:         GeoJSON / SHAPE-ZIP / DATEX-II-XML / GraphQL
+ENDPUNKT:       https://mobil.trk.de/geoserver/TBA/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TBA:baustellen_aktuell&outputFormat=application/json  (Vorschau: typeName=TBA:baustellen_vorschau; DATEX-II: https://mobil.trk.de/datex/datex.xml)
+DOKU:           https://transparenz.karlsruhe.de/api/3/action/package_show?id=baustellen  (Portal: https://transparenz.karlsruhe.de/dataset/baustellen)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (Namensnennung)
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          Live getestet (641 Features baustellen_aktuell, EPSG:25832). Felder: id, gemeinde, vorgangszeitraum_von/_bis, art, lage, tagesbaustelle, verursacher, zusatzinfo, sperrung, projektnummer, vorgangsnummer, datenquelle, stand. Regionaler Aggregator: Karlsruhe, Ettlingen, Rastatt, Baden-Baden, Bruchsal, Rheinstetten, Stutensee + Collectivité européenne d'Alsace (grenzüberschreitend, teils frz. Texte). Transparenzportal = CKAN 2.11.x. Brücken/Bauwerke separat (siehe karlsruhe-geoportal-bruecken).

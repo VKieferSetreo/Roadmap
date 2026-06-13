@@ -1,0 +1,18 @@
+QUELLE:         MobiData BW IPL — Geoserver (WFS / WMS)
+BETREIBER:      NVBW / MobiData BW
+EBENE:          Land:Baden-Württemberg
+DATENTYP:       Vektor-/Visualisierungs-Layer der Mobilitätsdaten (u.a. roadworks; weitere je Bestand)
+STRASSENTYP:    abhängig vom Layer (roadworks = B/L/K)
+FORMAT:         WFS / WMS
+ENDPUNKT:       https://api.mobidata-bw.de/geoserver/MobiData-BW/ows
+DOKU:           https://api.mobidata-bw.de/geoserver/web/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Layer (roadworks: dl-de/by-2.0)
+UPDATE:         laufend (an Quell-Datensätze gekoppelt)
+STATUS:         verifiziert
+NOTIZ:          GetCapabilities: ?service=WFS&version=2.0.0&request=GetCapabilities (siehe doku.xml).
+                Bestätigter Layer: MobiData-BW:roadworks. Vollständige Layer-Liste via
+                GetCapabilities inventarisieren (ggf. weitere Restriktions-Layer). CSV-Export-URL:
+                .../ows?service=WFS&version=1.0.0&request=GetFeature&typeName=MobiData-BW%3Aroadworks&maxFeatures=20000&outputFormat=csv

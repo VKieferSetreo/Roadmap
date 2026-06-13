@@ -1,0 +1,15 @@
+QUELLE: Baustelleninformationssystem Thüringen (TLBV)
+BETREIBER: Thüringer Landesamt für Bau und Verkehr (TLBV), Erfurt + Straßenverkehrsbehörden
+EBENE: Land (Thüringen)
+DATENTYP: aktuelle Baustellen auf Thüringer Straßen (ohne Bundesautobahnen — die via Autobahn-GmbH)
+STRASSENTYP: B/L/K (A = Autobahn-GmbH)
+FORMAT: Web-App (GWT)
+ENDPUNKT: null
+DOKU: https://baustelleninfo.thueringen.de/
+ZUGANG: eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: unklar
+UPDATE: laufend (App)
+STATUS: zu-bestätigen
+NOTIZ: Keine Auth (App), ABER Link11/CAPTCHA-Schutz → kein maschineller Zugriff, curl-Test = blockiert. Feed-Anfrage TLBV; TH-Baustellen ansonsten über Mobilithek/DATEX-II (RSA 21). Weitere Seite: https://bau-verkehr.thueringen.de/verkehr/strassenverkehr/baustellen

@@ -1,0 +1,15 @@
+QUELLE:         Umleitungsstrecken Schleswig-Holstein (WFS Baustelleninformationen)
+BETREIBER:      LBV.SH; GDI-SH; Open-Data SH
+EBENE:          Land:Schleswig-Holstein
+DATENTYP:       Umleitungsstrecken (Diversion Routes)
+STRASSENTYP:    A/B/L (Hauptnetz)
+FORMAT:         WFS 2.0.0 (GML)
+ENDPUNKT:       https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen?Service=WFS&Version=2.0.0&Request=GetCapabilities
+DOKU:           https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen?Service=WFS&Version=2.0.0&Request=GetCapabilities
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (LBV.SH-Standard)
+UPDATE:         täglich
+STATUS:         verifiziert
+NOTIZ:          NEUFUND: Umleitungsstrecken liegen im selben WFS wie die SH-Baustellen (FeatureType Baustelleninformationen:Umleitungsstrecken). LIVE GETESTET — numberMatched=173, count=1 liefert Feature. Analog zu HH Bedarfsumleitungen — relevant für GST-Ausweichplanung. Der frühere "zu-bestätigen"-Status (Anubis-Block der Datensatzseite) ist damit aufgelöst: WFS ist offen erreichbar.

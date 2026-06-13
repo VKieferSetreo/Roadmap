@@ -1,0 +1,15 @@
+QUELLE:         Dresden — Themenstadtplan / Open Data
+BETREIBER:      Landeshauptstadt Dresden, Straßen- und Tiefbauamt; Smart City Dresden (Urban Platform / Connected Urban Twins)
+EBENE:          Stadt:Dresden,Sachsen
+DATENTYP:       Straßenbaustellen & Umleitungen (Straßen/Gehwege/Brücken), Verkehrsdaten
+STRASSENTYP:    innerorts
+FORMAT:         WFS / GeoJSON (Portal: 'standardisiert, maschinenlesbar')
+ENDPUNKT:       -
+DOKU:           https://opendata.dresden.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Dresden Open Data — kommerziell + nichtkommerziell erlaubt, Namensnennung der Lizenzbedingungen
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Portal bestätigt (>1.100 Datensätze), exakter Baustellen-WFS/GeoJSON-Endpunkt nicht live geholt (apiEndpunkt=null). Teil der Urban Platform. Im Katalog gezielt nach 'Verkehr'/'Baustelle' suchen → Baustellen-WFS sehr wahrscheinlich vorhanden.

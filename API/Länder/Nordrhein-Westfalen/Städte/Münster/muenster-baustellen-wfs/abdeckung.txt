@@ -1,0 +1,15 @@
+QUELLE:         Münster — Baustellen (GeoServer/MapServer)
+BETREIBER:      Stadt Münster (geo.stadt-muenster.de); Portal: opendata.stadt-muenster.de (DKAN/Drupal)
+EBENE:          Stadt:Münster,Nordrhein-Westfalen
+DATENTYP:       aktuelle + geplante Baustellen mit Verkehrseinschränkung
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON / CSV / KML / Shapefile / WMS / WFS (1.0.0/1.1.0/2.0.0)
+ENDPUNKT:       https://geo.stadt-muenster.de/mapserv/odbaustellen_serv?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=baustellen&OUTPUTFORMAT=geojson&SRSNAME=EPSG:4326
+DOKU:           https://geo.stadt-muenster.de/mapserv/odbaustellen_serv?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities  (Portal: https://opendata.stadt-muenster.de/dataset/baustellen)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-by-de/2.0 — Namensnennung "Stadt Münster"
+UPDATE:         regelmäßig (tagesaktuell-nah)
+STATUS:         verifiziert
+NOTIZ:          Live getestet (FeatureCollection, LineString/Point, CRS84). Felder: fuid, bezeichnung, typ_id, typ_bez (z.B. Teilsperrung/Vollsperrung), beginntam, endetam, information (Freitext), publikationvon/bis, Ansprechpartner-Felder. Portal ist DKAN/Drupal — CKAN /api/3/action liefert teils 302/404, aber MapServer-Resource-URLs direkt nutzbar. UMN MapServer (nicht GeoServer).

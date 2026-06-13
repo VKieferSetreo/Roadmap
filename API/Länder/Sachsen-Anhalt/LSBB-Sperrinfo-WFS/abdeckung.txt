@@ -1,0 +1,15 @@
+QUELLE: LSBB Sperrinfo (SPERRINFOSYS ST) — service.ifak.eu/sperrinfo
+BETREIBER: Landesstraßenbaubehörde Sachsen-Anhalt (LSBB); techn. Betrieb ifak/movi.de
+EBENE: Land (Sachsen-Anhalt)
+DATENTYP: Baustellen, Sperrungen, Umleitungen
+STRASSENTYP: B/L/K (+ Kommunen)
+FORMAT: WFS 1.1.0/2.0, GeoJSON (outputFormat=application/json; subtype=geojson), EPSG:4326 nativ
+ENDPUNKT: https://service.ifak.eu/sperrinfo/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities
+DOKU: https://lsbb.sachsen-anhalt.de/service/baustellen-und-umleitungen
+ZUGANG: eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: AccessConstraints (live bestätigt) = "This service is for non-commercial use only." — kommerziell NUR mit schriftlicher Freigabe MLV/LSBB
+UPDATE: regelmäßig (Behörden/Kommunen pflegen)
+STATUS: verifiziert
+NOTIZ: Technisch beste ST-Direktquelle (sauberes GeoJSON, EPSG:4326). Layer roadworks, roadwork_symbols, diversions. WMS: https://service.ifak.eu/sperrinfo/wms . NON-COMMERCIAL — Freigabe-Mail MLV/LSBB = schnellster kommerzieller Unlock. App: http://www.movi.de/sperrinfo/ . GetCapabilities live HTTP 200, Layer + non-commercial-Constraint bestätigt.

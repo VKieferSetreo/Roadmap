@@ -1,0 +1,15 @@
+QUELLE:         WFS Brücken und sonstige Ingenieurbauwerke Hamburg
+BETREIBER:      FHH, Landesbetrieb Straßen, Brücken und Gewässer (LSBG)
+EBENE:          Land:Hamburg
+DATENTYP:       Straßenbrücken, Fußgängerbrücken, Tunnel, Lärmschutzwände, Verkehrszeichenbrücken (Schilderbrücken), Stützwände
+STRASSENTYP:    Alle (LSBG-Zuständigkeit Hauptverkehrs- + Bezirksstraßen)
+FORMAT:         WFS 1.1.0 / 2.0.0 (GML/CSV/GeoJSON)
+ENDPUNKT:       https://geodienste.hamburg.de/HH_WFS_Brueckenbauwerke?SERVICE=WFS&REQUEST=GetCapabilities
+DOKU:           https://metaver.de/trefferanzeige?docuuid=7534E0B7-F558-4F78-8417-32B24B011C48
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2.0 — "FHH, Landesbetrieb Straßen, Brücken und Gewässer"
+UPDATE:         nicht spezifiziert (Bauwerksbestand)
+STATUS:         verifiziert
+NOTIZ:          FeatureTypes (alle Prefix de.hh.up:): strassenbruecken, fussgaengerbruecken, tunnel, laermschutzbauwerke, verkehrszeichenbruecken. LIVE GETESTET — GetFeature liefert echte Bauwerke (bauwerksname, bauwerksart, baujahr, bauwerksnummer, ASB-Nummer). WICHTIG: WFS 2.0.0 count= liefert 0 Features auf dieser deegree-Instanz → für GetFeature VERSION=1.1.0 & maxFeatures verwenden (liefert Features!). Attribute = Standort, ASB-Nummer, interne Bauwerksnummer, Name, Baujahr, Bauwerksart, Baulast. Lichte Höhe/Traglast/Durchfahrtshöhe NICHT in den Attributen → via DescribeFeatureType prüfen; ASB-Nr. erlaubt Join mit BASt SIB-Bauwerke; ergänzende Bauwerksdaten bei LSBG (Info@LSBG.Hamburg.de) anfragen.

@@ -1,0 +1,5 @@
+VMZ Niedersachsen — nur Web-Portal, keine maschinenlesbare Schnittstelle dokumentiert.
+
+Portal:        https://www.vmz-niedersachsen.de/
+Metadaten NI:  https://geoportal.geodaten.niedersachsen.de/harvest/srv/api/records/00a48b0d-3d2c-4811-b39f-6d594c9768ad
+Kontakt Feed:  VMZ Niedersachsen, +49 511 35354-232

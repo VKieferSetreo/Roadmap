@@ -1,0 +1,4 @@
+== GDI-SH / DANord Portal (HTTP-Status) ==
+HTTP 200 | text/html;charset=UTF-8
+
+Baustellen-WFS (live): https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen

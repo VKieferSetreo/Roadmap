@@ -1,0 +1,15 @@
+QUELLE: Baustelleninformationen Sachsen (SPERRINFOSYS) — wms_list_baustellen
+BETREIBER: Landesamt für Geobasisinformation Sachsen (GeoSN) / LASuV; Quelle "Baustelleninformationssystem Sachsen"
+EBENE: Land (Sachsen)
+DATENTYP: tagesaktuelle Baustellen-Maßnahmen, zukünftige Sperrungen + Umleitungen
+STRASSENTYP: A/B/L/K (inkl. Autobahndaten seit Erweiterung)
+FORMAT: WMS 1.3.0 (GetMap/GetFeatureInfo)
+ENDPUNKT: https://geodienste.sachsen.de/wms_list_baustellen/guest?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0
+DOKU: https://www.baustellen.sachsen.de/
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: CC BY 4.0 — Namensnennung "Baustelleninformationssystem Sachsen"
+UPDATE: täglich
+STATUS: verifiziert
+NOTIZ: Layer sperrungen, umleitungen. WMS liefert Darstellung; für strukturierte Attribute GetFeatureInfo nötig. WFS-Variante wfs_list_baustellen/guest existiert, antwortet aber HTTP 403 (eingeschränkt). GetCapabilities live HTTP 200, Layer bestätigt. Auch via MDM/Mobilithek.

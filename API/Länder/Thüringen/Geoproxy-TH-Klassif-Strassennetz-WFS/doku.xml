@@ -1,0 +1,481 @@
+<?xml version='1.0' encoding='UTF-8'?><WFS_Capabilities xmlns="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>Geoproxy Thüringen WFS Klassifiziertes Straßennetz</ows:Title>
+    <ows:Abstract>Geoproxy Thüringen WFS für Klassifiziertes Straßennetz</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>Geobasisdaten</ows:Keyword>
+      <ows:Keyword>Geoproxy</ows:Keyword>
+      <ows:Keyword>WFS</ows:Keyword>
+      <ows:Keyword>GDI</ows:Keyword>
+      <ows:Keyword>Freistaat Thüringen</ows:Keyword>
+      <ows:Keyword>Straßennetz</ows:Keyword>
+      <ows:Keyword>transportation</ows:Keyword>
+      <ows:Keyword>road network</ows:Keyword>
+      <ows:Keyword>Download Service</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+    <ows:Fees>Dieses Angebot kann gemäß der "Datenlizenz Deutschland – Namensnennung – Version 2.0" (https://www.govdata.de/dl-de/by-2-0) genutzt werden. { "id": "dl-de/by-2-0", "name": "Datenlizenz Deutschland – Namensnennung – Version 2.0", "url": "https://www.govdata.de/dl-de/by-2-0 ", "quelle": "© GDI-Th" }</ows:Fees>
+    <ows:AccessConstraints>Es gelten keine Beschränkungen.</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>Thüringer Ministerium für Digitales und Infrastruktur</ows:ProviderName>
+    <ows:ProviderSite xlink:href="https://geoportal.thueringen.de"/>
+    <ows:ServiceContact>
+      <ows:IndividualName>Kompetenzzentrum Geodateninfrastruktur Thüringen</ows:IndividualName>
+      <ows:PositionName>pointOfContact</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49 361 57-4176926</ows:Voice>
+          <ows:Facsimile/>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Hohenwindenstr. 13 a</ows:DeliveryPoint>
+          <ows:City>Erfurt</ows:City>
+          <ows:AdministrativeArea>Erfurt</ows:AdministrativeArea>
+          <ows:PostalCode>99086</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>kompetenzzentrum.gdi-th@tlbg.thueringen.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="https://geoportal.thueringen.de"/>
+        <ows:HoursOfService>24x7</ows:HoursOfService>
+        <ows:ContactInstructions>Thüringer Ministerium für Digitales und Infrastruktur</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>pointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subtype="gml/2.1.2"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.0.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.0.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.1.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.2.1"</ows:Value>
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+        <ows:Value>application/json</ows:Value>
+        <ows:Value>application/json; subtype=noxmlns</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:Value>1.1.0</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:Value>text/xml</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:Value>results</ows:Value>
+        <ows:Value>hits</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subtype="gml/2.1.2"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.0.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.0.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.1.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.2.1"</ows:Value>
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+        <ows:Value>application/json</ows:Value>
+        <ows:Value>application/json; subtype=noxmlns</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetGmlObject">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?"/>
+          <ows:Post xlink:href="https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subtype="gml/2.1.2"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.0.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.0.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.1.1"</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+        <ows:Value>text/xml; subtype="gml/3.2.1"</ows:Value>
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+        <ows:Value>application/json</ows:Value>
+        <ows:Value>application/json; subtype=noxmlns</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:Euronetz_StrNetz</Name>
+      <Title>Europastrassen</Title>
+      <Abstract>Klassifiziertes Straßennetz Europastraßen</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>Euronetz_StrNetz</ows:Keyword>
+        <ows:Keyword>Europastraße</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network</ows:Keyword>
+        <ows:Keyword>European route</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:Klassifiz_StrNetz</Name>
+      <Title>Klassifiziertes Strassennetz</Title>
+      <Abstract>Klassifiziertes Straßennetz</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>Klassifiz_StrNetz</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:Netzknoten_StrNetz</Name>
+      <Title>Netzknoten</Title>
+      <Abstract>Klassifiziertes Straßennetz Netzknoten</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>Netzknoten_StrNetz</ows:Keyword>
+        <ows:Keyword>Netzknoten</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network node</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:Nullpunkte_StrNetz</Name>
+      <Title>Nullpunkte</Title>
+      <Abstract>Klassifiziertes Straßennetz Nullpunkt</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>Nullpunkte_StrNetz</ows:Keyword>
+        <ows:Keyword>Nullpunkt</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network neutral point</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:KmLinien_StrNetz</Name>
+      <Title>Kilometrierung</Title>
+      <Abstract>Klassifiziertes Straßennetz Kilometrierung</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>KmLinien_StrNetz</ows:Keyword>
+        <ows:Keyword>Kilometrierung</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network kilometrage</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tlbv="http://www.geoproxy.geoportal-th.de/tlbv">tlbv:StatLinien_StrNetz</Name>
+      <Title>Stationierung</Title>
+      <Abstract>Klassifiziertes Straßennetz Stationierung</Abstract>
+      <ows:Keywords>
+        <ows:Keyword>Klassifiziertes Straßennetz</ows:Keyword>
+        <ows:Keyword>StatLinien_StrNetz</ows:Keyword>
+        <ows:Keyword>Stationierung</ows:Keyword>
+        <ows:Keyword>transportation</ows:Keyword>
+        <ows:Keyword>road network stationing</ows:Keyword>
+      </ows:Keywords>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::25832</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::25833</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31467</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::31468</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4258</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3038</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3039</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3040</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3041</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3042</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3043</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3044</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3045</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3046</OtherSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::3047</OtherSRS>
+      <OutputFormats>
+        <Format>text/xml; subtype="gml/2.1.2"</Format>
+        <Format>text/xml; subtype=gml/2.1.2</Format>
+        <Format>text/xml; subtype="gml/3.0.1"</Format>
+        <Format>text/xml; subtype=gml/3.0.1</Format>
+        <Format>text/xml; subtype="gml/3.1.1"</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/xml; subtype="gml/3.2.1"</Format>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+        <Format>application/json</Format>
+        <Format>application/json; subtype=noxmlns</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>9.798641 50.140132</ows:LowerCorner>
+        <ows:UpperCorner>12.887084 51.691062</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">https://geomis.geoportal-th.de/geonetwork/srv/ger/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;Elementsetname=full&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;ID=f6c3c5de-3530-4fbe-95f2-e5fe1188cf62</MetadataURL>
+    </FeatureType>
+  </FeatureTypeList>
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:GeometryOperands xmlns:gml="http://www.opengis.net/gml">
+        <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:ArcByCenterPoint</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:CircleByCenterPoint</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Arc</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Circle</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:ArcByBulge</ogc:GeometryOperand>
+      </ogc:GeometryOperands>
+      <ogc:SpatialOperators>
+        <ogc:SpatialOperator name="BBOX"/>
+        <ogc:SpatialOperator name="Equals"/>
+        <ogc:SpatialOperator name="Disjoint"/>
+        <ogc:SpatialOperator name="Intersects"/>
+        <ogc:SpatialOperator name="Touches"/>
+        <ogc:SpatialOperator name="Crosses"/>
+        <ogc:SpatialOperator name="Within"/>
+        <ogc:SpatialOperator name="Contains"/>
+        <ogc:SpatialOperator name="Overlaps"/>
+        <ogc:SpatialOperator name="Beyond"/>
+        <ogc:SpatialOperator name="DWithin"/>
+      </ogc:SpatialOperators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:LogicalOperators/>
+      <ogc:ComparisonOperators>
+        <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+      </ogc:ComparisonOperators>
+      <ogc:ArithmeticOperators>
+        <ogc:SimpleArithmetic/>
+        <ogc:Functions>
+          <ogc:FunctionNames>
+            <ogc:FunctionName nArgs="1">Area</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Centroid</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">env</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">ExtraProp</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">GeometryFromWKT</ogc:FunctionName>
+            <ogc:FunctionName nArgs="0">GetCurrentScale</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">HatchingDistance</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">IDiv</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">IMod</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">InteriorPoint</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">InvertGeometry</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsCurve</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsPoint</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsSurface</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Length</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Lower</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">MoveGeometry</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">normalize</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">soundex</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Upper</ogc:FunctionName>
+          </ogc:FunctionNames>
+        </ogc:Functions>
+      </ogc:ArithmeticOperators>
+    </ogc:Scalar_Capabilities>
+    <ogc:Id_Capabilities>
+      <ogc:EID/>
+      <ogc:FID/>
+    </ogc:Id_Capabilities>
+  </ogc:Filter_Capabilities>
+</WFS_Capabilities>

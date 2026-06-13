@@ -1,0 +1,15 @@
+QUELLE:         RVR / GEONETZWERK.RUHR — Baustellen (Beispiel Herne-GeoServer)
+BETREIBER:      Regionalverband Ruhr (RVR), Essen — für 11 kreisfreie Städte + 4 Kreise der Metropole Ruhr; Beispiel-GeoServer: Stadt Herne (geodaten.herne.de)
+EBENE:          Sonstige  (regionaler Aggregator Ruhrgebiet; faktisch NRW — als länder-naher Verbund unter Sonstige abgelegt, deckt Essen/Dortmund/Bochum/Herne u.a. ab)
+DATENTYP:       Baustellen mit Verkehrseinschränkung (aktuell + geplant); regional gebündelte Geodaten (Radnetz, Bebauungspläne, Luftbilder)
+STRASSENTYP:    innerorts (regionsweit)
+FORMAT:         WFS (2.0.0/1.1.0/1.0.0) / GeoJSON / SHP; INSPIRE-Dienste
+ENDPUNKT:       https://geodaten.herne.de/geoserver/verkehr/baustellen?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=baustelle&OUTPUTFORMAT=GeoJSON&SRSNAME=EPSG:25832  (RVR-INSPIRE: https://geodaten.metropoleruhr.de/inspire/...)
+DOKU:           https://geodaten.herne.de/geoserver/verkehr/baustellen?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities  (Portal: https://www.rvr.ruhr/daten-digitales/geodaten/geonetzwerk/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         ACHTUNG — Herne-Baustellen über open.nrw als "Andere geschlossene Lizenz / nicht offen" markiert → Nutzung für Herne klären. RVR-Geonetzwerk-Daten überwiegend offen, je Datensatz prüfen.
+UPDATE:         Herne-Baustellen zuletzt 2026-03-11
+STATUS:         verifiziert
+NOTIZ:          Live getestet (Herne baustelle.4265, LineString, EPSG:25832). Felder: gml_id, beginn, ende, strasse, massnahme (z.B. "Ausbau A 43"), einschr (z.B. "Teilsperrung mit LSA"), auftraggeber, bemerkung. Wichtigster regionaler Aggregator fürs Ruhrgebiet. PFAD-MUSTER: geodaten.<stadt>.de/geoserver/verkehr/baustellen — Essen/Bochum/Gelsenkirchen systematisch durchprobieren (Herne ist verifiziertes Beispiel; geodaten.essen.de löste beim Test nicht auf). open.nrw "baustellen-rvr" zeigt faktisch auf Herne.

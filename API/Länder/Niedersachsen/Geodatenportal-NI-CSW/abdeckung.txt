@@ -1,0 +1,15 @@
+QUELLE:         Geodatensuche Niedersachsen (CSW-Katalog GDI-NI)
+BETREIBER:      Koordinierungsstelle GDI-NI / LGLN
+EBENE:          Land:Niedersachsen
+DATENTYP:       Meta-Katalog aller NI-Geodienste (WMS/WFS) inkl. Verkehr, Straßennetz, ALKIS
+STRASSENTYP:    Alle (Katalog)
+FORMAT:         CSW-Katalog → Verweise auf WMS/WFS
+ENDPUNKT:       https://geoportal.geodaten.niedersachsen.de/harvest/srv/search?keyword=Verkehr
+DOKU:           https://www.geodaten.niedersachsen.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz
+UPDATE:         laufend
+STATUS:         zu-bestätigen
+NOTIZ:          Einstiegspunkt zum Auffinden weiterer NI-WFS/WMS. CSW-Such-Endpunkt liefert beim Test HTTP 503 (Dienst zeitweise nicht erreichbar) → erneut prüfen. WFS-Suche: …/harvest/srv/search?type=service-WFS. NUMIS = verwandtes Umwelt-Metadatensystem.

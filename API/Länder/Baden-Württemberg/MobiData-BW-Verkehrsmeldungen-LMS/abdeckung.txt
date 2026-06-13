@@ -1,0 +1,20 @@
+QUELLE:         MobiData BW IPL — Verkehrsmeldungen (LMS BW)
+BETREIBER:      Lagemeldesystem LMS BW (Innenministerium BW); publiziert über MobiData BW (NVBW)
+EBENE:          Land:Baden-Württemberg
+DATENTYP:       Sperrungen / Gefahrenmeldungen / Staus / Unfälle / Veranstaltungen / Ereignisse
+STRASSENTYP:    A / B / L / K (netzübergreifend)
+FORMAT:         TIC3 XML / DATEX II XML
+ENDPUNKT:       https://api.mobidata-bw.de/datasets/traffic/incidents-bw/TIC3-Meldungen.xml
+DOKU:           https://mobidata-bw.de/dataset/meldung
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2.0 (Datenlizenz Deutschland Namensnennung 2.0)
+UPDATE:         alle ~10 Minuten
+STATUS:         verifiziert
+NOTIZ:          Zweiter Endpunkt (DATEX II):
+                https://api.mobidata-bw.de/datasets/traffic/incidents/incidents_lmsbw.datex2.xml
+                Integriert zusätzlich DWD-Wetterwarnungen, HVZ-BW-Hochwasserwarnungen, Stuttgart-
+                Störungen. "Sonstige Sperrungen" + "Gefahrenmeldungen" sind für GST-Routing relevant
+                (kurzfristige Hindernisse). Restriktions-Details i.d.R. im Meldungstext → Parsing.
+                Inhaltlich = alter VerkehrsInfo-BW / SVZ-BW-Bestand (svz-bw.de wird eingestellt).

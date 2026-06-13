@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:esri_wms="http://www.esri.com/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.3.0" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.esri.com/wms https://geodienste.sachsen.de/wms_list_baustellen/guest?version=1.3.0%26service=WMS%26request=GetSchemaExtension">
+	<Service>
+		<Name>WMS</Name>
+		<Title>Baustelleninformationen</Title>
+		<Abstract>Der Dienst stellt Daten aus dem Fachverfahren SPERRINFOSYS dar. Er beinhaltet Informationen über tagesaktuelle Maßnahmen sowie zukünftige Sperrungen und Umleitungen. Die Daten werden aus den angebundenen Systemen der zuständigen Verkehrsbehörden des Landesamtes für Straßenbau und Verkehr, der Landkreise, der Kreisfreien Städte und der Großen Kreisstädte in die zentrale Geo-Datenbank übermittelt. Weitere Informationen zum Dienst erhalten Sie im GeoMIS.Sachsen oder über die Metadatenanzeige, welche über folgende URL direkt aufrufbar ist: https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/1df0701f-be33-4d96-ab02-6b884fb071a8.</Abstract>
+		<KeywordList>
+			<Keyword>Sperrung</Keyword>
+			<Keyword>Umleitung</Keyword>
+			<Keyword>Baustellen</Keyword>
+			<Keyword>Sperrinfosys</Keyword>
+			<Keyword>Verkehrsraumeinschränkung</Keyword>
+			<Keyword>Verkehrsraumeinschränkungen</Keyword>
+			<Keyword>Verkehrsbeschränkung</Keyword>
+			<Keyword>Verkehrsbeschränkungen</Keyword>
+			<Keyword>Baustelleninformationssystem</Keyword>
+			<Keyword>landesweit</Keyword>
+			<Keyword>DE-SN</Keyword>
+			<Keyword>DE</Keyword>
+			<Keyword>SN</Keyword>
+			<Keyword>Bundesland Freistaat Sachsen</Keyword>
+			<Keyword>Sperrungen</Keyword>
+			<Keyword>Umleitungen</Keyword>
+		</KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>GDI-Servicezentrum</ContactPerson>
+				<ContactOrganization>Landesamt für Geobasisinformation Sachsen (GeoSN)</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactPosition/>
+			<ContactAddress>
+				<AddressType/>
+				<Address>Olbrichtplatz 3</Address>
+				<City>Dresden</City>
+				<StateOrProvince>Freistaat Sachsen</StateOrProvince>
+				<PostCode>01099</PostCode>
+				<Country>Deutschland</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>+49 351 8283-8420</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>+49 351 8283-6110</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>servicedesk@geosn.sachsen.de</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees>Die Nutzung ist kostenfrei.</Fees>
+		<AccessConstraints>Der Dienst kann gemäß den Nutzungsbestimmungen von Creatice Commons Lizenz - Namensnennung 4.0 International (https://creativecommons.org/licenses/by/4.0/) unter Angabe des Quellenvermerks: "Baustelleninformationssystem Sachsen" genutzt werden.</AccessConstraints>
+		<MaxWidth>4096</MaxWidth>
+		<MaxHeight>4096</MaxHeight>
+	</Service>
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>application/vnd.ogc.wms_xml</Format>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://geodienste.sachsen.de/wms_list_baustellen/guest?" xlink:type="simple"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/png</Format>
+				<Format>image/png8</Format>
+				<Format>image/png24</Format>
+				<Format>image/png32</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/tiff</Format>
+				<Format

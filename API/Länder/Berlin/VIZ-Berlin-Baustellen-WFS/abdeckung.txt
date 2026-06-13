@@ -1,0 +1,15 @@
+QUELLE: Berlin VIZ — Baustellen, Sperrungen und sonstige Störungen (mdhwfs)
+BETREIBER: Verkehrsinformationszentrale (VIZ) / Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt
+EBENE: Land (Berlin)
+DATENTYP: Baustellen, Sperrungen, Störungen, Veranstaltungen (Disruptions) — KEINE baulichen Lastdaten
+STRASSENTYP: Alle (Berliner Stadtgebiet)
+FORMAT: WFS 2.0 (GeoServer), Default GML, GeoJSON via outputFormat=application/json, EPSG:25833 (UTM33N)
+ENDPUNKT: https://api.viz.berlin.de/geoserver/mdhwfs/wfs?service=WFS&version=2.0.0&request=GetCapabilities
+DOKU: https://daten.berlin.de/datensaetze?groups=verkehr
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: Berlin Open Data (Wiederverwendung garantiert kostenfrei); konkrete DL-DE-Stufe je Distribution prüfen
+UPDATE: laufend
+STATUS: verifiziert
+NOTIZ: Layer mdhwfs:baustellen_sperrungen (Hauptlayer) + Nebenlayer parkdaten, leuchten_berlin, nextbike_*, sharenow_berlin. Felder u.a. subtype (Baustelle/Störung), severity, validity (JSON {from,to} dd.mm.yyyy), street, section, netrefs (→ Detailnetz-Kanten). Restriktions-Limits ggf. nur im Freitext. GetCapabilities live HTTP 200, Layer-Name bestätigt.

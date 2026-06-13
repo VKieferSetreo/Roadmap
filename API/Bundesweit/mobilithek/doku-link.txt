@@ -1,0 +1,16 @@
+Mobilithek — Nationaler Zugangspunkt (NAP) Deutschland für Mobilitätsdaten (BMV/BMDV).
+Broker/Katalog: kein globaler API-Endpunkt — pro abonniertem Datensatz entsteht eine eigene
+Broker-Feed-URL (DATEX II v2/v3, Transport REST/SOAP/OCIT-C). Die Doku-Seiten sind eine
+JS-SPA (kein statisches HTML abrufbar), daher hier nur Links:
+
+Plattform:                 https://mobilithek.info/
+DATEX-II-FAQ:              https://mobilithek.info/help/faq-datex-ii
+Schnittstellenbeschr.(TSSB): https://mobilithek.info/cms/downloads/tssb-de   (v1.3.1, 16.04.2025)
+DATEX-II v3 Info:          https://mobilithek.info/blog/datex-2-version-3
+
+ACCOUNT NÖTIG: Konto auf mobilithek.info anlegen -> Katalog nach "Baustellen"/"DATEX II"/
+"Verkehrslage" durchsuchen -> Datenangebot abonnieren (ggf. Nutzungsvereinbarung) ->
+Zertifikat einrichten -> Broker-Feed-URL wird im Konto sichtbar. Siehe mobilithek.env.
+Bekannte Zulieferer: Bayern (ArbIS/Bayern-VIZ), NRW (MOBIDROM), BW (svzbw). Profil:
+"German Roadworks Profile" (DATEX II). DATEX II liefert teils strukturierte Restriktions-
+felder (Gewicht/Breite/Höhe) -> maschinenlesbarer als der Autobahn-API-Freitext.

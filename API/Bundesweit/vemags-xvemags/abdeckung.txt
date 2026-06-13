@@ -1,0 +1,15 @@
+QUELLE:         VEMAGS — Verfahrensmanagement Großraum- und Schwertransporte (+ INS-GST, Xvemags)
+BETREIBER:      Hessen Mobil (Projektleitung VEMAGS), i.A. Bund + alle 16 Länder
+DATENTYP:       Genehmigungs-/Antragsdaten, Routen, Bauwerks-Restriktionen (Statik-Modul: Tragfähigkeit, zul. Achslasten/-abstände), Auflagen je Genehmigung. INS-GST: Routen-Anreicherung mit ASB-Teilabschnitten + Brücken-Prüfstellen. Fachlich beste GST-Daten
+EBENE:          Bundesweit
+STRASSENTYP:    Alle (A/B/L/K — gesamtes genehmigungsrelevantes Netz)
+FORMAT:         SOAP/XML — Xvemags (Xvemags-AB Antragstellung, Xvemags-FP Fachprüfung, Xvemags-EGB Gebühren). Fachschema OKSTRA "Schwerlast"; Bauwerksdaten ASB-ING (2013). INS-GST als Webservice
+ENDPUNKT:       -   (Anwendung: https://applikation.vemags.de — interaktiv; Xvemags-WSDL nur für zugelassene Drittsysteme, URL zu-bestätigen)
+DOKU:           https://www.vemags.de/ins-gst-modul/ins-gst-webservice-3/  (Schnittstelle: https://www.vemags.de/verfahrens-modul/schnittstelle/ | Statik-Modul: https://www.vemags.de/statik-modul/)
+ZUGANG:         eingeschränkt
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: JA
+LIZENZ:         keine offene Lizenz — behördliches Verfahren, kein open data
+UPDATE:         laufend (an SIB der Länder gekoppelt)
+STATUS:         zu-bestätigen
+NOTIZ:          Strategisch der wichtigste Zugangsweg an echte bundesweite Brücken-/Bauwerksrestriktionen — als Drittsystem über Xvemags andocken. ABER: Anbindung zielt auf Antrags-Workflow, NICHT auf offenen Restriktions-Daten-Pull. Kein offener Test möglich. Empfehlung: offiziell bei VEMAGS-Projektleitung (Hessen Mobil) anfragen. BMDV-Projekt "GST 4.0" beobachten. >90% aller GST-Genehmigungen laufen über VEMAGS.

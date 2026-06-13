@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities xmlns="http://www.opengis.net/wfs/2.0" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:Baustelleninformationen="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?service=wfs%26version=2.0.0%26request=DescribeFeatureType">
+  <ows:ServiceIdentification>
+    <ows:Title>Baustelleninformationen</ows:Title>
+    <ows:Abstract>Dieser Dienst stellt Informationen zu Baustellen und Verkehr für die Publikation über das LBV.SH bereit.</ows:Abstract>
+    <ows:Keywords>
+		<ows:Keyword>Verkehrsnetze</ows:Keyword>
+		<ows:Keyword>Baustellen</ows:Keyword>
+		<ows:Keyword>LBV</ows:Keyword>
+		<ows:Keyword>opendata</ows:Keyword>
+		<ows:Keyword>SH</ows:Keyword>
+		<ows:Keyword>Schleswig-Holstein</ows:Keyword>
+		<ows:Keyword>Datex II</ows:Keyword>
+		<ows:Keyword>Umleitung</ows:Keyword>
+	</ows:Keywords>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Fees/>
+    <ows:AccessConstraints/>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName/>
+    <ows:ServiceContact>
+      <ows:IndividualName/>
+      <ows:PositionName/>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice/>
+          <ows:Facsimile/>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint/>
+          <ows:City/>
+          <ows:AdministrativeArea/>
+          <ows:PostalCode/>
+          <ows:Country/>
+          <ows:ElectronicMailAddress/>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen"/>
+        <ows:HoursOfService/>
+        <ows:ContactInstructions/>
+      </ows:ContactInfo>
+      <ows:Role/>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:AllowedValues>
+          <ows:Value>2.0.0</ows:Value>
+      </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+    <ows:Parameter name="outputFormat">
+      <ows:AllowedValues>
+        <ows:Value>text/xml; subtype=gml/3.2</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetPropertyValue">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:AllowedValues>
+          <ows:Value>results</ows:Value>
+          <ows:Value>hits</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:AllowedValues>
+          <ows:Value>GML32</ows:Value>
+          <ows:Value>GML32+ZIP</ows:Value>
+          <ows:Value>application/gml+xml; version=3.2</ows:Value>
+          <ows:Value>GML3</ows:Value>
+          <ows:Value>GML3+ZIP</ows:Value>
+          <ows:Value>text/xml; subtype=gml/3.1.1</ows:Value>
+          <ows:Value>GML2</ows:Value>
+          <ows:Value>GML2+ZIP</ows:Value>
+          <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+          <ows:Value>GEOJSON</ows:Value>
+          <ows:Value>GEOJSON+ZIP</ows:Value>
+          <ows:Value>ESRIGEOJSON</ows:Value>
+          <ows:Value>ESRIGEOJSON+ZIP</ows:Value>
+          <ows:Value>KML</ows:Value>
+          <ows:Value>application/vnd.google-earth.kml xml</ows:Value>
+          <ows:Value>application/vnd.google-earth.kml+xml</ows:Value>
+          <ows:Value>KMZ</ows:Value>
+          <ows:Value>application/vnd.google-earth.kmz</ows:Value>
+          <ows:Value>SHAPE+ZIP</ows:Value>
+          <ows:Value>CSV</ows:Value>
+          <ows:Value>CSV+ZIP</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetGmlObject">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="ListStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeStoredQueries">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen?"/>
+          <ows:Post xlink:href="https://dienste.gdi-sh.de//WFS_SH_Baustelleninformationen"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Constraint name="ImplementsBasicWFS"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsTransactionalWFS"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsLockingWFS"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="KVPEncoding"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="XMLEncoding"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="SOAPEncoding"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsInheritance"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsRemoteResolve"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsResultPaging"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsStandardJoins"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsSpatialJoins"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsTemporalJoins"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ImplementsFeatureVersioning"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+    <ows:Constraint name="ManageStoredQueries"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></ows:Constraint>
+  </ows:OperationsMetadata>
+  <wfs:FeatureTypeList>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellen_SH</wfs:Name>
+    <wfs:Title>Baustellen SH</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.284207 53.352384</ows:LowerCorner>
+      <ows:UpperCorner>11.330852 54.773804</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellenpunkte_SH</wfs:Name>
+    <wfs:Title>Baustellenpunkte SH</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.284207 53.352384</ows:LowerCorner>
+      <ows:UpperCorner>11.330852 54.773804</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellenpunkte_Norderstedt</wfs:Name>
+    <wfs:Title>Baustellen Norderstedt</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>9.9 53.6</ows:LowerCorner>
+      <ows:UpperCorner>10.1 53.8</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Umleitungsstrecken</wfs:Name>
+    <wfs:Title>Umleitungsstrecken SH</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.284207 53.352384</ows:LowerCorner>
+      <ows:UpperCorner>11.330852 54.773804</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellen_MV</wfs:Name>
+    <wfs:Title>Baustellen MV</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>10.58 53.01</ows:LowerCorner>
+      <ows:UpperCorner>14.59 54.76</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellen_FHH</wfs:Name>
+    <wfs:Title>Baustellen FHH</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>9.72 53.39</ows:LowerCorner>
+      <ows:UpperCorner>10.33 53.75</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellen_Niedersachsen</wfs:Name>
+    <wfs:Title>Baustellen Niedersachsen</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+	  <ows:LowerCorner>6.5967389 51.262758</ows:LowerCorner>
+	  <ows:UpperCorner>11.646357 53.872382</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellenpunkte_Niedersachsen</wfs:Name>
+    <wfs:Title>Baustellenpunkte Niedersachsen</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+	  <ows:LowerCorner>6.5967389 51.262758</ows:LowerCorner>
+	  <ows:UpperCorner>11.646357 53.872382</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellen_Autobahn</wfs:Name>
+    <wfs:Title>Baustellen Autobahn</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.2798923 52.998489</ows:LowerCorner>
+      <ows:UpperCorner>12.505246 55.016423</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Baustellenpunkte_Autobahn</wfs:Name>
+    <wfs:Title>Baustellenpunkte Autobahn</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.2798923 52.998489</ows:LowerCorner>
+      <ows:UpperCorner>12.505246 55.016423</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Verkehrsstoerungen</wfs:Name>
+    <wfs:Title>Verkehrsstoerungen</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.284207 53.352384</ows:LowerCorner>
+      <ows:UpperCorner>11.330852 54.773804</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  <wfs:FeatureType>
+    <wfs:Name>Baustelleninformationen:Verkehrslagen</wfs:Name>
+    <wfs:Title>Verkehrslagen</wfs:Title>
+    <wfs:DefaultCRS>urn:ogc:def:crs:EPSG::25832</wfs:DefaultCRS>
+    <ows:WGS84BoundingBox>
+      <ows:LowerCorner>8.2798923 52.998489</ows:LowerCorner>
+      <ows:UpperCorner>12.505246 55.016423</ows:UpperCorner>
+    </ows:WGS84BoundingBox>
+  </wfs:FeatureType>
+  </wfs:FeatureTypeList>
+  <fes:Filter_Capabilities>
+  <fes:Conformance>
+    <fes:Constraint name="ImplementsQuery"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsAdHocQuery"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsFunctions"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsResourceId"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsMinStandardFilter"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsStandardFilter"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsMinSpatialFilter"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsSpatialFilter"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsMinTemporalFilter"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsTemporalFilter"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsVersionNav"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsSorting"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsExtendedOperators"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsMinimumXPath"><ows:NoValues/><ows:DefaultValue>TRUE</ows:DefaultValue></fes:Constraint>
+    <fes:Constraint name="ImplementsSchemaElementFunc"><ows:NoValues/><ows:DefaultValue>FALSE</ows:DefaultValue></fes:Constraint>
+  </fes:Conformance>
+  <fes:Id_Capabilities>
+    <fes:ResourceIdentifier name="fes:ResourceId"/>
+  </fes:Id_Capabilities>
+  <fes:Scalar_Capabilities>
+    <fes:LogicalOperators/>
+    <fes:ComparisonOperators>
+      <fes:ComparisonOperator name="PropertyIsEqualTo"/>
+      <fes:ComparisonOperator name="PropertyIsNotEqualTo"/>
+      <fes:ComparisonOperator name="PropertyIsLessThan"/>
+      <fes:ComparisonOperator name="PropertyIsGreaterThan"/>
+      <fes:ComparisonOperator name="PropertyIsLessThanOrEqualTo"/>
+      <fes:ComparisonOperator name="PropertyIsGreaterThanOrEqualTo"/>
+      <fes:ComparisonOperator name="PropertyIsLike"/>
+      <fes:ComparisonOperator name="PropertyIsNull"/>
+      <fes:ComparisonOperator name="PropertyIsNil"/>
+      <fes:ComparisonOperator name="PropertyIsBetween"/>
+    </fes:ComparisonOperators>
+  </fes:Scalar_Capabilities>
+  <fes:Spatial_Capabilities>
+    <fes:GeometryOperands xmlns:gml="http://www.opengis.net/gml" xmlns:gml32="http://www.opengis.net/gml">
+      <fes:GeometryOperand name="gml:Box"/>
+      <fes:GeometryOperand name="gml:Envelope"/>
+      <fes:GeometryOperand name="gml:Point"/>
+      <fes:GeometryOperand name="gml:LineString"/>
+      <fes:GeometryOperand name="gml:LinearRing"/>
+      <fes:GeometryOperand name="gml:Polygon"/>
+      <fes:GeometryOperand name="gml:MultiPoint"/>
+      <fes:GeometryOperand name="gml:MultiCurve"/>
+      <fes:GeometryOperand name="gml:MultiSurface"/>
+    </fes:GeometryOperands>
+    <fes:SpatialOperators>
+      <fes:SpatialOperator name="BBOX"/>
+      <fes:SpatialOperator name="Equals"/>
+      <fes:SpatialOperator name="Disjoint"/>
+      <fes:SpatialOperator name="Intersects"/>
+      <fes:SpatialOperator name="Touches"/>
+      <fes:SpatialOperator name="Crosses"/>
+      <fes:SpatialOperator name="Within"/>
+      <fes:SpatialOperator name="Contains"/>
+      <fes:SpatialOperator name="Overlaps"/>
+      <fes:SpatialOperator name="Beyond"/>
+      <fes:SpatialOperator name="DWithin"/>
+    </fes:SpatialOperators>
+  </fes:Spatial_Capabilities>
+  </fes:Filter_Capabilities>
+</wfs:WFS_Capabilities>

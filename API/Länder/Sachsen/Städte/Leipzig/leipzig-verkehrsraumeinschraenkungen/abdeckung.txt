@@ -1,0 +1,15 @@
+QUELLE:         Leipzig — Verkehrsraumeinschränkungen (Punkte + Polygone)
+BETREIBER:      Stadt Leipzig, Amt für Geoinformation und Bodenordnung (geodienste.leipzig.de, GeoServer)
+EBENE:          Stadt:Leipzig,Sachsen
+DATENTYP:       aktuelle Verkehrsraumeinschränkungen (= Baustellen/Sperrungen) als Punkt + Polygon
+STRASSENTYP:    innerorts
+FORMAT:         WFS / GeoJSON / CSV
+ENDPUNKT:       https://geodienste.leipzig.de/l3/OpenData/wfs?VERSION=2.0.0&REQUEST=GetFeature&typeName=OpenData:Verkehrsraumeinschraenkungen_point&outputFormat=application/json  (Polygone: typeName=OpenData:verkehrsraumeinschraenkungen)
+DOKU:           https://geodienste.leipzig.de/l3/OpenData/wfs?REQUEST=GetCapabilities&SERVICE=WFS&VERSION=2.0.0  (Portal: https://opendata.leipzig.de/dataset/verkehrsraumeinschrankungen-punkte-stadt-leipzig)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         im CKAN nicht explizit gesetzt — bei Stadt Leipzig bestätigen (Portal: freie Nutzung, Namensnennung der Lizenzbedingung)
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          Live getestet (1.556 Features Punkte, EPSG:25833). ACHTUNG Layer-Name-Casing: Punkte = "Verkehrsraumeinschraenkungen_point" (großes V), Polygone = "verkehrsraumeinschraenkungen" (klein). Felder Punkt: objectid, adresse, stadtbzrk, beginn, ende, neu, sparte (z.B. "Sondernutzung, Baustelleneinr."), sperrart, meldung, fme_tstamp. Verkehrszeichen-Kataster separat (siehe leipzig-verkehrszeichen).

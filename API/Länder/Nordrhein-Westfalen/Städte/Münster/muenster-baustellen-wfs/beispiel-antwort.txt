@@ -1,0 +1,10 @@
+== Münster Baustellen (WFS GeoJSON, MAXFEATURES=1) ==
+{
+"type": "FeatureCollection",
+"name": "baustellen",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fuid": 3, "bezeichnung": "B51 - Brückenneubau", "typ_id": 2, "typ_bez": "Teilsperrung", "beginntam": "2024\/01\/04 00:00:00", "endetam": "2026\/12\/31 00:00:00", "information": "Innerhalb von nur drei Jahren wird Straßen.NRW zwei Brücken in der Verbindung zwischen der Autobahn A43 und der B51, der Umgehungsstraße Münster erneuern. Die bestehenden Brücken der B51 bei Brillux, die Autobahn und Umgehungsstraße in Münster verbinden, müssen aufgrund ihres Alters bzw. eingeschränkten Belastbarkeit durch neue Brücken ersetzt werden.", "publikationvon": "2025\/01\/21 00:00:00", "publikationbis": "2026\/12\/31 00:00:00", "telefonansprechpartner1": "02541 \/ 742 294", "telefonansprechpartner2": "", "gesamtname1": "Sandra Beermann", "vorname1": "Sandra", "nachname1": "Beermann", "telefon1": "02541 \/ 742 294", "mobil11": "", "firmenname1": "", "gesamtname2": "", "vorname2": "", "nachname2": "", "telefon2": "", "mobil2": "", "firmenname2": "" }, "geometry": { "type": "LineString", "coordinates": [ [ 7.600656002365044, 51.934247608439669 ], [ 7.601064102577585, 51.934472782556696 ], [ 7.601669852981597, 51.934742466581717 ], [ 7.602224858388928, 51.934929604848129 ], [ 7.602542833945297, 51.935022556794188 ], [ 7.602979294222171, 51.93512832813942 ], [ 7.603579700587567, 51.935232474191778 ], [ 7.60413041213859, 51.935302136182095 ], [ 7.604866322811825, 51.935348211681408 ], [ 7.605392750044675, 51.935368203045201 ], [ 7.606178632344906, 51.935334698832094 ], [ 7.606875580361254, 51.935259918065952 ], [ 7.60734866772888, 51.935205739435403 ], [ 7.607441681740525, 51.935177421609154 ] ] } }
+]
+}
+

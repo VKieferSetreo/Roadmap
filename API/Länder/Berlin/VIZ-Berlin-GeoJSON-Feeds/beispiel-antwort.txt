@@ -1,0 +1,143 @@
+{
+  "type": "FeatureCollection",
+  "name": "baustellen",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LMS-BR/r_LMS-BR/330651_LMS-BR/72",
+        "tstore": "2024-04-16T10:43:42.450Z",
+        "objectState": "modified",
+        "subtype": "Baustelle",
+        "icon": "baustelle",
+        "severity": null,
+        "validity": {
+          "from": "",
+          "to": "31.12.2026 23:59"
+        },
+        "street": "Berlin, Badstraße in Höhe Pankstraße/ Prinzenallee im Kreuzungsbereich Fahrstreifenreduzierungen, Fahrbahnverschwenkungen",
+        "section": "Berlin, Badstraße in Höhe Pankstraße/ Prinzenallee im Kreuzungsbereich Fahrstreifenreduzierungen, Fahrbahnverschwenkungen",
+        "content": "Bauarbeiten"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.3814,
+          52.55223
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LMS-BR/r_LMS-BR/401481_LMS-BR/72",
+        "tstore": "2026-03-11T06:56:58.857Z",
+        "objectState": "modified",
+        "subtype": "Baustelle",
+        "icon": "baustelle",
+        "severity": null,
+        "validity": {
+          "from": "",
+          "to": "26.06.2026 23:59"
+        },
+        "street": "B2 Berlin, Berliner Allee vor Buschallee",
+        "section": "B2 Berlin, Berliner Allee vor Buschallee",
+        "content": "rechter Fahrstreifen gesperrt, Baustelle"
+      },
+      "geometry": {
+        "type": "GeometryCollection",
+        "geometries": [
+          {
+            "type": "Point",
+            "coordinates": [
+              13.4675328,
+              52.5536956
+            ]
+          },
+          {
+            "type": "LineString",
+            "coordinates": [
+              [
+                13.4675328,
+                52.5536956
+              ],
+              [
+                13.4675941,
+                52.5538181
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LMS-BR/r_LMS-BR/407136_LMS-BR/72",
+        "tstore": "2026-05-04T19:23:30.123Z",
+        "objectState": "modified",
+        "subtype": "Sperrung",
+        "icon": "sperrung",
+        "severity": null,
+        "validity": {
+          "from": "",
+          "to": ""
+        },
+        "street": "Berlin, Dunckerstraße zwischen Wisbyer Straße und Gertrud-Pincus-Platz",
+        "section": "Berlin, Dunckerstraße zwischen Wisbyer Straße und Gertrud-Pincus-Platz",
+        "content": "gesperrt, Wasserrohrbruch"
+      },
+      "geometry": {
+        "type": "GeometryCollection",
+        "geometries": [
+          {
+            "type": "Point",
+            "coordinates": [
+              13.42894,
+              52.55149
+            ]
+          },
+          {
+            "type": "LineString",
+            "coordinates": [
+              [
+                13.42894,
+                52.55149
+              ],
+              [
+                13.42874,
+                52.55128
+              ],
+              [
+                13.42867,
+                52.5512
+              ],
+              [
+                13.42774,
+                52.5502
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "LMS-BR/r_LMS-BR/380591_LMS-BR/72",
+        "tstore": "2025-08-20T08:00:00.173Z",
+        "objectState": "modified",
+        "subtype": "Gefahr",
+        "icon": "warnung",
+        "severity": null,
+        "validity": {
+          "from": "",
+          "to": "08.07.2026 23:59"
+        },
+        "street": "Berlin, Blaschkoallee, Richtung A113 in Höhe Buschkrugallee",
+        "section": "Berlin, Blaschkoallee, Richtung A113 in Höhe Buschkrugallee",
+        "content": "Fahrbahn auf einen Fahrstreifen verengt, Staugefahr, vorübergehende Regelung durch provisorische Ampelanlagen, Bauarbeiten"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinacurl: (23) Failure writing output to destination, passed 16384 returned 0

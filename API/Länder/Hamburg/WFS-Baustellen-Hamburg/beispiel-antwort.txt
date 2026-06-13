@@ -1,0 +1,33 @@
+== Baustellen Hamburg (WFS 1.1.0, maxFeatures=1, GML) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd https://registry.gdi-de.org/id/de.hh.up https://geodienste.hamburg.de/hh_wfs_baustellen?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=de.hh.up:baustelle&amp;NAMESPACE=xmlns(de.hh.up=https%3A%2F%2Fregistry.gdi-de.org%2Fid%2Fde.hh.up)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2026-06-13T14:49:07Z" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <de.hh.up:baustelle xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" gml:id="DE.HH.UP_BAUSTELLE_667688">
+      <de.hh.up:titel>Gründgensstraße, U5 – Notausgangsbau</de.hh.up:titel>
+      <de.hh.up:organisation>Hamburger Hochbahn Aktiengesellschaft</de.hh.up:organisation>
+      <de.hh.up:anlass>U5 – Notausgangsbau</de.hh.up:anlass>
+      <de.hh.up:umfang>In der Gründgensstraße wird ein Blockverkehr eingerichtet. Der Rad- und Fußverkehr wird um die Baustelle herumgeführt.</de.hh.up:umfang>
+      <de.hh.up:baubeginn>01.12.2024</de.hh.up:baubeginn>
+      <de.hh.up:bauende>31.12.2026</de.hh.up:bauende>
+      <de.hh.up:letzteaktualisierung>2025-01-15T10:49:47</de.hh.up:letzteaktualisierung>
+      <de.hh.up:istzugangeingeschraenkt>false</de.hh.up:istzugangeingeschraenkt>
+      <de.hh.up:iststoerung>true</de.hh.up:iststoerung>
+      <de.hh.up:isthotspot>false</de.hh.up:isthotspot>
+      <de.hh.up:istfreigegeben>true</de.hh.up:istfreigegeben>
+      <de.hh.up:mehrwert>Hamburg wächst, Mitte der 30er Jahre wird die Stadt rund zwei Millionen Einwohner haben, dazu kommen täglich weit mehr als 300.000 Pendler. Um das enorme Verkehrsaufkommen zu bewältigen und die Mobilität auch für die nächsten Generationen sicherstellen zu können, plant die HOCHBAHN im Auftrag der Stadt die neue U-Bahn-Linie U5. Mit ihrem Streckenverlauf sollen vorhandene Lücken im U-Bahn-Netz geschlossen werden. Damit werden dicht bewohnte Stadtteile sowie große Ausbildungs-, Arbeitsplatz- und Einzelhandelsstandorte wie die City Nord, die Universität und das UKE an das S- und U-Bahn-Netz angeschlossen. Stark frequentierte Buslinien wie die MetroBus-Linien 5, 6 und 7 sollen zudem nachhaltig entlastet werden.</de.hh.up:mehrwert>
+      <de.hh.up:istoepnveingeschraenkt>false</de.hh.up:istoepnveingeschraenkt>
+      <de.hh.up:oevnveinschraenkungen></de.hh.up:oevnveinschraenkungen>
+      <de.hh.up:hatinternetlink>true</de.hh.up:hatinternetlink>
+      <de.hh.up:internetlink>https://www.schneller-durch-hamburg.de/</de.hh.up:internetlink>
+      <de.hh.up:hatumleitungsbeschreibung>false</de.hh.up:hatumleitungsbeschreibung>
+      <de.hh.up:istparkraumeingeschraenkt>true</de.hh.up:istparkraumeingeschraenkt>
+      <de.hh.up:parkraumeinschraenkung>Es entfallen Parkplätze</de.hh.up:parkraumeinschraenkung>
+      <de.hh.up:tns_koordinate_value>
+        <!--Inlined geometry 'DE.HH.UP_BAUSTELLE_667688_DE.HH.UP_TNS_KOORDINATE_VALUE'-->
+        <gml:Point gml:id="DE.HH.UP_BAUSTELLE_667688_DE.HH.UP_TNS_KOORDINATE_VALUE" srsName="EPSG:25832">
+          <gml:pos>570482.719 5941018.630</gml:pos>
+        </gml:Point>
+      </de.hh.up:tns_koordinate_value>
+    </de.hh.up:baustelle>
+  </gml:featureMember>
+</wfs:FeatureCollection>

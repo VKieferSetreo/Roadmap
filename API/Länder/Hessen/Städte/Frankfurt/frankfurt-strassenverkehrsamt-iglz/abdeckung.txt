@@ -1,0 +1,15 @@
+QUELLE:         Frankfurt am Main — Straßenverkehrsamt / IGLZ
+BETREIBER:      Stadt Frankfurt, Straßenverkehrsamt / Integrierte Gesamtverkehrsleitzentrale (IGLZ); Portal: offenedaten.frankfurt.de (CKAN) + GDI-FFM
+EBENE:          Stadt:Frankfurt,Hessen
+DATENTYP:       Baustellen, Verkehrsmeldungen, Verkehrsmengen, Bewohnerparken (Geoportal-Kategorie Mobilität & Verkehr); IGLZ speist DATEX-II in die Mobilithek
+STRASSENTYP:    innerorts
+FORMAT:         WFS / GeoJSON (Geoportal); DATEX-II (über Mobilithek)
+ENDPUNKT:       -
+DOKU:           https://offenedaten.frankfurt.de/organization/strassenverkehrsamt
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Offene Daten Frankfurt (dl-de-by / CC-BY je Datensatz) — bestätigen
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Portal offenedaten.frankfurt.de hat TLS-Zertifikatsmismatch beim www.-Host + tw. 404 für Crawler → exakte Resource-URL nicht live geholt (apiEndpunkt=null). Datensätze existieren (Org 'Straßenverkehrsamt', Tags Baustelle/Verkehrsmeldung). EINFACHER WEG: Frankfurt-IGLZ-Baustellen kommen auch bundesweit über die Mobilithek (DATEX-II) — siehe API/Bundesweit/mobilithek. Regionalverband FrankfurtRheinMain bietet zusätzlich Open-Data-WMS/WFS.

@@ -1,0 +1,15 @@
+QUELLE:         Transparenzportal Hamburg — Gruppe "Transport und Verkehr" (Dachkatalog)
+BETREIBER:      FHH (Staatsarchiv betreibt Portal)
+EBENE:          Land:Hamburg
+DATENTYP:       ~100+ Geodatensätze Transport/Verkehr (Baustellen, GST-Routen, Brücken, Verkehrslage, Verkehrsstärken, automatisiertes Fahren, Verwaltungsgrenzen u.v.m.)
+STRASSENTYP:    Alle
+FORMAT:         CKAN-API (JSON); Datensätze als WFS, WMS, GML, CSV, GeoJSON
+ENDPUNKT:       https://suche.transparenz.hamburg.de/api/3/action/package_search?q=groups:transport-und-verkehr
+DOKU:           https://suche.transparenz.hamburg.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (überwiegend dl-de/by-2.0)
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          ZENTRALER EINSTIEG für HH. CKAN-API LIVE GETESTET — package_search liefert JSON (Portal gesamt 23254 Datensätze, Gruppe transport-und-verkehr filterbar). Browser-Filter: ?groups=transport-und-verkehr&res_format=wfs (bzw. wms/gml). Weitere relevante WFS dort: HH_WFS_Verkehrsstaerken (Zählungen), HH_WFS_automatisiertes_Fahren (Abbiegebeziehungen). Verlinkt MetaVer (metaver.de) als Metadatenkatalog.

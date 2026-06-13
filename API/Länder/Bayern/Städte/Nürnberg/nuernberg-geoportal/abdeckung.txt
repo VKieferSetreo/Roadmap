@@ -1,0 +1,15 @@
+QUELLE:         Nürnberg — GeoPortal
+BETREIBER:      Stadt Nürnberg, Amt für Geoinformation und Bodenordnung
+EBENE:          Stadt:Nürnberg,Bayern
+DATENTYP:       städtische Geodaten (GIS); ÖPNV separat über VAG-OpenData / VGN (GTFS)
+STRASSENTYP:    innerorts
+FORMAT:         WMS / WFS
+ENDPUNKT:       -
+DOKU:           https://www.nuernberg.de/internet/geoinformation_bodenordnung/geoportal.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (teils auf Anfrage)
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          GeoPortal bestätigt, dedizierter offener Baustellen-WFS NICHT nachgewiesen (apiEndpunkt=null). Bayern-Muster: Stadt-Geoportal schmal/offen-arm; viel über Landesdienste (BayernAtlas, BAYSIS, SDDI-Katalog Bayern — siehe API/Länder/Bayern). SDDI-Katalog listet u.a. 'GeoPortal Servicekarte Baustellen München'.

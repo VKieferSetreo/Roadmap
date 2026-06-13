@@ -1,0 +1,15 @@
+QUELLE:         DATEX II — europäischer Austauschstandard (Verkehrs-/Mobilitätsdaten) + German Roadworks Profile
+BETREIBER:      DATEX II Community / EU (CEN); in DE Pflicht-Lieferformat im NAP (Mobilithek)
+DATENTYP:       Format/Profile (KEIN Datenanbieter). GST-relevante Profile: SituationPublication (Roadworks/Baustellen, Closures), NetworkRestriction (dauerhafte Höhe/Gewicht/Breite), TrafficView/MeasuredData (Verkehrslage)
+EBENE:          Bundesweit (Standard; DE-Profile auf Mobilithek)
+STRASSENTYP:    Alle (modellseitig; Abdeckung hängt am Lieferanten)
+FORMAT:         DATEX II XML (v2 + v3), Profile-basiert
+ENDPUNKT:       -   (Standard, kein eigener Daten-Endpunkt — Bezug via Mobilithek/Länder-Feeds)
+DOKU:           https://docs.datex2.eu/  (Profile: https://datex2.eu/profiles-directory/ | German Roadworks Profile v04-00-00: https://repo.datex2.eu/implementations/profile_directory/german-roadworks-profile)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         offen (Spezifikation/Schemas)
+UPDATE:         n/a (Format)
+STATUS:         verifiziert
+NOTIZ:          Doku-Portale live erreichbar (docs.datex2.eu + profiles-directory HTTP 200). Roadmap MUSS DATEX II v2 UND v3 parsen können — es ist das Eingangsformat fast aller Länder-Baustellenfeeds. NetworkRestriction (dauerhafte Höhen-/Gewichtslimits) ist fachlich am spannendsten, aber in DE deutlich seltener befüllt als Roadworks. Parser am German Roadworks Profile orientieren. repo.datex2.eu war zum Test-Zeitpunkt per DNS nicht auflösbar (Link bleibt als Referenz).

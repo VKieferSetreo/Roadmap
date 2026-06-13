@@ -1,0 +1,15 @@
+QUELLE:         VMZ Bremen (Verkehrsmanagementzentrale)
+BETREIBER:      Freie Hansestadt Bremen
+EBENE:          Land:Bremen
+DATENTYP:       Verkehrslage, Baustellen (Übersicht + Steckbriefe), Umleitungen, Parken, Radzähler, Schwerverkehrs-Routing-Hinweise, Pressemeldungen je Baustelle
+STRASSENTYP:    Alle (HB + Bremerhaven; zusätzlich NI-Layer + BAB)
+FORMAT:         Web-Portal; RSS-Pfad referenziert (liefert jedoch HTML/TYPO3-Seite); DATEX/GeoJSON/API nicht öffentlich dokumentiert
+ENDPUNKT:       https://www.vmz.bremen.de/   (Baustellenübersicht: /baustellen/baustellenuebersicht/)
+DOKU:           https://www.vmz.bremen.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY-NC-ND (Nicht-Kommerziell, Keine Bearbeitung) — KRITISCH für kommerzielle Nutzung → bei VMZ HB klären
+UPDATE:         kontinuierlich
+STATUS:         zu-bestätigen
+NOTIZ:          Erwähnt explizit "heavy vehicle routing information" — direkt GST-relevant. Angeblicher RSS-Pfad /verkehrslage/aktuell/feed.rss liefert beim Test text/html (TYPO3-Portalseite), KEIN echter RSS-Feed → als Web-Portal behandeln. NI-Layer: /verkehrslage/niedersachsen/. Strukturierter Feed/DATEX bei VMZ HB anfragen. LIZENZ-NC beachten!

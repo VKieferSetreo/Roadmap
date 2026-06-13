@@ -1,0 +1,15 @@
+QUELLE:         Hessen Mobil — Lastbeschränkte Brücken (B/L/K) + SIB-Hessen-Online-Karte
+BETREIBER:      Hessen Mobil — Straßen- und Verkehrsmanagement
+EBENE:          Land:Hessen
+DATENTYP:       Lastbeschränkte Brücken (zul. Gesamtgewicht je Bauwerk; 2. Liste = anhörungspflichtige GST). Bauwerkssuche per 7-stelliger Bauwerksnummer
+STRASSENTYP:    B / L / K (Hessen-Mobil-Netz; BAB separat via Autobahn GmbH)
+FORMAT:         PDF-Liste (Stand 2026-02-27) + Web-Portal (SIB-Hessen Online-Karte). Kein offenes WFS/CSV/JSON
+ENDPUNKT:       https://mobil.hessen.de/sites/mobil.hessen.de/files/2026-02/lastbeschraenkte_bruecken_in_hessen_stand_2026-02-27_0.pdf
+DOKU:           https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         nicht offen lizenziert (Behörden-PDF/Kartenanwendung; Nutzung als Planungshilfe)
+UPDATE:         laufend; PDF manuell datiert (aktuell 2026-02-27); kurzfristige Änderungen jederzeit
+STATUS:         verifiziert
+NOTIZ:          GOLDSTANDARD-RESTRIKTION HESSEN. PDF-URL live getestet (HTTP 200, application/pdf, 4 Seiten, 105 KB) → als doku.pdf gespeichert. Maschinenlesbar nur via PDF-Parsing (kein API/WFS). SIB-Hessen-Online-Karte (https://sibhessen.de/online/application.jsp, HTTP 200) ist das Hessen-SIB-Bauwerke-Frontend (JS) → möglicher Backend-Service am Live-Traffic prüfen. Für strukturierten Bezug: schwertransporte@mobil.hessen.de . test.sh lädt die PDF (einziges abrufbares Artefakt) — keine beispiel-antwort.txt (binär, kein strukturierter API-Call).

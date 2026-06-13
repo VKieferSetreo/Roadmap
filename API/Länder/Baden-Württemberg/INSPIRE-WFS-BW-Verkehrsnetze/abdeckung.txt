@@ -1,0 +1,19 @@
+QUELLE:         INSPIRE-WFS/WMS BW Verkehrsnetze (ATKIS Basis-DLM)
+BETREIBER:      LGL Baden-Württemberg
+EBENE:          Land:Baden-Württemberg
+DATENTYP:       INSPIRE Road Transport Network (GML Application Schema v4.0) — Straßenverkehrsnetz
+STRASSENTYP:    Alle
+FORMAT:         WFS (GML 4.0) / WMS
+ENDPUNKT:       -   (Metadatensatz verweist auf Record-Formatter, NICHT direkt auf OGC-Endpunkt)
+DOKU:           https://metadaten.geoportal-bw.de/geonetwork/srv/api/records/53cfcf0b-8dae-9c07-e97a-2ff9ed7af6d1
+ZUGANG:         eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         RESTRIKTIV — "Einräumung von Nutzungsrechten gemäß VwVNutzHeo; Empfänger darf Daten nur zum vereinbarten Zweck verwenden" + "Other restrictions"
+UPDATE:         periodisch
+STATUS:         zu-bestätigen
+NOTIZ:          ACHTUNG: Lizenz-Constraint hier STRENGER als bei A1-A5 (offene MobiData-Feeds) —
+                vor Produktivnutzung mit LGL-BW klären. Endpunkt + genaue Zugangsbedingungen offen,
+                GetCapabilities-URL über GDI-BW-Katalogeintrag aufzulösen (KEINE URL erfunden).
+                Für reine Netz-Geometrie ist ATKIS Basis-DLM alternativ über A5 (Open GeoData)
+                weniger restriktiv erreichbar.

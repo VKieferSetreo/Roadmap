@@ -1,0 +1,15 @@
+QUELLE:         NLStBV INSPIRE WMS Straßennetz (DE-NI-SBV INSPIRE Viewservice)
+BETREIBER:      Nds. Landesbehörde für Straßenbau und Verkehr (NLStBV)
+EBENE:          Land:Niedersachsen
+DATENTYP:       Klassifiziertes Straßennetz (INSPIRE TransportNetworks): RoadLink, TransportNode
+STRASSENTYP:    A/B/L/K (Zuständigkeitsnetz NLStBV; ALKIS-/INSPIRE-konform)
+FORMAT:         WMS 1.3.0 (View); WFS analog vorhanden
+ENDPUNKT:       https://map.strassenbau.niedersachsen.de/srvms?map=INSPIRE_NLSTBV_STRASSE&service=wms&version=1.3.0&request=GetCapabilities
+DOKU:           https://www.strassenbau.niedersachsen.de/startseite/service/geofachdaten_und_wms_kartendienste/geofachdaten-und-wms-kartendienste-133771.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         INSPIRE-Nutzungsbedingungen ("no conditions apply"); i.d.R. CC BY 4.0 bei abgeleiteten Datensätzen — bei NLStBV prüfen
+UPDATE:         periodisch
+STATUS:         verifiziert
+NOTIZ:          Live GetCapabilities HTTP 200. WMS-Layer: TN.RoadTransportNetwork.RoadLink, TN.CommonTransportElements.TransportNode (+ .Default-Stile), Gruppe INSPIRE_Strassennetz. Reines Netz/Topologie — Restriktions-/Bauwerksattribute (Höhe/Traglast) NICHT enthalten, liegen in NWSIB (gated). Weitere View-Services: …?map=NLSTBV_STRASSE (nicht-INSPIRE Straßennetz), …?map=NLSTBV_SBVDST (Dienststellen).

@@ -1,0 +1,15 @@
+QUELLE:         Open-Data SH — Straßenbaustellen (WFS Baustelleninformationen + DATEX II)
+BETREIBER:      LBV.SH (Datengeber); GDI-SH (WFS); Land SH (Portal)
+EBENE:          Land:Schleswig-Holstein
+DATENTYP:       Straßenbaustellen (Linien + Punkte) + Umleitungsstrecken; zusätzlich DATEX-II-Publikation via Mobilithek
+STRASSENTYP:    A/B/L (Hauptnetz SH; Layer auch für Autobahn/NI/MV/HH/Norderstedt)
+FORMAT:         WFS 2.0.0 (GML); DATEX II (XML) über Mobilithek
+ENDPUNKT:       https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen?Service=WFS&Version=2.0.0&Request=GetCapabilities
+DOKU:           https://www.govdata.de/daten/-/details/strassenbaustellen-schleswig-holsteinf229d
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (dcat-ap.de cc-by/4.0); DATEX-Paket je Mobilithek
+UPDATE:         täglich (DAILY)
+STATUS:         verifiziert
+NOTIZ:          NEUFUND: echter offener WFS unter dienste.gdi-sh.de gefunden (NICHT nur DATEX). FeatureTypes u.a.: Baustellen_SH, Baustellen_Autobahn, Baustellen_FHH/MV/Niedersachsen, Baustellenpunkte_*, Umleitungsstrecken. LIVE GETESTET — Baustellen_SH numberMatched=1137 (count=1 liefert Feature). WFS 2.0.0 count= funktioniert hier. WICHTIG: das HTML-Portal opendata.schleswig-holstein.de ist Anubis-Bot-geschützt, ABER der CKAN-API-Pfad /api/3/action/package_search liefert JSON (kein Block) und enthält die WFS/WMS-Resource-Links. WMS: https://dienste.gdi-sh.de/WMS_SH_Baustelleninformationen . Umleitungsstrecken siehe auch OpenData-SH-Umleitungsstrecken-WFS (selber Dienst).

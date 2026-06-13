@@ -1,0 +1,15 @@
+QUELLE: Landesbetrieb Straßenwesen Brandenburg (LS) — Baustelleninformationssystem
+BETREIBER: Landesbetrieb Straßenwesen Brandenburg (LS), Hoppegarten
+EBENE: Land (Brandenburg)
+DATENTYP: Baustellen mit Sperrung >24h auf A/B/L + Kreisstraßen (Metropolregion BE-BB)
+STRASSENTYP: A/B/L/K
+FORMAT: interaktive Web-Karte (kein öffentlich dokumentierter WFS/GeoJSON/DATEX-Export)
+ENDPUNKT: null
+DOKU: https://www.ls.brandenburg.de/ls/de/bauen/baustelleninformationssystem/
+ZUGANG: zu-bestätigen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: unklar (Karte)
+UPDATE: laufend (Karte)
+STATUS: zu-bestätigen
+NOTIZ: Kein API auf der Seite dokumentiert. Feed-Anfrage an LS-Baustellen-Infosystem@LS.Brandenburg.de, Tel. 03342 249 2997. BB-Baustellen kommen ansonsten über Mobilithek/DATEX-II (RSA-21-Meldepflicht). Straßennetzviewer: https://www.ls.brandenburg.de/ls/de/service/strassennetzviewer/

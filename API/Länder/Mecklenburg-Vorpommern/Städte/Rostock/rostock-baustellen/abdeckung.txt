@@ -1,0 +1,15 @@
+QUELLE:         Rostock — Baustellen (OpenData.HRO)
+BETREIBER:      Hanse- und Universitätsstadt Rostock (geo.sv.rostock.de)
+EBENE:          Stadt:Rostock,Mecklenburg-Vorpommern
+DATENTYP:       Baustellen Stadtgebiet Rostock
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON / WFS / WMS / GML / KML / GeoRSS / CSV / XLSX / SHP
+ENDPUNKT:       https://geo.sv.rostock.de/download/opendata/baustellen/baustellen.json  (siehe package_show für vollständige Resource-Liste; WFS/WMS analog)
+DOKU:           https://www.opendata-hro.de/api/3/action/package_show?id=baustellen  (Portal: https://www.opendata-hro.de/dataset/baustellen)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC-Zero (CC0) — voll frei
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          CKAN package_show live geprüft (isopen=true, license_id=cc-zero). Voller Formatsatz wie alle HRO-Datensätze. Exakte GeoJSON-Resource-URL aus doku.json (package_show) ziehen — test.sh holt erst package_show, um die Resource zu zeigen.

@@ -1,0 +1,15 @@
+QUELLE: Mobilithek (BMDV) — Berlin-Publikation (DATEX II) Baustellen
+BETREIBER: Mobilithek (Bundesministerium für Digitales und Verkehr) — Daten von VIZ Berlin
+EBENE: Land (Berlin) via Bundesplattform
+DATENTYP: Baustellen, Verkehrsmeldungen (DATEX II)
+STRASSENTYP: Alle (Berliner Stadtgebiet)
+FORMAT: DATEX II (SOAP/Pull)
+ENDPUNKT: null (SOAP/Pull, institutionelle Registrierung + X.509-Zertifikat erforderlich)
+DOKU: https://mobilithek.info
+ZUGANG: registrierung
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: JA
+LIZENZ: je Publikation prüfen
+UPDATE: laufend
+STATUS: zu-bestätigen
+NOTIZ: Institutionelle Registrierung + X.509-Zertifikat nötig. Berlin liefert primär über die offenen GeoJSON/WFS-Feeds (siehe VIZ-Berlin-GeoJSON-Feeds / VIZ-Berlin-Baustellen-WFS) — Mobilithek meist redundant für Berlin. Konkrete Berlin-Publikation zu-bestätigen.

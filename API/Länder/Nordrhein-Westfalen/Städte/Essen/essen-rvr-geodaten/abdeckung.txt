@@ -1,0 +1,15 @@
+QUELLE:         Essen — Geodaten / Baustellen (über RVR-Verbund)
+BETREIBER:      Stadt Essen / Regionalverband Ruhr (RVR sitzt in Essen)
+EBENE:          Stadt:Essen,Nordrhein-Westfalen
+DATENTYP:       Baustellen/Verkehr über RVR-Geonetzwerk-Verbund (Essen = eine der 11 RVR-Städte)
+STRASSENTYP:    innerorts
+FORMAT:         WFS / WMS (über RVR-Muster)
+ENDPUNKT:       -  (eigener offener Baustellen-Endpunkt analog Herne-Muster wahrscheinlich, geodaten.essen.de-GeoServer; beim Test nicht aufgelöst → zu-bestätigen)
+DOKU:           https://www.rvr.ruhr/daten-digitales/geodaten/geonetzwerk/  (open.nrw-Suche "Essen")
+ZUGANG:         offen/zu-bestätigen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Datensatz (RVR-Verbund; teils restriktiv wie Herne)
+UPDATE:         je Dienst
+STATUS:         zu-bestätigen
+NOTIZ:          Kein eigener Live-Endpunkt verifiziert. geodaten.essen.de/geoserver/verkehr/baustellen löste beim Test NICHT auf (HTTP 000). PRAGMATISCH: Essen über RVR (../../../../../Sonstige/rvr-geonetzwerk-ruhr-baustellen) abdecken statt Einzelstadt. Pfad-Heuristik geodaten.<stadt>.de/geoserver/verkehr/baustellen weiter durchprobieren (Herne = verifiziertes Vorbild).

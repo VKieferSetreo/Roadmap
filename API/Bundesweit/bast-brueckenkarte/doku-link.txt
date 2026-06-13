@@ -1,0 +1,13 @@
+Interaktive Brückenkarte / Brückenstatistik Bundesfernstraßen (BASt / BMV).
+Web-Karten-Anwendung mit Export/Download-Funktion ("alle Bauwerksdaten herunterladen"),
+CC-BY 4.0, halbjährlich aktualisiert. KEIN bestätigter offener REST/WFS-Endpunkt — die
+Karte liegt hinter via.bund.de (direkter Deep-Link löst aktuell auf eine Fehlerseite auf,
+daher nicht als ENDPUNKT eingetragen). Zugang über die BMV-/BASt-Portalseiten:
+
+Karte (BMV-Artikel):       https://www.bmv.de/SharedDocs/DE/Artikel/StB/brueckenkarte.html?nn=12830
+Brückenstatistik (BASt):   https://www.bast.de/DE/Ingenieurbau/Fachthemen/brueckenstatistik/brueckenstatistik.html
+GDI-DE-Metadaten:          https://gdk.gdi-de.org/geonetwork/srv/api/records/699335644490391552
+
+Vorgehen: Karte öffnen -> Export/Download ziehen -> Felder prüfen (ob Traglast UND lichte
+Höhe enthalten sind ist UNBESTÄTIGT; wahrscheinlich nur Zustandsnote/Lage/Baustoff, da die
+echten Statik-Werte in SIB-Bauwerke liegen — siehe bast-bauwerksdaten/).

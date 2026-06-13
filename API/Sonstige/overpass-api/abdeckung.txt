@@ -1,0 +1,15 @@
+QUELLE:         Overpass API (OpenStreetMap Query-Engine)
+BETREIBER:      FOSSGIS e.V. (Hauptinstanz overpass-api.de) + diverse Mirrors
+EBENE:          Sonstige
+DATENTYP:       Restriktionen aus OSM-Tags: maxheight / maxwidth / maxweight / maxaxleload, hgv, bridge, tunnel, ford, railway=level_crossing, junction=roundabout, traffic_calming, hazmat
+STRASSENTYP:    Alle (A/B/L/K + Wege, soweit in OSM getaggt)
+FORMAT:         Overpass-QL (POST/GET) -> Output JSON / GeoJSON / CSV / XML
+ENDPUNKT:       https://overpass-api.de/api/interpreter
+DOKU:           https://dev.overpass-api.de/overpass-doc/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         ODbL 1.0 (OSM-Daten; Attribution "© OpenStreetMap contributors" Pflicht)
+UPDATE:         minütlich (Hauptinstanz repliziert von planet diffs; timestamp_osm_base im Output)
+STATUS:         verifiziert
+NOTIZ:          P1-Hauptzugriffsweg fuer gezielte/inkrementelle Abfragen. NICHT fuer DE-weiten Bulk (Timeout/Last) -> dafuer Geofabrik. User-Agent-Header gefordert. Faustregel <10.000 Queries/Tag UND <1 GB/Tag = unkritisch, sonst eigene Instanz. /api/status braucht passenden Accept-Header (sonst HTTP 406); Interpreter funktioniert einwandfrei. Mirrors: overpass.private.coffee, overpass.kumi.systems. Brueckenhoehe wird am DARUNTER fuehrenden Way getaggt (Korrelation noetig). LIVE GETESTET 2026-06-13: 5 maxheight-Ways in Berlin-Mitte-Bbox, osm_base 2026-06-13T14:39Z.

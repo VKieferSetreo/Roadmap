@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><wfs:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:detailnetz="detailnetz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" next="https://gdi.berlin.de/services/wfs/detailnetz?REQUEST=GetFeature&amp;VERSION=2.0.0&amp;TYPENAMES=detailnetz%3Ab_bauwerke&amp;COUNT=1&amp;SERVICE=WFS&amp;STARTINDEX=1" numberMatched="1005" numberReturned="1" timeStamp="2026-06-13T16:41:49.674+02:00" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd detailnetz https://gdi.berlin.de/services/wfs/detailnetz?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=detailnetz%3Ab_bauwerke http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+  <wfs:boundedBy>
+    <gml:Envelope srsName="urn:ogc:def:crs:EPSG::25833">
+      <gml:lowerCorner>384843.76262162 5818492.78821786</gml:lowerCorner>
+      <gml:upperCorner>384869.86718221 5818560.78094266</gml:upperCorner>
+    </gml:Envelope>
+  </wfs:boundedBy>
+  <wfs:member>
+    <detailnetz:b_bauwerke gml:id="b_bauwerke.18505">
+      <gml:boundedBy>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::25833">
+          <gml:lowerCorner>384843.76262162 5818492.78821786</gml:lowerCorner>
+          <gml:upperCorner>384869.86718221 5818560.78094266</gml:upperCorner>
+        </gml:Envelope>
+      </gml:boundedBy>
+      <detailnetz:dnbr__sdatenid>18505</detailnetz:dnbr__sdatenid>
+      <detailnetz:bauwerksart>TU</detailnetz:bauwerksart>
+      <detailnetz:bauwerksname>Tunnel Kaiser-Fr.-/Lewishamstr.</detailnetz:bauwerksname>
+      <detailnetz:okstra_id>5CB53CA3E2F541E58B764FF5FEC6FA32</detailnetz:okstra_id>
+      <detailnetz:bauwerksnummer>05615-0010</detailnetz:bauwerksnummer>
+      <detailnetz:sib_bauwerksnummer>-</detailnetz:sib_bauwerksnummer>
+      <detailnetz:geom>
+        <gml:MultiCurve srsName="urn:ogc:def:crs:EPSG::25833" gml:id="b_bauwerke.18505.geom">
+          <gml:curveMember>
+            <gml:LineString gml:id="b_bauwerke.18505.geom.1">
+              <gml:posList>384843.76262162 5818560.78094266 384869.86718221 5818492.78821786</gml:posList>
+            </gml:LineString>
+          </gml:curveMember>
+        </gml:MultiCurve>
+      </detailnetz:geom>
+    </detailnetz:b_bauwerke>
+  </wfs:member>
+</wfs:FeatureCollection>
+

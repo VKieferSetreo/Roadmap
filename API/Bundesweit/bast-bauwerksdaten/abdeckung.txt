@@ -1,0 +1,15 @@
+QUELLE:         SIB-Bauwerke / ASB-ING — Bauwerks-Fachsystem (Brücken-Traglast, lichte Höhe)
+BETREIBER:      Straßenbauverwaltungen Bund + Länder; Software via WPM-Ingenieure; Regelwerk BASt
+DATENTYP:       DIE Kern-Bauwerksrestriktionen — Brücken (Traglast/Tragfähigkeit, lichte Höhe/Durchfahrtshöhe, Stützweiten), Tunnel, Stützwände, Verkehrszeichenbrücken; Zustand + Tragfähigkeit pro Bauwerk. Schema ASB-ING (2013), DIN 1076
+EBENE:          Bundesweit
+STRASSENTYP:    A + B sowie L/K wo Länder einpflegen -> potenziell Alle
+FORMAT:         Fachdatenformat ASB-ING / OKSTRA; Austausch via TT-SIB / NW-SIB (Länder-Datenbanken). KEIN offener REST/WFS
+ENDPUNKT:       -   (keine öffentliche API — internes Behördensystem)
+DOKU:           https://www.bast.de/DE/Themen/Digitales/HF_1/Massnahmen/bauwerksdaten.html  (SIB-Bauwerke: https://sib-bauwerke.de/ | LISt Sachsen: https://www.list.sachsen.de/sib-bauwerke-zentrale-bauwerksdatenbank.html)
+ZUGANG:         eingeschränkt
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         nicht öffentlich lizenziert; Daten der Straßenbauverwaltungen (kommerzielle Software-Lizenz via WPM-Ingenieure)
+UPDATE:         laufend durch Bauwerksprüfungen (DIN 1076)
+STATUS:         zu-bestätigen
+NOTIZ:          DER Goldstandard für Brücken-Traglast + lichte Höhe — aber NICHT offen, kein Self-Service-Account (daher ACCOUNT_NOETIG NEIN: Zugang nur per Vertrag/Kooperation, nicht per Konto). Realistischer Zugang: (a) über VEMAGS INS-GST (../vemags-xvemags/), (b) Datenlieferungsvereinbarung mit Landesbetrieben/Autobahn GmbH, (c) als Straßenbaulastträger. Öffentlich sichtbare Ableitungen = Landes-GST-Negativkarten (z.B. NRW: ../govdata-brueckenkarte-nrw/) und BASt-Brückenkarte (../bast-brueckenkarte/).

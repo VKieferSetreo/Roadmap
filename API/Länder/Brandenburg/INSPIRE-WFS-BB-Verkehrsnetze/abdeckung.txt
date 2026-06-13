@@ -1,0 +1,15 @@
+QUELLE: INSPIRE-WFS Verkehrsnetze ATKIS Basis-DLM Brandenburg (tn_bdlm_wfs)
+BETREIBER: Landesvermessung und Geobasisinformation Brandenburg (LGB)
+EBENE: Land (Brandenburg)
+DATENTYP: Verkehrsnetz-Topologie (Straße/Schiene/Wasser/Luft), INSPIRE-TN-Schema — KEINE GST-Restriktionen
+STRASSENTYP: Alle (Netzgeometrie)
+FORMAT: WFS 2.0.0, GML 3.2.1; CRS u.a. EPSG:25832/25833/3857/4326
+ENDPUNKT: https://inspire.brandenburg.de/services/tn_bdlm_wfs?service=WFS&request=GetCapabilities&version=2.0.0
+DOKU: https://geobroker.geobasis-bb.de/
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: dl-de/by-2.0 — Attribution "© GeoBasis-DE/LGB, dl-de/by-2-0"
+UPDATE: INSPIRE-Zyklus (LS-Daten alle 3 Monate aktualisiert)
+STATUS: verifiziert
+NOTIZ: Netzgeometrie, KEINE GST-Restriktionen. Für Bauwerke/Brücken → ATKIS-Bauwerke-WFS der LGB (Geobroker, bw_bdlm_wfs o.ä. — zu-bestätigen). Geobroker-Produkt e48146bb-284b-4ac3-a946-9c96ffe8a341. GetCapabilities live HTTP 200.

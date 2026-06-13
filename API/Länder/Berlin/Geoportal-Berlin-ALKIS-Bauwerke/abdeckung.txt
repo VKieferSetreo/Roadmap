@@ -1,0 +1,15 @@
+QUELLE: Geoportal Berlin (Nachfolger FIS-Broker) — diverse OGC-Dienste (ALKIS-Bauwerke etc.)
+BETREIBER: SenSBW (Geodaten Berlin)
+EBENE: Land (Berlin)
+DATENTYP: ALKIS-Bauwerke (Gebäude/Brücken-Geometrie), Adressen, Basiskarten
+STRASSENTYP: Alle (Berliner Stadtgebiet)
+FORMAT: WFS 1.0/1.1/2.0, WMS
+ENDPUNKT: null (Dienst-URLs migrieren von fbinter.stadt-berlin.de → gdi.berlin.de; je Datensatz in Geodatensuche auflösen)
+DOKU: https://gdi.berlin.de/geonetwork/srv/ger/catalog.search#/home
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: DL-DE meist /Zero oder /BY-2.0
+UPDATE: laufend (Migration läuft)
+STATUS: zu-bestätigen
+NOTIZ: FIS-Broker abgeschaltet 01.12.2025 → Geoportal Berlin (https://gdi.berlin.de/viewer/main/) + Geodatensuche Berlin. Konkrete Dienst-URL je Datensatz über Geodatensuche auflösen, da Migration läuft. Kein einzelner fester API-Endpunkt → Portal-Eintrag.

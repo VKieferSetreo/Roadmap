@@ -1,0 +1,32 @@
+== BAB-Ast Hamburg (WFS 1.1.0, maxFeatures=1, GML) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd https://registry.gdi-de.org/id/de.hh.up https://geodienste.hamburg.de/HH_WFS_Strassen_und_Wegenetz?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=de.hh.up:bab_ast&amp;NAMESPACE=xmlns(de.hh.up=https%3A%2F%2Fregistry.gdi-de.org%2Fid%2Fde.hh.up)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2026-06-13T14:51:24Z" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <de.hh.up:bab_ast xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" gml:id="DE.HH.UP_BAB_AST_209949">
+      <de.hh.up:von_netzknoten>242600001E</de.hh.up:von_netzknoten>
+      <de.hh.up:nach_netzknoten>242600001F</de.hh.up:nach_netzknoten>
+      <de.hh.up:von_station>0</de.hh.up:von_station>
+      <de.hh.up:bis_station>1499</de.hh.up:bis_station>
+      <de.hh.up:klasse>A</de.hh.up:klasse>
+      <de.hh.up:wegenummer>1 (8778)</de.hh.up:wegenummer>
+      <de.hh.up:strassenname>BAB A1</de.hh.up:strassenname>
+      <de.hh.up:landesschluessel>2</de.hh.up:landesschluessel>
+      <de.hh.up:kreisschluessel>1</de.hh.up:kreisschluessel>
+      <de.hh.up:gemeindeschluessel>136</de.hh.up:gemeindeschluessel>
+      <de.hh.up:abschnittslaenge>1499</de.hh.up:abschnittslaenge>
+      <de.hh.up:ast>0</de.hh.up:ast>
+      <de.hh.up:fahrstreifenanzahl_in_stationierungsrichtung>2</de.hh.up:fahrstreifenanzahl_in_stationierungsrichtung>
+      <de.hh.up:fahrstreifenanzahl_in_beide_richtungen>0</de.hh.up:fahrstreifenanzahl_in_beide_richtungen>
+      <de.hh.up:fahrstreifenanzahl_gegen_stationierungsrichtung>0</de.hh.up:fahrstreifenanzahl_gegen_stationierungsrichtung>
+      <de.hh.up:bahnigkeit>1</de.hh.up:bahnigkeit>
+      <de.hh.up:geschwindigkeit>Verkehrsbeeinflussungsanlage (variable Geschwindigkeitsbeg.)</de.hh.up:geschwindigkeit>
+      <de.hh.up:wegeart>BAB - Ast</de.hh.up:wegeart>
+      <de.hh.up:geom>
+        <!--Inlined geometry 'DE.HH.UP_BAB_AST_209949_DE.HH.UP_GEOM'-->
+        <gml:LineString gml:id="DE.HH.UP_BAB_AST_209949_DE.HH.UP_GEOM" srsName="EPSG:25832">
+          <gml:posList>568717.350 5929359.210 568707.510 5929348.770 568697.380 5929337.310 568687.650 5929325.180 568677.270 5929311.110 568667.400 5929296.040 568659.240 5929280.980 568650.350 5929264.920 568641.710 5929245.420 568635.610 5929230.070 568627.890 5929207.380 568621.960 5929183.680 568617.760 5929164.660 568615.290 5929146.630 568613.060 5929128.360 568612.570 5929104.650 568613.310 5929085.390 568615.040 5929062.180 568618.990 5929039.950 568622.700 5929020.690 568629.360 5928995.750 568636.770 5928974.510 568644.910 5928955.000 568655.040 5928934.010 568676.030 5928899.190 568691.170 5928877.550 568716.030 5928849.550 568751.510 5928813.330 568781.230 5928785.100 568802.470 5928763.370 568820.740 5928742.380 568834.080 5928726.570 568847.410 5928709.040 568859.760 5928690.020 568870.630 5928669.280 568879.520 5928648.780 568888.590 5928624.140 568893.530 5928606.990 568897.730 5928589.940 568901.310 5928566.610 568902.050 5928542.170 568901.680 5928520.060 568900.320 5928497.710 568893.950 5928457.330 568887.580 5928425.830 568879.200 5928391.470 568869.940 5928356.830 568861.830 5928331.330 568851.420 5928300.690 568836.080 5928261.180 568812.360 5928209.920 568797.600 5928177.560 568778.220 5928137.620 568766.930 5928113.700 568736.370 5928050.730 568718.320 5928013.200</gml:posList>
+        </gml:LineString>
+      </de.hh.up:geom>
+    </de.hh.up:bab_ast>
+  </gml:featureMember>
+</wfs:FeatureCollection>

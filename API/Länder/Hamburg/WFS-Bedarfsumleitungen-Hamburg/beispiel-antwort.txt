@@ -1,0 +1,34 @@
+== Bedarfsumleitungen Hamburg (WFS 1.1.0, maxFeatures=1, GML) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.deegree.org/app https://geodienste.hamburg.de/HH_WFS_Bedarfsumleitungen?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=app:bedarfsumleitungen&amp;NAMESPACE=xmlns(app=http%3A%2F%2Fwww.deegree.org%2Fapp)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2026-06-13T14:49:31Z" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <app:bedarfsumleitungen xmlns:app="http://www.deegree.org/app" gml:id="APP_BEDARFSUMLEITUNGEN_842336">
+      <app:von_netzknoten>252500103M</app:von_netzknoten>
+      <app:nach_netzknoten>252500103N</app:nach_netzknoten>
+      <app:von_station>0</app:von_station>
+      <app:bis_station>180</app:bis_station>
+      <app:klasse>A</app:klasse>
+      <app:strassenschluessel>B756</app:strassenschluessel>
+      <app:wegenummer>7 (8777)</app:wegenummer>
+      <app:strassenname>BAB A7</app:strassenname>
+      <app:landesschluessel>2</app:landesschluessel>
+      <app:kreisschluessel>7</app:kreisschluessel>
+      <app:gemeindeschluessel>711</app:gemeindeschluessel>
+      <app:abschnittslaenge>972</app:abschnittslaenge>
+      <app:ast>0</app:ast>
+      <app:fahrstreifenanzahl_in_stationierungsrichtung>1</app:fahrstreifenanzahl_in_stationierungsrichtung>
+      <app:fahrstreifenanzahl_in_beide_richtungen>0</app:fahrstreifenanzahl_in_beide_richtungen>
+      <app:fahrstreifenanzahl_gegen_stationierungsrichtung>0</app:fahrstreifenanzahl_gegen_stationierungsrichtung>
+      <app:bahnigkeit>1</app:bahnigkeit>
+      <app:wegeart>BAB - Ast</app:wegeart>
+      <app:richtung>in Stationierungsrichtung</app:richtung>
+      <app:umleitung>U 25</app:umleitung>
+      <app:geom>
+        <!--Inlined geometry 'APP_BEDARFSUMLEITUNGEN_842336_APP_GEOM'-->
+        <gml:LineString gml:id="APP_BEDARFSUMLEITUNGEN_842336_APP_GEOM" srsName="EPSG:25832">
+          <gml:posList>561549.950 5924894.430 561550.060 5924854.550 561548.110 5924828.460 561545.650 5924807.680 561541.740 5924786.970 561536.620 5924767.560 561530.410 5924753.190 561522.970 5924742.120 561515.260 5924732.530 561507.504 5924726.103</gml:posList>
+        </gml:LineString>
+      </app:geom>
+    </app:bedarfsumleitungen>
+  </gml:featureMember>
+</wfs:FeatureCollection>

@@ -1,0 +1,23 @@
+QUELLE:         BAYSIS Bauwerke — WFS / WMS (Brücken + Tunnel + Trogbauwerke) ⭐
+BETREIBER:      Bayerische Straßenbauverwaltung (StMB); Dienste über gisportal-stmb.bayern.de
+EBENE:          Land:Bayern
+DATENTYP:       Brücken + Tunnel- + Trogbauwerke (≥2,00 m lichte Weite) — Kern-Hindernisdaten für GST
+STRASSENTYP:    B / St (+ ggf. weitere) — Netz der bayerischen Straßenbauverwaltung
+FORMAT:         WFS (GML / GeoJSON / Shapefile / KML / CSV / GeoPackage) / WMS
+ENDPUNKT:       https://gisportal-stmb.bayern.de/server/services/WFS/BAYSIS_Bauwerke/MapServer/WFSServer
+DOKU:           https://www.baysis.bayern.de/internet/geodaten_dienste/wfs/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 — "Datenquelle: Bayerische Straßenbauverwaltung - BAYSIS (https://www.baysis.bayern.de)"
+UPDATE:         laufend gepflegt (kein tagesaktueller Stempel auf Bauwerke-Layer bestätigt)
+STATUS:         verifiziert
+NOTIZ:          FeatureType: BAYSIS_Bauwerke:bauwerke. CRS EPSG:25832 default (+4326/3857/4258/31467/25833),
+                Output u.a. GeoJSON, Paging aktiv (count=N nutzen).
+                *** TOP-TREFFER: GetFeature-GeoJSON liefert STRUKTURIERTE GST-Felder (live geprüft
+                2026-06-13): "Höhenbeschränkung", "Gewichtsbeschränkung", "Brückenklasse",
+                "Grundsätzliche_Schwertransportsperre", "Art" (Brücke/Tunnel/Trog),
+                "Straßenbezeichnung", "Bauwerksnummer", "Station", "VNK"/"NNK" (ASB-Anknüpfung),
+                "Bauamt"/"Bauamt__Kontakt_". *** = echte strukturierte Brücken-Restriktionsquelle.
+                Attribut-Schema per DescribeFeatureType:
+                .../BAYSIS_Bauwerke/MapServer/WFSServer?request=DescribeFeatureType&service=WFS&version=2.0.0

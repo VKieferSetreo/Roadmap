@@ -1,0 +1,5 @@
+Nürnberg — GeoPortal
+GeoPortal: https://www.nuernberg.de/internet/geoinformation_bodenordnung/geoportal.html
+VAG-OpenData: https://opendata.vag.de/
+VGN: https://www.vgn.de/web-entwickler/open-data/
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

@@ -1,0 +1,15 @@
+QUELLE:         Aachen — Baustellen Stadtgebiet Aachen
+BETREIBER:      Stadt Aachen (Open Data Portal Aachen, CKAN, über open.nrw)
+EBENE:          Stadt:Aachen,Nordrhein-Westfalen
+DATENTYP:       amtlich erfasste Straßenbaustellen (Ort, Art/Grund, Start/Ende, Bemerkungen) + weitere Verkehrsstörungen
+STRASSENTYP:    innerorts
+FORMAT:         WFS / WMS / CSV (Punkt / Linie / Fläche)
+ENDPUNKT:       -  (über CKAN-Resources; exakte WFS-URL zu-bestätigen — CKAN-API beim Test transient 502)
+DOKU:           https://offenedaten.aachen.de/api/3/action/package_show?id=baustellen-stadtgebiet-aachen  (Portal: https://offenedaten.aachen.de/dataset/baustellen-stadtgebiet-aachen; Geoportal: https://geoportal.aachen.de/extern)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Open Data Aachen (über open.nrw, i.d.R. dl-de-by) — bestätigen
+UPDATE:         täglich
+STATUS:         zu-bestätigen
+NOTIZ:          Doku verifiziert, ABER CKAN-API beim Test wiederholt HTTP 502 Bad Gateway → exakte WFS/WMS/CSV-Resource-URL nicht extrahierbar. Standard-CKAN (/api/3/action/...) — sobald Portal wieder erreichbar, Resource-URLs maschinell ziehbar. test.sh ruft package_show (gibt aktuell 502 zurück; bei Erreichbarkeit liefert es die Resourcen). Kontakt: opendata@mail.aachen.de. Mobilitätsdashboard: open.nrw/open-data/showroom/mobilitaetsdashboard-der-stadt-aachen

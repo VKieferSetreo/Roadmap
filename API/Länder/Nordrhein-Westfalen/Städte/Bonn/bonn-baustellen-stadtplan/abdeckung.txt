@@ -1,0 +1,15 @@
+QUELLE:         Bonn — Baustellen tagesaktuell + geplant
+BETREIBER:      Stadt Bonn, Tiefbauamt (stadtplan.bonn.de); Portal: OpenGeoData:Bonn
+EBENE:          Stadt:Bonn,Nordrhein-Westfalen
+DATENTYP:       (a) tagesaktuelle Baustellen mit signifikantem Verkehrseinfluss; (b) geplante Straßenbaustellen 30 Tage / 1 Jahr
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON
+ENDPUNKT:       https://stadtplan.bonn.de/geojson?Thema=14403  (tagesaktuell; geplant über eigenen Thema=-Parameter)
+DOKU:           https://opengeodata-bonn.de/baustellen-tagesaktuell-mit-ortsangabe-bonn/  (geplant: https://opengeodata-bonn.de/geplante-straßenbaustellen-30-tage-und-1-jahr-mit-ortsangabe-bonn/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC0 (Public Domain)
+UPDATE:         täglich (tagesaktuell); geplant laufend gepflegt
+STATUS:         verifiziert
+NOTIZ:          Live getestet (FeatureCollection, Point, WGS84). Felder: baustelle_id, bezeichnung, stadtbezirk(_bez), adresse, von, bis, traeger, massnahme (z.B. Brückensanierung), sperrung (Vollsperrung/Teilsperrung). Einfaches ?Thema=<id>-GeoJSON-Muster über stadtplan.bonn.de — weitere Themen (Netztopologie, Baumstandorte) über dieselbe API. Netztopologie ggf. nützlich fürs Routing.

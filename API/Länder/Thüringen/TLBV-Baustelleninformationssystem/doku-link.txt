@@ -1,0 +1,4 @@
+Portal-Quelle ohne offenen Feed (Web-App mit Link11/CAPTCHA-Schutz, kein maschineller Zugriff):
+Baustelleninfo TH: https://baustelleninfo.thueringen.de/
+Bau & Verkehr TH: https://bau-verkehr.thueringen.de/verkehr/strassenverkehr/baustellen
+Alternative für TH-Baustellen: Mobilithek/DATEX-II (RSA-21-Meldepflicht)

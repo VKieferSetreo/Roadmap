@@ -1,0 +1,15 @@
+QUELLE:         München — Baustellen (Temporäre Einschränkungen, Opendata)
+BETREIBER:      Landeshauptstadt München, Baureferat / Mobilitätsreferat (GeoPortal München). Quellen: SWM, MVG, Münchner Stadtentwässerung, private Bauträger
+EBENE:          Stadt:München,Bayern
+DATENTYP:       Baustellen + Haltverbote (aktuell + geplant, nächste 4 Wochen) mit Verkehrseinschränkung
+STRASSENTYP:    innerorts (Schwerpunkt Innenstadt + Hauptverkehrsachsen)
+FORMAT:         WFS (GeoJSON / GML / CSV / SHP), WMS
+ENDPUNKT:       https://geoportal.muenchen.de/geoserver/mor_wfs/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=mor_wfs:baustellen_opendata&outputFormat=application/json  (Layer alt: mor_wfs:baustellen_4_weeks_opendata)
+DOKU:           https://geoportal.muenchen.de/geoserver/mor_wfs/ows?service=WFS&version=1.1.0&request=GetCapabilities  (Portal: https://geoportal.muenchen.de/portal/opendata/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Datenlizenz Deutschland Namensnennung 2.0 (dl-by-de/2.0) — Namensnennung "Landeshauptstadt München"
+UPDATE:         täglich
+STATUS:         verifiziert
+NOTIZ:          Live getestet (5.880 Features, MultiPolygon, EPSG:25832). Felder: strasse_hausnr, betroffene_bereiche, beschreibung, beeintraechtigung, art, weitere_info, beginn_datum_kombiniert, ende_datum_kombiniert, fachliche_id. KEINE Zahlfelder für Höhe/Breite/Gewicht — Restriktionen stecken im Freitext (beschreibung/beeintraechtigung), NLP/Parsing nötig. Kontakt: baustellen.mor@muenchen.de

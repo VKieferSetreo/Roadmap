@@ -1,0 +1,15 @@
+QUELLE: Klassifiziertes Straßennetz Thüringen (STRNETZ_wfs)
+BETREIBER: TLBV (Daten); GDI-Th / Thür. Ministerium für Digitales und Infrastruktur (Dienst)
+EBENE: Land (Thüringen)
+DATENTYP: klassifiziertes Straßennetz nach ASB (A/B/L), Netzknoten, Nullpunkte, Euronetz — KEINE GST-Restriktionen
+STRASSENTYP: A/B/L (ASB-Netz)
+FORMAT: WFS 2.0
+ENDPUNKT: https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?service=WFS&request=GetCapabilities
+DOKU: https://geomis.geoportal-th.de/geonetwork/srv/api/records/468059de-07f6-4510-8920-aedb9feb319e
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: dl-de/by-2.0 — Quelle "© GDI-Th"
+UPDATE: n/a (lt. Metadaten unspezifiziert)
+STATUS: verifiziert
+NOTIZ: ASB-Netz als Anker für Stationierung/Matching (analog BASt-BISStra). Layer tlbv:Klassifiz_StrNetz, tlbv:Euronetz_StrNetz, tlbv:Netzknoten_StrNetz, tlbv:Nullpunkte_StrNetz. GetCapabilities live HTTP 200, Layer bestätigt.

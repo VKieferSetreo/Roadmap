@@ -1,0 +1,15 @@
+QUELLE:         DWD — Wetterwarnungen (DWD GeoServer WFS / Open Data)
+BETREIBER:      Deutscher Wetterdienst (DWD)
+DATENTYP:       Wetterwarnungen (Sturm, Glätte, Starkregen) — für GST dynamische, wetterbedingte Fahr-Restriktionen (Windlast bei großvolumiger Ladung, Brückensperrung bei Sturm)
+EBENE:          Bundesweit
+STRASSENTYP:    Alle (flächig/Warngebiete)
+FORMAT:         WFS (GeoJSON/GML), zusätzlich WMS; Open-Data-Files auf CDC-Server
+ENDPUNKT:       https://maps.dwd.de/geoserver/dwd/ows  (Layer u.a. dwd:Warnungen_Gemeinden, dwd:Warnungen_Landkreise, dwd:Warngebiete_*); CDC Open Data: https://opendata.dwd.de/
+DOKU:           https://maps.dwd.de/geoserver/dwd/ows?service=WFS&request=GetCapabilities  (Open-Data-Info: https://www.dwd.de/DE/leistungen/opendata/faqs_opendata.html | bund.dev: https://dwd.api.bund.dev/)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         DWD Open Data (GeoNutzV; Namensnennung, https://www.dwd.de/copyright)
+UPDATE:         laufend (Warnungen near-realtime)
+STATUS:         verifiziert
+NOTIZ:          Live getestet (Warnungen_Gemeinden via WFS GeoJSON). WICHTIG: die früher gelisteten warnwetter.de-App-Endpunkte (v30/warnings_nowcast.json) und der bund.dev-Proxy (dwd.api.proxy.bund.dev) sind NICHT mehr offen erreichbar ("No static resource" / Host löst nicht auf). Stabiler offener Weg = DWD-GeoServer-WFS. P3 (nur wenn wetterbedingte Sperrkriterien modelliert werden).

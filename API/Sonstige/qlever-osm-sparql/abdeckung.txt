@@ -1,0 +1,15 @@
+QUELLE:         QLever (OSM als SPARQL / GeoSPARQL)
+BETREIBER:      Universitaet Freiburg (AD-Lehrstuhl) / qlever.dev
+EBENE:          Sonstige
+DATENTYP:       Ganz OSM analytisch abfragbar (RDF-Repraesentation via osm2rdf); GeoSPARQL (ogc:sfContains, ogc:sfIntersects). Stark fuer Cross-DE-Auswertungen, die in Overpass timeouten ("alle Bruecken mit maxheight<4 m an B-Strassen").
+STRASSENTYP:    Alle
+FORMAT:         SPARQL (POST) -> JSON (sparql-results+json) / TSV / CSV
+ENDPUNKT:       https://qlever.cs.uni-freiburg.de/api/osm-planet
+DOKU:           https://github.com/ad-freiburg/qlever
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Daten ODbL 1.0 (OSM); Software QLever Apache-2.0
+UPDATE:         OSM woechentlich repliziert
+STATUS:         verifiziert
+NOTIZ:          P3 — analytische Alternative zu Overpass fuer grosse Cross-DE-Aggregationen. Lernkurve SPARQL. Web-UI: https://qlever.dev/ (Datensatz osm-planet waehlbar). Nice-to-have, kein Muss. LIVE GETESTET 2026-06-13: SELECT * WHERE {?s ?p ?o} LIMIT 1 gegen osm-planet -> 1 Triple (osm2rdf meta), query-time 391ms, sparql-results+json.

@@ -1,0 +1,3 @@
+Portal-Quelle ohne festen API-Endpunkt:
+MetaVer (Open-Data-Katalog): https://metaver.de/
+GeoPortal.MV Themenkarte Verkehr: https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr

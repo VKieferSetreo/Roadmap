@@ -1,0 +1,15 @@
+QUELLE:         OpenGeoData Niedersachsen (LGLN ArcGIS Hub)
+BETREIBER:      Landesamt für Geoinformation und Landesvermessung Niedersachsen (LGLN)
+EBENE:          Land:Niedersachsen
+DATENTYP:       Klassifiziertes Straßennetz, DLM (Digitales Landschaftsmodell), ALKIS (Straßenschlüssel, Verwaltungsgrenzen)
+STRASSENTYP:    A/B/L/K (DLM/Straßennetz)
+FORMAT:         CSV, KML, ZIP, GeoJSON, GeoTIFF, PNG; zusätzlich WMS, WFS, ArcGIS GeoServices/FeatureServer
+ENDPUNKT:       https://ni-lgln-opengeodata.hub.arcgis.com/   (Hub-Portal; FeatureServer/WFS je Datensatz über Download-/API-Tab)
+DOKU:           https://lgln-geodaten.niedersachsen.de/opengeodata/opengeodata-220509.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         CC BY 4.0 (Quellenvermerk "© LGLN")
+UPDATE:         periodisch
+STATUS:         zu-bestätigen
+NOTIZ:          Bester offener NI-Einstieg mit GeoJSON-Download. Hub-Portal HTTP 200 live; exakte FeatureServer-/WFS-URLs je Datensatz NUR über die Hub-Seite (Download-/API-Tab) auflösbar → nicht raten. Straßennetz-Datensatz deckt BAB + Bundes- + Landesstraßen (NLStBV-Zuständigkeit) + NLStBV-verwaltete Kreisstraßen ab. Metadatensatz Klassif. Straßennetz: …/harvest/static/api/records/537d2714-e615-459e-8b6b-81e196c9f8d7 (zeitweise 503).

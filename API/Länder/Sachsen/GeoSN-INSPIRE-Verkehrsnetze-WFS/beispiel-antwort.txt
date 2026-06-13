@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wfs:FeatureCollection timeStamp="2026-06-13T16:48:25.327+02:00" numberReturned="1" numberMatched="unknown" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0" xmlns="http://inspire.ec.europa.eu/schemas/tn/4.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/tn/4.0 https://geodienste.sachsen.de/aaa-suite_schema/guest/inspire.ec.europa.eu/schemas/tn/4.0/TransportNetwork.xsd http://www.opengis.net/wfs/2.0 https://geodienste.sachsen.de/aaa-suite_schema/guest/ogc/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 https://geodienste.sachsen.de/aaa-suite_schema/guest/ogc/gml/3.2.1/gml.xsd">
+<wfs:boundedBy>
+<gml:Envelope srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:lowerCorner>308369.395 5566256.168</gml:lowerCorner>
+<gml:upperCorner>308489.070 5566279.150</gml:upperCorner>
+</gml:Envelope>
+</wfs:boundedBy>
+<wfs:member>
+<tn-ro:RoadLink gml:id="RoadLink_DESNATP1f10000ga">
+<gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">DE.SN.TN/RoadLink_DESNATP1f10000ga</gml:identifier>
+<net:beginLifespanVersion>2021-09-23T07:01:04Z</net:beginLifespanVersion>
+<net:inspireId>
+<base:Identifier>
+<base:localId>RoadLink_DESNATP1f10000ga</base:localId>
+<base:namespace>DE.SN.TN</base:namespace>
+</base:Identifier>
+</net:inspireId>
+<net:inNetwork xlink:href="DE.SN.TN/RoadTransportNetwork"/>
+<net:centrelineGeometry>
+<gml:LineString gml:id="V.vrt_o42003__without_o42005_o42003__p0000103000_o42002.id_1.798800.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:posList>308369.395 5566265.958 308422.576 5566256.168 308442.685 5566256.962 308456.972 5566259.079 308465.439 5566260.799 308474.038 5566263.841 308479.480 5566266.510 308483.090 5566269.410 308489.070 5566279.150</gml:posList>
+</gml:LineString>
+</net:centrelineGeometry>
+<net:fictitious>false</net:fictitious>
+<validFrom nilReason="other:unpopulated" xsi:nil="true"/>
+<validTo nilReason="other:unpopulated" xsi:nil="true"/>
+</tn-ro:RoadLink>
+</wfs:member>
+</wfs:FeatureCollection>

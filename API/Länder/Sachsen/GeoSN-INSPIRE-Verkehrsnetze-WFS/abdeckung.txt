@@ -1,0 +1,15 @@
+QUELLE: GeoSN INSPIRE/ATKIS Basis-DLM — Verkehrsnetze (TN)
+BETREIBER: Landesamt für Geobasisinformation Sachsen (GeoSN)
+EBENE: Land (Sachsen)
+DATENTYP: Verkehrsnetz-Topologie (INSPIRE TN, ATKIS Basis-DLM) — KEINE Restriktionen
+STRASSENTYP: Alle (Netzgeometrie)
+FORMAT: WFS 2.0
+ENDPUNKT: https://geodienste.sachsen.de/aaa/public_inspire/atkis-bdlm/tn/dls/wfs?SERVICE=WFS&REQUEST=GetCapabilities
+DOKU: https://www.geodaten.sachsen.de/
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: dl-de/by-2.0 — Quelle "Geodaten Sachsen"
+UPDATE: GeoSN-Zyklus
+STATUS: verifiziert
+NOTIZ: Netzgeometrie, KEINE Restriktionen. ALKIS vereinfacht (live 200): https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?request=GetCapabilities&service=WFS . WebAtlasSN-WMS (wms_webatlas_color) als Basemap = 403 (registrierungspflichtig). GetCapabilities live HTTP 200, Lizenz aus Capabilities bestätigt.

@@ -1,0 +1,15 @@
+QUELLE:         Dortmund — Baustellen (tagesaktuell + geplant, Opendatasoft)
+BETREIBER:      Stadt Dortmund, Fachbereich 66 (Tiefbauamt)
+EBENE:          Stadt:Dortmund,Nordrhein-Westfalen
+DATENTYP:       Baustellen tagesaktuell + geplant, je als Punkt- und Flächendatensatz
+STRASSENTYP:    innerorts
+FORMAT:         GeoJSON / CSV / JSON / Shapefile (Opendatasoft Explore API v2.1)
+ENDPUNKT:       https://open-data.dortmund.de/api/explore/v2.1/catalog/datasets/fb66-baustellen-tagesaktuell/records  (weitere IDs: fb66-baustellen-tagesaktuell-flachen, fb66-baustellen-geplant, fb66-baustellen-geplant-flachen; GeoJSON-Export: .../exports/geojson)
+DOKU:           https://open-data.dortmund.de/api/explore/v2.1/catalog/datasets/fb66-baustellen-tagesaktuell  (Portal: https://open-data.dortmund.de/explore/?q=baustelle)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Datenlizenz Deutschland – Zero 2.0 (dl-zero-de/2.0) — voll frei, keine Namensnennung
+UPDATE:         täglich
+STATUS:         verifiziert
+NOTIZ:          Live getestet (139 Features tagesaktuell). Felder: art_der_baumassnahme, auftraggeber, einschrankung, zeitraum, von, bis, stadtbezirk, status, kommune, geografische_koordinate (lon/lat WGS84). Höhen/Breiten/Gewichtshinweise ggf. im Freitext art_der_baumassnahme/einschrankung. Saubere REST-API (where/select/exports). Selbes Plattform-Muster wie Mannheim.

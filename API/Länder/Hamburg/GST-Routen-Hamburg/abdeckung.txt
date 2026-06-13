@@ -1,0 +1,15 @@
+QUELLE:         Großraum- und Schwertransport-Routen in Hamburg (GST-Netz) ⭐
+BETREIBER:      Freie und Hansestadt Hamburg, Landesbetrieb Verkehr (LBV); bereitgestellt über LGV
+EBENE:          Land:Hamburg
+DATENTYP:       GST-Vorzugsrouten-Netz (Routen für Großraum-/Schwertransporte in/durch HH) — Stütze für VEMAGS-Anträge §29 Abs.3 / §46 StVO + Baustellenvermeidung
+STRASSENTYP:    Hauptnetz HH (GST-geeignet)
+FORMAT:         WFS (GML/CSV/GeoJSON), WMS, OGC API Features (GeoJSON), XSD-Schema
+ENDPUNKT:       https://geodienste.hamburg.de/HH_WFS_Grossraum_und_Schwertransport_Routen?SERVICE=WFS&REQUEST=GetCapabilities
+DOKU:           https://suche.transparenz.hamburg.de/dataset/grossraum-und-schwertransport-routen-in-hamburg12
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2.0 — Quellenvermerk "Freie und Hansestadt Hamburg, Landesbetrieb Verkehr"
+UPDATE:         periodisch (LBV-gepflegt; historische Stände 2017 archiviert)
+STATUS:         verifiziert
+NOTIZ:          DIREKTER VOLLTREFFER fürs Projekt. FeatureType: de.hh.up:grossraum_schwertransport_netz. EPSG:25832. LIVE GETESTET — GetFeature liefert echte GST-Netz-Features (z.B. "BAB A253 abgestuft zur B 75", wegenummer/strassenname/fahrstreifenanzahl/geschwindigkeit/wegeart). OGC API Features (GeoJSON, 3892 Features): https://api.hamburg.de/datasets/v1/grossraum_und_schwertransport_routen/collections/grossraum_schwertransport_netz/items?f=json . WFS 2.0.0 count= funktioniert auf dieser deegree-Instanz nicht zuverlässig → für WFS-GetFeature VERSION=1.1.0 & maxFeatures verwenden; OGC-API ist der sauberste GeoJSON-Weg. MetaVer: https://metaver.de/trefferanzeige?docuuid=4AC1B569-65AA-4FAE-A5FC-E477DFE5D303

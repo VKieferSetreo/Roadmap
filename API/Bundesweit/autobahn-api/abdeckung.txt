@@ -1,0 +1,15 @@
+QUELLE:         Autobahn GmbH API (verkehr.autobahn.de)
+BETREIBER:      Autobahn GmbH des Bundes (Doku/Wrapper via bund.dev / bundesAPI)
+EBENE:          Bundesweit
+DATENTYP:       Baustellen (roadworks), Sperrungen (closure), Verkehrswarnungen (warning, inkl. Gewichtsbeschränkungs-Hinweise), Lkw-Parkplätze, Ladesäulen, Webcams
+STRASSENTYP:    A (nur Bundesautobahnen — KEINE B/L/K)
+FORMAT:         REST-JSON
+ENDPUNKT:       https://verkehr.autobahn.de/o/autobahn  (Liste: /  | je BAB: /{roadId}/services/{roadworks|closure|warning|parking_lorry|electric_charging_station|webcam}  | Detail: /details/{service}/{id})
+DOKU:           https://autobahn.api.bund.dev/  (OpenAPI: https://autobahn.api.bund.dev/openapi.yaml)
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         Daten der Autobahn GmbH; Nutzungslizenz nicht explizit in API-Doku — für kommerzielle Nutzung bei Autobahn GmbH klären (i.d.R. dl-de, zu-bestätigen)
+UPDATE:         kontinuierlich (Echtzeit-nah)
+STATUS:         verifiziert
+NOTIZ:          Live getestet (A1 roadworks). KEINE strukturierten Zahlfelder für Breite/Höhe/Gewicht — Restriktionen kommen via display_type (z.B. WEIGHT_LIMIT_35), icon-Codes (262-2 = max 3,5 t) und Freitext im description-Array (z.B. "Maximale Durchfahrtsbreite: 3.25 m"). Höhen/Breiten/Achslast → Freitext-Parsing nötig. CORS aktiv.

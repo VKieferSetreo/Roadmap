@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sld="http://www.opengis.net/sld" xsi:schemaLocation="http://www.opengis.net/wms https://isk.geobasis-bb.de/schema/ogc/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld https://isk.geobasis-bb.de/schema/ogc/sld/1.1.0/sld_capabilities.xsd" updateSequence="2016-01-01">
+	<Service>
+		<Name>WMS</Name>
+		<Title>WMS BB ALKIS</Title>
+		<Abstract>Der Web Map Service für das Amtliche Liegenschaftskataster Informationssystem (ALKIS) des Landes Brandenburg beinhaltet die amtlichen Informationen des Liegenschaftskatasters. Personenbezogene Daten, wie z.B. Eigentümerinformationen und Adressdaten sind nicht Bestandteil dieses Dienstes.</Abstract>
+		<KeywordList>
+			<Keyword>WMS_BB_ALKIS</Keyword>
+			<Keyword>Geobasisdaten</Keyword>
+			<Keyword>AdV</Keyword>
+			<Keyword>WMS</Keyword>
+			<Keyword>ALKIS</Keyword>
+			<Keyword>Amtliches Liegenschaftskatasterinformationssystem</Keyword>
+			<Keyword>Liegenschaftskataster</Keyword>
+			<Keyword>Flurstücke</Keyword>
+			<Keyword>Gebäude</Keyword>
+			<Keyword>Bodenschätzung</Keyword>
+			<Keyword>Lagebezeichnung</Keyword>
+			<Keyword>Tatsächliche Nutzung</Keyword>
+			<Keyword>Verwaltungsgebiete</Keyword>
+			<Keyword>Katasterbezirke</Keyword>
+			<Keyword>BB</Keyword>
+			<Keyword>Brandenburg</Keyword>
+			<Keyword>AAA</Keyword>
+			<Keyword>GDI</Keyword>
+			<Keyword>LGB</Keyword>
+			<Keyword>Vermessung</Keyword>
+			<Keyword>Kataster</Keyword>
+			<Keyword>Planung</Keyword>
+			<Keyword>infoMapAccessService</Keyword>
+			<Keyword>opendata</Keyword>
+		</KeywordList>
+		<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://geobroker.geobasis-bb.de/gbss.php?MODE=GetProductPreview&amp;PRODUCTID=31591bca-bb40-4d8a-98ad-35efc37524c9"/>
+		<ContactInformation>
+			<ContactPersonPrimary>
+				<ContactPerson>Kundenservice</ContactPerson>
+				<ContactOrganization>Landesvermessung und Geobasisinformation Brandenburg (LGB)</ContactOrganization>
+			</ContactPersonPrimary>
+			<ContactAddress>
+				<AddressType>postalisch</AddressType>
+				<Address>Heinrich-Mann-Allee 104 B</Address>
+				<City>Potsdam</City>
+				<StateOrProvince>Brandenburg</StateOrProvince>
+				<PostCode>14473</PostCode>
+				<Country>DE</Country>
+			</ContactAddress>
+			<ContactVoiceTelephone>+49-331-8844-123</ContactVoiceTelephone>
+			<ContactFacsimileTelephone>+49-331-8844-16123</ContactFacsimileTelephone>
+			<ContactElectronicMailAddress>kundenservice@geobasis-bb.de</ContactElectronicMailAddress>
+		</ContactInformation>
+		<Fees>kostenfrei, unter Beachtung der Lizenzbedingungen</Fees>
+		<AccessConstraints>Die Daten können gemäß der „Datenlizenz Deutschland - Namensnennung - Version 2.0“ (https://www.govdata.de/dl-de/by-2-0) genutzt werden. Namensnennung: "GeoBasis-DE/LGB", Beispiel: „© GeoBasis-DE/LGB, dl-de/by-2-0, (Daten geändert)“, (Klammer = optional)</AccessConstraints>
+		<MaxWidth>8000</MaxWidth>
+		<MaxHeight>8000</MaxHeight>
+	</Service>
+	<Capability>
+		<Request>
+			<GetCapabilities>
+				<Format>text/xml</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://isk.geobasis-bb.de/ows/alkis_wms?"/>
+						</Get>
+					</HTTP>
+				</DCPType>
+			</GetCapabilities>
+			<GetMap>
+				<Format>image/png</Format>
+				<Format>image/jpeg</Format>
+				<Format>image/gif</Format>
+				<DCPType>
+					<HTTP>
+						<Get>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://isk.geobasis-bb.de/ows/alkis_wms?"/>
+						</Get>
+						<Post>
+							<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://isk.geobasis-bb.de/ows/alkis_wms"/>
+						</Post>
+					</HTTP>
+				</DCPType>
+			</GetMap>
+			<GetFeatureInfo>
+				<

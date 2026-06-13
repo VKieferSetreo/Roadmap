@@ -1,0 +1,15 @@
+QUELLE:         INSPIRE Transport Networks (TN) — BKG DLM250 WFS
+BETREIBER:      EU-Richtlinie 2007/2/EG; DE-Umsetzung via GDI-DE & BKG (Geodatenzentrum)
+EBENE:          Sonstige
+DATENTYP:       Verkehrsnetz-Topologie (Road/Rail/Water/Air Networks): Geometrie, Netzknoten (tn-ro:RoadLink/RoadNode/Road, tn-ra:RailwayLink/RailwayNode ...). KEINE feinen GST-Restriktionen (Achslast etc.) — Netz-Backbone, generalisiert 1:250.000.
+STRASSENTYP:    Alle (DLM250-Massstab, generalisiert)
+FORMAT:         WFS 2.0.0 (GML 3.2.1); auch ATOM (Predefined Dataset); Metadaten via CSW
+ENDPUNKT:       https://sgx.geodatenzentrum.de/wfs_dlm250_inspire
+DOKU:           https://gdz.bkg.bund.de/index.php/default/wfs-digitales-landschaftsmodell-1-250-000-inspire-wfs-dlm250-inspire.html
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2.0 (Namensnennung) / GeoNutzV
+UPDATE:         periodisch (DLM250 jaehrlich aktualisiert)
+STATUS:         verifiziert
+NOTIZ:          P2 — liefert das Netz-GERUEST, NICHT feine Restriktionen; 1:250.000 fuer GST-Detailrouting zu grob. Nuetzlich als referenzierbares amtliches Netz + um Landes-Detail-Datensaetze via Katalog (gdk.gdi-de.org, CSW) zu finden. WFS-FeatureTypes: tn-ro:RoadLink, tn-ro:RoadNode, tn-ro:Road, tn-ra:RailwayLink u.a. LIVE GETESTET 2026-06-13: GetCapabilities 2.0.0 -> Title "INSPIRE-WFS Digital Landscape Model 1:250 000", TN-Road/Rail-FeatureTypes vorhanden. (National-Variante ohne INSPIRE-Schema: https://sgx.geodatenzentrum.de/wfs_dlm250.)

@@ -1,0 +1,20 @@
+QUELLE:         baustellen.saarland (LfS) — Baustellen, Sperrungen, Verkehrslage
+BETREIBER:      Landesbetrieb für Straßenbau (LfS), Neunkirchen
+EBENE:          Land:Saarland
+DATENTYP:       Baustellen (Punkt + Linie), Verkehrswarndienst/Sperrungen (roadclosed-Flag), Verkehrsmeldungen; je Feature description/starttime/endtime/roadname
+STRASSENTYP:    B / L (LfS-Netz; BAB via Autobahn GmbH) — kommunal je Meldung
+FORMAT:         GeoJSON (Leaflet-Feeds, offen)
+ENDPUNKT:       https://baustellen.saarland/data/baustellen/roadworks_point_geojson.geojson
+DOKU:           https://baustellen.saarland/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         nicht ausgewiesen (Behördenportal) — Lizenz beim LfS klären
+UPDATE:         laufend
+STATUS:         verifiziert
+NOTIZ:          OFFENER GEOJSON-FEED AUFGELÖST (Katalog sagte "kein offener Feed / zu-bestätigen / null")! Das Leaflet-Portal lädt vier GeoJSON-Dateien direkt (aus js/map.js extrahiert), alle HTTP 200:
+                  data/baustellen/roadworks_point_geojson.geojson    (Punkt-Baustellen — live, Features vorhanden)
+                  data/baustellen/roadworks_line_geojson.geojson     (Linien-Baustellen — live, 32 Features)
+                  data/verkehrsmeldungen/traffic_messages_point_geojson.geojson  (aktuell leer, valide)
+                  data/verkehrsmeldungen/traffic_messages_line_geojson.geojson   (aktuell leer, valide)
+                Felder u.a.: roadclosed (Sperrung true/false), description (HTML), roadname, recordid, starttime, endtime, event. WGS84-Koordinaten. Direkt integrierbar — kein Key, kein DATEX-Umweg nötig. doku.json = roadworks_line-Feed. Kontakt: poststelle@lfs.saarland.de

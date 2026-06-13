@@ -1,0 +1,5 @@
+Dresden — Themenstadtplan / Open Data
+Portal: https://opendata.dresden.de/
+Themenstadtplan: https://www.dresden.de/stadtplan
+Verkehrsportal: https://verkehrsportal.dresden.de/
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

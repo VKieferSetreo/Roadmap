@@ -1,0 +1,5 @@
+Stuttgart — Open Data / Geoportal
+Open Data: https://www.stuttgart.de/service/digitalisierung/open-data-portal/open-data-portal
+Geoportal Open Data: https://www.stuttgart.de/en/leben/bauen/geoportal/open-data-und-testdaten
+Baustellen-Alternative: MobiData BW (Land BW)
+Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).

@@ -1,0 +1,15 @@
+QUELLE:         GST-Schwertransportkarte NRW — lastbeschränkte / gesperrte Brücken
+BETREIBER:      Landesbetrieb Straßenbau NRW (Straßen.NRW); inkl. Bauwerke der Autobahn GmbH (NL Westfalen/Rheinland)
+EBENE:          Land:Nordrhein-Westfalen
+DATENTYP:       Für GST gesperrte/lastbeschränkte Bauwerke (Brücken) — Bauwerksnummer, Gewichtsbeschränkung ("keine Schwertransporte" etc.), Straßenklasse/-nummer
+STRASSENTYP:    Alle (A/B/L/K — Straßen.NRW-Netz + BAB)
+FORMAT:         ArcGIS REST FeatureServer (Esri JSON / GeoJSON), EPSG:25832
+ENDPUNKT:       https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0/query
+DOKU:           https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0?f=json
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         lt. Govdata-Eintrag "in Prüfung" — Karte/Service offen aufrufbar; formale Rohdaten-Freigabe in Bearbeitung (Lizenzklärung mit Straßen.NRW empfohlen)
+UPDATE:         betrieblich gepflegt; kurzfristige Änderungen jederzeit
+STATUS:         verifiziert
+NOTIZ:          GOLDSTANDARD-RESTRIKTION NRW. WICHTIG: Der zugrundeliegende ArcGIS-REST-FeatureServer der WebApp wurde lokalisiert UND ist OFFEN abfragbar (Katalog sagte "zu-bestätigen/null" — hiermit aufgelöst). WebApp-Viewer-id 35c61ce20f2c4639a333be830891e207 → WebMap 58d4f453a38b49598b81bca170fe61f4 → operationalLayer "lastbeschraenkte Bruecken" = last_bruecken1/FeatureServer/0. Felder: fid, tbwnr (7-stellige Bauwerksnr), strkl, strnr, bw_name, oben, klasse, gewicht (z.B. "keine Schwertransporte"). Live getestet, liefert echte Datensätze. GeoJSON via &f=geojson möglich. Ergänzt opengeodata-nrw-strassennetz (Geometrie) um die eigentliche Lastrestriktion.

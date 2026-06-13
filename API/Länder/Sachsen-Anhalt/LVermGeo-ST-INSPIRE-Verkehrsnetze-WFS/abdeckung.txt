@@ -1,0 +1,15 @@
+QUELLE: INSPIRE-WFS ST Verkehrsnetze ATKIS Basis-DLM (ows_INSPIRE_LVermGeo_ATKIS_TN_WFS)
+BETREIBER: Landesamt für Vermessung und Geoinformation Sachsen-Anhalt (LVermGeo)
+EBENE: Land (Sachsen-Anhalt)
+DATENTYP: Verkehrsnetz-Topologie (INSPIRE TN) — KEINE Traglast
+STRASSENTYP: Alle (Netzgeometrie)
+FORMAT: WFS 2.0.0 (AdV-WFS-Profil 2.0)
+ENDPUNKT: https://geodatenportal.sachsen-anhalt.de/ows_INSPIRE_LVermGeo_ATKIS_TN_WFS?service=wfs&version=2.0.0&request=getcapabilities
+DOKU: https://www.lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: Nutzungsbedingungen LVermGeo (OpenData-Variante dl-de/by); https://www.lvermgeo.sachsen-anhalt.de/de/nutzungsbedingungen.html
+UPDATE: regelmäßig
+STATUS: verifiziert
+NOTIZ: Netzgeometrie; Bauwerke (ATKIS, seit 05/2024 LoD2/CityGML) separat über GDP. KEINE Traglast. Open-Data-Dienste kostenfrei. GetCapabilities live HTTP 200.

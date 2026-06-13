@@ -1,0 +1,15 @@
+QUELLE: Mobilithek (DATEX-II ST-Baustellen, RSA-21-Meldepflicht seit 01.01.2026) + Open-Data ST via MetaVer
+BETREIBER: Mobilithek (BMDV) — Daten LSBB/ST; MetaVer (Open-Data-Portal)
+EBENE: Land (Sachsen-Anhalt) via Bundesplattform
+DATENTYP: Baustellen, Verkehrsmeldungen (DATEX II)
+STRASSENTYP: Alle (klass. Netz)
+FORMAT: DATEX II (SOAP/Pull) bzw. Portal
+ENDPUNKT: null (Registrierung + Zertifikat)
+DOKU: https://mobilithek.info
+ZUGANG: registrierung
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: JA
+LIZENZ: je Publikation prüfen
+UPDATE: laufend (RSA-21-Meldepflicht seit 01.01.2026)
+STATUS: zu-bestätigen
+NOTIZ: Registrierung + X.509-Zertifikat. Feed-Backbone für ST-Baustellen, falls LSBB-Sperrinfo (non-commercial) ohne Freigabe nicht kommerziell nutzbar. Open-Data ST auch via MetaVer (https://metaver.de/).

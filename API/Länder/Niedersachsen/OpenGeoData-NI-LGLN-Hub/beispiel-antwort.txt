@@ -1,0 +1,4 @@
+== OpenGeoData NI Hub (HTTP-Status) ==
+HTTP 200 | text/html; charset=utf-8
+
+Nächster Schritt: gewünschten Datensatz im Hub öffnen → Tab 'I want to use this' / 'API' → FeatureServer- bzw. GeoJSON-URL kopieren.

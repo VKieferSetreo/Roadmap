@@ -1,0 +1,15 @@
+QUELLE:         VMZ Niedersachsen (Verkehrsmanagementzentrale)
+BETREIBER:      Land Niedersachsen / Region Hannover (VMZNDS)
+EBENE:          Land:Niedersachsen
+DATENTYP:       Verkehrslage, Baustellen (bestehend + zukünftig), Kamerabilder, Verkehrswarndienst, Schulausfälle, Überflutungen, Fährausfälle
+STRASSENTYP:    Alle (Schwerpunkt A/B/L, Region Hannover)
+FORMAT:         Web-Portal (Karte); maschinenlesbarer Feed/DATEX nicht öffentlich dokumentiert
+ENDPUNKT:       -
+DOKU:           https://www.vmz-niedersachsen.de/
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         nicht ausgewiesen → bei VMZ klären
+UPDATE:         kontinuierlich (24/7-Betrieb)
+STATUS:         zu-bestätigen
+NOTIZ:          Nur Web-Portal, keine öffentliche API/DATEX-Endpunkt-Doku. Maschinen-Feed bei VMZ Niedersachsen anfragen (+49 511 35354-232). Metadaten-Eintrag im Geoportal NI: https://geoportal.geodaten.niedersachsen.de/harvest/srv/api/records/00a48b0d-3d2c-4811-b39f-6d594c9768ad (zeitweise 503). NI-Baustellen werden zusätzlich über VMZ Bremen visualisiert.

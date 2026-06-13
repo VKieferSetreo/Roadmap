@@ -1,0 +1,5 @@
+# LGL-BW Open GeoData / GDI-BW — nur Portal/Katalog, kein direkt aufgelöster OGC-Endpunkt
+Open GeoData:        https://www.lgl-bw.de/Produkte/Open-Data/index.html
+Open-GeoData-Portal: https://opengeodata.lgl-bw.de/
+Geodatendienste:     https://www.lgl-bw.de/Produkte/Geodatendienste/index.html
+Geoportal-BW-Katalog:https://metadaten.geoportal-bw.de/

@@ -1,0 +1,15 @@
+QUELLE:         Mobilithek — Nationaler Zugangspunkt (NAP) Deutschland
+BETREIBER:      Bundesministerium für Digitales und Verkehr (BMDV/BMV)
+DATENTYP:       Bundesweite Verkehrs-/Mobilitätsdaten als DATEX-II-Feeds — Baustellen, Sperrungen, Verkehrsmeldungen, Parken, Detektordaten, Ladesäulen. Aggregator der Länder-/Kommunen-/Bund-Feeds
+EBENE:          Bundesweit
+STRASSENTYP:    Alle (je nach Datengeber — Bund, Länder, Kommunen)
+FORMAT:         DATEX II (v2 + v3, XML); Transport REST/SOAP/OCIT-C
+ENDPUNKT:       -   (Broker: kein globaler Endpunkt; pro abonniertem Datensatz eigene Feed-URL)
+DOKU:           https://mobilithek.info/  (TSSB: https://mobilithek.info/cms/downloads/tssb-de | DATEX-II-FAQ: https://mobilithek.info/help/faq-datex-ii)
+ZUGANG:         account
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: JA
+LIZENZ:         je Datengeber (oft dl-de/by-2.0 oder CC-BY) — pro Feed im Katalog ausgewiesen
+UPDATE:         je Feed (Baustellen/Verkehr oft minütlich-stündlich)
+STATUS:         verifiziert
+NOTIZ:          ACCOUNT NÖTIG — Max holt Konto. Auth via Client-Zertifikat (mTLS), nicht simpler Key. Pro Datensatz Nutzungsvereinbarung + Zertifikat -> Broker-Feed-URL erscheint im Konto. Der offizielle nationale Zugangspunkt; DATEX II liefert teils STRUKTURIERTE Restriktionsfelder (Gewicht/Breite/Höhe) — besser maschinenlesbar als Autobahn-API-Freitext. Bekannte Zulieferer: Bayern (ArbIS), NRW (MOBIDROM), BW (svzbw). Siehe mobilithek.env + doku-link.txt.

@@ -1,0 +1,15 @@
+QUELLE: Geoportal Brandenburg (GDI-BB) — >100 Anbieter, WMS/WFS/WCS + Metadaten
+BETREIBER: GDI-BB (Geodateninfrastruktur Brandenburg)
+EBENE: Land (Brandenburg)
+DATENTYP: Diverse Geodaten (Verkehr, Bauwerke, Basis) — je Thema unterschiedlich
+STRASSENTYP: Alle (je Datensatz)
+FORMAT: Portal/CSW + diverse OGC-Dienste (WMS/WFS/WCS)
+ENDPUNKT: null (Dienste je Thema im Portal auflösen)
+DOKU: https://geoportal.brandenburg.de/
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: je Datensatz (überwiegend dl-de/by-2.0 bei LGB-Geobasis)
+UPDATE: laufend
+STATUS: verifiziert
+NOTIZ: Portal/Metadatenkatalog mit >100 Anbietern. Kein fester API-Endpunkt → je Thema CSW/Dienste auflösen. Open-Data-Geodaten BB auch in MetaVer (https://metaver.de/).

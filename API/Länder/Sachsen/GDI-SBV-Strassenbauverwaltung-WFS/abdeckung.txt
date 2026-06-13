@@ -1,0 +1,15 @@
+QUELLE: GDI-SBV — Geodaten der Sächs. Straßenbauverwaltung (FIS/Fachverfahren, inkl. Bauwerke/Straßenbäume etc.)
+BETREIBER: LISt GmbH (i.A. LASuV/SMIL), Hainichen
+EBENE: Land (Sachsen)
+DATENTYP: Straßenbauverwaltungs-Fachdaten (potenziell inkl. Bauwerke/Restriktionen)
+STRASSENTYP: A/B/L/K (Straßenbauverwaltung)
+FORMAT: WFS 2.0/1.1.0
+ENDPUNKT: https://gdi-sbv.list.smwa.sachsen.de/fisbaum/sbv/wfs (Beispiel-Dienst — nur im SVN/KDN erreichbar)
+DOKU: https://www.list.smwa.sachsen.de/771.htm
+ZUGANG: eingeschränkt
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: NEIN
+LIZENZ: "Nur für Dienstgebrauch der Sächs. Straßenbauverwaltung, keine private/kommerzielle Nutzung" (ohne SMIL-/LASuV-Freigabe)
+UPDATE: Fachverfahren
+STATUS: zu-bestätigen
+NOTIZ: Wäre die reichste Sachsen-Fachquelle (inkl. Bauwerke), aber nur im Sächs./Komm. Verwaltungsnetz (SVN/KDN) erreichbar — nicht aus öffentlichem Internet. Freigabe via LISt GmbH (geoinformationen@list.sachsen.de). Nicht offen testbar.

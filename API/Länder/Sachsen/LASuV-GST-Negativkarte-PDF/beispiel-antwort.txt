@@ -1,0 +1,15 @@
+== HEAD https://www.lasuv.sachsen.de/download/Negativkarte_Bautzen_48t_Stand_16_10_2025.pdf ==
+HTTP/2 200 
+content-security-policy: default-src 'self'; frame-ancestors 'self' https://*.sachsen.de; frame-src 'self' https://*.sachsen.de https://e.issuu.com https://platform.twitter.com https://syndication.twitter.com https://www.facebook.com https://e.issuu.com https://www.youtube-nocookie.com; font-src 'self' data:; img-src 'self' data: https://*.sachsen.de https://i.ytimg.com https://syndication.twitter.com https://vrweb15.linguatec.org; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.sachsen.de https://connect.facebook.net https://platform.twitter.com https://e.issuu.com https://vrweb15.linguatec.org https://*.etracker.com https://*.etracker.de; style-src 'self' 'unsafe-inline' https://*.sachsen.de https://vrweb15.linguatec.org; connect-src 'self' https://*.sachsen.de https://vrweb15.linguatec.org https://www.etracker.de; media-src 'self' https://vrweb15.linguatec.org; object-src 'self'; upgrade-insecure-requests;
+x-content-type-options: nosniff
+referrer-policy: strict-origin
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+last-modified: Fri, 12 Jun 2026 13:18:47 GMT
+etag: "1cd9ef2-6540e512329e2"
+accept-ranges: bytes
+content-length: 30252786
+content-type: application/pdf
+date: Sat, 13 Jun 2026 14:48:04 GMT
+server: Apache
+
+

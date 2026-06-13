@@ -1,0 +1,5 @@
+Essen — Geodaten / Baustellen
+RVR-Geonetzwerk (Aggregator, Essen = RVR-Sitz):
+  https://www.rvr.ruhr/daten-digitales/geodaten/geonetzwerk/
+Kein eigener offener Baustellen-Endpunkt verifiziert (geodaten.essen.de löste nicht auf).
+Empfehlung: über RVR/Herne-Muster abdecken (siehe API/Sonstige/rvr-geonetzwerk-ruhr-baustellen).

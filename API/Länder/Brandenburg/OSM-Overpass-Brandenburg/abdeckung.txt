@@ -1,0 +1,15 @@
+QUELLE: OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Brandenburg
+BETREIBER: OpenStreetMap-Community / Overpass-API (overpass-api.de)
+EBENE: Land (Brandenburg)
+DATENTYP: GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel
+STRASSENTYP: Alle (soweit getaggt — lückenhaft)
+FORMAT: OSM-JSON → GeoJSON
+ENDPUNKT: https://overpass-api.de/api/interpreter
+DOKU: https://wiki.openstreetmap.org/wiki/Overpass_API
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: ODbL (Attribution "© OpenStreetMap contributors", Share-Alike beachten)
+UPDATE: laufend (Community-Edits)
+STATUS: verifiziert
+NOTIZ: DER GST-Restriktions-Layer, den die Baustellen-/Netz-/Bauwerks-WFS nicht liefern. Produktion → Geofabrik brandenburg-latest.osm.pbf (https://download.geofabrik.de/europe/germany/brandenburg.html) in eigene PostGIS importieren statt Live-Overpass. Overpass-API etabliert, live HTTP 200.

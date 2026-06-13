@@ -1,0 +1,15 @@
+QUELLE:         OpenGeodata.NRW / Straßen.NRW — Straßennetz inkl. Bauwerke (Brücken/Tunnel)
+BETREIBER:      Landesbetrieb Straßenbau NRW (Straßen.NRW)
+EBENE:          Land:Nordrhein-Westfalen
+DATENTYP:       Bauwerke (Brücken/Tunnel/Bauwerke, Geometrie+Stammdaten), Straßennetz-Topologie (Abschnitte/Äste, Netzknoten, Stationierung), Verkehrswerte, Zählstellen
+STRASSENTYP:    Alle (A/B/L/K — klassifiziertes Netz NRW)
+FORMAT:         WFS (GML 3.2), WMS, Atom-Feed, Shapefile-Download (EPSG:25832)
+ENDPUNKT:       https://www.wfs.nrw.de/wfs/strassen_nrw?REQUEST=GetCapabilities&SERVICE=WFS
+DOKU:           https://www.opengeodata.nrw.de/produkte/transport_verkehr/strassennetz/datenbeschreibung_strassennetz.pdf
+ZUGANG:         offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ:         dl-de/by-2-0 (Datenlizenz Deutschland Namensnennung 2.0 — Quelle + Abrufdatum nennen)
+UPDATE:         vierteljährlich; Shapes zuletzt 12.06.2026; Netzstand der Features 2026-03-31
+STATUS:         verifiziert
+NOTIZ:          WFS live getestet — 13 FeatureTypes, darunter ms:Bauwerke. GetFeature ms:Bauwerke liefert echte Brücken (BWNR, BWNAME, BW=Brücke, BWART, STRKL, STRNR). ACHTUNG: kein Traglast-/lichte-Höhe-Feld im Bauwerke-Layer — nur Geometrie/Stammdaten. Echte GST-Lastbeschränkung steckt in gst-schwertransportkarte-nrw. Shape-Direktdownload Bauwerke: https://www.opengeodata.nrw.de/produkte/transport_verkehr/strassennetz/Bauwerke_EPSG25832_Shape.zip ; Atom-Feed: http://www.gis-rest.nrw.de/atomFeed/rest/atom/f4affc5e-a01a-4531-895c-5c6e59685ed1 ; WMS: https://www.wms.nrw.de/wms/strassen_nrw_wms?REQUEST=GetCapabilities&SERVICE=WMS . Datenbeschreibungs-PDF ist CID-codiert (nicht textextrahierbar) → Feldliste am Live-WFS prüfen. Stärkste offene Strukturquelle der Region.

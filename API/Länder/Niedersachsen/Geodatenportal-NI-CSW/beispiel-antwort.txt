@@ -1,0 +1,31 @@
+== Geodatensuche NI: keyword=Verkehr ==
+<html>
+<head>
+<title>
+Dienst nicht verfügbar
+</title>
+</head>
+<body>
+<table border=0 cellpadding="20">
+<tr>
+<td>
+<a href="http://www.niedersachsen.de"><img src="/error_path/17813.jpg" width="100" border=0></a>
+</td>
+<td valign="top">
+<h1>Dienst nicht verfügbar</h1>
+Dieser Dienst ist im Moment nicht verfügbar.
+<br>
+Wir bitten dies zu entschuldigen.
+<br>
+<br>
+
+
+Die ID ihrer Anfrage lautete: ai1smyvYsQ0_H5c89XNKIwAATyE</p>
+ 
+
+<td>
+</tr>
+</table>
+</body>
+</html>
+

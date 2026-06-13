@@ -1,0 +1,46 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-13T14:45:06Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "way",
+  "id": 4069866,
+  "nodes": [
+    2221910344,
+    2502067050,
+    530853511,
+    2502067047,
+    530907503,
+    530857782,
+    2502067042,
+    2502067040,
+    530903607,
+    2502067038,
+    530847635,
+    2502067036,
+    530886719,
+    740590052,
+    4844146487
+  ],
+  "tags": {
+    "de:strassenschluessel": "13003000000001100",
+    "highway": "trunk_link",
+    "lanes": "1",
+    "maxheight": "default",
+    "maxspeed": "60",
+    "motorroad": "yes",
+    "name": "Barnstorfer Ring",
+    "oneway": "yes",
+    "smoothness": "good",
+    "surface": "asphalt"
+  }
+}
+
+  ]
+}
+

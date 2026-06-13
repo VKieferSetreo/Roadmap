@@ -1,0 +1,15 @@
+QUELLE: Großraum- und Schwertransporte — gesperrte Brücken (GST-Negativkarten Sachsen)
+BETREIBER: Landesamt für Straßenbau und Verkehr (LASuV), Dresden
+EBENE: Land (Sachsen)
+DATENTYP: Brücken mit begrenzter Tragfähigkeit / für GST gesperrt (das gesuchte GST-Kerndatum!), zzgl. Achslastkollektive
+STRASSENTYP: B/L (+ A im Verfahren) — Bezug bis 68 t Gesamt / 12 t Achslast
+FORMAT: PDF je Landkreis (8 LK, ~19–44 MB, Stand 16.10.2025) — KEIN WFS/GeoJSON
+ENDPUNKT: null (Direkt-PDF-Downloads auf der Seite)
+DOKU: https://www.lasuv.sachsen.de/gst-negativkarten.html
+ZUGANG: offen
+ACCOUNT_NOETIG: NEIN
+API_KEY_NOETIG: NEIN
+LIZENZ: keine explizite Open-Data-Auszeichnung (Behörden-Referenzdokumente, frei abrufbar)
+UPDATE: periodisch (Stand 10/2025; seit 01.09.2025 zentrale Bearbeitung Dresden)
+STATUS: verifiziert
+NOTIZ: Inhaltlich die wertvollste GST-Brücken-Quelle der Ost-Länder, aber Format (PDF) macht maschinelle Nutzung aufwändig (PDF→Georeferenz nötig). Landkreise: Bautzen, Erzgebirgskreis, Görlitz, Meißen, Mittelsachsen, Sächs. Schweiz-Osterzgebirge, Vogtlandkreis, Zwickau. Maschinenlesbare Variante bei LASuV erfragen (presse@lasuv.sachsen.de).

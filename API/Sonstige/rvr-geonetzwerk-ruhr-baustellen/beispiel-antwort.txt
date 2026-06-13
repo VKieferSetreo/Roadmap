@@ -1,0 +1,10 @@
+== RVR/Herne Baustellen (WFS GeoJSON, MAXFEATURES=1) ==
+{
+"type": "FeatureCollection",
+"name": "to-geojson-hpzVYE",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::25832" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "baustelle.4265", "beginn": "01.09.2025", "ende": "31.12.2026", "strasse": "Forellstr. A 43", "massnahme": "Ausbau A 43", "einschr": "Teilsperrung mit LSA", "auftraggeber": null, "bemerkung": null }, "geometry": { "type": "LineString", "coordinates": [ [ 375002.0, 5712778.0 ], [ 374967.0, 5712752.0 ] ] } }
+]
+}
+

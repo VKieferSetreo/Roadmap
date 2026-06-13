@@ -1,0 +1,15 @@
+QUELLE:         GraphHopper — Directions API (truck / custom_model)
+BETREIBER:      GraphHopper GmbH (DE) — OSS-Engine + Hosted-Service
+EBENE:          Sonstige
+DATENTYP:       Built-in-Profile truck + small_truck; custom_model mit Encoded Values max_width / max_height / max_weight / max_length / axle_load / hazmat / surface / toll. Eigene Truck-Profile (Dimensionen/Speed) konfigurierbar.
+STRASSENTYP:    Alle (OSM-basiert)
+FORMAT:         REST-JSON
+ENDPUNKT:       https://graphhopper.com/api/1/route
+DOKU:           https://docs.graphhopper.com/openapi/routing
+ZUGANG:         account
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: JA
+LIZENZ:         Engine Apache-2.0; Daten ODbL (OSM)
+UPDATE:         Hosted repliziert OSM; Self-host nach eigenem Import
+STATUS:         verifiziert
+NOTIZ:          P2 — sehr flexibel (custom_model pro Request), DE-Anbieter, gute Doku. Hosted Free-Tier (Tageslimit); Truck-Routing teils Premium-Add-on -> Konditionen pruefen. Self-host kostenlos & unlimitiert. OSM-basiert -> gleiche Datenluecken (Achslast dünn). API-Key per Account -> graphhopper.env (Query-Param ?key=). Custom Profiles Hosted mit Prefix cp_. NICHT live getestet (Key noetig).

@@ -1,0 +1,2 @@
+# open.bydata — Open-Data-Portal Bayern (Meta-Katalog, SPA, keine bestätigte API)
+Portal: https://open.bydata.de/
