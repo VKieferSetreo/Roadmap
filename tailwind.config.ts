@@ -166,8 +166,13 @@ export default {
         "route-flow": {
           to: { strokeDashoffset: "-26" },
         },
+        "progress-indeterminate": {
+          "0%": { transform: "translateX(-120%)" },
+          "100%": { transform: "translateX(320%)" },
+        },
       },
       animation: {
+        "progress-indeterminate": "progress-indeterminate 1.1s ease-in-out infinite",
         "optimistic-flash": "optimistic-flash 600ms ease-out",
         "slide-in-right": "slide-in-right 280ms cubic-bezier(0.32, 0.72, 0, 1)",
         "fade-in": "fade-in 200ms ease-out",

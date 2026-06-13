@@ -3,7 +3,10 @@
 // erst bei der Bewertung gegen einen konkreten Transport).
 
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
+import MarkerClusterGroup from "react-leaflet-cluster"
 import "leaflet/dist/leaflet.css"
+import "leaflet.markercluster/dist/MarkerCluster.css"
+import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import { katMeta } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
@@ -35,16 +38,19 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
-        {obstacles.map((o) => (
-          <Marker
-            key={o.id}
-            position={[o.lat, o.lng]}
-            icon={findingPinIcon(
-              o.kategorie,
-              o.herkunft === "eigen" ? PIN_EIGEN : PIN_GLOBAL,
-              false,
-            )}
-          >
+        {/* Clustering: bei zehntausenden Hindernissen würden Einzelmarker den Browser
+            einfrieren. chunkedLoading fügt Marker häppchenweise hinzu (kein Block). */}
+        <MarkerClusterGroup chunkedLoading maxClusterRadius={60} disableClusteringAtZoom={13}>
+          {obstacles.map((o) => (
+            <Marker
+              key={o.id}
+              position={[o.lat, o.lng]}
+              icon={findingPinIcon(
+                o.kategorie,
+                o.herkunft === "eigen" ? PIN_EIGEN : PIN_GLOBAL,
+                false,
+              )}
+            >
             <Popup>
               <div className="min-w-[200px]">
                 <p className="font-semibold text-neutral-900">{o.name}</p>
@@ -77,7 +83,8 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
               </div>
             </Popup>
           </Marker>
-        ))}
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">
         {obstacles.length.toLocaleString("de-DE")} Hindernisse
