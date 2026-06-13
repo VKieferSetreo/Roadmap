@@ -59,24 +59,30 @@ export function PublishCard({ project }: { project: Project }) {
     <div className="flex flex-col gap-2.5">
       {share ? (
         <>
-          {/* Kopfzeile mit Aktionen rechts — kompakt */}
+          {/* Kopfzeile mit Aktionen rechts — kompakt, umbruchsicher */}
           <div className="flex items-center gap-2">
-            <span className="rounded-lg bg-primary-50 p-2 text-primary-700">
+            <span className="shrink-0 rounded-lg bg-primary-50 p-2 text-primary-700">
               <Globe2 className="h-4 w-4" />
             </span>
-            <p className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold text-neutral-900">
-              Veröffentlicht
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span className="text-sm font-semibold text-neutral-900">Veröffentlicht</span>
               {share.hatPasswort ? (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500">
+                <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-neutral-500">
                   <Lock className="h-3 w-3" /> passwortgeschützt
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-neutral-400">
+                <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-neutral-400">
                   <LockOpen className="h-3 w-3" /> ohne Passwort
                 </span>
               )}
-            </p>
-            <Button variant="ghost" size="sm" onClick={() => setDialogOpen(true)} disabled={busy}>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDialogOpen(true)}
+              disabled={busy}
+              className="shrink-0"
+            >
               <Pencil className="h-3.5 w-3.5" /> Bearbeiten
             </Button>
             <Button
@@ -84,7 +90,7 @@ export function PublishCard({ project }: { project: Project }) {
               size="sm"
               onClick={() => void remove()}
               disabled={busy}
-              className="text-severity-kritisch hover:bg-severity-kritisch-bg"
+              className="shrink-0 text-severity-kritisch hover:bg-severity-kritisch-bg"
             >
               <Trash2 className="h-3.5 w-3.5" /> Löschen
             </Button>
@@ -92,7 +98,10 @@ export function PublishCard({ project }: { project: Project }) {
 
           {/* URL + Kopieren */}
           <div className="flex items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700">
+            <code
+              title={share.url}
+              className="min-w-0 flex-1 truncate rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700"
+            >
               {share.url}
             </code>
             <Button
@@ -100,6 +109,7 @@ export function PublishCard({ project }: { project: Project }) {
               size="sm"
               onClick={() => void copy()}
               aria-label="Link kopieren"
+              className="shrink-0"
             >
               {copied ? (
                 <Check className="h-3.5 w-3.5 text-primary-600" />
