@@ -76,11 +76,17 @@ export const overpassApiConnector = {
   // KEIN vollständig garantierter Bestand → vollbestand=false (kein destruktiver Reconcile).
   vollbestand: false,
 
-  async fetch({ timeoutMs = 200000, log = () => {} } = {}) {
+  async fetch({ log = () => {} } = {}) {
+    // EIGENER langer Timeout: Overpass braucht je großem Bundesland bis ~180 s. Der globale
+    // EXTERNAL_TIMEOUT_MS (40 s, für REST-Feeds) würde die großen Länder killen → wir ignorieren
+    // ihn hier bewusst. vollbestand=false: ein in einem Run getimeoutetes Land bleibt aus dem
+    // letzten Run erhalten (kein destruktiver Reconcile), der Bestand heilt über mehrere Läufe.
+    const timeoutMs = 200000
     const obstacles = []
     let verfuegbar = 0
 
-    for (const { name: land, iso } of BUNDESLAENDER) {
+    for (const [i, { name: land, iso }] of BUNDESLAENDER.entries()) {
+      if (i > 0) await new Promise((r) => setTimeout(r, 1500)) // Rate-Limit-Höflichkeit
       let data
       try {
         data = await overpass(queryFuerLand(iso), timeoutMs)
