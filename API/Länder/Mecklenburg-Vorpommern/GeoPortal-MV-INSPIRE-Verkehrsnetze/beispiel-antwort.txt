@@ -1,0 +1,27 @@
+== INSPIRE TN MV: GetFeature tn-ro:RoadLink count=1 (GML 3.2.1) ==
+<?xml version="1.0" encoding="utf-8"?>
+<wfs:FeatureCollection timeStamp="2026-06-13T17:24:28.121+02:00" numberReturned="1" numberMatched="293771" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0" xmlns="http://inspire.ec.europa.eu/schemas/tn/4.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/tn/4.0 https://www.geodaten-mv.de/aaa-suite/schema/inspire.ec.europa.eu/schemas/tn/4.0/TransportNetwork.xsd http://www.opengis.net/wfs/2.0 https://www.geodaten-mv.de/aaa-suite/schema/ogc/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 https://www.geodaten-mv.de/aaa-suite/schema/ogc/gml/3.2.1/gml.xsd">
+<wfs:boundedBy>
+<gml:Envelope srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:lowerCorner>319191.629 5924190.391</gml:lowerCorner>
+<gml:upperCorner>319193.989 5924203.163</gml:upperCorner>
+</gml:Envelope>
+</wfs:boundedBy>
+<wfs:member>
+<tn-ro:RoadLink gml:id="RoadLink_DEMVLM25100000CA">
+<gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">https://registry.gdi-de.org/id/de.mv.land.inspire.tn.atkis-bdlm/RoadLink_DEMVLM25100000CA</gml:identifier>
+<net:beginLifespanVersion>2016-09-01T15:47:03Z</net:beginLifespanVersion>
+<net:inspireId>
+<base:Identifier>
+<base:localId>RoadLink_DEMVLM25100000CA</base:localId>
+<base:namespace>https://registry.gdi-de.org/id/de.mv.land.inspire.tn.atkis-bdlm</base:namespace>
+</base:Identifier>
+</net:inspireId>
+<net:inNetwork xlink:href="https://registry.gdi-de.org/id/de.mv.land.inspire.tn.atkis-bdlm/RoadTransportNetwork"/>
+<net:centrelineGeometry>
+<gml:LineString gml:id="V.vrt_o42003__without_o42005_o42003__p0000103000_o42002.id_1.541951.position.Geom_0" srsName="http://www.opengis.net/def/crs/epsg/0/25833" srsDimension="2">
+<gml:posList>319191.629 5924190.391 319193.989 5924203.163</gml:posList>
+</gml:LineString>
+</net:centrelineGeometry>
+<net:fictitious>f
+Weitere TN-FeatureTypes: tn-ro:Road, tn-ro:ERoad, tn-ro:RoadArea, tn-ra:RailwayLink u.v.m.

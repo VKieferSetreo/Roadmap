@@ -4,12 +4,12 @@ EBENE:          Stadt:Karlsruhe,Baden-Württemberg
 DATENTYP:       explizite Kategorien 'Brücken und Bauwerke', 'Verkehrstechnik', 'Baustellenmanagement' — potenziell Brücken-Standorte, Bauwerksdaten, Verkehrszeichen/Signalanlagen
 STRASSENTYP:    innerorts
 FORMAT:         WMS / WFS / GeoJSON / CSV (produktabhängig; manche WMS 'für internen Gebrauch auf Anfrage')
-ENDPUNKT:       -
-DOKU:           https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/fachplaene
-ZUGANG:         offen
-ACCOUNT_NOETIG: NEIN
+ENDPUNKT:       -  (kein offener maschineller Endpunkt; Brücken/Bauwerke-WMS/WFS nur 'auf Anfrage' per geoportal@la.karlsruhe.de)
+DOKU:           https://www.karlsruhe.de/mobilitaet-stadtbild/tiefbau-und-verkehrsinfrastruktur/bruecken-und-bauwerke  (Geoportal: .../geoportal-karlsruhe/e-service-und-open-data; CKAN: https://transparenz.karlsruhe.de/)
+ZUGANG:         eingeschränkt — Geodaten 'auf Anfrage' (Bestellformular/E-Mail), kein offener Live-Dienst
+ACCOUNT_NOETIG: NEIN (aber Anfrage/Bestellung nötig)
 API_KEY_NOETIG: NEIN
-LIZENZ:         Open Data (Landesinformationsfreiheitsgesetz / OpenGovernment); interne Dienste 'auf Anfrage'
+LIZENZ:         Open Data (Landesinformationsfreiheitsgesetz / OpenGovernment); Geo-Dienste 'auf Anfrage'
 UPDATE:         je Dienst
 STATUS:         zu-bestätigen
-NOTIZ:          Kategorien bestätigt, konkrete Brücken-WFS-URL NICHT isoliert (Geoportal != Transparenzportal-CKAN) (apiEndpunkt=null). EINE DER WENIGEN Städte mit ausgewiesener 'Brücken und Bauwerke'-Geodaten-Kategorie — selten offen! Hier gezielt nach Traglast/lichter Höhe nachhaken. Ergänzt den verifizierten Karlsruhe-Baustellen-Feed (karlsruhe-trk-baustellen). HOHE Projekt-Relevanz.
+NOTIZ:          NICHT FIXBAR als offener Endpunkt — bleibt 🟡. Gegencheck gemacht: (a) transparenz.karlsruhe.de IST ein lebendiges CKAN (status_show=200), enthält aber NULL Geodatensätze mit res_format WFS/WMS/GeoJSON — Volltextsuche 'brücke'(4)/'bauwerk'(6)/'verkehrstechnik'(1) liefert ausschließlich PDFs/Haushaltsplan/Umfragen, KEIN Brücken-Geodatensatz. 'verkehr'(46) = nur GTFS (kvv-fahrplandaten) + PDFs. (b) geoportal.karlsruhe.de hat KEINEN GeoServer (/geoserver/ows und /web = 404); geodaten.karlsruhe.de existiert nicht (404). (c) ArcGIS-Hub urbandataplatform-karlsruhe + hub.arcgis.com-Suche → kein öffentlicher Brücken-FeatureServer. (d) Die 'Brücken und Bauwerke'-Geodaten LEBEN im Geoportal (Liegenschaftsamt), WMS/WFS werden aber explizit nur 'auf Anfrage' (geoportal@la.karlsruhe.de bzw. Bestellformular web1.karlsruhe.de/service/Formulare/LA/) abgegeben. SELTEN — eine der wenigen Städte mit ausgewiesener Brücken-Geodaten-Kategorie (Traglast/lichte Höhe relevant) → BEZUGSWEG: per E-Mail anfragen. Ergänzt den verifizierten Karlsruhe-Baustellen-Feed (karlsruhe-trk-baustellen). HOHE Projekt-Relevanz.

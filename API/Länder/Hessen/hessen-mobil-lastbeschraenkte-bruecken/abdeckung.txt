@@ -13,3 +13,4 @@ LIZENZ:         nicht offen lizenziert (Behörden-PDF/Kartenanwendung; Nutzung a
 UPDATE:         laufend; PDF manuell datiert (aktuell 2026-02-27); kurzfristige Änderungen jederzeit
 STATUS:         verifiziert
 NOTIZ:          GOLDSTANDARD-RESTRIKTION HESSEN. PDF-URL live getestet (HTTP 200, application/pdf, 4 Seiten, 105 KB) → als doku.pdf gespeichert. Maschinenlesbar nur via PDF-Parsing (kein API/WFS). SIB-Hessen-Online-Karte (https://sibhessen.de/online/application.jsp, HTTP 200) ist das Hessen-SIB-Bauwerke-Frontend (JS) → möglicher Backend-Service am Live-Traffic prüfen. Für strukturierten Bezug: schwertransporte@mobil.hessen.de . test.sh lädt die PDF (einziges abrufbares Artefakt) — keine beispiel-antwort.txt (binär, kein strukturierter API-Call).
+STRUKTURIERT: hessen-lastbeschraenkte-bruecken.csv + .json (136 Brücken, aus PDF geparst 2026-06-13)

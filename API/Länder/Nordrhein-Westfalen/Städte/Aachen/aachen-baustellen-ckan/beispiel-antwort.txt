@@ -1,9 +1,2 @@
-== Aachen Baustellen (CKAN package_show) ==
-<html>
-<head><title>502 Bad Gateway</title></head>
-<body>
-<center><h1>502 Bad Gateway</h1></center>
-<hr><center>ext</center>
-</body>
-</html>
-
+== Aachen Baustellen (BSIS WFS, PUNKTE_ALLE, count=1) ==
+{"type":"FeatureCollection","features":[{"type":"Feature","id":"PUNKTE_ALLE.62783","geometry":{"type":"MultiPoint","coordinates":[[293042.63060533,5629656.87554136]]},"geometry_name":"the_geom","properties":{"gid":62783,"sbod_gid1":62783,"sdatenid":107915,"name":"Straßenbauarbeiten  Grundstückszufahrten/ Bordsteinabsenkungen","bereich":"Hausnummer 2","strassen":"Ahornstraße","zeitraum":"01.06.2026 - 24.06.2026","art":"Strassenbau","symbol":"Verkehrsbehinderung - aktuell","beschreibu":"Straßenbauarbeiten  Grundstückszufahrten/ Bordsteinabsenkungen","firma":"Peter Dreuw  Bauunternehmung GmbH","bauherr":"Regionetz Betrieb","kontakt":"Tel.: 0241 / 41368 - 0 oder Mail: Info@regionetz.de","einschraen":"Sperrung des Gehweges. Ein Notgehweg wird eingerichtet. \r\nHaltverbote werden aufgestellt. Verengung der Fahrbahn.","aachen_de":null,"extern_de":null,"date":"2026-06-13Z","hotlink":"https://bsis.aachen.de/html/Dokumente/0001A400/0x01A58B/index.htm","von":"2026-06-01Z","bis":"2026-06-24Z","sort_column":1}}],"totalFeatures":407,"numberMatched":407,"numberReturned":1,"timeStamp":"2026-06-13T15:19:04.845Z","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::25832"}}}

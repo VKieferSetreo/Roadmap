@@ -1,0 +1,137 @@
+bauwerksnummer,teilbauwerk,bauwerksname,ort,strasse_oben_uef,strasse_unten_uf,von_nk,nach_nk
+5024519,0,UF B 83 und DB bei Bebra,Bebra,B 27,B 83,5024027O,5024028O
+4825501,0,UF Ulfe bei Wichmannshausen,Wichmannshausen,B 27,,4825032O,4825002O
+5617584,0,Dittenbachdurchlass,Wernborn,B 275,,5617022O,5617023O
+5917726,1,UF K807 + Main + K808 - Mainbrücke Schwanheim-/Überbau FR Schwanheim/Kelsterbach,Ffm-Schwanheim,B 40,K 807,5917072O,5917073O
+5917726,2,UF K807 + Main + K808 - Mainbrücke Schwanheim-/Überbau FR Frankfurt,Ffm-Schwanheim,B 40,K 807,5917072O,5917073O
+6013504,1,UF Gehweg,bei Rüdesheim,B 42,Gehweg,6013011O,6013001O
+6013926,B,UF Engergraben/B42,Rüdesheim am Rhein / Rüdesheim,B 42,,6013011O,6013001O
+5021517,0,UF DB,Leimsfeld,B 254,,5021053O,5021012O
+5122504,1,UF Buchenbach,Asterode,B 454,,5122017O,5122018O
+5123505,0,UF Kisselbach in Heddersdorf,Heddersdorf,B 454,,5123013O,5123012O
+5122507,0,UF Urbach,Neukirchen,B 454,,5122015O,5122014O
+6317630,0,LAENGSVERDOLUNG STADTBACH,Heppenheim,B 460,,6317063O,6318066O
+6317632,0,UF STADTBACH HEPPENHEIM (B 460)/UF Stadtbach Heppenheim - Ost oben,64646 Heppenheim,B 460,,6317063O,6318066O
+6317628,0,UF STADTBACH/UF Stadtbach Heppenheim - West unten,Heppenheim,B 460,,6317063O,6318066O
+5916577,0,UF L3011 + DB Rheingaubrücke,Hofheim,B 519,L 3011,5916089O,5916043O
+6316552,C,NIBELUNGENBR. WORMS (B 47)/Vorlandbrücke Hessen,67547 Worms,B 47,,6316009,6316018
+5416516,0,"UF DB, L 3052 u. Lahn",Leun,B 49,L 3052,5416032O,5416036O
+5416564,0,UF B 277,Wetzlar,B 49,B 277,5416033O,5417054O
+5417515,0,"Lahnbrücke am Taubenstein,UF Lahn,L 3020,Stadtstr./UF Lahn, L 3020 u. Stadtstrasse ""Taubenstein""",Wetzlar,B 49,L 3020,5417054O,5417008O
+5417540,0,UF DB,Dorlar,B 49,,5417006O,5417056O
+5415555,0,UF Gemeindestrasse,Biskirchen,B 49,Gemeindestr.,5415040O,5415039O
+5417516,0,UF L 3020,Garbenheim,B 49 (Ast),L 3020,5417008A,5417008B
+5417562,1+2,"UF Lahn,Eselswiese FR Klein-Linden",Giessen/West,B 429,,5417056A,5417057O
+5125513,0,UF Ulster bei Philippsthal,Philippstal,B 62,,5125008O,5125007O
+5614505,1,UF Lahn/Ri.FB Limburg nach Elz,Limburg,B8,Gemeindestr.,5614051O,5614057O
+5614505,2,UF Lahn/Ri.FB von Elz nach Limburg,Limburg,B8,Gemeindestr.,5614051O,5614057O
+5818616,B,UF Kilianstädterstraße -Mainkur-/UF B8 und DB,Fechenheim,B 8 (Ast),B8,5818093B,5818093G
+5814509,0,UF Aarbach,in Adolfseck,B 54,,5814046O,5814027O
+4822582,0,UF L 3223,Gensungen,L 3220,L 3223,4822016O,4822084O
+5520513,0,UF ECKARDSBACH in Eichelsachsen/UF ECKARDSBACH,Schotten/Eichelsachsen,L 3183,,5520022O,5520023O
+5813507,0,UF Gladbach,bei Geroldstein,L 3033,,5813035O,5813041O
+5814524,0,UF Dornbach,Bad Schwalbach / Ramschied,L 3033,,5814015O,5814014O
+5317510,0,UF Bieber,Fellingshausen,L 3474,,5317008O,5317011O
+5223519,0,UF Aula in Niederaula,Niederaula,L 3471,,5223017O,5123006O
+5224511,0,UEF L 3433,Burghaun,L 3433,B27,5324035O,5224019O
+6418741,0,UF LIEBERSBACH IN BIRKENAU/UF LIEBERSBACH,Birkenau,L 3408,,6418017O,6418215O
+4923641,0,UF K 34 und Lingelbach,Rengshausen,L 3465,K 34,4922016L,4923028O
+4921514,0,UF DB,Borken,L 3384,,4921042O,4921029O
+5623542,0,UF ELMBACH bei Elm/UF ELMBACH,Schlüchtern/Elm,L 3329,,5623030O,5623029O
+5714512,0,UF Lahnerbach,bei Burg Hohenstein,L 3321,,5713008O,5714024O
+4826536,0,UF Schlierbach (Forsthaus),Oberdünzebach,L 3300,,4826009O,4826020O
+4722570,0,UF KVG & Zufahrt VW Parkplatz,Altenbauna,L 3311,G+R,4722059C,4722064G
+5325524,0,UF Naesse,Hofbieber,L 3258,WiWeg,5425047O,5325012O
+5126504,0,UF Werra in Heringen/UF Werra,Heringen,L 3255,,5125014O,5126003O
+5126503,0,UF Flutgraben in Heringen/UF Flutgraben,Heringen,L 3255,,5125014O,5126003O
+5023506,0,Flutgraben in Ersrode/UF Flutgraben in Ersrode,Ersrode,L 3253,,5023013O,5023009O
+4824540,0,"UF L 3249, DB u. Wehre bei Küchen",Küchen,L 3249,L 3249,4824014O,4724027O
+4725519,0,UF Regenwasser-Überlauf in Kammerbach,Kammerbach,L 3239,,4725043O,4725036O
+5718523,0,UF LOHGRABEN bei Rodheim/UF LOHGRABEN,Rosbach v.d.Höhe/Rodheim,L 3204,,5718012O,5718005O
+5819516,0,UF L 3268 bei Rückingen/UF L 3268,Erlensee/Rückingen,L 3193 (Ast),L 3193,5819050I,5819050F
+5819512,1+2,UF KINZIG bei Wolfgang/UF KINZIG,Hanau/Wolfgang,L 3193,,5819072O,5819064O
+5023564,0,UF Gleis in Raboldshausen,Raboldshausen,L 3155,,5022014O,5023016O
+4922543,0,UF Schwalm,bei Uttershausen,L 3148,,4922058O,4922049O
+5118531,2,UF DB Marburg/Nord,Marburg,L 3089,,5118016K,5118057O
+5119506,0,Muehlgrabenbruecke bei Rauschenberg,Rauschenberg,L 3077,,5119014O,5119043O
+5219514,0,Ohmbrücke bei Amöneburg,Amöneburg,L 3073,,5219035O,5219036O
+5615520,0,UF Ansbach,Villmar,L 3063,,5514066O,5615001O
+6013926,A,UF Engergraben/L3034,Rüdesheim am Rhein / Rüdesheim,L 3034,,6013013O,6013002O
+5913512,0,UF Wisper,bei Lorch,L 3033,,5913006O,5913007O
+5714514,0,UFMühlgraben,bei Kettenbach,L 3031,,5714012O,5714017O
+5417528,A+B,UF Lahn u Gemeindestraße,Dorlar,L 3020,,5417004O,5417003O
+5416543,0,UF Grundbach,Oberbiel,L 3020,,5416042O,5416035O
+5621543,0,UF BRACHT bei Bösgesäß/UF BRACHT,Birstein/Bösgesäß,K 922,,5621050O,5621029O
+5716614,0,UF Niedgesbach,Finsterthal,K 750,,5716006O,5616043O
+6118548,0,UEF K 128,bei Gundernhausen,K 128,B 26,6118050O,6118024O
+5616515,2,UF Sattelbach/i.Z.d. K739 von Gemünden nach Grävenwiesbach,Niederlauken,K 739,,5616018O,5616031O
+4625656,0,UF Bach bei Werleshausen,Werleshausen,K 67,,4625062O,4625063O
+4625655,0,UF Bach bei Werleshausen,Werleshausen,K 67,,4625062O,4625063O
+5914520,0,UF Wallufbach,in Niederwalluf,K 638,,5914033O,5915102O
+4623683,0,UF Osterbach,in Knickhagen,K 40,,4623335O,4523203O
+5219517,0,Ohmbruecke bei Schweinsberg,Schweinsberg,K 24,,5219037O,5219040C
+5324534,0,UF Flutgraben,Nüst,K 12,,5324012O,5324021O
+4918509,0,UEF Gemeindestraße (Bahnhofstraße),Allendorf (Eder)/Rennerthausen,,,G,B253
+5916506,0,UF WICKERBACH,Wicker,B 40,5916097O,5916060O,"7,5"
+4625671,0,UF Fußweg in Witzenhausen,Witzenhausen,B 451,Geh- und Radweg 4625068O,4625094A,12
+4625630,A+B+C,UF Werra in Witzenhausen,Witzenhausen,B 451,4625068O,4625094A,12
+6317629,0,UF STADTBACH,Heppenheim,B 460,6317063O,6318066O,40 *)
+5124528,0,UF Kreisbahn und Solz bei Malkomes,Malkomes,B 62,5124024O,5125042O,"3,5"
+5515548,A+B+C,UF Lahn u. DB,Gräveneck,L 3452,5515042O,5515043O,9
+5514534,0,UF Emsbach,Eschhofen,L 3448,5614020O,5514046O,9
+5514535,0,UF Lahn,Dehrn,L 3448,5614020O,5514046O,16
+5424562,0,UF Haune,Margretenhaun,L 3429,5424087O,5424098O,12
+6418741,0,UF LIEBERSBACH IN BIRKENAU/UF LIEBERSBACH,69488 Birkenau,L 3408,6418017O,6418215O,11
+5616513,0,UF Wiesbach,Mönstadt,L 3375,5616003O,5616004O,16
+5714510,0,UF Aarbach,in Michelbach,L 3373,5814043A,5714007O,30
+4926508,0,UF des Nessebach bei Wommen,Wommen,L 3251,4926001O,4926002O,12
+4523713,0,UF Mühlbach,in Wilhelmshausen,L 3233,4523203O,24 *),10
+4822523,0,UF Eder,in Altenbrunslar,L 3222,4822032O,4822022O,18
+4822524,0,UF Flutgraben,in Altenbrunslar,L 3222,4822032O,4822022O,18
+4722552,0,Längsverdolung des Pilgerbaches i.Z. der L 3221/UF Pilgerbach,in Grifte,L 3221,4722008O,4722085O,"3,5"
+4621537,1,UF Warme,in Zierenberg,L 3214,4621045O,4621053O,13
+5623507,0,UF RAMHOLZBACH in Vollmerz/UF RAMHOLZBACH,Schlüchtern/Vollmerz,L 3207,5623009O,5623013O,16
+5119506,0,Muehlgrabenbruecke bei Rauschenberg,Rauschenberg,L 3077,5119014O,5119043O,11 *)
+5021557,0,UF Schlierbach,in Schlierbach,L 3067,5021015O,5021039O,6
+5414510,0,UF Elbbach,Dorchheim,L 3046,5414030O,5414036O,16
+5514557,0,UF Steinbach,Heuchelheim,L 3046,5414036O,5514076A,18
+5415536,0,UF Kallenbach,Obershausen,L 3044,5415023O,5415016O,16
+5415512,C,UF Leyenbach,Odersberg,L 3044,5415006O,5315049O,16
+5816557,0,UF Dattenbach,Ehlhalten,L 3027,5816072O,5816032O,16
+5514526,0,UF Tiefenbach,Niedertiefenbach,L 3022,5514043O,5514038O,16
+5514524,0,UF Lahn,Runkel,L 3020,5514078O,5514083O,"3,5"
+5816528,0,UF Dattenbach,Ehlhalten,L 3011,5816033O,12,110kN
+5623533,B,UF DEUTSCHE BUNDESBAHN bei Drasenberg/UF DEUTSCHE BUNDESBAHN,Schlüchtern/Drasenberg,K 928,5623058O,5623034O,"3,5"
+5821501,1+2,UF LOCHGRABEN bei Lützelhausen/UF LOCHGRABEN,Linsengericht/Lützelhausen,K 897,5821015O,5821016O,16
+5616531,0,UF Taunusbahn,Hundstadt,K 760,5616012O,5616010O,16
+4926581,0,UF Breitzbach in Breitzbach,Breitzbach,K 76,4926033O,4926034O,30
+5616517,2+4,UF Steinkratzbach (Steinkerzbach)/(Alt),Naunstadt,K 759,5616011O,5616012O,9
+5616526,0,UF Weil,Altweilnau (Landsteiner Mühle),K 750,5716006O,5616043O,16
+5616520,0,UF Weil,Emmershausen,K 739,5616019O,5616018O,16
+5315527,0,UF Muehlbach,Gusternhain,K 72,5315021O,5315029O,3
+5221544,0,UF Erlenbach,Schwabenrod,K 68,5221031O,5221030O,11
+5814528,0,UF Aarbach,bei Hettenhain,K 663,5814049B,5814047O,"3,5"
+6318710,0,UNTERKELLERUNG,in Ober-Hambach,K 57,6317062O,6318081O,16
+4925546,0,UF Sontra bei Rockensüß/UF Sontra,Rockensüß,K 50,4925022O,4925006O,16
+5124539,0,UF Fuß- und Radweg bei Schenksolz,Schenksolz,K5,Geh- und Radweg 5124047O,5124048O,16
+4826559,0,UF des Schlierbaches bei Völkershausen,Völkershausen,K 49,4826009O,4826013O,16
+5217519,0,Krebsbachbruecke bei Altenvers,Altenvers,K 48,5217043O,5217032O,10
+5115765,0,UF Dill,Dillbrecht,K 47,5115254O,5115253O,9
+4725569,0,UF Berka bei Wellingerode,Wellingerode,K 38,4725003O,4725015O,16
+5517503,0,UF KLEEBACH bei Ebergöns/UF KLEEBACH,Butzbach/Ebergöns,K 364,5517014O,5517013O,"3,5"
+4825550,A,UF Schweinsbach in Eltmannshausen,Eltmannshausen,K 34,4825025O,4825019A,"4,5"
+5219512,0,Hist. Ohmbrücke bei Amoeneburg(Kulturdenkmal),Amöneburg,K 29,5219032O,5219035O,"2,8"
+6318761,0,UF-WESCHNITZ,in Rimbach,K 24,6318100O,6318101O,16
+5519509,0,UF Rodheimer Bach,Rodheim,K 188,5519048O,5519038O,12
+5619505,0,UF BACH in Weckesheim/UF BACH,Reichelsheim/Weckesheim,K 179,5619002O,5619001A,"3,5"
+5419537,0,UF Graben,Queckborn,K 150,5419006O,5419032O,16
+5419529,0,UF Wetter,Wetterfeld,K 146,5419022O,5419035O,16
+5321527,0,UF Katharinenbach,Köddingen,K 129,5321010O,5321011O,16
+4826550,0,UF Flutgraben bei Frieda,Frieda,K 12,4826016O,4826035O,18
+4826551,0,UF Werra bei Frieda,Frieda,K 12,4826016O,4826035O,12
+4917613,0,UF Eder bei Battenfeld/Ederbrücke,Battenfeld,K 119,4917105O,4917122C,16
+5121508,0,UF Schwalm,bei Heidelbach,K 115,5121006O,5121007O,6
+4917603,0,UF Flutgraben bei Reddighausen/Flutgrabenbrücke,Reddighausen,K 115,4917111O,4917109O,16
+5421517,0,UF Lauter,Hopfmannsfeld,K 112,5421014O,5321029O,11
+5717708,0,UEF Gemeindestraße -Jacob Lengfelder Str-,Bad Homburg,,,Jakob-Lengfelder-Straße L 3003,30 *)
+5813592,0,UF Wisper,Heidenrod / Geroldstein,,,Dickschieder Weg,16

@@ -3,13 +3,13 @@ BETREIBER:      Landeshauptstadt Wiesbaden
 EBENE:          Stadt:Wiesbaden,Hessen
 DATENTYP:       v.a. Bauleitplanung (WMS/WFS, täglich); Spielplätze, Grünflächen, Verkehrsplanung, geplante Bauprojekte. Baustellen NICHT eindeutig als offener Datensatz
 STRASSENTYP:    innerorts
-FORMAT:         WMS / WFS
-ENDPUNKT:       -
-DOKU:           https://geoportal.wiesbaden.de/
+FORMAT:         WMS / WFS — aber nur Bauleitplanung (geodata.o-sp.de/service/wiesbaden.cgi)
+ENDPUNKT:       -  (KEIN Baustellen-Datensatz; einziger offener Geo-Dienst = Bauleitplanung-WMS/WFS https://geodata.o-sp.de/service/wiesbaden.cgi)
+DOKU:           https://geoportal.wiesbaden.de/  (Open Data: https://www.o-sp.de/wiesbaden/opendata)
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
-LIZENZ:         Open Data Wiesbaden (dl-de / CC-BY)
+LIZENZ:         Datenlizenz Deutschland Namensnennung 2.0 (dl-de-by 2.0)
 UPDATE:         je Dienst
 STATUS:         zu-bestätigen
-NOTIZ:          Geoportal + Open-Data-Seite bestätigt; Baustellen NICHT eindeutig als offener Datensatz nachgewiesen (Open-Data-Fokus = Bauleitplanung) (apiEndpunkt=null). Hessen-Muster: Stadt-Open-Data dünn; mehr über Geoportal Hessen / hvbg.hessen.de und Regionalverband FrankfurtRheinMain. Baustellen Wiesbaden ggf. nur über Geoportal/Verkehrsleitzentrale.
+NOTIZ:          NICHT FIXBAR — bleibt 🟡 (wie erwartet). Gegencheck gemacht: Der Wiesbaden-Open-Data-Katalog (o-sp.de/wiesbaden/opendata) enthält GENAU EINEN WMS/WFS-Dienst: "Planübersicht / Bauleitplanung" (Bebauungspläne ab 1962, Satzungen, FNP-Änderungen) unter https://geodata.o-sp.de/service/wiesbaden.cgi, täglich aktualisiert, dl-de-by 2.0. KEINE Baustellen/Straßenbaustellen/Verkehr/Sperrungen. geoportal.wiesbaden.de lebt (200), hat aber keinen GeoServer an Standardpfaden (/geoserver/ows = 404); geo.wiesbaden.de / gisserver.wiesbaden.de existieren nicht. Hessen-Muster bestätigt (Stadt-Open-Data = nur Bauleitplanung). BEZUGSWEG: Baustellen Wiesbaden nur über Geoportal-Viewer/Verkehrsleitzentrale (kein offener Feed); landesweit über Geoportal Hessen / hvbg.hessen.de + Regionalverband FrankfurtRheinMain.

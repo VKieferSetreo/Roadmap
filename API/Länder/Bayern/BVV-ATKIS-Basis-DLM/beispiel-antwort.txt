@@ -1,0 +1,40 @@
+== BY ATKIS Basis-DLM: GetFeature adv:AX_Strassenachse count=1 (GML 3.2.1) ==
+<?xml version="1.0" encoding="utf-8"?>
+<wfs:FeatureCollection timeStamp="2026-06-13T17:28:53.929+02:00" numberReturned="1" numberMatched="unknown" xmlns="http://www.adv-online.de/namespaces/adv/gid/7.1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.adv-online.de/namespaces/adv/gid/7.1 https://repository.gdi-de.org/schemas/adv/nas/7.1/AAA-Fachschema.xsd http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd">
+<wfs:boundedBy>
+<gml:Envelope srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2">
+<gml:lowerCorner>499842.99 5545013.24</gml:lowerCorner>
+<gml:upperCorner>499907.64 5545016.94</gml:upperCorner>
+</gml:Envelope>
+</wfs:boundedBy>
+<wfs:member>
+<AX_Strassenachse gml:id="DEBYBDLMHB0000AR">
+<gml:identifier codeSpace="http://www.adv-online.de/">urn:adv:oid:DEBYBDLMHB0000AR</gml:identifier>
+<lebenszeitintervall>
+<AA_Lebenszeitintervall>
+<beginnt>2021-05-07T13:25:24Z</beginnt>
+</AA_Lebenszeitintervall>
+</lebenszeitintervall>
+<modellart>
+<AA_Modellart>
+<advStandardModell>Basis-DLM</advStandardModell>
+</AA_Modellart>
+</modellart>
+<modellart>
+<AA_Modellart>
+<advStandardModell>DTK25</advStandardModell>
+</AA_Modellart>
+</modellart>
+<istTeilVon xlink:href="urn:adv:oid:DEBYBDLMHB0000AY"/>
+<position>
+<gml:LineString gml:id="o42003.id.1465.position.Geom_0" srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2">
+<gml:posList>499907.64 5545016.94 499842.99 5545013.24</gml:posList>
+</gml:LineString>
+</position>
+<besondereVerkehrsbedeutung>2002</besondereVerkehrsbedeutung>
+<anzahlDerFahrstreifen>2</anzahlDerFahrstreifen>
+<fahrtrichtung>false</fahrtrichtung>
+</AX_Strassenachse>
+</wfs:member>
+</wfs:FeatureCollection>
+Weitere FeatureTypes u.a.: adv:AX_Strasse, adv:AX_Fahrbahnachse, adv:AX_Strassenverkehr, adv:AX_BauwerkImVerkehrsbereich

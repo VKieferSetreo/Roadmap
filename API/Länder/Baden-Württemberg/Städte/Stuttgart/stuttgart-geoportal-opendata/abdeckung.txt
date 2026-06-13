@@ -1,15 +1,15 @@
-QUELLE:         Stuttgart — Open Data / Geoportal
-BETREIBER:      Landeshauptstadt Stuttgart
+QUELLE:         Stuttgart — Baustellen (Open Data Stuttgart / Geoportal)
+BETREIBER:      Landeshauptstadt Stuttgart (Open Data Portal CKAN + geoserver.stuttgart.de)
 EBENE:          Stadt:Stuttgart,Baden-Württemberg
-DATENTYP:       Stadtpläne, Basiskarten, Themen Planung/Umwelt/Verkehr/Freizeit; Open Geodata & Testdaten
+DATENTYP:       aktuelle + geplante Straßenbaustellen (STRASSENNAME, DETAILS_STANDORT, ART_ARBEIT, ANFANG, ENDE, VERKEHRSAUSWIRKUNG, ZEITL_REGELUNG, STATUS) als Punkt
 STRASSENTYP:    innerorts
-FORMAT:         WMS/WMTS (Darstellung), WFS/WCS (Download) — produktabhängig
-ENDPUNKT:       -
-DOKU:           https://www.stuttgart.de/en/leben/bauen/geoportal/open-data-und-testdaten
+FORMAT:         WFS (GeoServer), GeoJSON via outputFormat=application/json, EPSG:25832
+ENDPUNKT:       https://geoserver.stuttgart.de/gdc/Verkehr_Mobilitaet/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Verkehr_Mobilitaet:A66_BAUM_BAUSTELLEN_DATE_WEB_im_Bau_EPSG25832&outputFormat=application/json  (geplant: ...DATE_WEB_geplant_EPSG25832)
+DOKU:           https://opendata.stuttgart.de/dataset/baustellen  (Geoportal: https://www.stuttgart.de/en/leben/bauen/geoportal/open-data-und-testdaten)
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
-LIZENZ:         je Datensatz (dl-de / CC-BY)
-UPDATE:         je Dienst
-STATUS:         zu-bestätigen
-NOTIZ:          Geoportal + Open-Data-Portal bestätigt, dedizierter offener Baustellen-Endpunkt NICHT nachgewiesen (apiEndpunkt=null). Für Stuttgart Baustellen am ehesten über MobiData BW / daten.bw / Land BW (siehe API/Länder/Baden-Württemberg/.../MobiData-BW-Baustellen-BEMaS).
+LIZENZ:         dl-de-by 2.0 (Open Data Stuttgart — je Datensatz prüfen)
+UPDATE:         täglich
+STATUS:         verifiziert
+NOTIZ:          GELÖST. opendata.stuttgart.de IST ein klassisches CKAN-Portal (status_show=200). package_search?q=baustelle → genau 1 Datensatz "baustellen" mit ZWEI WFS-Resourcen auf geoserver.stuttgart.de (Workspace Verkehr_Mobilitaet): "im_Bau" (aktuell) + "geplant". WFS GetFeature lieferte 200 + valides GeoJSON, 39 aktive Baustellen mit echten Feldern (STRASSENNAME, ART_ARBEIT z.B. "Arbeiten für S21", ANFANG/ENDE, VERKEHRSAUSWIRKUNG). Hinweis: CKAN-Resource nennt version=1.0.0; mit version=2.0.0 + outputFormat=application/json kommt sauberes GeoJSON. Koordinaten EPSG:25832 → vor Karte nach 4326 transformieren. Ergänzt MobiData BW (Land). test.sh ruft im_Bau count=1.

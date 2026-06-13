@@ -4,12 +4,12 @@ EBENE:          Land:Niedersachsen
 DATENTYP:       Klassifiziertes Straßennetz, DLM (Digitales Landschaftsmodell), ALKIS (Straßenschlüssel, Verwaltungsgrenzen)
 STRASSENTYP:    A/B/L/K (DLM/Straßennetz)
 FORMAT:         CSV, KML, ZIP, GeoJSON, GeoTIFF, PNG; zusätzlich WMS, WFS, ArcGIS GeoServices/FeatureServer
-ENDPUNKT:       https://ni-lgln-opengeodata.hub.arcgis.com/   (Hub-Portal; FeatureServer/WFS je Datensatz über Download-/API-Tab)
+ENDPUNKT:       https://opendata.lgln.niedersachsen.de/doorman/noauth/atkisbdlm_hb_wfs_sf?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Strassenachse&COUNT=1   (LGLN ATKIS-Basis-DLM-WFS, klassif. Straßennetz; Hub-Portal: https://ni-lgln-opengeodata.hub.arcgis.com/)
 DOKU:           https://lgln-geodaten.niedersachsen.de/opengeodata/opengeodata-220509.html
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ:         CC BY 4.0 (Quellenvermerk "© LGLN")
 UPDATE:         periodisch
-STATUS:         zu-bestätigen
-NOTIZ:          Bester offener NI-Einstieg mit GeoJSON-Download. Hub-Portal HTTP 200 live; exakte FeatureServer-/WFS-URLs je Datensatz NUR über die Hub-Seite (Download-/API-Tab) auflösbar → nicht raten. Straßennetz-Datensatz deckt BAB + Bundes- + Landesstraßen (NLStBV-Zuständigkeit) + NLStBV-verwaltete Kreisstraßen ab. Metadatensatz Klassif. Straßennetz: …/harvest/static/api/records/537d2714-e615-459e-8b6b-81e196c9f8d7 (zeitweise 503).
+STATUS:         verifiziert
+NOTIZ:          LIVE GETESTET 2026-06-13: offener LGLN-OpenData-WFS opendata.lgln.niedersachsen.de/doorman/noauth/atkisbdlm_hb_wfs_sf (WFS 2.0.0, ATKIS Basis-DLM NAS/Simple-Feature), GetFeature adv:AX_Strassenachse COUNT=1 → HTTP 200, application/gml+xml 3.2.1, valide FeatureCollection (gml:id DENIAT… = DE-Niedersachsen ATKIS, EPSG:25832). Reicher AAA-FeatureType-Satz: adv:AX_Strassenachse, adv:AX_Strasse, adv:AX_Fahrbahnachse, adv:AX_Strassenverkehr, adv:AX_BauwerkImVerkehrsbereich (Brücken/Tunnel) u.v.m. GetCapabilities: https://opendata.lgln.niedersachsen.de/doorman/noauth/atkisbdlm_hb_wfs_sf?SERVICE=WFS&REQUEST=GetCapabilities . WFS liefert nur GML (kein GeoJSON). HINWEIS Hub: das "Klassifizierte Straßennetz" liegt auf dem ArcGIS-Hub nur als WMS (hasApi=false, kein FeatureServer/GeoJSON-Query) — Vektor kommt aus diesem WFS. Straßennetz deckt BAB + Bundes- + Landesstraßen (NLStBV) + NLStBV-Kreisstraßen ab. Hub-Portal HTTP 200 live.

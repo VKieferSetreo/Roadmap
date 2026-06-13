@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Aachen — Baustellen Stadtgebiet (CKAN package_show). Offen, keine Auth.
-# HINWEIS: CKAN-API lieferte beim Erstellen transient HTTP 502. Bei Erreichbarkeit
-# listet package_show alle Resource-URLs (WFS/WMS/CSV) des Datensatzes.
+# Aachen — Baustellen (BSIS, Baustellen-Informationssystem der Stadt Aachen).
+# Offener WFS, keine Auth. Live-Daten (PUNKTE/LINIEN/FLAECHEN_ALLE).
+# Hinweis: Das CKAN-Portal offenedaten.aachen.de lieferte beim Test 502, ABER
+# der eigentliche Baustellen-WFS liegt eigenstaendig auf bsis.aachen.de/geoserver.
 set -euo pipefail
 
-URL="https://offenedaten.aachen.de/api/3/action/package_show?id=baustellen-stadtgebiet-aachen"
+URL="https://bsis.aachen.de/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=BSIS:PUNKTE_ALLE&count=1&outputFormat=application/json"
 
-echo "== Aachen Baustellen (CKAN package_show) =="
-curl -sSL --max-time 30 "${URL}" | head -c 4000
+echo "== Aachen Baustellen (BSIS WFS, PUNKTE_ALLE, count=1) =="
+curl -sSL --max-time 40 "${URL}" | head -c 4000
 echo

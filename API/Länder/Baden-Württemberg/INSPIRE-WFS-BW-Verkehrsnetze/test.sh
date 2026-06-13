@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# INSPIRE-WFS BW Verkehrsnetze (LGL) — Metadatensatz-Probe.
-# HINWEIS: Kein direkter OGC-Endpunkt aufgelöst; Lizenz RESTRIKTIV (VwVNutzHeo),
-# vor Nutzung mit LGL-BW klären (siehe abdeckung.txt, STATUS: zu-bestätigen).
-# Dieser Test prüft nur die Erreichbarkeit des Metadatensatzes. Kein erfundener Endpunkt.
-# Lauffähig mit: bash test.sh
+# INSPIRE-WFS BW Verkehrsnetze (ATKIS Basis-DLM), LGL-BW — offen, keine Auth.
+# Aufgelöst + live: owsproxy.lgl-bw.de WFS_INSP_BW_Verkehrsnetz_ATKIS_BasisDLM.
+# Lizenz laut Live-Capabilities: Open Data, dl-de/by-2-0 (NICHT restriktiv).
+# Dieser Call holt EINEN RoadLink (INSPIRE Transport Networks) als GML 3.2.
+set -euo pipefail
 
-UA="Roadmap-Setreo-API-Katalog/1.0 (Schwertransport-Routing; kontakt: klattigmaximilian@gmail.com)"
-URL="https://metadaten.geoportal-bw.de/geonetwork/srv/api/records/53cfcf0b-8dae-9c07-e97a-2ff9ed7af6d1"
+BASE="https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_INSP_BW_Verkehrsnetz_ATKIS_BasisDLM"
 
-curl -sSL --max-time 30 -A "$UA" -o /dev/null \
-  -w "HTTP %{http_code}  type=%{content_type}\n" "$URL"
-echo "# GetCapabilities-URL über GDI-BW-Katalog auflösen + Nutzungsrechte mit LGL-BW klären."
+echo "== INSPIRE BW Verkehrsnetze: GetFeature tn-ro:RoadLink count=1 (GML 3.2) =="
+curl -sSL --max-time 90 \
+  "${BASE}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=tn-ro:RoadLink&COUNT=1" \
+  | head -c 2200
+echo
+echo "Lizenz (aus Capabilities): Unentgeltliche Nutzung nach Open Data, dl-de/by-2-0."

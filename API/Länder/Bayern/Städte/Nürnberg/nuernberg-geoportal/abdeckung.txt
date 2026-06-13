@@ -3,13 +3,13 @@ BETREIBER:      Stadt Nürnberg, Amt für Geoinformation und Bodenordnung
 EBENE:          Stadt:Nürnberg,Bayern
 DATENTYP:       städtische Geodaten (GIS); ÖPNV separat über VAG-OpenData / VGN (GTFS)
 STRASSENTYP:    innerorts
-FORMAT:         WMS / WFS
-ENDPUNKT:       -
-DOKU:           https://www.nuernberg.de/internet/geoinformation_bodenordnung/geoportal.html
-ZUGANG:         offen
-ACCOUNT_NOETIG: NEIN
+FORMAT:         WMS / WFS (ArcGIS-Server, über Masterportal-Servicekatalog)
+ENDPUNKT:       -  (für BAUSTELLEN keiner; offener WFS-Servicekatalog existiert aber: https://geoportal.nuernberg.de/masterportal/GLOBAL/ressources/services-internet.json — 140 Dienste / 119 WFS, Basis-URL https://geoportal.nuernberg.de/server/services/Fachdaten/...)
+DOKU:           https://geoportal.nuernberg.de/masterportal/stadtplan/  (Stadt: https://www.nuernberg.de/internet/geoinformation_bodenordnung/geoportal.html; Opendata-Portal login-gated: nuernberg.de/internet/opendata/)
+ZUGANG:         offen (Geo-Dienste), Opendata-Portal jedoch login-pflichtig
+ACCOUNT_NOETIG: NEIN (für WFS); JA für das opendata-Miniweb-Portal
 API_KEY_NOETIG: NEIN
 LIZENZ:         je Datensatz (teils auf Anfrage)
 UPDATE:         je Dienst
 STATUS:         zu-bestätigen
-NOTIZ:          GeoPortal bestätigt, dedizierter offener Baustellen-WFS NICHT nachgewiesen (apiEndpunkt=null). Bayern-Muster: Stadt-Geoportal schmal/offen-arm; viel über Landesdienste (BayernAtlas, BAYSIS, SDDI-Katalog Bayern — siehe API/Länder/Bayern). SDDI-Katalog listet u.a. 'GeoPortal Servicekarte Baustellen München'.
+NOTIZ:          NICHT FIXBAR für Baustellen — bleibt 🟡. Gegencheck gemacht: Das GeoPortal läuft als Masterportal (geoportal.nuernberg.de/masterportal/stadtplan/) über einen ArcGIS-Server. Der VOLLE offene Servicekatalog (GLOBAL/ressources/services-internet.json) wurde geladen: 140 Dienste, davon 119 WFS — ABER KEINE Baustellen/Sperrungen/Verkehrsbeeinträchtigung. Inhalt = POIs, Gebietsgliederung, Bebauungspläne, ÖPNV-Trassen/Haltepunkte, Denkmäler, Bayern-Landes-WFS (gdiserv.bayern.de). Suche nach baustell/sperr/umleit/verkehrsbe = 0 Treffer. Das opendata.nuernberg.de-Portal ist ein login-gated Miniweb (kein offener Datensatz-Crawl). FAZIT (Bayern-Muster bestätigt): Stadt-Geoportal offen aber OHNE Baustellen — Baustellen über Landesdienste (BAYSIS, BayernAtlas, SDDI-Katalog Bayern → 'GeoPortal Servicekarte Baustellen München' u.a.; siehe API/Länder/Bayern).

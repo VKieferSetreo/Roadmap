@@ -1,15 +1,15 @@
-QUELLE:         Aachen — Baustellen Stadtgebiet Aachen
-BETREIBER:      Stadt Aachen (Open Data Portal Aachen, CKAN, über open.nrw)
+QUELLE:         Aachen — Baustellen Stadtgebiet Aachen (BSIS)
+BETREIBER:      Stadt Aachen — Baustellen-Informationssystem (BSIS), eigener GeoServer
 EBENE:          Stadt:Aachen,Nordrhein-Westfalen
-DATENTYP:       amtlich erfasste Straßenbaustellen (Ort, Art/Grund, Start/Ende, Bemerkungen) + weitere Verkehrsstörungen
+DATENTYP:       amtlich erfasste Straßenbaustellen (Straße, Bereich, Art/Grund, Zeitraum von/bis, Firma, Bauherr, Einschränkung, Kontakt) als Punkt/Linie/Fläche
 STRASSENTYP:    innerorts
-FORMAT:         WFS / WMS / CSV (Punkt / Linie / Fläche)
-ENDPUNKT:       -  (über CKAN-Resources; exakte WFS-URL zu-bestätigen — CKAN-API beim Test transient 502)
-DOKU:           https://offenedaten.aachen.de/api/3/action/package_show?id=baustellen-stadtgebiet-aachen  (Portal: https://offenedaten.aachen.de/dataset/baustellen-stadtgebiet-aachen; Geoportal: https://geoportal.aachen.de/extern)
+FORMAT:         WFS 2.0.0 (GeoJSON / GML), EPSG:25832; Layer BSIS:PUNKTE_ALLE, BSIS:LINIEN_ALLE, BSIS:FLAECHEN_ALLE
+ENDPUNKT:       https://bsis.aachen.de/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=BSIS:PUNKTE_ALLE&outputFormat=application/json  (Capabilities: https://bsis.aachen.de/geoserver/ows?service=WFS&request=GetCapabilities)
+DOKU:           https://offenedaten.aachen.de/dataset/baustellen-stadtgebiet-aachen  (CKAN-Portal; GeoServer: https://bsis.aachen.de/geoserver/web/)
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
-LIZENZ:         Open Data Aachen (über open.nrw, i.d.R. dl-de-by) — bestätigen
-UPDATE:         täglich
-STATUS:         zu-bestätigen
-NOTIZ:          Doku verifiziert, ABER CKAN-API beim Test wiederholt HTTP 502 Bad Gateway → exakte WFS/WMS/CSV-Resource-URL nicht extrahierbar. Standard-CKAN (/api/3/action/...) — sobald Portal wieder erreichbar, Resource-URLs maschinell ziehbar. test.sh ruft package_show (gibt aktuell 502 zurück; bei Erreichbarkeit liefert es die Resourcen). Kontakt: opendata@mail.aachen.de. Mobilitätsdashboard: open.nrw/open-data/showroom/mobilitaetsdashboard-der-stadt-aachen
+LIZENZ:         Open Data Aachen (über open.nrw, dl-de-by) — bestätigen
+UPDATE:         täglich (Live-Daten)
+STATUS:         verifiziert
+NOTIZ:          GELÖST. Das CKAN-Portal offenedaten.aachen.de lieferte beim Test durchgängig HTTP 502 (kompletter Portal-Ausfall, auch root/dataset/status_show). ABER: der eigentliche Baustellen-WFS liegt EIGENSTÄNDIG auf bsis.aachen.de/geoserver (Baustellen-Informationssystem) und ist live + offen. GetFeature lieferte 200 + valides GeoJSON, 407 aktive Baustellen mit echten Feldern (strassen, art, zeitraum, firma, einschraen). Drei Layer: PUNKTE_ALLE / LINIEN_ALLE / FLAECHEN_ALLE. Koordinaten in EPSG:25832 → vor Karten-Nutzung nach 4326 transformieren. test.sh ruft PUNKTE_ALLE count=1.

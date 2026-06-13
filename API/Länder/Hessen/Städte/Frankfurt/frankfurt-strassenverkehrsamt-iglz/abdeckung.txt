@@ -3,13 +3,13 @@ BETREIBER:      Stadt Frankfurt, Straßenverkehrsamt / Integrierte Gesamtverkehr
 EBENE:          Stadt:Frankfurt,Hessen
 DATENTYP:       Baustellen, Verkehrsmeldungen, Verkehrsmengen, Bewohnerparken (Geoportal-Kategorie Mobilität & Verkehr); IGLZ speist DATEX-II in die Mobilithek
 STRASSENTYP:    innerorts
-FORMAT:         WFS / GeoJSON (Geoportal); DATEX-II (über Mobilithek)
-ENDPUNKT:       -
-DOKU:           https://offenedaten.frankfurt.de/organization/strassenverkehrsamt
+FORMAT:         WFS 1.1.0 (GeoServer planas.frankfurt.de — aber nur Stadtplanungsamt-Layer); Baustellen real via DATEX-II (Mobilithek)
+ENDPUNKT:       -  (für BAUSTELLEN keiner offen abrufbar; Frankfurt-WFS-Basis = https://planas.frankfurt.de/wfs/<layer> trägt nur Planungsdaten, KEINE Baustellen)
+DOKU:           https://www.offenedaten.frankfurt.de/organization/strassenverkehrsamt  (WFS-Basis: https://planas.frankfurt.de/wfs/; Geoportal: https://geoportal.frankfurt.de/karte/; Metadaten: planas.frankfurt.de/infotool/)
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
-LIZENZ:         Offene Daten Frankfurt (dl-de-by / CC-BY je Datensatz) — bestätigen
+LIZENZ:         Offene Daten Frankfurt (dl-de-by 2.0) — bestätigen
 UPDATE:         je Dienst
 STATUS:         zu-bestätigen
-NOTIZ:          Portal offenedaten.frankfurt.de hat TLS-Zertifikatsmismatch beim www.-Host + tw. 404 für Crawler → exakte Resource-URL nicht live geholt (apiEndpunkt=null). Datensätze existieren (Org 'Straßenverkehrsamt', Tags Baustelle/Verkehrsmeldung). EINFACHER WEG: Frankfurt-IGLZ-Baustellen kommen auch bundesweit über die Mobilithek (DATEX-II) — siehe API/Bundesweit/mobilithek. Regionalverband FrankfurtRheinMain bietet zusätzlich Open-Data-WMS/WFS.
+NOTIZ:          TLS-MISMATCH UMGANGEN, aber Baustellen-Endpunkt NICHT auflösbar → bleibt 🟡. Erkenntnisse: (a) www.offenedaten.frankfurt.de hat TLS-Cert-Mismatch (ERR_TLS_CERT_ALTNAME_INVALID); der nicht-www-Host offenedaten.frankfurt.de lebt (root 200) ist aber ein SPA OHNE Maschinen-API (/api/3/action = 404, /organization/... = 404 für Crawler). (b) Der ECHTE Frankfurt-WFS-Host wurde aus den planas-Metadaten extrahiert: https://planas.frankfurt.de/wfs/<layer> (KEIN TLS-Problem) — GetCapabilities liefert z.B. bebauungsplaene_geltungsbereiche sauber. ABER: planas/wfs gehört dem STADTPLANUNGSamt (Bebauungspläne, Stellplatz, Vorkauf, Erhaltungssatzungen) — KEINE Baustellen; geratene Layer baustellen/verkehr/verkehrsmeldungen → HTTP 500 (Layer existiert nicht). (c) Baustellen/Verkehrsmeldungen kommen vom STRASSENVERKEHRSamt/IGLZ und fließen bundesweit als DATEX-II über die MOBILITHEK. (d) opendata.hessen.de (harvested) ist hinter Anti-Bot (.within.website) → nicht maschinell abrufbar. BEZUGSWEG (empfohlen): Frankfurt-IGLZ-Baustellen über API/Bundesweit/mobilithek (DATEX-II); zusätzlich Regionalverband FrankfurtRheinMain Open-Data-WMS/WFS (region-frankfurt.de).

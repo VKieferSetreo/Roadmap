@@ -1,0 +1,32 @@
+== LGL-BW ATKIS Basis-DLM: GetFeature nora:v_verkehrslinie count=1 (GML 3.2) ==
+<?xml version="1.0" encoding="UTF-8"?><wfs:FeatureCollection xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nora="http://nora-prod.lgl.bwl.de/nora" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberMatched="2943643" numberReturned="1" timeStamp="2026-06-13T15:31:18.546Z" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ATKIS_Basis-DLM/schemas/wfs/2.0/wfs.xsd http://nora-prod.lgl.bwl.de/nora https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ATKIS_Basis-DLM?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType&amp;typeName=nora%3Av_verkehrslinie http://www.opengis.net/gml/3.2 https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ATKIS_Basis-DLM/schemas/gml/3.2.1/gml.xsd">
+  <wfs:boundedBy>
+    <gml:Envelope srsDimension="2" srsName="urn:ogc:def:crs:EPSG::25832">
+      <gml:lowerCorner>557132.77 5327818.73</gml:lowerCorner>
+      <gml:upperCorner>557167.06 5327827.64</gml:upperCorner>
+    </gml:Envelope>
+  </wfs:boundedBy>
+  <wfs:member>
+    <nora:v_verkehrslinie gml:id="v_verkehrslinie.657f5e04-e18d-4c71-adfe-3d8d4b409faa">
+      <gml:name>Fünf Linden</gml:name>
+      <gml:boundedBy>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2">
+          <gml:lowerCorner>557132.77 5327818.73</gml:lowerCorner>
+          <gml:upperCorner>557167.06 5327827.64</gml:upperCorner>
+        </gml:Envelope>
+      </gml:boundedBy>
+      <nora:id>DEBWB0010000uQfy</nora:id>
+      <nora:objektart>Strassenachse</nora:objektart>
+      <nora:klasse>Gemeindestraße</nora:klasse>
+      <nora:klasse_org>1307</nora:klasse_org>
+      <nora:name_kurz>Fünf Linden</nora:name_kurz>
+      <nora:europastrasse>0</nora:europastrasse>
+      <nora:anzahl>2</nora:anzahl>
+      <nora:kennung>0842602112519</nora:kennung>
+      <nora:ebene>0</nora:ebene>
+      <nora:geom>
+        <gml:LineString srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2" gml:id="v_verkehrslinie.657f5e04-e18d-4c71-adfe-3d8d4b409faa.geom">
+          <gml:posList>557132.77 5327827.64 557167.06 5327818.73</gml:posList>
+        </gml:LineString>
+      <
+Weitere FeatureTypes u.a.: nora:v_verkehrsflaeche, nora:v_verkehrspunkt, nora:v_bauwerkslinie/-punkt/-flaeche (Brücken/Bauwerke)

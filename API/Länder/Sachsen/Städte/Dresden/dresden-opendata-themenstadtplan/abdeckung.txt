@@ -1,15 +1,15 @@
-QUELLE:         Dresden — Themenstadtplan / Open Data
-BETREIBER:      Landeshauptstadt Dresden, Straßen- und Tiefbauamt; Smart City Dresden (Urban Platform / Connected Urban Twins)
+QUELLE:         Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)
+BETREIBER:      Landeshauptstadt Dresden, Straßen- und Tiefbauamt; GIS-Backend kommisdd.dresden.de (cardoGIS / cardogis.com WFS3-Server)
 EBENE:          Stadt:Dresden,Sachsen
-DATENTYP:       Straßenbaustellen & Umleitungen (Straßen/Gehwege/Brücken), Verkehrsdaten
+DATENTYP:       aktuelle + zukünftige Verkehrseinschränkungen/Straßenbaustellen (typ/Sperrungsart, sperrgrund, datum_von, datum_bis, kategorie, staid) als LineString
 STRASSENTYP:    innerorts
-FORMAT:         WFS / GeoJSON (Portal: 'standardisiert, maschinenlesbar')
-ENDPUNKT:       -
-DOKU:           https://opendata.dresden.de/
+FORMAT:         OGC API Features (WFS3), GeoJSON, EPSG:4326 (auch 25833 verfügbar)
+ENDPUNKT:       https://kommisdd.dresden.de/net4/public/ogcapi/collections/L60/items?f=json  (L60=aktuelle, L150=zukünftige Verkehrseinschränkungen; Katalog: https://kommisdd.dresden.de/net4/public/ogcapi/collections?f=json)
+DOKU:           https://opendata.dresden.de/  (Themenstadtplan; OGC-Service: https://www.cardogis.com/WFS3Server)
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ:         Dresden Open Data — kommerziell + nichtkommerziell erlaubt, Namensnennung der Lizenzbedingungen
-UPDATE:         je Dienst
-STATUS:         zu-bestätigen
-NOTIZ:          Portal bestätigt (>1.100 Datensätze), exakter Baustellen-WFS/GeoJSON-Endpunkt nicht live geholt (apiEndpunkt=null). Teil der Urban Platform. Im Katalog gezielt nach 'Verkehr'/'Baustelle' suchen → Baustellen-WFS sehr wahrscheinlich vorhanden.
+UPDATE:         laufend (letzte_aenderung je Feature)
+STATUS:         verifiziert
+NOTIZ:          GELÖST. opendata.dresden.de ist ein SPA (redirect /informationsportal/, KEIN CKAN-API — /api/3/action = 404). Die echten Geodaten liegen auf dem cardoGIS-Backend kommisdd.dresden.de als OFFENE OGC-API-Features (WFS3), 866 öffentliche Layer. Baustellen = L60 "aktuelle Verkehrseinschränkungen" (+ L150 "zukünftige"). GetItems lieferte 200 + valides GeoJSON EPSG:4326 mit echten Feldern (typ, sperrgrund_format z.B. "Schachtarbeiten Trinkwasser i.A. SachsenEnergieBau", datum_von/bis, kategorie). Pagination via limit/offset. test.sh ruft L60, limit=2.

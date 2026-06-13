@@ -4,12 +4,12 @@ EBENE:          Stadt:Essen,Nordrhein-Westfalen
 DATENTYP:       Baustellen/Verkehr über RVR-Geonetzwerk-Verbund (Essen = eine der 11 RVR-Städte)
 STRASSENTYP:    innerorts
 FORMAT:         WFS / WMS (über RVR-Muster)
-ENDPUNKT:       -  (eigener offener Baustellen-Endpunkt analog Herne-Muster wahrscheinlich, geodaten.essen.de-GeoServer; beim Test nicht aufgelöst → zu-bestätigen)
-DOKU:           https://www.rvr.ruhr/daten-digitales/geodaten/geonetzwerk/  (open.nrw-Suche "Essen")
-ZUGANG:         offen/zu-bestätigen
+ENDPUNKT:       -  (KEIN eigener offener Baustellen-WFS für Essen; Baustellen-Info nur als Web-Portal essen.de/baustellen. Bezug über RVR-Aggregator: ../../../../../Sonstige/rvr-geonetzwerk-ruhr-baustellen)
+DOKU:           https://www.essen.de/leben/mobilitaet/kost__koordinierungsstelle_baustellen.de.html  (KOST; RVR: https://www.rvr.ruhr/daten-digitales/geodaten/geonetzwerk/; OpenData: https://opendata.essen.de/)
+ZUGANG:         offen (nur als Web-Portal) / als API nicht vorhanden
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ:         je Datensatz (RVR-Verbund; teils restriktiv wie Herne)
 UPDATE:         je Dienst
 STATUS:         zu-bestätigen
-NOTIZ:          Kein eigener Live-Endpunkt verifiziert. geodaten.essen.de/geoserver/verkehr/baustellen löste beim Test NICHT auf (HTTP 000). PRAGMATISCH: Essen über RVR (../../../../../Sonstige/rvr-geonetzwerk-ruhr-baustellen) abdecken statt Einzelstadt. Pfad-Heuristik geodaten.<stadt>.de/geoserver/verkehr/baustellen weiter durchprobieren (Herne = verifiziertes Vorbild).
+NOTIZ:          NICHT FIXBAR auf Einzelstadt-Ebene — bleibt 🟡 als Verweis-Quelle. Gegencheck gemacht: (a) geodaten.essen.de / geo.essen.de / gis.essen.de lösen NICHT auf (Connection-Fail, kein DNS/TLS). (b) geoportal.essen.de lebt, hat aber KEINEN GeoServer (/geoserver/ows und /geoserver/web = HTTP 404) — nur Fach-Apps (Baulast, Planen+Bauen). (c) opendata.essen.de ist ein Drupal-OpenData-Portal OHNE CKAN-API (/api/3/action = 301/404); Volltextsuche zeigt KEINEN Baustellen-Datensatz (vorhanden: Straßenabschnittsverzeichnis, Radverkehrsnetz, Hauskoordinaten — keine Baustellen). (d) Die Baustellen-Koordinierung "KOST" / "Baustelleninformation Stadt Essen" wird ausschließlich als HTML-Portal (essen.de/baustellen) publiziert, NICHT als offener WFS/GeoJSON. (e) open.nrw "baustellen-rvr" zeigt faktisch auf den Herne-GeoServer (separat verifiziert). FAZIT: Essen-Baustellen pragmatisch über den RVR-Aggregator abdecken; der Herne-WFS ist das verifizierte Vorbild des Pfad-Musters geodaten.<stadt>.de/geoserver/verkehr/baustellen — für Essen existiert dieser Host aber nicht.

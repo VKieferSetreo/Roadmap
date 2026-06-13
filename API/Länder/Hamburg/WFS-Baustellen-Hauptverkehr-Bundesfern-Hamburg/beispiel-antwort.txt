@@ -1,60 +1,7 @@
-== Verkehr-OpenData Archiv-Snapshot (GML, head) ==
-<?xml version='1.0' encoding='UTF-8'?>
-<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd http://www.deegree.org/app https://geodienste.hamburg.de/HH_WFS_Verkehr_opendata?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;TYPENAME=app:verkehr_baustellen_prod&amp;NAMESPACE=xmlns(app=http%3A%2F%2Fwww.deegree.org%2Fapp)" xmlns:wfs="http://www.opengis.net/wfs" timeStamp="2019-02-20T22:38:16Z" xmlns:gml="http://www.opengis.net/gml">
-  <gml:featureMember>
-    <app:verkehr_baustellen_prod xmlns:app="http://www.deegree.org/app" gml:id="APP_VERKEHR_BAUSTELLEN_PROD_145940">
-      <app:id_kost>12</app:id_kost>
-      <app:typ>F</app:typ>
-      <app:strasse>Stresemannstraße</app:strasse>
-      <app:abschnitt_von>Kaltenkircher Platz/ Kreuzungsbereich</app:abschnitt_von>
-      <app:abschnitt_bis></app:abschnitt_bis>
-      <app:beginn>im Bau</app:beginn>
-      <app:ende>voraussichtlich 22.03.2019</app:ende>
-      <app:dauer></app:dauer>
-      <app:art>Altona-Nord - Leitungsbauarbeiten.&lt;br />Bauträger: HWW.&lt;br />1. Halbseitige Fahrbahnsperrung stadteinwärts. Verschwenkung über Gegenfahrbahn. Einengung von 2 auf 1 Fahrstreifen je Richtung. &lt;br />2. Sperrung des rechten Linksabbiegefahrstreifens Richtung Kaltenkircher Platz. Einengung von 2 auf 1 Linksabbiegefahrstreifen. &lt;br />3. Kaltenkircher Platz: Sperrung des Linksabbiegefahrstreifens Richtung Stresemannstraße. Der Verkehr wird örtlich abgeleitet.&lt;br />4. Harkortstraße: Sperrung des Rechtsabbiegefahrstreifens Richtung Stresemannstraße. Die Umleitung ist ausgeschildert.&lt;br />!! Staugefahr !!</app:art>
-      <app:url></app:url>
-      <app:hinweis></app:hinweis>
-      <app:vz_nr>123</app:vz_nr>
-      <app:created>2019-02-20T16:11:35</app:created>
-      <app:geom>
-        <!--Inlined geometry 'APP_VERKEHR_BAUSTELLEN_PROD_145940_APP_GEOM'-->
-        <gml:Point gml:id="APP_VERKEHR_BAUSTELLEN_PROD_145940_APP_GEOM" srsName="EPSG:25832">
-          <gml:pos>562399.000 5935352.000</gml:pos>
-        </gml:Point>
-      </app:geom>
-    </app:verkehr_baustellen_prod>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:verkehr_baustellen_prod xmlns:app="http://www.deegree.org/app" gml:id="APP_VERKEHR_BAUSTELLEN_PROD_145941">
-      <app:id_kost>13</app:id_kost>
-      <app:typ>F</app:typ>
-      <app:strasse>Eimsbütteler Marktplatz</app:strasse>
-      <app:abschnitt_von>Eduardstraße</app:abschnitt_von>
-      <app:abschnitt_bis>Fruchtallee</app:abschnitt_bis>
-      <app:beginn>im Bau</app:beginn>
-      <app:ende>voraussichtlich 29.03.2019</app:ende>
-      <app:dauer></app:dauer>
-      <app:art>Eimsbüttel - Leitungsbauarbeiten.&lt;br />Bauträger: Stromnetz Hamburg GmbH.&lt;br />Abschnittsweise Sperrung des rechten Fahrstreifens stadteinwärts. Einengung von 3 auf 2 Fahrstreifen.</app:art>
-      <app:url></app:url>
-      <app:hinweis></app:hinweis>
-      <app:vz_nr>123</app:vz_nr>
-      <app:created>2019-02-20T16:11:35</app:created>
-      <app:geom>
-        <!--Inlined geometry 'APP_VERKEHR_BAUSTELLEN_PROD_145941_APP_GEOM'-->
-        <gml:Point gml:id="APP_VERKEHR_BAUSTELLEN_PROD_145941_APP_GEOM" srsName="EPSG:25832">
-          <gml:pos>562752.000 5936471.000</gml:pos>
-        </gml:Point>
-      </app:geom>
-    </app:verkehr_baustellen_prod>
-  </gml:featureMember>
-  <gml:featureMember>
-    <app:verkehr_baustellen_prod xmlns:app="http://www.deegree.org/app" gml:id="APP_VERKEHR_BAUSTELLEN_PROD_145942">
-      <app:id_kost>14</app:id_kost>
-      <app:typ>F</app:typ>
-      <app:strasse>Fruchtallee</app:strasse>
-      <app:abschnitt_von>Eppendorfer Weg</app:abschnitt_von>
-      <app:abschnitt_bis>Eimsbütteler Chaussee</app:abschnitt_bis>
-      <app:beginn>im Bau</app:beginn>
-      <app:ende>voraussichtlich 29.03.2019</app:ende>
-      <app:dauer></app:dauer>
-      <app:art>Eimsbüttel - Leitungsbauarbeit
+== Alter Verkehr-WFS (abgelöst, erwartet 404) ==
+HTTP 404 | text/html
+
+== Nachfolger hh_wfs_baustellen (grün, erwartet 200) ==
+HTTP 200 | text/xml;charset=UTF-8
+
+Bezug: ../WFS-Baustellen-Hamburg (FeatureType de.hh.up:baustelle)

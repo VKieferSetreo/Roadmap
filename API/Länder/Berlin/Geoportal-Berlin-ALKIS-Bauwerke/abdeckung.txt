@@ -3,13 +3,13 @@ BETREIBER: SenSBW (Geodaten Berlin)
 EBENE: Land (Berlin)
 DATENTYP: ALKIS-Bauwerke (Gebäude/Brücken-Geometrie), Adressen, Basiskarten
 STRASSENTYP: Alle (Berliner Stadtgebiet)
-FORMAT: WFS 1.0/1.1/2.0, WMS
-ENDPUNKT: null (Dienst-URLs migrieren von fbinter.stadt-berlin.de → gdi.berlin.de; je Datensatz in Geodatensuche auflösen)
+FORMAT: WFS 1.0/1.1/2.0 (GeoJSON/GML/GeoPackage), WMS
+ENDPUNKT: https://gdi.berlin.de/services/wfs/detailnetz?service=WFS&version=2.0.0&request=GetFeature&typeNames=detailnetz:b_bauwerke&count=1&outputFormat=application/json   (Detailnetz Bauwerke = Brücken/Tunnel; FeatureType detailnetz:b_bauwerke)
 DOKU: https://gdi.berlin.de/geonetwork/srv/ger/catalog.search#/home
 ZUGANG: offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ: DL-DE meist /Zero oder /BY-2.0
 UPDATE: laufend (Migration läuft)
-STATUS: zu-bestätigen
-NOTIZ: FIS-Broker abgeschaltet 01.12.2025 → Geoportal Berlin (https://gdi.berlin.de/viewer/main/) + Geodatensuche Berlin. Konkrete Dienst-URL je Datensatz über Geodatensuche auflösen, da Migration läuft. Kein einzelner fester API-Endpunkt → Portal-Eintrag.
+STATUS: verifiziert
+NOTIZ: LIVE GETESTET 2026-06-13: neuer migrierter Dienst gdi.berlin.de/services/wfs/detailnetz, GetFeature detailnetz:b_bauwerke count=1 outputFormat=application/json → HTTP 200, valide GeoJSON-FeatureCollection (1005 Bauwerke total, MultiLineString, EPSG:25833). Attribute u.a. bauwerksart (z.B. TU=Tunnel/BR=Brücke), bauwerksname, bauwerksnummer, sib_bauwerksnummer, okstra_id — exakt das GST-relevante Detailnetz-Bauwerke. Weitere Layer im selben Dienst: detailnetz:c_strassenabschnitte, detailnetz:a_verbindungspunkte. ERSETZT den abgeschalteten FIS-Broker (fbinter.stadt-berlin.de, aus seit 01.12.2025). GetCapabilities: https://gdi.berlin.de/services/wfs/detailnetz?request=GetCapabilities&service=WFS . Viewer/Katalog weiterhin: https://gdi.berlin.de/viewer/main/ , https://gdi.berlin.de/geonetwork/srv/ger/catalog.search#/home .

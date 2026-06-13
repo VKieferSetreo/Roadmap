@@ -1,4 +1,40 @@
-== OpenGeoData NI Hub (HTTP-Status) ==
-HTTP 200 | text/html; charset=utf-8
-
-Nächster Schritt: gewünschten Datensatz im Hub öffnen → Tab 'I want to use this' / 'API' → FeatureServer- bzw. GeoJSON-URL kopieren.
+== LGLN ATKIS Basis-DLM: GetFeature adv:AX_Strassenachse count=1 (GML 3.2.1) ==
+<?xml version='1.0' encoding='utf-8'?><wfs:FeatureCollection xmlns="http://www.adv-online.de/namespaces/adv/gid/7.1" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" timeStamp="2026-06-13T17:26:20.003+02:00" numberReturned="1" numberMatched="unknown" xsi:schemaLocation="http://www.adv-online.de/namespaces/adv/gid/7.1 https://download.lgln.niedersachsen.de/aaa-suite/schema/NAS/7.1/adv/nas/7.1/AAA-Fachschema.xsd http://www.opengis.net/wfs/2.0 https://download.lgln.niedersachsen.de/aaa-suite/schema/ogc/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 https://download.lgln.niedersachsen.de/aaa-suite/schema/NAS/7.1/ogc/gml/3.2.1/gml.xsd http://www.isotc211.org/2005/gco https://download.lgln.niedersachsen.de/aaa-suite/schema/NAS/7.1/iso/19139/20070417/gco/gco.xsd http://www.isotc211.org/2005/gmd https://download.lgln.niedersachsen.de/aaa-suite/schema/NAS/7.1/iso/19139/20070417/gmd/gmd.xsd">
+<wfs:boundedBy>
+<gml:Envelope srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2">
+<gml:lowerCorner>482614.637 5878036.304</gml:lowerCorner>
+<gml:upperCorner>482625.613 5878049.072</gml:upperCorner>
+</gml:Envelope>
+</wfs:boundedBy>
+<wfs:member>
+<AX_Strassenachse gml:id="DENIAT0100000A1Q">
+<gml:identifier codeSpace="http://www.adv-online.de/">urn:adv:oid:DENIAT0100000A1Q</gml:identifier>
+<lebenszeitintervall>
+<AA_Lebenszeitintervall>
+<beginnt>2018-04-03T14:33:56Z</beginnt>
+</AA_Lebenszeitintervall>
+</lebenszeitintervall>
+<modellart>
+<AA_Modellart>
+<advStandardModell>Basis-DLM</advStandardModell>
+</AA_Modellart>
+</modellart>
+<modellart>
+<AA_Modellart>
+<advStandardModell>DTK25</advStandardModell>
+</AA_Modellart>
+</modellart>
+<modellart>
+<AA_Modellart>
+<advStandardModell>DTK10</advStandardModell>
+</AA_Modellart>
+</modellart>
+<istTeilVon xlink:href="urn:adv:oid:DENIAT0100008mEq"/>
+<position>
+<gml:LineString gml:id="o42003.id.145343.position.Geom_0" srsName="urn:ogc:def:crs:EPSG::25832" srsDimension="2">
+<gml:posList>482614.637 5878049.072 482625.613 5878036.304</gml:posList>
+</gml:LineString>
+</position>
+<anzahlDerFahrstreifen>2</anzahlDerFahrstreifen>
+<
+Weitere FeatureTypes u.a.: adv:AX_Strasse, adv:AX_Fahrbahnachse, adv:AX_BauwerkImVerkehrsbereich (Brücken/Tunnel)

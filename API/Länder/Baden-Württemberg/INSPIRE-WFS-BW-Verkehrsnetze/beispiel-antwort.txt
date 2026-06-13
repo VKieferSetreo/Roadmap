@@ -1,0 +1,19 @@
+== INSPIRE BW Verkehrsnetze: GetFeature tn-ro:RoadLink count=1 (GML 3.2) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://inspire.ec.europa.eu/schemas/tn-ro/4.0 https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_INSP_BW_Verkehrsnetz_ATKIS_BasisDLM?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2&amp;TYPENAME=tn-ro:RoadLink&amp;NAMESPACES=xmlns(tn-ro,http%3A%2F%2Finspire.ec.europa.eu%2Fschemas%2Ftn-ro%2F4.0)" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2026-06-13T15:32:02Z" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="unknown" numberReturned="0">
+  <!--NOTE: numberReturned attribute should be 'unknown' as well, but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925.-->
+  <wfs:member>
+    <tn-ro:RoadLink xmlns:tn-ro="http://inspire.ec.europa.eu/schemas/tn-ro/4.0" gml:id="RoadLink.DEBWB0010000to1Y">
+      <gml:identifier codeSpace="https://inspire.ec.europa.eu/ids">https://registry.gdi-de.org/id/de.bw.lgl/RoadLink_DEBWB0010000to1Y</gml:identifier>
+      <net:beginLifespanVersion xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0">2020-07-14T12:48:18</net:beginLifespanVersion>
+      <net:inspireId xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0">
+        <base:Identifier xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3">
+          <base:localId>RoadLink_DEBWB0010000to1Y</base:localId>
+          <base:namespace>https://registry.gdi-de.org/id/de.bw.lgl</base:namespace>
+        </base:Identifier>
+      </net:inspireId>
+      <net:endLifespanVersion xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xsi:nil="true" nilReason="other:unpopulated"/>
+      <net:inNetwork xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0" xsi:nil="true" nilReason="other:unpopulated"/>
+      <net:centrelineGeometry xmlns:net="http://inspire.ec.europa.eu/schemas/net/4.0">
+        <!--In
+Lizenz (aus Capabilities): Unentgeltliche Nutzung nach Open Data, dl-de/by-2-0.

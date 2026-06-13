@@ -4,12 +4,12 @@ EBENE: Land (Mecklenburg-Vorpommern)
 DATENTYP: Verkehrsnetz-Topologie (INSPIRE TN), Basis-DLM (~70 Objektarten inkl. Straßen, Bahn, Wasser) — KEINE Traglast
 STRASSENTYP: Alle (Netzgeometrie)
 FORMAT: WFS 2.0 (GML)
-ENDPUNKT: null (Metadaten-IDs: 495d1f90-4b52-438f-9a0a-7f8d9de548f3 TN; 7420e63e-… Basis-DLM NAS — exakte Dienst-URL über GeoPortal.MV CapabilitiesViewer auflösen)
+ENDPUNKT: https://www.geodaten-mv.de/dienste/inspire_tn_atkis_bdlm_download?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=tn-ro:RoadLink&COUNT=1   (INSPIRE TN Download-WFS; FeatureType tn-ro:RoadLink; GML 3.2.1)
 DOKU: https://www.geoportal-mv.de/portal/Geowebdienste/CapabilitiesViewer
 ZUGANG: offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ: dl-de/by-2.0 (Geobasis MV)
 UPDATE: regelmäßig
-STATUS: zu-bestätigen
-NOTIZ: Metadaten bestätigt, raw Dienst-URL noch über GeoPortal.MV CapabilitiesViewer aufzulösen. Geobasis-Open-Data MV. Netzgeometrie; Bauwerke separat. Datenübersicht: https://www.geoportal-mv.de/portal/Geodatenviewer/Datenuebersicht
+STATUS: verifiziert
+NOTIZ: LIVE GETESTET 2026-06-13: Download-WFS www.geodaten-mv.de/dienste/inspire_tn_atkis_bdlm_download (WFS 2.0.0), GetFeature tn-ro:RoadLink COUNT=1 → HTTP 200, application/gml+xml 3.2.1, valide FeatureCollection (numberMatched=293771 RoadLinks, EPSG:25833, INSPIRE Transport Networks Schema v4.0). On-the-fly INSPIRE-Transformation aus ATKIS Basis-DLM. Reicher TN-Layer-Satz: tn-ro:Road, tn-ro:ERoad, tn-ro:RoadArea, tn-ro:RoadServiceArea, tn-ra:RailwayLink u.v.m. GetCapabilities: https://www.geodaten-mv.de/dienste/inspire_tn_atkis_bdlm_download?SERVICE=WFS&REQUEST=GetCapabilities . Verwandt + ebenfalls live: NAS-WFS atkis_bdlm_wfs_nas (HTTP 200). Nur Netzgeometrie/-klassifizierung; Bauwerke/Traglast separat. Datenübersicht: https://www.geoportal-mv.de/portal/Geodatenviewer/Datenuebersicht

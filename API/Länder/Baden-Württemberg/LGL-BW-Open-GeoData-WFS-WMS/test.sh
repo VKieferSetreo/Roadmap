@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# LGL-BW Open GeoData / GDI-BW — Geobasis-Dienste.
-# HINWEIS: Der konkrete WFS/WMS-GetCapabilities-Endpunkt ist NICHT öffentlich aufgelöst
-# (siehe abdeckung.txt, STATUS: zu-bestätigen). Kein erfundener Endpunkt.
-# Dieser Test prüft das Open-GeoData-Portal (Einstiegspunkt für die Dienst-Auflösung).
-# Lauffähig mit: bash test.sh
+# LGL-BW Open GeoData / GDI-BW — offener ATKIS-Basis-DLM-WFS (NOrA-Schema).
+# Aufgelöst + live: owsproxy.lgl-bw.de WFS_LGL-BW_ATKIS_Basis-DLM. Open Data,
+# dl-de/by-2-0. Dieser Call holt EINE Verkehrslinie (Straßennetz) als GML 3.2.
+set -euo pipefail
 
-UA="Roadmap-Setreo-API-Katalog/1.0 (Schwertransport-Routing; kontakt: klattigmaximilian@gmail.com)"
-URL="https://opengeodata.lgl-bw.de/"
+BASE="https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ATKIS_Basis-DLM"
 
-curl -sSL --max-time 30 -A "$UA" -o /dev/null \
-  -w "HTTP %{http_code}  type=%{content_type}\n" "$URL"
-echo "# Dienst-URLs über GDI-BW-Katalog auflösen: https://metadaten.geoportal-bw.de/"
+echo "== LGL-BW ATKIS Basis-DLM: GetFeature nora:v_verkehrslinie count=1 (GML 3.2) =="
+curl -sSL --max-time 90 \
+  "${BASE}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=nora:v_verkehrslinie&COUNT=1" \
+  | head -c 2200
+echo
+echo "Weitere FeatureTypes u.a.: nora:v_verkehrsflaeche, nora:v_verkehrspunkt, nora:v_bauwerkslinie/-punkt/-flaeche (Brücken/Bauwerke)"

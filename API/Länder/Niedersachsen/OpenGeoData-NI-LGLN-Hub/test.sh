@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# OpenGeoData Niedersachsen (LGLN ArcGIS Hub) — offen, keine Auth.
-# Hinweis: konkrete FeatureServer-URL je Datensatz erst über den Hub abrufbar (nicht raten).
-# Dieser Call prüft die Erreichbarkeit des Hub-Portals.
+# OpenGeoData Niedersachsen (LGLN) — offen, keine Auth (doorman/noauth).
+# Konkret aufgelöst + live: ATKIS-Basis-DLM-WFS der LGLN-OpenData-Plattform.
+# Dieser Call holt EINE Straßenachse (klassifiziertes Straßennetz) als GML 3.2.1.
+# Hinweis: Auf dem ArcGIS-Hub liegt das "Klassifizierte Straßennetz" nur als WMS
+# (kein FeatureServer/GeoJSON-Query); die Vektor-Geometrie kommt aus diesem WFS.
 set -euo pipefail
 
-URL="https://ni-lgln-opengeodata.hub.arcgis.com/"
+BASE="https://opendata.lgln.niedersachsen.de/doorman/noauth/atkisbdlm_hb_wfs_sf"
 
-echo "== OpenGeoData NI Hub (HTTP-Status) =="
-curl -sSL --max-time 30 -o /dev/null -w "HTTP %{http_code} | %{content_type}\n" "${URL}"
+echo "== LGLN ATKIS Basis-DLM: GetFeature adv:AX_Strassenachse count=1 (GML 3.2.1) =="
+curl -sSL --max-time 90 \
+  "${BASE}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Strassenachse&COUNT=1" \
+  | head -c 2200
 echo
-echo "Nächster Schritt: gewünschten Datensatz im Hub öffnen → Tab 'I want to use this' / 'API' → FeatureServer- bzw. GeoJSON-URL kopieren."
+echo "Weitere FeatureTypes u.a.: adv:AX_Strasse, adv:AX_Fahrbahnachse, adv:AX_BauwerkImVerkehrsbereich (Brücken/Tunnel)"

@@ -4,16 +4,15 @@ EBENE:          Land:Bayern
 DATENTYP:       ATKIS Basis-DLM (topographisches Landschaftsmodell inkl. Objektbereich Verkehr/Straßen); INSPIRE-WMS "Verkehrsnetze ATKIS Basis-DLM"
 STRASSENTYP:    Alle (Topographie)
 FORMAT:         Download (Shapefile / GeoPackage) / WFS / WMS / WMTS
-ENDPUNKT:       -   (konkreter WFS/Download-Endpunkt über OpenData-/Dienste-Seite aufzulösen)
+ENDPUNKT:       https://geoservices.bayern.de/wfs/v1/ogc_atkis_basisdlm.cgi?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Strassenachse&COUNT=1   (offener BVV-WFS ATKIS Basis-DLM, AAA 7.1.2; GML 3.2.1)
 DOKU:           https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm
 ZUGANG:         offen
 ACCOUNT_NOETIG: NEIN
 API_KEY_NOETIG: NEIN
 LIZENZ:         CC BY 4.0 — "Datenquelle: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de"
 UPDATE:         periodisch (Geobasis-Fortführung)
-STATUS:         zu-bestätigen
-NOTIZ:          OpenData + CC BY 4.0 bestätigt; exakte Dienst-/Download-URLs zu-bestätigen
-                (KEINE URL erfunden). Auflösen über:
+STATUS:         verifiziert
+NOTIZ:          LIVE GETESTET 2026-06-13: offener BVV-WFS geoservices.bayern.de/wfs/v1/ogc_atkis_basisdlm.cgi (WFS 2.0.0, ATKIS Basis-DLM AAA-Modell-basiert, OK-Katalog 7.1.2, keine Auth, CC BY 4.0). GetCapabilities → HTTP 200 (text/xml). GetFeature adv:AX_Strassenachse COUNT=1 → HTTP 200, application/gml+xml 3.2.1, valide FeatureCollection (gml:id DEBYBDLM… = DE-Bayern Basis-DLM, EPSG:25832). Reicher Verkehr-FeatureType-Satz: adv:AX_Strasse, adv:AX_Strassenachse, adv:AX_Fahrbahnachse, adv:AX_Strassenverkehr, adv:AX_Strassenverkehrsanlage, adv:AX_BauwerkImVerkehrsbereich (Brücken/Tunnel) u.v.m. GetCapabilities: https://geoservices.bayern.de/wfs/v1/ogc_atkis_basisdlm.cgi?SERVICE=WFS&REQUEST=GetCapabilities . Günstiger lizenziert als das BW-INSPIRE-Pendant. Netz-Geometrie + Klassifizierung; Höhen/Restriktionen NICHT Hauptmerkmal. Weitere Bezugswege (Atom/Download):
                 Dienste:        https://www.ldbv.bayern.de/produkte/dienste/geodatendienste.html
                 ATKIS Download: https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm
                 INSPIRE-WMS Verkehrsnetze (Record):

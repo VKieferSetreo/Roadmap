@@ -1,7 +1,37 @@
-== GeoPortal Bremen (HTTP-Status) ==
-HTTP 200 | text/html
+== WMS Straßennetz Land Bremen: GetCapabilities (head) ==
+<?xml version='1.0' encoding='UTF-8'?>
+<WMS_Capabilities version="1.3.0" updateSequence="0" xmlns="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sld="http://www.opengis.net/sld" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>WMS Straßennetz Land Bremen</Title>
+    <Abstract>Dieser Darstellungsdienst (WMS) stellt Daten zum INSPIRE-Thema Verkehrsnetze in der Freien Hansestadt Bremen (FHB) dar. 
 
-== GIS-Hub Bremen (HTTP-Status) ==
-HTTP 200 | text/html
-
-Nächster Schritt: Layer 'Detailnetz Bauwerke' im GeoPortal/MetaVer öffnen → WFS-URL kopieren.
+Das Straßeninformationssystem TTSIB enthält das Bundesfernstraßennetz und das nachgeordnete kommunale Straßennetz der FHB als Knoten- und Kantenmodell nach ASB (Anweisung Straßendaten-Banken) und OKStra (Objektkatalog Straße). Es sind alle Autobahnen, Bundesstraßen und kommunale Straßen, welche in der Baulast der FBH liegen, erfasst.</Abstract>
+    <OnlineResource xlink:type="simple" xlink:href="https://geo.bremen.de"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson></ContactPerson>
+        <ContactOrganization>Koordinierungsstelle GDI-FHB</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition></ContactPosition>
+      <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Lloydstraße 4</Address>
+        <City>Bremen</City>
+        <StateOrProvince>Land Bremen</StateOrProvince>
+        <PostCode>28217</PostCode>
+        <Country>Germany</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone></ContactVoiceTelephone>
+      <ContactFacsimileTelephone></ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>gdi-koordinierungsstelle@geo.bremen.de</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>Creative Commons Namensnennung (CC-BY), Quellenvermerk: Freie Hansestadt Bremen, Amt für Straßen und Verkehr</Fees>
+    <AccessConstraints>Es gelten keine Zugriffsbeschränkungen</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+     
+Layer u.a.: bundesautobahnen, bundesstrassen, gemeindestrassen, nullpunkte
