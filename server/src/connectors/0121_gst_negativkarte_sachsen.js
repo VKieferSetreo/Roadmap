@@ -10,6 +10,32 @@ const QUELLE_NAME = "GST-Negativkarten Sachsen (LASuV) — gesperrte Brücken (P
 const SEITE = "https://www.lasuv.sachsen.de/gst-negativkarten.html"
 const HOST = "https://www.lasuv.sachsen.de"
 
+// Sächsische Kreise → Zentroid [lat,lng]. Die Negativkarte ist EIN PDF je Landkreis (kein Einzel-
+// Bauwerk) → Karten-Lage ist bewusst nur Landkreis-grob. Schlüssel sind diakritik-gefaltete Tokens.
+const SACHSEN_KREISE = {
+  bautzen: [51.30, 14.30], goerlitz: [51.20, 14.85], meissen: [51.25, 13.55],
+  mittelsachsen: [51.00, 13.05], nordsachsen: [51.45, 12.85],
+  "saechsische schweiz": [50.85, 13.85], vogtland: [50.50, 12.20],
+  zwickau: [50.75, 12.55], erzgebirg: [50.55, 13.05],
+  "leipzig stadt": [51.34, 12.37], "stadt leipzig": [51.34, 12.37], leipzig: [51.15, 12.55],
+  chemnitz: [50.83, 12.92], dresden: [51.05, 13.74],
+}
+/** Diakritik-Faltung (ä→ae …) für robustes Kreis-Matching aus Dateinamen. */
+function falte(s) {
+  return String(s ?? "").toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[-_]/g, " ").replace(/\s+/g, " ").trim()
+}
+/** Landkreis-Name → Zentroid (längster passender Schlüssel gewinnt; "leipzig stadt" vor "leipzig"). */
+function kreisZentroid(landkreis) {
+  const f = falte(landkreis)
+  let best = null
+  for (const [key, coord] of Object.entries(SACHSEN_KREISE)) {
+    if (f.includes(key) && (!best || key.length > best.key.length)) best = { key, coord }
+  }
+  return best?.coord ?? null
+}
+
 // Dateiname → Landkreis + Tonnage + Stand. z.B. Negativkarte_Bautzen_48t_Stand_16_10_2025.pdf
 function parse(url) {
   const fn = decodeURIComponent(url.split("/").pop() ?? "")
@@ -37,13 +63,14 @@ export const gstNegativkarteSachsenConnector = {
     const obstacles = []
     for (const url of links) {
       const { landkreis, tonnageT, stand } = parse(url)
+      const [lat, lng] = kreisZentroid(landkreis) ?? [null, null]
       obstacles.push(makeNormalized({
         externeId: url.split("/").pop(),
         kategorie: "gewicht",
         name: `GST-Negativkarte ${landkreis ?? ""}${tonnageT ? ` (${tonnageT} t)` : ""}`.trim(),
         beschreibung: `Für Großraum-/Schwertransporte gesperrte/begrenzte Brücken im Landkreis ${landkreis ?? "?"} ` +
-          `(Bezugsgewicht ${tonnageT ?? "?"} t). Quelle ist eine PDF-Karte — Geokodierung nachgelagert.`,
-        lat: null, lng: null,
+          `(Bezugsgewicht ${tonnageT ?? "?"} t). Quelle ist eine PDF-Karte${lat ? " — Lage Landkreis-grob" : " — ohne Geokoordinaten"}.`,
+        lat, lng,
         strassenRef: null,
         attrs: {
           grundsaetzlicheGstSperre: true,

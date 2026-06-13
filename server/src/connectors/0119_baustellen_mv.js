@@ -3,7 +3,7 @@
 // WFS 2.0, GeoJSON, EPSG:25833 (UTM Zone 33N!) → utmZuWgs84(e,n,33). ~107 Baustellen.
 // LIZENZ: AccessConstraints "Urheberrecht" — kommerzielle Nutzung mit LS M-V klären.
 
-import { makeNormalized, getJson, utmZuWgs84, dateOnly, tonnageAusText, meterAusText, num } from "./_helpers.js"
+import { makeNormalized, getJson, utmZuWgs84, dateOnly, tonnageAusText, meterAusText, num, stabilHash } from "./_helpers.js"
 
 const QUELLE_NAME = "Straßenbaustellen Mecklenburg-Vorpommern (LS M-V / SBV)"
 const QUELLE_URL = "https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr"
@@ -44,7 +44,8 @@ export const baustellenMvConnector = {
       const text = [p.sperrart, p.erlaeuterung, p.verkehrslenkung, p.anderemassnahmen].filter(Boolean).join(" — ")
       const tonnage = tonnageAusText(text)
       obstacles.push(makeNormalized({
-        externeId: p.gid ?? f.id ?? p.bsname,
+        // gid/f.id teils leer → Geometrie-Suffix gegen Upsert-Kollision (gleicher bsname mehrfach).
+        externeId: `${p.gid ?? f.id ?? p.bsname ?? "bs"}#${stabilHash(lat, lng)}`,
         kategorie: tonnage ? "gewicht" : "baustelle",
         name: p.bsname || `Baustelle ${p.vonort ?? ""}`,
         beschreibung: text || null,

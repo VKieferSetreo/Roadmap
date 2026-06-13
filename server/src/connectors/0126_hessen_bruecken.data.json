@@ -12,7 +12,9 @@
       "strasse_oben_uef": "B 27",
       "strasse_unten_uf": "B 83",
       "von_nk": "5024027O",
-      "nach_nk": "5024028O"
+      "nach_nk": "5024028O",
+      "lat": 50.983504,
+      "lng": 9.838805
     },
     {
       "bauwerksnummer": "4825501",
@@ -22,7 +24,9 @@
       "strasse_oben_uef": "B 27",
       "strasse_unten_uf": "",
       "von_nk": "4825032O",
-      "nach_nk": "4825002O"
+      "nach_nk": "4825002O",
+      "lat": 51.108282,
+      "lng": 9.971531
     },
     {
       "bauwerksnummer": "5617584",
@@ -32,7 +36,9 @@
       "strasse_oben_uef": "B 275",
       "strasse_unten_uf": "",
       "von_nk": "5617022O",
-      "nach_nk": "5617023O"
+      "nach_nk": "5617023O",
+      "lat": 50.361239,
+      "lng": 8.571425
     },
     {
       "bauwerksnummer": "5917726",
@@ -42,7 +48,9 @@
       "strasse_oben_uef": "B 40",
       "strasse_unten_uf": "K 807",
       "von_nk": "5917072O",
-      "nach_nk": "5917073O"
+      "nach_nk": "5917073O",
+      "lat": 50.082182,
+      "lng": 8.581593
     },
     {
       "bauwerksnummer": "5917726",
@@ -52,7 +60,9 @@
       "strasse_oben_uef": "B 40",
       "strasse_unten_uf": "K 807",
       "von_nk": "5917072O",
-      "nach_nk": "5917073O"
+      "nach_nk": "5917073O",
+      "lat": 50.082182,
+      "lng": 8.581593
     },
     {
       "bauwerksnummer": "6013504",
@@ -62,7 +72,9 @@
       "strasse_oben_uef": "B 42",
       "strasse_unten_uf": "Gehweg",
       "von_nk": "6013011O",
-      "nach_nk": "6013001O"
+      "nach_nk": "6013001O",
+      "lat": 49.976931,
+      "lng": 7.91464
     },
     {
       "bauwerksnummer": "6013926",
@@ -72,7 +84,9 @@
       "strasse_oben_uef": "B 42",
       "strasse_unten_uf": "",
       "von_nk": "6013011O",
-      "nach_nk": "6013001O"
+      "nach_nk": "6013001O",
+      "lat": 50.0293,
+      "lng": 7.8902
     },
     {
       "bauwerksnummer": "5021517",
@@ -82,7 +96,9 @@
       "strasse_oben_uef": "B 254",
       "strasse_unten_uf": "",
       "von_nk": "5021053O",
-      "nach_nk": "5021012O"
+      "nach_nk": "5021012O",
+      "lat": 50.943115,
+      "lng": 9.280582
     },
     {
       "bauwerksnummer": "5122504",
@@ -92,7 +108,9 @@
       "strasse_oben_uef": "B 454",
       "strasse_unten_uf": "",
       "von_nk": "5122017O",
-      "nach_nk": "5122018O"
+      "nach_nk": "5122018O",
+      "lat": 50.853962,
+      "lng": 9.384549
     },
     {
       "bauwerksnummer": "5123505",
@@ -102,7 +120,9 @@
       "strasse_oben_uef": "B 454",
       "strasse_unten_uf": "",
       "von_nk": "5123013O",
-      "nach_nk": "5123012O"
+      "nach_nk": "5123012O",
+      "lat": 50.851854,
+      "lng": 9.553823
     },
     {
       "bauwerksnummer": "5122507",
@@ -112,7 +132,9 @@
       "strasse_oben_uef": "B 454",
       "strasse_unten_uf": "",
       "von_nk": "5122015O",
-      "nach_nk": "5122014O"
+      "nach_nk": "5122014O",
+      "lat": 50.876035,
+      "lng": 9.368624
     },
     {
       "bauwerksnummer": "6317630",
@@ -122,7 +144,9 @@
       "strasse_oben_uef": "B 460",
       "strasse_unten_uf": "",
       "von_nk": "6317063O",
-      "nach_nk": "6318066O"
+      "nach_nk": "6318066O",
+      "lat": 49.64999,
+      "lng": 8.66768
     },
     {
       "bauwerksnummer": "6317632",
@@ -132,7 +156,9 @@
       "strasse_oben_uef": "B 460",
       "strasse_unten_uf": "",
       "von_nk": "6317063O",
-      "nach_nk": "6318066O"
+      "nach_nk": "6318066O",
+      "lat": 49.643675,
+      "lng": 8.66254
     },
     {
       "bauwerksnummer": "6317628",
@@ -142,7 +168,9 @@
       "strasse_oben_uef": "B 460",
       "strasse_unten_uf": "",
       "von_nk": "6317063O",
-      "nach_nk": "6318066O"
+      "nach_nk": "6318066O",
+      "lat": 49.64999,
+      "lng": 8.66768
     },
     {
       "bauwerksnummer": "5916577",
@@ -152,7 +180,9 @@
       "strasse_oben_uef": "B 519",
       "strasse_unten_uf": "L 3011",
       "von_nk": "5916089O",
-      "nach_nk": "5916043O"
+      "nach_nk": "5916043O",
+      "lat": 50.09494,
+      "lng": 8.42285
     },
     {
       "bauwerksnummer": "6316552",
@@ -162,7 +192,9 @@
       "strasse_oben_uef": "B 47",
       "strasse_unten_uf": "",
       "von_nk": "6316009",
-      "nach_nk": "6316018"
+      "nach_nk": "6316018",
+      "lat": 49.628473,
+      "lng": 8.36535
     },
     {
       "bauwerksnummer": "5416516",
@@ -172,7 +204,9 @@
       "strasse_oben_uef": "B 49",
       "strasse_unten_uf": "L 3052",
       "von_nk": "5416032O",
-      "nach_nk": "5416036O"
+      "nach_nk": "5416036O",
+      "lat": 50.56045,
+      "lng": 8.32625
     },
     {
       "bauwerksnummer": "5416564",
@@ -182,7 +216,9 @@
       "strasse_oben_uef": "B 49",
       "strasse_unten_uf": "B 277",
       "von_nk": "5416033O",
-      "nach_nk": "5417054O"
+      "nach_nk": "5417054O",
+      "lat": 50.570561,
+      "lng": 8.531245
     },
     {
       "bauwerksnummer": "5417515",
@@ -192,7 +228,9 @@
       "strasse_oben_uef": "B 49",
       "strasse_unten_uf": "L 3020",
       "von_nk": "5417054O",
-      "nach_nk": "5417008O"
+      "nach_nk": "5417008O",
+      "lat": 50.570561,
+      "lng": 8.531245
     },
     {
       "bauwerksnummer": "5417540",
@@ -202,7 +240,9 @@
       "strasse_oben_uef": "B 49",
       "strasse_unten_uf": "",
       "von_nk": "5417006O",
-      "nach_nk": "5417056O"
+      "nach_nk": "5417056O",
+      "lat": 50.576851,
+      "lng": 8.563348
     },
     {
       "bauwerksnummer": "5415555",
@@ -212,7 +252,9 @@
       "strasse_oben_uef": "B 49",
       "strasse_unten_uf": "Gemeindestr.",
       "von_nk": "5415040O",
-      "nach_nk": "5415039O"
+      "nach_nk": "5415039O",
+      "lat": 50.531744,
+      "lng": 8.3112
     },
     {
       "bauwerksnummer": "5417516",
@@ -222,7 +264,9 @@
       "strasse_oben_uef": "B 49 (Ast)",
       "strasse_unten_uf": "L 3020",
       "von_nk": "5417008A",
-      "nach_nk": "5417008B"
+      "nach_nk": "5417008B",
+      "lat": 50.565536,
+      "lng": 8.527667
     },
     {
       "bauwerksnummer": "5417562",
@@ -232,7 +276,9 @@
       "strasse_oben_uef": "B 429",
       "strasse_unten_uf": "",
       "von_nk": "5417056A",
-      "nach_nk": "5417057O"
+      "nach_nk": "5417057O",
+      "lat": 50.586207,
+      "lng": 8.674231
     },
     {
       "bauwerksnummer": "5125513",
@@ -242,7 +288,9 @@
       "strasse_oben_uef": "B 62",
       "strasse_unten_uf": "",
       "von_nk": "5125008O",
-      "nach_nk": "5125007O"
+      "nach_nk": "5125007O",
+      "lat": 50.845674,
+      "lng": 9.980251
     },
     {
       "bauwerksnummer": "5614505",
@@ -252,7 +300,9 @@
       "strasse_oben_uef": "B8",
       "strasse_unten_uf": "Gemeindestr.",
       "von_nk": "5614051O",
-      "nach_nk": "5614057O"
+      "nach_nk": "5614057O",
+      "lat": 50.388045,
+      "lng": 8.063531
     },
     {
       "bauwerksnummer": "5614505",
@@ -262,7 +312,9 @@
       "strasse_oben_uef": "B8",
       "strasse_unten_uf": "Gemeindestr.",
       "von_nk": "5614051O",
-      "nach_nk": "5614057O"
+      "nach_nk": "5614057O",
+      "lat": 50.388045,
+      "lng": 8.063531
     },
     {
       "bauwerksnummer": "5818616",
@@ -272,7 +324,9 @@
       "strasse_oben_uef": "B 8 (Ast)",
       "strasse_unten_uf": "B8",
       "von_nk": "5818093B",
-      "nach_nk": "5818093G"
+      "nach_nk": "5818093G",
+      "lat": 50.123015,
+      "lng": 8.769386
     },
     {
       "bauwerksnummer": "5814509",
@@ -282,7 +336,9 @@
       "strasse_oben_uef": "B 54",
       "strasse_unten_uf": "",
       "von_nk": "5814046O",
-      "nach_nk": "5814027O"
+      "nach_nk": "5814027O",
+      "lat": 50.16097,
+      "lng": 8.077483
     },
     {
       "bauwerksnummer": "4822582",
@@ -292,7 +348,9 @@
       "strasse_oben_uef": "L 3220",
       "strasse_unten_uf": "L 3223",
       "von_nk": "4822016O",
-      "nach_nk": "4822084O"
+      "nach_nk": "4822084O",
+      "lat": 51.129579,
+      "lng": 9.438514
     },
     {
       "bauwerksnummer": "5520513",
@@ -302,7 +360,9 @@
       "strasse_oben_uef": "L 3183",
       "strasse_unten_uf": "",
       "von_nk": "5520022O",
-      "nach_nk": "5520023O"
+      "nach_nk": "5520023O",
+      "lat": 50.48726,
+      "lng": 9.16192
     },
     {
       "bauwerksnummer": "5813507",
@@ -312,7 +372,9 @@
       "strasse_oben_uef": "L 3033",
       "strasse_unten_uf": "",
       "von_nk": "5813035O",
-      "nach_nk": "5813041O"
+      "nach_nk": "5813041O",
+      "lat": 50.106809,
+      "lng": 7.9382
     },
     {
       "bauwerksnummer": "5814524",
@@ -322,7 +384,9 @@
       "strasse_oben_uef": "L 3033",
       "strasse_unten_uf": "",
       "von_nk": "5814015O",
-      "nach_nk": "5814014O"
+      "nach_nk": "5814014O",
+      "lat": 50.13355,
+      "lng": 8.04872
     },
     {
       "bauwerksnummer": "5317510",
@@ -332,7 +396,9 @@
       "strasse_oben_uef": "L 3474",
       "strasse_unten_uf": "",
       "von_nk": "5317008O",
-      "nach_nk": "5317011O"
+      "nach_nk": "5317011O",
+      "lat": 50.64253,
+      "lng": 8.597953
     },
     {
       "bauwerksnummer": "5223519",
@@ -342,7 +408,9 @@
       "strasse_oben_uef": "L 3471",
       "strasse_unten_uf": "",
       "von_nk": "5223017O",
-      "nach_nk": "5123006O"
+      "nach_nk": "5123006O",
+      "lat": 50.796121,
+      "lng": 9.589166
     },
     {
       "bauwerksnummer": "5224511",
@@ -352,7 +420,9 @@
       "strasse_oben_uef": "L 3433",
       "strasse_unten_uf": "B27",
       "von_nk": "5324035O",
-      "nach_nk": "5224019O"
+      "nach_nk": "5224019O",
+      "lat": 50.706843,
+      "lng": 9.70272
     },
     {
       "bauwerksnummer": "6418741",
@@ -362,7 +432,9 @@
       "strasse_oben_uef": "L 3408",
       "strasse_unten_uf": "",
       "von_nk": "6418017O",
-      "nach_nk": "6418215O"
+      "nach_nk": "6418215O",
+      "lat": 49.5638,
+      "lng": 8.7264
     },
     {
       "bauwerksnummer": "4923641",
@@ -372,7 +444,9 @@
       "strasse_oben_uef": "L 3465",
       "strasse_unten_uf": "K 34",
       "von_nk": "4922016L",
-      "nach_nk": "4923028O"
+      "nach_nk": "4923028O",
+      "lat": 51.005513,
+      "lng": 9.536631
     },
     {
       "bauwerksnummer": "4921514",
@@ -382,7 +456,9 @@
       "strasse_oben_uef": "L 3384",
       "strasse_unten_uf": "",
       "von_nk": "4921042O",
-      "nach_nk": "4921029O"
+      "nach_nk": "4921029O",
+      "lat": 51.057947,
+      "lng": 9.291898
     },
     {
       "bauwerksnummer": "5623542",
@@ -392,7 +468,9 @@
       "strasse_oben_uef": "L 3329",
       "strasse_unten_uf": "",
       "von_nk": "5623030O",
-      "nach_nk": "5623029O"
+      "nach_nk": "5623029O",
+      "lat": 50.3517,
+      "lng": 9.5613
     },
     {
       "bauwerksnummer": "5714512",
@@ -402,7 +480,9 @@
       "strasse_oben_uef": "L 3321",
       "strasse_unten_uf": "",
       "von_nk": "5713008O",
-      "nach_nk": "5714024O"
+      "nach_nk": "5714024O",
+      "lat": 50.194174,
+      "lng": 8.056994
     },
     {
       "bauwerksnummer": "4826536",
@@ -412,7 +492,9 @@
       "strasse_oben_uef": "L 3300",
       "strasse_unten_uf": "",
       "von_nk": "4826009O",
-      "nach_nk": "4826020O"
+      "nach_nk": "4826020O",
+      "lat": 51.166494,
+      "lng": 10.075916
     },
     {
       "bauwerksnummer": "4722570",
@@ -422,7 +504,9 @@
       "strasse_oben_uef": "L 3311",
       "strasse_unten_uf": "G+R",
       "von_nk": "4722059C",
-      "nach_nk": "4722064G"
+      "nach_nk": "4722064G",
+      "lat": 51.259751,
+      "lng": 9.416267
     },
     {
       "bauwerksnummer": "5325524",
@@ -432,7 +516,9 @@
       "strasse_oben_uef": "L 3258",
       "strasse_unten_uf": "WiWeg",
       "von_nk": "5425047O",
-      "nach_nk": "5325012O"
+      "nach_nk": "5325012O",
+      "lat": 50.593204,
+      "lng": 9.870872
     },
     {
       "bauwerksnummer": "5126504",
@@ -442,7 +528,9 @@
       "strasse_oben_uef": "L 3255",
       "strasse_unten_uf": "",
       "von_nk": "5125014O",
-      "nach_nk": "5126003O"
+      "nach_nk": "5126003O",
+      "lat": 50.886859,
+      "lng": 9.97468
     },
     {
       "bauwerksnummer": "5126503",
@@ -452,7 +540,9 @@
       "strasse_oben_uef": "L 3255",
       "strasse_unten_uf": "",
       "von_nk": "5125014O",
-      "nach_nk": "5126003O"
+      "nach_nk": "5126003O",
+      "lat": 50.886859,
+      "lng": 9.97468
     },
     {
       "bauwerksnummer": "5023506",
@@ -462,7 +552,9 @@
       "strasse_oben_uef": "L 3253",
       "strasse_unten_uf": "",
       "von_nk": "5023013O",
-      "nach_nk": "5023009O"
+      "nach_nk": "5023009O",
+      "lat": 50.976721,
+      "lng": 9.587048
     },
     {
       "bauwerksnummer": "4824540",
@@ -472,7 +564,9 @@
       "strasse_oben_uef": "L 3249",
       "strasse_unten_uf": "L 3249",
       "von_nk": "4824014O",
-      "nach_nk": "4724027O"
+      "nach_nk": "4724027O",
+      "lat": 51.176731,
+      "lng": 9.816693
     },
     {
       "bauwerksnummer": "4725519",
@@ -482,7 +576,9 @@
       "strasse_oben_uef": "L 3239",
       "strasse_unten_uf": "",
       "von_nk": "4725043O",
-      "nach_nk": "4725036O"
+      "nach_nk": "4725036O",
+      "lat": 51.267172,
+      "lng": 9.909992
     },
     {
       "bauwerksnummer": "5718523",
@@ -492,7 +588,9 @@
       "strasse_oben_uef": "L 3204",
       "strasse_unten_uf": "",
       "von_nk": "5718012O",
-      "nach_nk": "5718005O"
+      "nach_nk": "5718005O",
+      "lat": 50.299087,
+      "lng": 8.696728
     },
     {
       "bauwerksnummer": "5819516",
@@ -502,7 +600,9 @@
       "strasse_oben_uef": "L 3193 (Ast)",
       "strasse_unten_uf": "L 3193",
       "von_nk": "5819050I",
-      "nach_nk": "5819050F"
+      "nach_nk": "5819050F",
+      "lat": 50.162439,
+      "lng": 8.984646
     },
     {
       "bauwerksnummer": "5819512",
@@ -512,7 +612,9 @@
       "strasse_oben_uef": "L 3193",
       "strasse_unten_uf": "",
       "von_nk": "5819072O",
-      "nach_nk": "5819064O"
+      "nach_nk": "5819064O",
+      "lat": 50.132881,
+      "lng": 8.91698
     },
     {
       "bauwerksnummer": "5023564",
@@ -522,7 +624,9 @@
       "strasse_oben_uef": "L 3155",
       "strasse_unten_uf": "",
       "von_nk": "5022014O",
-      "nach_nk": "5023016O"
+      "nach_nk": "5023016O",
+      "lat": 50.913967,
+      "lng": 9.526737
     },
     {
       "bauwerksnummer": "4922543",
@@ -532,7 +636,9 @@
       "strasse_oben_uef": "L 3148",
       "strasse_unten_uf": "",
       "von_nk": "4922058O",
-      "nach_nk": "4922049O"
+      "nach_nk": "4922049O",
+      "lat": 51.083049,
+      "lng": 9.334667
     },
     {
       "bauwerksnummer": "5118531",
@@ -542,7 +648,9 @@
       "strasse_oben_uef": "L 3089",
       "strasse_unten_uf": "",
       "von_nk": "5118016K",
-      "nach_nk": "5118057O"
+      "nach_nk": "5118057O",
+      "lat": 50.809011,
+      "lng": 8.77047
     },
     {
       "bauwerksnummer": "5119506",
@@ -552,7 +660,9 @@
       "strasse_oben_uef": "L 3077",
       "strasse_unten_uf": "",
       "von_nk": "5119014O",
-      "nach_nk": "5119043O"
+      "nach_nk": "5119043O",
+      "lat": 50.908988,
+      "lng": 8.886467
     },
     {
       "bauwerksnummer": "5219514",
@@ -562,7 +672,9 @@
       "strasse_oben_uef": "L 3073",
       "strasse_unten_uf": "",
       "von_nk": "5219035O",
-      "nach_nk": "5219036O"
+      "nach_nk": "5219036O",
+      "lat": 50.7779,
+      "lng": 8.9229
     },
     {
       "bauwerksnummer": "5615520",
@@ -572,7 +684,9 @@
       "strasse_oben_uef": "L 3063",
       "strasse_unten_uf": "",
       "von_nk": "5514066O",
-      "nach_nk": "5615001O"
+      "nach_nk": "5615001O",
+      "lat": 50.3997,
+      "lng": 8.2314
     },
     {
       "bauwerksnummer": "6013926",
@@ -582,7 +696,9 @@
       "strasse_oben_uef": "L 3034",
       "strasse_unten_uf": "",
       "von_nk": "6013013O",
-      "nach_nk": "6013002O"
+      "nach_nk": "6013002O",
+      "lat": 50.0293,
+      "lng": 7.8902
     },
     {
       "bauwerksnummer": "5913512",
@@ -592,7 +708,9 @@
       "strasse_oben_uef": "L 3033",
       "strasse_unten_uf": "",
       "von_nk": "5913006O",
-      "nach_nk": "5913007O"
+      "nach_nk": "5913007O",
+      "lat": 50.0827,
+      "lng": 7.8524
     },
     {
       "bauwerksnummer": "5714514",
@@ -602,7 +720,9 @@
       "strasse_oben_uef": "L 3031",
       "strasse_unten_uf": "",
       "von_nk": "5714012O",
-      "nach_nk": "5714017O"
+      "nach_nk": "5714017O",
+      "lat": 50.246254,
+      "lng": 8.078519
     },
     {
       "bauwerksnummer": "5417528",
@@ -612,7 +732,9 @@
       "strasse_oben_uef": "L 3020",
       "strasse_unten_uf": "",
       "von_nk": "5417004O",
-      "nach_nk": "5417003O"
+      "nach_nk": "5417003O",
+      "lat": 50.576851,
+      "lng": 8.563348
     },
     {
       "bauwerksnummer": "5416543",
@@ -622,7 +744,9 @@
       "strasse_oben_uef": "L 3020",
       "strasse_unten_uf": "",
       "von_nk": "5416042O",
-      "nach_nk": "5416035O"
+      "nach_nk": "5416035O",
+      "lat": 50.551915,
+      "lng": 8.428807
     },
     {
       "bauwerksnummer": "5621543",
@@ -632,7 +756,9 @@
       "strasse_oben_uef": "K 922",
       "strasse_unten_uf": "",
       "von_nk": "5621050O",
-      "nach_nk": "5621029O"
+      "nach_nk": "5621029O",
+      "lat": 50.3923,
+      "lng": 9.30438
     },
     {
       "bauwerksnummer": "5716614",
@@ -642,7 +768,9 @@
       "strasse_oben_uef": "K 750",
       "strasse_unten_uf": "",
       "von_nk": "5716006O",
-      "nach_nk": "5616043O"
+      "nach_nk": "5616043O",
+      "lat": 50.293801,
+      "lng": 8.41306
     },
     {
       "bauwerksnummer": "6118548",
@@ -652,7 +780,9 @@
       "strasse_oben_uef": "K 128",
       "strasse_unten_uf": "B 26",
       "von_nk": "6118050O",
-      "nach_nk": "6118024O"
+      "nach_nk": "6118024O",
+      "lat": 49.870368,
+      "lng": 8.788434
     },
     {
       "bauwerksnummer": "5616515",
@@ -662,7 +792,9 @@
       "strasse_oben_uef": "K 739",
       "strasse_unten_uf": "",
       "von_nk": "5616018O",
-      "nach_nk": "5616031O"
+      "nach_nk": "5616031O",
+      "lat": 50.344084,
+      "lng": 8.432542
     },
     {
       "bauwerksnummer": "4625656",
@@ -672,7 +804,9 @@
       "strasse_oben_uef": "K 67",
       "strasse_unten_uf": "",
       "von_nk": "4625062O",
-      "nach_nk": "4625063O"
+      "nach_nk": "4625063O",
+      "lat": 51.325689,
+      "lng": 9.914989
     },
     {
       "bauwerksnummer": "4625655",
@@ -682,7 +816,9 @@
       "strasse_oben_uef": "K 67",
       "strasse_unten_uf": "",
       "von_nk": "4625062O",
-      "nach_nk": "4625063O"
+      "nach_nk": "4625063O",
+      "lat": 51.325689,
+      "lng": 9.914989
     },
     {
       "bauwerksnummer": "5914520",
@@ -692,7 +828,9 @@
       "strasse_oben_uef": "K 638",
       "strasse_unten_uf": "",
       "von_nk": "5914033O",
-      "nach_nk": "5915102O"
+      "nach_nk": "5915102O",
+      "lat": 50.045876,
+      "lng": 8.160521
     },
     {
       "bauwerksnummer": "4623683",
@@ -702,7 +840,9 @@
       "strasse_oben_uef": "K 40",
       "strasse_unten_uf": "",
       "von_nk": "4623335O",
-      "nach_nk": "4523203O"
+      "nach_nk": "4523203O",
+      "lat": 51.396071,
+      "lng": 9.554018
     },
     {
       "bauwerksnummer": "5219517",
@@ -712,7 +852,9 @@
       "strasse_oben_uef": "K 24",
       "strasse_unten_uf": "",
       "von_nk": "5219037O",
-      "nach_nk": "5219040C"
+      "nach_nk": "5219040C",
+      "lat": 50.767861,
+      "lng": 8.959387
     },
     {
       "bauwerksnummer": "5324534",
@@ -722,7 +864,9 @@
       "strasse_oben_uef": "K 12",
       "strasse_unten_uf": "",
       "von_nk": "5324012O",
-      "nach_nk": "5324021O"
+      "nach_nk": "5324021O",
+      "lat": 50.626745,
+      "lng": 9.856618
     },
     {
       "bauwerksnummer": "4918509",
@@ -732,7 +876,9 @@
       "strasse_oben_uef": "",
       "strasse_unten_uf": "",
       "von_nk": "G",
-      "nach_nk": "B253"
+      "nach_nk": "B253",
+      "lat": 51.066955,
+      "lng": 8.62709
     },
     {
       "bauwerksnummer": "5916506",
@@ -742,7 +888,9 @@
       "strasse_oben_uef": "B 40",
       "strasse_unten_uf": "5916097O",
       "von_nk": "5916060O",
-      "nach_nk": "7,5"
+      "nach_nk": "7,5",
+      "lat": 50.028864,
+      "lng": 8.406147
     },
     {
       "bauwerksnummer": "4625671",
@@ -752,7 +900,9 @@
       "strasse_oben_uef": "B 451",
       "strasse_unten_uf": "Geh- und Radweg 4625068O",
       "von_nk": "4625094A",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 51.33319,
+      "lng": 9.843419
     },
     {
       "bauwerksnummer": "4625630",
@@ -762,7 +912,9 @@
       "strasse_oben_uef": "B 451",
       "strasse_unten_uf": "4625068O",
       "von_nk": "4625094A",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 51.33319,
+      "lng": 9.843419
     },
     {
       "bauwerksnummer": "6317629",
@@ -772,7 +924,9 @@
       "strasse_oben_uef": "B 460",
       "strasse_unten_uf": "6317063O",
       "von_nk": "6318066O",
-      "nach_nk": "40 *)"
+      "nach_nk": "40 *)",
+      "lat": 49.64999,
+      "lng": 8.66768
     },
     {
       "bauwerksnummer": "5124528",
@@ -782,7 +936,9 @@
       "strasse_oben_uef": "B 62",
       "strasse_unten_uf": "5124024O",
       "von_nk": "5125042O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.852993,
+      "lng": 9.819399
     },
     {
       "bauwerksnummer": "5515548",
@@ -792,7 +948,9 @@
       "strasse_oben_uef": "L 3452",
       "strasse_unten_uf": "5515042O",
       "von_nk": "5515043O",
-      "nach_nk": "9"
+      "nach_nk": "9",
+      "lat": 50.448098,
+      "lng": 8.257527
     },
     {
       "bauwerksnummer": "5514534",
@@ -802,7 +960,9 @@
       "strasse_oben_uef": "L 3448",
       "strasse_unten_uf": "5614020O",
       "von_nk": "5514046O",
-      "nach_nk": "9"
+      "nach_nk": "9",
+      "lat": 50.393779,
+      "lng": 8.105712
     },
     {
       "bauwerksnummer": "5514535",
@@ -812,7 +972,9 @@
       "strasse_oben_uef": "L 3448",
       "strasse_unten_uf": "5614020O",
       "von_nk": "5514046O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.41899,
+      "lng": 8.09788
     },
     {
       "bauwerksnummer": "5424562",
@@ -822,7 +984,9 @@
       "strasse_oben_uef": "L 3429",
       "strasse_unten_uf": "5424087O",
       "von_nk": "5424098O",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 50.565939,
+      "lng": 9.762061
     },
     {
       "bauwerksnummer": "6418741",
@@ -832,7 +996,9 @@
       "strasse_oben_uef": "L 3408",
       "strasse_unten_uf": "6418017O",
       "von_nk": "6418215O",
-      "nach_nk": "11"
+      "nach_nk": "11",
+      "lat": 49.56538,
+      "lng": 8.723647
     },
     {
       "bauwerksnummer": "5616513",
@@ -842,7 +1008,9 @@
       "strasse_oben_uef": "L 3375",
       "strasse_unten_uf": "5616003O",
       "von_nk": "5616004O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.388227,
+      "lng": 8.424964
     },
     {
       "bauwerksnummer": "5714510",
@@ -852,7 +1020,9 @@
       "strasse_oben_uef": "L 3373",
       "strasse_unten_uf": "5814043A",
       "von_nk": "5714007O",
-      "nach_nk": "30"
+      "nach_nk": "30",
+      "lat": 50.851218,
+      "lng": 8.71328
     },
     {
       "bauwerksnummer": "4926508",
@@ -862,7 +1032,9 @@
       "strasse_oben_uef": "L 3251",
       "strasse_unten_uf": "4926001O",
       "von_nk": "4926002O",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 51.01427,
+      "lng": 10.12093
     },
     {
       "bauwerksnummer": "4523713",
@@ -872,7 +1044,9 @@
       "strasse_oben_uef": "L 3233",
       "strasse_unten_uf": "4523203O",
       "von_nk": "24 *)",
-      "nach_nk": "10"
+      "nach_nk": "10",
+      "lat": 51.39767,
+      "lng": 9.575766
     },
     {
       "bauwerksnummer": "4822523",
@@ -882,7 +1056,9 @@
       "strasse_oben_uef": "L 3222",
       "strasse_unten_uf": "4822032O",
       "von_nk": "4822022O",
-      "nach_nk": "18"
+      "nach_nk": "18",
+      "lat": 51.166567,
+      "lng": 9.445934
     },
     {
       "bauwerksnummer": "4822524",
@@ -892,7 +1068,9 @@
       "strasse_oben_uef": "L 3222",
       "strasse_unten_uf": "4822032O",
       "von_nk": "4822022O",
-      "nach_nk": "18"
+      "nach_nk": "18",
+      "lat": 51.166567,
+      "lng": 9.445934
     },
     {
       "bauwerksnummer": "4722552",
@@ -902,7 +1080,9 @@
       "strasse_oben_uef": "L 3221",
       "strasse_unten_uf": "4722008O",
       "von_nk": "4722085O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 51.217374,
+      "lng": 9.454715
     },
     {
       "bauwerksnummer": "4621537",
@@ -912,7 +1092,9 @@
       "strasse_oben_uef": "L 3214",
       "strasse_unten_uf": "4621045O",
       "von_nk": "4621053O",
-      "nach_nk": "13"
+      "nach_nk": "13",
+      "lat": 51.372251,
+      "lng": 9.233165
     },
     {
       "bauwerksnummer": "5623507",
@@ -922,7 +1104,9 @@
       "strasse_oben_uef": "L 3207",
       "strasse_unten_uf": "5623009O",
       "von_nk": "5623013O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.3517,
+      "lng": 9.5613
     },
     {
       "bauwerksnummer": "5119506",
@@ -932,7 +1116,9 @@
       "strasse_oben_uef": "L 3077",
       "strasse_unten_uf": "5119014O",
       "von_nk": "5119043O",
-      "nach_nk": "11 *)"
+      "nach_nk": "11 *)",
+      "lat": 50.908988,
+      "lng": 8.886467
     },
     {
       "bauwerksnummer": "5021557",
@@ -942,7 +1128,9 @@
       "strasse_oben_uef": "L 3067",
       "strasse_unten_uf": "5021015O",
       "von_nk": "5021039O",
-      "nach_nk": "6"
+      "nach_nk": "6",
+      "lat": 50.775385,
+      "lng": 8.470655
     },
     {
       "bauwerksnummer": "5414510",
@@ -952,7 +1140,9 @@
       "strasse_oben_uef": "L 3046",
       "strasse_unten_uf": "5414030O",
       "von_nk": "5414036O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.504947,
+      "lng": 8.065073
     },
     {
       "bauwerksnummer": "5514557",
@@ -962,7 +1152,9 @@
       "strasse_oben_uef": "L 3046",
       "strasse_unten_uf": "5414036O",
       "von_nk": "5514076A",
-      "nach_nk": "18"
+      "nach_nk": "18",
+      "lat": 50.367448,
+      "lng": 8.866727
     },
     {
       "bauwerksnummer": "5415536",
@@ -972,7 +1164,9 @@
       "strasse_oben_uef": "L 3044",
       "strasse_unten_uf": "5415023O",
       "von_nk": "5415016O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.562909,
+      "lng": 8.239278
     },
     {
       "bauwerksnummer": "5415512",
@@ -982,7 +1176,9 @@
       "strasse_oben_uef": "L 3044",
       "strasse_unten_uf": "5415006O",
       "von_nk": "5315049O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.593236,
+      "lng": 8.205238
     },
     {
       "bauwerksnummer": "5816557",
@@ -992,7 +1188,9 @@
       "strasse_oben_uef": "L 3027",
       "strasse_unten_uf": "5816072O",
       "von_nk": "5816032O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.174987,
+      "lng": 8.368346
     },
     {
       "bauwerksnummer": "5514526",
@@ -1002,7 +1200,9 @@
       "strasse_oben_uef": "L 3022",
       "strasse_unten_uf": "5514043O",
       "von_nk": "5514038O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.442706,
+      "lng": 8.132394
     },
     {
       "bauwerksnummer": "5514524",
@@ -1012,7 +1212,9 @@
       "strasse_oben_uef": "L 3020",
       "strasse_unten_uf": "5514078O",
       "von_nk": "5514083O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.42497,
+      "lng": 8.16703
     },
     {
       "bauwerksnummer": "5816528",
@@ -1022,7 +1224,9 @@
       "strasse_oben_uef": "L 3011",
       "strasse_unten_uf": "5816033O",
       "von_nk": "12",
-      "nach_nk": "110kN"
+      "nach_nk": "110kN",
+      "lat": 50.174987,
+      "lng": 8.368346
     },
     {
       "bauwerksnummer": "5623533",
@@ -1032,7 +1236,9 @@
       "strasse_oben_uef": "K 928",
       "strasse_unten_uf": "5623058O",
       "von_nk": "5623034O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.3517,
+      "lng": 9.5613
     },
     {
       "bauwerksnummer": "5821501",
@@ -1042,7 +1248,9 @@
       "strasse_oben_uef": "K 897",
       "strasse_unten_uf": "5821015O",
       "von_nk": "5821016O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.169446,
+      "lng": 9.197193
     },
     {
       "bauwerksnummer": "5616531",
@@ -1052,7 +1260,9 @@
       "strasse_oben_uef": "K 760",
       "strasse_unten_uf": "5616012O",
       "von_nk": "5616010O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.370024,
+      "lng": 8.469066
     },
     {
       "bauwerksnummer": "4926581",
@@ -1062,7 +1272,9 @@
       "strasse_oben_uef": "K 76",
       "strasse_unten_uf": "4926033O",
       "von_nk": "4926034O",
-      "nach_nk": "30"
+      "nach_nk": "30",
+      "lat": 51.022254,
+      "lng": 10.096179
     },
     {
       "bauwerksnummer": "5616517",
@@ -1072,7 +1284,9 @@
       "strasse_oben_uef": "K 759",
       "strasse_unten_uf": "5616011O",
       "von_nk": "5616012O",
-      "nach_nk": "9"
+      "nach_nk": "9",
+      "lat": 50.374836,
+      "lng": 8.450085
     },
     {
       "bauwerksnummer": "5616526",
@@ -1082,7 +1296,9 @@
       "strasse_oben_uef": "K 750",
       "strasse_unten_uf": "5716006O",
       "von_nk": "5616043O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.31585,
+      "lng": 8.420472
     },
     {
       "bauwerksnummer": "5616520",
@@ -1092,7 +1308,9 @@
       "strasse_oben_uef": "K 739",
       "strasse_unten_uf": "5616019O",
       "von_nk": "5616018O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.364779,
+      "lng": 8.376858
     },
     {
       "bauwerksnummer": "5315527",
@@ -1102,7 +1320,9 @@
       "strasse_oben_uef": "K 72",
       "strasse_unten_uf": "5315021O",
       "von_nk": "5315029O",
-      "nach_nk": "3"
+      "nach_nk": "3",
+      "lat": 50.664384,
+      "lng": 8.17813
     },
     {
       "bauwerksnummer": "5221544",
@@ -1112,7 +1332,9 @@
       "strasse_oben_uef": "K 68",
       "strasse_unten_uf": "5221031O",
       "von_nk": "5221030O",
-      "nach_nk": "11"
+      "nach_nk": "11",
+      "lat": 50.783018,
+      "lng": 9.25783
     },
     {
       "bauwerksnummer": "5814528",
@@ -1122,7 +1344,9 @@
       "strasse_oben_uef": "K 663",
       "strasse_unten_uf": "5814049B",
       "von_nk": "5814047O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.133051,
+      "lng": 8.088526
     },
     {
       "bauwerksnummer": "6318710",
@@ -1132,7 +1356,9 @@
       "strasse_oben_uef": "K 57",
       "strasse_unten_uf": "6317062O",
       "von_nk": "6318081O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 49.667506,
+      "lng": 8.68849
     },
     {
       "bauwerksnummer": "4925546",
@@ -1142,7 +1368,9 @@
       "strasse_oben_uef": "K 50",
       "strasse_unten_uf": "4925022O",
       "von_nk": "4925006O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 51.052435,
+      "lng": 9.852791
     },
     {
       "bauwerksnummer": "5124539",
@@ -1152,7 +1380,9 @@
       "strasse_oben_uef": "K5",
       "strasse_unten_uf": "Geh- und Radweg 5124047O",
       "von_nk": "5124048O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.842846,
+      "lng": 9.827931
     },
     {
       "bauwerksnummer": "4826559",
@@ -1162,7 +1392,9 @@
       "strasse_oben_uef": "K 49",
       "strasse_unten_uf": "4826009O",
       "von_nk": "4826013O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 51.160859,
+      "lng": 10.160965
     },
     {
       "bauwerksnummer": "5217519",
@@ -1172,7 +1404,9 @@
       "strasse_oben_uef": "K 48",
       "strasse_unten_uf": "5217043O",
       "von_nk": "5217032O",
-      "nach_nk": "10"
+      "nach_nk": "10",
+      "lat": 50.709987,
+      "lng": 8.619487
     },
     {
       "bauwerksnummer": "5115765",
@@ -1182,7 +1416,9 @@
       "strasse_oben_uef": "K 47",
       "strasse_unten_uf": "5115254O",
       "von_nk": "5115253O",
-      "nach_nk": "9"
+      "nach_nk": "9",
+      "lat": 50.810784,
+      "lng": 8.199286
     },
     {
       "bauwerksnummer": "4725569",
@@ -1192,7 +1428,9 @@
       "strasse_oben_uef": "K 38",
       "strasse_unten_uf": "4725003O",
       "von_nk": "4725015O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 51.218784,
+      "lng": 9.96404
     },
     {
       "bauwerksnummer": "5517503",
@@ -1202,7 +1440,9 @@
       "strasse_oben_uef": "K 364",
       "strasse_unten_uf": "5517014O",
       "von_nk": "5517013O",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.41768,
+      "lng": 8.63873
     },
     {
       "bauwerksnummer": "4825550",
@@ -1212,7 +1452,9 @@
       "strasse_oben_uef": "K 34",
       "strasse_unten_uf": "4825025O",
       "von_nk": "4825019A",
-      "nach_nk": "4,5"
+      "nach_nk": "4,5",
+      "lat": 51.185224,
+      "lng": 9.989805
     },
     {
       "bauwerksnummer": "5219512",
@@ -1222,7 +1464,9 @@
       "strasse_oben_uef": "K 29",
       "strasse_unten_uf": "5219032O",
       "von_nk": "5219035O",
-      "nach_nk": "2,8"
+      "nach_nk": "2,8",
+      "lat": 50.7779,
+      "lng": 8.9229
     },
     {
       "bauwerksnummer": "6318761",
@@ -1232,7 +1476,9 @@
       "strasse_oben_uef": "K 24",
       "strasse_unten_uf": "6318100O",
       "von_nk": "6318101O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 49.599351,
+      "lng": 8.753412
     },
     {
       "bauwerksnummer": "5519509",
@@ -1242,7 +1488,9 @@
       "strasse_oben_uef": "K 188",
       "strasse_unten_uf": "5519048O",
       "von_nk": "5519038O",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 50.44995,
+      "lng": 8.945795
     },
     {
       "bauwerksnummer": "5619505",
@@ -1252,7 +1500,9 @@
       "strasse_oben_uef": "K 179",
       "strasse_unten_uf": "5619002O",
       "von_nk": "5619001A",
-      "nach_nk": "3,5"
+      "nach_nk": "3,5",
+      "lat": 50.3551,
+      "lng": 8.8621
     },
     {
       "bauwerksnummer": "5419537",
@@ -1262,7 +1512,9 @@
       "strasse_oben_uef": "K 150",
       "strasse_unten_uf": "5419006O",
       "von_nk": "5419032O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.575105,
+      "lng": 8.932286
     },
     {
       "bauwerksnummer": "5419529",
@@ -1272,7 +1524,9 @@
       "strasse_oben_uef": "K 146",
       "strasse_unten_uf": "5419022O",
       "von_nk": "5419035O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.547772,
+      "lng": 8.956642
     },
     {
       "bauwerksnummer": "5321527",
@@ -1282,7 +1536,9 @@
       "strasse_oben_uef": "K 129",
       "strasse_unten_uf": "5321010O",
       "von_nk": "5321011O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.618484,
+      "lng": 9.210001
     },
     {
       "bauwerksnummer": "4826550",
@@ -1292,7 +1548,9 @@
       "strasse_oben_uef": "K 12",
       "strasse_unten_uf": "4826016O",
       "von_nk": "4826035O",
-      "nach_nk": "18"
+      "nach_nk": "18",
+      "lat": 51.190786,
+      "lng": 10.12559
     },
     {
       "bauwerksnummer": "4826551",
@@ -1302,7 +1560,9 @@
       "strasse_oben_uef": "K 12",
       "strasse_unten_uf": "4826016O",
       "von_nk": "4826035O",
-      "nach_nk": "12"
+      "nach_nk": "12",
+      "lat": 51.190786,
+      "lng": 10.12559
     },
     {
       "bauwerksnummer": "4917613",
@@ -1312,7 +1572,9 @@
       "strasse_oben_uef": "K 119",
       "strasse_unten_uf": "4917105O",
       "von_nk": "4917122C",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 51.018889,
+      "lng": 8.660095
     },
     {
       "bauwerksnummer": "5121508",
@@ -1322,7 +1584,9 @@
       "strasse_oben_uef": "K 115",
       "strasse_unten_uf": "5121006O",
       "von_nk": "5121007O",
-      "nach_nk": "6"
+      "nach_nk": "6",
+      "lat": 50.806176,
+      "lng": 9.258004
     },
     {
       "bauwerksnummer": "4917603",
@@ -1332,7 +1596,9 @@
       "strasse_oben_uef": "K 115",
       "strasse_unten_uf": "4917111O",
       "von_nk": "4917109O",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 51.010572,
+      "lng": 8.588173
     },
     {
       "bauwerksnummer": "5421517",
@@ -1342,7 +1608,9 @@
       "strasse_oben_uef": "K 112",
       "strasse_unten_uf": "5421014O",
       "von_nk": "5321029O",
-      "nach_nk": "11"
+      "nach_nk": "11",
+      "lat": 50.588418,
+      "lng": 9.313009
     },
     {
       "bauwerksnummer": "5717708",
@@ -1352,7 +1620,9 @@
       "strasse_oben_uef": "",
       "strasse_unten_uf": "",
       "von_nk": "Jakob-Lengfelder-Straße L 3003",
-      "nach_nk": "30 *)"
+      "nach_nk": "30 *)",
+      "lat": 50.22838,
+      "lng": 8.613013
     },
     {
       "bauwerksnummer": "5813592",
@@ -1362,7 +1632,14 @@
       "strasse_oben_uef": "",
       "strasse_unten_uf": "",
       "von_nk": "Dickschieder Weg",
-      "nach_nk": "16"
+      "nach_nk": "16",
+      "lat": 50.167205,
+      "lng": 7.967852
     }
-  ]
+  ],
+  "geokodiert": {
+    "verfahren": "nominatim",
+    "genauigkeit": "ort-genau",
+    "stand": "2026-06-13"
+  }
 }

@@ -2,7 +2,7 @@
 // Port aus dresden-opendata-themenstadtplan.cron.mjs. L60 "aktuelle" + L150 "zukünftige"
 // (OGC API Features / WFS3, GeoJSON EPSG:4326, LineString). Pagination via limit/offset.
 
-import { makeNormalized, fetchAllFeatures, ersterPunkt, tonnageAusText, meterAusText, dateOnly } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, ersterPunkt, tonnageAusText, meterAusText, dateOnly, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://opendata.dresden.de/"
 const QUELLE_NAME = "Dresden — Verkehrseinschränkungen (Themenstadtplan, kommisdd OGC API)"
@@ -31,7 +31,8 @@ export const dresdenVerkehrseinschraenkungenConnector = {
         const istVoll = /vollsperrung|gesperrt/i.test(typ) && !/halbseitig|fahrstreifen/i.test(typ)
         const [lng, lat] = ersterPunkt(f.geometry)
         obstacles.push(makeNormalized({
-          externeId: `${col.id}-${p.staid ?? f.id}`,
+          // staid/f.id teils dublett über die Pages → Geometrie-Suffix macht eindeutig.
+          externeId: `${col.id}-${p.staid ?? f.id ?? "x"}#${stabilHash(lat, lng)}`,
           kategorie: istVoll ? "sperrung" : "baustelle",
           name: grund || typ || "Verkehrseinschränkung Dresden",
           beschreibung: [typ, grund].filter(Boolean).join(" — ").trim() || null,

@@ -43,14 +43,19 @@ export const hessenBrueckenConnector = {
       // strasse_oben_uef = Straße, die ÜBER das Bauwerk führt (= die Straße mit der Lastrestriktion).
       const ref = normRef(b.strasse_oben_uef) ?? normRef(b.strasse_unten_uf)
       const teil = String(b.teilbauwerk ?? "0")
-      const externeId = teil && teil !== "0" ? `${b.bauwerksnummer}-${teil}` : String(b.bauwerksnummer)
+      // Bauwerksnummer ist nicht eindeutig (mehrere ASB-Segmente je BW, alle teil=0) → VNK (Netzknoten-
+      // Anfang) anhängen; er ist pro Segment eindeutig, sonst gingen Segmente beim Upsert verloren.
+      const externeId = [b.bauwerksnummer, teil !== "0" ? teil : null, b.von_nk]
+        .filter(Boolean).join("-")
       return makeNormalized({
         externeId,
         kategorie: "bruecke",
         name: b.bauwerksname || `Brücke ${b.bauwerksnummer}`,
-        beschreibung: [b.ort, b.strasse_oben_uef && `UeF ${b.strasse_oben_uef}`, b.strasse_unten_uf && `UF ${b.strasse_unten_uf}`]
-          .filter(Boolean).join(", ") || null,
-        lat: null, lng: null, // PDF-Liste ohne Geokoordinaten — VNK/NNK ist der Anker
+        beschreibung: ([b.ort, b.strasse_oben_uef && `UeF ${b.strasse_oben_uef}`, b.strasse_unten_uf && `UF ${b.strasse_unten_uf}`]
+          .filter(Boolean).join(", ") || "") + (b.lat ? " · Lage ortsgenau (geokodiert)" : "") || null,
+        // Koordinaten einmalig ort-genau über Nominatim gebacken (siehe scripts/geocode_hessen_bruecken.mjs);
+        // VNK/NNK bleibt der präzise ASB-Anker, lat/lng ist die Karten-Lage.
+        lat: b.lat ?? null, lng: b.lng ?? null,
         strassenRef: ref,
         attrs: { grundsaetzlicheGstSperre: true },
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,

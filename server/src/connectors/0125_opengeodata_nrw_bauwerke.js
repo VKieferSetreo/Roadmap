@@ -5,7 +5,7 @@
 // <gml:pos> = "lat lon". Live numberMatched≈19242 → maxPages so gesetzt, dass der VOLLE Bestand
 // kommt (pageSize 2000 × 10 = 20000) → vollbestand=true.
 
-import { makeNormalized, getText } from "./_helpers.js"
+import { makeNormalized, getText, stabilHash } from "./_helpers.js"
 
 const QUELLE = "0125"
 const QUELLE_NAME = "OpenGeodata.NRW / Straßen.NRW — Bauwerke (Brücken/Tunnel)"
@@ -60,7 +60,8 @@ export const opengeodataNrwBauwerkeConnector = {
         STRBEZ: tag(m, "STRBEZ"), ORT: tag(m, "ORT"),
       }
       obstacles.push(makeNormalized({
-        externeId: props.BWNR,
+        // BWNR ist nicht eindeutig (Teilbauwerke/fehlend) → Geometrie+Name-Suffix gegen Upsert-Kollision.
+        externeId: `${props.BWNR ?? "bw"}#${stabilHash(lat, lng, props.BWNAME)}`,
         kategorie,
         name: props.BWNAME || `${bw} ${props.STRBEZ ?? ""}`.trim(),
         beschreibung: [props.BWART, props.ORT].filter(Boolean).join(", ") || null,

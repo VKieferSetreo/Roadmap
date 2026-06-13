@@ -42,6 +42,20 @@ const num = (v) => {
   return Number.isFinite(n) ? n : null
 }
 
+/** Kurzer, stabiler Hash (FNV-1a → base36). Für eindeutige, deterministische externeIds:
+ *  Quell-IDs mancher Feeds sind nicht eindeutig (null/Dublette) → beim Upsert auf (quelle, externe_id)
+ *  überschreiben sich Datensätze gegenseitig. Ein Geometrie-Suffix `${base}#${stabilHash(lat,lng,...)}`
+ *  macht sie eindeutig OHNE Run-zu-Run-Drift (gleiche Geometrie → gleicher Hash → reconcile-stabil). */
+export function stabilHash(...teile) {
+  const s = teile.map((t) => (t == null ? "" : String(t))).join("|")
+  let h = 0x811c9dc5
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return (h >>> 0).toString(36)
+}
+
 /**
  * Baut ein NormalizedObstacle für den Importer (validateObstacle/insertObstacle).
  * Kaputte Koords (außerhalb DE) → null (Item wird dann mangels lat/lng übersprungen).
