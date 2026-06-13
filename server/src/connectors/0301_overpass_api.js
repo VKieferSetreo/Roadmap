@@ -100,16 +100,21 @@ export const overpassApiConnector = {
   // KEIN vollständig garantierter Bestand → vollbestand=false (kein destruktiver Reconcile).
   vollbestand: false,
 
-  async fetch({ log = () => {} } = {}) {
+  async fetch({ env = {}, log = () => {} } = {}) {
     // EIGENER langer Timeout: Overpass braucht je großem Bundesland bis ~180 s. Der globale
     // EXTERNAL_TIMEOUT_MS (40 s, für REST-Feeds) würde die großen Länder killen → wir ignorieren
     // ihn hier bewusst. vollbestand=false: ein in einem Run getimeoutetes Land bleibt aus dem
     // letzten Run erhalten (kein destruktiver Reconcile), der Bestand heilt über mehrere Läufe.
     const timeoutMs = 200000
+    // OVERPASS_ONLY_ISO (z.B. "DE-BY"): nur dieses eine Bundesland ziehen. Ermöglicht das
+    // einmalige Backfill als 16 Einzel-Runs (je eigene DB-Transaktion) — übersteht Deploys/
+    // Container-Restarts, idempotent re-runbar (Upsert auf way/<id>). Leer = alle 16 (Default).
+    const nurIso = String(env.OVERPASS_ONLY_ISO ?? "").trim()
+    const laender = nurIso ? BUNDESLAENDER.filter((b) => b.iso === nurIso) : BUNDESLAENDER
     const obstacles = []
     let verfuegbar = 0
 
-    for (const [i, { name: land, iso }] of BUNDESLAENDER.entries()) {
+    for (const [i, { name: land, iso }] of laender.entries()) {
       if (i > 0) await sleep(4000) // Rate-Limit-Höflichkeit zwischen den Bundesländern
       let data
       try {
