@@ -27,20 +27,22 @@ function formatStamp(iso: string | null): string {
   return `${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}, ${zeit} Uhr`
 }
 
-function progress(job: SyncJob | undefined): { pct: number; label: string } {
-  if (!job) return { pct: 0, label: "" }
-  if (job.status === "done") return { pct: 100, label: "Fertig" }
-  if (job.status === "error") return { pct: 100, label: "Fehlgeschlagen" }
-  if (job.phase === "rerun") return { pct: 95, label: "Auswertungen werden neu gefahren …" }
-  if (job.phase === "hygiene") return { pct: 88, label: "Abgelaufene Einträge werden aufgeräumt …" }
-  const base = job.total ? Math.round((job.done / job.total) * 80) : 10
-  const pos = Math.min(job.done + 1, job.total)
-  return {
-    pct: Math.max(8, base),
-    label: job.current
-      ? `Quelle ${pos}/${job.total} · ${job.current.name}`
-      : "Wird vorbereitet …",
+// Der Balken bildet den EHRLICHEN Lade-Fortschritt ab: geladene Quellen / alle
+// Quellen. job.done steigt im Backend erst NACHDEM eine Quelle komplett gezogen
+// UND in die DB geschrieben wurde (sequenziell). Nach dem Laden folgen Aufräumen
+// (hygiene) + Auswertungen (rerun) als sichtbare Abschluss-Schritte bei 100 %.
+function progress(job: SyncJob | undefined): { pct: number; phaseLabel: string } {
+  if (!job) return { pct: 0, phaseLabel: "" }
+  const pct = job.total ? Math.round((job.done / job.total) * 100) : 0
+  if (job.status === "error") return { pct: 100, phaseLabel: "Fehlgeschlagen" }
+  if (job.status === "done") return { pct: 100, phaseLabel: "Fertig" }
+  if (job.phase === "hygiene") {
+    return { pct: 100, phaseLabel: "Daten geschrieben — abgelaufene Einträge werden aufgeräumt …" }
   }
+  if (job.phase === "rerun") {
+    return { pct: 100, phaseLabel: "Daten geschrieben — Auswertungen werden aktualisiert …" }
+  }
+  return { pct, phaseLabel: "" } // import läuft
 }
 
 export function SyncBar() {
@@ -63,7 +65,7 @@ export function SyncBar() {
     queryKey: ["sync-job", jobId],
     queryFn: () => api.sync.job(jobId as string),
     enabled: Boolean(jobId),
-    refetchInterval: (q) => (q.state.data?.status === "running" ? 1_200 : false),
+    refetchInterval: (q) => (q.state.data?.status === "running" ? 1_000 : false),
   })
 
   const start = useMutation({
@@ -101,9 +103,13 @@ export function SyncBar() {
   }, [job.data, qc])
 
   const running = job.data?.status === "running" || start.isPending
-  const { pct, label } = progress(job.data)
+  const { pct, phaseLabel } = progress(job.data)
   const quellen = status.data?.quellen ?? []
   const aktiveQuellen = quellen.filter((q) => q.connector)
+  // Laufende Summe der bereits geschriebenen Einträge (neu + aktualisiert) über
+  // die abgeschlossenen Quellen — macht sichtbar, dass wirklich geschrieben wird.
+  const geschrieben =
+    job.data?.runs.reduce((s, r) => s + (r.stats?.neu ?? 0) + (r.stats?.aktualisiert ?? 0), 0) ?? 0
 
   return (
     <Card className="flex flex-col gap-3 p-4">
@@ -134,20 +140,38 @@ export function SyncBar() {
         </Button>
       </div>
 
-      {/* Fortschritt — Quellen werden SEQUENZIELL gezogen (eine nach der anderen),
-          damit der Balken sauber und nachvollziehbar läuft. */}
+      {/* Fortschritt — Quellen werden SEQUENZIELL gezogen: eine wird komplett geladen
+          UND geschrieben, bevor die nächste startet. Der Balken = geladene / alle. */}
       {jobId && job.data ? (
-        <div className="flex flex-col gap-1.5">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
+        <div className="flex flex-col gap-2 border-t border-neutral-100 pt-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-neutral-700">
+              {job.data.status === "running" && job.data.phase === "import"
+                ? `Datenquellen werden geladen — ${job.data.done} / ${job.data.total}`
+                : phaseLabel || `${job.data.done} / ${job.data.total} Quellen geladen`}
+            </span>
+            <span className="tabular-nums text-neutral-400">{pct}%</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
             <div
               className={cn(
-                "h-full rounded-full transition-all duration-500",
+                "h-full rounded-full transition-all duration-300",
                 job.data.status === "error" ? "bg-severity-kritisch-text" : "bg-primary-500",
               )}
               style={{ width: `${pct}%` }}
             />
           </div>
-          <p className="text-xs text-neutral-500">{label}</p>
+          {job.data.status === "running" && job.data.current ? (
+            <p className="flex items-center gap-1.5 text-xs text-neutral-500">
+              <RefreshCw className="h-3 w-3 shrink-0 animate-spin" />
+              <span className="truncate">Lädt: {job.data.current.name}</span>
+            </p>
+          ) : null}
+          {geschrieben > 0 ? (
+            <p className="text-[11px] tabular-nums text-neutral-400">
+              {geschrieben.toLocaleString("de-DE")} Einträge in die Datenbank geschrieben
+            </p>
+          ) : null}
         </div>
       ) : null}
     </Card>

@@ -42,6 +42,69 @@ const num = (v) => {
   return Number.isFinite(n) ? n : null
 }
 
+// ── Text-Extraktion ("Strip-downs") ───────────────────────────────────────────
+// Viele Feeds (Autobahn, DATEX, Kommunen) packen Grenzwerte + Zeiträume NUR in den Freitext
+// ("Maximale Durchfahrtsbreite: 10.75 m", "15.06.26 von 07:00 bis 19:00 Uhr"). Diese regelbasierten
+// Extraktoren ziehen daraus strukturierte Stammdaten. Langfristig kommt ein LLM dahinter — bis dahin
+// konservative Regex-Heuristiken (lieber nichts als falsch). Datums-Heuristik: kleinstes Datum = Start,
+// größtes = Ende (Max-Vorgabe). Werte landen NUR in Lücken (vom Connector gesetzte Felder gewinnen).
+
+/** Erste Meter-Angabe nach einem Schlüsselwort ("Breite … 3,5 m") → Zahl, sonst null. */
+function masszahlNachWort(text, wortRe) {
+  const m = String(text).replaceAll(",", ".").match(
+    new RegExp(`(?:${wortRe})[^0-9]{0,14}?(\\d{1,3}(?:\\.\\d{1,2})?)\\s*m\\b`, "i"),
+  )
+  return m ? Number(m[1]) : null
+}
+
+/** Alle Datumsangaben (DD.MM.[YY]YY + ISO) → sortierte, plausible ISO-Liste (YYYY-MM-DD). */
+function alleDaten(text) {
+  const out = new Set()
+  for (const m of String(text).matchAll(/\b(\d{1,2})\.(\d{1,2})\.(\d{2,4})\b/g)) {
+    const tag = m[1].padStart(2, "0"), mon = m[2].padStart(2, "0")
+    const jahr = m[3].length === 2 ? "20" + m[3] : m[3]
+    if (Number(mon) >= 1 && Number(mon) <= 12 && Number(tag) >= 1 && Number(tag) <= 31) out.add(`${jahr}-${mon}-${tag}`)
+  }
+  for (const m of String(text).matchAll(/\b(\d{4})-(\d{2})-(\d{2})\b/g)) out.add(`${m[1]}-${m[2]}-${m[3]}`)
+  return [...out].filter((d) => d >= "2000-01-01" && d <= "2100-12-31").sort()
+}
+
+/**
+ * Strukturierte Stammdaten aus Freitext ziehen. Liefert nur gefundene Felder:
+ *   { restbreiteM?, maxHoeheM?, maxGewichtT?, sperrlaengeM?, gueltigVon?, gueltigBis?, zeitfenster? }
+ * Konservativ: Maße brauchen ihr Schlüsselwort, Daten müssen plausibel sein.
+ */
+export function extractStammdaten(text) {
+  if (!text) return {}
+  const s = String(text)
+  const norm = s.replaceAll(",", ".")
+  const out = {}
+
+  const breite = masszahlNachWort(s, "durchfahrtsbreite|durchfahrbreite|fahrbahnbreite|restbreite|breite")
+  if (breite != null) out.restbreiteM = breite
+  const hoehe = masszahlNachWort(s, "durchfahrtsh(?:ö|oe)he|lichte\\s+h(?:ö|oe)he|h(?:ö|oe)he")
+  if (hoehe != null) out.maxHoeheM = hoehe
+  const gewicht = tonnageAusText(s)
+  if (gewicht != null) out.maxGewichtT = gewicht
+  // Länge der Maßnahme/Baustelle: "Länge: 24.92 km" → Meter (informativ, kein Fahrzeug-Limit).
+  const laengeKm = norm.match(/l(?:ä|ae)ng[e]?[^0-9]{0,8}?(\d{1,3}(?:\.\d{1,2})?)\s*km\b/i)
+  const laengeM = norm.match(/l(?:ä|ae)ng[e]?[^0-9]{0,8}?(\d{1,4}(?:\.\d{1,2})?)\s*m\b/i)
+  if (laengeKm) out.sperrlaengeM = Math.round(Number(laengeKm[1]) * 1000)
+  else if (laengeM) out.sperrlaengeM = Math.round(Number(laengeM[1]))
+
+  // Zeitfenster: "von 07:00 bis 19:00 Uhr" / "07.00-19.00".
+  const zf = s.match(/(\d{1,2})[:.](\d{2})\s*(?:bis|-|–|—)\s*(\d{1,2})[:.](\d{2})/)
+  if (zf) out.zeitfenster = `${zf[1].padStart(2, "0")}:${zf[2]}–${zf[3].padStart(2, "0")}:${zf[4]}`
+
+  // Datums-Heuristik: kleinstes = Start, größtes = Ende.
+  const daten = alleDaten(s)
+  if (daten.length >= 1) {
+    out.gueltigVon = daten[0]
+    if (daten.length >= 2 && daten[daten.length - 1] !== daten[0]) out.gueltigBis = daten[daten.length - 1]
+  }
+  return out
+}
+
 /** Kurzer, stabiler Hash (FNV-1a → base36). Für eindeutige, deterministische externeIds:
  *  Quell-IDs mancher Feeds sind nicht eindeutig (null/Dublette) → beim Upsert auf (quelle, externe_id)
  *  überschreiben sich Datensätze gegenseitig. Ein Geometrie-Suffix `${base}#${stabilHash(lat,lng,...)}`
