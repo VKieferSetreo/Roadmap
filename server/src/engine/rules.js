@@ -3,7 +3,7 @@
 // Detail-Werte in deutscher Zahlformatierung (Komma, − für negative Werte).
 
 export const KATEGORIEN = [
-  "bruecke", "engstelle", "baustelle", "gewicht", "bahnuebergang",
+  "bruecke", "engstelle", "baustelle", "sperrung", "gewicht", "bahnuebergang",
   "kreisverkehr", "ampel", "steigung", "tunnel",
 ]
 
@@ -14,6 +14,7 @@ const DEFAULT_TITEL = {
   gewicht: "Gewichtsbeschränkung",
   kreisverkehr: "Kreisverkehr",
   baustelle: "Baustelle",
+  sperrung: "Sperrung",
   bahnuebergang: "Bahnübergang",
   steigung: "Starke Steigung",
   ampel: "Signalanlage",
@@ -199,6 +200,30 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   }
 }
 
+function ruleSperrung(attrs, transport, obstacle, zeitraum) {
+  const overlap = overlapsZeitraum(obstacle, zeitraum)
+  const rb = num(attrs.restbreiteM)
+  const maxG = num(attrs.maxGewichtT)
+  // Vollsperrung im Zeitraum = kritisch; sonst Gewichts-/Restbreite prüfen, sonst Hinweis.
+  let severity = "hinweis"
+  if (attrs.vollsperrung === true && overlap) severity = "kritisch"
+  else if (rb != null && rb < transport.breite + 0.1) severity = "kritisch"
+  else if (maxG != null && maxG < transport.gesamtgewicht) severity = "kritisch"
+  else if (overlap) severity = "warnung"
+  return {
+    severity,
+    beschreibung:
+      severity === "kritisch"
+        ? "Strecke gesperrt bzw. für den Transport nicht passierbar — Umfahrung erforderlich."
+        : "Sperrung/Umleitung auf der Strecke — Durchfahrt bzw. Umleitungsführung prüfen.",
+    detail: {
+      ...(rb != null && { Restbreite: fmtM(rb) }),
+      ...(maxG != null && { "Zul. Gesamtlast": fmtT(maxG) }),
+      Zeitraum: overlap ? "überschneidet Transport-Zeitraum" : "außerhalb des Transport-Zeitraums",
+    },
+  }
+}
+
 function ruleBahnuebergang(attrs, transport) {
   const maxH = num(attrs.maxHoeheM)
   const kritisch = maxH != null && transport.hoehe > maxH
@@ -268,6 +293,9 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
       break
     case "baustelle":
       result = ruleBaustelle(attrs, transport, obstacle, zeitraum)
+      break
+    case "sperrung":
+      result = ruleSperrung(attrs, transport, obstacle, zeitraum)
       break
     case "bahnuebergang":
       result = ruleBahnuebergang(attrs, transport)
