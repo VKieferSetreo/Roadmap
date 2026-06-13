@@ -112,11 +112,11 @@ export function PublishCard({ project }: { project: Project }) {
         </>
       ) : (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <span className="rounded-lg bg-neutral-100 p-2 text-neutral-500">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="shrink-0 rounded-lg bg-neutral-100 p-2 text-neutral-500">
               <Link2 className="h-4 w-4" />
             </span>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm font-semibold text-neutral-900">Für Externe freigeben</p>
               <p className="text-xs text-neutral-500">
                 Erzeugt einen Link, über den Dritte Karte + Auswertung sehen (optional mit
@@ -124,7 +124,11 @@ export function PublishCard({ project }: { project: Project }) {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => setDialogOpen(true)}>
+          <Button
+            variant="outline"
+            className="shrink-0"
+            onClick={() => setDialogOpen(true)}
+          >
             <Globe2 className="h-4 w-4" /> Veröffentlichen
           </Button>
         </div>

@@ -57,8 +57,7 @@ export function KarteTab({ project }: { project: Project }) {
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [layersOpen, setLayersOpen] = useState(true)
-  /** Klickmodus „Eintrag erstellen" + gesnappte Position fürs Formular. */
-  const [addMode, setAddMode] = useState(false)
+  /** gesnappte Position des Strecken-Klicks fürs Eintrag-Formular. */
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
@@ -106,15 +105,12 @@ export function KarteTab({ project }: { project: Project }) {
     })
   }
 
-  /** Klick im Eintrag-Modus: an die Strecke snappen (max. 300 m), Dialog öffnen. */
-  const onMapClick = (p: RoutePoint) => {
-    if (!addMode) return
+  /** Klick direkt auf eine Strecke (nur Live): an den nächsten Streckenpunkt
+   *  snappen und die Eintrag-Maske öffnen. Kein Modus, kein Button. */
+  const onRouteClick = (p: RoutePoint) => {
     const snap = snapToRoutes(p, sichtbareRouten)
-    if (!snap || snap.distKm > 0.3) {
-      toast.error("Bitte näher an die Strecke klicken (max. 300 m).")
-      return
-    }
-    setAddMode(false)
+    if (!snap) return
+    setSelectedId(null)
     setAddPosition(snap.punkt)
   }
 
@@ -125,23 +121,17 @@ export function KarteTab({ project }: { project: Project }) {
         findings={sichtbareFindings}
         selectedId={selectedId}
         onSelect={setSelectedId}
-        onMapClick={addMode ? onMapClick : undefined}
+        onRouteClick={live ? onRouteClick : undefined}
       />
 
-      {/* Klickmodus-Banner */}
-      {addMode ? (
+      {/* Hinweis: Eintrag per Strecken-Klick (nur Live) — dezent, oben mittig */}
+      {live ? (
         <div className="pointer-events-none absolute left-1/2 top-3 z-[600] -translate-x-1/2">
-          <div className="glass pointer-events-auto flex animate-rise-in items-center gap-3 px-4 py-2.5">
-            <MapPinPlus className="h-4 w-4 text-primary-600" />
-            <span className="text-sm font-medium text-neutral-800">
-              Auf die Strecke klicken, um den Eintrag zu platzieren
+          <div className="glass flex animate-rise-in items-center gap-2 px-3.5 py-2">
+            <MapPinPlus className="h-4 w-4 shrink-0 text-primary-600" />
+            <span className="text-xs font-medium text-neutral-700">
+              Auf die Strecke klicken, um einen Eintrag anzulegen
             </span>
-            <button
-              onClick={() => setAddMode(false)}
-              className="cursor-pointer rounded-md px-2 py-0.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
-            >
-              Abbrechen
-            </button>
           </div>
         </div>
       ) : null}
@@ -251,21 +241,6 @@ export function KarteTab({ project }: { project: Project }) {
                 )
               })}
             </ul>
-          ) : null}
-          {/* Kunden-Eintrag per Karten-Klick (nur Live-Modus) */}
-          {live && !addMode ? (
-            <div className="border-t border-neutral-200/70 px-2 py-1.5">
-              <button
-                onClick={() => {
-                  setSelectedId(null)
-                  setAddMode(true)
-                }}
-                className="flex w-full cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-50"
-              >
-                <MapPinPlus className="h-4 w-4" />
-                Eintrag auf der Strecke erstellen
-              </button>
-            </div>
           ) : null}
         </div>
       </div>

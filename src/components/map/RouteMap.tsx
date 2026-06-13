@@ -3,15 +3,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import L from "leaflet"
-import {
-  MapContainer,
-  Marker,
-  Polyline,
-  Popup,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet"
+import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
@@ -21,14 +13,6 @@ import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
-
-/** Meldet Karten-Klicks nach oben (z.B. „Eintrag auf der Strecke erstellen"). */
-function MapClickHandler({ onClick }: { onClick: (p: RoutePoint) => void }) {
-  useMapEvents({
-    click: (e) => onClick({ lat: e.latlng.lat, lng: e.latlng.lng }),
-  })
-  return null
-}
 
 /** Passt den Kartenausschnitt an die Strecke an, sobald sie sich ändert. */
 function FitBounds({ points, enabled }: { points: RoutePoint[]; enabled: boolean }) {
@@ -51,8 +35,9 @@ interface RouteMapProps {
   findings: Finding[]
   selectedId?: string | null
   onSelect?: (id: string) => void
-  /** wenn gesetzt: Klicks auf die Karte werden gemeldet + Crosshair-Cursor. */
-  onMapClick?: (p: RoutePoint) => void
+  /** wenn gesetzt: ein Klick DIREKT auf eine Strecke (nicht auf einen Fund-Pin)
+   *  meldet die geklickte Position — fürs Anlegen eines Eintrags. */
+  onRouteClick?: (p: RoutePoint) => void
   className?: string
 }
 
@@ -61,7 +46,7 @@ export function RouteMap({
   findings,
   selectedId,
   onSelect,
-  onMapClick,
+  onRouteClick,
   className,
 }: RouteMapProps) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
@@ -90,11 +75,7 @@ export function RouteMap({
 
   return (
     <div
-      className={cn(
-        "relative h-full w-full",
-        onMapClick && "[&_.leaflet-container]:cursor-crosshair",
-        className,
-      )}
+      className={cn("relative h-full w-full", className)}
     >
       <MapContainer
         ref={mapRef}
@@ -106,7 +87,6 @@ export function RouteMap({
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
-        {onMapClick ? <MapClickHandler onClick={onMapClick} /> : null}
 
         {drawn.map((r) => (
           /* je Strecke: weißer Schatten + Strecken-Farbe + Fahrtrichtungs-Fluss */
@@ -137,6 +117,31 @@ export function RouteMap({
             }}
           />
         ))}
+        {/* Unsichtbare, breite Klick-Spur: Klick auf die Strecke → Eintrag-Maske.
+            Liegt im overlayPane UNTER den Markern (markerPane) → Fund-Pins fangen
+            ihre Klicks selbst ab, nur „freie" Strecken-Klicks lösen onRouteClick aus. */}
+        {onRouteClick
+          ? drawn.map((r) => (
+              <Polyline
+                key={`hit-${r.id}`}
+                positions={r.positions}
+                pathOptions={{
+                  color: "#000000",
+                  weight: 20,
+                  opacity: 0,
+                  className: "route-hit",
+                  lineCap: "round",
+                }}
+                eventHandlers={{
+                  click: (e) => {
+                    L.DomEvent.stopPropagation(e)
+                    onRouteClick({ lat: e.latlng.lat, lng: e.latlng.lng })
+                  },
+                }}
+              />
+            ))
+          : null}
+
         {drawn.map((r) => (
           <Marker key={`start-${r.id}`} position={r.positions[0]} icon={startPinIcon(r.farbe)}>
             <Popup>Start — {r.name}</Popup>

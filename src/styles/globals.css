@@ -102,6 +102,12 @@
   animation: route-flow 1.4s linear infinite;
 }
 
+/* Unsichtbare, breite Klick-Spur entlang der Strecke (Eintrag per Strecken-Klick).
+   pointer-Cursor signalisiert: hier kann man einen Eintrag setzen. */
+.route-hit {
+  cursor: pointer;
+}
+
 /* Sanftes Aufploppen der Fund-Pins */
 .rm-pin svg {
   transition: transform 150ms ease-out;
