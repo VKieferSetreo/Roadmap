@@ -114,7 +114,16 @@ export const api = {
       (r) => r.findings,
     ),
 
-  listObstacles: (params?: { kategorie?: FindingKategorie | string; q?: string }) =>
+  listObstacles: (
+    params?: {
+      kategorie?: FindingKategorie | string
+      q?: string
+      /** nur gemeldete Ereignisse (Baustellen/Sperrungen), keine Infrastruktur. */
+      gemeldet?: boolean
+      /** nur aktive Einträge. */
+      aktiv?: boolean
+    },
+  ) =>
     axiosClient<{ obstacles: Obstacle[] }>({ url: "/obstacles", method: "GET", params }).then(
       (r) => r.obstacles,
     ),

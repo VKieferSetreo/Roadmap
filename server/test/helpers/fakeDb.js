@@ -328,7 +328,7 @@ export function createFakeDb() {
 
     // ── obstacles ─────────────────────────────────────────────────────────────
     if (sql.includes("FROM obstacles WHERE ($1::text IS NULL")) {
-      const [kategorie, aktiv, q, tenantId] = params
+      const [kategorie, aktiv, q, tenantId, kategorien] = params
       const rows = state.obstacles
         .filter((o) => kategorie == null || o.kategorie === kategorie)
         .filter((o) => aktiv == null || o.aktiv === aktiv)
@@ -339,6 +339,7 @@ export function createFakeDb() {
             ilike(o.strassen_ref, q) || ilike(o.zustaendig, q),
         )
         .filter((o) => o.tenant_id == null || o.tenant_id === tenantId)
+        .filter((o) => kategorien == null || kategorien.includes(o.kategorie))
         .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
       return ok(rows)
     }

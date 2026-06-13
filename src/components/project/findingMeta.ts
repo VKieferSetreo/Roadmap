@@ -39,6 +39,55 @@ export function katMeta(kategorie: string): { label: string; icon: LucideIcon } 
   return KATEGORIE_META[kategorie as FindingKategorie] ?? FALLBACK_KAT_META
 }
 
+// ── Stammdaten-Darstellung (Karten-Popups) ────────────────────────────────────
+
+/** Lesbare Labels + Einheiten für die normalisierten Grenzwert-Attribute. */
+const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
+  maxHoeheM: { label: "Durchfahrtshöhe", unit: "m" },
+  maxBreiteM: { label: "Restbreite", unit: "m" },
+  restbreiteM: { label: "Restbreite", unit: "m" },
+  maxGewichtT: { label: "Zul. Gesamtlast", unit: "t" },
+  maxAchslastT: { label: "Zul. Achslast", unit: "t" },
+  steigungPct: { label: "Steigung", unit: "%" },
+  radiusM: { label: "Außenradius", unit: "m" },
+  maxLaengeM: { label: "Max. Länge", unit: "m" },
+  vollsperrung: { label: "Vollsperrung" },
+  anmeldungErforderlich: { label: "Anmeldung erforderlich" },
+}
+
+export function attrLabel(key: string): string {
+  return ATTR_LABEL[key]?.label ?? key
+}
+
+function formatAttrValue(key: string, v: number | string | boolean): string {
+  const meta = ATTR_LABEL[key]
+  if (typeof v === "boolean") return v ? "ja" : "nein"
+  if (typeof v === "number") return `${v.toLocaleString("de-DE")}${meta?.unit ? ` ${meta.unit}` : ""}`
+  return String(v)
+}
+
+/** Alle Attribute eines Hindernisses → lesbare {label, value}-Zeilen. */
+export function attrEntries(
+  attrs: Record<string, number | string> | undefined,
+): { label: string; value: string }[] {
+  return Object.entries(attrs ?? {}).map(([k, v]) => ({
+    label: attrLabel(k),
+    value: formatAttrValue(k, v as number | string | boolean),
+  }))
+}
+
+const fmtDate = (iso?: string | null) => (iso ? iso.split("-").reverse().join(".") : null)
+
+/** "von – bis" / "ab von" / "bis bis" / "unbefristet". */
+export function formatGueltigkeit(von?: string | null, bis?: string | null): string {
+  const v = fmtDate(von)
+  const b = fmtDate(bis)
+  if (v && b) return `${v} – ${b}`
+  if (v) return `ab ${v}`
+  if (b) return `bis ${b}`
+  return "unbefristet"
+}
+
 /** Custom-SVG-Glyphen für Kategorien wo kein passendes Lucide-Icon existiert.
  *  stroke="currentColor" — Farbe wird vom umschließenden Element gesetzt.
  *  Wird sowohl in der Karte (Pins) als auch in Dashboard/Detail-Overlays verwendet. */

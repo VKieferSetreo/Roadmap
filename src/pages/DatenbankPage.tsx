@@ -19,7 +19,7 @@ export function DatenbankPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Datenquellen aktualisieren und die zentrale Hindernis-Datenbank auf der Karte."
+        description="Datenquellen aktualisieren und gemeldete Ereignisse (Baustellen, Sperrungen) auf der Karte. Permanente Infrastruktur wird mitgeführt, hier aber nicht angezeigt."
         width="wide"
       >
         <div className="flex flex-col gap-4">
@@ -32,9 +32,12 @@ export function DatenbankPage() {
 }
 
 function ObstacleKarte({ live }: { live: boolean }) {
+  // Nur gemeldete, aktive Ereignisse (Baustellen/Sperrungen) — die permanente
+  // Infrastruktur (Brücken/Tunnel/Ampeln/Gewichtslimits …) ziehen wir zwar mit,
+  // wird auf der Übersichtskarte aber bewusst nicht angezeigt.
   const obstacles = useQuery({
-    queryKey: ["obstacles-alle"],
-    queryFn: () => api.listObstacles(),
+    queryKey: ["obstacles-alle", "gemeldet"],
+    queryFn: () => api.listObstacles({ gemeldet: true, aktiv: true }),
     enabled: live,
     staleTime: 60_000,
   })

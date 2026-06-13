@@ -13,6 +13,13 @@ import { isFiniteNumber, isPlainObject } from "./util.js"
 /** Quellen-ID für manuelle Kunden-Einträge (Quellen-Register '0100'). */
 export const KUNDEN_QUELLE = "0100"
 
+// "Gemeldete" Kategorien = aktiv gemeldete Abnormalitäten/Ereignisse (temporär,
+// werden gemeldet) — im Gegensatz zur permanenten Infrastruktur (Brücken, Tunnel,
+// Engstellen, Gewichts-/Achslast-Limits, Bahnübergänge, Kreisverkehre, Ampeln,
+// Steigungen). Die Infrastruktur ziehen wir mit, blenden sie auf der Übersichts-
+// karte aber aus — relevant fürs Auge sind nur die gemeldeten Ereignisse.
+export const GEMELDETE_KATEGORIEN = ["baustelle", "sperrung"]
+
 // Schlanke Spaltenliste für Lese-Queries: genau das, was rowToObstacle (map.js)
 // braucht — OHNE die schweren jsonb-Blobs (roh, geom, zeitfenster). Wichtig für
 // Performance: die Analyse einer langen Strecke matcht tausende Hindernisse im

@@ -13,18 +13,20 @@ import { Router } from "express"
 import { requireRole } from "../auth.js"
 import { rowToObstacle } from "../map.js"
 import {
-  assignFachId, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE, OBSTACLE_COLS,
-  todayIso, validateObstacle,
+  assignFachId, GEMELDETE_KATEGORIEN, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE,
+  OBSTACLE_COLS, todayIso, validateObstacle,
 } from "../obstaclesRepo.js"
 import { ApiError, asyncHandler, isPlainObject, isUuid } from "../util.js"
 
-// Schlanke Spalten (ohne roh/geom-Blobs) — die Übersichtskarte zieht ALLE Hindernisse.
+// Schlanke Spalten (ohne roh/geom-Blobs). $5 = optionaler Kategorie-Whitelist-Filter
+// (z.B. nur gemeldete Ereignisse für die Übersichtskarte).
 const LIST_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles
   WHERE ($1::text IS NULL OR kategorie = $1)
     AND ($2::boolean IS NULL OR aktiv = $2)
     AND ($3::text IS NULL OR name ILIKE $3 OR beschreibung ILIKE $3
          OR strassen_ref ILIKE $3 OR zustaendig ILIKE $3)
     AND (tenant_id IS NULL OR tenant_id = $4::uuid)
+    AND ($5::text[] IS NULL OR kategorie = ANY($5))
   ORDER BY created_at DESC`
 
 const mayWriteGlobal = (req) => {
@@ -64,11 +66,14 @@ export function obstaclesRouter({ db }) {
   r.get("/", asyncHandler(async (req, res) => {
     const { kategorie, q, aktiv } = req.query
     const aktivParam = aktiv === "true" ? true : aktiv === "false" ? false : null
+    // gemeldet=true → nur gemeldete Ereignisse (Baustellen/Sperrungen), keine Infrastruktur
+    const kategorienFilter = req.query.gemeldet === "true" ? GEMELDETE_KATEGORIEN : null
     const { rows } = await db.query(LIST_SQL, [
       kategorie || null,
       aktivParam,
       q ? `%${q}%` : null,
       req.ctx?.tenant?.id ?? null,
+      kategorienFilter,
     ])
     res.json({ obstacles: rows.map(rowToObstacle) })
   }))

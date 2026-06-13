@@ -7,7 +7,7 @@ import MarkerClusterGroup from "react-leaflet-cluster"
 import "leaflet/dist/leaflet.css"
 import "leaflet.markercluster/dist/MarkerCluster.css"
 import "leaflet.markercluster/dist/MarkerCluster.Default.css"
-import { katMeta } from "@/components/project/findingMeta"
+import { attrEntries, formatGueltigkeit, katMeta } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { Obstacle } from "@/types/domain"
@@ -16,19 +16,14 @@ const GERMANY: [number, number] = [51.1657, 10.4515]
 const PIN_GLOBAL = "#475569" // Slate — globaler Setreo-/Connector-Bestand
 const PIN_EIGEN = "#527121" // Setreo-Dunkelgrün — eigene Mandanten-Einträge
 
-/** Lesbare Kurzfassung der Grenzwerte. */
-function attrsSummary(o: Obstacle): string {
-  const num = (v: number | string | undefined) =>
-    typeof v === "number" ? v.toLocaleString("de-DE") : v
-  const parts: string[] = []
-  if (o.attrs.maxHoeheM !== undefined) parts.push(`Höhe ≤ ${num(o.attrs.maxHoeheM)} m`)
-  if (o.attrs.maxBreiteM !== undefined) parts.push(`Breite ≤ ${num(o.attrs.maxBreiteM)} m`)
-  if (o.attrs.maxGewichtT !== undefined) parts.push(`Last ≤ ${num(o.attrs.maxGewichtT)} t`)
-  if (o.attrs.maxAchslastT !== undefined) parts.push(`Achslast ≤ ${num(o.attrs.maxAchslastT)} t`)
-  if (o.attrs.steigungPct !== undefined) parts.push(`Steigung ${num(o.attrs.steigungPct)} %`)
-  if (o.attrs.radiusM !== undefined) parts.push(`Radius ${num(o.attrs.radiusM)} m`)
-  if (o.attrs.restbreiteM !== undefined) parts.push(`Restbreite ${num(o.attrs.restbreiteM)} m`)
-  return parts.join(" · ")
+/** Eine Stammdaten-Zeile im Popup (Label links, Wert rechts). */
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <span className="shrink-0 text-neutral-400">{label}</span>
+      <span className="text-right font-medium text-neutral-700">{value}</span>
+    </div>
+  )
 }
 
 export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
@@ -52,24 +47,44 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
               )}
             >
             <Popup>
-              <div className="min-w-[200px]">
+              <div className="min-w-[230px] max-w-[300px]">
                 <p className="font-semibold text-neutral-900">{o.name}</p>
                 <p className="mt-0.5 text-xs text-neutral-500">
                   {katMeta(o.kategorie).label}
                   {o.strassenRef ? ` · ${o.strassenRef}` : ""}
-                  {o.fachId ? ` · ID ${o.fachId}` : ""}
                 </p>
-                {attrsSummary(o) ? (
-                  <p className="mt-1.5 text-xs tabular-nums text-neutral-600">{attrsSummary(o)}</p>
+                {o.beschreibung ? (
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">{o.beschreibung}</p>
                 ) : null}
-                {o.gueltigBis ? (
-                  <p className="mt-1 text-xs text-neutral-500">
-                    gültig bis {o.gueltigBis.split("-").reverse().join(".")}
+
+                <div className="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-xs tabular-nums">
+                  <DetailRow label="Gültig" value={formatGueltigkeit(o.gueltigVon, o.gueltigBis)} />
+                  {attrEntries(o.attrs).map((e) => (
+                    <DetailRow key={e.label} label={e.label} value={e.value} />
+                  ))}
+                  {o.zustaendig ? <DetailRow label="Zuständig" value={o.zustaendig} /> : null}
+                  {o.fachId ? <DetailRow label="ID" value={o.fachId} /> : null}
+                </div>
+
+                {o.quelle?.name ? (
+                  <p className="mt-2 border-t border-neutral-100 pt-1.5 text-[11px] text-neutral-400">
+                    Quelle:{" "}
+                    {o.quelle.url ? (
+                      <a
+                        href={o.quelle.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary-600 underline"
+                      >
+                        {o.quelle.name}
+                      </a>
+                    ) : (
+                      o.quelle.name
+                    )}
+                    {o.quelle.aktualisiertAm ? ` · ${o.quelle.aktualisiertAm}` : ""}
                   </p>
                 ) : null}
-                {o.zustaendig ? (
-                  <p className="mt-1 text-xs text-neutral-500">{o.zustaendig}</p>
-                ) : null}
+
                 {o.herkunft === "eigen" ? (
                   <p className="mt-1.5 inline-block rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-[10px] font-medium text-primary-700">
                     Eigener Eintrag

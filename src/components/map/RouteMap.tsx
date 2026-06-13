@@ -7,7 +7,7 @@ import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-
 import "leaflet/dist/leaflet.css"
 import { Locate, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
-import { KATEGORIE_META, SEVERITY_META } from "@/components/project/findingMeta"
+import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { endPinIcon, findingPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { cn } from "@/lib/cn"
@@ -160,7 +160,7 @@ export function RouteMap({
 
         {findings.map((f) => {
           const meta = SEVERITY_META[f.severity]
-          const kat = KATEGORIE_META[f.kategorie]
+          const kat = katMeta(f.kategorie)
           return (
             <Marker
               key={f.id}
@@ -170,7 +170,7 @@ export function RouteMap({
               zIndexOffset={selectedId === f.id ? 1000 : 0}
             >
               <Popup>
-                <div className="min-w-[190px]">
+                <div className="min-w-[210px] max-w-[300px]">
                   <p className="font-semibold text-neutral-900">{f.titel}</p>
                   <p className="mt-0.5 text-xs text-neutral-500">
                     {kat.label} · km {f.km.toLocaleString("de-DE")}
@@ -179,6 +179,48 @@ export function RouteMap({
                   <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
                     {f.beschreibung}
                   </p>
+
+                  <div className="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-xs tabular-nums">
+                    <div className="flex justify-between gap-3">
+                      <span className="shrink-0 text-neutral-400">Gültig</span>
+                      <span className="text-right font-medium text-neutral-700">
+                        {formatGueltigkeit(f.gueltigVon, f.gueltigBis)}
+                      </span>
+                    </div>
+                    {Object.entries(f.detail).map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-3">
+                        <span className="shrink-0 text-neutral-400">{k}</span>
+                        <span className="text-right font-medium text-neutral-700">{v}</span>
+                      </div>
+                    ))}
+                    {f.zustaendig ? (
+                      <div className="flex justify-between gap-3">
+                        <span className="shrink-0 text-neutral-400">Zuständig</span>
+                        <span className="text-right font-medium text-neutral-700">
+                          {f.zustaendig}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {f.quelle?.name ? (
+                    <p className="mt-2 border-t border-neutral-100 pt-1.5 text-[11px] text-neutral-400">
+                      Quelle:{" "}
+                      {f.quelle.url ? (
+                        <a
+                          href={f.quelle.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary-600 underline"
+                        >
+                          {f.quelle.name}
+                        </a>
+                      ) : (
+                        f.quelle.name
+                      )}
+                    </p>
+                  ) : null}
+
                   <span
                     className={cn(
                       "mt-2 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",

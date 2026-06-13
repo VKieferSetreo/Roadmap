@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Badge } from "@/components/ui/Badge"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
-import { KATEGORIE_META, SEVERITY_META } from "@/components/project/findingMeta"
+import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { DbFinding } from "@/api/roadmap"
@@ -38,7 +38,7 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
         }
         subtitle={
           <>
-            {finding.projektName} · {KATEGORIE_META[finding.kategorie].label} · km{" "}
+            {finding.projektName} · {katMeta(finding.kategorie).label} · km{" "}
             {finding.km.toLocaleString("de-DE")}
             {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
             {finding.fachId ? ` · ID ${finding.fachId}` : ""}
@@ -63,12 +63,38 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
         </MapContainer>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-neutral-200 px-6 py-3 text-xs text-neutral-600">
-        <span>{finding.beschreibung}</span>
+        {finding.beschreibung ? <span>{finding.beschreibung}</span> : null}
+        <span className="tabular-nums">
+          <span className="text-neutral-400">Gültig:</span>{" "}
+          {formatGueltigkeit(finding.gueltigVon, finding.gueltigBis)}
+        </span>
         {Object.entries(finding.detail).map(([k, v]) => (
           <span key={k} className="tabular-nums">
             <span className="text-neutral-400">{k}:</span> {v}
           </span>
         ))}
+        {finding.zustaendig ? (
+          <span>
+            <span className="text-neutral-400">Zuständig:</span> {finding.zustaendig}
+          </span>
+        ) : null}
+        {finding.quelle?.name ? (
+          <span>
+            <span className="text-neutral-400">Quelle:</span>{" "}
+            {finding.quelle.url ? (
+              <a
+                href={finding.quelle.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary-600 underline"
+              >
+                {finding.quelle.name}
+              </a>
+            ) : (
+              finding.quelle.name
+            )}
+          </span>
+        ) : null}
       </div>
     </Dialog>
   )
