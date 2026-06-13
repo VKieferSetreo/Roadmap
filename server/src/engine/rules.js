@@ -183,21 +183,29 @@ function ruleKreisverkehr(attrs, transport) {
 function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const rb = num(attrs.restbreiteM)
   const overlap = overlapsZeitraum(obstacle, zeitraum)
-  let severity = "hinweis"
-  if (rb != null && rb < transport.breite + 0.1) severity = "kritisch"
-  else if (overlap) severity = "warnung"
   const detail = {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
     Zeitraum: overlap ? "überschneidet Transport-Zeitraum" : "außerhalb des Transport-Zeitraums",
   }
-  return {
-    severity,
-    beschreibung:
-      severity === "kritisch"
-        ? "Baustellen-Restbreite reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
-        : "Aktive Baustelle mit Spurverengung — Durchfahrt zeitlich abstimmen.",
-    detail,
+
+  let severity
+  let beschreibung
+  if (rb != null && rb < transport.breite + 0.1) {
+    severity = "kritisch"
+    beschreibung = "Baustellen-Restbreite reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
+  } else if (rb == null && overlap) {
+    // Keine Restbreite hinterlegt UND im Transport-Zeitraum aktiv → sicherheitshalber
+    // kritisch: für einen Schwertransport lässt sich die Passierbarkeit nicht annehmen.
+    severity = "kritisch"
+    beschreibung = "Aktive Baustelle ohne Angabe der Restbreite — Durchfahrt vorab klären (Passierbarkeit nicht gesichert)."
+  } else if (overlap) {
+    severity = "warnung"
+    beschreibung = "Aktive Baustelle mit Spurverengung — Durchfahrt zeitlich abstimmen."
+  } else {
+    severity = "hinweis"
+    beschreibung = "Baustelle außerhalb des Transport-Zeitraums — Lage beachten."
   }
+  return { severity, beschreibung, detail }
 }
 
 function ruleSperrung(attrs, transport, obstacle, zeitraum) {
