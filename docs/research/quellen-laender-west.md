@@ -1,0 +1,418 @@
+# Datenquellen-Katalog — LÄNDER WEST (NRW, Hessen, RLP, Saarland)
+
+> **Projekt:** Roadmap (Setreo) — Routenanalyse für Großraum- und Schwertransporte (GST) in DE.
+> **Scope dieses Dokuments:** Die vier westdeutschen Länder **Nordrhein-Westfalen, Hessen, Rheinland-Pfalz, Saarland** — Verkehrsinfo-/Baustellen-Portale + Feeds, Landesbetriebe Straßenbau, Open-Data-Portale, Geoportale/GDI (WFS/WMS/OAF), DATEX-II-Knoten, GST-Negativ-/Brückenkarten.
+> **Stand:** 2026-06-13. Recherche via WebSearch + WebFetch, Endpunkte wo möglich live/per Doku verifiziert.
+> **Lesehilfe:** `verifiziert=ja` = Endpunkt/Existenz live oder per offizieller Quelle bestätigt. `zu-bestätigen` = Portal/Existenz bestätigt, exakter API-Endpunkt unklar oder JS-gerendert → `apiEndpunkt=null`.
+> **Rechte-Hinweis:** Lizenz/Zugang ehrlich markiert. „Erlaubt oder nicht" ist hier NICHT das Auswahlkriterium — Rechte werden separat besorgt. Alles auflisten.
+
+---
+
+## Schnellübersicht (Priorisierung, alle 4 Länder)
+
+| Prio | Land | Quelle | Datentyp | Status |
+|------|------|--------|----------|--------|
+| **P1** | NRW | OpenGeodata.NRW / Straßen.NRW — **Bauwerke** (Brücken/Tunnel) + Straßennetz (WFS/WMS/Atom/Shape) | Bauwerke, Netzknoten, Abschnitte | **verifiziert (offen, dl-de/by-2-0)** |
+| **P1** | NRW | **GST-Schwertransportkarte NRW** (lastbeschränkte Brücken, ArcGIS WebApp) | gesperrte/lastbeschränkte Brücken für GST | verifiziert (Karte offen; Rohdaten in Freigabe-Prüfung) |
+| **P1** | NRW | MOBIDROM / Verkehr.NRW — DATEX-II Baustellen/Sperrungen | Baustellen, Sperrungen, temp. Restriktionen | verifiziert (Portal); Feed-Endpunkt zu-bestätigen |
+| **P1** | RLP | GeoPortal.rlp.de — **Straßennetz LBM** (OAF/WFS/WMS, GeoJSON) | A/B/L/K-Netz, Netzknoten, Stationen | **verifiziert (offen, dl-de/by-2-0)** |
+| **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** + LBM DATEX-II-Knoten | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal + DATEX-Knoten); Feed-URL zu-bestätigen |
+| **P1** | Hessen | **Hessen Mobil — Lastbeschränkte Brücken** (PDF-Liste + SIB-Hessen-Online-Karte) | lastbeschränkte Brücken B/L/K | verifiziert (PDF/Karte; kein offenes WFS) |
+| **P1** | Hessen | Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkehrsnetze (ATKIS/ALKIS/OKSTRA) | Straßennetz-Topologie | verifiziert (offen) |
+| **P2** | Hessen | Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen) | befahrbare/verbotene GST-Strecken | verifiziert (Karten; Format zu-bestätigen) |
+| **P2** | Hessen | opendata.hessen.de — Open Traffic Data (Verkehrsleitrechner-Rohdaten CSV) | Detektor-/Zähldaten | verifiziert (offen, CSV) |
+| **P1** | Saarland | GeoPortal Saarland — **Verkehr-WFS** + INSPIRE-Verkehrsnetze (ATKIS/OKSTRA) | Straßennetz/Verkehr | verifiziert (offen, OAF/WFS) |
+| **P1** | Saarland | **baustellen.saarland** (LfS) — Baustellen/Sperrungen/Verkehrslage | Baustellen, Sperrungen, Verkehrslage | verifiziert (Portal); kein offener Feed gefunden |
+| **P2** | alle | Mobilithek (BMDV) — DATEX-II-Angebote der Länder (NW/HE/RP/SL) | Baustellen/Sperrungen bundesweit gebündelt | verifiziert (NAP); je Feed Registrierung |
+
+> **Kern-Muster (alle 4 Länder):** Straßennetz-Geometrie + Bauwerke ist offen (Geoportale, dl-de/by-2-0). Baustellen/Sperrungen sind als Portal+DATEX-II vorhanden (über Landesplattform → Mobilithek). **Die echte GST-Brückenrestriktion (Traglast/lichte Höhe) ist nur als abgeleitete Negativ-/Brückenkarte oder PDF-Liste öffentlich** — Rohdaten (SIB-Bauwerke) liegen beim Landesbetrieb und sind nicht offen (siehe Bundeskatalog Quelle 3).
+
+---
+
+# ═══════════════════════════════════════════
+# NORDRHEIN-WESTFALEN (NRW)
+# ═══════════════════════════════════════════
+
+## NRW-1. OpenGeodata.NRW / Straßen.NRW — Straßennetz inkl. **Bauwerke** (Brücken/Tunnel)
+
+- **quelle:** „Straßennetz Landesbetrieb Straßenbau NRW" — Geodatensatz mit Layer **Bauwerke** (Brücken, Tunnel, sonstige Bauwerke), Abschnitte/Äste, Netzknoten, Nullpunkte, Ortsdurchfahrten, Fahrstreifen, Verkehrswerte, Zählstellen, Unfälle, Dienststellen, Verwaltungen
+- **betreiber:** Landesbetrieb Straßenbau NRW (Straßen.NRW), techn. Kontakt Dieter Schüller (Köln)
+- **datentyp:** **Bauwerke** = Brücken/Tunnel/Bauwerke (Geometrie + Stammdaten); Straßennetz-Topologie (Abschnitte, Netzknoten, Stationierung), Verkehrswerte, Zählstellen
+- **strassentyp:** A + B + L + K (öffentliche Straßen NRW: Bundesfern-, Landes-, Kreisstraßen) → **Alle** (klassifiziertes Netz)
+- **format:** WFS (GML), WMS, **Atom-Feed**, Shapefile-Download (EPSG:25832)
+- **apiEndpunkt (verifiziert):**
+  - **WFS GetCapabilities:** `https://www.wfs.nrw.de/wfs/strassen_nrw?REQUEST=GetCapabilities&SERVICE=WFS` (live; FeatureType `Bauwerke` bestätigt, 13–14 FeatureTypes)
+  - **WMS GetCapabilities:** `https://www.wms.nrw.de/wms/strassen_nrw_wms?REQUEST=GetCapabilities&SERVICE=WMS`
+  - **Atom-Feed:** `http://www.gis-rest.nrw.de/atomFeed/rest/atom/f4affc5e-a01a-4531-895c-5c6e59685ed1`
+  - **Shape-Direktdownload Bauwerke:** `https://www.opengeodata.nrw.de/produkte/transport_verkehr/strassennetz/Bauwerke_EPSG25832_Shape.zip`
+  - weitere Shapes analog (`AbschnitteAeste_…`, `Netzknoten_…`, `Nullpunkte_…`, `Ortsdurchfahrten_…`, `Fahrstreifen_…`, `Verkehrswerte_…`, `Zaehlstellen_…`, `Unfaelle_…`, `Dienststellen_…`, `Verwaltungen_…` jeweils `_EPSG25832_Shape.zip`)
+  - **Datenbeschreibung (PDF):** `https://www.opengeodata.nrw.de/produkte/transport_verkehr/strassennetz/datenbeschreibung_strassennetz.pdf`
+- **update:** vierteljährlich; Shapes zuletzt 12.06.2026 (sehr aktuell)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** **Datenlizenz Deutschland Namensnennung 2.0** (dl-de/by-2-0) — Quelle + Abrufdatum nennen
+- **abdeckung:** ganz NRW, klassifiziertes Straßennetz
+- **zugang:** **offen** — direkter Download + offene WFS/WMS, keine Registrierung
+- **verifiziert:** **ja** (WFS-Capabilities live, FeatureType `Bauwerke` bestätigt; Open.NRW-Datensatz + Shape-URLs bestätigt)
+- **url:**
+  - Produktseite: `https://www.opengeodata.nrw.de/produkte/transport_verkehr/strassennetz/`
+  - Open.NRW-Datensatz: `https://open.nrw/dataset/ac8a18de-29d2-4bd4-ba75-6a1d4b4aabff`
+  - WFS-Metadaten (GDI-DE): `https://gdk.gdi-de.org/geonetwork/srv/api/records/ad12519f-cee1-4f8d-9631-1ef3da869cbc`
+  - Karten-Viewer: `https://www.geoportal.nrw/?activetab=map&referer=opennrw&wms=https://www.wms.nrw.de/wms/strassen_nrw_wms`
+- **prio:** **P1**
+- **sonstiges:** **Stärkste offene Strukturquelle der Region.** ACHTUNG: Der Layer `Bauwerke` enthält Bauwerksgeometrie/-stammdaten — ob er die **GST-relevanten Attribute (Traglast/Brückenklasse, lichte Höhe)** als saubere Felder führt, ist aus den Capabilities NICHT verifiziert (Datenbeschreibungs-PDF ist CID-codiert, Felder nicht extrahierbar → **Feldliste am Live-Datensatz prüfen** via `GetFeature`/Shape-Attributtabelle). Die echten Lastbeschränkungen kommen separat aus NRW-2.
+
+## NRW-2. GST-Schwertransportkarte NRW — **lastbeschränkte / gesperrte Brücken** (Straßen.NRW + Autobahn GmbH)
+
+- **quelle:** „Lastbeschränkte Brücken NRW — Schwertransportkarte" (digitale Karte aller für GST gesperrten Bauwerke)
+- **betreiber:** Landesbetrieb Straßenbau NRW (Straßen.NRW); umfasst Bauwerke von Straßen.NRW **und** Autobahn GmbH (Niederlassung Westfalen/Rheinland)
+- **datentyp:** **Für GST gesperrte/lastbeschränkte Bauwerke** — Brücken, Verkehrszeichenbrücken/-kragarme, Tunnel und weitere statisch/maßlich zu prüfende Bauwerke (7-stellige Bauwerksnummer als ID)
+- **strassentyp:** A + B + L + K (Straßen.NRW-Netz + BAB) → **Alle**
+- **format:** Web-Portal (ArcGIS WebApp Viewer); Rohdaten-Format noch offen (Freigabe in Prüfung)
+- **apiEndpunkt:** **null** (ArcGIS WebApp JS-gerendert; zugrundeliegender REST-MapServer/FeatureServer nicht öffentlich abgeleitet) → `zu-bestätigen` (möglicher `…/arcgis/rest/services/…` an `giscloud.nrw.de` — am Live-Netzwerk-Traffic der WebApp zu lokalisieren)
+- **update:** kurzfristige Änderungen jederzeit möglich (betrieblich gepflegt)
+- **auth:** keine (Karte offen aufrufbar)
+- **kosten:** keine
+- **lizenz:** lt. Govdata-Eintrag — Lizenz „derzeit in Prüfung", Nutzungsbedingungen siehe externe Kartenansicht; Rohdaten-Freigabe ausdrücklich in Bearbeitung
+- **abdeckung:** ganz NRW
+- **zugang:** **offen (Karte)** — Rohdatenbezug: Kontakt über Open.NRW/Straßen.NRW (Freigabe in Prüfung) → `eingeschränkt` für maschinellen Bezug
+- **verifiziert:** **ja** (Karte existiert, Govdata-Eintrag bestätigt); Rohdaten-Endpunkt `zu-bestätigen`
+- **url:**
+  - Govdata: `https://www.govdata.de/suche/daten/lastbeschrankte-brucken-nrw-schwertransportkarte`
+  - WebApp-Viewer: `https://www.giscloud.nrw.de/arcgis/apps/webappviewer/index.html?id=35c61ce20f2c4639a333be830891e207`
+  - Metadaten (TTL): `https://www.govdata.de/ckan/dataset/lastbeschrankte-brucken-nrw-schwertransportkarte.ttl`
+  - Straßen.NRW Infoseite: `https://www.strassen.nrw.de/de/lastbeschraenkte-bruecken.html`
+- **prio:** **P1** (das bekannte „GST-Negativkarte NRW offen"-Lead — bestätigt: Karte offen, Rohdaten-Freigabe läuft)
+- **sonstiges:** Inhaltlich der **GST-Goldstandard für NRW** (genau die gesperrten Bauwerke). Strategie: (a) ArcGIS-REST-Service der WebApp ermitteln (DevTools/Network) und direkt abfragen, falls offen; (b) parallel Rohdaten-Freigabe bei Straßen.NRW/Open.NRW anstoßen. Ergänzt NRW-1 (Geometrie/Stammdaten) um die eigentliche Restriktion.
+
+## NRW-3. MOBIDROM / Verkehr.NRW — Mobilitätsdatenplattform & DATEX-II (Baustellen/Sperrungen)
+
+- **quelle:** NRW.Mobidrom Datenplattform (zentrale Mobilitätsdaten NRW) + Verkehrsinformationsportal Verkehr.NRW
+- **betreiber:** NRW.Mobidrom GmbH (Landesgesellschaft, Betrieb seit 23.05.2025); Verkehr.NRW vom Land NRW / Straßen.NRW
+- **datentyp:** Baustellen, Sperrungen, temporäre Verkehrsbeschränkungen, Verkehrslage (+ ÖPNV/Sharing/Parken). DATEX-II-Profile „Roadworks" und „Parking Publication light"
+- **strassentyp:** A + kommunal + Land (alle meldenden Baulastträger; ab 01.01.2027 Pflicht zur Baustellen-Koordinationsplattform für alle Baulastträger NRW) → **Alle**
+- **format:** DATEX II (XML), GTFS/GTFS-RT, GBFS, MDS, TRIAS
+- **apiEndpunkt:** **null** — konkreter öffentlicher DATEX-II-Feed-/API-Endpunkt nicht direkt aus den Portalseiten ableitbar (`zu-bestätigen`). Zugang über MOBIDROM-Datenplattform bzw. Mobilithek (NAP). Hinweis: zusätzliches **CKAN-Open-Data-Portal** `https://www.mobilitaetsdaten.nrw/` (DATEX-II-Datenprofil-Datensätze, z. B. Parken) gefunden → dort Feed-Katalog inventarisieren
+- **update:** Echtzeit-nah / kontinuierlich
+- **auth:** Plattform „diskriminierungsfrei + kostenfrei"; konkrete Bezugskonditionen je Datensatz (teils Registrierung an der Plattform/Mobilithek)
+- **kosten:** kostenfrei (lt. MOBIDROM)
+- **lizenz:** je Datensatz (über Plattform/Mobilithek ausgewiesen) — zu prüfen
+- **abdeckung:** ganz NRW
+- **zugang:** **offen/Registrierung** — Daten kostenfrei bereitgestellt; B2B-Bezug ggf. über Plattform-/Mobilithek-Konto. Kontakt Produkt: Pascal Wett, `pascal.wett@mobidrom.nrw`
+- **verifiziert:** ja (Plattform + Standards bestätigt); konkreter Feed-Endpunkt **zu-bestätigen**
+- **url:**
+  - Verkehrsportal: `https://www.verkehr.nrw/`
+  - MOBIDROM Plattform: `https://www.mobidrom.nrw/produkte/mobidrom-datenplattform`
+  - Daten bereitstellen (Standards): `https://www.mobidrom.nrw/produkte/mobidrom-datenplattform/daten-bereitstellen`
+  - **Open-Data-CKAN:** `https://www.mobilitaetsdaten.nrw/`
+  - Land.NRW PM Baustellenkoordination: `https://www.land.nrw/pressemitteilung/nordrhein-westfalen-verbessert-die-baustellenkoordination`
+- **prio:** **P1** (temporäre Restriktionen NRW)
+- **sonstiges:** Folge-Recherche: (1) `mobilitaetsdaten.nrw` CKAN-API systematisch nach DATEX-II-Baustellen/Sperrungs-Datensätzen durchsuchen; (2) Mobilithek-Angebote „Straßen.NRW/Mobidrom Roadworks" identifizieren. NRW liefert ihre Daten auch an die Mobilithek (→ Bundeskatalog).
+
+---
+
+# ═══════════════════════════════════════════
+# HESSEN
+# ═══════════════════════════════════════════
+
+## HE-1. Hessen Mobil — **Lastbeschränkte Brücken** (B/L/K) + SIB-Hessen-Online-Karte
+
+- **quelle:** „Lastbeschränkte Brücken im Zuge von Bundes-, Landes- und Kreisstraßen" + Online-Bauwerkskarte SIB-Hessen
+- **betreiber:** Hessen Mobil — Straßen- und Verkehrsmanagement
+- **datentyp:** **Lastbeschränkte Brücken** (zulässiges Gesamtgewicht je Bauwerk; 2. Liste = anhörungspflichtige GST). Bauwerkssuche per 7-stelliger Bauwerksnummer; Lage auf Karte
+- **strassentyp:** B + L + K (separate Liste für BAB via Autobahn GmbH) → B/L/K (Hessen-Mobil-Netz)
+- **format:** **PDF-Liste** (Stand 27.02.2026) + Web-Portal (SIB-Hessen Online-Karte). Kein offenes WFS/CSV/JSON
+- **apiEndpunkt:** **null** (PDF + JS-Kartenanwendung)
+- **update:** laufend; „kurzfristige Änderungen jederzeit möglich"; PDF manuell datiert
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** nicht offen lizenziert (Behörden-PDF/Kartenanwendung; Nutzung als Planungshilfe)
+- **abdeckung:** ganz Hessen (B/L/K)
+- **zugang:** **offen** (PDF + Karte frei abrufbar); maschinenlesbar nur via PDF-Parsing → für strukturierten Bezug Hessen Mobil kontaktieren (`schwertransporte@mobil.hessen.de`)
+- **verifiziert:** **ja** (PDF-URL + SIB-Hessen-Karte bestätigt)
+- **url:**
+  - Infoseite + PDF: `https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/lastbeschraenkte-bruecken-im-zuge-von-bundes-landes-und-kreisstrassen`
+  - PDF direkt: `https://mobil.hessen.de/sites/mobil.hessen.de/files/2026-02/lastbeschraenkte_bruecken_in_hessen_stand_2026-02-27_0.pdf`
+  - SIB-Hessen Online-Karte: `https://sibhessen.de/online/application.jsp`
+- **prio:** **P1** (Hessen-Pendant zur NRW-Negativkarte — die echte GST-Brückenrestriktion)
+- **sonstiges:** PDF-Liste ist die maschinell zugänglichste Form (Parsing nötig). SIB-Hessen-Online ist das Hessen-SIB-Bauwerke-Frontend → möglicher Service dahinter (`sibhessen.de`) am Live-Traffic prüfen. **Goldstandard-Restriktion Hessen.**
+
+## HE-2. Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen)
+
+- **quelle:** Positivkarten GST (befahrbare Strecken nach Gewichts-/Höhenklassen)
+- **betreiber:** Hessen Mobil
+- **datentyp:** GST-Strecken nach Gewichtsklassen (36/48/60/72 t) bei max. Höhe 4,20 m; Farbcodierung: orange = nur mit BF3-Begleitung („Gebotsstrecken"), violett = „Verbotsstrecken". Je Regierungsbezirk (Darmstadt, Gießen, Kassel)
+- **strassentyp:** Hessen-Mobil-Netz (B/L/K, ggf. + ausgewählte Strecken) → B/L/K
+- **format:** Karten (Format PDF/GIS nicht eindeutig ausgewiesen) → zu-bestätigen
+- **apiEndpunkt:** **null**
+- **update:** periodisch (Planungshilfe; ergänzt, ersetzt nicht die RGST-2013-Tabellen)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** Behörden-Planungshilfe (nicht offen lizenziert)
+- **abdeckung:** RB Darmstadt, Gießen, Kassel (ganz Hessen)
+- **zugang:** **offen** (über Webseite); strukturierter Bezug via Hessen Mobil (`schwertransporte@mobil.hessen.de`, +49 611 366 3486)
+- **verifiziert:** **ja** (Inhalt/Existenz bestätigt); Datei-Format/URL **zu-bestätigen**
+- **url:** `https://mobil.hessen.de/verkehr/grossraum-und-schwertransporte/positivkarten`
+- **prio:** **P2** (ergänzt HE-1 um routenfähige Klassifizierung)
+- **sonstiges:** Liefert direkt GST-routenrelevante Klassen (Gewicht/Höhe/BF3-Pflicht) — wertvoll, falls als GIS/Geometrie beziehbar. Datei-Links auf der Seite konkret prüfen.
+
+## HE-3. Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkehrsnetze (Straßennetz)
+
+- **quelle:** Geoportal Hessen (GDI-HE) — INSPIRE-WFS Verkehrsnetze, umgesetzt aus ATKIS Basis-DLM, ALKIS und OKSTRA (SBV-Straßennetz)
+- **betreiber:** HVBG (Hessische Verwaltung für Bodenmanagement und Geoinformation) / GDI-Hessen; OKSTRA-Straßennetz aus Hessen-Mobil-Quelldaten
+- **datentyp:** Straßennetz-Topologie/Verkehrsnetze (INSPIRE Transport Networks). Keine Bauwerks-Restriktionsattribute
+- **strassentyp:** je Datenmodell (ATKIS/ALKIS = topografisch; OKSTRA = klassifiziertes Netz A/B/L/K)
+- **format:** WFS 2.0.0 (GML), z. T. WMS, Atom (INSPIRE Download)
+- **apiEndpunkt (verifiziert):**
+  - INSPIRE-WFS HE Verkehrsnetze ATKIS Basis-DLM: `https://www.geoportal.hessen.de/spatial-objects/723`
+  - INSPIRE-WFS HE Verkehrsnetze ALKIS: `https://www.geoportal.hessen.de/spatial-objects/722`
+  - WFS-Capabilities-Muster (Mapbender): `https://www.geoportal.hessen.de/mapbender/php/wfs.php?inspire=1&featuretype_id={ID}&REQUEST=GetCapabilities&SERVICE=WFS&INSPIRE=1`
+  - Offene-Geodaten-Übersicht (214 Dienste): `https://www.geoportal.hessen.de/spatial-objects/`
+- **update:** periodisch (GDI-HE)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** offene Geodaten Hessen (i. d. R. dl-de/by-2-0 bzw. dl-de/zero — je Datensatz prüfen; Rechtsbasis HODaG)
+- **abdeckung:** ganz Hessen
+- **zugang:** **offen** (WFS/WMS frei)
+- **verifiziert:** **ja** (spatial-objects-Dienste + WFS-Muster bestätigt)
+- **url:**
+  - Geoportal: `https://www.geoportal.hessen.de/`
+  - GDI-HE Einstieg: `https://hvbg.hessen.de/geoinformation/geodateninfrastruktur/geoportal-hessen`
+- **prio:** **P1** (Netz-Grundriss Hessen; analog NRW-1 ohne Bauwerks-Restriktion)
+- **sonstiges:** Liefert Netzgeometrie/Topologie, **nicht** Brücken-Traglast/Höhe (die stecken in SIB-Hessen, HE-1). Dienst-Inventar über `spatial-objects/` durchsuchen (auch HLNUG-Geodienste `https://www.hlnug.de/themen/geografische-informationssysteme/geodienste`).
+
+## HE-4. opendata.hessen.de — Open-Data-Portal (inkl. Open Traffic Data)
+
+- **quelle:** Zentrales Open-Data-Portal Hessen (CKAN); u. a. „Verkehrsdaten aus dem Verkehrsleitrechner im Rohformat (Open Traffic Data)"
+- **betreiber:** Land Hessen (Hessen Digitales); Verkehrsdaten von Hessen Mobil / Kommunen (Open Traffic Data auch Darmstadt)
+- **datentyp:** Detektor-/Induktionsschleifen-Rohdaten (Zählwerte `DxxZ`, Belegung `DxxB`), 1-min-Auflösung; weitere Verkehrs-/Geodatensätze
+- **strassentyp:** überwiegend kommunal/Knotenpunkte (Open Traffic Data); je Datensatz
+- **format:** CSV (ZIP je Knoten/Monat); je Datensatz auch WFS/WMS/XML/GML/CSV
+- **apiEndpunkt:** CKAN-API des Portals (`https://opendata.hessen.de/api/3/…`) — je Datensatz Distributions-URLs (Portal teils 403 bei Bot-Fetch → im Browser/CKAN-API abfragen)
+- **update:** jährlich/laufend je Datensatz (Open Traffic Data 2022–2025 verfügbar)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** offen (HODaG; je Datensatz dl-de/by-2-0 o. ä.)
+- **abdeckung:** Hessen (je Datensatz)
+- **zugang:** **offen**
+- **verifiziert:** ja (Portal + Open-Traffic-Data-Datensatz bestätigt)
+- **url:**
+  - Portal: `https://opendata.hessen.de/`
+  - Verkehr-Kategorie: `https://opendata.hessen.de/dataset?groups=verkehr`
+  - Open Data in Hessen: `https://opendata.hessen.de/pages/open-data-in-hessen`
+- **prio:** **P2** (Rohdaten Verkehr; für GST-Restriktionen randständig, aber als Sucheinstieg für Hessen-Mobil-Datensätze)
+- **sonstiges:** Über CKAN-API nach weiteren Hessen-Mobil-Datensätzen (Baustellen/Straßennetz/Bauwerke) suchen; Portal blockt direkte Bot-Fetches (403) → CKAN-`package_search` nutzen.
+
+> **Hessen-Hinweis VEMAGS:** Hessen Mobil betreibt das bundesweite VEMAGS-Verfahren (GST-Antragsbearbeitung). VEMAGS-INS-GST ist die offizielle Routenprüfung gegen Bauwerksrestriktionen → siehe **Bundeskatalog Quelle 4** (restricted, Zugang per Anfrage). Allgemein-Info: `https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/allgemeine-informationen-und-vemags`
+
+---
+
+# ═══════════════════════════════════════════
+# RHEINLAND-PFALZ (RLP)
+# ═══════════════════════════════════════════
+
+## RP-1. GeoPortal.rlp.de — **Straßennetz LBM** (OGC API Features / WFS / WMS)
+
+- **quelle:** Straßennetz Rheinland-Pfalz (LBM) — OAF/WFS-Dienst `strassennetz_wfs_2.0.0`; zusätzlich Einzeldatensatz „Landstraßen"
+- **betreiber:** Landesbetrieb Mobilität Rheinland-Pfalz (LBM); Geoportal-Betrieb LVermGeo RLP. Techn. Kontakt `Daniel.Boden@lbm.rlp.de`
+- **datentyp:** Straßennetz: **Autobahnen, Bundesstraßen, Landesstraßen, Kreisstraßen**, Netzknoten, Stationen (A/B/L/K), ABA-Kilometer, Beschriftung. **Keine** dedizierte Brücken-/Bauwerks-Collection im WFS
+- **strassentyp:** A + B + L + K → **Alle** (klassifiziertes Netz)
+- **format:** **OGC API Features (GeoJSON/JSON)**, WFS 2.0.0 (GML), WMS, Atom (INSPIRE)
+- **apiEndpunkt (verifiziert):**
+  - **OAF-Landing (Straßennetz):** `https://www.geoportal.rlp.de/spatial-objects/513`
+  - **OAF-API-Definition:** `https://www.geoportal.rlp.de/spatial-objects/513/api`
+  - **Collections (Beispiel Landesstraßen):** `https://www.geoportal.rlp.de/spatial-objects/226/collections/Landesstrassen`
+  - **WFS (Landstraßen, INSPIRE):** `https://www.geoportal.rlp.de/mapbender/php/wfs.php?FEATURETYPE_ID=2217&REQUEST=GetCapabilities&SERVICE=WFS&INSPIRE=1`
+  - **WMS (Landstraßen):** `https://www.geoportal.rlp.de/mapbender/php/wms.php?layer_id=36536&REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS`
+  - MapServer-Quelle (Backend): `http://lbm-geo.rlp.de/cgi-bin/mapserv?map=/home/planer/wfs/strassennetz_wfs.map&`
+- **update:** Landstraßen-WFS zuletzt 13.11.2024; OAF 02.09.2024 (Datenstand prüfen)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** **Datenlizenz Deutschland Namensnennung 2.0** (dl-de/by-2-0); Metadaten teils CC0
+- **abdeckung:** ganz RLP
+- **zugang:** **offen** (OAF/WFS/WMS frei, GeoJSON direkt)
+- **verifiziert:** **ja** (OAF-Collections + Landstraßen-WFS/WMS-URLs bestätigt; FeatureTypes gelistet)
+- **url:**
+  - Geoportal: `https://www.geoportal.rlp.de/`
+  - Spatial-Objects (Straßennetz): `https://www.geoportal.rlp.de/spatial-objects/513`
+  - Open-Data-Eintrag (open.rlp.de): `https://open.rlp.de/de/suchergebnisse/dataset/landstrassen`
+  - LVermGeo Open Data: `https://lvermgeo.rlp.de/geodaten-geoshop/open-data`
+- **prio:** **P1** (Netz-Grundriss RLP, moderne OAF/GeoJSON — sehr gut integrierbar)
+- **sonstiges:** **Keine Brücken-/Bauwerks-Restriktion im WFS** (nur Netz). LBM-3D-Gebäudemodell (LoD2) enthält Brückengeometrien, aber keine Traglast/Höhe → echte Restriktion via LBM (RP-3) / SIB. Open-Data-Portal RLP ist `open.rlp.de` (vormals `daten.rlp.de`, 301-Redirect).
+
+## RP-2. Mobilitätsatlas RLP / BaustellenInfo digital — Baustellen & Verkehrsmeldungen
+
+- **quelle:** Mobilitätsatlas Rheinland-Pfalz (verkehr.rlp.de) + „BaustellenInfo digital Rheinland-Pfalz"
+- **betreiber:** Land RLP (MWTEK) + LBM RLP; BaustellenInfo bündelt LBM + Kreise/Kommunen
+- **datentyp:** Baustellen (Land, Autobahn GmbH, Kommunen), Sperrungen, Verkehrsmeldungen, Verkehrszählungen, Unfallhäufungsstellen, Ladesäulen, ÖV-Haltestellen
+- **strassentyp:** A + B + L + K + kommunal → **Alle** (meldende Baulastträger)
+- **format:** Web-Portal/Karte; Daten an Mobilithek weitergegeben (für Navi-Hersteller/Apps) → DATEX II via LBM-Knoten
+- **apiEndpunkt:** **null** (Portal); öffentlicher Feed-Endpunkt nicht direkt sichtbar (`zu-bestätigen`) — Bezug über Mobilithek bzw. LBM-DATEX-Knoten (RP-4)
+- **update:** Echtzeit-nah
+- **auth:** Portal offen; Daten-/Feed-Bezug ggf. über Mobilithek (Registrierung)
+- **kosten:** Portal frei
+- **lizenz:** je Bezugsweg (Mobilithek) zu prüfen
+- **abdeckung:** ganz RLP
+- **zugang:** **offen (Portal)** / Feed via Mobilithek
+- **verifiziert:** ja (Portale bestätigt); Feed-Endpunkt **zu-bestätigen**
+- **url:**
+  - Mobilitätsatlas (LBM): `https://lbm.rlp.de/themen/verkehrssteuerung/mobilitaetsatlas`
+  - Mobilitätsatlas (MWTEK): `https://mwtek.rlp.de/themen/verkehr/mobilitaetsatlas-rheinland-pfalz`
+  - BaustellenInfo digital: `https://baustelleninfo.rlp.de/`
+  - Verkehrsportal: `https://www.verkehr.rlp.de/`
+- **prio:** **P1** (temporäre Restriktionen RLP)
+- **sonstiges:** Konkreten DATEX-II-Feed über die Mobilithek-Angebote des LBM bzw. den DATEX-Knoten (RP-4) auflösen.
+
+## RP-3. LBM RLP — Brücken & Schwertransporte (Restriktions-Stelle)
+
+- **quelle:** LBM RLP Themenseiten „Brücken" und „Großraum- und Schwerverkehr"
+- **betreiber:** Landesbetrieb Mobilität RLP (LBM)
+- **datentyp:** Brückenprüfung/Traglast (statischer Nachweis je Bauwerk), Genehmigungs-/Anhörungsverfahren GST. Keine öffentliche maschinenlesbare Negativ-/Brückenliste gefunden (im Ggs. zu NRW/Hessen)
+- **strassentyp:** A + B + L + K
+- **format:** Web-Info (Themenseiten); operative Daten in LBM-/SIB-Systemen (nicht offen)
+- **apiEndpunkt:** **null**
+- **update:** laufend (Bauwerksprüfung)
+- **auth:** restricted (interne Systeme); Routenprüfung über VEMAGS
+- **kosten:** n/a
+- **lizenz:** nicht offen
+- **abdeckung:** ganz RLP
+- **zugang:** **eingeschränkt** — GST-Routenprüfung über VEMAGS (Antrag); Kreisverwaltungen/kreisfreie Städte erteilen Genehmigungen. Direkter Datenbezug nur per LBM-Anfrage/Kooperation
+- **verifiziert:** ja (Zuständigkeit/Verfahren bestätigt); **keine offene Brückenliste** verifiziert (anders als NRW/HE)
+- **url:**
+  - Brücken: `https://lbm.rlp.de/themen/bruecken`
+  - GST: `https://lbm.rlp.de/themen/verkehrsrecht/grossraum-und-schwerverkehr`
+- **prio:** **P2** (Restriktion vorhanden, aber nicht offen — Lücke ggü. NRW/HE)
+- **sonstiges:** **Lücke RLP:** keine öffentliche GST-Negativ-/Brückenkarte wie NRW (NRW-2) oder Hessen (HE-1) auffindbar. Beim LBM gezielt nach „lastbeschränkte Brücken RLP"-Liste anfragen; sonst nur via VEMAGS-INS-GST (Bundeskatalog Q4).
+
+## RP-4. LBM RLP — DATEX-II-Knoten (Verkehrsdaten-Austausch)
+
+- **quelle:** LBM RLP als eingetragener DATEX-II-Node (Nodes Directory datex2.eu)
+- **betreiber:** Landesbetrieb Mobilität RLP
+- **datentyp:** Verkehrsmeldungen/Baustellen/Situations (DATEX II)
+- **strassentyp:** A + B + L (LBM-Netz)
+- **format:** DATEX II
+- **apiEndpunkt:** **null** (Knoten-Eintrag bestätigt Existenz; öffentlicher Endpunkt nicht im Verzeichnis exponiert) → `zu-bestätigen`, Bezug über Mobilithek
+- **update:** Echtzeit-nah
+- **auth:** i. d. R. über Mobilithek (NAP)
+- **kosten:** je Mobilithek-Angebot
+- **lizenz:** je Angebot
+- **abdeckung:** ganz RLP
+- **zugang:** **eingeschränkt/Registrierung** (über Mobilithek)
+- **verifiziert:** ja (Node im DATEX-II-Verzeichnis gelistet); Endpunkt **zu-bestätigen**
+- **url:**
+  - DATEX-II-Node: `https://datex2.eu/implementations/nodes_directory/landesbetrieb-mobilitat-rheinland-pfalz`
+  - Nodes Directory: `https://repo.datex2.eu/implementations/nodes_directory`
+- **prio:** **P2**
+- **sonstiges:** Beweist, dass RLP DATEX-II-konform liefert → der reale Bezugsweg ist die Mobilithek (Bundeskatalog). Endpunkt dort suchen.
+
+---
+
+# ═══════════════════════════════════════════
+# SAARLAND
+# ═══════════════════════════════════════════
+
+## SL-1. GeoPortal Saarland (GDI-SL) — **Verkehr-WFS** + INSPIRE-Verkehrsnetze
+
+- **quelle:** GeoPortal Saarland — `Verkehr_WFS` (ausgewählte Geodaten Verkehr) + INSPIRE-WFS Verkehrsnetze (ATKIS Basis-DLM, OKSTRA)
+- **betreiber:** Geodateninfrastruktur Saarland (GDI-SL); LVGL Saarland (Landesamt für Vermessung, Geoinformation und Landentwicklung); OKSTRA-Netz aus LfS-Quelldaten
+- **datentyp:** Verkehrs-Geodaten + Straßennetz-Topologie (INSPIRE Transport Networks: Funktionsklasse der Straße etc.). Keine dedizierte Brücken-Restriktions-Collection erkennbar
+- **strassentyp:** je Dienst (ATKIS topografisch; OKSTRA = klassifiziertes Netz A/B/L/K)
+- **format:** OGC API Features (OAF) / WFS 2.0.0, WMS/WMS-T
+- **apiEndpunkt (verifiziert):**
+  - **Verkehr_WFS (OAF):** `https://geoportal.saarland.de/spatial-objects/242`
+  - **INSPIRE-WFS SL Verkehrsnetze ATKIS Basis-DLM:** `https://geoportal.saarland.de/spatial-objects/413`
+  - **INSPIRE-WFS SL Verkehrsnetze OKSTRA:** `https://geoportal.saarland.de/spatial-objects/326`
+  - OAF-Übersicht: `https://geoportal.saarland.de/spatial-objects/`
+  - Schnittstellen-Doku: `https://geoportal.saarland.de/article/Schnittstelle/`
+- **update:** periodisch (GDI-SL)
+- **auth:** keine
+- **kosten:** keine
+- **lizenz:** offene Geodaten Saarland (je Datensatz; dl-de/by-2-0 o. ä. — prüfen)
+- **abdeckung:** ganz Saarland
+- **zugang:** **offen** (OAF/WFS/WMS frei)
+- **verifiziert:** **ja** (drei Verkehrs-/Verkehrsnetz-Dienste mit URLs bestätigt)
+- **url:**
+  - GeoPortal: `https://geoportal.saarland.de/`
+  - Verkehr-App: `https://geoportal.saarland.de/apps/` (Anwendung „Verkehr — Mobilität im Saarland")
+  - Verfügbare Geodatendienste (LVGL): `https://www.saarland.de/lvgl/DE/themen-aufgaben/themen/verfuegbareGeodatendienste/verfuegbareGeodatendienste`
+- **prio:** **P1** (Netz-Grundriss Saarland; OKSTRA-Netz = klassifiziertes Straßennetz mit Funktionsklassen)
+- **sonstiges:** OKSTRA-Verkehrsnetz (`/326`) ist am nächsten am klassifizierten LfS-Netz. Collections per OAF inventarisieren; auf Bauwerks-/Brückenattribute prüfen (vermutlich nur Netz).
+
+## SL-2. LfS / baustellen.saarland — Baustellen, Sperrungen, Verkehrslage
+
+- **quelle:** „baustellen.saarland" (LfS-Baustellenportal) + „Wo wird gebaut" (saarland.de)
+- **betreiber:** Landesbetrieb für Straßenbau (LfS), Neunkirchen. Kontakt `poststelle@lfs.saarland.de`
+- **datentyp:** Baustellen, Verkehrswarndienst (Sperrungen), Verkehrslage (frei/stockend/zäh/Stau)
+- **strassentyp:** B + L (LfS-Netz; BAB via Autobahn GmbH) — kommunal je Meldung
+- **format:** Web-Portal (Listen-/Tabellenansicht); **kein** offener API/DATEX/GeoJSON-Feed gefunden
+- **apiEndpunkt:** **null** (kein maschinenlesbarer Export im Portal sichtbar) → `zu-bestätigen` (intern evtl. JSON-Backend; am Live-Traffic prüfen)
+- **update:** laufend
+- **auth:** keine (Portal)
+- **kosten:** keine
+- **lizenz:** nicht ausgewiesen (Behördenportal)
+- **abdeckung:** ganz Saarland
+- **zugang:** **offen (Portal)**; maschineller Bezug unklar → LfS anfragen bzw. Mobilithek prüfen
+- **verifiziert:** ja (Portal + Betreiber bestätigt); offener Feed **zu-bestätigen**
+- **url:**
+  - Baustellenportal: `https://baustellen.saarland/`
+  - LfS „Wo wird gebaut": `https://www.saarland.de/lfs/DE/aktuelles/wo_wird_gebaut`
+  - LfS Startseite: `https://www.saarland.de/lfs/DE/home/home_node.html`
+- **prio:** **P1** (temporäre Restriktionen Saarland)
+- **sonstiges:** Saarland kleinstes Netz; LfS verwaltet ~1.490 km L + ~300 km B + zahlreiche Bauwerke (Brücken/Kreisverkehre). Prüfen, ob baustellen.saarland an die Mobilithek liefert (DATEX II) bzw. ob ein JSON-Backend abgreifbar ist.
+
+## SL-3. LfS Saarland — GST / Schwertransport (Restriktions-Stelle)
+
+- **quelle:** LfS — zuständig für Bauwerke (Brücken, Kreisverkehre) im B/L-Netz; GST-FAQ
+- **betreiber:** Landesbetrieb für Straßenbau (LfS)
+- **datentyp:** Bauwerke (Brücken/Kreisverkehre) im LfS-Netz; GST-Genehmigung/Anhörung. **Keine** öffentliche GST-Negativ-/Brückenkarte gefunden
+- **strassentyp:** B + L
+- **format:** Web-Info; operative Bauwerksdaten nicht offen (SIB-Bauwerke)
+- **apiEndpunkt:** **null**
+- **update:** laufend
+- **auth:** restricted
+- **kosten:** n/a
+- **lizenz:** nicht offen
+- **abdeckung:** ganz Saarland
+- **zugang:** **eingeschränkt** — GST-Routenprüfung über VEMAGS; Datenbezug per LfS-Anfrage
+- **verifiziert:** ja (Zuständigkeit bestätigt); **keine offene Brückenliste** verifiziert
+- **url:**
+  - LfS FAQ (GST): `https://www.saarland.de/lfs/DE/service/faq/haeufige_Fragen_und_Antworten_node.html`
+  - LfS Home: `https://www.saarland.de/lfs/DE/home/home_node.html`
+- **prio:** **P2** (Restriktion vorhanden, nicht offen — Lücke wie RLP)
+- **sonstiges:** **Lücke Saarland:** keine öffentliche GST-Negativkarte wie NRW/Hessen. Echte Brückenrestriktion via VEMAGS-INS-GST (Bundeskatalog Q4) oder LfS-Kooperation.
+
+---
+
+## Abdeckungs-Synthese & Lücken (Länder West)
+
+### Was OFFEN + verifiziert vorliegt (sofort nutzbar)
+- **Straßennetz-Geometrie aller 4 Länder** als WFS/OAF/Shape unter dl-de/by-2-0:
+  - **NRW:** `wfs.nrw.de/wfs/strassen_nrw` inkl. **Bauwerke**-Layer (Brücken/Tunnel) + Shape-Download (12.06.2026, sehr aktuell) — **stärkste Quelle**.
+  - **RLP:** GeoPortal.rlp.de OAF (`spatial-objects/513`, GeoJSON) — A/B/L/K, modern.
+  - **Hessen:** Geoportal Hessen INSPIRE-WFS Verkehrsnetze (`/722`, `/723`, OKSTRA).
+  - **Saarland:** GeoPortal Saarland Verkehr_WFS (`/242`) + INSPIRE Verkehrsnetze (`/413`, `/326`).
+- **GST-Brückenrestriktion offen sichtbar in 2 von 4 Ländern:**
+  - **NRW:** GST-Schwertransportkarte (lastbeschränkte/gesperrte Brücken, ArcGIS WebApp) — **Karte offen, Rohdaten-Freigabe in Prüfung**. ← bestätigtes Lead.
+  - **Hessen:** Hessen Mobil PDF-Liste lastbeschränkte Brücken + SIB-Hessen-Online-Karte + Positivkarten (Gewichts-/Höhenklassen).
+- **Temporäre Restriktionen (Baustellen/Sperrungen)** als Portal in allen 4 Ländern; DATEX-II-Lieferung an Mobilithek (NRW via MOBIDROM, RLP via LBM-Knoten, HE via Hessen Mobil, SL via LfS).
+
+### Konkrete „zu-bestätigen"-Punkte (Folge-Recherche)
+1. **NRW Bauwerke-Feldliste:** Enthält der offene `Bauwerke`-Layer die GST-Attribute (Traglast/Brückenklasse, lichte Höhe)? → per `GetFeature`/Shape-Attributtabelle prüfen (PDF-Datenbeschreibung war CID-codiert, nicht parsebar).
+2. **NRW Schwertransportkarte ArcGIS-REST-Service:** WebApp ist JS — den zugrundeliegenden `…/arcgis/rest/services/…`-Endpunkt (an `giscloud.nrw.de`) via Browser-Network-Trace ermitteln; falls offen → direkt abfragbar.
+3. **DATEX-II-Feed-Endpunkte (alle 4):** Portale gefunden, aber keine direkten Feed-URLs exponiert. Auflösung über **Mobilithek-Angebotskatalog** (je Land) bzw. `mobilitaetsdaten.nrw` CKAN-API (NRW hat zusätzliches offenes Datenportal).
+4. **Hessen opendata CKAN:** Portal blockt Bot-Fetch (403) → via `package_search`-API weitere Hessen-Mobil-Datensätze (Baustellen/Bauwerke) finden.
+5. **Hessen Positivkarten-Format:** PDF oder GIS? Datei-Links auf der Positivkarten-Seite konkret abgreifen.
+
+### Echte Lücken (kein offener Treffer)
+- **RLP + Saarland: keine öffentliche GST-Negativ-/Brückenkarte** (anders als NRW + Hessen). Restriktion nur über VEMAGS-INS-GST (Bund, restricted) oder direkte LBM-/LfS-Anfrage.
+- **Brücken-Traglast/lichte-Höhe als offene Rohdaten** existiert in KEINEM der 4 Länder offen — überall nur abgeleitete Karten/Listen (NRW/HE) oder gar nicht (RLP/SL). Die Rohquelle bleibt **SIB-Bauwerke / ASB-ING** (Bundeskatalog Q3, eingeschränkt) bzw. **VEMAGS-INS-GST** (Q4).
+
+### Strategische Empfehlung (Länder West)
+1. **NRW sofort anbinden:** OpenGeodata.NRW Bauwerke-Shape/WFS (offen) + GST-Schwertransportkarte (ArcGIS-REST ermitteln) — die mit Abstand reichste offene Region.
+2. **Hessen:** PDF-Brückenliste parsen + SIB-Hessen-Online-Backend prüfen + INSPIRE-Verkehrsnetz-WFS für Netzgeometrie.
+3. **RLP + Saarland:** Netzgeometrie offen via OAF/WFS nutzen; GST-Brückenrestriktion proaktiv bei LBM bzw. LfS anfragen (keine offene Karte) — oder über VEMAGS-INS-GST bundesweit lösen.
+4. **DATEX-II-Baustellen:** zentral über **Mobilithek** je Land beziehen (ein Bezugsweg statt vier Portale); NRW zusätzlich `mobilitaetsdaten.nrw`.
+
+---
+
+*Erstellt: 2026-06-13. Bereich: Länder West (NRW, Hessen, RLP, Saarland). Bundesquellen siehe `quellen-bund.md`; Aggregatoren/kommerziell siehe `quellen-schwertransport-aggregatoren.md`. Übrige Länder in separaten Katalogen.*
