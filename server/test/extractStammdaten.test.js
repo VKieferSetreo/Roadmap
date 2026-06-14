@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { extractStammdaten, makeNormalized } from "../src/connectors/_helpers.js"
+import { extractStammdaten, makeNormalized, stripHtml } from "../src/connectors/_helpers.js"
 import { enrichFromText } from "../src/enrich.js"
 
 // Echter Autobahn-API-Beschreibungsblock (A7, wie im Karten-Popup gesehen).
@@ -117,5 +117,25 @@ describe("makeNormalized — Strip-down-Integration", () => {
     })
     expect(o.beschreibung).toBe("OSM highway=residential")
     expect(o.attrs).toEqual({})
+  })
+
+  it("Sanitizing: 0-Sentinel-Maße raus, HTML gestrippt", () => {
+    const o = makeNormalized({
+      externeId: "x4", kategorie: "baustelle", name: "Test",
+      beschreibung: 'Umleitung <a href="https://x.de">Link</a> &amp; mehr',
+      lat: 53.5, lng: 9.9, attrs: { restbreiteM: 0, maxGewichtT: 7.5 }, quelleName: "Test",
+    })
+    expect(o.attrs.restbreiteM).toBeUndefined() // 0 gedroppt
+    expect(o.attrs.maxGewichtT).toBe(7.5) // echter Wert bleibt
+    expect(o.beschreibung).toBe("Umleitung Link & mehr")
+  })
+})
+
+describe("stripHtml", () => {
+  it("entfernt Tags, dekodiert Entities, behält Zeilenumbrüche", () => {
+    expect(stripHtml('A <b>x</b> &amp; <a href="u">y</a>')).toBe("A x & y")
+    expect(stripHtml("Zeile1\nZeile2")).toBe("Zeile1\nZeile2")
+    expect(stripHtml(null)).toBe(null)
+    expect(stripHtml("   ")).toBe(null)
   })
 })

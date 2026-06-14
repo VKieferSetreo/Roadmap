@@ -160,6 +160,23 @@ export function stabilHash(...teile) {
  * Kaputte Koords (außerhalb DE) → null (Item wird dann mangels lat/lng übersprungen).
  * attrs: nur numerische/boolesche Grenzwerte; leere/null-Werte werden gefiltert.
  */
+// Maß-Attribute, bei denen 0 KEIN echter Grenzwert ist (0 = "keine Angabe", zeigt sonst "0 m"/"0 t").
+const NULL_BEI_NULL = new Set([
+  "restbreiteM", "maxBreiteM", "maxHoeheM", "maxGewichtT", "maxAchslastT", "maxLaengeM", "sperrlaengeM", "radiusM",
+])
+
+/** Freitext säubern: HTML-Tags raus, Entities dekodieren, Mehrfach-Spaces zusammenziehen, trimmen.
+ *  Zeilenumbrüche bleiben erhalten (sinnvolle Struktur, z.B. Autobahn-Meldungen). null-sicher. */
+export function stripHtml(text) {
+  if (text == null) return null
+  const s = String(text)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'").replace(/&nbsp;/g, " ")
+    .replace(/[ \t]{2,}/g, " ").replace(/[ \t]+\n/g, "\n").trim()
+  return s || null
+}
+
 export function makeNormalized({
   externeId, kategorie, name = null, beschreibung = null, lat, lng,
   strassenRef = null, attrs = {}, gueltigVon = null, gueltigBis = null, realerStart = null,
@@ -172,8 +189,13 @@ export function makeNormalized({
     nlng = null
   }
   const cleanAttrs = Object.fromEntries(
-    Object.entries(attrs || {}).filter(([, v]) => v != null && (typeof v === "number" || typeof v === "boolean")),
+    Object.entries(attrs || {}).filter(([k, v]) =>
+      v != null && (typeof v === "number" || typeof v === "boolean") &&
+      // 0-Sentinel bei Maß-Attributen droppen ("0 m"/"0 t" ist keine echte Angabe).
+      !(typeof v === "number" && v === 0 && NULL_BEI_NULL.has(k)),
+    ),
   )
+  beschreibung = stripHtml(beschreibung)
 
   // Strip-down: fehlende Grenzwerte/Zeiträume aus dem Freitext (Name + Beschreibung) nachziehen.
   // Nur Lücken füllen — vom Connector explizit gesetzte Werte bleiben unangetastet.
