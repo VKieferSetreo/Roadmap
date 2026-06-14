@@ -146,7 +146,9 @@ export function extractStammdaten(text) {
   if (/\bHavarie\b|\bNotma(?:ß|ss)nahme\b|\bWasserrohrbruch\b/i.test(s)) out.havarie = true // akut/ungeplant
   // (bauwerkstyp bewusst NICHT extrahiert — redundant mit kategorie bruecke/tunnel, feuerte massenhaft
   //  auf generische OSM-Namen "Brücke (OSM)" und flaggte Infrastruktur fälschlich als KI-aufbereitet.)
-  const medium = s.match(/\b(Fernw(?:ä|ae)rme|Trinkwasser|Wasserleitung|Gasleitung|Gasversorgung|Stromleitung|Stromnetz|Glasfaser|Breitband|Telekommunikation|Kommunikationsleitung|Kanal)\b/i)
+  // "Kanal" braucht Bau-Kontext-Suffix — sonst feuert es auf geografische Gewässernamen
+  // ("Rhein-Herne-Kanal", "Zum Kanal") statt auf eine Kanal-Baustelle.
+  const medium = s.match(/\b(Fernw(?:ä|ae)rme|Trinkwasser|Wasserleitung|Gasleitung|Gasversorgung|Stromleitung|Stromnetz|Glasfaser|Breitband|Telekommunikation|Kommunikationsleitung|Kanal(?:isation|sanierung|arbeiten|bau|netz))\b/i)
   if (medium) out.medium = medium[1] // Bauanlass (Versorgungsleitung)
 
   // Datums-Heuristik: kleinstes = Start, größtes = Ende. Einzeldatum nur mit Gültigkeits-Kontext.
