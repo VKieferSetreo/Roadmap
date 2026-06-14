@@ -114,7 +114,7 @@ export async function analyze({ db, project, corridorM }) {
  * Kompletter Analyse-Lauf inkl. analysis_runs-Record und transaktionaler
  * Persistenz. Wirft bei Fehlern (Projekt bleibt dann unverändert, Run = error).
  */
-export async function runAnalysis({ db, project, corridorM = 120 }) {
+export async function runAnalysis({ db, project, corridorM = 50 }) {
   const runRes = await db.query(
     "INSERT INTO analysis_runs (project_id, status, engine_version) VALUES ($1, $2, $3) RETURNING id",
     [project.id, "running", ENGINE_VERSION],

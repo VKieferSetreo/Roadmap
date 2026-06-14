@@ -131,7 +131,7 @@ async function rerunOne({ db, row, corridorM, log }) {
  *
  * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen}>}
  */
-export async function rerunAffectedProjects({ db, corridorM = 120, log = () => {} }) {
+export async function rerunAffectedProjects({ db, corridorM = 50, log = () => {} }) {
   const { rows } = await db.query(
     "SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'",
   )

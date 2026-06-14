@@ -2,6 +2,7 @@
 // darunter die Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar,
 // geclustert). Keine Funde-/Auswertungs-Tabelle hier — Funde leben im Projekt.
 
+import { useCallback } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Database, Map as MapIcon } from "lucide-react"
@@ -45,15 +46,20 @@ function ObstacleKarte({ live }: { live: boolean }) {
     staleTime: 60_000,
   })
 
-  const deleteObstacle = async (id: string) => {
-    try {
-      await api.deleteObstacle(id)
-      toast.success("Eigener Eintrag verworfen.")
-      await queryClient.invalidateQueries({ queryKey: ["obstacles-alle"] })
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "Verwerfen fehlgeschlagen.")
-    }
-  }
+  // Stabile Referenz: sonst würde ObstaclesMap das markercluster-Layer bei JEDEM
+  // Re-Render neu aufbauen (useEffect-Dep) → Flackern/Marker-Verlust.
+  const deleteObstacle = useCallback(
+    async (id: string) => {
+      try {
+        await api.deleteObstacle(id)
+        toast.success("Eigener Eintrag verworfen.")
+        await queryClient.invalidateQueries({ queryKey: ["obstacles-alle"] })
+      } catch (err) {
+        toast.error(err instanceof ApiError ? err.message : "Verwerfen fehlgeschlagen.")
+      }
+    },
+    [queryClient],
+  )
 
   if (!live) {
     return (
@@ -94,7 +100,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="h-[calc(100vh-360px)] min-h-[420px]">
-      <ObstaclesMap obstacles={obstacles.data ?? []} onDelete={(id) => void deleteObstacle(id)} />
+      <ObstaclesMap obstacles={obstacles.data ?? []} onDelete={deleteObstacle} />
     </div>
   )
 }

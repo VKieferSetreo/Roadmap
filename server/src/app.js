@@ -42,7 +42,12 @@ export function createApp({
   fetchImpl = globalThis.fetch,
   requireAuth = process.env.REQUIRE_AUTH === "true",
   timeoutMs = Number(process.env.EXTERNAL_TIMEOUT_MS ?? 4000),
-  corridorM = Number(process.env.CORRIDOR_M ?? 120),
+  // Korridor-Halbbreite (m): max. Abstand eines Hindernisses zur Route, damit es als
+  // Fund zählt. 50 m statt früher 120 m (Max 2026-06-14): 120 m fing in der Stadt
+  // Parallel-/Seitenstraßen mit ein („nur in der Nähe" = Bloat). 50 m hält genug
+  // Toleranz für GPS-Ungenauigkeit + Autobahn-Fahrbahn-Versatz, schließt aber den
+  // Nachbarblock (~80–120 m) aus. Per CORRIDOR_M übersteuerbar.
+  corridorM = Number(process.env.CORRIDOR_M ?? 50),
   shareBaseUrl = process.env.SHARE_BASE_URL ?? "https://setreo-cloud.com",
   sessionSalt = process.env.SESSION_SALT ?? "roadmap-dev-salt",
   shareDir = SHARE_DIR,

@@ -116,14 +116,23 @@ function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; 
   const map = useMap()
   useEffect(() => {
     // leaflet.markercluster erweitert L zur Laufzeit (kein @types-Paket) → lose getypt.
-    const cluster = (L as unknown as { markerClusterGroup: (o: unknown) => L.LayerGroup }).markerClusterGroup({
-      chunkedLoading: true, // Marker häppchenweise hinzufügen → kein Browser-Freeze
+    const cluster = (L as unknown as {
+      markerClusterGroup: (o: unknown) => L.LayerGroup & { addLayers: (l: L.Layer[]) => void }
+    }).markerClusterGroup({
+      chunkedLoading: true, // greift bei addLayers (bulk): Marker häppchenweise → kein Freeze
       maxClusterRadius: 60,
+      // animate:false ist BEWUSST (Max 2026-06-14, „Icons nach Zoom unsichtbar"):
+      // markercluster blendet Marker beim Zoom über Opacity-Transitions ein/aus
+      // (clusterHide → opacity 0, dann ein enqueued setTimeout clusterShow → opacity 1).
+      // Geht dieser Callback verloren (Zoom-Interrupt), bleibt der Marker auf opacity 0
+      // = „während Zoom sichtbar, danach weg". Ohne Animation werden Marker synchron bei
+      // voller Deckkraft hinzugefügt → sie bleiben zuverlässig sichtbar.
+      animate: false,
       // Ab der Zoomstufe, ab der auch die Strecken-Linien erscheinen, einzelne Pins zeigen —
       // sonst hätte eine sichtbare Strecke keinen eigenen Pin (steckte im Cluster) = „Tag fehlt".
       disableClusteringAtZoom: LINES_MIN_ZOOM,
     })
-    for (const o of obstacles) {
+    const markers = obstacles.map((o) => {
       const eigen = istEigenerEintrag(o.quelle)
       // Pin MITTIG auf die Strecke (geom-Mittelpunkt) statt am Anfangspunkt → Tag sitzt auf der Linie.
       const pos = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
@@ -132,8 +141,9 @@ function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; 
       })
       marker.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
       wireDelete(marker, o, onDelete)
-      cluster.addLayer(marker)
-    }
+      return marker
+    })
+    cluster.addLayers(markers) // bulk → chunkedLoading greift, deutlich schneller als addLayer-Loop
     map.addLayer(cluster)
     return () => {
       map.removeLayer(cluster)
