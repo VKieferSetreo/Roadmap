@@ -108,13 +108,13 @@
   cursor: pointer;
 }
 
-/* Sanftes Aufploppen der Fund-Pins */
-.rm-pin svg {
-  transition: transform 150ms ease-out;
-  transform-origin: 50% 100%;
-}
-.rm-pin:hover svg {
-  transform: scale(1.08);
+/* KEIN transform/scale auf Hover (Max 2026-06-14): ein CSS-transform auf einem
+   Marker-Kind promotet den Pin beim Hovern zu einem eigenen GPU-Layer und triggert
+   ein Re-Composite des gesamten Leaflet-Marker-Panes → Pin UND alle Nachbarn
+   verschwinden kurz. Pins sind über Leaflet ohnehin interaktiv (Cursor-Pointer);
+   Hervorhebung läuft über die Selektion (Ring + zIndex im Pin-SVG), nicht über Hover. */
+.rm-pin {
+  cursor: pointer;
 }
 
 /* ── Reduced Motion: Animationen respektvoll abschalten ───────────────────── */
