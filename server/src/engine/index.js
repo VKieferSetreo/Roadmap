@@ -84,8 +84,10 @@ export async function analyze({ db, project, corridorM }) {
   distanzKm = round1(distanzKm)
   const kritisch = findings.filter((f) => f.severity === "kritisch").length
   const warnung = findings.filter((f) => f.severity === "warnung").length
-  // deterministische Fahrzeit: Summe(km)/55·60 + Zuschläge über ALLE Funde
-  const fahrzeitMin = Math.round((distanzKm / 55) * 60 + kritisch * 25 + warnung * 10)
+  // Reine Fahrzeit-Schätzung über die Strecke (≈50 km/h Schnitt für Schwertransport).
+  // KEIN Zuschlag je Fund mehr — bei vielen Funden hätte das die Zeit unrealistisch
+  // aufgebläht (734 km → 156 h war Unsinn).
+  const fahrzeitMin = Math.round((distanzKm / 50) * 60)
 
   return {
     findings,

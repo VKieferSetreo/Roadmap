@@ -40,16 +40,25 @@ describe("Gültigkeit", () => {
 })
 
 describe("bruecke/tunnel — Spielraum", () => {
+  // Infrastruktur: nur Abweichungen (warnung/kritisch). Ausreichend Spielraum
+  // (sonst „hinweis") → ausgeblendet (null).
   it.each([
     [4.25, "kritisch"], // 0,05 m
     [4.29, "kritisch"], // 0,09 m
     [4.3, "warnung"], //   0,10 m — Grenzwert exklusiv
     [4.69, "warnung"], //  0,49 m
-    [4.7, "hinweis"], //   0,50 m — Grenzwert exklusiv
-    [5.0, "hinweis"],
+    [4.7, null], //        0,50 m — ausreichend → ausgeblendet
+    [5.0, null], //        ausreichend → ausgeblendet
   ])("maxHoeheM %f → %s", (maxHoeheM, severity) => {
-    expect(evaluate(ob("bruecke", { maxHoeheM }), TR, {}).severity).toBe(severity)
-    expect(evaluate(ob("tunnel", { maxHoeheM }), TR, {}).severity).toBe(severity)
+    const rb = evaluate(ob("bruecke", { maxHoeheM }), TR, {})
+    const rt = evaluate(ob("tunnel", { maxHoeheM }), TR, {})
+    if (severity === null) {
+      expect(rb).toBeNull()
+      expect(rt).toBeNull()
+    } else {
+      expect(rb.severity).toBe(severity)
+      expect(rt.severity).toBe(severity)
+    }
   })
 
   it("negativer Spielraum mit deutscher Formatierung (Spec-Beispiel)", () => {
@@ -60,11 +69,8 @@ describe("bruecke/tunnel — Spielraum", () => {
     expect(r.detail["Spielraum"]).toBe("−0,40 m")
   })
 
-  it("fehlende attrs → Default hinweis mit vorhandenen Details", () => {
-    const r = evaluate(ob("bruecke", {}), TR, {})
-    expect(r.severity).toBe("hinweis")
-    expect(r.detail["Transporthöhe"]).toBe("4,20 m")
-    expect(r.detail["Durchfahrtshöhe"]).toBeUndefined()
+  it("fehlende attrs (keine hinterlegte Höhe) → ausgeblendet (Infrastruktur ohne Abweichung)", () => {
+    expect(evaluate(ob("bruecke", {}), TR, {})).toBeNull()
   })
 })
 
@@ -73,9 +79,11 @@ describe("engstelle — Marge", () => {
     [3.05, "kritisch"],
     [3.1, "warnung"],
     [3.49, "warnung"],
-    [3.5, "hinweis"],
+    [3.5, null], // ausreichende Marge → ausgeblendet (Infrastruktur ohne Abweichung)
   ])("maxBreiteM %f → %s", (maxBreiteM, severity) => {
-    expect(evaluate(ob("engstelle", { maxBreiteM }), TR, {}).severity).toBe(severity)
+    const r = evaluate(ob("engstelle", { maxBreiteM }), TR, {})
+    if (severity === null) expect(r).toBeNull()
+    else expect(r.severity).toBe(severity)
   })
 })
 
@@ -84,9 +92,11 @@ describe("gewicht — Rest + Achslast", () => {
     [67.9, "kritisch"], // Rest −0,1 t
     [68, "warnung"], //    Rest 0 t
     [77.9, "warnung"], //  Rest 9,9 t
-    [78, "hinweis"], //    Rest 10 t — Grenzwert exklusiv
+    [78, null], //         Rest 10 t — ausreichend → ausgeblendet
   ])("maxGewichtT %f → %s", (maxGewichtT, severity) => {
-    expect(evaluate(ob("gewicht", { maxGewichtT }), TR, {}).severity).toBe(severity)
+    const r = evaluate(ob("gewicht", { maxGewichtT }), TR, {})
+    if (severity === null) expect(r).toBeNull()
+    else expect(r.severity).toBe(severity)
   })
 
   it("Achslast-Überschreitung (max aus achslasten[]) eskaliert auf kritisch", () => {
@@ -95,9 +105,8 @@ describe("gewicht — Rest + Achslast", () => {
     expect(r.detail["Achslast"]).toBe("11,5 t")
   })
 
-  it("Achslast eingehalten → keine Eskalation", () => {
-    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 12 }), TR, {})
-    expect(r.severity).toBe("hinweis")
+  it("Achslast eingehalten + Rest ausreichend → ausgeblendet (keine Abweichung)", () => {
+    expect(evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 12 }), TR, {})).toBeNull()
   })
 
   it("heterogene achslasten: die höchste Achse zählt", () => {
@@ -107,11 +116,10 @@ describe("gewicht — Rest + Achslast", () => {
     expect(r.detail["Achslast"]).toBe("12,0 t")
   })
 
-  it("leeres/fehlendes achslasten[] → keine Achslast-Eskalation, kein Achslast-Detail", () => {
-    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), { ...TR, achslasten: [] }, {})
-    expect(r.severity).toBe("hinweis")
-    expect(r.detail["Zul. Achslast"]).toBe("11,0 t")
-    expect(r.detail["Achslast"]).toBeUndefined()
+  it("leeres/fehlendes achslasten[] → keine Achslast-Eskalation → ausgeblendet (Rest ausreichend)", () => {
+    // Rest 32 t ausreichend, Achslast nicht prüfbar (leeres Array) → keine Abweichung → null
+    expect(evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), { ...TR, achslasten: [] }, {}))
+      .toBeNull()
   })
 })
 
@@ -121,11 +129,12 @@ describe("steigung", () => {
     [8, 60, "warnung"], //   >60 t exklusiv
     [12, 40, "warnung"],
     [5, 101, "warnung"], //  ≥5 % nur bei >100 t
-    [5, 100, "hinweis"],
-    [4.9, 200, "hinweis"],
+    [5, 100, null], //       unkritisch → ausgeblendet
+    [4.9, 200, null], //     unkritisch → ausgeblendet
   ])("steigungPct %f bei %f t → %s", (steigungPct, gesamtgewicht, severity) => {
     const r = evaluate(ob("steigung", { steigungPct }), { ...TR, gesamtgewicht }, {})
-    expect(r.severity).toBe(severity)
+    if (severity === null) expect(r).toBeNull()
+    else expect(r.severity).toBe(severity)
   })
 })
 
@@ -133,10 +142,12 @@ describe("kreisverkehr — Schleppkurve", () => {
   it.each([
     [10, 23, "kritisch"], // > 2,2·r = 22
     [10, 20, "warnung"], //  > 1,6·r = 16
-    [10, 16, "hinweis"],
-    [10, 15, "hinweis"],
+    [10, 16, null], //       unkritisch → ausgeblendet
+    [10, 15, null], //       unkritisch → ausgeblendet
   ])("radiusM %f, laenge %f → %s", (radiusM, laenge, severity) => {
-    expect(evaluate(ob("kreisverkehr", { radiusM }), { ...TR, laenge }, {}).severity).toBe(severity)
+    const r = evaluate(ob("kreisverkehr", { radiusM }), { ...TR, laenge }, {})
+    if (severity === null) expect(r).toBeNull()
+    else expect(r.severity).toBe(severity)
   })
 })
 
@@ -176,23 +187,22 @@ describe("bahnuebergang / ampel", () => {
     expect(r.severity).toBe("kritisch")
   })
 
-  it("Oberleitung hoch genug → hinweis + DB-Netz-Hinweis", () => {
-    const r = evaluate(ob("bahnuebergang", { maxHoeheM: 5.5 }), TR, {})
-    expect(r.severity).toBe("hinweis")
-    expect(r.detail["Hinweis"]).toBe("Anmeldung DB Netz erforderlich")
+  it("Oberleitung hoch genug → ausgeblendet (keine Abweichung)", () => {
+    expect(evaluate(ob("bahnuebergang", { maxHoeheM: 5.5 }), TR, {})).toBeNull()
   })
 
-  it("ampel: Höhe über Signalausleger → warnung, sonst hinweis", () => {
+  it("ampel: Höhe über Signalausleger → warnung; hoch genug → ausgeblendet", () => {
     expect(evaluate(ob("ampel", { maxHoeheM: 4.1 }), TR, {}).severity).toBe("warnung")
-    expect(evaluate(ob("ampel", { maxHoeheM: 4.5 }), TR, {}).severity).toBe("hinweis")
+    expect(evaluate(ob("ampel", { maxHoeheM: 4.5 }), TR, {})).toBeNull()
   })
 })
 
 describe("titel + formatierung", () => {
   it("nutzt obstacle.name als Titel, sonst Kategorie-Default", () => {
-    expect(evaluate(ob("bruecke", { maxHoeheM: 5 }, { name: "Brücke Seevetal" }), TR, {}).titel)
+    // Werte so gewählt, dass eine Abweichung entsteht (sonst ausgeblendet)
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3.8 }, { name: "Brücke Seevetal" }), TR, {}).titel)
       .toBe("Brücke Seevetal")
-    expect(evaluate(ob("kreisverkehr", {}), TR, {}).titel).toBe("Kreisverkehr")
+    expect(evaluate(ob("kreisverkehr", { radiusM: 5 }), TR, {}).titel).toBe("Kreisverkehr")
   })
 
   it("fmtKomma: Komma-Dezimaltrennung, − für negativ", () => {

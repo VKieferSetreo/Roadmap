@@ -262,12 +262,8 @@ describe("analysis (multi-route, offline)", () => {
     expect(rueck).toMatchObject({ routeId: "r-rueck", routeName: "Rückfahrt" })
     expect(rueck.km).toBeLessThanOrEqual(round1(totalKm(RUECK)))
 
-    // deterministische Fahrzeit: Summe(km)/55·60 + 25·kritisch + 10·warnung
-    const kritisch = project.findings.filter((f) => f.severity === "kritisch").length
-    const warnung = project.findings.filter((f) => f.severity === "warnung").length
-    expect(project.fahrzeitMin).toBe(
-      Math.round((project.distanzKm / 55) * 60 + kritisch * 25 + warnung * 10),
-    )
+    // reine Fahrzeit-Schätzung über die Strecke (≈50 km/h), KEIN Zuschlag je Fund
+    expect(project.fahrzeitMin).toBe(Math.round((project.distanzKm / 50) * 60))
   })
 
   it("schreibt analysis_run mit stats.routen", async () => {
