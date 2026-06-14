@@ -24,6 +24,7 @@ import {
 } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
+import { MapFullscreen, MapSearch } from "./MapControls"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { geomMidpoint, geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
@@ -211,6 +212,8 @@ export function ObstaclesMap({ obstacles, onDelete }: { obstacles: Obstacle[]; o
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
         <MapResize />
+        <MapSearch />
+        <MapFullscreen />
         <ObstacleLayers obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">

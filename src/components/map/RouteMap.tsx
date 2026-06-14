@@ -1,11 +1,11 @@
 // Leaflet-Karte mit Route-Polyline + Form+Farb-codierten Fund-Markern.
 // Form = Kategorie-Gruppe (Bauwerk, Physik, Baustelle, Verkehr), Farbe = Severity.
 
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Locate, Minus, Plus } from "lucide-react"
+import { Locate, Maximize2, Minimize2, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
@@ -71,6 +71,22 @@ export function RouteMap({
   )
   const allPoints = useMemo(() => drawn.flatMap((r) => r.points), [drawn])
   const mapRef = useRef<L.Map | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [isFs, setIsFs] = useState(false)
+
+  useEffect(() => {
+    const onChange = () => {
+      setIsFs(Boolean(document.fullscreenElement))
+      setTimeout(() => mapRef.current?.invalidateSize(), 60)
+    }
+    document.addEventListener("fullscreenchange", onChange)
+    return () => document.removeEventListener("fullscreenchange", onChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen()
+    else void wrapperRef.current?.requestFullscreen?.()
+  }
 
   const centerOnRoute = () => {
     if (!mapRef.current || allPoints.length < 2) return
@@ -82,7 +98,8 @@ export function RouteMap({
 
   return (
     <div
-      className={cn("relative h-full w-full", className)}
+      ref={wrapperRef}
+      className={cn("relative h-full w-full bg-neutral-100", className)}
     >
       <MapContainer
         ref={mapRef}
@@ -220,6 +237,17 @@ export function RouteMap({
 
       {/* Map-Controls unten rechts: Zentrieren + Zoom +/− */}
       <div className="pointer-events-none absolute bottom-3 right-3 z-[500] flex flex-col items-end gap-2">
+        <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label={isFs ? "Vollbild verlassen" : "Vollbild"}
+            title={isFs ? "Vollbild verlassen" : "Vollbild"}
+            className="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+          >
+            {isFs ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+        </div>
         <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
           <button
             type="button"

@@ -157,6 +157,7 @@ export const SEVERITY_META: Record<
   kritisch: {
     label: "Kritisch",
     badge: "kritisch",
+    // NUR Kritisch ist rot (Max 2026-06-14). Warnung = klares Orange, Hinweis = klares Gelb.
     marker: "#DC2626",
     dot: "bg-severity-kritisch",
     chip: "bg-severity-kritisch text-white",
@@ -167,7 +168,7 @@ export const SEVERITY_META: Record<
   warnung: {
     label: "Warnung",
     badge: "warnung",
-    marker: "#EA580C",
+    marker: "#F59E0B",
     dot: "bg-severity-warnung",
     chip: "bg-severity-warnung text-white",
     soft: "bg-severity-warnung-bg border-severity-warnung-border text-severity-warnung-text",
@@ -177,7 +178,7 @@ export const SEVERITY_META: Record<
   hinweis: {
     label: "Hinweis",
     badge: "hinweis",
-    marker: "#CA8A04",
+    marker: "#EAB308",
     dot: "bg-severity-hinweis",
     chip: "bg-severity-hinweis text-white",
     soft: "bg-severity-hinweis-bg border-severity-hinweis-border text-severity-hinweis-text",

@@ -148,6 +148,82 @@ function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected:
   </svg>`
 }
 
+// ── Echte StVO-Schilder als Marker-Kopf ──────────────────────────────────────
+// Statt eigener Glyphen zeigen wir das tatsächliche Verkehrsschild (Max 2026-06-14):
+// rotes Warndreieck (Z123 Baustelle, Z120 Engstelle, Z131 Ampel, Z151 Bahnübergang,
+// Z110 Steigung), rotes Rundverbot (Z250 Sperrung, Z262 Gewicht), blaues Gebotsschild
+// (Z215 Kreisverkehr). Das Schild sitzt im Kopf des farbigen Pins — die Pin-Farbe trägt
+// weiter die Severity (Hinweis gelb … Kritisch rot) bzw. Slate (DB) / Hellblau (eigen).
+// Brücke/Tunnel/Sonstige haben kein StVO-Pendant → behalten ihren Custom-Glyph.
+const STVO_RED = "#C1121F"
+const STVO_DARK = "#1f2937"
+const STVO_BLUE = "#1F5FAA"
+
+/** Rotes Warndreieck (weißes Feld) mit Piktogramm — Lokalkoordinaten 20×20, Mitte (10,10). */
+const warnTriangle = (picto: string) =>
+  `<path d="M10 2.2 L18 18 H2 Z" fill="${STVO_RED}" stroke="${STVO_RED}" stroke-width="1.5" stroke-linejoin="round"/>
+   <path d="M10 6 L15.2 15.4 H4.8 Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="round"/>
+   ${picto}`
+
+/** Rotes Rundverbot (weißes Feld, dicker roter Ring) mit Piktogramm. */
+const prohibitCircle = (picto: string) =>
+  `<circle cx="10" cy="10" r="8.6" fill="#ffffff"/>
+   <circle cx="10" cy="10" r="8.6" fill="none" stroke="${STVO_RED}" stroke-width="2.8"/>
+   ${picto}`
+
+/** Blaues Gebotsschild (weißes Piktogramm). */
+const infoCircle = (picto: string) =>
+  `<circle cx="10" cy="10" r="9" fill="${STVO_BLUE}"/>
+   ${picto}`
+
+// Piktogramme (Lokalkoordinaten 20×20). Bei Dreiecken liegt der nutzbare Bereich unten-mittig.
+const PICTO_BAUSTELLE = `<g fill="none" stroke="${STVO_DARK}" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+   <circle cx="8" cy="8.8" r="1.05" fill="${STVO_DARK}" stroke="none"/>
+   <path d="M7.7 10 L9.4 12.2"/><path d="M9.4 12.2 L13.2 9.3"/>
+   <path d="M12.5 9.9 L14.3 8.4"/><path d="M12.3 10.3 L13.8 11.9"/>
+   <path d="M8.6 12 L7.4 14.2"/><path d="M4.8 14.6 Q9.2 11.6 14 14.6" stroke-width="1.2"/></g>`
+const PICTO_AMPEL = `<g><rect x="8.3" y="6.6" width="3.4" height="8" rx="1.3" fill="${STVO_DARK}"/>
+   <circle cx="10" cy="8.3" r="0.72" fill="#fff"/><circle cx="10" cy="10.5" r="0.72" fill="#fff"/>
+   <circle cx="10" cy="12.7" r="0.72" fill="#fff"/></g>`
+const PICTO_BAHN = `<g fill="${STVO_DARK}"><rect x="5.4" y="9.4" width="7" height="3.4" rx="0.6"/>
+   <rect x="9.2" y="7.2" width="2.6" height="2.6" rx="0.4"/><rect x="5.8" y="7.8" width="1.5" height="1.8"/>
+   <circle cx="7.3" cy="13.4" r="1.05"/><circle cx="10.8" cy="13.4" r="1.05"/></g>`
+const PICTO_STEIGUNG = `<g stroke="${STVO_DARK}" fill="none" stroke-linecap="round">
+   <path d="M5 14 H15" stroke-width="1.1"/><path d="M5 14 L14.5 8.2" stroke-width="1.5"/></g>`
+const PICTO_ENGSTELLE = `<g stroke="${STVO_DARK}" stroke-width="1.3" fill="none" stroke-linecap="round">
+   <path d="M6.4 14.4 L9.1 7"/><path d="M13.6 14.4 L10.9 7"/></g>`
+const PICTO_GEWICHT = `<text x="10" y="13.7" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="700" fill="${STVO_DARK}">t</text>`
+const PICTO_KREISEL = `<g fill="none" stroke="#fff" stroke-width="1.25" stroke-linecap="round">
+   <path d="M10 5.7 a4.3 4.3 0 0 1 3.7 2.2"/><path d="M13.6 11.7 a4.3 4.3 0 0 1 -3.6 2.7"/>
+   <path d="M6.5 11.9 a4.3 4.3 0 0 1 -0.1 -4.4"/></g>
+   <g fill="#fff"><path d="M13.1 6 l1.5 1.4 -2 0.7 z"/><path d="M11.3 14.9 l-2 0.1 1.2 -1.7 z"/>
+   <path d="M5.2 8.8 l0.4 -2 1.5 1.4 z"/></g>`
+
+type StvoBuilder = () => string
+const STVO_SIGN: Partial<Record<FindingKategorie, StvoBuilder>> = {
+  baustelle: () => warnTriangle(PICTO_BAUSTELLE),
+  engstelle: () => warnTriangle(PICTO_ENGSTELLE),
+  ampel: () => warnTriangle(PICTO_AMPEL),
+  bahnuebergang: () => warnTriangle(PICTO_BAHN),
+  steigung: () => warnTriangle(PICTO_STEIGUNG),
+  sperrung: () => prohibitCircle(""),
+  gewicht: () => prohibitCircle(PICTO_GEWICHT),
+  kreisverkehr: () => infoCircle(PICTO_KREISEL),
+}
+
+/** Pin mit echtem StVO-Schild im Kopf. Körper-Farbe = Severity/Slate/Eigen. */
+function signPinSvg(kategorie: FindingKategorie, color: string, selected: boolean): string {
+  const groundShadow = `<ellipse cx="18" cy="40.5" rx="5" ry="1.7" fill="#00000026"/>`
+  const ring = selected ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>` : ""
+  // Tropfen-Körper (wie "drop") in der Severity-/Bestandsfarbe, Spitze unten bei (18,41).
+  const body = `<path d="M18 2 C10 2 4 8 4 16 c0 11 13.6 24.5 13.7 24.6 a0.5 0.5 0 0 0 0.6 0 C18.4 40.5 32 27 32 16 c0 -8 -6 -14 -14 -14 z" fill="${color}" stroke="#ffffff" stroke-width="2"/>`
+  // 20×20-Schild zentriert in den Kopf (Mitte 18,16): translate(8.5 6.5) scale(0.95).
+  const sign = `<g transform="translate(8.5 6.5) scale(0.95)">${(STVO_SIGN[kategorie] as StvoBuilder)()}</g>`
+  return `<svg width="${PIN_W}" height="${PIN_H}" viewBox="0 0 ${PIN_W} ${PIN_H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    ${groundShadow}${ring}${body}${sign}
+  </svg>`
+}
+
 // DivIcons sind nur von (kategorie, color, selected) abhängig → cachen. Die
 // Hindernis-Übersichtskarte rendert tausende Pins; ohne Cache liefe pro Pin ein
 // teures renderToStaticMarkup → Browser-Freeze. Eine DivIcon-Instanz darf von
@@ -163,8 +239,10 @@ export function findingPinIcon(
   const cached = pinCache.get(key)
   if (cached) return cached
 
-  const shape = SHAPE_BY_KATEGORIE[kategorie] ?? "circle"
-  const html = pinShapeSvg(shape, color, iconHtmlForKategorie(kategorie), selected)
+  // StVO-Kategorien → echtes Schild im Kopf; Brücke/Tunnel/Sonstige → Custom-Glyph.
+  const html = STVO_SIGN[kategorie]
+    ? signPinSvg(kategorie, color, selected)
+    : pinShapeSvg(SHAPE_BY_KATEGORIE[kategorie] ?? "circle", color, iconHtmlForKategorie(kategorie), selected)
   const icon = L.divIcon({
     className: "rm-pin",
     html,
