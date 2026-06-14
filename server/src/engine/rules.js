@@ -16,6 +16,12 @@ export const KATEGORIEN = [
 // die nur bei einer echten Abweichung (warnung/kritisch) angezeigt wird.
 const EVENT_KATEGORIEN = new Set(["baustelle", "sperrung"])
 
+// Bauwerke (Brücke/Tunnel/sonstige Bauwerke) werden vom Strecken-Engineering separat bewertet
+// (Durchfahrtshöhe/Tragfähigkeit) → NICHT in der Karten-Auswertung als Fund zeigen. Sie bleiben als
+// Daten in der DB/Karte erhalten, erzeugen aber keinen Routen-Fund. Fokus der Auswertung: gemeldete
+// Ereignisse (Baustellen/Sperrungen) + dynamische Restriktionen. Leicht umkehrbar (Liste anpassen).
+export const AUSWERTUNG_AUSGESCHLOSSEN = ["bruecke", "tunnel", "sonstige"]
+
 const DEFAULT_TITEL = {
   bruecke: "Brückendurchfahrt",
   tunnel: "Tunnel",

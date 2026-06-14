@@ -10,7 +10,7 @@ import { rowToObstacle } from "../map.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import { bboxWithBuffer, cumulativeKm, nearestOnRoute, totalKm } from "./geometry.js"
-import { evaluate } from "./rules.js"
+import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 export const ENGINE_VERSION = "2.0.0"
@@ -49,8 +49,9 @@ export async function analyze({ db, project, corridorM }) {
     const { rows } = await db.query(
       `SELECT ${OBSTACLE_COLS} FROM obstacles WHERE aktiv = true
          AND (tenant_id IS NULL OR tenant_id = $1::uuid)
-         AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5`,
-      [project.tenantId ?? null, bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng],
+         AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5
+         AND kategorie <> ALL($6::text[])`, // Bauwerke raus — macht das Strecken-Engineering
+      [project.tenantId ?? null, bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng, AUSWERTUNG_AUSGESCHLOSSEN],
     )
 
     for (const row of rows) {
