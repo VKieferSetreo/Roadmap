@@ -154,15 +154,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <div className="mt-6 flex flex-col items-center px-3 text-center">
               <Folder className="h-6 w-6 text-neutral-300" />
               <p className="mt-3 text-sm text-neutral-400">Noch keine Projekte.</p>
-              <button
-                onClick={() => {
-                  openNewProject()
-                  onNavigate?.()
-                }}
-                className="mt-4 w-full rounded-lg bg-primary-600 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700"
-              >
-                + Neues Projekt
-              </button>
             </div>
           ) : (
             sorted.map((p) => {
@@ -181,6 +172,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="border-t border-neutral-100 p-3">
+        {/* Bei leerer Projektliste: „Neues Projekt" hier unten (über Datenbank) statt oben. */}
+        {sorted.length === 0 ? (
+          <button
+            onClick={() => {
+              openNewProject()
+              onNavigate?.()
+            }}
+            className="mb-2 w-full rounded-lg bg-primary-600 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700"
+          >
+            + Neues Projekt
+          </button>
+        ) : null}
         <NavRow icon={Database} label="Datenbank" active={onDb} onClick={() => go("/datenbank")} />
         {adminKontext ? (
           <NavRow
