@@ -33,12 +33,13 @@ function geomPoints(geom) {
   return out
 }
 
-// Klar doppelte Funde zusammenfassen: gleiche Route + Kategorie + (normalisierte) Bezeichnung
-// + nahe Position (Δkm ≤ DUP_KM) = dasselbe reale Hindernis — oft aus mehreren Quellen oder
-// beide Fahrtrichtungen, oder eine in Segmente zerlegte Maßnahme. Behalten wird der schwerste
-// Fund; bei gleicher Severity der mit Strecken-Geometrie (informativer). Der per-Connector-Dedup
-// (dedupeObstacles) erwischt das NICHT, weil er quellenweise + auf exaktem 100-m-Raster gruppiert.
-const DUP_KM = 1.0
+// Nur ECHT redundante Punkt-Dubletten zusammenfassen: gleiche Route + Kategorie + (normalisierte)
+// Bezeichnung + ko-lokalisiert (Δkm ≤ DUP_KM) = dasselbe reale Hindernis doppelt gemeldet.
+// WICHTIG: Einträge mit eigener Linien-Geometrie (geom) werden NIE zusammengefasst — das sind
+// distinkte Strecken, oft die zwei Fahrtrichtungen/Fahrbahnen derselben Maßnahme. Die bleiben
+// beide erhalten ("nicht dass die rausgehen") und das FE stellt sie als EINEN aufsplittbaren
+// Marker mit Tabs dar. Behalten wird der schwerste Fund.
+const DUP_KM = 0.15 // 150 m — nur wirklich ko-lokalisierte Punkt-Dubletten
 const SEV_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
@@ -46,7 +47,10 @@ export function dedupeFindings(findings) {
   const kept = []
   for (const f of findings) {
     const key = `${f.routeId}|${f.kategorie}|${normName(f.titel)}`
-    const dup = kept.find((k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM)
+    // Strecken-Funde (beide mit geom) NICHT mergen → Fahrtrichtungen bleiben getrennt.
+    const dup = kept.find(
+      (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM && !(k.geom && f.geom),
+    )
     if (!dup) {
       kept.push({ ...f, __key: key })
       continue
@@ -165,7 +169,7 @@ export async function analyze({ db, project, corridorM }) {
  * Kompletter Analyse-Lauf inkl. analysis_runs-Record und transaktionaler
  * Persistenz. Wirft bei Fehlern (Projekt bleibt dann unverändert, Run = error).
  */
-export async function runAnalysis({ db, project, corridorM = 15 }) {
+export async function runAnalysis({ db, project, corridorM = 20 }) {
   const runRes = await db.query(
     "INSERT INTO analysis_runs (project_id, status, engine_version) VALUES ($1, $2, $3) RETURNING id",
     [project.id, "running", ENGINE_VERSION],

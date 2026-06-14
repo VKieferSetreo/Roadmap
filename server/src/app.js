@@ -43,13 +43,13 @@ export function createApp({
   requireAuth = process.env.REQUIRE_AUTH === "true",
   timeoutMs = Number(process.env.EXTERNAL_TIMEOUT_MS ?? 4000),
   // Korridor-Halbbreite (m): max. Abstand eines Hindernisses zur Route, damit es als
-  // Fund zählt. 15 m je Seite (Max 2026-06-14): nur was DIREKT an der Strecke liegt —
-  // 50/120 m fingen Parallel-/Seitenstraßen mit ein („nur in der Nähe" = Bloat). 15 m
-  // hält gerade noch Toleranz für GPS-Ungenauigkeit + Fahrbahnversatz, schließt aber
+  // Fund zählt. 20 m je Seite (Max 2026-06-14): nur was DIREKT an der Strecke liegt —
+  // 50/120 m fingen Parallel-/Seitenstraßen mit ein („nur in der Nähe" = Bloat). 20 m
+  // hält Toleranz für GPS-Ungenauigkeit + Fahrbahnversatz (Gegenfahrbahn), schließt aber
   // Nachbarstraßen aus. Das Strecken-Matching nutzt die Linien-Geometrie (geom), damit
   // eine an der Route entlanglaufende Maßnahme trotz versetztem Mittelpunkt greift.
   // Per CORRIDOR_M übersteuerbar.
-  corridorM = Number(process.env.CORRIDOR_M ?? 15),
+  corridorM = Number(process.env.CORRIDOR_M ?? 20),
   shareBaseUrl = process.env.SHARE_BASE_URL ?? "https://setreo-cloud.com",
   sessionSalt = process.env.SESSION_SALT ?? "roadmap-dev-salt",
   shareDir = SHARE_DIR,
