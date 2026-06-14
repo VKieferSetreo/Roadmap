@@ -2,10 +2,11 @@
 // Hält den globalen "Neues Projekt"-Dialog.
 
 import { useEffect, useState } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { SetreoHeader } from "./SetreoHeader"
 import { SetreoFooter } from "./SetreoFooter"
 import { AppSidebar } from "./AppSidebar"
+import { ContentErrorBoundary } from "./ContentErrorBoundary"
 import { NewProjectDialog } from "@/components/project/NewProjectDialog"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
@@ -18,6 +19,7 @@ const SIDEBAR_OPEN_KEY = "roadmap.sidebar.open"
 
 export function AppLayout() {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   // Desktop-Sidebar: nativ offen (Kollision-Format), einklappbar; Wahl persistiert.
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -74,22 +76,26 @@ export function AppLayout() {
           onClose={() => setMobileNavOpen(false)}
         />
         <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
-          {keinMandant ? (
-            <div className="flex h-full items-center justify-center px-4">
-              <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
-                  <Building2 className="h-6 w-6 text-accent-700" />
+          {/* Fehler in einer Seite kapseln → Header + Sidebar (alle Reiter + Dropdown)
+              bleiben IMMER stehen; Reset bei Routen-/Mandantenwechsel. */}
+          <ContentErrorBoundary resetKey={`${pathname}|${tenant?.id ?? ""}`}>
+            {keinMandant ? (
+              <div className="flex h-full items-center justify-center px-4">
+                <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
+                    <Building2 className="h-6 w-6 text-accent-700" />
+                  </div>
+                  <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
+                  <p className="mt-2 text-sm text-neutral-500">
+                    Dein Konto ist noch keinem Mandanten zugewiesen. Bitte wende dich an Setreo —
+                    sobald die Zuordnung steht, erscheinen hier die Projekte deines Teams.
+                  </p>
                 </div>
-                <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
-                <p className="mt-2 text-sm text-neutral-500">
-                  Dein Konto ist noch keinem Mandanten zugewiesen. Bitte wende dich an Setreo —
-                  sobald die Zuordnung steht, erscheinen hier die Projekte deines Teams.
-                </p>
               </div>
-            </div>
-          ) : (
-            <Outlet />
-          )}
+            ) : (
+              <Outlet />
+            )}
+          </ContentErrorBoundary>
         </main>
       </div>
 
