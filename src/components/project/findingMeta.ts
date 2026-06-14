@@ -105,6 +105,17 @@ export function formatGueltigkeit(von?: string | null, bis?: string | null): str
  *  stroke="currentColor" — Farbe wird vom umschließenden Element gesetzt.
  *  Wird sowohl in der Karte (Pins) als auch in Dashboard/Detail-Overlays verwendet. */
 export const CUSTOM_KAT_SVG: Partial<Record<FindingKategorie, string>> = {
+  // Baustelle — echtes StVO-Z123-Piktogramm: Bauarbeiter mit Schaufel über einem
+  // Erdhaufen (statt des Lucide-Bauzauns). Deckungsgleich mit dem Karten-Pin-Glyph.
+  baustelle: `<svg viewBox="4 7.5 11 8" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%">
+    <circle cx="8" cy="8.8" r="1.1" fill="currentColor" stroke="none"/>
+    <path d="M7.7 10 L9.4 12.2"/>
+    <path d="M9.4 12.2 L13.2 9.3"/>
+    <path d="M12.5 9.9 L14.3 8.4"/>
+    <path d="M12.3 10.3 L13.8 11.9"/>
+    <path d="M8.6 12 L7.4 14.2"/>
+    <path d="M4.8 14.6 Q9.2 11.6 14 14.6" stroke-width="1.3"/>
+  </svg>`,
   // Brücke — Hängebrücke im Brooklyn-Bridge-Style.
   bruecke: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%">
     <path d="M3 15 V6 Q5 9 7 6 V15"/>
