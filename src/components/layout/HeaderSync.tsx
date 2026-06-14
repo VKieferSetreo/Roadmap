@@ -50,6 +50,11 @@ export function HeaderSync() {
     onSuccess: (j) => {
       startedHere.current = true
       setJobId(j.id)
+      // activeJobId SOFORT in den geteilten Cache → der DB-Tab-SyncBar hängt sich
+      // ohne Wartezeit an denselben Lauf (gleiche Ansicht, synchron).
+      qc.setQueryData(["sync-status"], (old: { activeJobId?: string | null } | undefined) =>
+        old ? { ...old, activeJobId: j.id } : old,
+      )
     },
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
@@ -100,19 +105,22 @@ export function HeaderSync() {
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => !running && start.mutate()}
-        disabled={running}
-        title={running ? "Aktualisierung läuft …" : "Alle Datenquellen neu ziehen + Auswertungen aktualisieren"}
-        className="flex flex-col items-start rounded-md px-2 py-1 text-left leading-tight transition-colors hover:bg-neutral-100 disabled:cursor-default disabled:opacity-80"
-      >
-        <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-700">
-          <RefreshCw className={cn("h-3.5 w-3.5", running && "animate-spin")} />
-          {running ? "Aktualisiere …" : "Daten aktualisieren"}
+      {/* Button im Format von „Problem melden" + kleine Stand-Zeile darunter */}
+      <div className="flex flex-col items-end gap-0.5">
+        <button
+          type="button"
+          onClick={() => !running && start.mutate()}
+          disabled={running}
+          title={running ? "Aktualisierung läuft …" : "Alle Datenquellen neu ziehen + Auswertungen aktualisieren"}
+          className="flex h-8 items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 disabled:cursor-default disabled:opacity-80"
+        >
+          <RefreshCw className={cn("h-4 w-4 text-neutral-400", running && "animate-spin")} />
+          <span className="hidden sm:inline">{running ? "Aktualisiere …" : "Daten aktualisieren"}</span>
+        </button>
+        <span className="hidden text-[10px] leading-none text-neutral-400 sm:block">
+          Letzter Stand: {stamp}
         </span>
-        <span className="text-[10px] text-neutral-400">Letzter Stand: {stamp}</span>
-      </button>
+      </div>
     </div>
   )
 }

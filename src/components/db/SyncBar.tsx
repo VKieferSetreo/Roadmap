@@ -83,6 +83,11 @@ export function SyncBar() {
     onSuccess: (j) => {
       setJobId(j.id)
       doneHandled.current = null
+      // activeJobId SOFORT in den geteilten Cache → der Header-Sync hängt sich ohne
+      // Wartezeit an denselben Lauf (gleiche Ansicht, synchron).
+      qc.setQueryData(["sync-status"], (old: { activeJobId?: string | null } | undefined) =>
+        old ? { ...old, activeJobId: j.id } : old,
+      )
     },
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
