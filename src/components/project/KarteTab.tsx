@@ -5,18 +5,14 @@ import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
-  Building2,
   ChevronDown,
-  ClipboardList,
   Clock,
-  ExternalLink,
   Eye,
   EyeOff,
   Layers,
   MapPinned,
   MapPinPlus,
   Route as RouteIcon,
-  X,
 } from "lucide-react"
 import { RouteMap } from "@/components/map/RouteMap"
 import { Button } from "@/components/ui/Button"
@@ -94,8 +90,6 @@ export function KarteTab({ project }: { project: Project }) {
   const kategoriesOnRoute = Array.from(new Set(sichtbareFindings.map((f) => f.kategorie))).sort(
     (a, b) => KATEGORIE_META[a].label.localeCompare(KATEGORIE_META[b].label),
   )
-  const selected = sichtbareFindings.find((f) => f.id === selectedId)
-
   const toggleRoute = (routeId: string) => {
     setHidden((prev) => {
       const next = new Set(prev)
@@ -269,88 +263,6 @@ export function KarteTab({ project }: { project: Project }) {
                 )
               })}
             </ul>
-          </div>
-        </div>
-      ) : null}
-
-      {/* Detail des gewählten Funds unten links */}
-      {selected ? (
-        <div
-          key={selected.id}
-          className="absolute bottom-4 left-3 z-[500] w-[340px] max-w-[calc(100%-1.5rem)]"
-        >
-          <div className="glass animate-rise-in overflow-hidden">
-            {/* Severity-Akzent oben */}
-            <div className={cn("h-1 w-full", SEVERITY_META[selected.severity].dot)} />
-            <div className="p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className={cn("rounded-lg p-2", SEVERITY_META[selected.severity].chip)}>
-                    <KategorieGlyph kategorie={selected.kategorie} className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-neutral-900">{selected.titel}</p>
-                    <p className="text-xs text-neutral-500">
-                      {KATEGORIE_META[selected.kategorie].label} · km{" "}
-                      {selected.km.toLocaleString("de-DE")}
-                      {selected.strassenRef ? ` · ${selected.strassenRef}` : ""}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedId(null)}
-                  aria-label="Schließen"
-                  className="rounded-md p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              {selected.routeName ? (
-                <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      background:
-                        project.routes.find((r) => r.id === selected.routeId)?.farbe ?? "#71717A",
-                    }}
-                  />
-                  {selected.routeName}
-                </p>
-              ) : null}
-              <p className="mt-2 text-sm text-neutral-600">{selected.beschreibung}</p>
-              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-neutral-200/70 pt-3 text-xs">
-                {Object.entries(selected.detail).map(([k, v]) => (
-                  <div key={k} className="flex flex-col">
-                    <dt className="text-neutral-400">{k}</dt>
-                    <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
-                  </div>
-                ))}
-              </dl>
-              {selected.zustaendig ? (
-                <p className="mt-2.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                  <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                  {selected.zustaendig}
-                </p>
-              ) : null}
-              <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
-                <button
-                  onClick={() => navigate(`/projekte/${project.id}/dashboard`)}
-                  className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary-700 transition-colors hover:text-primary-800"
-                >
-                  <ClipboardList className="h-3.5 w-3.5" /> Im Dashboard öffnen
-                </button>
-                {selected.quelle ? (
-                  <a
-                    href={selected.quelle.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
-                  >
-                    {selected.quelle.name} <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : null}
-              </div>
-            </div>
           </div>
         </div>
       ) : null}

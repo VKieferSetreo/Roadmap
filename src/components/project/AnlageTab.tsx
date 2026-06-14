@@ -437,7 +437,7 @@ export function AnlageTab({ project }: { project: Project }) {
                 ) : null}
                 <Button onClick={onRun} disabled={!routeReady}>
                   <Play className="h-4 w-4" />
-                  {project.status === "fertig" ? "Erneut auswerten" : "Auswertung fahren"}
+                  {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
                 </Button>
               </div>
             </>

@@ -5,9 +5,10 @@ import { useEffect, useMemo, useRef } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Locate, Minus, Plus } from "lucide-react"
+import { Building2, ExternalLink, Locate, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
+import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { endPinIcon, findingPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { cn } from "@/lib/cn"
@@ -161,6 +162,7 @@ export function RouteMap({
         {findings.map((f) => {
           const meta = SEVERITY_META[f.severity]
           const kat = katMeta(f.kategorie)
+          const routeColor = drawn.find((r) => r.id === f.routeId)?.farbe ?? "#71717A"
           return (
             <Marker
               key={f.id}
@@ -169,72 +171,76 @@ export function RouteMap({
               eventHandlers={{ click: () => onSelect?.(f.id) }}
               zIndexOffset={selectedId === f.id ? 1000 : 0}
             >
-              <Popup>
-                <div className="min-w-[210px] max-w-[300px]">
-                  <p className="font-semibold text-neutral-900">{f.titel}</p>
-                  <p className="mt-0.5 text-xs text-neutral-500">
-                    {kat.label} · km {f.km.toLocaleString("de-DE")}
-                    {f.strassenRef ? ` · ${f.strassenRef}` : ""}
-                  </p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
-                    {f.beschreibung}
-                  </p>
-
-                  <div className="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-xs tabular-nums">
-                    <div className="flex justify-between gap-3">
-                      <span className="shrink-0 text-neutral-400">Gültig</span>
-                      <span className="text-right font-medium text-neutral-700">
-                        {formatGueltigkeit(f.gueltigVon, f.gueltigBis)}
-                      </span>
+              <Popup maxWidth={340} minWidth={300}>
+                <div className="w-[300px] max-w-[78vw]">
+                  {/* Kopf: Severity-Chip + Kategorie-Glyph + Titel */}
+                  <div className="flex items-start gap-2.5">
+                    <span className={cn("shrink-0 rounded-lg p-2", meta.chip)}>
+                      <KategorieGlyph kategorie={f.kategorie} className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-neutral-900">{f.titel}</p>
+                      <p className="text-xs text-neutral-500">
+                        {kat.label} · km {f.km.toLocaleString("de-DE")}
+                        {f.strassenRef ? ` · ${f.strassenRef}` : ""}
+                      </p>
                     </div>
-                    {Object.entries(f.detail).map(([k, v]) => (
-                      <div key={k} className="flex justify-between gap-3">
-                        <span className="shrink-0 text-neutral-400">{k}</span>
-                        <span className="text-right font-medium text-neutral-700">{v}</span>
-                      </div>
-                    ))}
-                    {f.zustaendig ? (
-                      <div className="flex justify-between gap-3">
-                        <span className="shrink-0 text-neutral-400">Zuständig</span>
-                        <span className="text-right font-medium text-neutral-700">
-                          {f.zustaendig}
-                        </span>
-                      </div>
-                    ) : null}
                   </div>
 
-                  {f.quelle?.name ? (
-                    <p className="mt-2 border-t border-neutral-100 pt-1.5 text-[11px] text-neutral-400">
-                      Quelle:{" "}
-                      {f.quelle.url ? (
-                        <a
-                          href={f.quelle.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary-600 underline"
-                        >
-                          {f.quelle.name}
-                        </a>
-                      ) : (
-                        f.quelle.name
-                      )}
+                  {f.routeName ? (
+                    <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                      <span className="h-2 w-2 rounded-full" style={{ background: routeColor }} />
+                      {f.routeName}
                     </p>
                   ) : null}
 
-                  <span
-                    className={cn(
-                      "mt-2 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
-                      SEVERITY_META[f.severity].soft,
-                    )}
-                  >
+                  {f.beschreibung ? (
+                    <p className="mt-2 text-sm leading-relaxed text-neutral-600">{f.beschreibung}</p>
+                  ) : null}
+
+                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-neutral-200/70 pt-3 text-xs">
+                    <div className="flex flex-col">
+                      <dt className="text-neutral-400">Gültig</dt>
+                      <dd className="font-medium tabular-nums text-neutral-800">
+                        {formatGueltigkeit(f.gueltigVon, f.gueltigBis)}
+                      </dd>
+                    </div>
+                    {Object.entries(f.detail).map(([k, v]) => (
+                      <div key={k} className="flex flex-col">
+                        <dt className="text-neutral-400">{k}</dt>
+                        <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  {f.zustaendig ? (
+                    <p className="mt-2.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                      <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                      {f.zustaendig}
+                    </p>
+                  ) : null}
+
+                  <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
                     <span
                       className={cn(
-                        "inline-block h-1.5 w-1.5 rounded-full",
-                        SEVERITY_META[f.severity].dot,
+                        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+                        meta.soft,
                       )}
-                    />
-                    {meta.label}
-                  </span>
+                    >
+                      <span className={cn("h-1.5 w-1.5 rounded-full", meta.dot)} />
+                      {meta.label}
+                    </span>
+                    {f.quelle?.name ? (
+                      <a
+                        href={f.quelle.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
+                      >
+                        {f.quelle.name} <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
               </Popup>
             </Marker>
