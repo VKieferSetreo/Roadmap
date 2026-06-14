@@ -24,6 +24,7 @@ import {
 } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
@@ -114,6 +115,31 @@ function ObstacleClusterLayer({ obstacles }: { obstacles: Obstacle[] }) {
   return null
 }
 
+/** Strecken-Geometrie (geom = Linie/MultiLineString) als Polylines — die betroffene
+ *  Strecke statt nur ein Punkt. Eigene Ebene (NICHT geclustert), unter den Markern;
+ *  Rebuild nur bei Daten-Änderung. */
+function ObstacleLinesLayer({ obstacles }: { obstacles: Obstacle[] }) {
+  const map = useMap()
+  useEffect(() => {
+    const group = L.layerGroup()
+    for (const o of obstacles) {
+      const lines = geomToLines(o.geom)
+      if (lines.length === 0) continue
+      const color = istEigenerEintrag(o.quelle) ? EIGEN_COLOR : PIN_GLOBAL
+      // weißes Casing für Lesbarkeit über den Tiles + farbige Strecke darüber
+      L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7 }).addTo(group)
+      const line = L.polyline(lines, { color, weight: 3.5, opacity: 0.9, lineCap: "round" })
+      line.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
+      line.addTo(group)
+    }
+    group.addTo(map)
+    return () => {
+      map.removeLayer(group)
+    }
+  }, [map, obstacles])
+  return null
+}
+
 export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
@@ -121,6 +147,8 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
+        {/* Linien zuerst (unter den Markern), dann das Cluster */}
+        <ObstacleLinesLayer obstacles={obstacles} />
         <ObstacleClusterLayer obstacles={obstacles} />
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">

@@ -20,7 +20,7 @@ import { ApiError, asyncHandler, isPlainObject, isUuid } from "../util.js"
 
 // Schlanke Spalten (ohne roh/geom-Blobs). $5 = optionaler Kategorie-Whitelist-Filter
 // (z.B. nur gemeldete Ereignisse für die Übersichtskarte).
-const LIST_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles
+const LIST_WHERE = `FROM obstacles
   WHERE ($1::text IS NULL OR kategorie = $1)
     AND ($2::boolean IS NULL OR aktiv = $2)
     AND ($3::text IS NULL OR name ILIKE $3 OR beschreibung ILIKE $3
@@ -28,6 +28,12 @@ const LIST_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles
     AND (tenant_id IS NULL OR tenant_id = $4::uuid)
     AND ($5::text[] IS NULL OR kategorie = ANY($5))
   ORDER BY created_at DESC`
+
+// Schlanke Spalten (ohne roh/geom-Blobs) für Tabelle/Listen.
+const LIST_SQL = `SELECT ${OBSTACLE_COLS} ${LIST_WHERE}`
+// Karten-Variante: zusätzlich geom (Strecken-Linie). Opt-in via ?geom=true, damit nur
+// die Karte den ~3,5-MB-Geometrie-Blob zieht und die Tabelle schlank bleibt.
+const LIST_SQL_GEOM = `SELECT ${OBSTACLE_COLS}, geom ${LIST_WHERE}`
 
 const mayWriteGlobal = (req) => {
   const roles = req.user?.roles ?? []
@@ -84,7 +90,8 @@ export function obstaclesRouter({ db }) {
     const aktivParam = aktiv === "true" ? true : aktiv === "false" ? false : null
     // gemeldet=true → nur gemeldete Ereignisse (Baustellen/Sperrungen), keine Infrastruktur
     const kategorienFilter = req.query.gemeldet === "true" ? GEMELDETE_KATEGORIEN : null
-    const { rows } = await db.query(LIST_SQL, [
+    const sql = req.query.geom === "true" ? LIST_SQL_GEOM : LIST_SQL
+    const { rows } = await db.query(sql, [
       kategorie || null,
       aktivParam,
       q ? `%${q}%` : null,

@@ -36,8 +36,8 @@ function ObstacleKarte({ live }: { live: boolean }) {
   // Infrastruktur (Brücken/Tunnel/Ampeln/Gewichtslimits …) ziehen wir zwar mit,
   // wird auf der Übersichtskarte aber bewusst nicht angezeigt.
   const obstacles = useQuery({
-    queryKey: ["obstacles-alle", "gemeldet"],
-    queryFn: () => api.listObstacles({ gemeldet: true, aktiv: true }),
+    queryKey: ["obstacles-alle", "gemeldet", "geom"],
+    queryFn: () => api.listObstacles({ gemeldet: true, aktiv: true, geom: true }),
     enabled: live,
     staleTime: 60_000,
   })

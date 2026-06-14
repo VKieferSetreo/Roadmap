@@ -126,6 +126,8 @@ export const api = {
       gemeldet?: boolean
       /** nur aktive Einträge. */
       aktiv?: boolean
+      /** zusätzlich die Strecken-Geometrie (geom) laden — nur für die Karte (schwerer Blob). */
+      geom?: boolean
     },
   ) =>
     axiosClient<{ obstacles: Obstacle[] }>({ url: "/obstacles", method: "GET", params }).then(

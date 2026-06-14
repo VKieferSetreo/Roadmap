@@ -18,6 +18,7 @@ import {
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { endPinIcon, findingPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { geomToLines } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
@@ -165,6 +166,38 @@ export function RouteMap({
           </Marker>
         ))}
         {allPoints.length >= 2 ? <FitBounds points={allPoints} enabled={autoFit} /> : null}
+
+        {/* Strecke, auf der ein Fund GREIFT (geom = Linie/MultiLineString), in der
+            Severity-Farbe — weißes Casing darunter + Klick wählt den Fund. So sieht man
+            die betroffene Strecke, nicht nur einen Punkt. */}
+        {findings.flatMap((f) => {
+          const lines = geomToLines(f.geom)
+          if (lines.length === 0) return []
+          const meta = SEVERITY_META[f.severity]
+          const eigen = istEigenerEintrag(f.quelle)
+          const color = eigen ? EIGEN_COLOR : meta.marker
+          const active = selectedId === f.id
+          return [
+            <Polyline
+              key={`fgeom-bg-${f.id}`}
+              positions={lines}
+              pathOptions={{ color: "#ffffff", weight: active ? 11 : 8, opacity: 0.85 }}
+              eventHandlers={{ click: () => onSelect?.(f.id) }}
+            />,
+            <Polyline
+              key={`fgeom-${f.id}`}
+              positions={lines}
+              pathOptions={{
+                color,
+                weight: active ? 7 : 5,
+                opacity: 0.95,
+                lineCap: "round",
+                lineJoin: "round",
+              }}
+              eventHandlers={{ click: () => onSelect?.(f.id) }}
+            />,
+          ]
+        })}
 
         {findings.map((f) => {
           const meta = SEVERITY_META[f.severity]
