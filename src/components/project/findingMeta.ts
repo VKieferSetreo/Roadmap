@@ -187,3 +187,17 @@ export const SEVERITY_META: Record<
 }
 
 export const SEVERITY_ORDER: FindingSeverity[] = ["kritisch", "warnung", "hinweis"]
+
+// ── Eigene (Kunden-)Einträge ───────────────────────────────────────────────────
+// Eigene Einträge werden UNABHÄNGIG von der Severity hellblau dargestellt (Max
+// 2026-06-14) — sie sind sofort als „von uns gepflegt" erkennbar. Die Severity
+// (kritisch/warnung) bleibt in den Badges/Texten erhalten, nur der Pin ist hellblau.
+export const EIGEN_COLOR = "#38BDF8" // sky-400 — Hellblau für eigene Einträge
+export const EIGEN_BADGE = "border-sky-200 bg-sky-50 text-sky-700"
+
+/** Stammt der Fund/das Hindernis aus einem eigenen Mandanten-Eintrag? */
+export function istEigenerEintrag(quelle?: { eigen?: boolean; name?: string } | null): boolean {
+  if (!quelle) return false
+  // Primär das explizite Flag; Fallback auf den Namen (Bestandsdaten vor dem Flag).
+  return quelle.eigen === true || (typeof quelle.name === "string" && quelle.name.startsWith("Eigener Eintrag"))
+}

@@ -20,6 +20,7 @@ import { createDefaultDb } from "./db.js"
 import { createNominatim } from "./external/nominatim.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
+import { bugReportsRouter } from "./routes/bugReports.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
 import { notificationsRouter } from "./routes/notifications.js"
@@ -50,6 +51,9 @@ export function createApp({
     url: (process.env.AUTH_EXTERN_URL ?? "").replace(/\/$/, ""),
     secret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "",
   },
+  // Nur für Tests: kleiner deterministischer Connector-Satz für den Sync-Button.
+  // Prod lässt das weg → startSync zieht allConnectors (alle registrierten Quellen).
+  syncConnectors,
 } = {}) {
   const nominatim = createNominatim({ fetchImpl, timeoutMs })
 
@@ -98,7 +102,9 @@ export function createApp({
   app.use("/api/obstacles", obstaclesRouter({ db }))
   app.use("/api/geocode", geoRouter({ db, nominatim }))
   // Sync ("alle Quellen aktualisieren") — jeder eingeloggte Nutzer, kein Tenant-Zwang
-  app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env }))
+  app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))
+  // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
+  app.use("/api/bug-reports", bugReportsRouter({ db }))
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Nicht gefunden" }))
 

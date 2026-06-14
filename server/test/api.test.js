@@ -347,7 +347,7 @@ describe("obstacles CRUD + Import (v2-Felder)", () => {
     expect(plain.body.quellenId).toBe("0100")
     expect(plain.body.fachId).toBe(buildFachId(1, "0100", todayIso()))
     expect(plain.body.realerStart).toBe(todayIso())
-    expect(plain.body.quelle).toEqual({ name: "Eigener Eintrag (Setreo)" })
+    expect(plain.body.quelle).toEqual({ name: "Eigener Eintrag (Setreo)", eigen: true })
 
     const patched = await request(app)
       .patch(`/api/obstacles/${created.body.id}`)

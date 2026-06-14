@@ -177,21 +177,21 @@ describe("Sync-API", () => {
   })
 
   it("POST startet einen Sync-Job, der bis 'done' durchläuft", async () => {
-    const fetchImpl = async (url) => {
-      if (String(url).includes("/services/roadworks")) return jsonResponse({ roadworks: [] })
-      throw new Error("offline")
-    }
-    const { app } = makeApp({ fetchImpl })
+    // Deterministischer 2-Connector-Satz injiziert (prod zieht allConnectors). So
+    // testet der Lifecycle ohne 35 echte Connectoren — schnell und stabil.
+    const syncConnectors = [vollbestand([item("a")]), { ...fenster([item("b")]), quelleId: "0008" }]
+    const { app } = makeApp({ syncConnectors })
     const start = await request(app).post("/api/sync")
     expect(start.status).toBe(202)
     expect(["running", "done"]).toContain(start.body.status)
+    expect(start.body.total).toBe(2) // genau der injizierte Satz wird gezogen
     const jobId = start.body.id
 
     let job
-    for (let i = 0; i < 80; i += 1) {
+    for (let i = 0; i < 100; i += 1) {
       job = (await request(app).get(`/api/sync/${jobId}`)).body
       if (job.status !== "running") break
-      await new Promise((r) => setTimeout(r, 5))
+      await new Promise((r) => setTimeout(r, 10))
     }
     expect(job.status).toBe("done")
     expect(job.done).toBe(job.total)

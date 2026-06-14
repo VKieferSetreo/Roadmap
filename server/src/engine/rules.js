@@ -1,6 +1,8 @@
 // Regelwerk: bewertet ein Hindernis gegen die Transport-Stammdaten + Zeitraum.
 // evaluate() → { severity, titel, beschreibung, detail } | null (nicht relevant).
 // Detail-Werte in deutscher Zahlformatierung (Komma, − für negative Werte).
+// Stil-Vorgabe (Max 2026-06-14): in den von UNS generierten Texten KEINE Binde-/
+// Gedankenstriche — vollständige Sätze mit Punkt statt „ — ".
 
 export const KATEGORIEN = [
   "bruecke", "engstelle", "baustelle", "sperrung", "gewicht", "bahnuebergang",
@@ -74,7 +76,7 @@ function ruleHoehe(art, attrs, transport) {
   if (maxH == null) {
     return {
       severity: "hinweis",
-      beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe — vor Ort prüfen.`,
+      beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe. Vor Ort prüfen.`,
       detail: { Transporthöhe: fmtM(transport.hoehe) },
     }
   }
@@ -83,8 +85,8 @@ function ruleHoehe(art, attrs, transport) {
     severity: sev3(spielraum < 0.10, spielraum < 0.50),
     beschreibung:
       spielraum < 0.10
-        ? `Durchfahrtshöhe reicht für den Transport nicht aus — ${art} umfahren oder Höhe reduzieren.`
-        : `Begrenzte Durchfahrtshöhe — Spielraum knapp, Durchfahrt prüfen.`,
+        ? `Durchfahrtshöhe reicht für den Transport nicht aus. ${art} umfahren oder Höhe reduzieren.`
+        : `Begrenzte Durchfahrtshöhe. Spielraum knapp, Durchfahrt prüfen.`,
     detail: {
       Durchfahrtshöhe: fmtM(maxH),
       Transporthöhe: fmtM(transport.hoehe),
@@ -98,14 +100,14 @@ function ruleEngstelle(attrs, transport) {
   if (maxB == null) {
     return {
       severity: "hinweis",
-      beschreibung: "Engstelle ohne hinterlegte Restbreite — vor Ort prüfen.",
+      beschreibung: "Engstelle ohne hinterlegte Restbreite. Vor Ort prüfen.",
       detail: { Transportbreite: fmtM(transport.breite) },
     }
   }
   const marge = round2(maxB - transport.breite)
   return {
     severity: sev3(marge < 0.10, marge < 0.50),
-    beschreibung: "Fahrbahn verengt sich — Restbreite gegen Transportbreite prüfen.",
+    beschreibung: "Fahrbahn verengt sich. Restbreite gegen Transportbreite prüfen.",
     detail: {
       Fahrbahnbreite: fmtM(maxB),
       Transportbreite: fmtM(transport.breite),
@@ -128,7 +130,7 @@ function ruleGewicht(attrs, transport) {
   if (maxG == null && maxAchs == null) {
     return {
       severity: "hinweis",
-      beschreibung: "Gewichtsbeschränkung ohne hinterlegte Traglast — Bescheid prüfen.",
+      beschreibung: "Gewichtsbeschränkung ohne hinterlegte Traglast. Bescheid prüfen.",
       detail: { Gesamtgewicht: fmtT(transport.gesamtgewicht) },
     }
   }
@@ -153,8 +155,8 @@ function ruleGewicht(attrs, transport) {
     severity,
     beschreibung:
       severity === "kritisch"
-        ? "Zulässige Last überschritten — Ausnahmegenehmigung/Lastverteilungsnachweis erforderlich."
-        : "Zulässige Brücken-/Streckenlast prüfen, ggf. Lastverteilung nachweisen.",
+        ? "Zulässige Last überschritten. Ausnahmegenehmigung bzw. Lastverteilungsnachweis erforderlich."
+        : "Zulässige Last auf Brücke oder Strecke prüfen, ggf. Lastverteilung nachweisen.",
     detail,
   }
 }
@@ -165,7 +167,7 @@ function ruleSteigung(attrs, transport) {
   if (pct == null) {
     return {
       severity: "hinweis",
-      beschreibung: "Längsneigung ohne hinterlegten Wert — Anfahrvermögen berücksichtigen.",
+      beschreibung: "Längsneigung ohne hinterlegten Wert. Anfahrvermögen berücksichtigen.",
       detail: { Gesamtgewicht: fmtT(gewicht) },
     }
   }
@@ -174,7 +176,7 @@ function ruleSteigung(attrs, transport) {
   else if (pct >= 5) severity = gewicht > 100 ? "warnung" : "hinweis"
   return {
     severity,
-    beschreibung: "Längsneigung — Anfahrvermögen und Bremsweg berücksichtigen.",
+    beschreibung: "Längsneigung beachten. Anfahrvermögen und Bremsweg berücksichtigen.",
     detail: { Längsneigung: fmtPct(pct), Gesamtgewicht: fmtT(gewicht) },
   }
 }
@@ -184,13 +186,13 @@ function ruleKreisverkehr(attrs, transport) {
   if (r == null) {
     return {
       severity: "hinweis",
-      beschreibung: "Kreisverkehr ohne hinterlegten Radius — Schleppkurve prüfen.",
+      beschreibung: "Kreisverkehr ohne hinterlegten Radius. Schleppkurve prüfen.",
       detail: { Fahrzeuglänge: fmtM(transport.laenge) },
     }
   }
   return {
     severity: sev3(transport.laenge > 2.2 * r, transport.laenge > 1.6 * r),
-    beschreibung: "Schleppkurve im Kreisverkehr — Befahrbarkeit für die Fahrzeuglänge prüfen.",
+    beschreibung: "Schleppkurve im Kreisverkehr. Befahrbarkeit für die Fahrzeuglänge prüfen.",
     detail: { Außenradius: `${fmtKomma(r, 0)} m`, Fahrzeuglänge: fmtM(transport.laenge) },
   }
 }
@@ -207,10 +209,13 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const detail = {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
     ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
-    Zeitraum: overlap ? "überschneidet Transport-Zeitraum" : "außerhalb des Transport-Zeitraums",
+    Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
   }
 
-  const breiteVerletzt = rb != null && rb < transport.breite + 0.1
+  // ROT nur bei ECHTER Verletzung: Restbreite kleiner als die Transportbreite
+  // (kein Sicherheitspuffer mehr — Max 2026-06-14: 3,25 m reicht für 3,20 m, darf
+  // NICHT kritisch sein). Gleichstand „passt exakt" gilt als ausreichend.
+  const breiteVerletzt = rb != null && rb < transport.breite
   const hoeheVerletzt = mh != null && mh < transport.hoehe
 
   let severity
@@ -218,20 +223,20 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   if (breiteVerletzt || hoeheVerletzt) {
     severity = "kritisch"
     beschreibung = breiteVerletzt && hoeheVerletzt
-      ? "Baustelle verletzt Restbreite UND Durchfahrtshöhe — Durchfahrt nicht möglich, umfahren."
+      ? "Baustelle verletzt Restbreite und Durchfahrtshöhe. Durchfahrt nicht möglich, bitte umfahren."
       : breiteVerletzt
-        ? "Baustellen-Restbreite reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
-        : "Baustellen-Höhenbegrenzung reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
+        ? "Die Restbreite der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
+        : "Die Höhenbegrenzung der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
   } else if (overlap) {
     // Auf der Strecke, im Zeitraum aktiv, aber keine hinterlegte Restriktion verletzt
     // (oder keine Maße bekannt) → anzeigen zur Prüfung, NICHT automatisch rot.
     severity = "warnung"
     beschreibung = rb == null && mh == null
-      ? "Aktive Baustelle auf der Strecke — keine Maße hinterlegt, Relevanz vor Ort prüfen."
-      : "Aktive Baustelle auf der Strecke — hinterlegte Maße reichen aus, Durchfahrt zeitlich abstimmen."
+      ? "Aktive Baustelle auf der Strecke. Keine Maße hinterlegt, Relevanz vor Ort prüfen."
+      : "Aktive Baustelle auf der Strecke. Hinterlegte Maße reichen aus, Durchfahrt zeitlich abstimmen."
   } else {
     severity = "hinweis"
-    beschreibung = "Baustelle auf der Strecke — aktuell außerhalb des Transport-Zeitraums."
+    beschreibung = "Baustelle auf der Strecke, aktuell außerhalb des Transportzeitraums."
   }
   return { severity, beschreibung, detail }
 }
@@ -243,19 +248,19 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
   // Vollsperrung im Zeitraum = kritisch; sonst Gewichts-/Restbreite prüfen, sonst Hinweis.
   let severity = "hinweis"
   if (attrs.vollsperrung === true && overlap) severity = "kritisch"
-  else if (rb != null && rb < transport.breite + 0.1) severity = "kritisch"
+  else if (rb != null && rb < transport.breite) severity = "kritisch"
   else if (maxG != null && maxG < transport.gesamtgewicht) severity = "kritisch"
   else if (overlap) severity = "warnung"
   return {
     severity,
     beschreibung:
       severity === "kritisch"
-        ? "Strecke gesperrt bzw. für den Transport nicht passierbar — Umfahrung erforderlich."
-        : "Sperrung/Umleitung auf der Strecke — Durchfahrt bzw. Umleitungsführung prüfen.",
+        ? "Strecke gesperrt bzw. für den Transport nicht passierbar. Umfahrung erforderlich."
+        : "Sperrung oder Umleitung auf der Strecke. Durchfahrt bzw. Umleitungsführung prüfen.",
     detail: {
       ...(rb != null && { Restbreite: fmtM(rb) }),
       ...(maxG != null && { "Zul. Gesamtlast": fmtT(maxG) }),
-      Zeitraum: overlap ? "überschneidet Transport-Zeitraum" : "außerhalb des Transport-Zeitraums",
+      Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
     },
   }
 }
@@ -266,8 +271,8 @@ function ruleBahnuebergang(attrs, transport) {
   return {
     severity: kritisch ? "kritisch" : "hinweis",
     beschreibung: kritisch
-      ? "Transporthöhe überschreitet die Oberleitungshöhe — Querung nicht möglich ohne Abschaltung."
-      : "Höhengleicher Bahnübergang — Bodenfreiheit und Wartezeit beachten.",
+      ? "Transporthöhe überschreitet die Oberleitungshöhe. Querung nur mit Abschaltung möglich."
+      : "Höhengleicher Bahnübergang. Bodenfreiheit und Wartezeit beachten.",
     detail: {
       ...(maxH != null && { Oberleitungshöhe: fmtM(maxH), Transporthöhe: fmtM(transport.hoehe) }),
       Hinweis: "Anmeldung DB Netz erforderlich",
@@ -281,8 +286,8 @@ function ruleAmpel(attrs, transport) {
   return {
     severity: warn ? "warnung" : "hinweis",
     beschreibung: warn
-      ? "Transporthöhe über Signalausleger — Anlage ggf. schwenken/demontieren lassen."
-      : "Lichtsignalanlage — Durchfahrt mit Begleitung abstimmen.",
+      ? "Transporthöhe über Signalausleger. Anlage ggf. schwenken oder demontieren lassen."
+      : "Lichtsignalanlage. Durchfahrt mit Begleitung abstimmen.",
     detail: {
       ...(maxH != null && { Auslegerhöhe: fmtM(maxH), Transporthöhe: fmtM(transport.hoehe) }),
     },

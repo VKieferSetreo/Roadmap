@@ -12,7 +12,7 @@
 // der Job-Status verloren (der Import selbst ist transaktional und unkritisch).
 
 import { randomUUID } from "node:crypto"
-import { enabledConnectors } from "./connectors/index.js"
+import { allConnectors } from "./connectors/index.js"
 import { rerunAffectedProjects } from "./engine/rerunAll.js"
 import { rowToImportRun } from "./map.js"
 import { withTimeout } from "./util.js"
@@ -62,21 +62,29 @@ export function activeSyncJob() {
  * Startet einen Sync-Lauf (oder gibt den laufenden zurück). Returnt den Job sofort;
  * die Arbeit läuft im Hintergrund weiter.
  */
-export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env }) {
+export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env, connectors } = {}) {
   pruneJobs()
   const running = activeSyncJob()
   if (running && running.status === "running") return running
 
-  const connectors = enabledConnectors(env)
+  // ALLE registrierten Connectoren ziehen (= was das FE als "aktive Quellen" zählt,
+  // getConnector != null). NICHT enabledConnectors(env): das liest die env-Allowlist
+  // CONNECTORS, die nur das WORKER-Cron-Scheduling staffelt und in der API-App leer ist
+  // → früher lief der Sync-Button über 0 Quellen (instant fertig, 0 Einträge).
+  // `connectors` ist nur für Tests injizierbar (kleiner deterministischer Satz).
+  const connectorList = Array.isArray(connectors) ? connectors : allConnectors(env)
   const id = randomUUID()
   const job = {
     id,
     status: "running",
-    phase: "import", // import | hygiene | rerun
-    total: connectors.length,
+    phase: "import", // import | verify | hygiene | rerun
+    total: connectorList.length,
     done: 0,
-    current: connectors[0] ? { quelleId: connectors[0].quelleId, name: connectors[0].name } : null,
+    current: connectorList[0]
+      ? { quelleId: connectorList[0].quelleId, name: connectorList[0].name }
+      : null,
     runs: [],
+    verify: null, // { geprueft, neu, aktualisiert, deaktiviert, reaktiviert, geaendert }
     deaktiviertAbgelaufen: 0,
     rerun: null,
     startedAt: new Date().toISOString(),
@@ -87,7 +95,7 @@ export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env 
   jobs.set(id, job)
   activeJobId = id
 
-  void runJob(job, { db, fetchImpl, env, connectors, paceMs: syncPaceMs(env) })
+  void runJob(job, { db, fetchImpl, env, connectors: connectorList, paceMs: syncPaceMs(env) })
   return job
 }
 
@@ -138,6 +146,27 @@ async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
     }
     job.current = null
     job.etaSeconds = 0
+
+    // Sichtbare Verifikations-Phase: Abgleich des gezogenen Bestands mit der DB
+    // (was ist neu, was hat sich geändert, was fiel weg). Der eigentliche Abgleich
+    // passiert pro Quelle im Upsert; hier wird er aufsummiert und kurz sichtbar
+    // gemacht, damit der Nutzer sieht, dass wirklich gegen den Bestand geprüft wird.
+    job.phase = "verify"
+    const verify = job.runs.reduce(
+      (a, r) => {
+        const s = r.stats ?? {}
+        a.geprueft += s.gefunden ?? 0
+        a.neu += s.neu ?? 0
+        a.aktualisiert += s.aktualisiert ?? 0
+        a.deaktiviert += s.deaktiviert ?? 0
+        a.reaktiviert += s.reaktiviert ?? 0
+        return a
+      },
+      { geprueft: 0, neu: 0, aktualisiert: 0, deaktiviert: 0, reaktiviert: 0 },
+    )
+    verify.geaendert = verify.neu + verify.aktualisiert + verify.deaktiviert + verify.reaktiviert
+    job.verify = verify
+    if (paceMs > 0) await sleep(Math.max(paceMs, 1500))
 
     // Abgelaufene Hindernisse (7 Tage nach gueltig_bis) deaktivieren
     job.phase = "hygiene"

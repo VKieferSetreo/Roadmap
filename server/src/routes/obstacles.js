@@ -35,6 +35,22 @@ const mayWriteGlobal = (req) => {
 }
 
 /**
+ * Kontaktdaten eines Kunden-Eintrags säubern: wer hat gemeldet, Ansprechpartner,
+ * Telefon. Reine Strings, getrimmt, gekappt. Liegen im quelle-jsonb (keine eigene
+ * Spalte/Migration nötig) und fließen über das Finding bis ins Karten-Popup.
+ */
+function sanitizeKontakt(input) {
+  if (!isPlainObject(input)) return null
+  const pick = (v) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 200) : undefined)
+  const kontakt = {
+    melder: pick(input.melder),
+    ansprechpartner: pick(input.ansprechpartner),
+    telefon: pick(input.telefon),
+  }
+  return Object.values(kontakt).some(Boolean) ? kontakt : null
+}
+
+/**
  * Schreibrecht auf einen bestehenden Eintrag prüfen.
  * Fremder Tenant → 404 (kein Leak), globaler Eintrag ohne admin/roadmap → 403.
  */
@@ -90,10 +106,18 @@ export function obstaclesRouter({ db }) {
     const value = check.value
 
     if (!wantsGlobal) {
-      // Kunden-Eintrag: tenant-eigen, Defaults nur wenn nicht gesetzt
+      // Kunden-Eintrag: tenant-eigen, Defaults nur wenn nicht gesetzt.
+      // quelle trägt das eigen-Flag (FE färbt eigene Funde hellblau) + optionale
+      // Kontaktdaten (Melder/Ansprechpartner/Telefon). Tenant-Einträge sind NICHT
+      // streckengebunden — analyze() matcht sie über ALLE Projekte des Mandanten.
       value.tenantId = req.ctx.tenant.id
       value.quellenId = value.quellenId ?? KUNDEN_QUELLE
-      value.quelle = value.quelle ?? { name: `Eigener Eintrag (${req.ctx.tenant.name})` }
+      const kontakt = sanitizeKontakt(req.body?.kontakt)
+      value.quelle = {
+        name: `Eigener Eintrag (${req.ctx.tenant.name})`,
+        eigen: true,
+        ...(kontakt && { kontakt }),
+      }
       value.demo = false
     }
 

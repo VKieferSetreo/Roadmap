@@ -5,6 +5,10 @@ import axiosClient from "./client"
 import type {
   AppNotification,
   AppStats,
+  BugReport,
+  BugReportCreate,
+  BugReportList,
+  BugReportStatus,
   Finding,
   FindingKategorie,
   FindingSeverity,
@@ -159,6 +163,26 @@ export const api = {
       axiosClient<{ updated: number }>({ url: `/notifications/${id}/read`, method: "POST" }),
     readAll: () =>
       axiosClient<{ updated: number }>({ url: "/notifications/read-all", method: "POST" }),
+  },
+
+  // ── Bug-Reports (Melden: jeder; Liste/Triage: Admin) ───────────────────────
+  bugReports: {
+    /** Melden — jeder eingeloggte Nutzer. */
+    create: (payload: BugReportCreate) =>
+      axiosClient<BugReport>({ url: "/bug-reports", method: "POST", data: payload }),
+    /** Liste + Status-Zähler (nur Admin). */
+    list: (status?: BugReportStatus) =>
+      axiosClient<BugReportList>({
+        url: "/bug-reports",
+        method: "GET",
+        params: status ? { status } : undefined,
+      }),
+    /** Status/Notiz pflegen (nur Admin). */
+    patch: (id: string, patch: { status?: BugReportStatus; notiz?: string | null }) =>
+      axiosClient<BugReport>({ url: `/bug-reports/${id}`, method: "PATCH", data: patch }),
+    /** Löschen (nur Admin). */
+    remove: (id: string) =>
+      axiosClient<void>({ url: `/bug-reports/${id}`, method: "DELETE" }),
   },
 }
 

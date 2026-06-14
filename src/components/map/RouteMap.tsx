@@ -5,9 +5,16 @@ import { useEffect, useMemo, useRef } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Building2, ExternalLink, Locate, Minus, Plus } from "lucide-react"
+import { Building2, ExternalLink, Locate, Minus, Phone, Plus, User } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
-import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
+import {
+  EIGEN_BADGE,
+  EIGEN_COLOR,
+  formatGueltigkeit,
+  istEigenerEintrag,
+  katMeta,
+  SEVERITY_META,
+} from "@/components/project/findingMeta"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { endPinIcon, findingPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
@@ -163,11 +170,14 @@ export function RouteMap({
           const meta = SEVERITY_META[f.severity]
           const kat = katMeta(f.kategorie)
           const routeColor = drawn.find((r) => r.id === f.routeId)?.farbe ?? "#71717A"
+          // Eigene Einträge: Pin hellblau, unabhängig von der Severity.
+          const eigen = istEigenerEintrag(f.quelle)
+          const kontakt = eigen ? f.quelle?.kontakt : undefined
           return (
             <Marker
               key={f.id}
               position={[f.lat, f.lng]}
-              icon={findingPinIcon(f.kategorie, meta.marker, selectedId === f.id)}
+              icon={findingPinIcon(f.kategorie, eigen ? EIGEN_COLOR : meta.marker, selectedId === f.id)}
               eventHandlers={{ click: () => onSelect?.(f.id) }}
               zIndexOffset={selectedId === f.id ? 1000 : 0}
             >
@@ -187,12 +197,19 @@ export function RouteMap({
                     </div>
                   </div>
 
-                  {f.routeName ? (
-                    <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-                      <span className="h-2 w-2 rounded-full" style={{ background: routeColor }} />
-                      {f.routeName}
-                    </p>
-                  ) : null}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {f.routeName ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                        <span className="h-2 w-2 rounded-full" style={{ background: routeColor }} />
+                        {f.routeName}
+                      </span>
+                    ) : null}
+                    {eigen ? (
+                      <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium", EIGEN_BADGE)}>
+                        Eigener Eintrag
+                      </span>
+                    ) : null}
+                  </div>
 
                   {f.beschreibung ? (
                     <p className="mt-2 text-sm leading-relaxed text-neutral-600">{f.beschreibung}</p>
@@ -220,6 +237,32 @@ export function RouteMap({
                     </p>
                   ) : null}
 
+                  {/* Kontaktdaten bei eigenen Einträgen (Melder/Ansprechpartner/Telefon) */}
+                  {kontakt && (kontakt.melder || kontakt.ansprechpartner || kontakt.telefon) ? (
+                    <div className="mt-2.5 flex flex-col gap-1 rounded-lg bg-sky-50/70 px-2.5 py-2 text-xs text-neutral-600">
+                      {kontakt.melder ? (
+                        <p className="flex items-center gap-1.5">
+                          <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                          <span className="text-neutral-400">Gemeldet von:</span> {kontakt.melder}
+                        </p>
+                      ) : null}
+                      {kontakt.ansprechpartner ? (
+                        <p className="flex items-center gap-1.5">
+                          <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                          <span className="text-neutral-400">Ansprechpartner:</span> {kontakt.ansprechpartner}
+                        </p>
+                      ) : null}
+                      {kontakt.telefon ? (
+                        <p className="flex items-center gap-1.5">
+                          <Phone className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                          <a href={`tel:${kontakt.telefon.replace(/\s+/g, "")}`} className="font-medium text-sky-700 hover:underline">
+                            {kontakt.telefon}
+                          </a>
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+
                   <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
                     <span
                       className={cn(
@@ -231,14 +274,19 @@ export function RouteMap({
                       {meta.label}
                     </span>
                     {f.quelle?.name ? (
-                      <a
-                        href={f.quelle.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
-                      >
-                        {f.quelle.name} <ExternalLink className="h-3 w-3" />
-                      </a>
+                      eigen || !f.quelle.url ? (
+                        // Eigener Eintrag / ohne Link: Quelle als reiner Text (kein toter Link)
+                        <span className="text-xs font-medium text-neutral-500">{f.quelle.name}</span>
+                      ) : (
+                        <a
+                          href={f.quelle.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
+                        >
+                          {f.quelle.name} <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )
                     ) : null}
                   </div>
                 </div>

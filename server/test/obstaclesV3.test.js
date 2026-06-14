@@ -49,6 +49,28 @@ describe("obstacles v3 — Kunden-POST", () => {
     expect(res.body.fachId.slice(8)).toBe(formatDdmmyy(todayIso()))
   })
 
+  it("Kontaktdaten (Melder/Ansprechpartner/Telefon) landen im quelle-jsonb", async () => {
+    const { app } = await makeTwoTenantApp()
+    const res = await asUser("vki@setreo.de")(request(app).post("/api/obstacles")).send({
+      ...OBSTACLE,
+      kontakt: { melder: " Disponent Müller ", ansprechpartner: "Bauleiter Schmidt", telefon: "0711 123456", quatsch: 42 },
+    })
+    expect(res.status).toBe(201)
+    expect(res.body.quelle).toEqual({
+      name: "Eigener Eintrag (Setreo)",
+      eigen: true,
+      kontakt: { melder: "Disponent Müller", ansprechpartner: "Bauleiter Schmidt", telefon: "0711 123456" },
+    })
+  })
+
+  it("leere/fehlende Kontaktdaten → kein kontakt-Feld", async () => {
+    const { app } = await makeTwoTenantApp()
+    const res = await asUser("vki@setreo.de")(request(app).post("/api/obstacles"))
+      .send({ ...OBSTACLE, kontakt: { melder: "  ", telefon: "" } })
+    expect(res.status).toBe(201)
+    expect(res.body.quelle).toEqual({ name: "Eigener Eintrag (Setreo)", eigen: true })
+  })
+
   it("fachId-Sequenz zählt pro Quelle weiter — auch über Tenant-Grenzen", async () => {
     const { app } = await makeTwoTenantApp()
     const first = await asUser("vki@setreo.de")(request(app).post("/api/obstacles")).send(OBSTACLE)
@@ -82,7 +104,7 @@ describe("obstacles v3 — Kunden-POST", () => {
       .send(OBSTACLE)
     expect(eigen.status).toBe(201)
     expect(eigen.body.herkunft).toBe("eigen")
-    expect(eigen.body.quelle).toEqual({ name: "Eigener Eintrag (Kunde A)" })
+    expect(eigen.body.quelle).toEqual({ name: "Eigener Eintrag (Kunde A)", eigen: true })
 
     const global = await asAdmin(request(app).post("/api/obstacles"))
       .send({ ...OBSTACLE, global: true })

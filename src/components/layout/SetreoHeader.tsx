@@ -6,6 +6,8 @@ import { Building2, LogOut, Menu } from "lucide-react"
 import { toast } from "sonner"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { BugReportButton } from "@/components/bugreport/BugReportButton"
+import { BetaBadge } from "@/components/shared/BetaBadge"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { useSettingsStore } from "@/store/settings"
 import { useAuthStore } from "@/store/auth"
@@ -58,6 +60,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
         <span className="text-sm font-medium text-neutral-500">Roadmap</span>
       </a>
 
+      {/* Beta-Sticker: System noch in Entwicklung, nicht final */}
+      <BetaBadge className="ml-1" />
+
       <div className="flex-1" />
 
       {/* Mandanten-Switcher — nur Setreo-Admin im Live-Modus */}
@@ -78,6 +83,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
           </select>
         </div>
       ) : null}
+
+      {/* Problem melden (Bug-Report) — Live-Modus, jeder eingeloggte Nutzer */}
+      {mode === "live" ? <BugReportButton /> : null}
 
       {/* Glocke / Nachrichtenzentrum */}
       {showBell ? <NotificationBell /> : null}

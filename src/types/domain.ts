@@ -49,12 +49,25 @@ export type FindingKategorie =
 /** Wie kritisch ein Fund für den konkreten Transport ist. */
 export type FindingSeverity = "kritisch" | "warnung" | "hinweis"
 
+/** Kontaktdaten eines eigenen (Kunden-)Eintrags. */
+export interface Kontakt {
+  /** Wer hat die Information gemeldet / kontaktiert. */
+  melder?: string
+  ansprechpartner?: string
+  telefon?: string
+}
+
 /** Datenquelle eines Funds (Behörde, API, OSM …). */
 export interface FindingSource {
   name: string
-  url: string
+  /** Klickbarer Link zur Quelle (fehlt bei eigenen Einträgen). */
+  url?: string
   /** ISO-Datum oder relativer Text, z.B. "vor 12 min". */
-  aktualisiertAm: string
+  aktualisiertAm?: string
+  /** true = eigener Mandanten-Eintrag (FE färbt hellblau). */
+  eigen?: boolean
+  /** Kontaktdaten bei eigenen Einträgen. */
+  kontakt?: Kontakt
 }
 
 /** Ein auf der Strecke gefundenes Hindernis / eine Auffälligkeit. */
@@ -192,6 +205,8 @@ export interface ObstacleCreate {
   gueltigVon?: string
   gueltigBis?: string
   realerStart?: string
+  /** Optionale Kontaktdaten (Melder/Ansprechpartner/Telefon). */
+  kontakt?: Kontakt
 }
 
 /** Aggregat-Kennzahlen vom Backend (GET /api/stats). */
@@ -267,10 +282,19 @@ export interface SyncImportRun {
 export interface SyncJob {
   id: string
   status: "running" | "done" | "error"
-  phase: "import" | "hygiene" | "rerun"
+  phase: "import" | "verify" | "hygiene" | "rerun"
   total: number
   done: number
   current: { quelleId?: string; name: string } | null
+  /** Abgleich des gezogenen Bestands mit der DB (Verifikations-Phase). */
+  verify: {
+    geprueft: number
+    neu: number
+    aktualisiert: number
+    deaktiviert: number
+    reaktiviert: number
+    geaendert: number
+  } | null
   deaktiviertAbgelaufen: number
   rerun: {
     geprueft: number
@@ -284,6 +308,52 @@ export interface SyncJob {
   error: string | null
   /** Geschätzte Restdauer in Sekunden (aus letzten Laufzeiten je Quelle); null wenn unbekannt. */
   etaSeconds?: number | null
+}
+
+// ── Bug-Reports (In-App-Fehlermeldung + /debug-Triage) ────────────────────────
+
+export type BugReportStatus = "offen" | "in_arbeit" | "erledigt" | "verworfen"
+
+/** Automatisch erfasster Kontext-Snapshot zum Meldezeitpunkt. */
+export interface BugReportKontext {
+  appVersion?: string
+  mode?: string
+  viewPath?: string
+  viewport?: string
+  screen?: string
+  sprache?: string
+  userAgent?: string
+  zeitpunkt?: string
+  /** Daten-/Seitenstatus: Mandant, Projektzahl, aktuelles Projekt … */
+  datenstatus?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+/** Eingabe beim Melden (POST /api/bug-reports). */
+export interface BugReportCreate {
+  beschreibung: string
+  viewPath?: string
+  kontext?: BugReportKontext
+}
+
+/** Ein Bug-Report (GET /api/bug-reports, nur Admin). */
+export interface BugReport {
+  id: string
+  email: string
+  tenantSlug?: string | null
+  isAdmin: boolean
+  beschreibung: string
+  viewPath?: string | null
+  kontext: BugReportKontext
+  status: BugReportStatus
+  notiz?: string | null
+  createdAt: string
+  resolvedAt?: string | null
+}
+
+export interface BugReportList {
+  reports: BugReport[]
+  zaehler: Record<BugReportStatus, number>
 }
 
 /** Default-Stammdaten für ein frisch angelegtes Projekt (typischer Schwertransport). */

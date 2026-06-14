@@ -59,6 +59,9 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
   const [name, setName] = useState("")
   const [beschreibung, setBeschreibung] = useState("")
   const [attrs, setAttrs] = useState<Record<string, number>>({})
+  const [melder, setMelder] = useState("")
+  const [ansprechpartner, setAnsprechpartner] = useState("")
+  const [telefon, setTelefon] = useState("")
   const [realerStart, setRealerStart] = useState("")
   const [gueltigBis, setGueltigBis] = useState("")
   // Pflicht-Entscheidung: befristet (mit Enddatum) ODER offen (dauerhaft).
@@ -72,6 +75,9 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
     setName("")
     setBeschreibung("")
     setAttrs({})
+    setMelder("")
+    setAnsprechpartner("")
+    setTelefon("")
     setRealerStart(new Date().toISOString().slice(0, 10))
     setGueltigBis("")
     setBefristet(true)
@@ -92,6 +98,11 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
     }
     setBusy(true)
     try {
+      const kontakt = {
+        ...(melder.trim() && { melder: melder.trim() }),
+        ...(ansprechpartner.trim() && { ansprechpartner: ansprechpartner.trim() }),
+        ...(telefon.trim() && { telefon: telefon.trim() }),
+      }
       await api.createObstacle({
         kategorie,
         name: name.trim(),
@@ -102,6 +113,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         realerStart: realerStart || undefined,
         gueltigVon: realerStart || undefined,
         gueltigBis: befristet ? gueltigBis : undefined,
+        ...(Object.keys(kontakt).length > 0 && { kontakt }),
       })
       onClose()
       onCreated()
@@ -247,6 +259,50 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
           </p>
         )}
 
+        {/* Kontakt: wer hat gemeldet + Ansprechpartner vor Ort, für Rückfragen. */}
+        <div>
+          <Label>Kontakt (optional)</Label>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div>
+              <Label htmlFor="ob-melder" className="text-[10px]">
+                Gemeldet von
+              </Label>
+              <Input
+                id="ob-melder"
+                value={melder}
+                onChange={(e) => setMelder(e.target.value)}
+                placeholder="z.B. Disposition"
+                maxLength={120}
+              />
+            </div>
+            <div>
+              <Label htmlFor="ob-ansprech" className="text-[10px]">
+                Ansprechpartner
+              </Label>
+              <Input
+                id="ob-ansprech"
+                value={ansprechpartner}
+                onChange={(e) => setAnsprechpartner(e.target.value)}
+                placeholder="Name vor Ort"
+                maxLength={120}
+              />
+            </div>
+            <div>
+              <Label htmlFor="ob-tel" className="text-[10px]">
+                Telefon
+              </Label>
+              <Input
+                id="ob-tel"
+                type="tel"
+                value={telefon}
+                onChange={(e) => setTelefon(e.target.value)}
+                placeholder="Rückrufnummer"
+                maxLength={60}
+              />
+            </div>
+          </div>
+        </div>
+
         <div>
           <Label htmlFor="ob-desc">Beschreibung (optional)</Label>
           <Textarea
@@ -254,7 +310,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
             rows={2}
             value={beschreibung}
             onChange={(e) => setBeschreibung(e.target.value)}
-            placeholder="Worauf müssen Fahrer/Planung achten?"
+            placeholder="Worauf müssen Fahrer oder Planung achten?"
             className="input-base"
           />
         </div>

@@ -4,6 +4,7 @@
 
 import { useLocation, useNavigate } from "react-router-dom"
 import {
+  Bug,
   Building2,
   Database,
   Folder,
@@ -58,6 +59,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const onHome = pathname === "/"
   const onDb = pathname.startsWith("/datenbank")
   const onTenants = pathname.startsWith("/mandanten")
+  const onDebug = pathname.startsWith("/debug")
   const onSettings = pathname.startsWith("/einstellungen")
 
   const go = (path: string) => {
@@ -131,6 +133,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             active={onTenants}
             onClick={() => go("/mandanten")}
           />
+        ) : null}
+        {isAdmin ? (
+          <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debug")} />
         ) : null}
         <NavRow
           icon={Settings}

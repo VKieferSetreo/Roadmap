@@ -43,11 +43,14 @@ function progress(job: SyncJob | undefined): { pct: number; phaseLabel: string }
   const pct = job.total ? Math.round((job.done / job.total) * 100) : 0
   if (job.status === "error") return { pct: 100, phaseLabel: "Fehlgeschlagen" }
   if (job.status === "done") return { pct: 100, phaseLabel: "Fertig" }
+  if (job.phase === "verify") {
+    return { pct: 100, phaseLabel: "Daten geladen. Bestand wird mit der Datenbank abgeglichen …" }
+  }
   if (job.phase === "hygiene") {
-    return { pct: 100, phaseLabel: "Daten geschrieben — abgelaufene Einträge werden aufgeräumt …" }
+    return { pct: 100, phaseLabel: "Bestand abgeglichen. Abgelaufene Einträge werden aufgeräumt …" }
   }
   if (job.phase === "rerun") {
-    return { pct: 100, phaseLabel: "Daten geschrieben — Auswertungen werden aktualisiert …" }
+    return { pct: 100, phaseLabel: "Bestand gepflegt. Auswertungen werden aktualisiert …" }
   }
   return { pct, phaseLabel: "" } // import läuft
 }
@@ -182,6 +185,13 @@ export function SyncBar() {
           {geschrieben > 0 ? (
             <p className="text-[11px] tabular-nums text-neutral-400">
               {geschrieben.toLocaleString("de-DE")} Einträge in die Datenbank geschrieben
+            </p>
+          ) : null}
+          {job.data.verify ? (
+            <p className="text-[11px] tabular-nums text-neutral-400">
+              {job.data.verify.geprueft.toLocaleString("de-DE")} Einträge geprüft ·{" "}
+              {job.data.verify.geaendert.toLocaleString("de-DE")} geändert
+              {job.data.verify.neu ? ` (${job.data.verify.neu.toLocaleString("de-DE")} neu)` : ""}
             </p>
           ) : null}
         </div>

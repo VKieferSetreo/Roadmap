@@ -32,6 +32,7 @@ export function createFakeDb() {
     })),
     importRuns: [],
     notifications: [],
+    bugReports: [],
     geocodeCache: new Map(),
     routeCache: new Map(),
   }
@@ -574,6 +575,50 @@ export function createFakeDb() {
       const rows = state.notifications.filter((n) => n.tenant_id === params[0] && n.read_at == null)
       for (const n of rows) n.read_at = now()
       return ok([], rows.length)
+    }
+
+    // ── bug_reports (v3.2: In-App-Fehlermeldungen + /debug-Triage) ────────────
+    if (sql.startsWith("INSERT INTO bug_reports")) {
+      const row = {
+        id: randomUUID(),
+        email: params[0], tenant_slug: params[1], is_admin: params[2],
+        beschreibung: params[3], view_path: params[4], kontext: J(params[5]),
+        status: "offen", notiz: null, created_at: now(), resolved_at: null,
+      }
+      state.bugReports.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("SELECT * FROM bug_reports WHERE status = $1 ORDER BY created_at DESC")) {
+      return ok(
+        state.bugReports
+          .filter((b) => b.status === params[0])
+          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1)),
+      )
+    }
+    if (sql.startsWith("SELECT * FROM bug_reports ORDER BY created_at DESC")) {
+      return ok([...state.bugReports].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)))
+    }
+    if (sql.startsWith("SELECT status, count(*)::int AS n FROM bug_reports GROUP BY status")) {
+      const by = {}
+      for (const b of state.bugReports) by[b.status] = (by[b.status] ?? 0) + 1
+      return ok(Object.entries(by).map(([status, n]) => ({ status, n })))
+    }
+    if (sql.startsWith("UPDATE bug_reports SET")) {
+      const row = state.bugReports.find((b) => b.id === params[0])
+      if (!row) return ok([])
+      const [, status, notizGesetzt, notiz] = params
+      if (status != null) {
+        row.status = status
+        row.resolved_at =
+          status === "erledigt" || status === "verworfen" ? (row.resolved_at ?? now()) : null
+      }
+      if (notizGesetzt) row.notiz = notiz
+      return ok([row])
+    }
+    if (sql.startsWith("DELETE FROM bug_reports WHERE id = $1")) {
+      const before = state.bugReports.length
+      state.bugReports = state.bugReports.filter((b) => b.id !== params[0])
+      return ok([], before - state.bugReports.length)
     }
 
     // ── caches ────────────────────────────────────────────────────────────────

@@ -141,3 +141,19 @@ export function rowToShareData(row, findings = []) {
     findings,
   }
 }
+
+export function rowToBugReport(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    tenantSlug: row.tenant_slug ?? null,
+    isAdmin: Boolean(row.is_admin),
+    beschreibung: row.beschreibung,
+    viewPath: row.view_path ?? null,
+    kontext: row.kontext ?? {},
+    status: row.status,
+    notiz: row.notiz ?? null,
+    createdAt: toIso(row.created_at),
+    resolvedAt: toIso(row.resolved_at) ?? null,
+  }
+}

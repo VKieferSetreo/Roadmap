@@ -154,9 +154,15 @@ describe("kreisverkehr — Schleppkurve", () => {
 describe("baustelle", () => {
   const zeitraum = { von: "2026-06-15T22:00", bis: "2026-06-17T14:00" }
 
-  it("Restbreite < breite+0,1 → kritisch", () => {
-    const r = evaluate(ob("baustelle", { restbreiteM: 3.05 }), TR, {})
+  it("Restbreite < Transportbreite → kritisch (echte Verletzung)", () => {
+    const r = evaluate(ob("baustelle", { restbreiteM: 2.9 }), TR, {}) // 2,90 < 3,00
     expect(r.severity).toBe("kritisch")
+  })
+
+  it("Restbreite ≥ Transportbreite → NICHT kritisch (3,05 reicht für 3,00, kein Puffer)", () => {
+    // Max 2026-06-14: passt = passt. Ohne Zeitraum bleibt es als hinweis sichtbar.
+    const r = evaluate(ob("baustelle", { restbreiteM: 3.05 }), TR, {})
+    expect(r.severity).toBe("hinweis")
   })
 
   it("ausreichende Restbreite + Überlappung mit Zeitraum → warnung", () => {

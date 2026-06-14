@@ -20,6 +20,7 @@ function jobView(job, isAdmin) {
     total: job.total,
     done: job.done,
     current: job.current,
+    verify: job.verify,
     deaktiviertAbgelaufen: job.deaktiviertAbgelaufen,
     rerun: job.rerun,
     startedAt: job.startedAt,
@@ -33,7 +34,7 @@ function jobView(job, isAdmin) {
   }
 }
 
-export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env }) {
+export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env, connectors }) {
   const r = Router()
 
   /** Übersicht für die DB-Tab-Kopfzeile: Quellen-Status + zuletzt aktualisiert. */
@@ -62,7 +63,7 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
 
   /** Sync starten (oder den laufenden Job zurückgeben). */
   r.post("/", asyncHandler(async (req, res) => {
-    const job = startSync({ db, fetchImpl, env })
+    const job = startSync({ db, fetchImpl, env, connectors })
     res.status(202).json(jobView(job, req.ctx?.isAdmin === true))
   }))
 
