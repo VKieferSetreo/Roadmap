@@ -44,7 +44,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-neutral-200/80 bg-white px-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] lg:px-6">
+    <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center gap-3 border-b border-neutral-200/70 bg-white px-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.03)] lg:px-6">
       <button
         type="button"
         onClick={onMenuClick}

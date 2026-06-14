@@ -59,7 +59,11 @@ export function HeaderSync() {
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
 
-  // Abschluss: Auswertungen wurden im Rerun neu gefahren → Seite KOMPLETT neu laden.
+  // Abschluss: Auswertungen wurden im Rerun neu gefahren → ALLE Queries invalidieren
+  // (Projekte/Funde/Hindernisse/Glocke/Stats/Status) = komplettes Daten-Refresh in-place.
+  // KEIN window.location.reload(): das lädt die aktuelle Deep-Route hart neu, die das
+  // statische nginx nicht kennt → 404 (SPA-Routing). Sanftes Invalidate ist flashfrei
+  // UND zeigt überall den frischen Stand.
   const handled = useRef(false)
   useEffect(() => {
     const j = job.data
@@ -67,19 +71,12 @@ export function HeaderSync() {
     handled.current = true
     if (j.status === "error") {
       toast.error("Aktualisierung fehlgeschlagen.")
-      setJobId(null)
-      handled.current = false
-      return
+    } else if (startedHere.current) {
+      toast.success("Daten aktualisiert — Auswertungen sind frisch.")
     }
-    if (startedHere.current) {
-      // kurz „fertig" zeigen (Balken bei 100 %), dann harter Reload → alles frisch
-      const t = setTimeout(() => window.location.reload(), 900)
-      return () => clearTimeout(t)
-    }
-    // nur angehängt: kein Reload, aber Daten sanft auffrischen
-    toast.success("Daten aktualisiert.")
     void qc.invalidateQueries()
     setJobId(null)
+    startedHere.current = false
     handled.current = false
   }, [job.data, qc])
 
@@ -105,19 +102,22 @@ export function HeaderSync() {
         </div>
       ) : null}
 
-      {/* Button im Format von „Problem melden" + kleine Stand-Zeile darunter */}
-      <div className="flex flex-col items-end gap-0.5">
+      {/* Button im Format von „Problem melden". Die Stand-Zeile hängt ABSOLUT darunter,
+          damit der Button selbst auf gleicher Höhe wie die übrigen Header-Buttons sitzt
+          (sonst würde der Untertitel ihn nach oben schieben). min-w → Stand passt immer
+          sauber drunter, egal ob „heute", Datum o.ä. */}
+      <div className="relative">
         <button
           type="button"
           onClick={() => !running && start.mutate()}
           disabled={running}
           title={running ? "Aktualisierung läuft …" : "Alle Datenquellen neu ziehen + Auswertungen aktualisieren"}
-          className="flex h-8 items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 disabled:cursor-default disabled:opacity-80"
+          className="flex h-8 min-w-[190px] items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 disabled:cursor-default disabled:opacity-80"
         >
           <RefreshCw className={cn("h-4 w-4 text-neutral-400", running && "animate-spin")} />
           <span className="hidden sm:inline">{running ? "Aktualisiere …" : "Daten aktualisieren"}</span>
         </button>
-        <span className="hidden text-[10px] leading-none text-neutral-400 sm:block">
+        <span className="absolute left-0 top-full mt-1 hidden whitespace-nowrap text-[10px] leading-none text-neutral-400 sm:block">
           Letzter Stand: {stamp}
         </span>
       </div>
