@@ -5,7 +5,7 @@
 // damit Auswertungen + Listen frisch sind.
 
 import { useEffect, useRef, useState } from "react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
@@ -21,7 +21,11 @@ function formatStamp(iso: string | null): string {
 }
 
 export function HeaderSync() {
+  const qc = useQueryClient()
   const [jobId, setJobId] = useState<string | null>(null)
+  // Nur wer den Sync HIER gestartet hat, bekommt am Ende den harten Reload; wer sich
+  // nur an einen laufenden Lauf anhängt, bekommt ein sanftes Daten-Refresh.
+  const startedHere = useRef(false)
 
   const status = useQuery({
     queryKey: ["sync-status"],
@@ -43,7 +47,10 @@ export function HeaderSync() {
 
   const start = useMutation({
     mutationFn: () => api.sync.start(),
-    onSuccess: (j) => setJobId(j.id),
+    onSuccess: (j) => {
+      startedHere.current = true
+      setJobId(j.id)
+    },
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
 
@@ -59,10 +66,17 @@ export function HeaderSync() {
       handled.current = false
       return
     }
-    // kurz „fertig" zeigen (Balken bei 100 %), dann harter Reload → alles frisch
-    const t = setTimeout(() => window.location.reload(), 900)
-    return () => clearTimeout(t)
-  }, [job.data])
+    if (startedHere.current) {
+      // kurz „fertig" zeigen (Balken bei 100 %), dann harter Reload → alles frisch
+      const t = setTimeout(() => window.location.reload(), 900)
+      return () => clearTimeout(t)
+    }
+    // nur angehängt: kein Reload, aber Daten sanft auffrischen
+    toast.success("Daten aktualisiert.")
+    void qc.invalidateQueries()
+    setJobId(null)
+    handled.current = false
+  }, [job.data, qc])
 
   const running = job.data?.status === "running" || start.isPending
   const pct = job.data?.total
