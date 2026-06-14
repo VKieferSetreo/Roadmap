@@ -4,18 +4,16 @@
 
 import { Link } from "react-router-dom"
 import { Building2, LogOut, Menu } from "lucide-react"
-import { toast } from "sonner"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { BugReportButton } from "@/components/bugreport/BugReportButton"
 import { HeaderSync } from "./HeaderSync"
-import { BetaBadge } from "@/components/shared/BetaBadge"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
+import { setTenantHeader } from "@/api/client"
 import { useSettingsStore } from "@/store/settings"
 import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
-import { useProjectStore } from "@/store/projects"
 import { handleLogout, initialsFromEmail } from "@/lib/auth"
 
 export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
@@ -25,8 +23,6 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const extern = useContextStore((s) => s.extern)
   const tenant = useContextStore((s) => s.tenant)
   const tenants = useContextStore((s) => s.tenants)
-  const switchTenant = useContextStore((s) => s.switchTenant)
-  const loadProjects = useProjectStore((s) => s.loadProjects)
   const mode = useDataSourceStore((s) => s.mode)
   // Glocke nur live + mit Mandant (Nachrichten sind mandantenbezogen)
   const showBell = mode === "live" && (isAdmin || Boolean(tenant))
@@ -34,13 +30,13 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const email = identity?.email ?? profile.email
   const init = initialsFromEmail(email)
 
-  const onSwitchTenant = async (slug: string) => {
-    try {
-      await switchTenant(slug)
-      await loadProjects()
-    } catch {
-      toast.error("Mandant konnte nicht gewechselt werden.")
-    }
+  // Mandantenwechsel: Header persistieren (überlebt Reload via localStorage) und die
+  // Seite komplett neu laden — so fetchen alle Komponenten (Projekte, Datenbank, Karte)
+  // sauber unter dem neuen Mandanten, ohne Stale-State.
+  const onSwitchTenant = (slug: string) => {
+    if (!slug || slug === tenant?.slug) return
+    setTenantHeader(slug)
+    window.location.reload()
   }
 
   return (
@@ -75,9 +71,6 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
         </a>
       )}
 
-      {/* Beta-Sticker: System noch in Entwicklung, nicht final */}
-      <BetaBadge className="ml-1" />
-
       <div className="flex-1" />
 
       {/* Globaler „Daten aktualisieren"-Sync — links neben der Mandanten-Auswahl */}
@@ -89,7 +82,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
           <Building2 className="h-4 w-4 text-neutral-400" aria-hidden />
           <select
             value={tenant?.slug ?? ""}
-            onChange={(e) => void onSwitchTenant(e.target.value)}
+            onChange={(e) => onSwitchTenant(e.target.value)}
             aria-label="Mandant wählen"
             className="h-8 cursor-pointer rounded-md border border-neutral-200 bg-white px-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >

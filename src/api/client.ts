@@ -72,9 +72,28 @@ export const axiosInstance = axios.create({
 
 // Aktiver Mandant (nur für Setreo-Admins relevant — wählt den Tenant-Kontext serverseitig).
 // Wird vom Context-Store gesetzt; normale Nutzer haben ihren Tenant serverseitig fix.
-let tenantSlug: string | null = null
+// In localStorage gespiegelt, damit der gewählte Mandant einen Seiten-Reload überlebt
+// (Mandantenwechsel lädt die Seite neu, damit alle Komponenten frisch fetchen).
+const TENANT_STORAGE_KEY = "roadmap-tenant"
+
+let tenantSlug: string | null = (() => {
+  if (typeof window === "undefined") return null
+  try {
+    return window.localStorage.getItem(TENANT_STORAGE_KEY)
+  } catch {
+    return null
+  }
+})()
+
 export function setTenantHeader(slug: string | null) {
   tenantSlug = slug
+  if (typeof window === "undefined") return
+  try {
+    if (slug) window.localStorage.setItem(TENANT_STORAGE_KEY, slug)
+    else window.localStorage.removeItem(TENANT_STORAGE_KEY)
+  } catch {
+    // localStorage nicht verfügbar
+  }
 }
 
 axiosInstance.interceptors.request.use((config) => {
