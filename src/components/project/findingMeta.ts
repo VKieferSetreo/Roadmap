@@ -62,6 +62,8 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   sackgasse: { label: "Sackgasse" },
   havarie: { label: "Akut/Havarie" },
   medium: { label: "Versorgungsleitung" },
+  spurenFrei: { label: "Fahrstreifen frei" },
+  spurenGesperrt: { label: "Fahrstreifen gesperrt" },
   anmeldungErforderlich: { label: "Anmeldung erforderlich" },
 }
 

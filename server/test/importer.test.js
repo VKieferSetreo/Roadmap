@@ -3,7 +3,7 @@
 
 import request from "supertest"
 import { describe, expect, it } from "vitest"
-import { autobahnConnector, normalizeRoadwork } from "../src/connectors/autobahn.js"
+import { autobahnConnector, normalizeAutobahn } from "../src/connectors/autobahn.js"
 import { CONNECTORS, enabledConnectors, getConnector } from "../src/connectors/index.js"
 import { buildFachId, todayIso } from "../src/obstaclesRepo.js"
 import { runImport } from "../src/worker/importer.js"
@@ -155,15 +155,19 @@ describe("Autobahn-Connector (Quelle 0001, fetch gemockt)", () => {
       gueltigVon: "2026-03-08",
       realerStart: "2026-03-08",
     })
-    expect(obstacles[0].beschreibung).toBe("Bauarbeiten\nBeginn: 08.03.2026\nFahrbahnverengung")
-    expect(obstacles[0].quelle.name).toBe("Autobahn-API · A1 Roadworks")
+    // "Fahrbahnverengung" wird nativ extrahiert → Hinweis angehängt + attrs/Flag gesetzt
+    expect(obstacles[0].beschreibung).toContain("Fahrbahnverengung")
+    expect(obstacles[0].beschreibung).toContain("aus Meldungstext extrahiert")
+    expect(obstacles[0].attrs.fahrbahnVerengt).toBe(true)
+    expect(obstacles[0].kiAufbereitet).toBe(true)
+    expect(obstacles[0].quelle.name).toBe("Autobahn-API · A1 roadworks")
     expect(obstacles[0].quelle.url).toContain("/A1/services/roadworks")
   })
 
-  it("normalizeRoadwork verwirft Items ohne identifier/Koordinaten", () => {
-    expect(normalizeRoadwork({}, "A1", "u")).toBeNull()
-    expect(normalizeRoadwork({ identifier: "x" }, "A1", "u")).toBeNull()
-    expect(normalizeRoadwork({ identifier: "x", coordinate: { lat: "a", long: "b" } }, "A1", "u")).toBeNull()
+  it("normalizeAutobahn verwirft Items ohne identifier/Koordinaten", () => {
+    expect(normalizeAutobahn({}, "A1", "roadworks", "u")).toBeNull()
+    expect(normalizeAutobahn({ identifier: "x" }, "A1", "roadworks", "u")).toBeNull()
+    expect(normalizeAutobahn({ identifier: "x", coordinate: { lat: "a", long: "b" } }, "A1", "roadworks", "u")).toBeNull()
   })
 
   it("Registry: Autobahn registriert, enabledConnectors folgt env CONNECTORS", () => {
@@ -178,12 +182,12 @@ describe("Autobahn-Connector (Quelle 0001, fetch gemockt)", () => {
 
 describe("Admin-Endpoints (Import)", () => {
   const autobahnFetch = async (url) => {
-    if (String(url).includes("/services/roadworks")) {
-      return String(url).includes("/A1/")
-        ? jsonResponse({ roadworks: [ROADWORK] })
-        : jsonResponse({ roadworks: [] })
+    const u = String(url)
+    if (u.endsWith("/o/autobahn/")) return jsonResponse({ roads: ["A1"] }) // Road-Liste dynamisch
+    if (u.includes("/services/roadworks")) {
+      return u.includes("/A1/") ? jsonResponse({ roadworks: [ROADWORK] }) : jsonResponse({ roadworks: [] })
     }
-    throw new Error("offline")
+    throw new Error("offline") // closure etc. tolerant übersprungen
   }
 
   it("POST /api/admin/import/:quelleId triggert synchron → Run-Summary (camelCase)", async () => {
