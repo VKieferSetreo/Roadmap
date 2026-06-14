@@ -95,6 +95,47 @@ describe("runImport (Mock-Connector)", () => {
     expect(db.state.obstacles[0].externe_id).toMatch(/^dup#/)
   })
 
+  it("Drift-Schutz: gleiche Baustelle mit neuer externeId + ~100m Versatz bleibt EIN Eintrag (kein entfallen+neu)", async () => {
+    const db = createFakeDb()
+    const base = {
+      ...ITEM_A, name: "B10 Kriegsstraße zw. Karlstraße und Ettlinger Tor",
+      kategorie: "baustelle", lat: 49.006, lng: 8.403,
+    }
+    const voll = (items) => ({ ...mockConnector(items), vollbestand: true })
+    await runImport({ db, connector: voll([{ ...base, externeId: "src-1" }]), log: quiet })
+    expect(db.state.obstacles).toHaveLength(1)
+    const firstId = db.state.obstacles[0].id
+
+    // nächster Lauf: andere Quell-ID + ~100m Drift → früher: alt deaktiviert + neu eingefügt
+    const run = await runImport({
+      db, connector: voll([{ ...base, externeId: "src-2", lat: 49.0069 }]), log: quiet,
+    })
+    expect(db.state.obstacles).toHaveLength(1) // KEIN Duplikat
+    expect(db.state.obstacles[0].id).toBe(firstId) // dieselbe Zeile → obstacle_id stabil
+    expect(db.state.obstacles[0].aktiv).toBe(true) // NICHT vom Reconcile deaktiviert
+    expect(run.stats.neu).toBe(0)
+    expect(run.stats.aktualisiert).toBe(1)
+    expect(run.stats.deaktiviert).toBe(0)
+  })
+
+  it("Drift-Schutz greift NICHT über die ~300m-Box / bei anderem Namen (kein Falsch-Merge)", async () => {
+    const db = createFakeDb()
+    const base = { ...ITEM_A, name: "Baustelle X", kategorie: "baustelle", lat: 49.006, lng: 8.403 }
+    const voll = (items) => ({ ...mockConnector(items), vollbestand: true })
+    await runImport({ db, connector: voll([{ ...base, externeId: "src-1" }]), log: quiet })
+    // weit weg (≈3 km) UND anderer Name → zwei getrennte Einträge
+    const run = await runImport({
+      db,
+      connector: voll([
+        { ...base, externeId: "src-1" }, // bleibt (exakt)
+        { ...base, externeId: "src-9", name: "Baustelle Y", lat: 49.03 },
+      ]),
+      log: quiet,
+    })
+    expect(db.state.obstacles).toHaveLength(2)
+    expect(run.stats.neu).toBe(1)
+  })
+
   it("Re-Import setzt manuelles aktiv=false NICHT zurück", async () => {
     const db = createFakeDb()
     await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })

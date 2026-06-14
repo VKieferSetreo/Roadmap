@@ -18,6 +18,23 @@ import {
 
 const EXISTING_SQL = "SELECT * FROM obstacles WHERE quellen_id = $1 AND externe_id = $2"
 
+// Drift-Schutz (T-078): findet ein bestehendes AKTIVES Hindernis derselben Quelle mit
+// gleicher Kategorie + gleichem (normalisiertem) Namen im ~300m-Umkreis. Greift NUR wenn
+// die exakte (quellen_id, externe_id) nicht matcht — fängt driftende Quell-IDs UND
+// positions-bedingt kippende dup#-Hashes ab, sodass das obstacle_id stabil bleibt.
+// Sonst meldet der Finding-Diff jeden Lauf „entfallen (km77)" + „neu (km76,9)".
+const FUZZY_MATCH_SQL = `SELECT id, externe_id, lat, lng FROM obstacles
+   WHERE quellen_id = $1 AND aktiv = true AND kategorie = $2
+     AND lower(regexp_replace(btrim(name), '\\s+', ' ', 'g')) = $3
+     AND lat IS NOT NULL AND lng IS NOT NULL
+     AND lat BETWEEN $4 AND $5 AND lng BETWEEN $6 AND $7`
+
+// ~300 m Bounding-Box (1° lat ≈ 111 km; 1° lng ≈ 70 km bei 51°N).
+const FUZZY_LAT = 0.003
+const FUZZY_LNG = 0.0045
+const normName = (name) => String(name ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+const dist2 = (a, b) => (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2
+
 const REACTIVATE_SQL = "UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = $1"
 
 // Fehlende Einträge der Quelle deaktivieren (nur Vollbestand-Feeds, nur was nicht
@@ -100,13 +117,30 @@ export async function runImport({
         value.demo = false
 
         const { rows: existing } = await q.query(EXISTING_SQL, [connector.quelleId, externeId])
-        if (existing[0]) {
+        let target = existing[0] ?? null
+        // Kein exakter Treffer? → Drift-Schutz: dasselbe reale Hindernis unter neuer
+        // Quell-ID / leicht versetzter Position wiederfinden, statt es neu anzulegen
+        // (sonst Reconcile-Churn jeden Lauf, T-078).
+        if (!target && value.name && value.lat != null && value.lng != null) {
+          const { rows: near } = await q.query(FUZZY_MATCH_SQL, [
+            connector.quelleId, value.kategorie, normName(value.name),
+            value.lat - FUZZY_LAT, value.lat + FUZZY_LAT,
+            value.lng - FUZZY_LNG, value.lng + FUZZY_LNG,
+          ])
+          if (near.length) {
+            target = near.reduce((best, r) => (dist2(r, value) < dist2(best, value) ? r : best), near[0])
+            // Der Treffer behält seine externe_id — die ins seen-Set, damit der
+            // Vollbestand-Reconcile diese (noch im Feed vorhandene) Zeile nicht deaktiviert.
+            seen.add(target.externe_id)
+          }
+        }
+        if (target) {
           // Sachfeld-Update — fachId/realerStart bleiben stabil
-          await q.query(UPDATE_SACHFELDER_SQL, sachfeldParams(existing[0].id, value))
+          await q.query(UPDATE_SACHFELDER_SQL, sachfeldParams(target.id, value))
           stats.aktualisiert += 1
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen)
-          if (connector.vollbestand && existing[0].aktiv === false) {
-            await q.query(REACTIVATE_SQL, [existing[0].id])
+          if (connector.vollbestand && target.aktiv === false) {
+            await q.query(REACTIVATE_SQL, [target.id])
             stats.reaktiviert += 1
           }
         } else {

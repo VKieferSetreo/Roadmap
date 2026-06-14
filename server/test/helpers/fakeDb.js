@@ -377,6 +377,22 @@ export function createFakeDb() {
         state.obstacles.filter((o) => o.quellen_id === params[0] && o.externe_id === params[1]),
       )
     }
+    // Drift-Schutz-Fuzzy-Match (Importer): aktiv, gleiche Kategorie + normalisierter Name + ~Umkreis
+    if (sql.startsWith("SELECT id, externe_id, lat, lng FROM obstacles WHERE quellen_id = $1 AND aktiv = true AND kategorie = $2")) {
+      const [quellenId, kategorie, normNameParam, minLat, maxLat, minLng, maxLng] = params
+      const norm = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+      return ok(
+        state.obstacles
+          .filter(
+            (o) =>
+              o.quellen_id === quellenId && o.aktiv === true && o.kategorie === kategorie &&
+              norm(o.name) === normNameParam &&
+              o.lat != null && o.lng != null &&
+              o.lat >= minLat && o.lat <= maxLat && o.lng >= minLng && o.lng <= maxLng,
+          )
+          .map((o) => ({ id: o.id, externe_id: o.externe_id, lat: o.lat, lng: o.lng })),
+      )
+    }
     if (sql.startsWith("SELECT * FROM obstacles WHERE id = $1")) {
       return ok(state.obstacles.filter((o) => o.id === params[0]))
     }
