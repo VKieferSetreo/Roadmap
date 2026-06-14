@@ -18,6 +18,21 @@ export const ENGINE_VERSION = "2.0.0"
 const round1 = (n) => Math.round(n * 10) / 10
 const sanePoint = (p) => p && isFiniteNumber(p.lat) && isFiniteNumber(p.lng)
 
+/** Alle Stützpunkte einer GeoJSON-Linie/MultiLinie als {lat,lng} (GeoJSON-Reihenfolge [lng,lat]). */
+function geomPoints(geom) {
+  if (!geom || typeof geom !== "object") return []
+  const out = []
+  const addLine = (line) => {
+    if (!Array.isArray(line)) return
+    for (const p of line) {
+      if (Array.isArray(p) && isFiniteNumber(p[0]) && isFiniteNumber(p[1])) out.push({ lat: p[1], lng: p[0] })
+    }
+  }
+  if (geom.type === "LineString") addLine(geom.coordinates)
+  else if (geom.type === "MultiLineString" && Array.isArray(geom.coordinates)) geom.coordinates.forEach(addLine)
+  return out
+}
+
 /** Analysierbare Routen: nur die mit ≥2 validen Punkten (Geometrie = points). */
 export function usableRoutes(routes) {
   return (Array.isArray(routes) ? routes : [])
@@ -56,7 +71,16 @@ export async function analyze({ db, project, corridorM }) {
 
     for (const row of rows) {
       const obstacle = rowToObstacle(row)
-      const near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum)
+      // Punkt-Hindernis: Abstand des Punkts zur Route. Strecken-Hindernis (geom = Linie):
+      // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
+      // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
+      // und ein Punkt 16 m neben der Route fällt sauber raus.
+      let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum)
+      for (const p of geomPoints(obstacle.geom)) {
+        if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
+        const n = nearestOnRoute(p, geometry, cum)
+        if (n.distM < near.distM) near = n
+      }
       if (near.distM > corridorM) continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
@@ -114,7 +138,7 @@ export async function analyze({ db, project, corridorM }) {
  * Kompletter Analyse-Lauf inkl. analysis_runs-Record und transaktionaler
  * Persistenz. Wirft bei Fehlern (Projekt bleibt dann unverändert, Run = error).
  */
-export async function runAnalysis({ db, project, corridorM = 50 }) {
+export async function runAnalysis({ db, project, corridorM = 15 }) {
   const runRes = await db.query(
     "INSERT INTO analysis_runs (project_id, status, engine_version) VALUES ($1, $2, $3) RETURNING id",
     [project.id, "running", ENGINE_VERSION],
