@@ -40,7 +40,7 @@ import { leipzigVerkehrsraumeinschraenkungenConnector } from "./0220_leipzig_ver
 import { leipzigVerkehrszeichenConnector } from "./0221_leipzig_verkehrszeichen.js"
 import { rostockBaustellenConnector } from "./0222_rostock_baustellen.js"
 import { rostockGstRoutenConnector } from "./0223_rostock_gst_routen.js"
-import { overpassApiConnector } from "./0301_overpass_api.js"
+// Overpass/OSM (0301) bewusst ENTFERNT: crowdsourced, unzuverlässig, ~120k Bloat — keine gewünschte Quelle.
 import { rvrGeonetzwerkRuhrBaustellenConnector } from "./0302_rvr_geonetzwerk_ruhr_baustellen.js"
 
 export const CONNECTORS = [
@@ -78,7 +78,6 @@ export const CONNECTORS = [
   leipzigVerkehrszeichenConnector,
   rostockBaustellenConnector,
   rostockGstRoutenConnector,
-  overpassApiConnector,
   rvrGeonetzwerkRuhrBaustellenConnector,
 ]
 
