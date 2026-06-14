@@ -269,9 +269,7 @@ export function KarteTab({ project }: { project: Project }) {
                 const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
                 return (
                   <li key={kat} className="flex items-center gap-2 text-xs text-neutral-700">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded border border-neutral-200 bg-white text-neutral-700">
-                      <KategorieGlyph kategorie={kat} className="h-3.5 w-3.5" />
-                    </span>
+                    <KategorieGlyph kategorie={kat} className="h-5 w-5 shrink-0" />
                     <span className="flex-1">{katMeta(kat).label}</span>
                     <span className="tabular-nums text-neutral-400">{count}</span>
                   </li>
