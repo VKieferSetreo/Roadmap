@@ -26,6 +26,21 @@ let activeJobId = null
 const PRUNE_AFTER_MS = 60 * 60 * 1000 // fertige Jobs 1 h vorhalten, dann verwerfen
 const RERUN_TIMEOUT_MS = 5 * 60 * 1000 // Rerun darf den Single-Run-Lock nicht ewig halten
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Sichtbare Sequenzierung: zwischen zwei Quellen mind. so lange warten, dass das FE
+// (pollt im 1-s-Takt) jede Etappe wirklich sieht. Ohne diese Pause sind die meisten
+// Quellen in Millisekunden durch → der Balken springt scheinbar instant auf 100 %
+// und man sieht nicht, welche Quelle wann lädt. Default 1000 ms; im Test (Vitest)
+// 0 ms, sonst liefe der Sync-Lifecycle-Test minutenlang. Per SYNC_PACE_MS justierbar.
+function syncPaceMs(env) {
+  if (env.SYNC_PACE_MS != null && env.SYNC_PACE_MS !== "") {
+    const n = Number(env.SYNC_PACE_MS)
+    return Number.isFinite(n) && n >= 0 ? n : 1000
+  }
+  return env.VITEST || env.NODE_ENV === "test" ? 0 : 1000
+}
+
 function pruneJobs() {
   const cutoff = Date.now() - PRUNE_AFTER_MS
   for (const [id, job] of jobs) {
@@ -72,7 +87,7 @@ export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env 
   jobs.set(id, job)
   activeJobId = id
 
-  void runJob(job, { db, fetchImpl, env, connectors })
+  void runJob(job, { db, fetchImpl, env, connectors, paceMs: syncPaceMs(env) })
   return job
 }
 
@@ -96,15 +111,19 @@ async function fetchConnectorDurations(db) {
   }
 }
 
-async function runJob(job, { db, fetchImpl, env, connectors }) {
+async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
   try {
     const durMap = await fetchConnectorDurations(db)
-    const expected = (c) => durMap.get(c.quelleId) ?? 8 // unbekannt → 8 s Default
+    // Pace-Pause zählt in die ETA mit, sonst läge die Schätzung deutlich zu niedrig.
+    const expected = (c) => (durMap.get(c.quelleId) ?? 8) + paceMs / 1000
     const restDauer = () => Math.round(connectors.slice(job.done).reduce((s, c) => s + expected(c), 0))
     job.etaSeconds = restDauer()
     for (const connector of connectors) {
+      // Quelle als "lädt gerade" anzeigen, DANN die sichtbare Pause — so steht jede
+      // Etappe ("Lädt: X") mind. paceMs im UI, bevor importiert + hochgezählt wird.
       job.current = { quelleId: connector.quelleId, name: connector.name }
       job.etaSeconds = restDauer() // inkl. aktueller Quelle
+      if (paceMs > 0) await sleep(paceMs)
       try {
         const run = await runImport({ db, connector, fetchImpl, env })
         job.runs.push(rowToImportRun(run))
