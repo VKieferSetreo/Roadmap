@@ -111,77 +111,92 @@ function wireDelete(layer: L.Layer, o: Obstacle, onDelete?: DeleteFn) {
   })
 }
 
-/** Baut das markercluster-Layer imperativ; Rebuild NUR bei Daten-Änderung (nicht bei Zoom). */
-function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
+// Pin am geom-Mittelpunkt (sonst am Punkt) — ein Marker je Hindernis.
+function makeMarker(o: Obstacle, onDelete?: DeleteFn): L.Marker {
+  const eigen = istEigenerEintrag(o.quelle)
+  const pos = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
+  const m = L.marker(pos, { icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false) })
+  m.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
+  wireDelete(m, o, onDelete)
+  return m
+}
+
+/**
+ * Hindernis-Layer der Übersichtskarte. Punkt-Hindernisse liegen immer im markercluster
+ * (Overview). Geom-Hindernisse (Linie) werden als **Linie + zugehöriger Pin GEKOPPELT**
+ * in einem nicht-entfernten Layer gezeigt — aber erst ab LINES_MIN_ZOOM; darunter (Linien
+ * aus) hängen sie geclustert im Cluster. So gibt es NIE eine Linie ohne Pin und nie
+ * Doppel-Pins.
+ *
+ * Behebt (Max 2026-06-14): markercluster entfernte off-screen-Pins (removeOutsideVisibleBounds),
+ * die separate Linien-Ebene aber nicht → „graue Markierung ohne Marker". Jetzt teilen sich
+ * Linie + Pin denselben Layer-Lebenszyklus.
+ */
+function ObstacleLayers({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
   const map = useMap()
   useEffect(() => {
     // leaflet.markercluster erweitert L zur Laufzeit (kein @types-Paket) → lose getypt.
     const cluster = (L as unknown as {
-      markerClusterGroup: (o: unknown) => L.LayerGroup & { addLayers: (l: L.Layer[]) => void }
+      markerClusterGroup: (o: unknown) => L.LayerGroup & {
+        addLayers: (l: L.Layer[]) => void
+        removeLayers: (l: L.Layer[]) => void
+      }
     }).markerClusterGroup({
-      chunkedLoading: true, // greift bei addLayers (bulk): Marker häppchenweise → kein Freeze
+      chunkedLoading: true,
       maxClusterRadius: 60,
-      // animate:false ist BEWUSST (Max 2026-06-14, „Icons nach Zoom unsichtbar"):
-      // markercluster blendet Marker beim Zoom über Opacity-Transitions ein/aus
-      // (clusterHide → opacity 0, dann ein enqueued setTimeout clusterShow → opacity 1).
-      // Geht dieser Callback verloren (Zoom-Interrupt), bleibt der Marker auf opacity 0
-      // = „während Zoom sichtbar, danach weg". Ohne Animation werden Marker synchron bei
-      // voller Deckkraft hinzugefügt → sie bleiben zuverlässig sichtbar.
-      animate: false,
-      // Ab der Zoomstufe, ab der auch die Strecken-Linien erscheinen, einzelne Pins zeigen —
-      // sonst hätte eine sichtbare Strecke keinen eigenen Pin (steckte im Cluster) = „Tag fehlt".
+      animate: false, // siehe Pattern: kein Opacity-Transition-Pfad (Marker bleiben sichtbar)
       disableClusteringAtZoom: LINES_MIN_ZOOM,
     })
-    const markers = obstacles.map((o) => {
-      const eigen = istEigenerEintrag(o.quelle)
-      // Pin MITTIG auf die Strecke (geom-Mittelpunkt) statt am Anfangspunkt → Tag sitzt auf der Linie.
-      const pos = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
-      const marker = L.marker(pos, {
-        icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false),
-      })
-      marker.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
-      wireDelete(marker, o, onDelete)
-      return marker
-    })
-    cluster.addLayers(markers) // bulk → chunkedLoading greift, deutlich schneller als addLayer-Loop
-    map.addLayer(cluster)
-    return () => {
-      map.removeLayer(cluster)
-    }
-  }, [map, obstacles, onDelete])
-  return null
-}
 
-/** Strecken-Geometrie (geom = Linie/MultiLineString) als Polylines — die betroffene
- *  Strecke statt nur ein Punkt. Eigene Ebene (NICHT geclustert), unter den Markern,
- *  nur ab LINES_MIN_ZOOM sichtbar; Rebuild nur bei Daten-Änderung. */
-function ObstacleLinesLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
-  const map = useMap()
-  useEffect(() => {
-    const group = L.layerGroup()
+    const pointMarkers: L.Layer[] = []
+    const geomPins: L.Layer[] = []
+    // je geom-Hindernis: weißes Casing + farbige Linie + Pin (alle in geomGroup gekoppelt)
+    const geomLayers: L.Layer[] = []
     for (const o of obstacles) {
       const lines = geomToLines(o.geom)
-      if (lines.length === 0) continue
+      if (lines.length === 0) {
+        pointMarkers.push(makeMarker(o, onDelete))
+        continue
+      }
       const color = istEigenerEintrag(o.quelle) ? EIGEN_COLOR : PIN_GLOBAL
-      // weißes Casing für Lesbarkeit über den Tiles + farbige Strecke darüber
-      L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7 }).addTo(group)
+      const casing = L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7 })
       const line = L.polyline(lines, { color, weight: 3.5, opacity: 0.9, lineCap: "round" })
       line.bindTooltip(o.name, { sticky: true, direction: "top" })
       line.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
       wireDelete(line, o, onDelete)
-      line.addTo(group)
+      const pin = makeMarker(o, onDelete)
+      geomPins.push(pin)
+      geomLayers.push(casing, line, pin)
     }
-    // Nur ab LINES_MIN_ZOOM einblenden (sonst Punkt-Rauschen in der Übersicht).
-    const sync = () => {
-      const show = map.getZoom() >= LINES_MIN_ZOOM
-      if (show && !map.hasLayer(group)) group.addTo(map)
-      else if (!show && map.hasLayer(group)) map.removeLayer(group)
+
+    cluster.addLayers(pointMarkers)
+    map.addLayer(cluster)
+
+    const geomGroup = L.layerGroup()
+    let mode: "in" | "out" | null = null
+    const apply = () => {
+      const next = map.getZoom() >= LINES_MIN_ZOOM ? "in" : "out"
+      if (next === mode) return
+      mode = next
+      if (next === "in") {
+        // herangezoomt: geom-Pins aus dem Cluster, Linie + Pin gemeinsam in geomGroup
+        cluster.removeLayers(geomPins)
+        geomGroup.clearLayers()
+        for (const l of geomLayers) geomGroup.addLayer(l)
+        if (!map.hasLayer(geomGroup)) map.addLayer(geomGroup)
+      } else {
+        // herausgezoomt: Linien weg, geom-Hindernisse als geclusterte Pins in der Übersicht
+        if (map.hasLayer(geomGroup)) map.removeLayer(geomGroup)
+        geomGroup.clearLayers()
+        cluster.addLayers(geomPins)
+      }
     }
-    sync()
-    map.on("zoomend", sync)
+    apply()
+    map.on("zoomend", apply)
     return () => {
-      map.off("zoomend", sync)
-      if (map.hasLayer(group)) map.removeLayer(group)
+      map.off("zoomend", apply)
+      map.removeLayer(cluster)
+      if (map.hasLayer(geomGroup)) map.removeLayer(geomGroup)
     }
   }, [map, obstacles, onDelete])
   return null
@@ -194,9 +209,7 @@ export function ObstaclesMap({ obstacles, onDelete }: { obstacles: Obstacle[]; o
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
-        {/* Linien zuerst (unter den Markern), dann das Cluster */}
-        <ObstacleLinesLayer obstacles={obstacles} onDelete={onDelete} />
-        <ObstacleClusterLayer obstacles={obstacles} onDelete={onDelete} />
+        <ObstacleLayers obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">
         {obstacles.length.toLocaleString("de-DE")} Hindernisse
