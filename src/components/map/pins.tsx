@@ -103,7 +103,12 @@ const PIN_ANCHOR_Y = 42
 
 function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected: boolean): string {
   const stroke = "#ffffff"
-  const shadow = "drop-shadow(0 2px 3px rgba(0,0,0,.45))"
+  // Schatten als GEZEICHNETE Boden-Ellipse (kein CSS filter:drop-shadow):
+  // ein CSS-Filter wird beim Zoom/Pan, wenn Leaflet den Marker-Pane transformiert,
+  // pro Frame neu gerastert → Flackern / inkonsistente Sichtbarkeit (Max 2026-06-14,
+  // Auswertungs-Karte, viele Pins). Eine gefüllte Ellipse ist reine Geometrie und wird
+  // ohne Rasterungs-Schritt mit-transformiert → flickerfrei.
+  const groundShadow = `<ellipse cx="18" cy="40.5" rx="5" ry="1.7" fill="#00000026"/>`
   const ring = selected ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>` : ""
 
   // Standard-Glyph-Center innerhalb des Pin-Hauptkörpers (für Glyph-Boxgröße 16×16).
@@ -135,7 +140,8 @@ function pinShapeSvg(shape: PinShape, color: string, iconHtml: string, selected:
       break
   }
 
-  return `<svg width="${PIN_W}" height="${PIN_H}" viewBox="0 0 ${PIN_W} ${PIN_H}" xmlns="http://www.w3.org/2000/svg" style="filter:${shadow};overflow:visible">
+  return `<svg width="${PIN_W}" height="${PIN_H}" viewBox="0 0 ${PIN_W} ${PIN_H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    ${groundShadow}
     ${ring}
     ${shapeBody}
     <g transform="${glyphTransform}">${iconHtml}</g>
@@ -175,7 +181,9 @@ export function startPinIcon(farbe: string): L.DivIcon {
   const inner = renderToStaticMarkup(
     <MapPinIcon size={14} strokeWidth={2.6} color="white" fill={farbe} />,
   )
-  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));overflow:visible">
+  // Schatten gezeichnet statt CSS-filter (sonst Flackern beim Zoom/Pan, s. pinShapeSvg).
+  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <ellipse cx="17" cy="40" rx="5" ry="1.7" fill="#00000026"/>
     <path d="M17 1.5C8.72 1.5 2 8.22 2 16.5c0 10.4 13 23.1 14.05 24.13a1.36 1.36 0 0 0 1.9 0C19 39.6 32 26.9 32 16.5 32 8.22 25.28 1.5 17 1.5Z"
           fill="${farbe}" stroke="#fff" stroke-width="2.5"/>
     <circle cx="17" cy="16" r="9" fill="#fff"/>
@@ -193,7 +201,8 @@ export function startPinIcon(farbe: string): L.DivIcon {
 // ── Ziel-Pin: klares Bullseye-Symbol (konzentrische Kreise) ──────────────────
 // Kein Karo-Muster mehr (wirkte verzerrt im runden Clipping).
 export function endPinIcon(): L.DivIcon {
-  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));overflow:visible">
+  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+    <ellipse cx="17" cy="40" rx="5" ry="1.7" fill="#00000026"/>
     <path d="M17 1.5C8.72 1.5 2 8.22 2 16.5c0 10.4 13 23.1 14.05 24.13a1.36 1.36 0 0 0 1.9 0C19 39.6 32 26.9 32 16.5 32 8.22 25.28 1.5 17 1.5Z"
           fill="#DC2626" stroke="#fff" stroke-width="2.5"/>
     <circle cx="17" cy="16" r="9" fill="#fff"/>
