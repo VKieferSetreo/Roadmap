@@ -18,8 +18,10 @@ import {
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useContextStore } from "@/store/context"
+import { ProjectMenu } from "@/components/project/ProjectMenu"
 import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
+import type { Project } from "@/types/domain"
 
 interface NavRowProps {
   icon: LucideIcon
@@ -43,6 +45,56 @@ function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
       <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
       <span className="truncate">{label}</span>
     </button>
+  )
+}
+
+// Projekt-Zeile mit eigenem Drei-Punkte-Menü (Umbenennen/Archivieren/Löschen) — wie auf der
+// Home-Kartenansicht. Nav-Button und Menü sind Geschwister (kein Button-im-Button), das ⋮
+// erscheint auf Hover/Fokus und bleibt sichtbar, solange die Zeile aktiv ist.
+function ProjectNavRow({
+  project,
+  active,
+  onClick,
+}: {
+  project: Project
+  active?: boolean
+  onClick: () => void
+}) {
+  return (
+    <div
+      className={cn(
+        "group relative flex items-center rounded-md transition-colors",
+        active
+          ? "bg-primary-50 before:absolute before:bottom-1.5 before:left-0 before:top-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
+          : "hover:bg-neutral-100",
+      )}
+    >
+      <button
+        onClick={onClick}
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-2.5 rounded-md py-2 pl-3 pr-1 text-sm transition-colors",
+          active ? "font-medium text-primary-700" : "text-neutral-600 group-hover:text-neutral-900",
+        )}
+        aria-current={active ? "page" : undefined}
+      >
+        <Folder
+          className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")}
+        />
+        <span className="truncate">{project.name}</span>
+      </button>
+      <div
+        className={cn(
+          "pr-1.5 transition-opacity",
+          // aktiv → immer sichtbar; sonst auf Hover/Fokus einblenden. Im Mobile-Drawer (kein
+          // Hover) per max-lg dauerhaft sichtbar, damit das Menü auf Touch erreichbar bleibt.
+          active
+            ? "opacity-100"
+            : "opacity-0 focus-within:opacity-100 group-hover:opacity-100 max-lg:opacity-100",
+        )}
+      >
+        <ProjectMenu project={project} />
+      </div>
+    </div>
   )
 }
 
@@ -116,10 +168,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             sorted.map((p) => {
               const isActive = p.id === activeId
               return (
-                <NavRow
+                <ProjectNavRow
                   key={p.id}
-                  icon={Folder}
-                  label={p.name}
+                  project={p}
                   active={isActive}
                   onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "anlage"}`)}
                 />
