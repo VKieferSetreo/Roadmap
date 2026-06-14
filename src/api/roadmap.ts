@@ -172,6 +172,18 @@ export const api = {
       axiosClient<{ updated: number }>({ url: `/notifications/${id}/read`, method: "POST" }),
     readAll: () =>
       axiosClient<{ updated: number }>({ url: "/notifications/read-all", method: "POST" }),
+    /** Bekommt der Nutzer E-Mail-Benachrichtigungen? (Opt-out je Mandant + Adresse) */
+    mailPref: () =>
+      axiosClient<{ enabled: boolean }>({ url: "/notifications/mail-pref", method: "GET" }).then(
+        (r) => r.enabled,
+      ),
+    /** E-Mail-Benachrichtigungen ein-/ausschalten. */
+    setMailPref: (enabled: boolean) =>
+      axiosClient<{ enabled: boolean }>({
+        url: "/notifications/mail-pref",
+        method: "POST",
+        data: { enabled },
+      }),
   },
 
   // ── Bug-Reports (Melden: jeder; Liste/Triage: Admin) ───────────────────────

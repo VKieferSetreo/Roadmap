@@ -14,6 +14,7 @@
 // schwerste Fund (eine Nachricht je Hindernis, kein Strecken-Spam).
 
 import { rowToProject } from "../map.js"
+import { sendProjectNotificationMail } from "../mail/notify.js"
 import { ENGINE_VERSION, runAnalysis, usableRoutes } from "./index.js"
 
 const SEVERITY_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
@@ -102,8 +103,8 @@ async function persistEvents(db, project, events) {
 // während eines Syncs weiter Requests bedienen kann.
 const RERUN_CONCURRENCY = 4
 
-/** Ein Projekt neu auswerten + Fund-Diff → Benachrichtigungen. */
-async function rerunOne({ db, row, corridorM, log }) {
+/** Ein Projekt neu auswerten + Fund-Diff → Benachrichtigungen (Glocke + Mail). */
+async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
   const project = rowToProject(row, [], null)
   const before = await db.query(FINDINGS_SQL, [row.id])
   const beforeMap = indexByObstacle(before.rows)
@@ -120,6 +121,10 @@ async function rerunOne({ db, row, corridorM, log }) {
   if (events.length > 0) {
     await persistEvents(db, project, events)
     log(`${project.name}: ${events.length} Änderung(en) → Benachrichtigungen`)
+    // Zusätzlich zur Glocke: Mail an die Mandanten-Mitglieder (minus Opt-out).
+    // Additiv + fehlertolerant — sendMail/notify werfen nie, die Glocke bleibt bestehen.
+    const mail = await sendProjectNotificationMail({ db, project, events }, { env, fetchImpl, log })
+    if (mail?.sent > 0) log(`${project.name}: ${mail.sent} Mail(s) versendet`)
   }
   return { done: true, events: events.length }
 }
@@ -131,7 +136,9 @@ async function rerunOne({ db, row, corridorM, log }) {
  *
  * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen}>}
  */
-export async function rerunAffectedProjects({ db, corridorM = 20, log = () => {} }) {
+export async function rerunAffectedProjects({
+  db, corridorM = 20, log = () => {}, env = process.env, fetchImpl = globalThis.fetch,
+}) {
   const { rows } = await db.query(
     "SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'",
   )
@@ -143,7 +150,9 @@ export async function rerunAffectedProjects({ db, corridorM = 20, log = () => {}
 
   for (let i = 0; i < eligible.length; i += RERUN_CONCURRENCY) {
     const batch = eligible.slice(i, i + RERUN_CONCURRENCY)
-    const results = await Promise.all(batch.map((row) => rerunOne({ db, row, corridorM, log })))
+    const results = await Promise.all(
+      batch.map((row) => rerunOne({ db, row, corridorM, log, env, fetchImpl })),
+    )
     for (const r of results) {
       if (r.done) neuAusgewertet += 1
       if (r.events > 0) {

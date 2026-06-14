@@ -180,7 +180,9 @@ async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
 
     // Alle ausgewerteten Projekte neu fahren + Benachrichtigungen erzeugen
     job.phase = "rerun"
-    job.rerun = await withTimeout(rerunAffectedProjects({ db }), RERUN_TIMEOUT_MS, "Sync-Rerun")
+    job.rerun = await withTimeout(
+      rerunAffectedProjects({ db, env, fetchImpl }), RERUN_TIMEOUT_MS, "Sync-Rerun",
+    )
 
     job.status = "done"
   } catch (err) {

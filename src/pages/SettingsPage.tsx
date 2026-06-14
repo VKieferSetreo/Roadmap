@@ -1,7 +1,7 @@
 // Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
-import { useState } from "react"
-import { Database, FlaskConical, KeyRound, LogOut } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Database, FlaskConical, KeyRound, LogOut, Mail } from "lucide-react"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -86,6 +86,58 @@ function ChangePasswordCard() {
             {busy ? "Wird gespeichert …" : "Passwort speichern"}
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** E-Mail-Benachrichtigungen bei neuen/geänderten Funden auf den eigenen Strecken. */
+function MailNotificationCard() {
+  const [enabled, setEnabled] = useState<boolean | null>(null)
+  const [available, setAvailable] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    api.notifications
+      .mailPref()
+      .then((v) => active && setEnabled(v))
+      .catch(() => active && setAvailable(false)) // kein Mandant o.ä. → Karte ausblenden
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const toggle = async (next: boolean) => {
+    const prev = enabled
+    setEnabled(next) // optimistisch
+    try {
+      await api.notifications.setMailPref(next)
+      toast.success(next ? "E-Mail-Benachrichtigungen aktiviert." : "E-Mail-Benachrichtigungen deaktiviert.")
+    } catch {
+      setEnabled(prev ?? null)
+      toast.error("Einstellung konnte nicht gespeichert werden.")
+    }
+  }
+
+  if (!available || enabled === null) return null
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Mail className="h-4 w-4 text-neutral-400" />
+          Benachrichtigungen
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-neutral-800">E-Mail bei neuen Funden</p>
+          <p className="text-xs text-neutral-500">
+            Wir schicken Ihnen eine E-Mail, wenn auf einer Ihrer ausgewerteten Strecken ein neuer
+            Fund auftaucht, sich etwas ändert oder ein Fund entfällt.
+          </p>
+        </div>
+        <Switch checked={enabled} onCheckedChange={(v) => void toggle(v)} ariaLabel="E-Mail-Benachrichtigungen" />
       </CardContent>
     </Card>
   )
@@ -182,6 +234,9 @@ export function SettingsPage() {
               </CardContent>
             </Card>
           ) : null}
+
+          {/* E-Mail-Benachrichtigungen (Opt-out) — nur live + mit Mandant. */}
+          {mode === "live" ? <MailNotificationCard /> : null}
 
           {/* Passwort ändern — nur externe Kunden-Accounts. Interne Setreo-Konten
               verwalten ihr Passwort im Setreo-Hub, nicht hier. */}

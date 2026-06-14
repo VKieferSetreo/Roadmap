@@ -48,5 +48,33 @@ export function notificationsRouter({ db }) {
     res.json({ updated: result.rowCount })
   }))
 
+  // ── E-Mail-Benachrichtigungen (Opt-out je Mandant + eigene Adresse) ──────────
+  /** Bekommt der angemeldete Nutzer Mails? (enabled = NICHT in mail_optout) */
+  r.get("/mail-pref", asyncHandler(async (req, res) => {
+    const { rows } = await db.query(
+      "SELECT 1 FROM mail_optout WHERE tenant_id = $1 AND email = $2",
+      [req.ctx.tenant.id, req.ctx.email],
+    )
+    res.json({ enabled: rows.length === 0 })
+  }))
+
+  /** E-Mail-Benachrichtigungen ein-/ausschalten (Opt-out setzen/entfernen). */
+  r.post("/mail-pref", asyncHandler(async (req, res) => {
+    const enabled = req.body?.enabled === true
+    if (enabled) {
+      await db.query(
+        "DELETE FROM mail_optout WHERE tenant_id = $1 AND email = $2",
+        [req.ctx.tenant.id, req.ctx.email],
+      )
+    } else {
+      await db.query(
+        `INSERT INTO mail_optout (tenant_id, email) VALUES ($1, $2)
+           ON CONFLICT (tenant_id, email) DO NOTHING`,
+        [req.ctx.tenant.id, req.ctx.email],
+      )
+    }
+    res.json({ enabled })
+  }))
+
   return r
 }
