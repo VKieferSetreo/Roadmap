@@ -78,6 +78,20 @@ export function istReineInfrastruktur(o) {
   return false
 }
 
+// Live-/Ad-hoc-Verkehrsmeldungen (Pannen, Unfallfolgen, Gefahren, Witterung, verlorene Ladung …)
+// sind EPHEMER und für die PLANUNG eines Großraum-/Schwertransports (Tage/Wochen Vorlauf) wertlos
+// (Vorgabe Max: "KEINE LIVE VERKEHRSDATEN — die Plattform ist zum Planen da, ad hoc bringt nix").
+// Schlüsselwörter bewusst KONSERVATIV: gegen die Autobahn-Baustellen (Quelle 0001) verifiziert, dass
+// sie dort NICHT auftauchen — "unfall"/"brand"/"stau" wären False-Positives (echte Baustellen) und
+// sind daher NICHT enthalten. "defekt" nur mit Fahrzeug-Kontext (sonst träfe es "defekte Fahrbahndecke").
+const LIVE_VERKEHR_RX =
+  /gefahr durch|liegengeblieb|liegen geblieb|\bpanne\b|defekte[ns]? (pkw|lkw|kfz|fahrzeug|lastwagen|transporter)|bergung|geborgen|rettungseinsatz|rettungsdienst|umgestürzt|umgekippte|ölspur|verlorene? ladung|gegenstand auf der fahrbahn|hindernis auf der fahrbahn|tier(e)? auf der|falschfahrer|geisterfahrer|aquaplaning|glätte|glatteis|witterungsbedingt/i
+
+/** Ephemere Live-/Ad-hoc-Verkehrsmeldung (nicht planbar) → nicht importieren/anzeigen. */
+export function istLiveVerkehrsmeldung(o) {
+  return LIVE_VERKEHR_RX.test(`${o?.name ?? ""}\n${o?.beschreibung ?? ""}`)
+}
+
 export function validateObstacle(input, { strict = false } = {}) {
   if (!isPlainObject(input)) return { ok: false, reason: "kein Objekt" }
   if (!KATEGORIEN.includes(input.kategorie)) {

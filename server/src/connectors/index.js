@@ -19,7 +19,9 @@ import { umleitungsstreckenShConnector } from "./0118_umleitungsstrecken_sh.js"
 import { baustellenMvConnector } from "./0119_baustellen_mv.js"
 import { lsbbSperrinfoConnector } from "./0120_lsbb_sperrinfo.js"
 import { gstNegativkarteSachsenConnector } from "./0121_gst_negativkarte_sachsen.js"
-import { mobidataBwLmsConnector } from "./0122_mobidata_bw_lms.js"
+// 0122 (MobiData BW — LMS BW Verkehrsmeldungen) ENTFERNT (Max 2026-06-14): reine Live-/Ad-hoc-
+// Verkehrslage (Pannen/Gefahren/aktuelle Sperrungen), für die Transport-PLANUNG wertlos.
+// import { mobidataBwLmsConnector } from "./0122_mobidata_bw_lms.js"
 import { baysisBauwerkeConnector } from "./0123_baysis_bauwerke.js"
 import { gstSchwertransportkarteNrwConnector } from "./0124_gst_schwertransportkarte_nrw.js"
 import { opengeodataNrwBauwerkeConnector } from "./0125_opengeodata_nrw_bauwerke.js"
@@ -57,7 +59,6 @@ export const CONNECTORS = [
   baustellenMvConnector,
   lsbbSperrinfoConnector,
   gstNegativkarteSachsenConnector,
-  mobidataBwLmsConnector,
   baysisBauwerkeConnector,
   gstSchwertransportkarteNrwConnector,
   opengeodataNrwBauwerkeConnector,

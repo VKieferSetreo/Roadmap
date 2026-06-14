@@ -12,7 +12,7 @@
 
 import { dedupeObstacles } from "../connectors/_helpers.js"
 import {
-  assignFachId, insertObstacle, istReineInfrastruktur, sachfeldParams, todayIso,
+  assignFachId, insertObstacle, istLiveVerkehrsmeldung, istReineInfrastruktur, sachfeldParams, todayIso,
   UPDATE_SACHFELDER_SQL, validateObstacle,
 } from "../obstaclesRepo.js"
 
@@ -84,6 +84,12 @@ export async function runImport({
         if (istReineInfrastruktur(check.value)) {
           stats.uebersprungen += 1
           stats.infrastruktur = (stats.infrastruktur ?? 0) + 1
+          continue
+        }
+        // Ephemere Live-/Ad-hoc-Verkehrsmeldung (Panne/Gefahr/Witterung …) → nicht planbar, raus.
+        if (istLiveVerkehrsmeldung(check.value)) {
+          stats.uebersprungen += 1
+          stats.liveVerkehr = (stats.liveVerkehr ?? 0) + 1
           continue
         }
         seen.add(externeId)
