@@ -4,7 +4,7 @@
 // GESAMTEN aktuellen Bestand als Referenzpunkt → vollbestand=true. Der NormalizedObstacle-
 // Vertrag führt keine Linien-Geometrie → nur der Punkt (lat/lng) wird übernommen.
 
-import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText } from "./_helpers.js"
+import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
 
 const QUELLE = "0127"
 const QUELLE_NAME = "baustellen.saarland (Landesbetrieb für Straßenbau)"
@@ -43,8 +43,16 @@ export const baustellenSaarlandConnector = {
       const text = stripHtml(p.description ?? "")
       const istSperrung = String(p.roadclosed) === "true"
       const tonnage = tonnageAusText(text)
+      // Eindeutige, reconcile-stabile externeId: Quell-ID (recordid/f.id) ist nicht garantiert eindeutig
+      // (null oder Dublette je Fahrtrichtung/Teilstück/Phase am selben Ort) → würde beim Upsert auf
+      // (quelle, externe_id) Datensätze still überschreiben. Deterministisches Suffix aus Geometrie +
+      // unterscheidenden Quellfeldern (Herkunft, Strasse, von/bis-Datum, Sperr-Phase, erste Beschreibungszeile)
+      // hält run-zu-run stabil und trennt zwei Meldungen am selben Punkt sauber auf.
+      const externeId = `${p.recordid ?? f.id ?? herkunft}#${stabilHash(
+        lat, lng, herkunft, p.roadname, p.starttime, p.endtime, p.roadclosed, erstZeile(text),
+      )}`
       return makeNormalized({
-        externeId: p.recordid ?? f.id,
+        externeId,
         kategorie: tonnage ? "gewicht" : istSperrung ? "sperrung" : herkunft === "baustelle" ? "baustelle" : "sperrung",
         name: erstZeile(text) ?? p.roadname ?? (istSperrung ? "Sperrung" : "Baustelle"),
         beschreibung: text || null,

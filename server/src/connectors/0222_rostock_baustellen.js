@@ -2,7 +2,7 @@
 // Port aus rostock-baustellen.cron.mjs. Statisches GeoJSON (geo.sv.rostock.de, WGS84), ganzer
 // Datensatz in einem Abruf. Schema defensiv über mehrere Schlüssel gemappt.
 
-import { makeNormalized, getJson, ersterPunkt, tonnageAusText, meterAusText, dateOnly } from "./_helpers.js"
+import { makeNormalized, getJson, ersterPunkt, tonnageAusText, meterAusText, dateOnly, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://www.opendata-hro.de/dataset/baustellen"
 const QUELLE_NAME = "Rostock — Baustellen (OpenData.HRO)"
@@ -28,8 +28,17 @@ export const rostockBaustellenConnector = {
       const vollsperrung = /vollsperrung|voll gesperrt/i.test(text) || undefined
       const istSperrung = /sperrung|gesperrt/i.test(String(sperrInfo ?? ""))
       const [lng, lat] = ersterPunkt(f.geometry)
+      const von = dateOnly(p.baubeginn ?? p.von ?? p.beginn)
+      const bis = dateOnly(p.bauende ?? p.bis ?? p.ende)
+      // Eindeutige UND reconcile-stabile externeId: Quell-ID als Basis (falls vorhanden) + ein
+      // deterministischer Diskriminator-Hash aus unterscheidenden Quellfeldern. (lat,lng) allein
+      // würde mehrere Meldungen am selben Ort (je Richtung/Teilstück/Phase) kollabieren lassen und
+      // null-ID-Features würden im Importer still gedroppt — beides verhindert der Hash.
+      const quellId = p.uuid ?? p.id ?? p.objectid ?? f.id
+      const disc = stabilHash(lat, lng, strasse, massnahme, sperrInfo, von, bis)
+      const externeId = `${quellId ?? "x"}#${disc}`
       obstacles.push(makeNormalized({
-        externeId: p.uuid ?? p.id ?? p.objectid ?? f.id,
+        externeId,
         kategorie: istSperrung ? "sperrung" : "baustelle",
         name: strasse ?? massnahme ?? "Baustelle Rostock",
         beschreibung: [massnahme, sperrInfo].filter(Boolean).join(" — ").trim() || null,
@@ -41,9 +50,9 @@ export const rostockBaustellenConnector = {
           maxHoeheM: meterAusText(text, /(?:höhe|hoehe|durchfahrt)/i),
           maxGewichtT: tonnageAusText(text),
         },
-        realerStart: dateOnly(p.baubeginn ?? p.von ?? p.beginn),
-        gueltigVon: dateOnly(p.baubeginn ?? p.von ?? p.beginn),
-        gueltigBis: dateOnly(p.bauende ?? p.bis ?? p.ende),
+        realerStart: von,
+        gueltigVon: von,
+        gueltigBis: bis,
         quelleName: QUELLE_NAME,
         quelleUrl: PORTAL,
       }))

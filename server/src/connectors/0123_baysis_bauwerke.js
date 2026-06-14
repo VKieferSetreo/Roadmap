@@ -5,7 +5,7 @@
 // paginiert über count/startIndex. Live numberMatched≈12287 → maxPages so gesetzt, dass der
 // VOLLE Bestand kommt (pageSize 1500 × 10 = 15000) → vollbestand=true.
 
-import { makeNormalized, fetchAllFeatures } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, ersterPunkt, stabilHash } from "./_helpers.js"
 
 const QUELLE = "0123"
 const QUELLE_NAME = "BAYSIS Bauwerke (Bayerische Straßenbauverwaltung)"
@@ -41,17 +41,29 @@ export const baysisBauwerkeConnector = {
   vollbestand: true,
 
   async fetch({ env = {}, timeoutMs = 60000, log = () => {} } = {}) {
-    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1500, maxPages: 10, timeoutMs })
+    // maxPages nur hoher Sicherheits-Backstop — fetchAllFeatures stoppt selbst bei numberMatched
+    // bzw. erster Teilseite. KEIN Abschneiden des Bestands, auch wenn die Quelle über 15000 wächst.
+    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1500, maxPages: 500, timeoutMs, log })
     log(`${QUELLE}: ${feats.length} Bauwerke geladen`)
 
     const obstacles = feats.map((f) => {
       const p = f.properties ?? {}
-      const [lng, lat] = f.geometry?.coordinates ?? [null, null] // Point, bereits WGS84 [lng,lat]
+      // Koords retten: nicht nur Point — alle Geometrie-Typen (Line/Polygon/Multi) über den ersten
+      // Punkt; bereits WGS84 (srsName=EPSG:4326), daher keine UTM-Reprojektion nötig. So gehen keine
+      // Einträge mit Nicht-Point-Geometrie verloren.
+      const [lng, lat] = ersterPunkt(f.geometry)
       const art = String(p.Art ?? "")
       const kategorie = /tunnel|trog/i.test(art) ? "tunnel" : "bruecke"
       const gstSperre = String(p.Grundsätzliche_Schwertransportsperre ?? "").trim().toLowerCase() === "vorhanden"
+      // externeId EINDEUTIG je echtem Teilbauwerk UND STABIL über Läufe (reconcile-stabil):
+      // Bauwerksnummer (ASB-Nr) ist KEIN Unique-Key — zwei Teilbauwerke (je Richtungsfahrbahn) bzw.
+      // dasselbe Bauwerk auf zwei Abschnitten teilen sie sich → würden beim Upsert kollabieren.
+      // Diskriminator-Hash aus Geometrie + unterscheidenden Quellfeldern (GmlID/OBJECTID feature-stabil,
+      // Art, Straße). NIE Array-Index/Zufall (nicht reconcile-stabil).
+      const quellId = p.Bauwerksnummer ?? p.OBJECTID ?? f.id ?? "BW"
+      const disc = stabilHash(lat, lng, p.GmlID ?? p.OBJECTID ?? f.id, art, p.Straßenbezeichnung)
       return makeNormalized({
-        externeId: p.Bauwerksnummer ?? p.OBJECTID ?? f.id,
+        externeId: `${quellId}#${disc}`,
         kategorie,
         name: bauwerkName(p),
         beschreibung: art || null,

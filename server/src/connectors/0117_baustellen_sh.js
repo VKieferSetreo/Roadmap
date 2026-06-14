@@ -32,7 +32,7 @@ export const baustellenShConnector = {
   vollbestand: true,
 
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
-    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 3, timeoutMs })
+    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 200, timeoutMs })
     log(`SH-Baustellen: ${feats.length} Features`)
     const obstacles = []
     for (const f of feats) {

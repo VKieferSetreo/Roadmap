@@ -278,9 +278,13 @@ export async function getText(url, { timeoutMs = 30000, headers = {} } = {}) {
   }
 }
 
-/** Paginierter WFS/OGC-API-Voll-Abruf → GeoJSON-Features. */
-export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000, maxPages = 50, timeoutMs = 45000 } = {}) {
+/** Paginierter WFS/OGC-API-Voll-Abruf → GeoJSON-Features. Läuft bis der Bestand vollständig ist
+ *  (Seite < pageSize ODER all.length ≥ numberMatched), NICHT bis zu einem fixen Seiten-Cap — sonst
+ *  würde ein zu niedriges maxPages den Bestand still abschneiden (und Reconcile löscht das Fehlende).
+ *  maxPages ist nur noch ein hoher Sicherheits-Backstop; wird er erreicht, warnt log(). */
+export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000, maxPages = 500, timeoutMs = 45000, log = () => {} } = {}) {
   const all = []
+  let matched = null
   for (let page = 0; page < maxPages; page++) {
     const sep = baseUrl.includes("?") ? "&" : "?"
     let url
@@ -289,8 +293,11 @@ export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000
     else url = `${baseUrl}${sep}limit=${pageSize}&offset=${page * pageSize}`
     const data = await getJson(url, { timeoutMs })
     const feats = data?.features ?? []
+    if (matched == null && Number.isFinite(data?.numberMatched)) matched = data.numberMatched
     all.push(...feats)
-    if (feats.length < pageSize || mode === "wfs1") break
+    if (feats.length < pageSize || mode === "wfs1") return all // letzte Seite / WFS1 ohne Offset
+    if (matched != null && all.length >= matched) return all // vollständig laut numberMatched
+    if (page === maxPages - 1) log(`fetchAllFeatures: Sicherheits-Cap maxPages=${maxPages} erreicht bei ${all.length}${matched != null ? `/${matched}` : ""} — Bestand evtl. abgeschnitten`)
   }
   return all
 }

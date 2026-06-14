@@ -50,8 +50,22 @@ export const opengeodataNrwBauwerkeConnector = {
     for (const m of members) {
       const bw = tag(m, "BW") // "Brücke" / "Tunnel/Trogbauwerke" / "Stützbauwerk" / ...
       if (!bw || !HINDERNIS_ARTEN.test(bw)) { verworfen++; continue }
+      // gml:id (z.B. "Bauwerke.3517507") ist je Feature/Teilbauwerk garantiert eindeutig + run-zu-run
+      // stabil → die reconcile-stabile, kollisionsfreie Primärquelle für die externeId.
+      const gid = tag(m, null, /<ms:Bauwerke\b[^>]*\bgml:id="([^"]+)"/)
+      // TBWNR (Teilbauwerksnummer) trennt Sub-Bauwerke EINER Brücke (z.B. je Fahrtrichtung), die sich
+      // denselben BWNR + dieselbe pos + denselben BWNAME teilen — MUSS in die Fallback-ID.
+      const tbwnr = (tag(m, "TBWNR") ?? "").trim()
       const pos = tag(m, null, /<gml:pos>([^<]+)<\/gml:pos>/) // "lat lon" (EPSG:4326-Achsfolge)
-      const [lat, lng] = pos ? pos.trim().split(/\s+/).map(Number) : [null, null]
+      // Koordinaten retten: posList (Linie/Fläche → erstes Koordinatenpaar) als Fallback, falls kein
+      // einzelner gml:pos vorhanden ist — keinen Eintrag wegen fehlender Koords verlieren.
+      const posList = pos ?? (() => {
+        const pl = tag(m, null, /<gml:posList[^>]*>([^<]+)<\/gml:posList>/)
+        if (!pl) return null
+        const nums = pl.trim().split(/\s+/)
+        return nums.length >= 2 ? `${nums[0]} ${nums[1]}` : null
+      })()
+      const [lat, lng] = posList ? posList.trim().split(/\s+/).map(Number) : [null, null]
       const kategorie = /tunnel|trog/i.test(bw) ? "tunnel" : "bruecke"
       const strkl = (tag(m, "STRKL") ?? "").trim()
       const strnr = (tag(m, "STRNR") ?? "").trim()
@@ -60,8 +74,10 @@ export const opengeodataNrwBauwerkeConnector = {
         STRBEZ: tag(m, "STRBEZ"), ORT: tag(m, "ORT"),
       }
       obstacles.push(makeNormalized({
-        // BWNR ist nicht eindeutig (Teilbauwerke/fehlend) → Geometrie+Name-Suffix gegen Upsert-Kollision.
-        externeId: `${props.BWNR ?? "bw"}#${stabilHash(lat, lng, props.BWNAME)}`,
+        // gml:id ist je Teilbauwerk garantiert eindeutig + stabil → bevorzugte externeId (kollisionsfrei,
+        // reconcile-stabil). Fallback ohne gml:id: BWNR#TBWNR#Geometrie-Hash — TBWNR trennt die
+        // Teilbauwerke/Fahrtrichtungen, die sich BWNR+pos+BWNAME teilen (sonst stiller Upsert-Verlust).
+        externeId: gid || `${props.BWNR ?? "bw"}#${tbwnr || "0"}#${stabilHash(lat, lng, props.BWNAME, bw)}`,
         kategorie,
         name: props.BWNAME || `${bw} ${props.STRBEZ ?? ""}`.trim(),
         beschreibung: [props.BWART, props.ORT].filter(Boolean).join(", ") || null,

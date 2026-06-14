@@ -23,7 +23,9 @@ export const dresdenVerkehrseinschraenkungenConnector = {
     const obstacles = []
     for (const col of COLLECTIONS) {
       const base = `https://kommisdd.dresden.de/net4/public/ogcapi/collections/${col.id}/items?f=json`
-      const feats = await fetchAllFeatures(base, { mode: "ogcapi", pageSize: 1000, maxPages: 10, timeoutMs, ...HEAD })
+      // maxPages nur als hoher Sicherheits-Backstop — fetchAllFeatures paginiert bereits bis
+      // numberMatched. Ein niedriger Cap (war 10 → max. 10000) würde den Bestand still abschneiden.
+      const feats = await fetchAllFeatures(base, { mode: "ogcapi", pageSize: 1000, maxPages: 500, timeoutMs, log, ...HEAD })
       for (const f of feats) {
         const p = f.properties ?? {}
         const typ = String(p.typ ?? "")
@@ -31,8 +33,19 @@ export const dresdenVerkehrseinschraenkungenConnector = {
         const istVoll = /vollsperrung|gesperrt/i.test(typ) && !/halbseitig|fahrstreifen/i.test(typ)
         const [lng, lat] = ersterPunkt(f.geometry)
         obstacles.push(makeNormalized({
-          // staid/f.id teils dublett über die Pages → Geometrie-Suffix macht eindeutig.
-          externeId: `${col.id}-${p.staid ?? f.id ?? "x"}#${stabilHash(lat, lng)}`,
+          // staid/f.id teils dublett über die Pages UND staid selbst nicht eindeutig (71 Gruppen
+          // mit 2-3 echten, verschiedenen Maßnahmen am selben Ort). Nur (lat,lng) reicht NICHT:
+          // ersterPunkt liefert nur den Start-Vertex des LineString → alle Duplikat-Gruppen teilen
+          // ihn → Kollision → stiller last-wins-Verlust beim Upsert auf (quelle, externe_id). Daher
+          // gehen volle Geometrie + Zeitraum + Sperrgrund/Typ in den Diskriminator-Hash (stabil/
+          // deterministisch über Läufe, reconcile-fest — kein Index, kein Zufall).
+          externeId: `${col.id}-${p.staid ?? f.id ?? "x"}#${stabilHash(
+            JSON.stringify(f.geometry?.coordinates ?? []),
+            p.datum_von_format ?? p.datum_von,
+            p.datum_bis_format ?? p.datum_bis,
+            typ,
+            grund,
+          )}`,
           kategorie: istVoll ? "sperrung" : "baustelle",
           name: grund || typ || "Verkehrseinschränkung Dresden",
           beschreibung: [typ, grund].filter(Boolean).join(" — ").trim() || null,

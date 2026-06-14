@@ -3,7 +3,7 @@
 // GeoServer WFS 2.0, GeoJSON, EPSG:4326 (keine Reprojektion). Geometrie = GeometryCollection
 // (Point + optional LineString). validity = JSON-String { from, to } (dd.mm.yyyy [HH:MM]).
 
-import { makeNormalized, fetchAllFeatures, dateOnly, tonnageAusText, meterAusText } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, dateOnly, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
 
 const QUELLE_NAME = "Berlin VIZ — Baustellen/Sperrungen/Störungen (mdhwfs)"
 const QUELLE_URL = "https://daten.berlin.de/datensaetze?groups=verkehr"
@@ -17,16 +17,28 @@ function katAus(subtype) {
   if (s.includes("sperrung")) return "sperrung"
   return "sperrung"
 }
+// Erste plausible [lng,lat]-Koordinate aus einer beliebig tief verschachtelten
+// Geometrie ziehen (Point/MultiPoint/LineString/MultiLineString/Polygon/MultiPolygon).
+// Rettet Koords statt Einträge wegen fehlender Geometrie zu verlieren.
+function ersteKoord(c) {
+  while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
+  return Array.isArray(c) && c.length >= 2 && Number.isFinite(c[0]) && Number.isFinite(c[1]) ? c : null
+}
 function geomPunkt(geometry) {
   if (!geometry) return [null, null]
-  const geoms = geometry.type === "GeometryCollection" ? geometry.geometries : [geometry]
-  let point = [null, null], line = null
+  const geoms = geometry.type === "GeometryCollection" ? (geometry.geometries ?? []) : [geometry]
+  // 1. Bevorzugt einen echten Point nehmen (genauester Ortsbezug).
   for (const g of geoms) {
-    if (g.type === "Point" && point[0] == null) point = g.coordinates
-    if ((g.type === "LineString" || g.type === "MultiLineString") && !line) line = g
+    if (g?.type === "Point") { const c = ersteKoord(g.coordinates); if (c) return c }
   }
-  if (point[0] == null && line) { let c = line.coordinates; while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]; point = c }
-  return point
+  // 2. Sonst aus IRGENDEINER vorhandenen Geometrie den ersten Stützpunkt retten
+  //    (Line/Polygon/Multi* — kein Eintrag soll mangels Point verloren gehen).
+  for (const g of geoms) {
+    if (!g?.coordinates) continue
+    const c = ersteKoord(g.coordinates)
+    if (c) return c
+  }
+  return [null, null]
 }
 function validity(v) {
   if (!v) return { von: null, bis: null }
@@ -42,7 +54,9 @@ export const vizBerlinBaustellenConnector = {
   vollbestand: true,
 
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
-    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 5, timeoutMs })
+    // Pagination NICHT kappen: fetchAllFeatures terminiert via numberMatched; maxPages ist nur
+    // ein hoher Sicherheits-Backstop (log warnt, falls er je erreicht wird). Kein stiller Cap mehr.
+    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 500, timeoutMs, log })
     log(`VIZ-Berlin-Baustellen: ${feats.length} Features`)
     const obstacles = []
     for (const f of feats) {
@@ -52,8 +66,15 @@ export const vizBerlinBaustellenConnector = {
       const text = [p.section, p.content].filter(Boolean).join(" — ")
       const kat = katAus(p.subtype)
       const tonnage = tonnageAusText(text)
+      // externeId: eindeutig pro echtem Einzel-Eintrag UND deterministisch/reconcile-stabil.
+      // Quell-id allein ist nicht garantiert eindeutig; (lat,lng) allein würde zwei Meldungen am
+      // selben Ort (je Richtung/Teilstück/Phase) kollabieren lassen. Daher Quell-id als Basis-
+      // Diskriminator + Hash über Ort UND unterscheidende Quellfelder (subtype/Richtung-Phase,
+      // section, Gültigkeit von/bis, street). Kein Array-Index, kein Zufall → stabil über Läufe.
+      const quellId = p.id ?? f.id
+      const externeId = `${quellId ?? "x"}#${stabilHash(point[1], point[0], p.subtype, p.section, von, bis, p.street)}`
       obstacles.push(makeNormalized({
-        externeId: p.id ?? f.id,
+        externeId,
         kategorie: tonnage ? "gewicht" : kat,
         name: p.street || p.section || `${p.subtype ?? "Meldung"} Berlin`,
         beschreibung: text || null,

@@ -2,7 +2,7 @@
 // Port aus duesseldorf-verkehrsmeldungen.cron.mjs. Eine statische, regelmäßig regenerierte
 // GeoJSON-Datei (Point, EPSG:4326, DATEX-II-Properties) → ein Voll-Abruf.
 
-import { makeNormalized, getJson, ersterPunkt, tonnageAusText, meterAusText, dateOnly } from "./_helpers.js"
+import { makeNormalized, getJson, ersterPunkt, tonnageAusText, meterAusText, dateOnly, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://opendata.duesseldorf.de/dataset/verkehrsmeldungen-mobilitätsdaten"
 const QUELLE_NAME = "Düsseldorf — Verkehrsmeldungen (DATEX-II Mobilitätsdaten)"
@@ -34,8 +34,24 @@ export const duesseldorfVerkehrsmeldungenConnector = {
       const istSperrung = /roadClosed|roadBlocked/i.test(mgmt) || /roadBlocked/i.test(constr)
       const vollsperrung = /roadClosed/i.test(mgmt) || (constr === "roadBlocked") || undefined
       const [lng, lat] = ersterPunkt(f.geometry)
+      // externeId: eindeutig pro echtem Einzel-Eintrag UND stabil über Läufe (Reconcile-stabil).
+      // Die Quelle führt KEINE per-Record-DATEX-ID (kein situationRecord_id/id/@id im GeoJSON, geprüft
+      // 2026-06 an der Live-Datei). Darum deterministischer Hash über ALLE unterscheidenden Quellfelder:
+      // Geometrie (lat,lng) + Strasse + Richtung/Teilstück (lane, distanceAlong) + Zeitraum (von/bis) +
+      // Record-/Sperr-Typ + erste Beschreibungszeile. So kollabieren zwei Meldungen am selben Ort
+      // (je Fahrtrichtung/Teilstück/Phase) NICHT zu einer externeId. KEIN Array-Index/Zufall.
+      const quellId = p.situationRecord_id ?? p.id ?? p["@id"] ?? null
+      const ersteBeschrZeile = String(p.comment ?? "").split(/\r?\n/)[0].slice(0, 120)
+      const disc = stabilHash(
+        lat, lng,
+        p.roadName ?? "", p.roadNumber ?? "",
+        p.lane ?? "", p.distanceAlong ?? "",
+        p.overallStartTime ?? "", p.overallEndTime ?? "",
+        recType, constr, mgmt,
+        ersteBeschrZeile,
+      )
       obstacles.push(makeNormalized({
-        externeId: `${p.roadName ?? ""}-${p.overallStartTime ?? ""}-${f.geometry?.coordinates?.join(",")}`,
+        externeId: `${quellId ?? f.id ?? "x"}#${disc}`,
         kategorie: istSperrung ? "sperrung" : "baustelle",
         name: p.roadName ?? recType ?? "Verkehrsmeldung Düsseldorf",
         beschreibung: p.comment ?? null,

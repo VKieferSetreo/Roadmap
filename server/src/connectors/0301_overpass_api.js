@@ -1,12 +1,14 @@
 // Connector Quelle 0301: Overpass API (OpenStreetMap) — GST-Restriktionen + Bauwerke.
 // Port aus API/Sonstige/overpass-api/overpass-api.cron.mjs (1:1-Logik).
-// Zieht OSM-Ways mit maxheight/maxweight/maxwidth/maxaxleload (+ bridge/tunnel) je Bundesland-Area.
+// Zieht OSM-Elemente (Way + Node + Relation via nwr) mit maxheight/maxweight/maxwidth/maxaxleload
+// (+ bridge/tunnel) je Bundesland-Area. Restriktionen stehen oft auch auf Nodes (barrier=height_restrictor,
+// bollard, lift_gate) oder Relationen — diese würden bei reinem way-Selektor still verloren gehen.
 //
 // vollbestand=FALSE: Overpass kennt keinen Offset; Voll-DE in einem Query ist zu groß/last-intensiv
 // (Timeout). Wir chunken über Bundesland-Areas (admin_level=4) und mergen — das deckt DE faktisch ab,
 // aber falls einzelne Area-Queries timeouten fehlen Teile, daher KEIN destruktiver Reconcile.
 
-import { makeNormalized } from "./_helpers.js"
+import { makeNormalized, stabilHash } from "./_helpers.js"
 
 const QUELLE_NAME = "Overpass API (OpenStreetMap)"
 // Mehrere Instanzen — bei Rate-Limit (429) wird die nächste probiert.
@@ -35,8 +37,11 @@ const BUNDESLAENDER = [
 ]
 
 function queryFuerLand(iso) {
-  const tagFilter = RESTRIKTIONS_TAGS.map((t) => `way["${t}"](area.a);`).join("")
-  return `[out:json][timeout:180];area["ISO3166-2"="${iso}"][admin_level=4]->.a;(${tagFilter});out tags geom;`
+  // nwr = node+way+relation: Restriktions-Tags stehen häufig auch auf Nodes (Schranken, Höhen-
+  // begrenzer, Poller) und Relationen — reiner way-Selektor verlöre einen kompletten Element-Typ.
+  const tagFilter = RESTRIKTIONS_TAGS.map((t) => `nwr["${t}"](area.a);`).join("")
+  // out center geom: liefert für Nodes lat/lon, für Way/Relation einen center-Punkt + Geometrie.
+  return `[out:json][timeout:180];area["ISO3166-2"="${iso}"][admin_level=4]->.a;(${tagFilter});out tags center geom;`
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -87,9 +92,25 @@ function kategorieAus(tags, maxHoeheM, maxBreiteM, maxGewichtT) {
   return "engstelle"
 }
 
+/** Koordinate aus einem OSM-Element retten — alle Element-/Geometrie-Typen, KEINE Verluste:
+ *  Node trägt lat/lon direkt; Way/Relation liefern via "out center" einen center-Punkt; sonst
+ *  Mittelpunkt über alle Geometrie-Vertices (toleranter als nur geometry[0]). */
 function koordVonElement(el) {
-  if (!Array.isArray(el.geometry) || el.geometry.length === 0) return { lat: null, lng: null }
-  return { lat: el.geometry[0].lat, lng: el.geometry[0].lon }
+  // 1) Node: lat/lon direkt am Element.
+  if (el.lat != null && el.lon != null) return { lat: el.lat, lng: el.lon }
+  // 2) Way/Relation mit "out center": center.{lat,lon}.
+  if (el.center && el.center.lat != null && el.center.lon != null) {
+    return { lat: el.center.lat, lng: el.center.lon }
+  }
+  // 3) Geometrie vorhanden → Mittelpunkt über alle gültigen Vertices.
+  if (Array.isArray(el.geometry) && el.geometry.length > 0) {
+    let sumLat = 0, sumLng = 0, n = 0
+    for (const p of el.geometry) {
+      if (p && p.lat != null && p.lon != null) { sumLat += p.lat; sumLng += p.lon; n++ }
+    }
+    if (n > 0) return { lat: sumLat / n, lng: sumLng / n }
+  }
+  return { lat: null, lng: null }
 }
 
 export const overpassApiConnector = {
@@ -108,7 +129,7 @@ export const overpassApiConnector = {
     const timeoutMs = 200000
     // OVERPASS_ONLY_ISO (z.B. "DE-BY"): nur dieses eine Bundesland ziehen. Ermöglicht das
     // einmalige Backfill als 16 Einzel-Runs (je eigene DB-Transaktion) — übersteht Deploys/
-    // Container-Restarts, idempotent re-runbar (Upsert auf way/<id>). Leer = alle 16 (Default).
+    // Container-Restarts, idempotent re-runbar (Upsert auf ${type}/<id>#hash). Leer = alle 16 (Default).
     const nurIso = String(env.OVERPASS_ONLY_ISO ?? "").trim()
     const laender = nurIso ? BUNDESLAENDER.filter((b) => b.iso === nurIso) : BUNDESLAENDER
     const obstacles = []
@@ -123,9 +144,10 @@ export const overpassApiConnector = {
         log(`${land}: Overpass-Fehler (${e.message}) — übersprungen`)
         continue
       }
-      const elements = (data.elements ?? []).filter((e) => e.type === "way" && e.tags)
+      // node + way + relation behalten (nur Elemente mit Tags) — kein Element-Typ wird gedroppt.
+      const elements = (data.elements ?? []).filter((e) => e.tags && (e.type === "node" || e.type === "way" || e.type === "relation"))
       verfuegbar += elements.length
-      log(`${land}: ${elements.length} Ways mit Restriktions-Tag`)
+      log(`${land}: ${elements.length} Elemente (node/way/relation) mit Restriktions-Tag`)
 
       for (const el of elements) {
         const t = el.tags
@@ -144,8 +166,24 @@ export const overpassApiConnector = {
           ?? (t.bridge && t.bridge !== "no" ? "Brücke (OSM)"
             : t.tunnel && t.tunnel !== "no" ? "Tunnel (OSM)" : "Restriktion (OSM)")
 
+        // externeId: STABIL & EINDEUTIG. Basis = OSM-Identität `${type}/${id}` (global eindeutig &
+        // run-stabil; node/123 ≠ way/123 ≠ relation/123 — sonst Kollision). Zusätzlich ein
+        // stabilHash-Diskriminator über unterscheidende Quellfelder (Ort, Ref/Richtung, Grenzwerte,
+        // Bauwerk-Art, erste Beschreibung): schützt selbst dann gegen Kollabieren, falls ein Quell-id
+        // mehrfach/ohne id käme. Kein Index/Zufall → reconcile-stabil über Läufe.
+        const quellId = `${el.type}/${el.id}`
+        const externeId = `${quellId}#${stabilHash(
+          lat, lng,
+          el.type,
+          t.ref ?? null,
+          t.direction ?? t.oneway ?? null,
+          maxHoeheM, maxBreiteM, maxGewichtT, maxAchslastT,
+          t.bridge ?? null, t.tunnel ?? null,
+          (t.highway ?? name ?? ""),
+        )}`
+
         obstacles.push(makeNormalized({
-          externeId: `way/${el.id}`,
+          externeId,
           kategorie,
           name,
           beschreibung: t.highway ? `OSM highway=${t.highway}` : null,
@@ -153,7 +191,7 @@ export const overpassApiConnector = {
           strassenRef: t.ref ?? null,
           attrs: { maxHoeheM, maxBreiteM, maxGewichtT, maxAchslastT },
           quelleName: QUELLE_NAME,
-          quelleUrl: `https://www.openstreetmap.org/way/${el.id}`,
+          quelleUrl: `https://www.openstreetmap.org/${el.type}/${el.id}`,
         }))
       }
     }

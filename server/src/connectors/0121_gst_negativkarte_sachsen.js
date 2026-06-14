@@ -4,11 +4,14 @@
 // LASuV-Seite. lat/lng=null (nicht georeferenziert) → Importer überspringt die Items sauber.
 // vollbestand=false (Dokument-Referenzen, kein geokodierter Bestand; Reconcile darf nicht greifen).
 
-import { makeNormalized, getText } from "./_helpers.js"
+import { makeNormalized, getText, stabilHash } from "./_helpers.js"
 
 const QUELLE_NAME = "GST-Negativkarten Sachsen (LASuV) — gesperrte Brücken (PDF je Landkreis)"
 const SEITE = "https://www.lasuv.sachsen.de/gst-negativkarten.html"
 const HOST = "https://www.lasuv.sachsen.de"
+// Sachsen-Landesmitte (Dresden-Raum) als Koord-Fallback, wenn kein Landkreis-Zentroid matcht — so
+// stirbt KEIN Item am validateObstacle-Gate des Importers (verlustfreier Import, Max-Vorgabe).
+const SACHSEN_FALLBACK = [51.05, 13.74]
 
 // Sächsische Kreise → Zentroid [lat,lng]. Die Negativkarte ist EIN PDF je Landkreis (kein Einzel-
 // Bauwerk) → Karten-Lage ist bewusst nur Landkreis-grob. Schlüssel sind diakritik-gefaltete Tokens.
@@ -62,14 +65,24 @@ export const gstNegativkarteSachsenConnector = {
     log(`GST-Negativkarte-PDFs: ${links.length}`)
     const obstacles = []
     for (const url of links) {
+      const dateiname = url.split("/").pop()
       const { landkreis, tonnageT, stand } = parse(url)
-      const [lat, lng] = kreisZentroid(landkreis) ?? [null, null]
+      const zentroid = kreisZentroid(landkreis)
+      // Kein Landkreis-Treffer → Sachsen-Landesmitte als Fallback (NIE droppen), Warnung loggen,
+      // damit fehlende SACHSEN_KREISE-Einträge sichtbar werden statt still verloren zu gehen.
+      if (!zentroid) log(`GST-Negativkarte: kein Kreis-Zentroid für "${landkreis ?? "?"}" (${dateiname}) → Sachsen-Fallback-Koords`)
+      const [lat, lng] = zentroid ?? SACHSEN_FALLBACK
+      // externeId: STABIL über Läufe + EINDEUTIG pro Einzel-Eintrag. Der Dateiname (Quell-ID) ist
+      // der native Identifier; ein stabilHash-Diskriminator über (lat,lng) + unterscheidende
+      // Quellfelder (Landkreis, Tonnage-Stufe, Stand) verhindert Kollabieren bei mehreren PDFs je
+      // Landkreis (gleiches Zentroid, andere Tonnage/Stand) und ist reconcile-stabil (kein Index/Random).
+      const externeId = `${dateiname ?? "x"}#${stabilHash(lat, lng, landkreis, tonnageT, stand)}`
       obstacles.push(makeNormalized({
-        externeId: url.split("/").pop(),
+        externeId,
         kategorie: "gewicht",
         name: `GST-Negativkarte ${landkreis ?? ""}${tonnageT ? ` (${tonnageT} t)` : ""}`.trim(),
         beschreibung: `Für Großraum-/Schwertransporte gesperrte/begrenzte Brücken im Landkreis ${landkreis ?? "?"} ` +
-          `(Bezugsgewicht ${tonnageT ?? "?"} t). Quelle ist eine PDF-Karte${lat ? " — Lage Landkreis-grob" : " — ohne Geokoordinaten"}.`,
+          `(Bezugsgewicht ${tonnageT ?? "?"} t). Quelle ist eine PDF-Karte${zentroid ? " — Lage Landkreis-grob" : " — Lage Sachsen-grob (kein Kreis-Treffer)"}.`,
         lat, lng,
         strassenRef: null,
         attrs: {

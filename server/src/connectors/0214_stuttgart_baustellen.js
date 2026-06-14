@@ -37,7 +37,7 @@ export const stuttgartBaustellenConnector = {
     const obstacles = []
     for (const L of LAYERS) {
       const base = `${WS}&typeNames=${encodeURIComponent(L.typ)}`
-      const feats = await fetchAllFeatures(base, { mode: "wfs2", pageSize: 1000, maxPages: 5, timeoutMs, ...HEAD })
+      const feats = await fetchAllFeatures(base, { mode: "wfs2", pageSize: 1000, maxPages: 200, timeoutMs, ...HEAD })
       for (const f of feats) {
         const p = f.properties ?? {}
         const [lng, lat] = ersterPunktUtm32(f.geometry, p)

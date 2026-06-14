@@ -6,7 +6,8 @@
 // kein Offset nötig). Reconcile erlaubt — fällt eine Baustelle aus dem Feed, wird sie deaktiviert.
 
 import {
-  makeNormalized, getJson, utmZuWgs84, dateOnly, tonnageAusText, meterAusText,
+  makeNormalized, dateOnly, tonnageAusText, meterAusText,
+  stabilHash, fetchAllFeatures, ersterPunkt,
 } from "./_helpers.js"
 
 const QUELLE_NAME = "RVR / GEONETZWERK.RUHR — Baustellen"
@@ -22,22 +23,12 @@ function wfsUrl(base) {
   return `${base}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=baustelle&OUTPUTFORMAT=GeoJSON&SRSNAME=EPSG:25832`
 }
 
-/** Referenzpunkt (lat/lng) aus der UTM-Geometrie ziehen, erster Punkt nach WGS84 reprojizieren. */
+/** Referenzpunkt (lat/lng) geometrie-agnostisch ziehen — Point bis MultiPolygon, beliebig
+ *  verschachtelt. ersterPunkt steigt in coordinates ab und reprojiziert UTM(>1000)→WGS84.
+ *  KEINE Geometrietypen mehr verlieren (kein Default-null mehr für Polygon/MultiPoint/etc). */
 function koordVonFeature(g) {
-  if (!g) return { lat: null, lng: null }
-  if (g.type === "Point") {
-    const [lng, lat] = utmZuWgs84(g.coordinates[0], g.coordinates[1], 32)
-    return { lat, lng }
-  }
-  if (g.type === "LineString") {
-    const [lng, lat] = utmZuWgs84(g.coordinates[0][0], g.coordinates[0][1], 32)
-    return { lat, lng }
-  }
-  if (g.type === "MultiLineString") {
-    const [lng, lat] = utmZuWgs84(g.coordinates[0][0][0], g.coordinates[0][0][1], 32)
-    return { lat, lng }
-  }
-  return { lat: null, lng: null }
+  const [lng, lat] = ersterPunkt(g, 32)
+  return { lat, lng }
 }
 
 /** "Teilsperrung mit LSA" / "Vollsperrung" → vollsperrung-Flag (true/undefined). */
@@ -57,12 +48,16 @@ export const rvrGeonetzwerkRuhrBaustellenConnector = {
     let verfuegbar = 0
 
     for (const inst of INSTANZEN) {
-      const fc = await getJson(wfsUrl(inst.base), { timeoutMs })
-      if (!fc) {
-        log(`Instanz ${inst.stadt} nicht erreichbar — übersprungen`)
+      // Paginierter Vollabruf statt einem ungekappten GetFeature: VERSION=1.1.0 → mode:'wfs1'
+      // (maxFeatures). Kein stilles Server-Default-Limit mehr; ein hohes pageSize zieht den
+      // gesamten Bestand. So schneidet Reconcile (vollbestand=true) keine echten Einträge ab.
+      const feats = await fetchAllFeatures(wfsUrl(inst.base), {
+        mode: "wfs1", pageSize: 50000, maxPages: 500, timeoutMs, log,
+      })
+      if (!feats || feats.length === 0) {
+        log(`Instanz ${inst.stadt} nicht erreichbar oder leer — übersprungen`)
         continue
       }
-      const feats = fc.features ?? []
       verfuegbar += feats.length
       log(`${inst.stadt}: ${feats.length} Baustellen`)
 
@@ -74,8 +69,18 @@ export const rvrGeonetzwerkRuhrBaustellenConnector = {
         const strassenRef = refMatch ? `${refMatch[1].toUpperCase()}${refMatch[2]}` : null
         const text = [p.massnahme, p.einschr, p.bemerkung].filter(Boolean).join(" · ")
 
+        // Eindeutige & reconcile-stabile externeId: (lat,lng) allein kollabiert Meldungen am
+        // selben Ort (je Fahrtrichtung/Teilstück/Phase). Diskriminator nimmt unterscheidende
+        // Quellfelder mit auf — Straße, von/bis-Datum, Einschränkung/Richtung, erste Maßnahme-
+        // Zeile. Bevorzugt native gml_id/id als Quell-Schlüssel; KEIN Array-Index/Zufall.
+        const quellId = p.gml_id ?? f.id
+        const ersteZeile = String(p.massnahme ?? "").split(/[\n·]/)[0].trim()
+        const externeId = `${quellId ?? "x"}#${stabilHash(
+          lat, lng, p.strasse, p.beginn, p.ende, p.einschr, ersteZeile,
+        )}`
+
         obstacles.push(makeNormalized({
-          externeId: p.gml_id ?? f.id,
+          externeId,
           kategorie: "baustelle",
           name: p.massnahme ?? p.strasse ?? "Baustelle (RVR)",
           beschreibung: text || null,

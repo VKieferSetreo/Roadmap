@@ -27,7 +27,7 @@ export const leipzigVerkehrsraumeinschraenkungenConnector = {
   vollbestand: true,
 
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
-    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 5, timeoutMs })
+    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 200, timeoutMs })
     const obstacles = []
     for (const f of feats) {
       const p = f.properties ?? {}

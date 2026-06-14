@@ -2,7 +2,7 @@
 // Port aus bonn-baustellen-stadtplan.cron.mjs. Tagesaktuelle Baustellen (Thema=14403,
 // GeoJSON Point EPSG:4326), ganzer Datensatz in einem Abruf.
 
-import { makeNormalized, getJson, ersterPunkt, dateOnly } from "./_helpers.js"
+import { makeNormalized, getJson, ersterPunkt, dateOnly, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://opengeodata-bonn.de/baustellen-tagesaktuell-mit-ortsangabe-bonn/"
 const QUELLE_NAME = "Bonn — Baustellen (stadtplan.bonn.de)"
@@ -31,8 +31,14 @@ export const bonnBaustellenConnector = {
       const vollsperrung = /vollsperrung/i.test(sperrung) || undefined
       const istSperrung = /sperrung/i.test(sperrung)
       const [lng, lat] = ersterPunkt(f.geometry)
+      // externeId muss eindeutig pro echtem Einzel-Eintrag UND run-stabil sein: zwei Meldungen am
+      // selben Ort (je Fahrtrichtung / Bauphase / Maßnahme) teilen sich oft dieselbe baustelle_id und
+      // würden beim Upsert auf (quellen_id, externe_id) kollabieren = stiller Datenverlust. Deshalb
+      // einen deterministischen Diskriminator aus unterscheidenden Quellfeldern anhängen (kein Index).
+      const quellId = p.baustelle_id ?? f.id ?? "x"
+      const externeId = `${quellId}#${stabilHash(lat, lng, p.sperrung, p.massnahme, p.bezeichnung, p.adresse, p.von, p.bis)}`
       obstacles.push(makeNormalized({
-        externeId: p.baustelle_id ?? f.id,
+        externeId,
         kategorie: istSperrung ? "sperrung" : "baustelle",
         name: p.bezeichnung ?? p.adresse ?? "Baustelle Bonn",
         beschreibung: [p.massnahme, p.sperrung, p.adresse].filter(Boolean).join(" — ").trim() || null,
