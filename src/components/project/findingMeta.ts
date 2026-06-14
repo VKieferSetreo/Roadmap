@@ -55,6 +55,14 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   zeitfenster: { label: "Zeitfenster" },
   vollsperrung: { label: "Vollsperrung" },
   halbseitig: { label: "Halbseitige Sperrung" },
+  fahrbahnVerengt: { label: "Fahrbahn verengt" },
+  anzahlFahrstreifen: { label: "Fahrstreifen (verbleibend)" },
+  umleitung: { label: "Umleitung" },
+  einbahnstrasse: { label: "Einbahnstraße" },
+  sackgasse: { label: "Sackgasse" },
+  havarie: { label: "Akut/Havarie" },
+  bauwerkstyp: { label: "Bauwerk" },
+  medium: { label: "Versorgungsleitung" },
   anmeldungErforderlich: { label: "Anmeldung erforderlich" },
 }
 

@@ -7,8 +7,8 @@
 
 import { extractStammdaten } from "./connectors/_helpers.js"
 
-const NUM_ATTR = ["restbreiteM", "maxHoeheM", "maxGewichtT", "maxAchslastT", "sperrlaengeM"]
-const BOOL_ATTR = ["vollsperrung", "halbseitig"]
+// extractStammdaten-Felder, die KEINE attrs sind (eigene Spalten) — alles andere wandert in attrs.
+const NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef", "richtung"])
 
 /**
  * @param {{name?:string, beschreibung?:string, attrs?:object, gueltigVon?:string, gueltigBis?:string,
@@ -24,13 +24,11 @@ export function enrichFromText(row) {
   const attrs = row.attrs && typeof row.attrs === "object" ? { ...row.attrs } : {}
   let changed = false
 
-  for (const k of NUM_ATTR) {
-    if (ex[k] != null && attrs[k] == null) { attrs[k] = ex[k]; changed = true }
+  // Alle extrahierten attrs generisch übernehmen — nur Lücken füllen, Booleans nur true.
+  for (const [k, v] of Object.entries(ex)) {
+    if (NICHT_ATTR.has(k)) continue
+    if (attrs[k] == null && v != null && v !== false && v !== "") { attrs[k] = v; changed = true }
   }
-  for (const k of BOOL_ATTR) {
-    if (ex[k] === true && attrs[k] == null) { attrs[k] = true; changed = true }
-  }
-  if (ex.zeitfenster && attrs.zeitfenster == null) { attrs.zeitfenster = ex.zeitfenster; changed = true }
 
   const patch = { attrs }
   if (!row.gueltigVon && ex.gueltigVon) { patch.gueltigVon = ex.gueltigVon; changed = true }

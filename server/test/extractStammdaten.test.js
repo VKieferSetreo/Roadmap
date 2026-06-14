@@ -58,6 +58,17 @@ describe("extractStammdaten", () => {
     expect(extractStammdaten("gültig ab 15.03.2024").gueltigVon).toBe("2024-03-15")
   })
 
+  it("GST-Signale: Fahrbahn verengt, Fahrstreifen-Anzahl, Umleitung (mit keine-Guard), Einbahn/Sackgasse", () => {
+    expect(extractStammdaten("Fahrbahn wird verengt").fahrbahnVerengt).toBe(true)
+    expect(extractStammdaten("auf zwei Fahrstreifen verengt").anzahlFahrstreifen).toBe(2)
+    expect(extractStammdaten("Umleitung über die B5 eingerichtet").umleitung).toBe(true)
+    expect(extractStammdaten("keine Umleitung erforderlich").umleitung).toBeUndefined() // Negative-Lookbehind
+    expect(extractStammdaten("Einbahnstraße aufgehoben").einbahnstrasse).toBe(true)
+    expect(extractStammdaten("Litzelaustraße wird zur Sackgasse").sackgasse).toBe(true)
+    expect(extractStammdaten("Notmaßnahme Wasserrohrbruch").havarie).toBe(true)
+    expect(extractStammdaten("Arbeiten an der Fernwärme-Leitung").medium).toMatch(/Fernw/)
+  })
+
   it("Sperrart (Voll vor Halb) + Richtung aus echtem Baustellen-Text", () => {
     const a = extractStammdaten("Die Straße ist in Fahrtrichtung stadtauswärts eingeengt.")
     expect(a.richtung).toBe("stadtauswärts")
@@ -83,7 +94,7 @@ describe("enrichFromText (Bestands-Anreicherung)", () => {
   })
 
   it("nichts zu holen → changed=false", () => {
-    const p = enrichFromText({ name: "Brücke", beschreibung: "OSM highway=residential", attrs: { maxHoeheM: 3.8 } })
+    const p = enrichFromText({ name: "Objekt 12", beschreibung: "OSM highway=residential", attrs: { maxHoeheM: 3.8 } })
     expect(p.changed).toBe(false)
   })
 })
@@ -112,7 +123,7 @@ describe("makeNormalized — Strip-down-Integration", () => {
 
   it("kein Treffer → Beschreibung unverändert, kein Hinweis", () => {
     const o = makeNormalized({
-      externeId: "x3", kategorie: "bruecke", name: "Brücke",
+      externeId: "x3", kategorie: "bruecke", name: "Objekt 12",
       beschreibung: "OSM highway=residential", lat: 53.5, lng: 9.9, quelleName: "Test",
     })
     expect(o.beschreibung).toBe("OSM highway=residential")
@@ -122,12 +133,12 @@ describe("makeNormalized — Strip-down-Integration", () => {
   it("Sanitizing: 0-Sentinel-Maße raus, HTML gestrippt", () => {
     const o = makeNormalized({
       externeId: "x4", kategorie: "baustelle", name: "Test",
-      beschreibung: 'Umleitung <a href="https://x.de">Link</a> &amp; mehr',
+      beschreibung: 'Hinweis <a href="https://x.de">Link</a> &amp; mehr',
       lat: 53.5, lng: 9.9, attrs: { restbreiteM: 0, maxGewichtT: 7.5 }, quelleName: "Test",
     })
     expect(o.attrs.restbreiteM).toBeUndefined() // 0 gedroppt
     expect(o.attrs.maxGewichtT).toBe(7.5) // echter Wert bleibt
-    expect(o.beschreibung).toBe("Umleitung Link & mehr")
+    expect(o.beschreibung).toBe("Hinweis Link & mehr")
   })
 })
 

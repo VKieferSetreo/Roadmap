@@ -130,6 +130,25 @@ export function extractStammdaten(text) {
   if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s)) out.vollsperrung = true
   else if (/halbseitig|einseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen/i.test(s)) out.halbseitig = true
 
+  // Zusätzliche GST-Signale (Workflow-entdeckt + adversarial verifiziert, FP-arm). Booleans nur true.
+  // Fahrbahn-Verengung = wichtigstes Restbreiten-Surrogat, wenn keine cm-Angabe da ist.
+  if (/\bFahrbahn\w*[^,.;]{0,40}?(?:eingeengt|verengt)|\bFahrbahn(?:einengung|verengung)\b|(?:Einengung|Verengung)\s+der\s+Fahrbahn/i.test(s)) out.fahrbahnVerengt = true
+  const spuren = s.match(/auf\s+(einen|zwei|drei|vier|f(?:ü|ue)nf|\d{1,2})\s+Fahrstreifen\s+(?:verengt|reduziert|eingeengt)/i)
+  if (spuren) {
+    const wort = { einen: 1, zwei: 2, drei: 3, vier: 4, fünf: 5, fuenf: 5 }
+    const n = wort[spuren[1].toLowerCase()] ?? Number(spuren[1])
+    if (n > 0) out.anzahlFahrstreifen = n
+  }
+  // Umleitung: Negative-Lookbehind gegen "keine/ohne Umleitung" (im Workflow als FP-Fix bestätigt).
+  if (/(?<!keine\s)(?<!ohne\s)(?:\bUmleitung(?:sstrecke)?\b|\bBedarfsumleitung\b|Verkehr wird (?:ü|ue)ber die Gegenfahrbahn geleitet)/i.test(s)) out.umleitung = true
+  if (/\bEinbahnstra(?:ß|ss)e\b/i.test(s)) out.einbahnstrasse = true
+  if (/\bSackgasse\b/i.test(s)) out.sackgasse = true // GST: kein Wenden möglich
+  if (/\bHavarie\b|\bNotma(?:ß|ss)nahme\b|\bWasserrohrbruch\b/i.test(s)) out.havarie = true // akut/ungeplant
+  const bauwerk = s.match(/\b([\wäöüß-]*[Tt]unnel|Unterf(?:ü|ue)hrung|(?:Ü|Ue)berf(?:ü|ue)hrung|Br(?:ü|ue)cke)\b/)
+  if (bauwerk) out.bauwerkstyp = bauwerk[1] // signalisiert harte Höhen-/Last-Restriktion
+  const medium = s.match(/\b(Fernw(?:ä|ae)rme|Trinkwasser|Wasserleitung|Gasleitung|Gasversorgung|Stromleitung|Stromnetz|Glasfaser|Breitband|Telekommunikation|Kommunikationsleitung|Kanal)\b/i)
+  if (medium) out.medium = medium[1] // Bauanlass (Versorgungsleitung)
+
   // Datums-Heuristik: kleinstes = Start, größtes = Ende. Einzeldatum nur mit Gültigkeits-Kontext.
   const daten = alleDaten(s)
   const hatKontext = /\b(g(?:ü|ue)ltig|gilt|zeitraum|vom|bis|ab\s|baubeginn|bauende|dauer|gesperrt|sperrung|wirksam)\b/i.test(s)
@@ -165,6 +184,9 @@ export function stabilHash(...teile) {
 const NULL_BEI_NULL = new Set([
   "restbreiteM", "maxBreiteM", "maxHoeheM", "maxGewichtT", "maxAchslastT", "maxLaengeM", "sperrlaengeM", "radiusM",
 ])
+
+// extractStammdaten-Felder, die KEINE attrs sind (eigene Spalten / Top-Level) — Rest wandert in attrs.
+const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef", "richtung"])
 
 /** Freitext säubern: HTML-Tags raus, Entities dekodieren, Mehrfach-Spaces zusammenziehen, trimmen.
  *  Zeilenumbrüche bleiben erhalten (sinnvolle Struktur, z.B. Autobahn-Meldungen). null-sicher. */
@@ -202,13 +224,11 @@ export function makeNormalized({
   // Nur Lücken füllen — vom Connector explizit gesetzte Werte bleiben unangetastet.
   const ex = extractStammdaten([name, beschreibung].filter(Boolean).join(" · "))
   let extrahiert = false
-  for (const k of ["restbreiteM", "maxHoeheM", "maxGewichtT", "maxAchslastT", "sperrlaengeM"]) {
-    if (ex[k] != null && cleanAttrs[k] == null) { cleanAttrs[k] = ex[k]; extrahiert = true }
+  // Alle extrahierten attrs generisch übernehmen (außer den Nicht-attr-Feldern) — nur Lücken füllen.
+  for (const [k, v] of Object.entries(ex)) {
+    if (EX_NICHT_ATTR.has(k)) continue
+    if (cleanAttrs[k] == null && v != null && v !== false && v !== "") { cleanAttrs[k] = v; extrahiert = true }
   }
-  for (const k of ["vollsperrung", "halbseitig"]) {
-    if (ex[k] === true && cleanAttrs[k] == null) { cleanAttrs[k] = true; extrahiert = true }
-  }
-  if (ex.zeitfenster && cleanAttrs.zeitfenster == null) { cleanAttrs.zeitfenster = ex.zeitfenster; extrahiert = true }
   let vonFinal = gueltigVon, bisFinal = gueltigBis
   if (vonFinal == null && ex.gueltigVon) { vonFinal = ex.gueltigVon; extrahiert = true }
   if (bisFinal == null && ex.gueltigBis) { bisFinal = ex.gueltigBis; extrahiert = true }

@@ -53,6 +53,11 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
                   {katMeta(o.kategorie).label}
                   {o.strassenRef ? ` · ${o.strassenRef}` : ""}
                 </p>
+                {o.kiAufbereitet ? (
+                  <span className="mt-1 inline-block rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+                    ✨ mit KI-Aufbereitung
+                  </span>
+                ) : null}
                 {o.beschreibung ? (
                   <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">{o.beschreibung}</p>
                 ) : null}

@@ -164,6 +164,8 @@ export interface Obstacle {
   realerStart?: string
   /** "global" = Setreo-/Connector-Daten (alle Mandanten) · "eigen" = Eintrag des eigenen Mandanten. */
   herkunft?: "global" | "eigen"
+  /** true, wenn strukturierte Felder automatisch aus dem Meldungstext angereichert wurden (KI-Aufbereitung). */
+  kiAufbereitet?: boolean
   createdAt: string
   updatedAt: string
 }
