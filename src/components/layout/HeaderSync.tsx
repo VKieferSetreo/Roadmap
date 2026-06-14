@@ -10,15 +10,7 @@ import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
-
-/** ISO → "heute, 14:05" / "13.06., 14:05" / "noch nie". */
-function formatStamp(iso: string | null): string {
-  if (!iso) return "noch nie"
-  const d = new Date(iso)
-  const zeit = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
-  if (d.toDateString() === new Date().toDateString()) return `heute, ${zeit} Uhr`
-  return `${d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" })}, ${zeit} Uhr`
-}
+import { formatStampDE } from "@/lib/format"
 
 export function HeaderSync() {
   const qc = useQueryClient()
@@ -93,7 +85,7 @@ export function HeaderSync() {
     : running
       ? 6
       : 0
-  const stamp = formatStamp(status.data?.zuletztAktualisiert ?? null)
+  const stamp = formatStampDE(status.data?.zuletztAktualisiert ?? null)
 
   return (
     <div className="flex items-center gap-2">

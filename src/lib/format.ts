@@ -13,6 +13,18 @@ export function formatDateTimeDE(d: Date | string): string {
   return format(date, "dd.MM.yyyy HH:mm", { locale: de })
 }
 
+/** ISO → „heute, 14:05 Uhr" / „gestern, 14:05 Uhr" / „13.06., 14:05 Uhr" / „noch nie".
+ *  Gemeinsames „Letzter Stand"-Format (Header-Sync-Button + Anlage-Tab). */
+export function formatStampDE(iso: string | null | undefined): string {
+  if (!iso) return "noch nie"
+  const d = parseISO(iso)
+  const zeit = format(d, "HH:mm", { locale: de })
+  const days = daysUntil(d)
+  if (days === 0) return `heute, ${zeit} Uhr`
+  if (days === -1) return `gestern, ${zeit} Uhr`
+  return `${format(d, "dd.MM.", { locale: de })}, ${zeit} Uhr`
+}
+
 export function formatRelativeDE(d: Date | string): string {
   const date = typeof d === "string" ? parseISO(d) : d
   const days = daysUntil(date)

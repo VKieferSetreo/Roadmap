@@ -31,6 +31,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
+import { formatStampDE } from "@/lib/format"
 
 type StreckeTab = "upload" | "startziel"
 
@@ -426,37 +427,29 @@ export function AnlageTab({ project }: { project: Project }) {
                   "Strecke hochladen, um die Auswertung zu starten."
                 )}
               </div>
-              {/* Aktionen vertikal gestapelt: Buttons untereinander, „Letzter Stand" direkt
-                  unter „Erneut auswerten". Die Spalte ist inhaltsbreit (Desktop) und der
-                  Zeitstempel nowrap → beide Buttons (w-full) wachsen auf dessen Breite, der
-                  Stand passt also immer darunter. */}
-              <div className="flex w-full flex-col gap-1.5 sm:w-auto">
+              {/* Aktionen nebeneinander: „Ergebnis öffnen" links, „Erneut auswerten" rechts
+                  (etwas breiter). „Letzter Stand" hängt direkt unter dem Auswerten-Button,
+                  im selben relativen Format wie der Header-Sync (heute/gestern/Datum). */}
+              <div className="flex flex-wrap items-start justify-end gap-2">
                 {project.status === "fertig" ? (
                   <Button
                     variant="outline"
-                    className="w-full"
                     onClick={() => navigate(`/projekte/${project.id}/karte`)}
                   >
                     Ergebnis öffnen <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : null}
-                <Button className="w-full" onClick={onRun} disabled={!routeReady}>
-                  <Play className="h-4 w-4" />
-                  {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
-                </Button>
-                {project.status === "fertig" ? (
-                  <p className="whitespace-nowrap text-center text-xs text-neutral-400">
-                    Letzter Stand:{" "}
-                    {new Date(project.updatedAt).toLocaleString("de-DE", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    Uhr
-                  </p>
-                ) : null}
+                <div className="flex flex-col gap-1">
+                  <Button className="min-w-[210px]" onClick={onRun} disabled={!routeReady}>
+                    <Play className="h-4 w-4" />
+                    {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
+                  </Button>
+                  {project.status === "fertig" ? (
+                    <p className="whitespace-nowrap text-center text-xs text-neutral-400">
+                      Letzter Stand: {formatStampDE(project.updatedAt)}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             </>
           )}
