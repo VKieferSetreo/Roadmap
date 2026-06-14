@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { BugReportButton } from "@/components/bugreport/BugReportButton"
+import { HeaderSync } from "./HeaderSync"
 import { BetaBadge } from "@/components/shared/BetaBadge"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { useSettingsStore } from "@/store/settings"
@@ -78,6 +79,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
       <BetaBadge className="ml-1" />
 
       <div className="flex-1" />
+
+      {/* Globaler „Daten aktualisieren"-Sync — links neben der Mandanten-Auswahl */}
+      {mode === "live" ? <HeaderSync /> : null}
 
       {/* Mandanten-Switcher — nur Setreo-Admin im Live-Modus */}
       {isAdmin && tenants.length > 0 ? (
