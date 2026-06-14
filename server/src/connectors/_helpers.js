@@ -177,6 +177,98 @@ export function stabilHash(...teile) {
   return (h >>> 0).toString(36)
 }
 
+// ── Genereller Dubletten-Filter (quellenübergreifend) ────────────────────────
+// Viele Quellen liefern EIN Ereignis als mehrere Features (Segmente/Teile/Spuren):
+// gleicher Name, gleiche Kategorie, ~gleicher Ort, verschiedene externe_ids
+// (z.B. …-sperrung.001/.002/.003, APP_BEDARFSUMLEITUNGEN_843326/842, mehrere WFS-
+// Features an einer Adresse). Das stapelt N Pins am selben Punkt. dedupeObstacles
+// fasst solche Gruppen je Connector-Output zu EINEM Strecken-Hindernis zusammen.
+
+const DEDUP_MIN_KEYS = new Set([
+  "restbreiteM", "maxHoeheM", "maxBreiteM", "maxGewichtT", "maxAchslastT", "maxLaengeM", "spurenFrei",
+])
+const DEDUP_MAX_KEYS = new Set(["spurenGesperrt", "sperrlaengeM", "radiusM"])
+
+/** Gruppenschlüssel: Kategorie + normalisierter Name + Ort auf 3 NK (≈100 m).
+ *  Der Importer ruft dedupe je Connector-Output auf → quellen_id ist implizit konstant. */
+export function dupGroupKey(o) {
+  const name = String(o?.name ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+  const lat = Number(o?.lat)
+  const lng = Number(o?.lng)
+  const ll = Number.isFinite(lat) && Number.isFinite(lng) ? `${lat.toFixed(3)},${lng.toFixed(3)}` : "?"
+  return `${o?.kategorie ?? ""}|${name}|${ll}`
+}
+
+/** Stabile externeId einer zusammengefassten Gruppe (gleich über Läufe → Upsert statt Insert,
+ *  Reconcile deaktiviert die alten Einzel-Segmente). */
+export function dupExterneId(o) {
+  return `dup#${stabilHash(dupGroupKey(o))}`
+}
+
+function mergeGeoms(group) {
+  const lines = []
+  for (const o of group) {
+    const g = o?.geom
+    if (!g || !g.type) continue
+    if (g.type === "LineString") lines.push(g.coordinates)
+    else if (g.type === "MultiLineString") lines.push(...g.coordinates)
+  }
+  if (lines.length) return { type: "MultiLineString", coordinates: lines }
+  return group.find((o) => o?.geom)?.geom ?? null
+}
+
+function mergeDupGroup(group) {
+  const first = group[0]
+  const attrs = {}
+  for (const o of group) {
+    for (const [k, v] of Object.entries(o?.attrs ?? {})) {
+      if (typeof v === "boolean") { if (v) attrs[k] = true }
+      else if (typeof v === "number") {
+        if (DEDUP_MIN_KEYS.has(k)) attrs[k] = attrs[k] == null ? v : Math.min(attrs[k], v)
+        else if (DEDUP_MAX_KEYS.has(k)) attrs[k] = attrs[k] == null ? v : Math.max(attrs[k], v)
+        else attrs[k] = attrs[k] ?? v
+      } else attrs[k] = attrs[k] ?? v
+    }
+  }
+  const vons = group.map((o) => o?.gueltigVon).filter(Boolean).sort()
+  const bisse = group.map((o) => o?.gueltigBis).filter(Boolean).sort()
+  const gueltigVon = vons[0] ?? null
+  const gueltigBis = bisse.length ? bisse[bisse.length - 1] : null
+  const beschreibung = group.map((o) => o?.beschreibung).find((b) => b && String(b).trim()) ?? null
+  return {
+    ...first,
+    externeId: dupExterneId(first),
+    beschreibung,
+    attrs,
+    ...(gueltigVon ? { gueltigVon, realerStart: gueltigVon } : {}),
+    ...(gueltigBis ? { gueltigBis } : {}),
+    kiAufbereitet: group.some((o) => o?.kiAufbereitet),
+    geom: mergeGeoms(group),
+  }
+}
+
+/** Dubletten eines Connector-Outputs zusammenfassen → EIN Strecken-Hindernis je Gruppe
+ *  (kombinierte Linien-Geometrie, schärfste Maße, weitester Zeitraum, stabile dup#-externeId).
+ *  Singletons und Einträge ohne Namen bleiben unverändert (kein Über-Mergen). */
+export function dedupeObstacles(items) {
+  if (!Array.isArray(items)) return []
+  const groups = new Map()
+  const out = []
+  for (const o of items) {
+    if (!String(o?.name ?? "").trim()) {
+      out.push(o) // ohne Name zu unspezifisch → nicht gruppieren
+      continue
+    }
+    const k = dupGroupKey(o)
+    if (!groups.has(k)) groups.set(k, [])
+    groups.get(k).push(o)
+  }
+  for (const group of groups.values()) {
+    out.push(group.length === 1 ? group[0] : mergeDupGroup(group))
+  }
+  return out
+}
+
 /**
  * Baut ein NormalizedObstacle für den Importer (validateObstacle/insertObstacle).
  * Kaputte Koords (außerhalb DE) → null (Item wird dann mangels lat/lng übersprungen).

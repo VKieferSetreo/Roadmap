@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { extractStammdaten, makeNormalized, stripHtml } from "../src/connectors/_helpers.js"
+import {
+  dedupeObstacles, dupExterneId, extractStammdaten, makeNormalized, stripHtml,
+} from "../src/connectors/_helpers.js"
 import { enrichFromText } from "../src/enrich.js"
 
 // Echter Autobahn-API-Beschreibungsblock (A7, wie im Karten-Popup gesehen).
@@ -141,6 +143,48 @@ describe("makeNormalized — Strip-down-Integration", () => {
     expect(o.attrs.restbreiteM).toBeUndefined() // 0 gedroppt
     expect(o.attrs.maxGewichtT).toBe(7.5) // echter Wert bleibt
     expect(o.beschreibung).toBe("Hinweis Link & mehr")
+  })
+})
+
+describe("dedupeObstacles (genereller Dublettenfilter)", () => {
+  const seg = (ext, lat, lng, geom, extra = {}) => ({
+    externeId: ext, kategorie: "sperrung", name: "L536 Tunnelwartung",
+    lat, lng, geom, attrs: {}, ...extra,
+  })
+
+  it("fasst gleiche Kategorie+Name+~Ort (3 NK) zu EINER Strecke mit MultiLineString zusammen", () => {
+    const items = [
+      seg("x-.001", 48.1230, 9.5001, { type: "LineString", coordinates: [[9.50, 48.12], [9.51, 48.13]] }, { gueltigBis: "2026-07-10" }),
+      seg("x-.002", 48.1234, 9.5004, { type: "LineString", coordinates: [[9.51, 48.13], [9.52, 48.14]] }, { gueltigBis: "2026-07-20" }),
+      seg("x-.003", 48.1231, 9.5002, null, { gueltigVon: "2026-07-01" }),
+    ]
+    const out = dedupeObstacles(items)
+    expect(out).toHaveLength(1)
+    expect(out[0].geom.type).toBe("MultiLineString")
+    expect(out[0].geom.coordinates).toHaveLength(2) // beide LineStrings, null ignoriert
+    expect(out[0].externeId).toBe(dupExterneId(items[0])) // stabil
+    expect(out[0].gueltigVon).toBe("2026-07-01") // frühestes Von
+    expect(out[0].gueltigBis).toBe("2026-07-20") // spätestes Bis
+  })
+
+  it("schärfste Maße gewinnen beim Zusammenfassen", () => {
+    const out = dedupeObstacles([
+      seg("a", 48.12, 9.50, null, { attrs: { restbreiteM: 3.5, spurenGesperrt: 1 } }),
+      seg("b", 48.12, 9.50, null, { attrs: { restbreiteM: 3.0, spurenGesperrt: 2 } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].attrs.restbreiteM).toBe(3.0) // Minimum (engste Stelle)
+    expect(out[0].attrs.spurenGesperrt).toBe(2) // Maximum
+  })
+
+  it("verschiedene Namen / weit entfernte Orte bleiben getrennt; Einträge ohne Namen unangetastet", () => {
+    const out = dedupeObstacles([
+      seg("a", 48.12, 9.50, null),
+      { ...seg("b", 48.12, 9.50, null), name: "B29 Tunnelwartung" }, // anderer Name
+      { ...seg("c", 48.99, 9.99, null) }, // weit weg (anderer Ort-Key)
+      { externeId: "n1", kategorie: "baustelle", name: "", lat: 48.12, lng: 9.50, attrs: {} }, // ohne Namen
+    ])
+    expect(out).toHaveLength(4) // nichts zusammengefasst
   })
 })
 

@@ -10,6 +10,7 @@
 // Fehler im Connector → Run status 'error' mit Log; runImport wirft NIE
 // (der Worker und der Admin-Trigger laufen immer weiter).
 
+import { dedupeObstacles } from "../connectors/_helpers.js"
 import {
   assignFachId, insertObstacle, istReineInfrastruktur, sachfeldParams, todayIso,
   UPDATE_SACHFELDER_SQL, validateObstacle,
@@ -52,11 +53,18 @@ export async function runImport({
   try {
     const timeoutMs = Number(env.EXTERNAL_TIMEOUT_MS ?? 4000)
     const result = await connector.fetch({ fetchImpl, env, timeoutMs, log: note })
-    const items = Array.isArray(result?.obstacles) ? result.obstacles : []
+    const rawItems = Array.isArray(result?.obstacles) ? result.obstacles : []
     // Kaputte/leere Connector-Antwort sichtbar machen (sonst sieht ein „ok, 0 gefunden"
     // wie ein legitim leerer Feed aus). Reconcile bleibt durch seen.size>0 geschützt.
     if (!Array.isArray(result?.obstacles)) {
       note("Connector lieferte kein obstacles-Array — als leerer Feed behandelt (kein Reconcile)")
+    }
+    // Genereller Dubletten-Filter: ein Ereignis als N Features (gleicher Name+Ort+Kategorie)
+    // → EIN Strecken-Hindernis. Stabile dup#-externeId; Vollbestand-Reconcile räumt die
+    // alten Einzel-Segmente danach automatisch weg.
+    const items = dedupeObstacles(rawItems)
+    if (rawItems.length !== items.length) {
+      note(`Dubletten zusammengefasst: ${rawItems.length} Features → ${items.length} Einträge`)
     }
     stats.gefunden = items.length
 

@@ -78,6 +78,23 @@ describe("runImport (Mock-Connector)", () => {
       .toBe(buildFachId(2, "0009", todayIso()))
   })
 
+  it("Dublettenfilter: gleiche Kategorie+Name+~Ort werden zu EINEM Eintrag (1 INSERT statt 3)", async () => {
+    const db = createFakeDb()
+    const seg = (ext, lng) => ({
+      ...ITEM_A, externeId: ext, name: "L536 Tunnelwartung", kategorie: "sperrung",
+      lat: 48.123, lng,
+    })
+    const run = await runImport({
+      db,
+      connector: mockConnector([seg("s-.001", 9.5001), seg("s-.002", 9.5002), seg("s-.003", 9.5003)]),
+      log: quiet,
+    })
+    expect(run.stats.gefunden).toBe(1) // 3 Features → 1 Eintrag
+    expect(run.stats.neu).toBe(1)
+    expect(db.state.obstacles).toHaveLength(1)
+    expect(db.state.obstacles[0].externe_id).toMatch(/^dup#/)
+  })
+
   it("Re-Import setzt manuelles aktiv=false NICHT zurück", async () => {
     const db = createFakeDb()
     await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
@@ -162,6 +179,35 @@ describe("Autobahn-Connector (Quelle 0001, fetch gemockt)", () => {
     expect(obstacles[0].kiAufbereitet).toBe(true)
     expect(obstacles[0].quelle.name).toBe("Autobahn GmbH · A1")
     expect(obstacles[0].quelle.url).toBe("https://autobahn.de")
+  })
+
+  it("gruppiert Nacht-/Teil-Segmente DERSELBEN Maßnahme zu EINER Strecke (Dubletten-Fix)", async () => {
+    // Echtes Identifier-Format: Maßnahme 2026-028479, Datum MITTEN im identifier, pro Nacht ein .deN.
+    const nightly = (deN, day, lng) => ({
+      identifier: `2026-028479--vi-bs.2026-06-${day}_20-00-00-000.devi-zus.2026-06-22_19-00-00-000_001.de${deN}`,
+      title: "A44 | Soest-Ost - Am Flugplatz",
+      subtitle: "Dortmund → Kassel",
+      startTimestamp: `2026-06-${day}T20:00:00.000+0200`,
+      coordinate: { lat: "51.5562", long: String(lng) },
+      description: ["Fahrbahnverengung"],
+      geometry: { type: "LineString", coordinates: [[lng, 51.55], [lng + 0.01, 51.56]] },
+    })
+    const fetchImpl = async (url) => {
+      if (String(url).includes("/A44/services/roadworks")) {
+        return jsonResponse({ roadworks: [nightly(1, "22", 8.17), nightly(3, "23", 8.18), nightly(9, "26", 8.14)] })
+      }
+      throw new Error("offline")
+    }
+    const { obstacles } = await autobahnConnector.fetch({
+      fetchImpl, env: { AUTOBAHN_ROADS: "A44" }, timeoutMs: 50, log: quiet,
+    })
+    // 3 Nächte EINER Maßnahme+Richtung → genau 1 Strecke
+    expect(obstacles).toHaveLength(1)
+    const o = obstacles[0]
+    expect(o.geom.type).toBe("MultiLineString") // Strecke aus allen Teil-Linien
+    expect(o.geom.coordinates).toHaveLength(3)
+    expect(o.externeId).toMatch(/^2026-028479#/) // stabil je Maßnahme+Richtung
+    expect(o.gueltigVon).toBe("2026-06-22") // frühestes Von über alle Nächte
   })
 
   it("normalizeAutobahn verwirft Items ohne identifier/Koordinaten", () => {

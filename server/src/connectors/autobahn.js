@@ -8,9 +8,19 @@
 import { fetchJson } from "../external/http.js"
 import { extractStammdaten, stabilHash } from "./_helpers.js"
 
-/** Projekt-Schlüssel: identifier ohne das abschließende ".deN"-Teilsegment. Die Autobahn-API zerlegt
- *  EINE Baustelle in mehrere Teil-Segmente (…de8/de15/de17) mit gleichem Projekt-Prefix → so gruppierbar. */
-const projektKey = (id) => String(id ?? "").replace(/\.de\d+$/i, "")
+/** Projekt-Schlüssel = die Autobahn-Maßnahmen-Nummer (Format YYYY-NNNNNN am Anfang des identifier).
+ *  Die API zerlegt EINE Maßnahme nicht nur geografisch (…de1/de3/de9), sondern auch zeitlich pro
+ *  Nacht/Bauphase — und das DATUM steckt MITTEN im identifier
+ *  (z.B. 2026-028479--vi-bs.2026-06-22_…de1, …2026-06-23_…de3). Ein bloßes ".deN"-Strippen lässt
+ *  deshalb jede Nacht als eigenes "Projekt" stehen → N-fach-Duplikate derselben Maßnahme. Wir gruppieren
+ *  daher auf die Maßnahmen-Nummer: alle Segmente + Nächte EINER Maßnahme werden zu einer Strecke. */
+const projektKey = (id) => {
+  const s = String(id ?? "")
+  const m = s.match(/^(\d{4}-\d{5,6})/) // YYYY-NNNNNN — Maßnahmen-Nr. am Anfang
+  if (m) return m[1]
+  // Fallback (untypische ids): bis zum Phasen-Trenner "--", dann ".deN" strippen.
+  return s.split("--")[0].replace(/\.de\d+$/i, "")
+}
 
 // extractStammdaten-Felder, die KEINE attrs sind (eigene Spalten / Top-Level).
 const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef", "richtung"])
