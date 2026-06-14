@@ -38,3 +38,13 @@ export function geomToLines(geom?: GeoJSONGeometry | null): LatLng[][] {
 export function hasLineGeom(geom?: GeoJSONGeometry | null): boolean {
   return geomToLines(geom).length > 0
 }
+
+/** Mittelpunkt der Strecke (mittlerer Stützpunkt der längsten Linie) — damit der Pin
+ *  MITTEN auf der markierten Strecke sitzt statt am Anfang. null bei Punkt/leerer Geometrie. */
+export function geomMidpoint(geom?: GeoJSONGeometry | null): LatLng | null {
+  const lines = geomToLines(geom)
+  if (lines.length === 0) return null
+  let longest = lines[0]
+  for (const l of lines) if (l.length > longest.length) longest = l
+  return longest[Math.floor(longest.length / 2)] ?? null
+}

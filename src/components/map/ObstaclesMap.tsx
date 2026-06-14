@@ -24,11 +24,14 @@ import {
 } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
-import { geomToLines } from "@/lib/geom"
+import { geomMidpoint, geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
 const PIN_GLOBAL = "#475569" // Slate — globaler Setreo-/Connector-Bestand
+// Ab dieser Zoomstufe: Strecken-Linien zeigen UND Cluster auflösen (jede Strecke
+// bekommt ihren eigenen Pin). Darunter: nur geclusterte Pins, keine Linien (Übersicht).
+const LINES_MIN_ZOOM = 11
 
 /** HTML-Escape für Feld-Inhalte aus externen Feeds (Popup-HTML-Injection vermeiden). */
 function esc(v: unknown): string {
@@ -116,11 +119,15 @@ function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; 
     const cluster = (L as unknown as { markerClusterGroup: (o: unknown) => L.LayerGroup }).markerClusterGroup({
       chunkedLoading: true, // Marker häppchenweise hinzufügen → kein Browser-Freeze
       maxClusterRadius: 60,
-      disableClusteringAtZoom: 13,
+      // Ab der Zoomstufe, ab der auch die Strecken-Linien erscheinen, einzelne Pins zeigen —
+      // sonst hätte eine sichtbare Strecke keinen eigenen Pin (steckte im Cluster) = „Tag fehlt".
+      disableClusteringAtZoom: LINES_MIN_ZOOM,
     })
     for (const o of obstacles) {
       const eigen = istEigenerEintrag(o.quelle)
-      const marker = L.marker([o.lat, o.lng], {
+      // Pin MITTIG auf die Strecke (geom-Mittelpunkt) statt am Anfangspunkt → Tag sitzt auf der Linie.
+      const pos = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
+      const marker = L.marker(pos, {
         icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false),
       })
       marker.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
@@ -134,10 +141,6 @@ function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; 
   }, [map, obstacles, onDelete])
   return null
 }
-
-// Strecken-Linien erst ab dieser Zoomstufe einblenden. Bei Deutschland-Übersicht
-// schrumpfen die Linien sonst zu „grauen Punkten überall" → erst beim Reinzoomen sinnvoll.
-const LINES_MIN_ZOOM = 11
 
 /** Strecken-Geometrie (geom = Linie/MultiLineString) als Polylines — die betroffene
  *  Strecke statt nur ein Punkt. Eigene Ebene (NICHT geclustert), unter den Markern,

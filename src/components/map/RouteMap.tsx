@@ -18,7 +18,7 @@ import {
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { endPinIcon, findingPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
-import { geomToLines } from "@/lib/geom"
+import { geomMidpoint, geomToLines } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
@@ -214,10 +214,13 @@ export function RouteMap({
           // Eigene Einträge: Pin hellblau, unabhängig von der Severity.
           const eigen = istEigenerEintrag(f.quelle)
           const kontakt = eigen ? f.quelle?.kontakt : undefined
+          // Pin MITTIG auf die markierte Strecke setzen (statt am Anfang) — so hat jede
+          // gezeichnete Strecke einen sichtbaren Tag genau auf der Linie.
+          const pos = geomMidpoint(f.geom) ?? ([f.lat, f.lng] as [number, number])
           return (
             <Marker
               key={f.id}
-              position={[f.lat, f.lng]}
+              position={pos}
               icon={findingPinIcon(f.kategorie, eigen ? EIGEN_COLOR : meta.marker, selectedId === f.id)}
               eventHandlers={{ click: () => onSelect?.(f.id) }}
               zIndexOffset={selectedId === f.id ? 1000 : 0}
