@@ -17,6 +17,13 @@ import { Card } from "@/components/ui/Card"
 import type { SyncJob } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
+/** Sekunden → "noch ~3 min" / "noch ~25 s" (grobe ETA, daher ~). */
+function formatEta(sec: number | null | undefined): string | null {
+  if (sec == null || sec <= 0 || !Number.isFinite(sec)) return null
+  if (sec < 90) return `noch ~${Math.max(5, Math.round(sec / 5) * 5)} s`
+  return `noch ~${Math.round(sec / 60)} min`
+}
+
 function formatStamp(iso: string | null): string {
   if (!iso) return "noch nie"
   const d = new Date(iso)
@@ -162,10 +169,15 @@ export function SyncBar() {
             />
           </div>
           {job.data.status === "running" && job.data.current ? (
-            <p className="flex items-center gap-1.5 text-xs text-neutral-500">
-              <RefreshCw className="h-3 w-3 shrink-0 animate-spin" />
-              <span className="truncate">Lädt: {job.data.current.name}</span>
-            </p>
+            <div className="flex flex-col gap-0.5">
+              <p className="flex items-center gap-1.5 text-xs text-neutral-500">
+                <RefreshCw className="h-3 w-3 shrink-0 animate-spin" />
+                <span className="truncate">Lädt: {job.data.current.name}</span>
+              </p>
+              {job.data.phase === "import" && formatEta(job.data.etaSeconds) ? (
+                <p className="pl-[18px] text-[11px] tabular-nums text-neutral-400">{formatEta(job.data.etaSeconds)}</p>
+              ) : null}
+            </div>
           ) : null}
           {geschrieben > 0 ? (
             <p className="text-[11px] tabular-nums text-neutral-400">

@@ -67,6 +67,7 @@ export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env 
     startedAt: new Date().toISOString(),
     finishedAt: null,
     error: null,
+    etaSeconds: null, // geschätzte Restdauer (aus letzten Laufzeiten je Quelle)
   }
   jobs.set(id, job)
   activeJobId = id
@@ -75,10 +76,35 @@ export function startSync({ db, fetchImpl = globalThis.fetch, env = process.env 
   return job
 }
 
+/** Letzte erfolgreiche Laufzeit je Quelle (Sekunden) aus import_runs → realistische ETA.
+ *  So dominiert die langsame Quelle (Overpass ~15 min) die Schätzung korrekt, statt naivem elapsed/done. */
+async function fetchConnectorDurations(db) {
+  try {
+    const { rows } = await db.query(
+      `SELECT DISTINCT ON (quelle_id) quelle_id, EXTRACT(EPOCH FROM (finished_at - started_at)) AS dur
+         FROM import_runs WHERE finished_at IS NOT NULL AND status = 'ok'
+         ORDER BY quelle_id, started_at DESC`,
+    )
+    const m = new Map()
+    for (const r of rows) {
+      const d = Number(r.dur)
+      if (Number.isFinite(d) && d >= 0) m.set(r.quelle_id, d)
+    }
+    return m
+  } catch {
+    return new Map()
+  }
+}
+
 async function runJob(job, { db, fetchImpl, env, connectors }) {
   try {
+    const durMap = await fetchConnectorDurations(db)
+    const expected = (c) => durMap.get(c.quelleId) ?? 8 // unbekannt → 8 s Default
+    const restDauer = () => Math.round(connectors.slice(job.done).reduce((s, c) => s + expected(c), 0))
+    job.etaSeconds = restDauer()
     for (const connector of connectors) {
       job.current = { quelleId: connector.quelleId, name: connector.name }
+      job.etaSeconds = restDauer() // inkl. aktueller Quelle
       try {
         const run = await runImport({ db, connector, fetchImpl, env })
         job.runs.push(rowToImportRun(run))
@@ -89,8 +115,10 @@ async function runJob(job, { db, fetchImpl, env, connectors }) {
         })
       }
       job.done += 1
+      job.etaSeconds = restDauer()
     }
     job.current = null
+    job.etaSeconds = 0
 
     // Abgelaufene Hindernisse (7 Tage nach gueltig_bis) deaktivieren
     job.phase = "hygiene"

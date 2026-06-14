@@ -282,6 +282,8 @@ export interface SyncJob {
   startedAt: string
   finishedAt: string | null
   error: string | null
+  /** Geschätzte Restdauer in Sekunden (aus letzten Laufzeiten je Quelle); null wenn unbekannt. */
+  etaSeconds?: number | null
 }
 
 /** Default-Stammdaten für ein frisch angelegtes Projekt (typischer Schwertransport). */
