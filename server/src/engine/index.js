@@ -33,6 +33,32 @@ function geomPoints(geom) {
   return out
 }
 
+// Klar doppelte Funde zusammenfassen: gleiche Route + Kategorie + (normalisierte) Bezeichnung
+// + nahe Position (Δkm ≤ DUP_KM) = dasselbe reale Hindernis — oft aus mehreren Quellen oder
+// beide Fahrtrichtungen, oder eine in Segmente zerlegte Maßnahme. Behalten wird der schwerste
+// Fund; bei gleicher Severity der mit Strecken-Geometrie (informativer). Der per-Connector-Dedup
+// (dedupeObstacles) erwischt das NICHT, weil er quellenweise + auf exaktem 100-m-Raster gruppiert.
+const DUP_KM = 1.0
+const SEV_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
+const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+
+export function dedupeFindings(findings) {
+  const kept = []
+  for (const f of findings) {
+    const key = `${f.routeId}|${f.kategorie}|${normName(f.titel)}`
+    const dup = kept.find((k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM)
+    if (!dup) {
+      kept.push({ ...f, __key: key })
+      continue
+    }
+    const fr = SEV_RANK[f.severity] ?? 0
+    const dr = SEV_RANK[dup.severity] ?? 0
+    if (fr > dr || (fr === dr && f.geom && !dup.geom)) Object.assign(dup, f, { __key: key })
+  }
+  // eslint-disable-next-line no-unused-vars
+  return kept.map(({ __key, ...f }) => f)
+}
+
 /** Analysierbare Routen: nur die mit ≥2 validen Punkten (Geometrie = points). */
 export function usableRoutes(routes) {
   return (Array.isArray(routes) ? routes : [])
@@ -50,7 +76,7 @@ export async function analyze({ db, project, corridorM }) {
     throw new ApiError(422, "Keine Strecke mit Punkten vorhanden — Strecke hochladen")
   }
 
-  const findings = []
+  let findings = []
   let distanzKm = 0
 
   for (const route of routes) {
@@ -108,6 +134,7 @@ export async function analyze({ db, project, corridorM }) {
       })
     }
   }
+  findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
   findings.sort((a, b) => a.km - b.km)
 
   distanzKm = round1(distanzKm)
