@@ -6,7 +6,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { SetreoHeader } from "./SetreoHeader"
 import { SetreoFooter } from "./SetreoFooter"
 import { AppSidebar } from "./AppSidebar"
-import { GlobalSyncBar } from "./GlobalSyncBar"
 import { ContentErrorBoundary } from "./ContentErrorBoundary"
 import { NewProjectDialog } from "@/components/project/NewProjectDialog"
 import { useProjectStore } from "@/store/projects"
@@ -67,7 +66,6 @@ export function AppLayout() {
 
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
-      <GlobalSyncBar />
       <SetreoHeader onMenuClick={() => setMobileNavOpen(true)} />
 
       <div className="flex min-h-0 flex-1">
