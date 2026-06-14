@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 import { cn } from "@/lib/cn"
 
@@ -25,11 +26,14 @@ export function Dialog({ open, onClose, children, size = "default" }: DialogProp
 
   if (!open) return null
 
-  return (
+  // Portal an document.body + z-index ÜBER Leaflet (dessen Panes/Controls reichen
+  // bis z-index ~1000). Ohne Portal landet der Dialog im Stacking-Context der Karte
+  // und damit HINTER den Map-Layern — die Maske wäre unsichtbar/unbedienbar.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[2000] flex items-center justify-center p-4"
     >
       <div
         className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]"
@@ -47,7 +51,8 @@ export function Dialog({ open, onClose, children, size = "default" }: DialogProp
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
