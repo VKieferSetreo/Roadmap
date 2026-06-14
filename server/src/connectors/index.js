@@ -35,7 +35,9 @@ import { dresdenVerkehrseinschraenkungenConnector } from "./0213_dresden_verkehr
 import { stuttgartBaustellenConnector } from "./0214_stuttgart_baustellen.js"
 import { muensterBaustellenConnector } from "./0215_muenster_baustellen.js"
 import { dortmundBaustellenConnector } from "./0216_dortmund_baustellen.js"
-import { duesseldorfVerkehrsmeldungenConnector } from "./0217_duesseldorf_verkehrsmeldungen.js"
+// 0217 (Düsseldorf — Verkehrsmeldungen, DATEX-II) ENTFERNT (Max 2026-06-14): reine Live-/Ad-hoc-
+// Verkehrsmeldungen ("Gefahrenstelle …", ohne Enddatum), für die Transport-PLANUNG wertlos.
+// import { duesseldorfVerkehrsmeldungenConnector } from "./0217_duesseldorf_verkehrsmeldungen.js"
 import { bonnBaustellenConnector } from "./0218_bonn_baustellen.js"
 import { karlsruheTrkBaustellenConnector } from "./0219_karlsruhe_trk_baustellen.js"
 import { leipzigVerkehrsraumeinschraenkungenConnector } from "./0220_leipzig_verkehrsraumeinschraenkungen.js"
@@ -72,7 +74,6 @@ export const CONNECTORS = [
   stuttgartBaustellenConnector,
   muensterBaustellenConnector,
   dortmundBaustellenConnector,
-  duesseldorfVerkehrsmeldungenConnector,
   bonnBaustellenConnector,
   karlsruheTrkBaustellenConnector,
   leipzigVerkehrsraumeinschraenkungenConnector,

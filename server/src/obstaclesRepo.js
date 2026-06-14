@@ -78,18 +78,29 @@ export function istReineInfrastruktur(o) {
   return false
 }
 
-// Live-/Ad-hoc-Verkehrsmeldungen (Pannen, Unfallfolgen, Gefahren, Witterung, verlorene Ladung …)
-// sind EPHEMER und für die PLANUNG eines Großraum-/Schwertransports (Tage/Wochen Vorlauf) wertlos
+// Live-/Ad-hoc-Verkehrsmeldungen (Pannen, Unfälle, Gefahren, Witterung, verlorene Ladung …) sind
+// EPHEMER und für die PLANUNG eines Großraum-/Schwertransports (Tage/Wochen Vorlauf) wertlos
 // (Vorgabe Max: "KEINE LIVE VERKEHRSDATEN — die Plattform ist zum Planen da, ad hoc bringt nix").
-// Schlüsselwörter bewusst KONSERVATIV: gegen die Autobahn-Baustellen (Quelle 0001) verifiziert, dass
-// sie dort NICHT auftauchen — "unfall"/"brand"/"stau" wären False-Positives (echte Baustellen) und
-// sind daher NICHT enthalten. "defekt" nur mit Fahrzeug-Kontext (sonst träfe es "defekte Fahrbahndecke").
-const LIVE_VERKEHR_RX =
-  /gefahr durch|liegengeblieb|liegen geblieb|\bpanne\b|defekte[ns]? (pkw|lkw|kfz|fahrzeug|lastwagen|transporter)|bergung|geborgen|rettungseinsatz|rettungsdienst|umgestürzt|umgekippte|ölspur|verlorene? ladung|gegenstand auf der fahrbahn|hindernis auf der fahrbahn|tier(e)? auf der|falschfahrer|geisterfahrer|aquaplaning|glätte|glatteis|witterungsbedingt/i
+//
+// Zweistufig, gegen die echten Daten verifiziert (0 False-Positives auf Autobahn-Baustellen 0001):
+//  1) IMMER live — eindeutige Ad-hoc-Indikatoren, die in geplanten Baustellen NICHT vorkommen
+//     (inkl. Fahrzeugbrand — NICHT bloßes "brand", das träfe Ortsnamen wie Brandenburg/Wüstenbrand).
+//  2) MEHRDEUTIG (unfall/stau/defekt) — kommen auch in Baustellen-Texten ("Unfallschwerpunkt-
+//     Sanierung", "Rückstau", "defekte Fahrbahndecke") und Ortsnamen vor → nur dann live, wenn KEIN
+//     Bau-Kontext im Text steht. So fliegt der echte "Unfall/Stau/defekt"-Live-Eintrag raus, die
+//     geplante Baustelle bleibt.
+const LIVE_IMMER_RX =
+  /gefahr durch|liegengeblieb|liegen geblieb|\bpanne\b|defekte[ns]? (pkw|lkw|kfz|fahrzeug|lastwagen|transporter|ampel)|bergung|geborgen|rettungseinsatz|rettungsdienst|umgestürzt|umgekippte|ölspur|verlorene? ladung|gegenstand auf der fahrbahn|hindernis auf der fahrbahn|tier(e)? auf der|falschfahrer|geisterfahrer|aquaplaning|glätte|glatteis|witterungsbedingt|fahrzeugbrand|brennende[sr]? (pkw|lkw|fahrzeug)|in brand geraten|lkw-brand|pkw-brand/i
+const LIVE_MEHRDEUTIG_RX = /\bunfall|\bstau\b|\bdefekt/i
+const BAU_KONTEXT_RX =
+  /baustelle|bauarbeit|bauma(ß|ss)nahme|sanierung|erneuerung|bauphase|instandsetzung|instandhaltung|unterhaltung|beseitigung|leitung|sondernutzung|stra(ß|ss)enbau|fahrbahnerhalt|deckenbau|fahrbahndecke|brücke|gültig|zeitraum dieser|umleitung|sperrung wegen|vollsperrung|halbseitig|markierung/i
 
 /** Ephemere Live-/Ad-hoc-Verkehrsmeldung (nicht planbar) → nicht importieren/anzeigen. */
 export function istLiveVerkehrsmeldung(o) {
-  return LIVE_VERKEHR_RX.test(`${o?.name ?? ""}\n${o?.beschreibung ?? ""}`)
+  const text = `${o?.name ?? ""} ${o?.beschreibung ?? ""}`
+  if (LIVE_IMMER_RX.test(text)) return true
+  if (LIVE_MEHRDEUTIG_RX.test(text) && !BAU_KONTEXT_RX.test(text)) return true
+  return false
 }
 
 export function validateObstacle(input, { strict = false } = {}) {
