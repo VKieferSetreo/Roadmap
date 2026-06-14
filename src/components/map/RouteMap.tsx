@@ -199,9 +199,10 @@ export function RouteMap({
               }}
               eventHandlers={{ click: () => onSelect?.(f.id) }}
             >
-              {/* Tag der markierten Strecke: Name beim Drüberfahren */}
+              {/* Tag der markierten Strecke: WAS ist hier — Kategorie + Severity + Bezeichnung */}
               <Tooltip sticky direction="top">
-                {f.titel}
+                <span className="font-semibold">{katMeta(f.kategorie).label}</span> · {meta.label}
+                {f.titel ? ` — ${f.titel}` : ""}
               </Tooltip>
             </Polyline>,
           ]
