@@ -1,6 +1,7 @@
-// Einstellungen — Datenquelle, Profil, Kartendarstellung, Demo-Daten.
+// Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
-import { Database, FlaskConical, LogOut } from "lucide-react"
+import { useState } from "react"
+import { Database, FlaskConical, KeyRound, LogOut } from "lucide-react"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -9,16 +10,92 @@ import { Select } from "@/components/ui/Select"
 import { Switch } from "@/components/ui/Switch"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
+import { api } from "@/api/roadmap"
 import { TILE_LAYERS, useSettingsStore, type TileStyle } from "@/store/settings"
 import { useProjectStore } from "@/store/projects"
 import { useAuthStore } from "@/store/auth"
+import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { handleLogout } from "@/lib/auth"
 
+const MIN_PW_LEN = 10
+
+/** Eigenes Passwort ändern — nur für externe Kunden-Accounts (setreo-auth-extern). */
+function ChangePasswordCard() {
+  const [pw, setPw] = useState("")
+  const [pw2, setPw2] = useState("")
+  const [busy, setBusy] = useState(false)
+
+  const submit = async () => {
+    if (pw.length < MIN_PW_LEN) {
+      toast.error(`Passwort muss mindestens ${MIN_PW_LEN} Zeichen haben.`)
+      return
+    }
+    if (pw !== pw2) {
+      toast.error("Die Passwörter stimmen nicht überein.")
+      return
+    }
+    setBusy(true)
+    try {
+      await api.account.changePassword(pw)
+      setPw("")
+      setPw2("")
+      toast.success("Passwort geändert.")
+    } catch {
+      toast.error("Passwort konnte nicht geändert werden.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <KeyRound className="h-4 w-4 text-neutral-400" />
+          Passwort ändern
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="pw-new">Neues Passwort</Label>
+            <Input
+              id="pw-new"
+              type="password"
+              autoComplete="new-password"
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              placeholder={`mindestens ${MIN_PW_LEN} Zeichen`}
+            />
+          </div>
+          <div>
+            <Label htmlFor="pw-confirm">Wiederholen</Label>
+            <Input
+              id="pw-confirm"
+              type="password"
+              autoComplete="new-password"
+              value={pw2}
+              onChange={(e) => setPw2(e.target.value)}
+              placeholder="Neues Passwort bestätigen"
+            />
+          </div>
+        </div>
+        <div>
+          <Button onClick={() => void submit()} disabled={busy || !pw || !pw2}>
+            {busy ? "Wird gespeichert …" : "Passwort speichern"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function SettingsPage() {
-  const { profile, tileStyle, autoFit, setProfile, setTileStyle, setAutoFit } = useSettingsStore()
+  const { tileStyle, autoFit, setTileStyle, setAutoFit } = useSettingsStore()
   const resetToSeed = useProjectStore((s) => s.resetToSeed)
   const identity = useAuthStore((s) => s.identity)
+  const extern = useContextStore((s) => s.extern)
   const mode = useDataSourceStore((s) => s.mode)
   const apiVersion = useDataSourceStore((s) => s.apiVersion)
 
@@ -106,31 +183,9 @@ export function SettingsPage() {
             </Card>
           ) : null}
 
-          {/* Konto */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Profil</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={profile.name}
-                  onChange={(e) => setProfile({ name: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">E-Mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ email: e.target.value })}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Passwort ändern — nur externe Kunden-Accounts. Interne Setreo-Konten
+              verwalten ihr Passwort im Setreo-Hub, nicht hier. */}
+          {extern ? <ChangePasswordCard /> : null}
 
           {/* Karte */}
           <Card>

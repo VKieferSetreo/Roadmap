@@ -11,6 +11,8 @@ interface ContextStore {
   loaded: boolean
   email: string
   isAdmin: boolean
+  /** Login über setreo-auth-extern (Kunden-Gateway). */
+  extern: boolean
   tenant: AppContext["tenant"]
   /** alle Mandanten (nur Admin). */
   tenants: Tenant[]
@@ -26,6 +28,7 @@ export const useContextStore = create<ContextStore>((set) => ({
   loaded: false,
   email: "",
   isAdmin: false,
+  extern: false,
   tenant: null,
   tenants: [],
 
@@ -36,6 +39,7 @@ export const useContextStore = create<ContextStore>((set) => ({
         loaded: true,
         email: ctx.email,
         isAdmin: ctx.isAdmin,
+        extern: ctx.extern === true,
         tenant: ctx.tenant,
         tenants: ctx.tenants ?? [],
       })

@@ -2,6 +2,7 @@
 // Logo → immer zum Hub; rechts echte Anmelde-Identität (SSO) + Abmelden; mobil Menü-Button.
 // Setreo-Admins sehen zusätzlich den Mandanten-Switcher (X-Tenant-Kontext).
 
+import { Link } from "react-router-dom"
 import { Building2, LogOut, Menu } from "lucide-react"
 import { toast } from "sonner"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
@@ -20,6 +21,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const profile = useSettingsStore((s) => s.profile)
   const identity = useAuthStore((s) => s.identity)
   const isAdmin = useContextStore((s) => s.isAdmin)
+  const extern = useContextStore((s) => s.extern)
   const tenant = useContextStore((s) => s.tenant)
   const tenants = useContextStore((s) => s.tenants)
   const switchTenant = useContextStore((s) => s.switchTenant)
@@ -51,14 +53,26 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Logo → immer zurück zum Setreo-Hub (absoluter Domain-Root, am /roadmap-Basename vorbei). */}
-      <a href="/" className="flex items-center gap-3" aria-label="Zurück zum Setreo-Hub">
-        <SetreoLogo height={32} />
-        <span className="text-neutral-300" aria-hidden>
-          |
-        </span>
-        <span className="text-sm font-medium text-neutral-500">Roadmap</span>
-      </a>
+      {/* Logo-Ziel: externe Kunden bleiben in der App (Projektübersicht) — sie haben
+          keinen Zugriff aufs Hub-Admin-Panel (setreo-cloud.com/). Interne/Admins gehen
+          zum Setreo-Hub (Domain-Root, am /roadmap-Basename vorbei). */}
+      {extern ? (
+        <Link to="/" className="flex items-center gap-3" aria-label="Zur Projektübersicht">
+          <SetreoLogo height={32} />
+          <span className="text-neutral-300" aria-hidden>
+            |
+          </span>
+          <span className="text-sm font-medium text-neutral-500">Roadmap</span>
+        </Link>
+      ) : (
+        <a href="/" className="flex items-center gap-3" aria-label="Zurück zum Setreo-Hub">
+          <SetreoLogo height={32} />
+          <span className="text-neutral-300" aria-hidden>
+            |
+          </span>
+          <span className="text-sm font-medium text-neutral-500">Roadmap</span>
+        </a>
+      )}
 
       {/* Beta-Sticker: System noch in Entwicklung, nicht final */}
       <BetaBadge className="ml-1" />

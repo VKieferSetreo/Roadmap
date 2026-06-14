@@ -29,6 +29,7 @@ import { projectsRouter } from "./routes/projects.js"
 import { shareRouter } from "./routes/share.js"
 import { statsRouter } from "./routes/stats.js"
 import { syncRouter } from "./routes/sync.js"
+import { accountRouter } from "./routes/account.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -88,6 +89,9 @@ export function createApp({
     res.json({
       email,
       isAdmin,
+      // extern = Login über setreo-auth-extern (Kunden-Gateway). Steuert FE: eigenes
+      // Passwort änderbar + Logo führt zur Projektübersicht statt zum Hub-Admin.
+      extern: req.user?.gateway === "extern",
       tenant: tenant ? { id: tenant.id, slug: tenant.slug, name: tenant.name } : null,
       ...(isAdmin && { tenants: await listTenants(db) }),
     })
@@ -105,6 +109,8 @@ export function createApp({
   app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
   app.use("/api/bug-reports", bugReportsRouter({ db }))
+  // Eigenes Konto: Self-Service-Passwortänderung (nur externe Kunden-Accounts)
+  app.use("/api/account", accountRouter({ fetchImpl, authExtern }))
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Nicht gefunden" }))
 
