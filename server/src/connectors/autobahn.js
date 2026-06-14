@@ -59,6 +59,7 @@ export function normalizeRoadwork(rw, road, url) {
     attrs,
     ...(gueltigVon && { gueltigVon, realerStart }),
     ...(gueltigBis && { gueltigBis }),
+    kiAufbereitet: extrahiert,
     quelle: {
       name: `Autobahn-API · ${road} Roadworks`,
       url,

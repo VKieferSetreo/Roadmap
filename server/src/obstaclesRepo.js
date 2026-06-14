@@ -116,6 +116,7 @@ export function validateObstacle(input, { strict = false } = {}) {
       realerStart: input.realerStart ?? null,
       aktiv: input.aktiv !== false,
       demo: input.demo === true,
+      kiAufbereitet: input.kiAufbereitet === true,
       tenantId: null, // wird vom Aufrufer gesetzt (Route/Importer), nie vom Client
       externeId: null,
     },
@@ -124,26 +125,27 @@ export function validateObstacle(input, { strict = false } = {}) {
 
 export const INSERT_SQL = `INSERT INTO obstacles (kategorie, name, beschreibung, lat, lng, strassen_ref,
     zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start,
-    aktiv, demo, tenant_id, externe_id)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`
+    aktiv, demo, tenant_id, externe_id, ki_aufbereitet)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING *`
 
 export const insertParams = (o) => [
   o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef, o.zustaendig,
   o.quelle != null ? JSON.stringify(o.quelle) : null, JSON.stringify(o.attrs),
   o.gueltigVon, o.gueltigBis, o.fachId, o.quellenId, o.realerStart, o.aktiv, o.demo,
-  o.tenantId ?? null, o.externeId ?? null,
+  o.tenantId ?? null, o.externeId ?? null, o.kiAufbereitet === true,
 ]
 
-/** Sachfeld-Update beim Re-Import: fachId/realerStart/aktiv/tenant bleiben stabil. */
+/** Sachfeld-Update beim Re-Import: fachId/realerStart/aktiv/tenant bleiben stabil.
+ *  ki_aufbereitet ist "sticky" (einmal true bleibt true), damit ein Re-Import ohne Treffer das Flag nicht löscht. */
 export const UPDATE_SACHFELDER_SQL = `UPDATE obstacles SET kategorie = $2, name = $3, beschreibung = $4,
     lat = $5, lng = $6, strassen_ref = $7, zustaendig = $8, quelle = $9, attrs = $10,
-    gueltig_von = $11, gueltig_bis = $12, updated_at = now()
+    gueltig_von = $11, gueltig_bis = $12, ki_aufbereitet = (ki_aufbereitet OR $13), updated_at = now()
   WHERE id = $1 RETURNING *`
 
 export const sachfeldParams = (id, o) => [
   id, o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef, o.zustaendig,
   o.quelle != null ? JSON.stringify(o.quelle) : null, JSON.stringify(o.attrs),
-  o.gueltigVon, o.gueltigBis,
+  o.gueltigVon, o.gueltigBis, o.kiAufbereitet === true,
 ]
 
 const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index

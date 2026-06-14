@@ -62,6 +62,7 @@ export function rowToObstacle(row) {
     realerStart: toIsoDate(row.realer_start) ?? null,
     aktiv: row.aktiv !== false,
     demo: row.demo === true,
+    kiAufbereitet: row.ki_aufbereitet === true,
     // v3: tenant_id NULL = globaler Eintrag, gesetzt = Kunden-Eintrag des Mandanten
     tenantId: row.tenant_id ?? null,
     herkunft: row.tenant_id == null ? "global" : "eigen",

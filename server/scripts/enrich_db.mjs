@@ -14,6 +14,7 @@ const UPDATE = `UPDATE obstacles SET
     strassen_ref = COALESCE(strassen_ref, $5),
     richtung = COALESCE(richtung, $6),
     confidence = COALESCE(confidence, $7),
+    ki_aufbereitet = true,
     updated_at = now()
   WHERE id = $1`
 

@@ -180,30 +180,43 @@ function ruleKreisverkehr(attrs, transport) {
   }
 }
 
+// Prinzip (Max 2026-06-14): ALLE Baustellen auf der Strecke werden als Fund angezeigt
+// (nie ausgeblendet). ROT (kritisch) nur, wenn die HINTERLEGTEN Daten eine Restriktion
+// wirklich verletzen (Restbreite < Transportbreite oder Höhenbegrenzung < Transporthöhe).
+// Ohne Verletzung: Warnung (aktiv im Zeitraum, zur Relevanz-Prüfung) bzw. Hinweis
+// (außerhalb des Zeitraums). So sieht der Sachbearbeiter alles und entscheidet selbst.
 function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const rb = num(attrs.restbreiteM)
+  const mh = num(attrs.maxHoeheM)
   const overlap = overlapsZeitraum(obstacle, zeitraum)
   const detail = {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
+    ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
     Zeitraum: overlap ? "überschneidet Transport-Zeitraum" : "außerhalb des Transport-Zeitraums",
   }
 
+  const breiteVerletzt = rb != null && rb < transport.breite + 0.1
+  const hoeheVerletzt = mh != null && mh < transport.hoehe
+
   let severity
   let beschreibung
-  if (rb != null && rb < transport.breite + 0.1) {
+  if (breiteVerletzt || hoeheVerletzt) {
     severity = "kritisch"
-    beschreibung = "Baustellen-Restbreite reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
-  } else if (rb == null && overlap) {
-    // Keine Restbreite hinterlegt UND im Transport-Zeitraum aktiv → sicherheitshalber
-    // kritisch: für einen Schwertransport lässt sich die Passierbarkeit nicht annehmen.
-    severity = "kritisch"
-    beschreibung = "Aktive Baustelle ohne Angabe der Restbreite — Durchfahrt vorab klären (Passierbarkeit nicht gesichert)."
+    beschreibung = breiteVerletzt && hoeheVerletzt
+      ? "Baustelle verletzt Restbreite UND Durchfahrtshöhe — Durchfahrt nicht möglich, umfahren."
+      : breiteVerletzt
+        ? "Baustellen-Restbreite reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
+        : "Baustellen-Höhenbegrenzung reicht für den Transport nicht aus — Durchfahrt abstimmen oder umfahren."
   } else if (overlap) {
+    // Auf der Strecke, im Zeitraum aktiv, aber keine hinterlegte Restriktion verletzt
+    // (oder keine Maße bekannt) → anzeigen zur Prüfung, NICHT automatisch rot.
     severity = "warnung"
-    beschreibung = "Aktive Baustelle mit Spurverengung — Durchfahrt zeitlich abstimmen."
+    beschreibung = rb == null && mh == null
+      ? "Aktive Baustelle auf der Strecke — keine Maße hinterlegt, Relevanz vor Ort prüfen."
+      : "Aktive Baustelle auf der Strecke — hinterlegte Maße reichen aus, Durchfahrt zeitlich abstimmen."
   } else {
     severity = "hinweis"
-    beschreibung = "Baustelle außerhalb des Transport-Zeitraums — Lage beachten."
+    beschreibung = "Baustelle auf der Strecke — aktuell außerhalb des Transport-Zeitraums."
   }
   return { severity, beschreibung, detail }
 }

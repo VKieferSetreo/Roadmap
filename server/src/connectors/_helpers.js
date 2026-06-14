@@ -229,6 +229,7 @@ export function makeNormalized({
     gueltigVon: dateOnly(vonFinal),
     gueltigBis: dateOnly(bisFinal),
     realerStart: dateOnly(realerStart),
+    kiAufbereitet: extrahiert, // Flag: aus Freitext angereichert → FE-Badge "mit KI-Aufbereitung"
     quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: new Date().toISOString() },
   }
 }
