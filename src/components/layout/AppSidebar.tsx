@@ -49,7 +49,7 @@ function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const projects = useProjectStore((s) => s.projects)
+  const projects = useProjectStore((s) => s.projects ?? [])
   const openNewProject = useUiStore((s) => s.openNewProject)
   const isAdmin = useContextStore((s) => s.isAdmin)
 

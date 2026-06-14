@@ -118,7 +118,9 @@ export const useProjectStore = create<ProjectStore>()(
         set({ loading: true })
         try {
           const projects = await api.listProjects()
-          set({ projects, loading: false, seeded: true })
+          // projects IMMER als Array halten — sonst crasht jeder s.projects.find/[...projects]
+          // (z.B. ProjectDetail, AppSidebar) beim Render, u.a. nach Mandantenwechsel.
+          set({ projects: Array.isArray(projects) ? projects : [], loading: false, seeded: true })
         } catch {
           set({ loading: false })
           toast.error("Projekte konnten nicht geladen werden.")
@@ -141,7 +143,7 @@ export const useProjectStore = create<ProjectStore>()(
         set({ projects: buildSeedProjects(), analysis: {}, seeded: true })
       },
 
-      getProject: (id) => get().projects.find((p) => p.id === id),
+      getProject: (id) => (get().projects ?? []).find((p) => p.id === id),
 
       createProject: async (name) => {
         const fallback = (): Project => ({
@@ -399,6 +401,12 @@ export const useProjectStore = create<ProjectStore>()(
       migrate: (state, version) => (version < 2 ? undefined : (state as ProjectStore)),
       // analysis (laufende Timer-Fortschritte) + loading nicht persistieren
       partialize: (s) => ({ projects: s.projects, seeded: s.seeded }),
+      // Defensive: korrupte Persists (projects: undefined) heilen — projects MUSS ein Array
+      // bleiben, sonst crasht s.projects.find/[...projects] beim ersten Render.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<ProjectStore>
+        return { ...current, ...p, projects: Array.isArray(p.projects) ? p.projects : current.projects }
+      },
     },
   ),
 )

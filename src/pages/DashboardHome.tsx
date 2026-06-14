@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/cn"
 
 export function DashboardHome() {
-  const projects = useProjectStore((s) => s.projects)
+  const projects = useProjectStore((s) => s.projects ?? [])
   const loading = useProjectStore((s) => s.loading)
   const openNewProject = useUiStore((s) => s.openNewProject)
   const ansicht = useSettingsStore((s) => s.projektAnsicht)

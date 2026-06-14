@@ -62,7 +62,7 @@ export const api = {
 
   listProjects: () =>
     axiosClient<{ projects: Project[] }>({ url: "/projects", method: "GET" }).then(
-      (r) => r.projects,
+      (r) => r?.projects ?? [],
     ),
 
   createProject: (name: string) =>

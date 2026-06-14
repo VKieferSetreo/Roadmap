@@ -20,7 +20,7 @@ const VALID = new Set(TABS.map((t) => t.slug))
 export function ProjectDetail() {
   const navigate = useNavigate()
   const { id, tab } = useParams<{ id: string; tab?: string }>()
-  const project = useProjectStore((s) => (id ? s.projects.find((p) => p.id === id) : undefined))
+  const project = useProjectStore((s) => (id ? (s.projects ?? []).find((p) => p.id === id) : undefined))
   const loading = useProjectStore((s) => s.loading)
   const seeded = useProjectStore((s) => s.seeded)
 
