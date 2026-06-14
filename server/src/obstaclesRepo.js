@@ -58,6 +58,26 @@ export const buildFachId = (index, quellenId, realerStart) =>
  * z.B. anmeldungErforderlich), gueltigVon/Bis + realerStart als ISO-Datum,
  * quellenId 4-stellig, fachId 14-stellig.
  */
+// Reine bestehende Infrastruktur OHNE Abweichung → NICHT importieren/anzeigen (Vorgabe Max):
+// "wenn da einfach nur Infrastrukturelemente sind bei denen aber nix is, dann raus." Brücken/Tunnel/
+// sonstige Bauwerke ohne Restriktion und das GST-Positiv-Routennetz (gstRoute) sind Standard-Themen,
+// die das Strecken-Engineering abdeckt. SOBALD eine Abweichung dranhängt (Höhen-/Breiten-/Gewichts-/
+// Achslast-Limit, GST-Sperre, Vollsperrung, Bezugsgewicht) ist es zu behalten — auch bei Brücken.
+const RESTRIKTIONS_ATTRS = ["maxHoeheM", "maxBreiteM", "maxGewichtT", "maxAchslastT", "restbreiteM", "maxLaengeM", "bezugsgewichtT"]
+const BLOCK_FLAGS = ["vollsperrung", "halbseitig", "grundsaetzlicheGstSperre"]
+const INFRA_KATEGORIEN = new Set(["bruecke", "tunnel", "sonstige"])
+
+export function istReineInfrastruktur(o) {
+  const attrs = (o && typeof o.attrs === "object" && o.attrs) || {}
+  const hatAbweichung =
+    RESTRIKTIONS_ATTRS.some((k) => attrs[k] != null && Number(attrs[k]) > 0) ||
+    BLOCK_FLAGS.some((k) => attrs[k] === true)
+  if (hatAbweichung) return false // Restriktion/Sperre vorhanden → Abweichung, behalten
+  if (INFRA_KATEGORIEN.has(o?.kategorie)) return true // Bauwerk ohne jede Restriktion → raus
+  if (attrs.gstRoute === true) return true // GST-Positiv-Netz (bestehende Widmung, keine Abweichung) → raus
+  return false
+}
+
 export function validateObstacle(input, { strict = false } = {}) {
   if (!isPlainObject(input)) return { ok: false, reason: "kein Objekt" }
   if (!KATEGORIEN.includes(input.kategorie)) {

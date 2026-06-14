@@ -11,7 +11,8 @@
 // (der Worker und der Admin-Trigger laufen immer weiter).
 
 import {
-  assignFachId, insertObstacle, sachfeldParams, todayIso, UPDATE_SACHFELDER_SQL, validateObstacle,
+  assignFachId, insertObstacle, istReineInfrastruktur, sachfeldParams, todayIso,
+  UPDATE_SACHFELDER_SQL, validateObstacle,
 } from "../obstaclesRepo.js"
 
 const EXISTING_SQL = "SELECT * FROM obstacles WHERE quellen_id = $1 AND externe_id = $2"
@@ -69,6 +70,12 @@ export async function runImport({
         if (!externeId || !check.ok) {
           stats.uebersprungen += 1
           note(`Item ${index} übersprungen: ${!externeId ? "externeId fehlt" : check.reason}`)
+          continue
+        }
+        // Reine bestehende Infrastruktur ohne Abweichung gar nicht erst speichern (Standard = Engineering).
+        if (istReineInfrastruktur(check.value)) {
+          stats.uebersprungen += 1
+          stats.infrastruktur = (stats.infrastruktur ?? 0) + 1
           continue
         }
         seen.add(externeId)
