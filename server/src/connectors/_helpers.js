@@ -144,8 +144,8 @@ export function extractStammdaten(text) {
   if (/\bEinbahnstra(?:ß|ss)e\b/i.test(s)) out.einbahnstrasse = true
   if (/\bSackgasse\b/i.test(s)) out.sackgasse = true // GST: kein Wenden möglich
   if (/\bHavarie\b|\bNotma(?:ß|ss)nahme\b|\bWasserrohrbruch\b/i.test(s)) out.havarie = true // akut/ungeplant
-  const bauwerk = s.match(/\b([\wäöüß-]*[Tt]unnel|Unterf(?:ü|ue)hrung|(?:Ü|Ue)berf(?:ü|ue)hrung|Br(?:ü|ue)cke)\b/)
-  if (bauwerk) out.bauwerkstyp = bauwerk[1] // signalisiert harte Höhen-/Last-Restriktion
+  // (bauwerkstyp bewusst NICHT extrahiert — redundant mit kategorie bruecke/tunnel, feuerte massenhaft
+  //  auf generische OSM-Namen "Brücke (OSM)" und flaggte Infrastruktur fälschlich als KI-aufbereitet.)
   const medium = s.match(/\b(Fernw(?:ä|ae)rme|Trinkwasser|Wasserleitung|Gasleitung|Gasversorgung|Stromleitung|Stromnetz|Glasfaser|Breitband|Telekommunikation|Kommunikationsleitung|Kanal)\b/i)
   if (medium) out.medium = medium[1] // Bauanlass (Versorgungsleitung)
 
