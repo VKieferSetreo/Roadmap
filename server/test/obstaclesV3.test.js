@@ -9,14 +9,15 @@ import { cityPoints, makeApp, midOf } from "./helpers/testApp.js"
 const asAdmin = (req) => req.set("X-Auth-User", "admin@setreo.de").set("X-Auth-Roles", "admin")
 const asUser = (email) => (req) => req.set("X-Auth-User", email).set("X-Auth-Roles", "user")
 
-/** Zweiten Tenant inkl. Mitglied über die Admin-API anlegen. */
-async function createTenant(app, { slug, name, members = [] }) {
+/** Zweiten Tenant (+ Mitglieder direkt in den Fake-State, ohne Provisionierung) anlegen. */
+async function createTenant(app, db, { slug, name, members = [] }) {
   const res = await asAdmin(request(app).post("/api/admin/tenants")).send({ slug, name })
   expect(res.status).toBe(201)
-  if (members.length) {
-    const put = await asAdmin(request(app).put(`/api/admin/tenants/${res.body.id}/members`))
-      .send({ emails: members })
-    expect(put.status).toBe(200)
+  for (const email of members) {
+    db.state.members.push({
+      tenant_id: res.body.id, email: email.toLowerCase(), role: "user",
+      passwort_klar: null, created_at: new Date().toISOString(),
+    })
   }
   return res.body
 }
@@ -24,7 +25,7 @@ async function createTenant(app, { slug, name, members = [] }) {
 /** App mit zweitem Tenant kunde-a (Mitglied a@kunde-a.de); setreo-Mitglied: vki@setreo.de. */
 async function makeTwoTenantApp() {
   const ctx = makeApp({ requireAuth: true })
-  await createTenant(ctx.app, { slug: "kunde-a", name: "Kunde A", members: ["a@kunde-a.de"] })
+  await createTenant(ctx.app, ctx.db, { slug: "kunde-a", name: "Kunde A", members: ["a@kunde-a.de"] })
   return ctx
 }
 

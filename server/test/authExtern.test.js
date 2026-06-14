@@ -18,26 +18,28 @@ function provisionFetch(status = 201) {
   }))
 }
 
-async function makeTenantWithMember(app, { slug = "kunde-a", members = [] } = {}) {
+/** Tenant anlegen (+ Mitglieder direkt in den Fake-State, ohne Provisionierung). */
+async function makeTenantWithMember(app, db, { slug = "kunde-a", members = [] } = {}) {
   const res = await asAdmin(request(app).post("/api/admin/tenants")).send({ slug, name: slug })
   expect(res.status).toBe(201)
-  if (members.length) {
-    const put = await asAdmin(request(app).put(`/api/admin/tenants/${res.body.id}/members`))
-      .send({ emails: members })
-    expect(put.status).toBe(200)
+  for (const email of members) {
+    db.state.members.push({
+      tenant_id: res.body.id, email: email.toLowerCase(), role: "user",
+      passwort_klar: null, created_at: new Date().toISOString(),
+    })
   }
   return res.body
 }
 
 describe("gateway-trennung (X-Auth-Gateway: extern)", () => {
   it("externe Identität bekommt NIE admin — auch mit gefälschtem Rollen-Header", async () => {
-    const { app } = makeApp({ requireAuth: true })
-    await makeTenantWithMember(app, { members: ["kunde@firma.de"] })
+    const { app, db } = makeApp({ requireAuth: true })
+    await makeTenantWithMember(app, db, { members: ["kunde@firma.de"] })
 
     const ctx = await request(app)
       .get("/api/context")
       .set("X-Auth-User", "kunde@firma.de")
-      .set("X-Auth-Roles", "admin") // vom Client/Fehlkonfiguration behauptete Rolle
+      .set("X-Auth-Roles", "admin")
       .set("X-Auth-Gateway", "extern")
     expect(ctx.status).toBe(200)
     expect(ctx.body.isAdmin).toBe(false)
@@ -46,8 +48,8 @@ describe("gateway-trennung (X-Auth-Gateway: extern)", () => {
   })
 
   it("extern: Admin-API 403, X-Tenant-Switch wird ignoriert", async () => {
-    const { app } = makeApp({ requireAuth: true })
-    await makeTenantWithMember(app, { members: ["kunde@firma.de"] })
+    const { app, db } = makeApp({ requireAuth: true })
+    await makeTenantWithMember(app, db, { members: ["kunde@firma.de"] })
 
     const admin = await request(app)
       .get("/api/admin/tenants")
@@ -56,7 +58,6 @@ describe("gateway-trennung (X-Auth-Gateway: extern)", () => {
       .set("X-Auth-Gateway", "extern")
     expect(admin.status).toBe(403)
 
-    // X-Tenant zeigt auf setreo — extern zählt allein das Member-Mapping
     const ctx = await request(app)
       .get("/api/context")
       .set("X-Auth-User", "kunde@firma.de")
@@ -73,9 +74,8 @@ describe("gateway-trennung (X-Auth-Gateway: extern)", () => {
   })
 
   it("X-Auth-Email hat Vorrang: User-ID in X-Auth-User bricht das Mapping nicht", async () => {
-    // setreo-auth (live) setzt X-Auth-User = UUID — fürs Mapping zählt X-Auth-Email.
-    const { app } = makeApp({ requireAuth: true })
-    await makeTenantWithMember(app, { members: ["kunde@firma.de"] })
+    const { app, db } = makeApp({ requireAuth: true })
+    await makeTenantWithMember(app, db, { members: ["kunde@firma.de"] })
 
     const ctx = await request(app)
       .get("/api/context")
@@ -91,15 +91,15 @@ describe("gateway-trennung (X-Auth-Gateway: extern)", () => {
 describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
   it("legt Konto im extern-Auth an + trägt Mitgliedschaft ein (201)", async () => {
     const fetchImpl = provisionFetch(201)
-    const { app } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app)
+    const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
+    const tenant = await makeTenantWithMember(app, db)
 
     const res = await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/users`))
       .send({ email: "Kunde@Firma.de", password: "geheim-1234" })
     expect(res.status).toBe(201)
     expect(res.body.created).toBe(true)
     expect(res.body.email).toBe("kunde@firma.de")
-    expect(res.body.tenant.mitglieder).toContain("kunde@firma.de")
+    expect(res.body.tenant.mitglieder.map((m) => m.email)).toContain("kunde@firma.de")
 
     expect(fetchImpl).toHaveBeenCalledOnce()
     const [url, init] = fetchImpl.mock.calls[0]
@@ -112,21 +112,20 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
   it("bestehendes Konto: 200 (Passwort-Reset), Mitgliedschaft bleibt einfach", async () => {
     const fetchImpl = provisionFetch(200)
     const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app, { members: ["kunde@firma.de"] })
+    const tenant = await makeTenantWithMember(app, db, { members: ["kunde@firma.de"] })
 
     const res = await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/users`))
       .send({ email: "kunde@firma.de", password: "neues-passwort" })
     expect(res.status).toBe(200)
     expect(res.body.created).toBe(false)
-    const members = db.state.members.filter((m) => m.email === "kunde@firma.de")
-    expect(members).toHaveLength(1)
+    expect(db.state.members.filter((m) => m.email === "kunde@firma.de")).toHaveLength(1)
   })
 
   it("E-Mail gehört anderem Mandanten → 409, extern-Auth wird NICHT angerufen", async () => {
     const fetchImpl = provisionFetch(201)
-    const { app } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app)
-    await makeTenantWithMember(app, { slug: "kunde-b", members: ["kunde@firma.de"] })
+    const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
+    const tenant = await makeTenantWithMember(app, db)
+    await makeTenantWithMember(app, db, { slug: "kunde-b", members: ["kunde@firma.de"] })
 
     const res = await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/users`))
       .send({ email: "kunde@firma.de", password: "geheim-1234" })
@@ -136,8 +135,8 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
 
   it("Validierung: Passwort zu kurz 400, kaputte E-Mail 400, ohne Config 503", async () => {
     const fetchImpl = provisionFetch(201)
-    const { app } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app)
+    const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
+    const tenant = await makeTenantWithMember(app, db)
 
     const short = await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/users`))
       .send({ email: "kunde@firma.de", password: "kurz" })
@@ -148,8 +147,8 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
     expect(badMail.status).toBe(400)
     expect(fetchImpl).not.toHaveBeenCalled()
 
-    const { app: unconfigured } = makeApp({ requireAuth: true, authExtern: { url: "", secret: "" } })
-    const t2 = await makeTenantWithMember(unconfigured)
+    const { app: unconfigured, db: db2 } = makeApp({ requireAuth: true, authExtern: { url: "", secret: "" } })
+    const t2 = await makeTenantWithMember(unconfigured, db2)
     const res = await asAdmin(request(unconfigured).post(`/api/admin/tenants/${t2.id}/users`))
       .send({ email: "kunde@firma.de", password: "geheim-1234" })
     expect(res.status).toBe(503)
@@ -160,7 +159,7 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
       throw new Error("connect ECONNREFUSED")
     })
     const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app)
+    const tenant = await makeTenantWithMember(app, db)
 
     const res = await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/users`))
       .send({ email: "kunde@firma.de", password: "geheim-1234" })
@@ -170,8 +169,8 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
 
   it("nur Admin darf provisionieren (extern-Gateway 403)", async () => {
     const fetchImpl = provisionFetch(201)
-    const { app } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
-    const tenant = await makeTenantWithMember(app, { members: ["kunde@firma.de"] })
+    const { app, db } = makeApp({ requireAuth: true, fetchImpl, authExtern: AUTH_EXTERN })
+    const tenant = await makeTenantWithMember(app, db, { members: ["kunde@firma.de"] })
 
     const res = await request(app)
       .post(`/api/admin/tenants/${tenant.id}/users`)

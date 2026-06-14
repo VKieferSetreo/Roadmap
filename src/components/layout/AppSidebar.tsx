@@ -52,6 +52,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const projects = useProjectStore((s) => s.projects ?? [])
   const openNewProject = useUiStore((s) => s.openNewProject)
   const isAdmin = useContextStore((s) => s.isAdmin)
+  const tenant = useContextStore((s) => s.tenant)
+  // Admin-Werkzeuge (Mandanten/Debugging) NUR im eigenen Setreo-Kontext zeigen. Wechselt der
+  // Admin per Dropdown auf einen Kunden-Mandanten, sieht er dessen 1:1-Ansicht (ohne diese
+  // Reiter) — das Dropdown bleibt oben zum Zurückwechseln.
+  const adminKontext = isAdmin && (tenant?.slug ?? "setreo") === "setreo"
 
   const m = pathname.match(/^\/projekte\/([^/]+)(?:\/([^/]+))?/)
   const activeId = m?.[1]
@@ -126,7 +131,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="border-t border-neutral-100 p-3">
         <NavRow icon={Database} label="Datenbank" active={onDb} onClick={() => go("/datenbank")} />
-        {isAdmin ? (
+        {adminKontext ? (
           <NavRow
             icon={Building2}
             label="Mandanten"
@@ -134,7 +139,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             onClick={() => go("/mandanten")}
           />
         ) : null}
-        {isAdmin ? (
+        {adminKontext ? (
           <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debug")} />
         ) : null}
         <NavRow

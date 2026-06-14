@@ -44,7 +44,9 @@ export function createFakeDb() {
     const row = { id: randomUUID(), slug, name, created_at: now() }
     state.tenants.push(row)
     for (const email of members) {
-      state.members.push({ tenant_id: row.id, email: email.toLowerCase(), created_at: now() })
+      state.members.push({
+        tenant_id: row.id, email: email.toLowerCase(), role: "user", passwort_klar: null, created_at: now(),
+      })
     }
     return row
   }
@@ -74,8 +76,14 @@ export function createFakeDb() {
         }))
       return ok(rows)
     }
-    if (sql.startsWith("SELECT tenant_id, email FROM tenant_members")) {
-      return ok([...state.members].sort((a, b) => (a.email < b.email ? -1 : 1)))
+    if (sql.startsWith("SELECT tenant_id, email, role, passwort_klar FROM tenant_members")) {
+      return ok(
+        [...state.members]
+          .sort((a, b) => (a.email < b.email ? -1 : 1))
+          .map((m) => ({
+            tenant_id: m.tenant_id, email: m.email, role: m.role ?? "user", passwort_klar: m.passwort_klar ?? null,
+          })),
+      )
     }
     if (sql.startsWith("INSERT INTO tenants (slug, name)")) {
       const row = { id: randomUUID(), slug: params[0], name: params[1], created_at: now() }
@@ -123,8 +131,18 @@ export function createFakeDb() {
       state.members = state.members.filter((m) => m.tenant_id !== params[0])
       return ok([], before - state.members.length)
     }
-    if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email)")) {
-      state.members.push({ tenant_id: params[0], email: params[1], created_at: now() })
+    if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email, role, passwort_klar)")) {
+      state.members.push({
+        tenant_id: params[0], email: params[1], role: params[2] ?? "user",
+        passwort_klar: params[3] ?? null, created_at: now(),
+      })
+      return ok([], 1)
+    }
+    if (sql.startsWith("UPDATE tenant_members SET role = $3, passwort_klar = $4 WHERE tenant_id = $1 AND email = $2")) {
+      const m = state.members.find((x) => x.tenant_id === params[0] && x.email === params[1])
+      if (!m) return ok([], 0)
+      m.role = params[2]
+      m.passwort_klar = params[3]
       return ok([], 1)
     }
     if (sql.startsWith("SELECT count(*)::int AS n FROM projects WHERE tenant_id = $1")) {

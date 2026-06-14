@@ -152,12 +152,23 @@ export interface Project {
   archiviertAm?: string | null
 }
 
-/** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Mitglieder. */
+/** Rolle eines Nutzers innerhalb seines Mandanten. */
+export type TenantRole = "admin" | "user"
+
+/** Nutzer eines Mandanten (Admin-Verwaltung). passwort = Klartext (nur Setreo-Admin sieht das;
+ *  null bei internen Hub-Konten ohne hier verwaltetes Passwort). */
+export interface TenantMember {
+  email: string
+  role: TenantRole
+  passwort: string | null
+}
+
+/** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Nutzer. */
 export interface Tenant {
   id: string
   slug: string
   name: string
-  mitglieder: string[]
+  mitglieder: TenantMember[]
   projekte: number
 }
 

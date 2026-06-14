@@ -41,18 +41,39 @@ export async function listTenants(db) {
        (SELECT count(*)::int FROM projects p WHERE p.tenant_id = t.id) AS projekte
      FROM tenants t ORDER BY t.created_at ASC`,
   )
-  const members = await db.query(
-    "SELECT tenant_id, email FROM tenant_members ORDER BY email ASC",
-  )
-  const byTenant = new Map()
-  for (const m of members.rows) {
-    if (!byTenant.has(m.tenant_id)) byTenant.set(m.tenant_id, [])
-    byTenant.get(m.tenant_id).push(m.email)
-  }
+  const byTenant = await membersByTenant(db)
   return tenants.rows.map((t) => rowToTenant(t, byTenant.get(t.id) ?? []))
 }
 
-/** Tenant-Shape exakt wie im FE-Contract: {id, slug, name, mitglieder, projekte}. */
+/** Map tenant_id → [{email, role, passwort}] (alle Mandanten). */
+export async function membersByTenant(db) {
+  const { rows } = await db.query(
+    "SELECT tenant_id, email, role, passwort_klar FROM tenant_members ORDER BY email ASC",
+  )
+  const map = new Map()
+  for (const m of rows) {
+    if (!map.has(m.tenant_id)) map.set(m.tenant_id, [])
+    map.get(m.tenant_id).push(rowToMember(m))
+  }
+  return map
+}
+
+/** Mitglieder eines Mandanten als [{email, role, passwort}]. */
+export async function tenantMembers(db, tenantId) {
+  return (await membersByTenant(db)).get(tenantId) ?? []
+}
+
+/** tenant_members-Row → FE-Member-Shape. passwort = Klartext (nur Admin sieht das). */
+export function rowToMember(row) {
+  return {
+    email: row.email,
+    role: row.role === "admin" ? "admin" : "user",
+    passwort: row.passwort_klar ?? null,
+  }
+}
+
+/** Tenant-Shape exakt wie im FE-Contract: {id, slug, name, mitglieder, projekte}.
+ *  mitglieder = [{email, role, passwort}]. */
 export function rowToTenant(row, mitglieder = [], projekte = row.projekte ?? 0) {
   return {
     id: row.id,

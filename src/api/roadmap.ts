@@ -20,6 +20,7 @@ import type {
   SyncJob,
   SyncStatus,
   Tenant,
+  TenantRole,
   TransportData,
   TransportZeitraum,
 } from "@/types/domain"
@@ -103,16 +104,19 @@ export const api = {
   deleteTenant: (id: string) =>
     axiosClient<void>({ url: `/admin/tenants/${id}`, method: "DELETE" }),
 
-  setTenantMembers: (id: string, emails: string[]) =>
-    axiosClient<Tenant>({ url: `/admin/tenants/${id}/members`, method: "PUT", data: { emails } }),
+  /** Zentraler Speichern-Button: setzt die komplette Nutzerliste eines Mandanten
+   *  (Rolle + Passwort je Nutzer). Neue brauchen ein Passwort (werden provisioniert),
+   *  geändertes Passwort wird neu gesetzt, Entfernte fallen weg. */
+  saveTenantMembers: (id: string, members: { email: string; role: TenantRole; password: string }[]) =>
+    axiosClient<Tenant>({ url: `/admin/tenants/${id}/members`, method: "PUT", data: { members } }),
 
-  /** Kunden-Zugang anlegen: Konto in setreo-auth-extern + Mitgliedschaft im Mandanten.
+  /** Einzelnen Kunden-Zugang anlegen/aktualisieren (Konto in setreo-auth-extern).
    *  created=false ⇒ Konto existierte, Passwort wurde neu gesetzt. */
-  createTenantUser: (id: string, email: string, password: string) =>
+  createTenantUser: (id: string, email: string, password: string, role: TenantRole = "user") =>
     axiosClient<{ email: string; created: boolean; tenant: Tenant }>({
       url: `/admin/tenants/${id}/users`,
       method: "POST",
-      data: { email, password },
+      data: { email, password, role },
     }),
 
   // ── Datenbank ──────────────────────────────────────────────────────────────
