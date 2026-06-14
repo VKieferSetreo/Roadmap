@@ -51,7 +51,7 @@ export const baustellenShConnector = {
         attrs: {
           restbreiteM: num(p.Verbleibende_Restbreite_in_m) ?? undefined,
           maxGewichtT: gewicht ?? undefined,
-          laengeM: num(p.Länge_in_m) ?? undefined,
+          sperrlaengeM: num(p.Länge_in_m) ?? undefined, // einheitlicher Key (FE-Label "Länge der Maßnahme")
           vollsperrung: /vollsperr|gesperrt|durchgangsverkehr.*gesperrt/i.test(text) || undefined,
         },
         gueltigVon: von, gueltigBis: bis, realerStart: von,
