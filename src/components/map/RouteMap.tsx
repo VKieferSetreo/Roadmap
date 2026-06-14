@@ -9,6 +9,7 @@ import { Locate, Minus, Plus } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
+import { MapResize } from "./MapResize"
 import { endPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { groupFindings } from "@/lib/findingGroups"
@@ -93,6 +94,7 @@ export function RouteMap({
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+        <MapResize />
 
         {drawn.map((r) => (
           /* je Strecke: weißer Schatten + Strecken-Farbe + Fahrtrichtungs-Fluss */

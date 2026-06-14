@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
+import { MapResize } from "./MapResize"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { DbFinding } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
@@ -56,6 +57,7 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
           className="h-full w-full"
         >
           <TileLayer attribution={tiles.attribution} url={tiles.url} />
+          <MapResize />
           <Marker
             position={[finding.lat, finding.lng]}
             icon={findingPinIcon(finding.kategorie, sev.marker, true)}
