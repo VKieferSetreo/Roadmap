@@ -242,8 +242,9 @@ export function makeNormalized({
     externeId: externeId != null ? String(externeId) : null,
     kategorie,
     name: name != null ? String(name).slice(0, 240) : null,
-    // Hinweis anhängen, dass strukturierte Angaben aus dem Text generiert wurden (kein Live-Wert).
-    beschreibung: extrahiert ? `${besch ? besch + " " : ""}· Angaben aus Meldungstext extrahiert` : besch,
+    // Beschreibung = PURER Quelltext (was die Behörde/Quelle liefert), keine eigenen Notizen.
+    // Dass strukturierte Felder abgeleitet wurden, markiert separat das kiAufbereitet-Flag/Badge.
+    beschreibung: besch,
     lat: nlat,
     lng: nlng,
     strassenRef: refFinal != null ? String(refFinal) : null,

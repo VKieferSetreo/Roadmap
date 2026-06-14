@@ -108,7 +108,9 @@ describe("makeNormalized — Strip-down-Integration", () => {
     })
     expect(o.attrs.restbreiteM).toBe(10.75)
     expect(o.gueltigVon).toBe("2026-06-15")
-    expect(o.beschreibung).toContain("aus Meldungstext extrahiert")
+    // Beschreibung bleibt PURER Quelltext (keine eigene Notiz); Ableitung markiert kiAufbereitet.
+    expect(o.beschreibung).toBe("Maximale Durchfahrtsbreite: 10.75 m, gültig ab 15.06.26")
+    expect(o.kiAufbereitet).toBe(true)
   })
 
   it("überschreibt vom Connector gesetzte Werte NICHT", () => {

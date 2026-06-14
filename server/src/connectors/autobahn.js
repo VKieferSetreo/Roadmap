@@ -89,6 +89,8 @@ export function normalizeAutobahn(item, road, service, url) {
   const segment = item?.impact?.lower && item?.impact?.upper
     ? `Abschnitt: ${item.impact.lower} – ${item.impact.upper}` : null
   const extrahiert = Object.keys(attrs).length > 0 || (!!ende && !start) || (!start && !!ex.gueltigVon)
+  // Beschreibung = PURER Autobahn-GmbH-Meldungstext (Segment-Abschnitt + Original-Description), KEINE
+  // eigenen Notizen. Abgeleitete Felder markiert das kiAufbereitet-Flag separat.
   const beschFinal = [segment, beschreibung].filter(Boolean).join("\n") || null
 
   return {
@@ -97,7 +99,7 @@ export function normalizeAutobahn(item, road, service, url) {
     name: typeof item.title === "string" && item.title.trim()
       ? item.title.trim()
       : `${istSperrung ? "Sperrung" : "Baustelle"} ${road}`,
-    beschreibung: extrahiert && beschFinal ? `${beschFinal}\n· Angaben aus Meldungstext extrahiert` : beschFinal,
+    beschreibung: beschFinal,
     lat,
     lng,
     strassenRef: road,
@@ -109,8 +111,9 @@ export function normalizeAutobahn(item, road, service, url) {
     _pk: projektKey(item.identifier), // Gruppierungs-Hilfsfelder (von validateObstacle ignoriert)
     _ri: typeof item.subtitle === "string" ? item.subtitle.trim() : "",
     quelle: {
-      name: `Autobahn-API · ${road} ${service}`,
-      url,
+      // Quelle = Autobahn GmbH; Link öffnet die offizielle Autobahn-Seite (nicht den JSON-Endpunkt).
+      name: `Autobahn GmbH · ${road}`,
+      url: "https://autobahn.de",
       aktualisiertAm: new Date().toISOString(),
     },
   }
@@ -150,7 +153,7 @@ function mergeAutobahnGruppe(group) {
     externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie)}`, // stabil, eindeutig je Projekt+Richtung
     kategorie: first.kategorie,
     name: first.name,
-    beschreibung: `${first.beschreibung ?? ""}\n· Sammelstrecke aus ${group.length} Teilabschnitten`.trim(),
+    beschreibung: first.beschreibung ?? null, // purer Quelltext; die Strecke steckt in geom (MultiLineString)
     lat: first.lat,
     lng: first.lng,
     strassenRef: first.strassenRef,

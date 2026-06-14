@@ -155,13 +155,13 @@ describe("Autobahn-Connector (Quelle 0001, fetch gemockt)", () => {
       gueltigVon: "2026-03-08",
       realerStart: "2026-03-08",
     })
-    // "Fahrbahnverengung" wird nativ extrahiert → Hinweis angehängt + attrs/Flag gesetzt
+    // Beschreibung = PURER Quelltext (keine Notiz); "Fahrbahnverengung" wird nativ extrahiert (Flag)
     expect(obstacles[0].beschreibung).toContain("Fahrbahnverengung")
-    expect(obstacles[0].beschreibung).toContain("aus Meldungstext extrahiert")
+    expect(obstacles[0].beschreibung).not.toContain("aus Meldungstext extrahiert")
     expect(obstacles[0].attrs.fahrbahnVerengt).toBe(true)
     expect(obstacles[0].kiAufbereitet).toBe(true)
-    expect(obstacles[0].quelle.name).toBe("Autobahn-API · A1 roadworks")
-    expect(obstacles[0].quelle.url).toContain("/A1/services/roadworks")
+    expect(obstacles[0].quelle.name).toBe("Autobahn GmbH · A1")
+    expect(obstacles[0].quelle.url).toBe("https://autobahn.de")
   })
 
   it("normalizeAutobahn verwirft Items ohne identifier/Koordinaten", () => {

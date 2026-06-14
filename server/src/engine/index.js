@@ -65,7 +65,10 @@ export async function analyze({ db, project, corridorM }) {
         kategorie: obstacle.kategorie,
         severity: verdict.severity,
         titel: verdict.titel,
-        beschreibung: verdict.beschreibung,
+        // Popup zeigt den ECHTEN Quelltext (z.B. Autobahn-GmbH-Meldung), nicht unseren generierten
+        // Satz. Die Bewertung steckt in severity + detail. Fallback auf den Regeltext, falls die Quelle
+        // keinen Beschreibungstext liefert.
+        beschreibung: (obstacle.beschreibung && obstacle.beschreibung.trim()) || verdict.beschreibung,
         detail: verdict.detail,
         lat: obstacle.lat,
         lng: obstacle.lng,
