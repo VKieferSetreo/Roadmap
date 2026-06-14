@@ -205,7 +205,7 @@ export function stripHtml(text) {
 export function makeNormalized({
   externeId, kategorie, name = null, beschreibung = null, lat, lng,
   strassenRef = null, attrs = {}, gueltigVon = null, gueltigBis = null, realerStart = null,
-  quelleName = null, quelleUrl = null,
+  quelleName = null, quelleUrl = null, geom = null,
 }) {
   let nlat = lat != null ? Number(lat) : null
   let nlng = lng != null ? Number(lng) : null
@@ -252,6 +252,7 @@ export function makeNormalized({
     gueltigBis: dateOnly(bisFinal),
     realerStart: dateOnly(realerStart),
     kiAufbereitet: extrahiert, // Flag: aus Freitext angereichert → FE-Badge "mit KI-Aufbereitung"
+    geom: geom && typeof geom === "object" ? geom : null, // GeoJSON-Geometrie (Strecke) für Linien-Render
     quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: new Date().toISOString() },
   }
 }

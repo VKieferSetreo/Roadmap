@@ -47,7 +47,7 @@ export async function analyze({ db, project, corridorM }) {
     // v3: globale Hindernisse + Kunden-Einträge des Projekt-Tenants.
     const bbox = bboxWithBuffer(geometry, corridorM)
     const { rows } = await db.query(
-      `SELECT ${OBSTACLE_COLS} FROM obstacles WHERE aktiv = true
+      `SELECT ${OBSTACLE_COLS}, geom FROM obstacles WHERE aktiv = true
          AND (tenant_id IS NULL OR tenant_id = $1::uuid)
          AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5
          AND kategorie <> ALL($6::text[])`, // Bauwerke raus — macht das Strecken-Engineering
@@ -69,6 +69,7 @@ export async function analyze({ db, project, corridorM }) {
         detail: verdict.detail,
         lat: obstacle.lat,
         lng: obstacle.lng,
+        geom: obstacle.geom ?? null, // GeoJSON-Strecke (Linie) für FE-Rendering, sonst Punkt
         km: round1(near.km), // Position auf SEINER Route
         routeId: route.id,
         routeName: route.name,
@@ -127,14 +128,14 @@ export async function runAnalysis({ db, project, corridorM = 120 }) {
         await q.query(
           `INSERT INTO findings (project_id, obstacle_id, kategorie, severity, titel, beschreibung,
              lat, lng, km, detail, strassen_ref, gueltig_von, gueltig_bis, quelle, zustaendig,
-             route_id, route_name)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`,
+             route_id, route_name, geom)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
           [
             project.id, f.obstacleId, f.kategorie, f.severity, f.titel, f.beschreibung,
             f.lat, f.lng, f.km, JSON.stringify(f.detail ?? {}), f.strassenRef ?? null,
             f.gueltigVon ?? null, f.gueltigBis ?? null,
             f.quelle != null ? JSON.stringify(f.quelle) : null, f.zustaendig ?? null,
-            f.routeId ?? null, f.routeName ?? null,
+            f.routeId ?? null, f.routeName ?? null, f.geom != null ? JSON.stringify(f.geom) : null,
           ],
         )
       }

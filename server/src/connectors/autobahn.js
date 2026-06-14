@@ -6,7 +6,11 @@
 //   Spuren · impact.lower/upper → Streckenabschnitt. future=true (zukünftig startende) bleibt erhalten.
 
 import { fetchJson } from "../external/http.js"
-import { extractStammdaten } from "./_helpers.js"
+import { extractStammdaten, stabilHash } from "./_helpers.js"
+
+/** Projekt-Schlüssel: identifier ohne das abschließende ".deN"-Teilsegment. Die Autobahn-API zerlegt
+ *  EINE Baustelle in mehrere Teil-Segmente (…de8/de15/de17) mit gleichem Projekt-Prefix → so gruppierbar. */
+const projektKey = (id) => String(id ?? "").replace(/\.de\d+$/i, "")
 
 // extractStammdaten-Felder, die KEINE attrs sind (eigene Spalten / Top-Level).
 const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef", "richtung"])
@@ -101,12 +105,73 @@ export function normalizeAutobahn(item, road, service, url) {
     ...(gueltigVon && { gueltigVon, realerStart: gueltigVon }),
     ...(gueltigBis && { gueltigBis }),
     kiAufbereitet: extrahiert,
+    geom: item.geometry && typeof item.geometry === "object" && item.geometry.type ? item.geometry : null,
+    _pk: projektKey(item.identifier), // Gruppierungs-Hilfsfelder (von validateObstacle ignoriert)
+    _ri: typeof item.subtitle === "string" ? item.subtitle.trim() : "",
     quelle: {
       name: `Autobahn-API · ${road} ${service}`,
       url,
       aktualisiertAm: new Date().toISOString(),
     },
   }
+}
+
+/** Mehrere Teil-Segmente EINES Projekts + EINER Richtung → ein Strecken-Hindernis: kombinierte Linien-
+ *  Geometrie (MultiLineString), schärfste Maße, frühestes Von / spätestes Bis. Behebt die N-fach-Duplikate
+ *  und liefert die Strecke (Linie + 1 Pin) statt N Punkte. Gruppe der Größe 1 → unverändert. */
+function mergeAutobahnGruppe(group) {
+  if (group.length === 1) return group[0]
+  const first = group[0]
+  const lines = []
+  for (const o of group) {
+    const g = o.geom
+    if (!g) continue
+    if (g.type === "LineString") lines.push(g.coordinates)
+    else if (g.type === "MultiLineString") lines.push(...g.coordinates)
+  }
+  const MIN_KEYS = new Set(["restbreiteM", "maxHoeheM", "maxGewichtT", "maxBreiteM", "maxAchslastT", "spurenFrei"])
+  const MAX_KEYS = new Set(["spurenGesperrt", "sperrlaengeM"])
+  const attrs = {}
+  for (const o of group) {
+    for (const [k, v] of Object.entries(o.attrs ?? {})) {
+      if (typeof v === "boolean") { if (v) attrs[k] = true }
+      else if (typeof v === "number") {
+        if (MIN_KEYS.has(k)) attrs[k] = attrs[k] == null ? v : Math.min(attrs[k], v)
+        else if (MAX_KEYS.has(k)) attrs[k] = attrs[k] == null ? v : Math.max(attrs[k], v)
+        else attrs[k] = attrs[k] ?? v
+      } else attrs[k] = attrs[k] ?? v
+    }
+  }
+  const vons = group.map((o) => o.gueltigVon).filter(Boolean).sort()
+  const bisse = group.map((o) => o.gueltigBis).filter(Boolean).sort()
+  const gueltigVon = vons[0] ?? null
+  const gueltigBis = bisse.length ? bisse[bisse.length - 1] : null
+  return {
+    externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie)}`, // stabil, eindeutig je Projekt+Richtung
+    kategorie: first.kategorie,
+    name: first.name,
+    beschreibung: `${first.beschreibung ?? ""}\n· Sammelstrecke aus ${group.length} Teilabschnitten`.trim(),
+    lat: first.lat,
+    lng: first.lng,
+    strassenRef: first.strassenRef,
+    attrs,
+    ...(gueltigVon && { gueltigVon, realerStart: gueltigVon }),
+    ...(gueltigBis && { gueltigBis }),
+    kiAufbereitet: group.some((o) => o.kiAufbereitet),
+    geom: lines.length ? { type: "MultiLineString", coordinates: lines } : first.geom ?? null,
+    quelle: first.quelle,
+  }
+}
+
+/** Teil-Segmente (gleiche Projekt-ID + Richtung + Kategorie) zu Strecken-Hindernissen zusammenfassen. */
+function gruppiereStrecken(obstacles) {
+  const groups = new Map()
+  for (const o of obstacles) {
+    const key = `${o._pk}|${o._ri}|${o.kategorie}`
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(o)
+  }
+  return [...groups.values()].map(mergeAutobahnGruppe)
 }
 
 /** Begrenzte Parallelität für die vielen Road-Requests (107 Roads × 2 Services). */
@@ -170,7 +235,9 @@ export const autobahnConnector = {
     })
     for (const list of perRoad) if (Array.isArray(list)) obstacles.push(...list)
 
-    log(`Autobahn gesamt: ${obstacles.length} (${baustellen} Baustellen, ${sperrungen} Sperrungen) über ${roads.length} Roads`)
-    return { obstacles }
+    // Teil-Segmente eines Projekts+Richtung zu Strecken zusammenfassen (kein 3×-Duplikat, Linie statt Punkt).
+    const strecken = gruppiereStrecken(obstacles)
+    log(`Autobahn gesamt: ${obstacles.length} Teil-Segmente → ${strecken.length} Strecken (${baustellen} Baustellen, ${sperrungen} Sperrungen) über ${roads.length} Roads`)
+    return { obstacles: strecken }
   },
 }

@@ -40,6 +40,7 @@ export function rowToFinding(row) {
     ...(row.gueltig_bis != null && { gueltigBis: toIsoDate(row.gueltig_bis) }),
     ...(row.quelle != null && { quelle: row.quelle }),
     ...(row.zustaendig != null && { zustaendig: row.zustaendig }),
+    ...(row.geom != null && { geom: row.geom }),
   }
 }
 
@@ -63,6 +64,7 @@ export function rowToObstacle(row) {
     aktiv: row.aktiv !== false,
     demo: row.demo === true,
     kiAufbereitet: row.ki_aufbereitet === true,
+    geom: row.geom ?? null,
     // v3: tenant_id NULL = globaler Eintrag, gesetzt = Kunden-Eintrag des Mandanten
     tenantId: row.tenant_id ?? null,
     herkunft: row.tenant_id == null ? "global" : "eigen",

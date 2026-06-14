@@ -82,6 +82,14 @@ export interface Finding {
   quelle?: FindingSource
   /** Zuständige Stelle (Behörde, Niederlassung). */
   zustaendig?: string
+  /** GeoJSON-Geometrie (LineString/MultiLineString = Strecke) für Linien-Darstellung statt nur Punkt. */
+  geom?: GeoJSONGeometry | null
+}
+
+/** Minimale GeoJSON-Geometrie (Punkt/Linie/Strecke) — für Karten-Rendering. */
+export interface GeoJSONGeometry {
+  type: string
+  coordinates: unknown
 }
 
 export interface RoutePoint {
@@ -167,6 +175,8 @@ export interface Obstacle {
   herkunft?: "global" | "eigen"
   /** true, wenn strukturierte Felder automatisch aus dem Meldungstext angereichert wurden (KI-Aufbereitung). */
   kiAufbereitet?: boolean
+  /** GeoJSON-Geometrie (LineString/MultiLineString = Strecke) für Linien-Darstellung statt nur Punkt. */
+  geom?: GeoJSONGeometry | null
   createdAt: string
   updatedAt: string
 }
