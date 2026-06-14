@@ -172,6 +172,9 @@ export const api = {
       axiosClient<{ updated: number }>({ url: `/notifications/${id}/read`, method: "POST" }),
     readAll: () =>
       axiosClient<{ updated: number }>({ url: "/notifications/read-all", method: "POST" }),
+    /** Alle Nachrichten löschen (Papierkorb). */
+    deleteAll: () =>
+      axiosClient<{ deleted: number }>({ url: "/notifications", method: "DELETE" }),
     /** Bekommt der Nutzer E-Mail-Benachrichtigungen? (Opt-out je Mandant + Adresse) */
     mailPref: () =>
       axiosClient<{ enabled: boolean }>({ url: "/notifications/mail-pref", method: "GET" }).then(

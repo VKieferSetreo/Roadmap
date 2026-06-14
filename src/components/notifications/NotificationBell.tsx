@@ -7,10 +7,11 @@
 // jedem Klick (Mark-as-read soll es offen lassen).
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
-  ArrowDownCircle, Bell, Check, CheckCheck, Pencil, TriangleAlert,
+  ArrowDownCircle, Bell, Check, CheckCheck, Pencil, Trash2, TriangleAlert,
 } from "lucide-react"
 import { api } from "@/api/roadmap"
 import { KATEGORIE_META } from "@/components/project/findingMeta"
@@ -47,6 +48,9 @@ function relativeTime(iso: string): string {
 export function NotificationBell() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  // Position des (per Portal an body gehängten) Panels — fixed, unter der Glocke.
+  const [pos, setPos] = useState<{ top: number; right: number } | null>(null)
   const navigate = useNavigate()
   const qc = useQueryClient()
 
@@ -77,20 +81,37 @@ export function NotificationBell() {
     mutationFn: () => api.notifications.readAll(),
     onSuccess: invalidate,
   })
+  const deleteAll = useMutation({
+    mutationFn: () => api.notifications.deleteAll(),
+    onSuccess: invalidate,
+  })
 
   useEffect(() => {
     if (!open) return
+    // Panel an der Glocke ausrichten (rechtsbündig, knapp darunter). Der Header ist
+    // sticky → die Glocke sitzt stabil am Viewport-Rand; bei Resize/Scroll neu rechnen.
+    const place = () => {
+      const r = ref.current?.getBoundingClientRect()
+      if (r) setPos({ top: r.bottom + 8, right: Math.max(8, window.innerWidth - r.right) })
+    }
+    place()
     const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (ref.current?.contains(t) || panelRef.current?.contains(t)) return
+      setOpen(false)
     }
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false)
     }
     window.addEventListener("mousedown", onClick)
     window.addEventListener("keydown", onEsc)
+    window.addEventListener("resize", place)
+    window.addEventListener("scroll", place, true)
     return () => {
       window.removeEventListener("mousedown", onClick)
       window.removeEventListener("keydown", onEsc)
+      window.removeEventListener("resize", place)
+      window.removeEventListener("scroll", place, true)
     }
   }, [open])
 
@@ -121,8 +142,13 @@ export function NotificationBell() {
         ) : null}
       </button>
 
-      {open ? (
-        <div className="absolute right-0 z-40 mt-2 w-[min(92vw,380px)] animate-fade-in overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg">
+      {open && pos
+        ? createPortal(
+          <div
+            ref={panelRef}
+            style={{ position: "fixed", top: pos.top, right: pos.right }}
+            className="z-[1500] w-[min(92vw,380px)] animate-fade-in overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg"
+          >
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
             <div>
               <p className="text-sm font-semibold text-neutral-900">Nachrichten</p>
@@ -130,16 +156,32 @@ export function NotificationBell() {
                 Änderungen an deinen Auswertungen
               </p>
             </div>
-            {count > 0 ? (
-              <button
-                type="button"
-                onClick={() => markAll.mutate()}
-                disabled={markAll.isPending}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 disabled:opacity-50"
-              >
-                <CheckCheck className="h-3.5 w-3.5" /> Alle gelesen
-              </button>
-            ) : null}
+            <div className="flex items-center gap-1">
+              {count > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => markAll.mutate()}
+                  disabled={markAll.isPending}
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 disabled:opacity-50"
+                >
+                  <CheckCheck className="h-3.5 w-3.5" /> Alle gelesen
+                </button>
+              ) : null}
+              {items.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Alle Nachrichten löschen?")) deleteAll.mutate()
+                  }}
+                  disabled={deleteAll.isPending}
+                  aria-label="Alle Nachrichten löschen"
+                  title="Alle löschen"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              ) : null}
+            </div>
           </div>
 
           <div className="max-h-[min(70vh,440px)] overflow-y-auto">
@@ -228,8 +270,10 @@ export function NotificationBell() {
               </ul>
             )}
           </div>
-        </div>
-      ) : null}
+          </div>,
+          document.body,
+        )
+        : null}
     </div>
   )
 }

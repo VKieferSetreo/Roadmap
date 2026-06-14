@@ -48,6 +48,12 @@ export function notificationsRouter({ db }) {
     res.json({ updated: result.rowCount })
   }))
 
+  /** Alle Nachrichten des Mandanten löschen (Papierkorb im Nachrichtenzentrum). */
+  r.delete("/", asyncHandler(async (req, res) => {
+    const result = await db.query("DELETE FROM notifications WHERE tenant_id = $1", [req.ctx.tenant.id])
+    res.json({ deleted: result.rowCount })
+  }))
+
   // ── E-Mail-Benachrichtigungen (Opt-out je Mandant + eigene Adresse) ──────────
   /** Bekommt der angemeldete Nutzer Mails? (enabled = NICHT in mail_optout) */
   r.get("/mail-pref", asyncHandler(async (req, res) => {
