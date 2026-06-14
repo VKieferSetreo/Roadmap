@@ -5,7 +5,16 @@
 export const KATEGORIEN = [
   "bruecke", "engstelle", "baustelle", "sperrung", "gewicht", "bahnuebergang",
   "kreisverkehr", "ampel", "steigung", "tunnel",
+  // "sonstige": permanente Infrastruktur ohne GST-Routen-Relevanz (z.B. Stützmauern, Lärmschutz).
+  // Wird gespeichert (nichts droppen) + auf der DB-Karte gezeigt, erzeugt aber keinen Routen-Fund
+  // (evaluate() default → null). NICHT in EVENT_KATEGORIEN.
+  "sonstige",
 ]
+
+// Gemeldete Ereignisse (temporär, werden aktiv gemeldet) — immer als Fund anzeigen,
+// auch ohne hinterlegte Maße. Alle anderen Kategorien sind permanente Infrastruktur,
+// die nur bei einer echten Abweichung (warnung/kritisch) angezeigt wird.
+const EVENT_KATEGORIEN = new Set(["baustelle", "sperrung"])
 
 const DEFAULT_TITEL = {
   bruecke: "Brückendurchfahrt",
@@ -326,6 +335,14 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
       break
     default:
       return null
+  }
+  // Infrastruktur (Brücke/Tunnel/Engstelle/Gewicht/Steigung/Kreisverkehr/Bahnübergang/
+  // Ampel): nur ECHTE Abweichungen von der Norm zeigen. Reine "Hinweis"-Funde ohne
+  // hinterlegten Grenzwert (z.B. „Brücke ohne hinterlegte Durchfahrtshöhe") sind
+  // normale Bauwerksdaten ohne Abweichung → ausblenden. Gemeldete Ereignisse
+  // (Baustellen/Sperrungen) bleiben dagegen IMMER sichtbar (Max-Wunsch).
+  if (result.severity === "hinweis" && !EVENT_KATEGORIEN.has(obstacle.kategorie)) {
+    return null
   }
   return {
     ...result,

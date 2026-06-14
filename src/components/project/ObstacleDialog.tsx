@@ -43,6 +43,7 @@ const ATTR_FELDER: Record<
   kreisverkehr: [{ key: "radiusM", label: "Außenradius", unit: "m" }],
   bahnuebergang: [{ key: "maxHoeheM", label: "Oberleitungshöhe", unit: "m", step: 0.05 }],
   ampel: [{ key: "maxHoeheM", label: "Auslegerhöhe", unit: "m", step: 0.05 }],
+  sonstige: [], // sonstige Infrastruktur — keine editierbaren Grenzwerte
 }
 
 interface ObstacleDialogProps {

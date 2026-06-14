@@ -28,6 +28,7 @@ export const KATEGORIE_META: Record<FindingKategorie, { label: string; icon: Luc
   bahnuebergang: { label: "Bahnübergang", icon: TrainFront },
   steigung: { label: "Steigung", icon: TrendingUp },
   ampel: { label: "Signalanlage", icon: TrafficCone },
+  sonstige: { label: "Sonstiges Bauwerk", icon: MapPin },
 }
 
 /** Fallback für unbekannte Kategorien (z.B. neue Backend-Kategorie ohne FE-Update)

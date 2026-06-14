@@ -33,6 +33,7 @@ const SHAPE_BY_KATEGORIE: Record<FindingKategorie, PinShape> = {
   kreisverkehr: "circle", // Verkehrssteuerung
   ampel: "circle",
   bahnuebergang: "circle",
+  sonstige: "circle", // sonstige Infrastruktur (kein Routen-Hindernis)
 }
 
 const ICON_BY_KATEGORIE: Record<FindingKategorie, LucideIcon> = {
@@ -46,6 +47,7 @@ const ICON_BY_KATEGORIE: Record<FindingKategorie, LucideIcon> = {
   kreisverkehr: RotateCw,
   ampel: TrafficCone,
   bahnuebergang: TrainFront,
+  sonstige: MapPinIcon,
 }
 
 /** Custom-Glyph für Kategorien wo kein passendes Lucide-Icon existiert.

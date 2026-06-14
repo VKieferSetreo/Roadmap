@@ -44,6 +44,7 @@ export type FindingKategorie =
   | "ampel"
   | "steigung"
   | "tunnel"
+  | "sonstige"
 
 /** Wie kritisch ein Fund für den konkreten Transport ist. */
 export type FindingSeverity = "kritisch" | "warnung" | "hinweis"
