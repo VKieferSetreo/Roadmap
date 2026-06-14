@@ -2,7 +2,8 @@
 // darunter die Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar,
 // geclustert). Keine Funde-/Auswertungs-Tabelle hier — Funde leben im Projekt.
 
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { Database, Map as MapIcon } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
@@ -10,6 +11,7 @@ import { SyncBar } from "@/components/db/SyncBar"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
+import { ApiError } from "@/api/client"
 
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
@@ -35,12 +37,23 @@ function ObstacleKarte({ live }: { live: boolean }) {
   // Nur gemeldete, aktive Ereignisse (Baustellen/Sperrungen) — die permanente
   // Infrastruktur (Brücken/Tunnel/Ampeln/Gewichtslimits …) ziehen wir zwar mit,
   // wird auf der Übersichtskarte aber bewusst nicht angezeigt.
+  const queryClient = useQueryClient()
   const obstacles = useQuery({
     queryKey: ["obstacles-alle", "gemeldet", "geom"],
     queryFn: () => api.listObstacles({ gemeldet: true, aktiv: true, geom: true }),
     enabled: live,
     staleTime: 60_000,
   })
+
+  const deleteObstacle = async (id: string) => {
+    try {
+      await api.deleteObstacle(id)
+      toast.success("Eigener Eintrag verworfen.")
+      await queryClient.invalidateQueries({ queryKey: ["obstacles-alle"] })
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Verwerfen fehlgeschlagen.")
+    }
+  }
 
   if (!live) {
     return (
@@ -81,7 +94,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="h-[calc(100vh-360px)] min-h-[420px]">
-      <ObstaclesMap obstacles={obstacles.data ?? []} />
+      <ObstaclesMap obstacles={obstacles.data ?? []} onDelete={(id) => void deleteObstacle(id)} />
     </div>
   )
 }

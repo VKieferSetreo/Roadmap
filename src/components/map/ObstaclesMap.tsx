@@ -86,11 +86,30 @@ function obstaclePopupHtml(o: Obstacle): string {
     ${quelleHtml ? `<p class="mt-2 border-t border-neutral-100 pt-1.5 text-[11px] text-neutral-400">Quelle: ${quelleHtml}${o.quelle?.aktualisiertAm ? ` · ${esc(o.quelle.aktualisiertAm)}` : ""}</p>` : ""}
     ${eigen ? `<p class="mt-1.5 inline-block rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700">Eigener Eintrag</p>` : ""}
     ${o.demo ? `<p class="mt-1.5 inline-block rounded-full border border-accent-400 bg-accent-100 px-2 py-0.5 text-[10px] font-medium text-accent-700">Demo-Datensatz</p>` : ""}
+    ${eigen ? `<div class="mt-2 border-t border-neutral-100 pt-2"><button data-delete-obstacle type="button" class="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-medium text-red-600 transition-colors hover:bg-red-100"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Eintrag verwerfen</button></div>` : ""}
   </div>`
 }
 
+type DeleteFn = (id: string) => void
+
+/** „Eintrag verwerfen"-Button im Popup (nur eigene Einträge) mit dem Delete-Handler verdrahten. */
+function wireDelete(layer: L.Layer, o: Obstacle, onDelete?: DeleteFn) {
+  if (!onDelete || !istEigenerEintrag(o.quelle)) return
+  layer.on("popupopen", (e: L.LeafletEvent & { popup: L.Popup }) => {
+    const btn = e.popup.getElement()?.querySelector("[data-delete-obstacle]")
+    if (!btn) return
+    const handler = () => {
+      if (window.confirm("Diesen eigenen Eintrag wirklich verwerfen?")) {
+        layer.closePopup()
+        onDelete(o.id)
+      }
+    }
+    btn.addEventListener("click", handler, { once: true })
+  })
+}
+
 /** Baut das markercluster-Layer imperativ; Rebuild NUR bei Daten-Änderung (nicht bei Zoom). */
-function ObstacleClusterLayer({ obstacles }: { obstacles: Obstacle[] }) {
+function ObstacleClusterLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
   const map = useMap()
   useEffect(() => {
     // leaflet.markercluster erweitert L zur Laufzeit (kein @types-Paket) → lose getypt.
@@ -105,20 +124,25 @@ function ObstacleClusterLayer({ obstacles }: { obstacles: Obstacle[] }) {
         icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false),
       })
       marker.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
+      wireDelete(marker, o, onDelete)
       cluster.addLayer(marker)
     }
     map.addLayer(cluster)
     return () => {
       map.removeLayer(cluster)
     }
-  }, [map, obstacles])
+  }, [map, obstacles, onDelete])
   return null
 }
 
+// Strecken-Linien erst ab dieser Zoomstufe einblenden. Bei Deutschland-Übersicht
+// schrumpfen die Linien sonst zu „grauen Punkten überall" → erst beim Reinzoomen sinnvoll.
+const LINES_MIN_ZOOM = 11
+
 /** Strecken-Geometrie (geom = Linie/MultiLineString) als Polylines — die betroffene
- *  Strecke statt nur ein Punkt. Eigene Ebene (NICHT geclustert), unter den Markern;
- *  Rebuild nur bei Daten-Änderung. */
-function ObstacleLinesLayer({ obstacles }: { obstacles: Obstacle[] }) {
+ *  Strecke statt nur ein Punkt. Eigene Ebene (NICHT geclustert), unter den Markern,
+ *  nur ab LINES_MIN_ZOOM sichtbar; Rebuild nur bei Daten-Änderung. */
+function ObstacleLinesLayer({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
   const map = useMap()
   useEffect(() => {
     const group = L.layerGroup()
@@ -129,18 +153,28 @@ function ObstacleLinesLayer({ obstacles }: { obstacles: Obstacle[] }) {
       // weißes Casing für Lesbarkeit über den Tiles + farbige Strecke darüber
       L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7 }).addTo(group)
       const line = L.polyline(lines, { color, weight: 3.5, opacity: 0.9, lineCap: "round" })
+      line.bindTooltip(o.name, { sticky: true, direction: "top" })
       line.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
+      wireDelete(line, o, onDelete)
       line.addTo(group)
     }
-    group.addTo(map)
-    return () => {
-      map.removeLayer(group)
+    // Nur ab LINES_MIN_ZOOM einblenden (sonst Punkt-Rauschen in der Übersicht).
+    const sync = () => {
+      const show = map.getZoom() >= LINES_MIN_ZOOM
+      if (show && !map.hasLayer(group)) group.addTo(map)
+      else if (!show && map.hasLayer(group)) map.removeLayer(group)
     }
-  }, [map, obstacles])
+    sync()
+    map.on("zoomend", sync)
+    return () => {
+      map.off("zoomend", sync)
+      if (map.hasLayer(group)) map.removeLayer(group)
+    }
+  }, [map, obstacles, onDelete])
   return null
 }
 
-export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
+export function ObstaclesMap({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
   return (
@@ -148,8 +182,8 @@ export function ObstaclesMap({ obstacles }: { obstacles: Obstacle[] }) {
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
         {/* Linien zuerst (unter den Markern), dann das Cluster */}
-        <ObstacleLinesLayer obstacles={obstacles} />
-        <ObstacleClusterLayer obstacles={obstacles} />
+        <ObstacleLinesLayer obstacles={obstacles} onDelete={onDelete} />
+        <ObstacleClusterLayer obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">
         {obstacles.length.toLocaleString("de-DE")} Hindernisse

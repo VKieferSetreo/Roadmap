@@ -34,6 +34,9 @@ export interface HealthResponse {
 export interface AppContext {
   email: string
   isAdmin: boolean
+  /** true = Login über setreo-auth-extern (Kunden-Gateway) — eigenes Passwort änderbar,
+   *  Logo führt zur Projektübersicht statt zum Hub-Admin. */
+  extern?: boolean
   /** Mandant des Nutzers (Admin: aktuell gewählter via X-Tenant). null = kein Mandant zugeordnet. */
   tenant: { id: string; slug: string; name: string } | null
   /** Alle Mandanten — nur für Admins gefüllt (Tenant-Switcher). */
@@ -138,6 +141,10 @@ export const api = {
   createObstacle: (payload: ObstacleCreate) =>
     axiosClient<Obstacle>({ url: "/obstacles", method: "POST", data: payload }),
 
+  /** Eigenen Eintrag verwerfen/löschen (nur eigene Tenant-Einträge bzw. Admin). */
+  deleteObstacle: (id: string) =>
+    axiosClient<void>({ url: `/obstacles/${id}`, method: "DELETE" }),
+
   stats: () => axiosClient<AppStats>({ url: "/stats", method: "GET" }),
 
   // ── Sync ("Alle Quellen aktualisieren") ────────────────────────────────────
@@ -185,6 +192,13 @@ export const api = {
     /** Löschen (nur Admin). */
     remove: (id: string) =>
       axiosClient<void>({ url: `/bug-reports/${id}`, method: "DELETE" }),
+  },
+
+  // ── Eigenes Konto ──────────────────────────────────────────────────────────
+  account: {
+    /** Eigenes Passwort ändern (nur externe Kunden-Accounts). */
+    changePassword: (neuesPasswort: string) =>
+      axiosClient<{ ok: true }>({ url: "/account/password", method: "POST", data: { neuesPasswort } }),
   },
 }
 

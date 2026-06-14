@@ -73,6 +73,8 @@ export interface FindingSource {
 /** Ein auf der Strecke gefundenes Hindernis / eine Auffälligkeit. */
 export interface Finding {
   id: string
+  /** ID des zugrundeliegenden Hindernisses (für „eigenen Eintrag verwerfen"). */
+  obstacleId?: string | null
   kategorie: FindingKategorie
   titel: string
   beschreibung: string

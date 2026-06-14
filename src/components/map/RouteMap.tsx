@@ -3,9 +3,9 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet"
+import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Building2, ExternalLink, Locate, Minus, Phone, Plus, User } from "lucide-react"
+import { Building2, ExternalLink, Locate, Minus, Phone, Plus, Trash2, User } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import {
   EIGEN_BADGE,
@@ -47,6 +47,8 @@ interface RouteMapProps {
   /** wenn gesetzt: ein Klick DIREKT auf eine Strecke (nicht auf einen Fund-Pin)
    *  meldet die geklickte Position — fürs Anlegen eines Eintrags. */
   onRouteClick?: (p: RoutePoint) => void
+  /** wenn gesetzt: eigener Eintrag kann aus dem Popup verworfen werden (obstacleId). */
+  onDeleteOwn?: (obstacleId: string) => void
   className?: string
 }
 
@@ -56,6 +58,7 @@ export function RouteMap({
   selectedId,
   onSelect,
   onRouteClick,
+  onDeleteOwn,
   className,
 }: RouteMapProps) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
@@ -195,7 +198,12 @@ export function RouteMap({
                 lineJoin: "round",
               }}
               eventHandlers={{ click: () => onSelect?.(f.id) }}
-            />,
+            >
+              {/* Tag der markierten Strecke: Name beim Drüberfahren */}
+              <Tooltip sticky direction="top">
+                {f.titel}
+              </Tooltip>
+            </Polyline>,
           ]
         })}
 
@@ -294,6 +302,21 @@ export function RouteMap({
                         </p>
                       ) : null}
                     </div>
+                  ) : null}
+
+                  {/* Eigenen Eintrag verwerfen (löscht das Hindernis, Auswertung wird aufgefrischt) */}
+                  {eigen && onDeleteOwn && f.obstacleId ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm("Diesen eigenen Eintrag wirklich verwerfen?")) {
+                          onDeleteOwn(f.obstacleId as string)
+                        }
+                      }}
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-medium text-red-600 transition-colors hover:bg-red-100"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Eintrag verwerfen
+                    </button>
                   ) : null}
 
                   <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">

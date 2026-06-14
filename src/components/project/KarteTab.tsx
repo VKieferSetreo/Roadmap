@@ -23,6 +23,8 @@ import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
+import { api } from "@/api/roadmap"
+import { ApiError } from "@/api/client"
 import type { Project, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -108,6 +110,18 @@ export function KarteTab({ project }: { project: Project }) {
     setAddPosition(snap.punkt)
   }
 
+  /** Eigenen Eintrag verwerfen: Hindernis löschen, dann neu auswerten (Fund verschwindet). */
+  const onDeleteOwn = async (obstacleId: string) => {
+    try {
+      await api.deleteObstacle(obstacleId)
+      setSelectedId(null)
+      toast.success("Eigener Eintrag verworfen — Auswertung wird aufgefrischt.")
+      await runAnalysis(project.id)
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Verwerfen fehlgeschlagen.")
+    }
+  }
+
   return (
     <div className="relative h-full w-full">
       <RouteMap
@@ -116,6 +130,7 @@ export function KarteTab({ project }: { project: Project }) {
         selectedId={selectedId}
         onSelect={setSelectedId}
         onRouteClick={live ? onRouteClick : undefined}
+        onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
       />
 
       {/* Hinweis: Eintrag per Strecken-Klick (nur Live) — dezent, oben mittig */}

@@ -33,6 +33,7 @@ export function rowToFinding(row) {
     km: row.km != null ? Number(row.km) : 0,
     severity: row.severity,
     detail: row.detail ?? {},
+    ...(row.obstacle_id != null && { obstacleId: row.obstacle_id }),
     ...(row.route_id != null && { routeId: row.route_id }),
     ...(row.route_name != null && { routeName: row.route_name }),
     ...(row.strassen_ref != null && { strassenRef: row.strassen_ref }),
