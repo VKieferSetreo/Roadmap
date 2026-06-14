@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { ObstacleDialog } from "./ObstacleDialog"
-import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { katMeta, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
@@ -90,7 +90,7 @@ export function KarteTab({ project }: { project: Project }) {
   }))
   // Unique Kategorien auf den sichtbaren Strecken — für die Legende.
   const kategoriesOnRoute = Array.from(new Set(sichtbareFindings.map((f) => f.kategorie))).sort(
-    (a, b) => KATEGORIE_META[a].label.localeCompare(KATEGORIE_META[b].label),
+    (a, b) => katMeta(a).label.localeCompare(katMeta(b).label),
   )
   const toggleRoute = (routeId: string) => {
     setHidden((prev) => {
@@ -272,7 +272,7 @@ export function KarteTab({ project }: { project: Project }) {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-neutral-100 text-neutral-700">
                       <KategorieGlyph kategorie={kat} className="h-3.5 w-3.5" />
                     </span>
-                    <span className="flex-1">{KATEGORIE_META[kat].label}</span>
+                    <span className="flex-1">{katMeta(kat).label}</span>
                     <span className="tabular-nums text-neutral-400">{count}</span>
                   </li>
                 )

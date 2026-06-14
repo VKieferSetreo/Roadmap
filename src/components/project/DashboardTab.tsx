@@ -27,7 +27,7 @@ import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
 import { ReportView } from "./ReportView"
 import { routeLengthKm } from "@/lib/parseRouteFile"
-import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { katMeta, KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
 import type { Finding, FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
@@ -64,7 +64,7 @@ export function DashboardTab({ project }: { project: Project }) {
         q
           ? f.titel.toLowerCase().includes(q) ||
             f.beschreibung.toLowerCase().includes(q) ||
-            KATEGORIE_META[f.kategorie].label.toLowerCase().includes(q)
+            katMeta(f.kategorie).label.toLowerCase().includes(q)
           : true,
       )
       .sort(
@@ -297,7 +297,7 @@ function exportCsv(project: Project) {
     .sort((a, b) => a.km - b.km)
     .map((f) =>
       [
-        KATEGORIE_META[f.kategorie].label,
+        katMeta(f.kategorie).label,
         SEVERITY_META[f.severity].label,
         f.titel,
         f.beschreibung,
@@ -391,7 +391,7 @@ function FindingRow({
   open: boolean
   onToggle: () => void
 }) {
-  const kat = KATEGORIE_META[finding.kategorie]
+  const kat = katMeta(finding.kategorie)
   const sev = SEVERITY_META[finding.severity]
   return (
     <li data-finding-id={finding.id}>
