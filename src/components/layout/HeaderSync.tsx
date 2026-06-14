@@ -59,11 +59,10 @@ export function HeaderSync() {
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
 
-  // Abschluss: Auswertungen wurden im Rerun neu gefahren → ALLE Queries invalidieren
-  // (Projekte/Funde/Hindernisse/Glocke/Stats/Status) = komplettes Daten-Refresh in-place.
-  // KEIN window.location.reload(): das lädt die aktuelle Deep-Route hart neu, die das
-  // statische nginx nicht kennt → 404 (SPA-Routing). Sanftes Invalidate ist flashfrei
-  // UND zeigt überall den frischen Stand.
+  // Abschluss: Auswertungen wurden im Rerun neu gefahren.
+  //  • Initiator (startedHere): Seite KOMPLETT neu laden (Max-Wunsch). Die Deep-Route
+  //    funktioniert jetzt dank SPA-Fallback im Proxy (kein 404 mehr).
+  //  • Nur angehängt (anderer hat gestartet): kein Reload, sanftes Invalidate + Toast.
   const handled = useRef(false)
   useEffect(() => {
     const j = job.data
@@ -71,12 +70,20 @@ export function HeaderSync() {
     handled.current = true
     if (j.status === "error") {
       toast.error("Aktualisierung fehlgeschlagen.")
-    } else if (startedHere.current) {
-      toast.success("Daten aktualisiert — Auswertungen sind frisch.")
+      void qc.invalidateQueries()
+      setJobId(null)
+      startedHere.current = false
+      handled.current = false
+      return
     }
+    if (startedHere.current) {
+      // kurz „fertig" (Balken 100 %) zeigen, dann harter Reload → alles frisch
+      const t = setTimeout(() => window.location.reload(), 900)
+      return () => clearTimeout(t)
+    }
+    toast.success("Daten aktualisiert.")
     void qc.invalidateQueries()
     setJobId(null)
-    startedHere.current = false
     handled.current = false
   }, [job.data, qc])
 

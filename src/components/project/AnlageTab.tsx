@@ -440,6 +440,19 @@ export function AnlageTab({ project }: { project: Project }) {
                   {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
                 </Button>
               </div>
+              {project.status === "fertig" ? (
+                <p className="text-xs text-neutral-400">
+                  Letzter Stand:{" "}
+                  {new Date(project.updatedAt).toLocaleString("de-DE", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  Uhr
+                </p>
+              ) : null}
             </>
           )}
         </CardContent>
