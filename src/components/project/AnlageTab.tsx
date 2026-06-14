@@ -426,33 +426,38 @@ export function AnlageTab({ project }: { project: Project }) {
                   "Strecke hochladen, um die Auswertung zu starten."
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              {/* Aktionen vertikal gestapelt: Buttons untereinander, „Letzter Stand" direkt
+                  unter „Erneut auswerten". Die Spalte ist inhaltsbreit (Desktop) und der
+                  Zeitstempel nowrap → beide Buttons (w-full) wachsen auf dessen Breite, der
+                  Stand passt also immer darunter. */}
+              <div className="flex w-full flex-col gap-1.5 sm:w-auto">
                 {project.status === "fertig" ? (
                   <Button
                     variant="outline"
+                    className="w-full"
                     onClick={() => navigate(`/projekte/${project.id}/karte`)}
                   >
                     Ergebnis öffnen <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : null}
-                <Button onClick={onRun} disabled={!routeReady}>
+                <Button className="w-full" onClick={onRun} disabled={!routeReady}>
                   <Play className="h-4 w-4" />
                   {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
                 </Button>
+                {project.status === "fertig" ? (
+                  <p className="whitespace-nowrap text-center text-xs text-neutral-400">
+                    Letzter Stand:{" "}
+                    {new Date(project.updatedAt).toLocaleString("de-DE", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    Uhr
+                  </p>
+                ) : null}
               </div>
-              {project.status === "fertig" ? (
-                <p className="text-xs text-neutral-400">
-                  Letzter Stand:{" "}
-                  {new Date(project.updatedAt).toLocaleString("de-DE", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}{" "}
-                  Uhr
-                </p>
-              ) : null}
             </>
           )}
         </CardContent>
