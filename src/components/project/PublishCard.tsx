@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Input, Label } from "@/components/ui/Input"
 import { useProjectStore } from "@/store/projects"
+import { cn } from "@/lib/cn"
 import type { Project } from "@/types/domain"
 
 export function PublishCard({ project }: { project: Project }) {
@@ -21,6 +22,21 @@ export function PublishCard({ project }: { project: Project }) {
   const [copied, setCopied] = useState(false)
 
   const share = project.share
+  const live = Boolean(share)
+
+  // Status-Badge (oben rechts, wie die „Tage" beim Transport-Zeitraum): Live = freigegeben.
+  const statusBadge = (
+    <span
+      className={cn(
+        "shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-semibold",
+        live
+          ? "border-primary-100 bg-primary-50/60 text-primary-800"
+          : "border-neutral-200 bg-neutral-100 text-neutral-500",
+      )}
+    >
+      {live ? "Live" : "Offline"}
+    </span>
+  )
 
   const submit = async () => {
     setBusy(true)
@@ -66,6 +82,7 @@ export function PublishCard({ project }: { project: Project }) {
             </span>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
               <span className="text-sm font-semibold text-neutral-900">Veröffentlicht</span>
+              {statusBadge}
               {share.hatPasswort ? (
                 <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-neutral-500">
                   <Lock className="h-3 w-3" /> passwortgeschützt
@@ -122,14 +139,17 @@ export function PublishCard({ project }: { project: Project }) {
         </>
       ) : (
         <>
-          {/* Kopfzeile wie „Transport-Zeitraum": Icon oben links + Überschrift daneben */}
-          <span className="flex items-center gap-2 text-sm font-semibold text-neutral-800">
-            <Link2 className="h-4 w-4 text-primary-600" /> Für Externe freigeben
-          </span>
-          {/* darunter: Text links, Button rechts (analog Datum + Badge beim Zeitraum) */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="max-w-[440px] text-xs text-neutral-500">
-              Erzeugt einen Link, über den Dritte Karte + Auswertung sehen (optional mit Passwort).
+          {/* Kopfzeile wie „Transport-Zeitraum": Icon + Überschrift links, Status rechts */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2 text-sm font-semibold text-neutral-800">
+              <Link2 className="h-4 w-4 text-primary-600" /> Für Externe freigeben
+            </span>
+            {statusBadge}
+          </div>
+          {/* darunter: Text (2 Zeilen) links, Button rechts auf gleicher Höhe */}
+          <div className="flex items-center justify-between gap-3">
+            <p className="flex-1 text-xs leading-relaxed text-neutral-500">
+              Externer Link für Dritte — Karte + Auswertung ansehen (optional mit Passwort).
             </p>
             <Button variant="outline" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Globe2 className="h-4 w-4" /> Veröffentlichen
