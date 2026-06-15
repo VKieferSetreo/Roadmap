@@ -38,8 +38,8 @@ export function AnlageTab({ project }: { project: Project }) {
 
   return (
     <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-start gap-5 lg:grid-cols-2">
-      {/* ── Transport-Stammdaten ── */}
-      <Card>
+      {/* ── Transport-Stammdaten — volle Breite ── */}
+      <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-base">Transport-Stammdaten</CardTitle>
         </CardHeader>
@@ -186,8 +186,17 @@ export function AnlageTab({ project }: { project: Project }) {
         </CardContent>
       </Card>
 
-      {/* ── Auswertung-Block (Status + Aktionen) ── */}
-      <Card>
+      {/* ── Für Externe freigeben (neben dem Zeitraum) ── */}
+      {project.status === "fertig" && mode === "live" && !running ? (
+        <Card>
+          <CardContent className="p-4">
+            <PublishCard project={project} />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* ── Auswertung-Block (Status + Aktionen) — volle Breite ── */}
+      <Card className="lg:col-span-2">
         <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {running ? (
             <div className="w-full animate-fade-in">
@@ -273,14 +282,6 @@ export function AnlageTab({ project }: { project: Project }) {
         </CardContent>
       </Card>
 
-      {/* ── Veröffentlichen — eigener Block (getrennt von der Auswertung) ── */}
-      {project.status === "fertig" && mode === "live" && !running ? (
-        <Card>
-          <CardContent className="p-4">
-            <PublishCard project={project} />
-          </CardContent>
-        </Card>
-      ) : null}
     </div>
   )
 }
