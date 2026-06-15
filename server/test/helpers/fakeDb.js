@@ -401,6 +401,10 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT pg_advisory_xact_lock")) {
       return ok([{ pg_advisory_xact_lock: null }])
     }
+    // Rerun-Serialisierung (rerunAll): im Fake immer erfolgreich (ein Prozess).
+    if (sql.startsWith("SELECT pg_try_advisory_xact_lock")) {
+      return ok([{ ok: true }])
+    }
     if (sql.startsWith("SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index")) {
       const indexes = state.obstacles
         .filter((o) => o.quellen_id === params[0] && /^\d{4}/.test(o.fach_id ?? ""))

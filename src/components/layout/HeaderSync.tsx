@@ -12,6 +12,10 @@ import { api } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
 import { formatStampDE } from "@/lib/format"
 
+// Nach einem Sync nur die wirklich betroffenen Queries auffrischen (wie SyncBar) —
+// NICHT der gesamte Cache (sonst Spinner überall, auch bei nur angehängten Clients).
+const REFRESH_KEYS = ["sync-status", "obstacles-alle", "db-findings", "notif-unread", "notif-list"]
+
 export function HeaderSync() {
   const qc = useQueryClient()
   const [jobId, setJobId] = useState<string | null>(null)
@@ -22,7 +26,11 @@ export function HeaderSync() {
   const status = useQuery({
     queryKey: ["sync-status"],
     queryFn: () => api.sync.status(),
-    refetchInterval: jobId ? false : 60_000,
+    // Responsiver Poll, damit ein laufender Sync in JEDEM Mandanten zügig (≤15 s, bei
+    // Fokus sofort) als Ladebalken erscheint — der Sync ist global, alle sollen ihn sehen.
+    // Sobald angehängt (jobId), übernimmt der 1-s-Job-Poll und der Status-Poll pausiert.
+    refetchInterval: jobId ? false : 15_000,
+    refetchOnWindowFocus: true,
   })
 
   // Läuft schon ein Sync (anderer Nutzer / DB-Tab)? → dranhängen.
@@ -51,21 +59,21 @@ export function HeaderSync() {
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
 
-  // Abschluss: Auswertungen wurden im Rerun neu gefahren.
+  // Abschluss: Auswertungen wurden im Rerun neu gefahren. Guard ist job-id-basiert →
+  // jeder Job wird GENAU EINMAL behandelt (kein wiederholter Toast bei Re-Attach/Refetch).
   //  • Initiator (startedHere): Seite KOMPLETT neu laden (Max-Wunsch). Die Deep-Route
   //    funktioniert jetzt dank SPA-Fallback im Proxy (kein 404 mehr).
-  //  • Nur angehängt (anderer hat gestartet): kein Reload, sanftes Invalidate + Toast.
-  const handled = useRef(false)
+  //  • Nur angehängt (anderer hat gestartet): kein Reload, KEIN Toast (den besitzt SyncBar),
+  //    nur die betroffenen Queries gezielt auffrischen.
+  const handled = useRef<string | null>(null)
   useEffect(() => {
     const j = job.data
-    if (!j || j.status === "running" || handled.current) return
-    handled.current = true
+    if (!j || j.status === "running" || handled.current === j.id) return
+    handled.current = j.id
     if (j.status === "error") {
       toast.error("Aktualisierung fehlgeschlagen.")
-      void qc.invalidateQueries()
       setJobId(null)
       startedHere.current = false
-      handled.current = false
       return
     }
     if (startedHere.current) {
@@ -73,10 +81,8 @@ export function HeaderSync() {
       const t = setTimeout(() => window.location.reload(), 900)
       return () => clearTimeout(t)
     }
-    toast.success("Daten aktualisiert.")
-    void qc.invalidateQueries()
+    for (const key of REFRESH_KEYS) void qc.invalidateQueries({ queryKey: [key] })
     setJobId(null)
-    handled.current = false
   }, [job.data, qc])
 
   const running = job.data?.status === "running" || start.isPending

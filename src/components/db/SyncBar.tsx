@@ -59,11 +59,17 @@ export function SyncBar() {
   const qc = useQueryClient()
   const [jobId, setJobId] = useState<string | null>(null)
   const doneHandled = useRef<string | null>(null)
+  // Job-ID des selbst gestarteten Laufs → nur DER Klicker bekommt den Toast, nicht
+  // jeder nur angehängte Client (auch anderer Mandanten).
+  const startedHereId = useRef<string | null>(null)
 
   const status = useQuery({
     queryKey: ["sync-status"],
     queryFn: () => api.sync.status(),
-    refetchInterval: jobId ? false : 60_000,
+    // ≤15 s / bei Fokus sofort: ein laufender (globaler) Sync soll in jedem Mandanten
+    // sichtbar werden. Sobald angehängt (jobId) übernimmt der 1-s-Job-Poll.
+    refetchInterval: jobId ? false : 15_000,
+    refetchOnWindowFocus: true,
   })
 
   // Läuft beim Laden schon ein Sync (anderer Nutzer)? → dranhängen.
@@ -83,6 +89,7 @@ export function SyncBar() {
     onSuccess: (j) => {
       setJobId(j.id)
       doneHandled.current = null
+      startedHereId.current = j.id
       // activeJobId SOFORT in den geteilten Cache → der Header-Sync hängt sich ohne
       // Wartezeit an denselben Lauf (gleiche Ansicht, synchron).
       qc.setQueryData(["sync-status"], (old: { activeJobId?: string | null } | undefined) =>
@@ -92,15 +99,17 @@ export function SyncBar() {
     onError: () => toast.error("Aktualisierung konnte nicht gestartet werden."),
   })
 
-  // Abschluss genau einmal je Job behandeln: melden + Daten neu laden.
+  // Abschluss genau einmal je Job behandeln: melden + Daten neu laden. Der Toast nur
+  // für den Initiator (sonst sähe jeder angehängte Client jedes Mandanten die Meldung).
   useEffect(() => {
     const j = job.data
     if (!j || j.status === "running" || doneHandled.current === j.id) return
     doneHandled.current = j.id
+    const initiator = startedHereId.current === j.id
 
     if (j.status === "error") {
-      toast.error("Aktualisierung fehlgeschlagen.")
-    } else {
+      if (initiator) toast.error("Aktualisierung fehlgeschlagen.")
+    } else if (initiator) {
       const neu = j.rerun?.benachrichtigungen ?? 0
       const importiert = j.runs.reduce((s, r) => s + (r.stats?.neu ?? 0), 0)
       toast.success(

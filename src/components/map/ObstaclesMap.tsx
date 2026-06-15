@@ -10,7 +10,7 @@
 
 import { useEffect } from "react"
 import L from "leaflet"
-import { MapContainer, TileLayer, useMap } from "react-leaflet"
+import { MapContainer, TileLayer, useMap, ZoomControl } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import "leaflet.markercluster"
 import "leaflet.markercluster/dist/MarkerCluster.css"
@@ -209,8 +209,10 @@ export function ObstaclesMap({ obstacles, onDelete }: { obstacles: Obstacle[]; o
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
-      <MapContainer center={GERMANY} zoom={6} scrollWheelZoom className="h-full w-full">
+      <MapContainer center={GERMANY} zoom={6} scrollWheelZoom zoomControl={false} className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
+        {/* Zoom nach unten-rechts — oben-links sitzt die Ortssuche (sonst verdeckt sie +/-) */}
+        <ZoomControl position="bottomright" />
         <MapResize />
         <MapSearch />
         <MapFullscreen />

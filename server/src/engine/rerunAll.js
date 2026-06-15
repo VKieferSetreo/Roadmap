@@ -100,8 +100,14 @@ async function persistEvents(db, project, events) {
 
 // Wie viele Projekt-Reruns gleichzeitig laufen. Parallel (Max-Wunsch), aber
 // gedeckelt, damit der pg-Pool (max 10) nicht erschöpft wird und die API
-// während eines Syncs weiter Requests bedienen kann.
-const RERUN_CONCURRENCY = 4
+// während eines Syncs weiter Requests bedienen kann. 2 statt 4: jede runAnalysis
+// zieht den vollen Bounding-Box-Bestand (inkl. geom-jsonb) in den Heap — ×4 parallel
+// über alle Mandanten ließ den Container OOMen (sah aus wie DB-Crash). Plus: der
+// Advisory-Lock unten hält selbst eine Connection.
+const RERUN_CONCURRENCY = 2
+
+// Prozessübergreifende Rerun-Sperre (siehe rerunAffectedProjects).
+const RERUN_LOCK_KEY = "roadmap_rerun_global"
 
 /** Ein Projekt neu auswerten + Fund-Diff → Benachrichtigungen (Glocke + Mail). */
 async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
@@ -134,9 +140,33 @@ async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
  * mit ≥1 nutzbarer Strecke PARALLEL (gebündelt) neu und erzeugt Benachrichtigungen
  * aus dem Fund-Diff.
  *
- * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen}>}
+ * Serialisiert prozessübergreifend über einen nicht-blockierenden Advisory-XACT-Lock:
+ * API-Sync-Rerun (sync.js) und Worker-Auto-Rerun (worker/index.js) laufen in GETRENNTEN
+ * Prozessen — ihre In-Memory-Locks greifen nur prozessintern. Ohne geteilte Sperre liefen
+ * beide vollen Reruns (je Schwer-SELECTs + tx-Last) gleichzeitig auf derselben DB → sie
+ * kippt. Bekommt ein Lauf den Lock nicht, überspringt er (der nächste Sync/Cron holt es
+ * nach). Der Lock hält bis zum COMMIT dieser tx (= Rerun-Ende), kein manuelles unlock.
+ * ponytail: die Lock-tx hält ihre Connection für die Rerun-Dauer idle-in-transaction —
+ * unkritisch bei RERUN_CONCURRENCY=2 und ohne idle_in_transaction_session_timeout.
+ *
+ * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen, skipped?}>}
  */
-export async function rerunAffectedProjects({
+export async function rerunAffectedProjects(opts) {
+  const { db, log = () => {} } = opts
+  return db.tx(async (q) => {
+    const got = await q.query("SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok", [RERUN_LOCK_KEY])
+    if (!got.rows[0]?.ok) {
+      log("Rerun läuft bereits (anderer Prozess) — übersprungen")
+      return {
+        engineVersion: ENGINE_VERSION, geprueft: 0, neuAusgewertet: 0,
+        mitAenderung: 0, benachrichtigungen: 0, skipped: true,
+      }
+    }
+    return runRerun(opts)
+  })
+}
+
+async function runRerun({
   db, corridorM = 20, log = () => {}, env = process.env, fetchImpl = globalThis.fetch,
 }) {
   const { rows } = await db.query(
