@@ -1,1 +1,0 @@
-SKIP: Gated. VEMAGS/XVEMAGS (Verfahrensmanagement Großraum-/Schwertransporte) ist ein behördliches Antrags-/Genehmigungssystem mit Zugangsbeschränkung — kein offener maschineller Hindernis-Feed.
