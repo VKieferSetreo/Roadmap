@@ -3,14 +3,16 @@
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { ClipboardList, MapPinned, SlidersHorizontal, type LucideIcon } from "lucide-react"
+import { ClipboardList, MapPin, MapPinned, SlidersHorizontal, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useProjectStore } from "@/store/projects"
+import { RouteTab } from "@/components/project/RouteTab"
 import { AnlageTab } from "@/components/project/AnlageTab"
 import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 
 const TABS: { slug: string; label: string; icon: LucideIcon }[] = [
+  { slug: "route", label: "Route", icon: MapPin },
   { slug: "anlage", label: "Anlage", icon: SlidersHorizontal },
   { slug: "karte", label: "Karte", icon: MapPinned },
   { slug: "dashboard", label: "Dashboard", icon: ClipboardList },
@@ -35,7 +37,7 @@ export function ProjectDetail() {
     )
   }
   if (!project) return <Navigate to="/" replace />
-  if (!tab || !VALID.has(tab)) return <Navigate to={`/projekte/${project.id}/anlage`} replace />
+  if (!tab || !VALID.has(tab)) return <Navigate to={`/projekte/${project.id}/route`} replace />
 
   return (
     <div className="flex h-full flex-col">
@@ -61,6 +63,11 @@ export function ProjectDetail() {
                     {project.findings.length}
                   </span>
                 ) : null}
+                {t.slug === "route" && project.routes.length > 0 ? (
+                  <span className="ml-0.5 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-neutral-600">
+                    {project.routes.length}
+                  </span>
+                ) : null}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -73,7 +80,9 @@ export function ProjectDetail() {
           <KarteTab project={project} />
         ) : (
           <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
-            {tab === "anlage" ? (
+            {tab === "route" ? (
+              <RouteTab project={project} />
+            ) : tab === "anlage" ? (
               <AnlageTab project={project} />
             ) : (
               <DashboardTab project={project} />

@@ -1,0 +1,343 @@
+// Reiter „Route": oben Strecken anlegen (Datei · Google-Link · Start/Ziel, Anzahl je Quelle
+// als Badge), unten die Liste der angelegten Strecken mit Mini-Preview. Aus dem früheren
+// AnlageTab herausgelöst, damit die Anlage-Seite (Stammdaten + Veröffentlichung) schlank bleibt.
+
+import { useState } from "react"
+import { toast } from "sonner"
+import { Link2, Loader2, MapPin, Navigation, Pencil, Plus, Route, Upload, Waypoints, X } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import { DropZone } from "@/components/upload/DropZone"
+import { PlaceAutocomplete } from "./PlaceAutocomplete"
+import { RoutePreview } from "./RoutePreview"
+import { useProjectStore } from "@/store/projects"
+import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
+import { api, type RouteResult } from "@/api/roadmap"
+import { ApiError } from "@/api/client"
+import type { Project, RouteSource } from "@/types/domain"
+import { cn } from "@/lib/cn"
+
+/** Die drei Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel. */
+const STRECKE_TABS = [
+  { id: "datei", label: "Datei", icon: Upload },
+  { id: "link", label: "Google-Link", icon: Link2 },
+  { id: "startziel", label: "Start / Ziel", icon: Navigation },
+] as const
+
+const SOURCE_LABEL: Record<RouteSource, string> = {
+  datei: "Datei",
+  link: "Google-Link",
+  startziel: "Start/Ziel",
+}
+
+export function RouteTab({ project }: { project: Project }) {
+  const addRoute = useProjectStore((s) => s.addRoute)
+  const removeRoute = useProjectStore((s) => s.removeRoute)
+  const renameRoute = useProjectStore((s) => s.renameRoute)
+  const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
+
+  const [tab, setTab] = useState<RouteSource>("datei")
+  const [editRouteId, setEditRouteId] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
+  const [linkUrl, setLinkUrl] = useState("")
+  const [linkBusy, setLinkBusy] = useState(false)
+  const [szStart, setSzStart] = useState("")
+  const [szZiel, setSzZiel] = useState("")
+  const [szVias, setSzVias] = useState<string[]>([])
+  const [szBusy, setSzBusy] = useState(false)
+
+  const countBySource = (s: RouteSource) =>
+    project.routes.filter((r) => (r.source ?? "datei") === s).length
+
+  const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
+    addRoute(project.id, { name, points: res.points, source })
+    const grob = res.provider.router === "fallback"
+    toast.success(
+      `Strecke „${name}" angelegt: ${res.points.length.toLocaleString("de-DE")} Punkte · ca. ${res.distanzKm.toLocaleString("de-DE", { maximumFractionDigits: 0 })} km` +
+        (grob ? " (grobe Schätzung — Router nicht erreichbar)." : "."),
+    )
+  }
+
+  const onRouteFile = async (file: File) => {
+    try {
+      const parsed = await parseRouteFile(file)
+      const name = file.name.replace(/\.(gpx|kml|geojson|json|zip|shp)$/i, "")
+      addRoute(project.id, { name, fileName: file.name, points: parsed.points, source: "datei" })
+      toast.success(
+        `Strecke „${name}" geladen: ${parsed.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(parsed.points).toLocaleString("de-DE")} km.`,
+      )
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
+    }
+  }
+
+  const onLinkLoad = async () => {
+    const url = linkUrl.trim()
+    if (!url) {
+      toast.error("Bitte einen Google-Maps-Link einfügen.")
+      return
+    }
+    setLinkBusy(true)
+    try {
+      const res = await api.route.maps(url)
+      addRouteFromResult(res, "Google-Maps-Route", "link")
+      setLinkUrl("")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Link konnte nicht verarbeitet werden.")
+    } finally {
+      setLinkBusy(false)
+    }
+  }
+
+  const onStartZiel = async () => {
+    const start = szStart.trim()
+    const ziel = szZiel.trim()
+    if (!start || !ziel) {
+      toast.error("Bitte Start und Ziel angeben.")
+      return
+    }
+    setSzBusy(true)
+    try {
+      const vias = szVias.map((v) => v.trim()).filter(Boolean)
+      const res = await api.route.startziel(start, ziel, vias)
+      addRouteFromResult(res, `${start} → ${ziel}`, "startziel")
+      setSzStart("")
+      setSzZiel("")
+      setSzVias([])
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Route konnte nicht berechnet werden.")
+    } finally {
+      setSzBusy(false)
+    }
+  }
+
+  const commitRename = () => {
+    if (editRouteId && editName.trim()) renameRoute(project.id, editRouteId, editName.trim())
+    setEditRouteId(null)
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      {/* ── Strecke hinzufügen ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Route className="h-4 w-4 text-primary-600" /> Strecke hinzufügen
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {/* Quelle wählen — Anzahl je Quelle als Badge */}
+          <div className="inline-flex w-full rounded-md border border-neutral-200 bg-neutral-50 p-1">
+            {STRECKE_TABS.map((opt) => {
+              const n = countBySource(opt.id)
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setTab(opt.id)}
+                  className={cn(
+                    "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    tab === opt.id
+                      ? "bg-white text-primary-700 shadow-sm"
+                      : "text-neutral-500 hover:text-neutral-700",
+                  )}
+                >
+                  <opt.icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{opt.label}</span>
+                  {n > 0 ? (
+                    <span
+                      className={cn(
+                        "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold leading-none",
+                        tab === opt.id
+                          ? "bg-primary-100 text-primary-700"
+                          : "bg-neutral-200 text-neutral-600",
+                      )}
+                    >
+                      {n}
+                    </span>
+                  ) : null}
+                </button>
+              )
+            })}
+          </div>
+
+          {tab === "datei" ? (
+            <DropZone
+              label={
+                project.routes.length > 0
+                  ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
+                  : "Streckendatei hochladen"
+              }
+              hint="GPX, KML, GeoJSON oder Shapefile (.zip mit .prj / .shp)"
+              accept=".gpx,.kml,.geojson,.json,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
+              onFile={(file) => void onRouteFile(file)}
+            />
+          ) : tab === "link" ? (
+            <div className="flex flex-col gap-2.5">
+              <p className="text-xs text-neutral-500">
+                Google-Maps-Routenlink einfügen (Wegbeschreibung mit Start und Ziel). Der Link wird
+                aufgelöst und der optimale Straßenweg berechnet.
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void onLinkLoad()
+                  }}
+                  placeholder="https://maps.app.goo.gl/… oder google.com/maps/dir/…"
+                  disabled={linkBusy}
+                  className="flex-1"
+                />
+                <Button onClick={() => void onLinkLoad()} disabled={linkBusy || !linkUrl.trim()}>
+                  {linkBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+                  Laden
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              <PlaceAutocomplete
+                value={szStart}
+                onChange={setSzStart}
+                placeholder="Start (Ort oder Adresse)"
+                disabled={szBusy}
+              />
+              {szVias.map((v, i) => (
+                <div key={i} className="flex gap-2">
+                  <PlaceAutocomplete
+                    value={v}
+                    onChange={(val) => setSzVias((arr) => arr.map((x, j) => (j === i ? val : x)))}
+                    placeholder={`Zwischenstopp ${i + 1}`}
+                    disabled={szBusy}
+                    className="flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSzVias((arr) => arr.filter((_, j) => j !== i))}
+                    aria-label={`Zwischenstopp ${i + 1} entfernen`}
+                    disabled={szBusy}
+                    className="rounded-md p-2 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              <PlaceAutocomplete
+                value={szZiel}
+                onChange={setSzZiel}
+                placeholder="Ziel (Ort oder Adresse)"
+                disabled={szBusy}
+              />
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSzVias((a) => [...a, ""])}
+                  disabled={szBusy}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 transition-colors hover:text-primary-700 disabled:opacity-50"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Zwischenstopp
+                </button>
+                <Button onClick={() => void onStartZiel()} disabled={szBusy || !szStart.trim() || !szZiel.trim()}>
+                  {szBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+                  Route berechnen
+                </Button>
+              </div>
+              <p className="text-[11px] text-neutral-400">
+                Optimaler Weg ohne LKW-Restriktionen — die Restriktionen prüft anschließend die
+                Auswertung gegen die Hindernis-Datenbank.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Angelegte Strecken ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <MapPin className="h-4 w-4 text-primary-600" /> Angelegte Strecken
+            {project.routes.length > 0 ? (
+              <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-600">
+                {project.routes.length}
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {project.routes.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-center text-sm text-neutral-500">
+              Noch keine Strecke. Oben über Datei, Google-Link oder Start / Ziel anlegen.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {project.routes.map((r) => (
+                <li
+                  key={r.id}
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2"
+                >
+                  <RoutePreview points={r.points} color={r.farbe} />
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-full ring-2 ring-white"
+                    style={{ background: r.farbe }}
+                    aria-hidden
+                  />
+                  <div className="min-w-0 flex-1">
+                    {editRouteId === r.id ? (
+                      <Input
+                        autoFocus
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        onBlur={commitRename}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitRename()
+                          if (e.key === "Escape") setEditRouteId(null)
+                        }}
+                        className="h-7 text-sm"
+                      />
+                    ) : (
+                      <p className="truncate text-sm font-medium text-neutral-800">{r.name}</p>
+                    )}
+                    <p className="truncate text-xs tabular-nums text-neutral-400">
+                      {SOURCE_LABEL[r.source ?? "datei"]} · {r.fileName ? `${r.fileName} · ` : ""}
+                      {r.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}
+                      {routeLengthKm(r.points).toLocaleString("de-DE")} km
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditRouteId(r.id)
+                      setEditName(r.name)
+                    }}
+                    aria-label={`Strecke ${r.name} umbenennen`}
+                    disabled={running}
+                    className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeRoute(project.id, r.id)}
+                    aria-label={`Strecke ${r.name} entfernen`}
+                    disabled={running}
+                    className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {project.routes.length > 1 ? (
+            <p className="flex items-center gap-1.5 text-xs text-neutral-400">
+              <Waypoints className="h-3.5 w-3.5" />
+              Alle Strecken erscheinen farblich getrennt auf der Karte — einzeln ein-/ausblendbar.
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
