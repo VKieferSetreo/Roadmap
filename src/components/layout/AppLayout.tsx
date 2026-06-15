@@ -107,7 +107,7 @@ export function AppLayout() {
         onCreate={(name) => {
           void createProject(name).then((p) => {
             closeNewProject()
-            navigate(`/projekte/${p.id}/anlage`)
+            navigate(`/projekte/${p.id}/route`)
           })
         }}
       />

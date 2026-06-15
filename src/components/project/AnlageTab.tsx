@@ -37,7 +37,7 @@ export function AnlageTab({ project }: { project: Project }) {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-start gap-5 lg:grid-cols-2">
+    <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 lg:grid-cols-2">
       {/* ── Transport-Stammdaten — volle Breite ── */}
       <Card className="lg:col-span-2">
         <CardHeader>

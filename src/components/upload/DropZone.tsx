@@ -18,6 +18,8 @@ interface DropZoneProps {
   onClear?: () => void
   ariaLabel?: string
   className?: string
+  /** kompakte (halbe) Höhe für enge Layouts. */
+  compact?: boolean
 }
 
 export function DropZone({
@@ -30,6 +32,7 @@ export function DropZone({
   onClear,
   ariaLabel,
   className,
+  compact = false,
 }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -104,7 +107,8 @@ export function DropZone({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         className={cn(
-          "flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
+          "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
+          compact ? "min-h-[90px] px-4 py-3" : "min-h-[180px] px-6 py-8",
           dragging
             ? "border-primary-500 bg-primary-50"
             : error
@@ -114,17 +118,20 @@ export function DropZone({
       >
         <div
           className={cn(
-            "mb-3 rounded-full p-3",
+            "rounded-full",
+            compact ? "mb-1.5 p-2" : "mb-3 p-3",
             dragging ? "bg-primary-100 text-primary-700" : "bg-neutral-100 text-neutral-400",
           )}
         >
-          <UploadCloud className="h-6 w-6" />
+          <UploadCloud className={compact ? "h-5 w-5" : "h-6 w-6"} />
         </div>
         <p className="text-sm font-medium text-neutral-700">{label}</p>
         {hint ? <p className="mt-1 text-xs text-neutral-500">{hint}</p> : null}
-        <p className="mt-2 text-xs text-neutral-400">
-          Datei hierher ziehen oder klicken · max. {formatBytes(maxSizeMb * 1024 * 1024)}
-        </p>
+        {!compact ? (
+          <p className="mt-2 text-xs text-neutral-400">
+            Datei hierher ziehen oder klicken · max. {formatBytes(maxSizeMb * 1024 * 1024)}
+          </p>
+        ) : null}
       </div>
       {error ? (
         <p id={errId} role="alert" className="mt-2 text-xs font-medium text-red-600">

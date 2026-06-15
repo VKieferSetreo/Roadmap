@@ -118,7 +118,7 @@ export function RouteTab({ project }: { project: Project }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
       {/* ── Strecke hinzufügen ── */}
       <Card>
         <CardHeader>
@@ -162,8 +162,11 @@ export function RouteTab({ project }: { project: Project }) {
             })}
           </div>
 
+          {/* Quellen-Inhalt mit fester Mindesthöhe → kein Springen beim Tab-Wechsel */}
+          <div className="flex min-h-[184px] flex-col justify-center">
           {tab === "datei" ? (
             <DropZone
+              compact
               label={
                 project.routes.length > 0
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
@@ -250,6 +253,7 @@ export function RouteTab({ project }: { project: Project }) {
               </p>
             </div>
           )}
+          </div>
         </CardContent>
       </Card>
 

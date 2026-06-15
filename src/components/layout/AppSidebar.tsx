@@ -163,7 +163,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   key={p.id}
                   project={p}
                   active={isActive}
-                  onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "anlage"}`)}
+                  onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "route"}`)}
                 />
               )
             })
