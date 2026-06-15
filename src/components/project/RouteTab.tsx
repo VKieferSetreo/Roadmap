@@ -167,6 +167,7 @@ export function RouteTab({ project }: { project: Project }) {
           {tab === "datei" ? (
             <DropZone
               compact
+              fill
               label={
                 project.routes.length > 0
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"

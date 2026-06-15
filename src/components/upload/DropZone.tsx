@@ -20,6 +20,8 @@ interface DropZoneProps {
   className?: string
   /** kompakte (halbe) Höhe für enge Layouts. */
   compact?: boolean
+  /** füllt die verfügbare Höhe des Eltern-Containers (gestrichelte Box bis unten). */
+  fill?: boolean
 }
 
 export function DropZone({
@@ -33,6 +35,7 @@ export function DropZone({
   ariaLabel,
   className,
   compact = false,
+  fill = false,
 }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -87,7 +90,7 @@ export function DropZone({
   }
 
   return (
-    <div className={className}>
+    <div className={cn(fill && "flex flex-1 flex-col", className)}>
       <div
         role="button"
         tabIndex={0}
@@ -109,6 +112,7 @@ export function DropZone({
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
           compact ? "min-h-[128px] px-4 py-5" : "min-h-[180px] px-6 py-8",
+          fill && "flex-1",
           dragging
             ? "border-primary-500 bg-primary-50"
             : error

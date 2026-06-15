@@ -197,7 +197,7 @@ export function AnlageTab({ project }: { project: Project }) {
 
       {/* ── Auswertung-Block (Status + Aktionen) — volle Breite ── */}
       <Card className="lg:col-span-2">
-        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           {running ? (
             <div className="w-full animate-fade-in">
               <div className="mb-1.5 flex items-center justify-between text-sm">
