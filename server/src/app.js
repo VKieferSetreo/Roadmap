@@ -18,6 +18,7 @@ import express from "express"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { createNominatim } from "./external/nominatim.js"
+import { createOsrm } from "./external/osrm.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
@@ -30,6 +31,7 @@ import { shareRouter } from "./routes/share.js"
 import { statsRouter } from "./routes/stats.js"
 import { syncRouter } from "./routes/sync.js"
 import { accountRouter } from "./routes/account.js"
+import { routeRouter } from "./routes/route.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -64,6 +66,10 @@ export function createApp({
   syncConnectors,
 } = {}) {
   const nominatim = createNominatim({ fetchImpl, timeoutMs })
+  // OSRM-Router (Deutschland-Graph, eigene Coolify-App). Großzügiger Timeout — lange
+  // Strecken brauchen mehr als der Geocoder-Default. OSRM down → resolveRoute fällt auf
+  // den deterministischen Geometrie-Fallback zurück.
+  const osrm = createOsrm({ fetchImpl, timeoutMs: 20000 })
 
   const app = express()
   app.disable("x-powered-by")
@@ -112,6 +118,8 @@ export function createApp({
   app.use("/api/notifications", requireTenant, notificationsRouter({ db }))
   app.use("/api/obstacles", obstaclesRouter({ db }))
   app.use("/api/geocode", geoRouter({ db, nominatim }))
+  // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
+  app.use("/api/route", routeRouter({ db, nominatim, osrm, fetchImpl }))
   // Sync ("alle Quellen aktualisieren") — jeder eingeloggte Nutzer, kein Tenant-Zwang
   app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)

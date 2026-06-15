@@ -15,7 +15,12 @@ export interface ProjectRoute {
   points: RoutePoint[]
   /** Hex-Farbe für Karte/Listen-Zuordnung (FE vergibt aus Palette). */
   farbe: string
+  /** Herkunft der Strecke — für die Zähler je Upload-Tab. Default „datei". */
+  source?: RouteSource
 }
+
+/** Quelle, über die eine Strecke angelegt wurde (= die drei Upload-Tabs). */
+export type RouteSource = "datei" | "link" | "startziel"
 
 /** Stammdaten des Transports — bestimmen, was auf der Strecke zum Problem wird. */
 export interface TransportData {

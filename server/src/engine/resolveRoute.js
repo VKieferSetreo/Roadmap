@@ -69,7 +69,7 @@ export async function resolveRoute(db, route, { nominatim, osrm } = {}) {
     }
   }
 
-  // mode=startziel
+  // mode=startziel: Ortsnamen geocoden → Wegpunkte → routen
   const orte = [route?.start, ...(route?.vias ?? []), route?.ziel]
     .filter((s) => typeof s === "string" && s.trim())
   if (orte.length < 2) throw new ApiError(400, "Start und Ziel erforderlich")
@@ -77,10 +77,24 @@ export async function resolveRoute(db, route, { nominatim, osrm } = {}) {
   const geocoded = []
   for (const ort of orte) geocoded.push(await geocodeOrt(db, nominatim, ort))
   const waypoints = geocoded.map((g) => ({ lat: g.lat, lng: g.lng }))
-  const geocoder = summarizeProviders(geocoded.map((g) => g.provider))
-  const geocoderFallback = geocoded.some((g) => g.provider === "cities")
+  return routeWaypoints(db, waypoints, { osrm }, {
+    geocoder: summarizeProviders(geocoded.map((g) => g.provider)),
+    geocoderFallback: geocoded.some((g) => g.provider === "cities"),
+  })
+}
 
-  const key = routeKey(waypoints)
+/**
+ * Routet eine bereits aufgelöste Wegpunkt-Liste (lat/lng) über den optimalen Straßenweg:
+ * route_cache → OSRM → deterministischer Geometrie-Fallback. Genutzt von Start/Ziel
+ * (nach Geocoding) UND von aus Links extrahierten Wegpunkten (Google-Maps).
+ */
+export async function routeWaypoints(db, waypoints, { osrm } = {}, meta = {}) {
+  const wp = (Array.isArray(waypoints) ? waypoints : []).filter(sanePoint)
+  if (wp.length < 2) throw new ApiError(400, "Mindestens zwei Wegpunkte erforderlich")
+  const geocoder = meta.geocoder
+  const geocoderFallback = meta.geocoderFallback ?? false
+
+  const key = routeKey(wp)
   const cached = await db.query(
     "SELECT geometry, distanz_km, dauer_min FROM route_cache WHERE key = $1",
     [key],
@@ -95,7 +109,7 @@ export async function resolveRoute(db, route, { nominatim, osrm } = {}) {
     }
   }
 
-  const osrmRes = osrm ? await osrm.route(waypoints) : null
+  const osrmRes = osrm ? await osrm.route(wp) : null
   if (osrmRes) {
     const geometry = downsample(osrmRes.geometry)
     await db.query(
@@ -113,7 +127,7 @@ export async function resolveRoute(db, route, { nominatim, osrm } = {}) {
   }
 
   // OSRM nicht erreichbar → deterministischer Geometrie-Fallback
-  const geometry = buildPolyline(waypoints)
+  const geometry = buildPolyline(wp)
   return {
     geometry,
     distanzKm: totalKm(geometry),

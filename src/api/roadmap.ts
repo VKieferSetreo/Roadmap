@@ -16,6 +16,7 @@ import type {
   ObstacleCreate,
   Project,
   ProjectRoute,
+  RoutePoint,
   ShareInfo,
   SyncJob,
   SyncStatus,
@@ -54,6 +55,16 @@ export interface ProjectPatch {
   zeitraum?: TransportZeitraum
   /** true = archivieren, false = wiederherstellen. */
   archiviert?: boolean
+}
+
+/** Ergebnis einer Routen-Berechnung (Start/Ziel oder Google-Maps-Link). */
+export interface RouteResult {
+  points: RoutePoint[]
+  distanzKm: number
+  dauerMin: number | null
+  provider: { geocoder?: string; router: string; fallback: boolean }
+  stops?: number
+  resolvedUrl?: string
 }
 
 export const api = {
@@ -159,6 +170,20 @@ export const api = {
     start: () => axiosClient<SyncJob>({ url: "/sync", method: "POST" }),
     /** Fortschritt pollen. */
     job: (id: string) => axiosClient<SyncJob>({ url: `/sync/${id}`, method: "GET" }),
+  },
+
+  // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──
+  route: {
+    /** Start + Ziel (+ optionale Zwischenstopps) → Strecke (Wegpunkt-Geometrie). */
+    startziel: (start: string, ziel: string, vias?: string[]) =>
+      axiosClient<RouteResult>({
+        url: "/route/startziel",
+        method: "POST",
+        data: { start, ziel, vias },
+      }),
+    /** Google-Maps-Link → Wegpunkte → Strecke. */
+    maps: (url: string) =>
+      axiosClient<RouteResult>({ url: "/route/maps", method: "POST", data: { url } }),
   },
 
   // ── Nachrichtenzentrum / Glocke ────────────────────────────────────────────
