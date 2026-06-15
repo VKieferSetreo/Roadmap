@@ -10,8 +10,7 @@ import { rowToObstacle } from "../map.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  angleDeltaDeg, bboxWithBuffer, cumulativeKm, lineBearingDeg, nearestOnRoute,
-  routeBearingAtKm, totalKm,
+  bboxWithBuffer, cumulativeKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -123,15 +122,12 @@ export async function analyze({ db, project, corridorM }) {
 
       // Gegenfahrbahn-Filter: Strecken-Meldungen (Linien-Geometrie, faktisch nur Autobahn)
       // laufen je Fahrbahn als eigene Linie in REISERICHTUNG (Daten geprüft: Koordinaten-
-      // Reihenfolge = Fahrtrichtung). Läuft eine Linie antiparallel zur Route (Gegenfahrbahn),
-      // passiert der Transport sie nicht → ausblenden. NUR Linien mit verlässlicher Richtung;
-      // Punkt-Meldungen und zu kurze/zweideutige Linien bleiben IMMER drin (nichts fälschlich droppen).
-      const obstacleBearing = lineBearingDeg(obstaclePts)
-      if (obstacleBearing != null) {
-        const routeBearing = routeBearingAtKm(geometry, cum, near.km)
-        if (routeBearing != null && angleDeltaDeg(obstacleBearing, routeBearing) > OPPOSITE_DEG) {
-          continue
-        }
+      // Reihenfolge = Fahrtrichtung). Läuft die Linie im Korridor ÜBERWIEGEND gegen die
+      // Reiserichtung (Gegenfahrbahn), passiert der Transport sie nicht → ausblenden.
+      // obstacleRouteRelation gewichtet segmentweise nach Länge mit lokalem Kurs; Punkte
+      // und nur-quer/zweideutig liegende Linien → "none"/"parallel" → bleiben IMMER drin.
+      if (obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, OPPOSITE_DEG) === "opposite") {
+        continue
       }
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue

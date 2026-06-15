@@ -62,6 +62,26 @@ function routeBearingAtKm(geo, cum, km, w = 0.3) {
   return haversineKm(a, b) < 1e-4 ? null : bearingDeg(a, b)
 }
 const angleDeltaDeg = (a, b) => { const d = Math.abs((a - b) % 360); return d > 180 ? 360 - d : d }
+// gleiche Logik wie engine/geometry.js obstacleRouteRelation
+function obstacleRouteRelation(pts, geo, cum, corridorM, oppositeDeg) {
+  if (!Array.isArray(pts) || pts.length < 2) return { rel: "none", parKm: 0, oppKm: 0 }
+  const parallelMax = 180 - oppositeDeg
+  let parallelKm = 0, oppositeKm = 0
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], segKm = haversineKm(a, b)
+    if (segKm === 0) continue
+    const mid = { lat: (a.lat + b.lat) / 2, lng: (a.lng + b.lng) / 2 }
+    const near = nearestOnRoute(mid, geo, cum)
+    if (near.distM > corridorM) continue
+    const rBear = routeBearingAtKm(geo, cum, near.km)
+    if (rBear == null) continue
+    const d = angleDeltaDeg(bearingDeg(a, b), rBear)
+    if (d > oppositeDeg) oppositeKm += segKm
+    else if (d < parallelMax) parallelKm += segKm
+  }
+  const rel = parallelKm >= 0.1 ? "parallel" : oppositeKm > 0 ? "opposite" : "none"
+  return { rel, parKm: parallelKm, oppKm: oppositeKm }
+}
 function geomPoints(geom) {
   if (!geom || typeof geom !== "object") return []
   const out = []
@@ -98,21 +118,20 @@ for (const pid of PROJECTS) {
       let near = nearestOnRoute({ lat: o.lat, lng: o.lng }, geo, cum)
       for (const p of pts) { if (near.distM <= CORRIDOR_M) break; const n = nearestOnRoute(p, geo, cum); if (n.distM < near.distM) near = n }
       if (near.distM > CORRIDOR_M) continue
-      const oBear = lineBearingDeg(pts)
-      if (oBear == null) { punkteMatched++; continue } // Punkt / zu kurz → immer behalten
-      const rBear = routeBearingAtKm(geo, cum, near.km)
-      const delta = rBear == null ? null : Math.round(angleDeltaDeg(oBear, rBear))
-      const rec = { ref: o.strassen_ref, name: o.name, vonNach: vonNach(o.beschreibung), oBear: Math.round(oBear), rBear: rBear == null ? null : Math.round(rBear), delta, km: near.km.toFixed(1), lenKm: haversineKm(pts[0], pts[pts.length - 1]).toFixed(2) }
-      if (delta != null && delta > OPPOSITE_DEG) { lineDropped++; drops.push(rec) } else { lineKept++; keptLines.push(rec) }
+      if (pts.length < 2) { punkteMatched++; continue } // Punkt → immer behalten
+      const { rel, parKm, oppKm } = obstacleRouteRelation(pts, geo, cum, CORRIDOR_M, OPPOSITE_DEG)
+      if (rel === "none") { punkteMatched++; continue } // keine Korridor-Überlappung → behalten (wie Punkt)
+      const rec = { ref: o.strassen_ref, name: o.name, vonNach: vonNach(o.beschreibung), rel, parKm: parKm.toFixed(2), oppKm: oppKm.toFixed(2), km: near.km.toFixed(1) }
+      if (rel === "opposite") { lineDropped++; drops.push(rec) } else { lineKept++; keptLines.push(rec) }
     }
     console.log(`\nRoute "${route.name}" (${geo.length} Pkt): Punkte behalten=${punkteMatched}, Linien behalten=${lineKept}, Linien GEDROPPT=${lineDropped}`)
     if (drops.length) {
-      console.log(`  — GEDROPPT (Gegenfahrbahn, delta>${OPPOSITE_DEG}°):`)
-      for (const d of drops) console.log(`    [${d.ref}] km${d.km} len${d.lenKm} routeKurs=${d.rBear}° linieKurs=${d.oBear}° Δ=${d.delta}°  «${d.vonNach}»  ${d.name}`)
+      console.log(`  — GEDROPPT (Gegenfahrbahn, oppKm>parKm):`)
+      for (const d of drops) console.log(`    [${d.ref}] km${d.km} par=${d.parKm} opp=${d.oppKm}km  «${d.vonNach}»  ${d.name}`)
     }
     if (keptLines.length) {
-      console.log(`  — behaltene Linien (zur Kontrolle, Δ klein = gleiche Richtung):`)
-      for (const d of keptLines) console.log(`    [${d.ref}] km${d.km} routeKurs=${d.rBear}° linieKurs=${d.oBear}° Δ=${d.delta}°  «${d.vonNach}»`)
+      console.log(`  — behaltene Linien (par≥opp = gleiche Richtung überwiegt):`)
+      for (const d of keptLines) console.log(`    [${d.ref}] km${d.km} par=${d.parKm} opp=${d.oppKm}km  «${d.vonNach}»`)
     }
   }
 }

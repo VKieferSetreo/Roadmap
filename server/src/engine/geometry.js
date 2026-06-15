@@ -115,6 +115,45 @@ export function angleDeltaDeg(a, b) {
   return d > 180 ? 360 - d : d
 }
 
+/**
+ * Verhältnis einer Strecken-Meldung (Linien-Geometrie) zur Route im Korridor:
+ *   "parallel" — überlappt überwiegend MIT der Reiserichtung → relevant, behalten
+ *   "opposite" — überlappt NUR/überwiegend gegen die Richtung (Gegenfahrbahn) → ausblenden
+ *   "none"     — keine Überlappung im Korridor (oder Punkt) → behalten
+ *
+ * Längen-gewichtet über alle Linien-Segmente, deren Mittelpunkt im Korridor liegt, mit
+ * LOKALEM Segment-Kurs (statt grobem erster→letzter). Robust gegen kurze/verrauschte
+ * Stützpunkte und gegen Hin-/Rückfahrt-Routen. Es wird NUR gedroppt, wenn die Linie
+ * REIN gegen die Reiserichtung läuft (kein nennenswerter Parallel-Anteil ≥ PARALLEL_MIN_KM).
+ * Fährt der Transport die Linie irgendwo in gleicher Richtung (auch nur ein Stück), bleibt
+ * sie drin — lieber eine Gegenfahrbahn zeigen als eine relevante Meldung verlieren.
+ */
+const PARALLEL_MIN_KM = 0.1 // ab so viel Gleichrichtungs-Überlappung gilt die Linie als befahren
+export function obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, oppositeDeg = 120) {
+  if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return "none"
+  const parallelMax = 180 - oppositeDeg // darunter = klar gleiche Richtung
+  let parallelKm = 0
+  let oppositeKm = 0
+  for (let i = 0; i < obstaclePts.length - 1; i++) {
+    const a = obstaclePts[i]
+    const b = obstaclePts[i + 1]
+    const segKm = haversineKm(a, b)
+    if (segKm === 0) continue
+    const mid = { lat: (a.lat + b.lat) / 2, lng: (a.lng + b.lng) / 2 }
+    const near = nearestOnRoute(mid, geometry, cum)
+    if (near.distM > corridorM) continue
+    const routeBear = routeBearingAtKm(geometry, cum, near.km)
+    if (routeBear == null) continue
+    const delta = angleDeltaDeg(bearingDeg(a, b), routeBear)
+    if (delta > oppositeDeg) oppositeKm += segKm
+    else if (delta < parallelMax) parallelKm += segKm
+    // dazwischen (quer/zweideutig): zählt nicht
+  }
+  if (parallelKm >= PARALLEL_MIN_KM) return "parallel" // irgendwo gleiche Richtung → behalten
+  if (oppositeKm > 0) return "opposite" // rein Gegenfahrbahn → ausblenden
+  return "none"
+}
+
 /** Bounding-Box der Geometrie, um pufferM (Meter) erweitert — für den SQL-Vorfilter. */
 export function bboxWithBuffer(geometry, pufferM) {
   let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity
