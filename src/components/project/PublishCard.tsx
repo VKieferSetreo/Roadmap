@@ -121,27 +121,21 @@ export function PublishCard({ project }: { project: Project }) {
           </div>
         </>
       ) : (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="shrink-0 rounded-lg bg-neutral-100 p-2 text-neutral-500">
-              <Link2 className="h-4 w-4" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-neutral-900">Für Externe freigeben</p>
-              <p className="text-xs text-neutral-500">
-                Erzeugt einen Link, über den Dritte Karte + Auswertung sehen (optional mit
-                Passwort).
-              </p>
-            </div>
+        <>
+          {/* Kopfzeile wie „Transport-Zeitraum": Icon oben links + Überschrift daneben */}
+          <span className="flex items-center gap-2 text-sm font-semibold text-neutral-800">
+            <Link2 className="h-4 w-4 text-primary-600" /> Für Externe freigeben
+          </span>
+          {/* darunter: Text links, Button rechts (analog Datum + Badge beim Zeitraum) */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="max-w-[440px] text-xs text-neutral-500">
+              Erzeugt einen Link, über den Dritte Karte + Auswertung sehen (optional mit Passwort).
+            </p>
+            <Button variant="outline" className="shrink-0" onClick={() => setDialogOpen(true)}>
+              <Globe2 className="h-4 w-4" /> Veröffentlichen
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            className="shrink-0"
-            onClick={() => setDialogOpen(true)}
-          >
-            <Globe2 className="h-4 w-4" /> Veröffentlichen
-          </Button>
-        </div>
+        </>
       )}
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} size="sm">

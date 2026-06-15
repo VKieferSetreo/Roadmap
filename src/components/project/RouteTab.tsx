@@ -162,8 +162,8 @@ export function RouteTab({ project }: { project: Project }) {
             })}
           </div>
 
-          {/* Quellen-Inhalt mit fester Mindesthöhe → kein Springen beim Tab-Wechsel */}
-          <div className="flex min-h-[184px] flex-col justify-center">
+          {/* Quellen-Inhalt mit fester Mindesthöhe → kein Springen beim Tab-Wechsel; oben ausgerichtet */}
+          <div className="flex min-h-[184px] flex-col justify-start">
           {tab === "datei" ? (
             <DropZone
               compact

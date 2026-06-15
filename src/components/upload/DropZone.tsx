@@ -108,7 +108,7 @@ export function DropZone({
         onDrop={onDrop}
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1",
-          compact ? "min-h-[90px] px-4 py-3" : "min-h-[180px] px-6 py-8",
+          compact ? "min-h-[128px] px-4 py-5" : "min-h-[180px] px-6 py-8",
           dragging
             ? "border-primary-500 bg-primary-50"
             : error
