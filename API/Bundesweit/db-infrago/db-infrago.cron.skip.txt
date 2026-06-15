@@ -1,1 +1,0 @@
-SKIP: Referenz-/Netzdaten (Bahn-Infrastruktur/Schienennetz der DB InfraGO), kein Straßen-Hindernis-Producer im Sinne des obstacle-Formats.

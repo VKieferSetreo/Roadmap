@@ -1,1 +1,0 @@
-SKIP: Geobasis-/Netzdaten (BKG Geodatenzentrum — Basis-DLM, Verwaltungsgrenzen, Verkehrsnetz), kein diskretes Hindernis. Referenz-Layer, kein Producer.
