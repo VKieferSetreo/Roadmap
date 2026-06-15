@@ -60,6 +60,61 @@ export function nearestOnRoute(point, geometry, cum = cumulativeKm(geometry)) {
   return best
 }
 
+/** Initialer Kurs in Grad (0 = Nord, im Uhrzeigersinn) von a nach b. */
+function bearingDeg(a, b) {
+  const lat1 = a.lat * DEG
+  const lat2 = b.lat * DEG
+  const dLng = (b.lng - a.lng) * DEG
+  const y = Math.sin(dLng) * Math.cos(lat2)
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng)
+  return (Math.atan2(y, x) / DEG + 360) % 360
+}
+
+/** Punkt auf der Route an einer km-Marke (lineare Interpolation zwischen Stützpunkten). */
+function pointAtKm(geometry, cum, km) {
+  if (geometry.length === 0) return null
+  if (km <= 0) return geometry[0]
+  const total = cum[cum.length - 1]
+  if (km >= total) return geometry[geometry.length - 1]
+  for (let i = 1; i < cum.length; i++) {
+    if (cum[i] >= km) {
+      const seg = cum[i] - cum[i - 1]
+      const t = seg === 0 ? 0 : (km - cum[i - 1]) / seg
+      const a = geometry[i - 1]
+      const b = geometry[i]
+      return { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) }
+    }
+  }
+  return geometry[geometry.length - 1]
+}
+
+/** Kurs einer Linie über ihre Gesamtspanne (erster → letzter Punkt). null, wenn die
+ *  Spanne kürzer als minKm ist — dann ist der Kurs zu instabil, um darauf zu filtern. */
+export function lineBearingDeg(points, minKm = 0.12) {
+  if (!Array.isArray(points) || points.length < 2) return null
+  const a = points[0]
+  const b = points[points.length - 1]
+  if (haversineKm(a, b) < minKm) return null
+  return bearingDeg(a, b)
+}
+
+/** Lokaler Kurs der Route um eine km-Marke (±windowKm) — die Reiserichtung des
+ *  Transports an dieser Stelle. null, wenn das Fenster degeneriert ist. */
+export function routeBearingAtKm(geometry, cum, km, windowKm = 0.3) {
+  if (!Array.isArray(geometry) || geometry.length < 2) return null
+  const total = cum[cum.length - 1]
+  const a = pointAtKm(geometry, cum, Math.max(0, km - windowKm))
+  const b = pointAtKm(geometry, cum, Math.min(total, km + windowKm))
+  if (!a || !b || haversineKm(a, b) < 1e-4) return null
+  return bearingDeg(a, b)
+}
+
+/** Winkeldifferenz (0..180°) zweier Kurse. */
+export function angleDeltaDeg(a, b) {
+  const d = Math.abs((a - b) % 360)
+  return d > 180 ? 360 - d : d
+}
+
 /** Bounding-Box der Geometrie, um pufferM (Meter) erweitert — für den SQL-Vorfilter. */
 export function bboxWithBuffer(geometry, pufferM) {
   let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity

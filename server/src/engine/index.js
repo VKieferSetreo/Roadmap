@@ -9,7 +9,10 @@
 import { rowToObstacle } from "../map.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
-import { bboxWithBuffer, cumulativeKm, nearestOnRoute, totalKm } from "./geometry.js"
+import {
+  angleDeltaDeg, bboxWithBuffer, cumulativeKm, lineBearingDeg, nearestOnRoute,
+  routeBearingAtKm, totalKm,
+} from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
@@ -41,6 +44,10 @@ function geomPoints(geom) {
 // Marker mit Tabs dar. Behalten wird der schwerste Fund.
 const DUP_KM = 0.15 // 150 m — nur wirklich ko-lokalisierte Punkt-Dubletten
 const SEV_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
+// Gegenfahrbahn-Filter: ab dieser Winkeldifferenz (Grad) zwischen Hindernis-Linie und
+// Route-Richtung gilt die Linie als Gegenfahrbahn → für diese Fahrtrichtung irrelevant.
+// 120° = klar entgegengesetzt; alles darunter (parallel/quer/zweideutig) bleibt drin.
+const OPPOSITE_DEG = 120
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
 export function dedupeFindings(findings) {
@@ -101,17 +108,31 @@ export async function analyze({ db, project, corridorM }) {
 
     for (const row of rows) {
       const obstacle = rowToObstacle(row)
+      const obstaclePts = geomPoints(obstacle.geom)
       // Punkt-Hindernis: Abstand des Punkts zur Route. Strecken-Hindernis (geom = Linie):
       // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
       // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
       // und ein Punkt 16 m neben der Route fällt sauber raus.
       let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum)
-      for (const p of geomPoints(obstacle.geom)) {
+      for (const p of obstaclePts) {
         if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
         const n = nearestOnRoute(p, geometry, cum)
         if (n.distM < near.distM) near = n
       }
       if (near.distM > corridorM) continue
+
+      // Gegenfahrbahn-Filter: Strecken-Meldungen (Linien-Geometrie, faktisch nur Autobahn)
+      // laufen je Fahrbahn als eigene Linie in REISERICHTUNG (Daten geprüft: Koordinaten-
+      // Reihenfolge = Fahrtrichtung). Läuft eine Linie antiparallel zur Route (Gegenfahrbahn),
+      // passiert der Transport sie nicht → ausblenden. NUR Linien mit verlässlicher Richtung;
+      // Punkt-Meldungen und zu kurze/zweideutige Linien bleiben IMMER drin (nichts fälschlich droppen).
+      const obstacleBearing = lineBearingDeg(obstaclePts)
+      if (obstacleBearing != null) {
+        const routeBearing = routeBearingAtKm(geometry, cum, near.km)
+        if (routeBearing != null && angleDeltaDeg(obstacleBearing, routeBearing) > OPPOSITE_DEG) {
+          continue
+        }
+      }
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
       findings.push({
