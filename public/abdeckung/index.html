@@ -25,7 +25,7 @@
   .pl.o.r{color:var(--rot);border-color:var(--rot)} .pl.o.y{color:var(--gelb);border-color:var(--gelb)} .pl.o.g{color:var(--gruen);border-color:var(--gruen)} .pl.o.na{color:#94a3b8;border-color:#cbd5e1}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
   .scroll{overflow-x:auto}
-  table{border-collapse:collapse;width:100%;min-width:860px}
+  table{border-collapse:collapse;width:100%;min-width:1020px}
   th,td{padding:0;text-align:center}
   thead th{background:#f1f5f9;color:#334155;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:11px 8px;border-bottom:2px solid #cbd5e1}
   thead th.land{text-align:left;padding-left:16px;min-width:184px}
@@ -33,6 +33,8 @@
   tbody td{border-bottom:1px solid var(--line);border-left:1px solid #f1f5f9;height:52px;vertical-align:middle}
   tbody tr:hover{background:#fcfdff}
   .cell{display:inline-flex;gap:5px;align-items:center;cursor:default}
+  .qpct{font-weight:700;font-size:12px;font-variant-numeric:tabular-nums}
+  .qpct.g{color:var(--gruen)} .qpct.y{color:var(--gelb)} .qpct.r{color:var(--rot)} .qpct.na{color:#94a3b8}
   tbody th.land .lavg{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:1px}
   .sumrow td,.sumrow th{background:#f8fafc;border-top:2px solid #cbd5e1}
   .sumrow th.land{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#475569}
@@ -55,6 +57,7 @@
   <div class="legend">
     <span class="item"><span class="swatch"><span class="pl g">85</span></span> gefüllt = <b>Ist</b> (was wir haben)</span>
     <span class="item"><span class="swatch"><span class="pl o g">95</span></span> Rahmen = <b>Maximum</b> (öffentlich verfügbar)</span>
+    <span class="item"><span class="qpct g">NN%</span> = Anteil am Maximum (Ist ÷ Max)</span>
     <span class="item">Farbe: <span style="color:var(--gruen);font-weight:700">grün ≥ 85</span> · <span style="color:var(--gelb);font-weight:700">gelb 60–84</span> · <span style="color:var(--rot);font-weight:700">rot &lt; 60</span></span>
   </div>
 
@@ -64,7 +67,7 @@
 
   <div class="note">
     <h2>Lesart</h2>
-    <p><b>Links (gefüllt)</b> = aktuell angebundene Abdeckung. <b>Rechts (Rahmen)</b> = das Maximum, das sich mit <b>heute öffentlich bzw. frei verfügbaren</b> Quellen erreichen ließe.</p>
+    <p><b>Links (gefüllt)</b> = aktuell angebundene Abdeckung. <b>Rechts (Rahmen)</b> = das Maximum, das sich mit <b>heute öffentlich bzw. frei verfügbaren</b> Quellen erreichen ließe. Die <b>%-Zahl</b> = Ist ÷ Max, also der Anteil des öffentlich Möglichen, den wir schon haben.</p>
     <ul>
       <li><b>Ist niedrig, Maximum hoch</b> → frei verfügbare Daten existieren, müssen nur angebunden werden (handlungsbar). Beispiele: Baustellen in Niedersachsen, Hessen, Bremen, Bayern, NRW-nachgeordnetes-Netz <span class="pill">via Mobilithek/BayernInfo in Anbindung</span>.</li>
       <li><b>Ist = Maximum, beide grün</b> → öffentliches Optimum bereits erreicht (z. B. RLP/Sachsen/Thüringen/Brandenburg/BW/SH/MV-Baustellen, Autobahn bundesweit).</li>
@@ -101,6 +104,7 @@ const DATA = {
 
 const cls = (s) => s == null ? "na" : s >= 85 ? "g" : s >= 60 ? "y" : "r"
 const avg = (a) => Math.round(a.reduce((x,y)=>x+y,0)/a.length)
+const quote = (ist,max) => max > 0 ? Math.round(ist/max*100) : 0
 const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")
 
 const tip = document.getElementById("tip")
@@ -108,8 +112,8 @@ const moveTip = (e)=>{const x=Math.min(e.clientX+14,window.innerWidth-318);tip.s
 const showTip = (e,h)=>{tip.innerHTML=h;tip.style.opacity="1";moveTip(e)}
 const hideTip = ()=>{tip.style.opacity="0"}
 
-const cell = (ist,max,q,land,kat)=>`<td><div class="cell" data-q="<b>${esc(land)} · ${esc(kat)}</b><br>Ist ${ist} &nbsp;→&nbsp; Maximum ${max}<br><span style='color:#cbd5e1'>${esc(q)}</span>">`
-  +`<span class="pl ${cls(ist)}">${ist}</span><span class="pl o ${cls(max)}">${max}</span></div></td>`
+const cell = (ist,max,q,land,kat)=>{const p=quote(ist,max);return `<td><div class="cell" data-q="<b>${esc(land)} · ${esc(kat)}</b><br>Ist ${ist} &nbsp;→&nbsp; Maximum ${max} &nbsp;(${p}% erreicht)<br><span style='color:#cbd5e1'>${esc(q)}</span>">`
+  +`<span class="pl ${cls(ist)}">${ist}</span><span class="pl o ${cls(max)}">${max}</span><span class="qpct ${cls(p)}">${p}%</span></div></td>`}
 
 const t = document.getElementById("board")
 let html = "<thead><tr><th class='land'>Bundesland</th>"

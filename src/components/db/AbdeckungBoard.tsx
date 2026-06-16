@@ -41,12 +41,18 @@ function Pill({ score, outline }: { score: number; outline?: boolean }) {
   )
 }
 
+// Erreichte Quote = Ist ÷ Max in % ("wieviel vom öffentlich Möglichen haben wir schon"),
+// eingefärbt nach denselben Schwellen (grün ≥85, gelb 60–84, rot <60).
+const quote = (ist: number, max: number) => (max > 0 ? Math.round((ist / max) * 100) : 0)
+
 function Cell({ ist, max, quelle, land, kat }: { ist: number; max: number; quelle: string; land: string; kat: string }) {
+  const pct = quote(ist, max)
   return (
-    <td className="border-l border-neutral-100 px-2 py-2 text-center" title={`${land} · ${kat} — Ist ${ist} → Max ${max}: ${quelle}`}>
+    <td className="border-l border-neutral-100 px-2 py-2 text-center" title={`${land} · ${kat} — Ist ${ist} → Max ${max} (${pct}% erreicht): ${quelle}`}>
       <span className="inline-flex items-center gap-1.5">
         <Pill score={ist} />
         <Pill score={max} outline />
+        <span className="tabular-nums text-xs font-bold" style={{ color: COL[cls(pct)] }}>{pct}%</span>
       </span>
     </td>
   )
@@ -62,13 +68,14 @@ export function AbdeckungBoard() {
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-neutral-600">
         <span className="flex items-center gap-1.5"><Pill score={90} /> Ist (was wir haben)</span>
         <span className="flex items-center gap-1.5"><Pill score={90} outline /> Maximum (öffentlich verfügbar)</span>
+        <span className="flex items-center gap-1.5"><b className="tabular-nums" style={{ color: COL.g }}>NN%</b> Anteil am Maximum (Ist ÷ Max)</span>
         <span>
           Farbe: <b style={{ color: COL.g }}>grün ≥ 85</b> · <b style={{ color: COL.y }}>gelb 60–84</b> · <b style={{ color: COL.r }}>rot &lt; 60</b>
         </span>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
-        <table className="w-full min-w-[840px] border-collapse">
+        <table className="w-full min-w-[1000px] border-collapse">
           <thead>
             <tr>
               <th className="sticky left-0 bg-neutral-100 px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-600">Bundesland</th>
@@ -108,7 +115,8 @@ export function AbdeckungBoard() {
 
       <p className="text-xs leading-relaxed text-neutral-500">
         Die Ampel bewertet, ob für Bundesland × Datentyp eine flächendeckende <b>amtliche Quelle</b> angebunden ist
-        (nicht die tagesaktuelle Meldungszahl). <b>Ist niedrig, Max hoch</b> = frei verfügbare Daten existieren, müssen
+        (nicht die tagesaktuelle Meldungszahl). Die <b>%-Zahl</b> = Ist ÷ Max, also der Anteil des öffentlich Möglichen,
+        den wir schon haben. <b>Ist niedrig, Max hoch</b> = frei verfügbare Daten existieren, müssen
         nur angebunden werden (NI/Hessen/Bremen/Bayern via Mobilithek/BayernInfo). <b>Auch Max niedrig</b> = öffentlich
         nicht verfügbar (Brücken/Tunnel/Gewicht außerhalb NRW/Bayern/Berlin/Hamburg/Hessen — nur WSV-Brücken frei).
         Öffentliche Version: <code className="rounded bg-neutral-100 px-1">setreo-cloud.com/roadmap/abdeckung</code>
