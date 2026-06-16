@@ -147,13 +147,22 @@ function ObstacleLayers({ obstacles, onDelete }: { obstacles: Obstacle[]; onDele
       animate: false, // siehe Pattern: kein Opacity-Transition-Pfad (Marker bleiben sichtbar)
       disableClusteringAtZoom: LINES_MIN_ZOOM,
     })
-    cluster.addLayers(obstacles.map((o) => makeMarker(o, onDelete)))
+    // Nur platzierbare Hindernisse rendern: ein Marker mit NaN-Koordinaten (z.B. Punkt-
+    // Hindernis mit lat/lng = null) vergiftet die Bounds-Mathematik von markercluster →
+    // beim Zoom-Recalc verschwinden dann ALLE Marker (nur während der Animation sichtbar).
+    const posOf = (o: Obstacle): [number, number] | null => {
+      const p = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
+      return Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]) ? (p as [number, number]) : null
+    }
+    const platzierbar = obstacles.filter((o) => posOf(o) != null)
+    cluster.addLayers(platzierbar.map((o) => makeMarker(o, onDelete)))
     map.addLayer(cluster)
 
-    // Strecken-Hindernisse mit vorberechnetem Mittelpunkt (für den Sichtfeld-Test).
-    const geomObs = obstacles
+    // Strecken-Hindernisse mit (endlichem) Mittelpunkt für den Sichtfeld-Test.
+    const geomObs = platzierbar
       .map((o) => ({ o, mid: geomMidpoint(o.geom) }))
-      .filter((g): g is { o: Obstacle; mid: [number, number] } => g.mid != null && geomToLines(g.o.geom).length > 0)
+      .filter((g): g is { o: Obstacle; mid: [number, number] } =>
+        Array.isArray(g.mid) && Number.isFinite(g.mid[0]) && Number.isFinite(g.mid[1]) && geomToLines(g.o.geom).length > 0)
 
     const renderer = L.canvas({ padding: 0.5 }) // Linien auf Canvas (SVG skaliert nicht auf Tausende)
     const lineGroup = L.layerGroup().addTo(map)
