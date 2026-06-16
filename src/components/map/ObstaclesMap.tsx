@@ -124,81 +124,84 @@ function makeMarker(o: Obstacle, onDelete?: DeleteFn): L.Marker {
 }
 
 /**
- * Hindernis-Layer der Übersichtskarte. Punkt-Hindernisse liegen immer im markercluster
- * (Overview). Geom-Hindernisse (Linie) werden als **Linie + zugehöriger Pin GEKOPPELT**
- * in einem nicht-entfernten Layer gezeigt — aber erst ab LINES_MIN_ZOOM; darunter (Linien
- * aus) hängen sie geclustert im Cluster. So gibt es NIE eine Linie ohne Pin und nie
- * Doppel-Pins.
+ * Hindernis-Layer der Übersichtskarte.
+ * - PUNKTE: ALLE Hindernisse liegen als Pin im markercluster (ein Pin je Hindernis). Das Cluster
+ *   bündelt bei kleinem Zoom und entfernt off-screen-Pins selbst (removeOutsideVisibleBounds) →
+ *   die Punkte sind komplett vorgeladen, aber nur Sichtbares ist im DOM.
+ * - LINIEN (geom): werden LAZY gerendert — nur ab LINES_MIN_ZOOM UND nur für Strecken, deren
+ *   Mittelpunkt im (gepufferten) Sichtfeld liegt. Auf einem Canvas-Renderer (statt SVG) und
+ *   pro Hindernis gecached, damit Pan/Zoom auch bei tausenden Strecken nicht ruckelt.
  *
- * Behebt (Max 2026-06-14): markercluster entfernte off-screen-Pins (removeOutsideVisibleBounds),
- * die separate Linien-Ebene aber nicht → „graue Markierung ohne Marker". Jetzt teilen sich
- * Linie + Pin denselben Layer-Lebenszyklus.
+ * Lag-Fix (Max 2026-06-16): vorher hingen ALLE ~Tausend Linien ab Zoom 11 gleichzeitig als SVG
+ * im DOM, unabhängig vom Sichtfeld → Karte ruckelte. Jetzt sichtfeld-gebunden + Canvas + Cache.
  */
 function ObstacleLayers({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
   const map = useMap()
   useEffect(() => {
     // leaflet.markercluster erweitert L zur Laufzeit (kein @types-Paket) → lose getypt.
     const cluster = (L as unknown as {
-      markerClusterGroup: (o: unknown) => L.LayerGroup & {
-        addLayers: (l: L.Layer[]) => void
-        removeLayers: (l: L.Layer[]) => void
-      }
+      markerClusterGroup: (o: unknown) => L.LayerGroup & { addLayers: (l: L.Layer[]) => void }
     }).markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 60,
       animate: false, // siehe Pattern: kein Opacity-Transition-Pfad (Marker bleiben sichtbar)
       disableClusteringAtZoom: LINES_MIN_ZOOM,
     })
+    cluster.addLayers(obstacles.map((o) => makeMarker(o, onDelete)))
+    map.addLayer(cluster)
 
-    const pointMarkers: L.Layer[] = []
-    const geomPins: L.Layer[] = []
-    // je geom-Hindernis: weißes Casing + farbige Linie + Pin (alle in geomGroup gekoppelt)
-    const geomLayers: L.Layer[] = []
-    for (const o of obstacles) {
+    // Strecken-Hindernisse mit vorberechnetem Mittelpunkt (für den Sichtfeld-Test).
+    const geomObs = obstacles
+      .map((o) => ({ o, mid: geomMidpoint(o.geom) }))
+      .filter((g): g is { o: Obstacle; mid: [number, number] } => g.mid != null && geomToLines(g.o.geom).length > 0)
+
+    const renderer = L.canvas({ padding: 0.5 }) // Linien auf Canvas (SVG skaliert nicht auf Tausende)
+    const lineGroup = L.layerGroup().addTo(map)
+    const cache = new Map<string, L.Layer[]>() // id → [Casing, Linie], einmal gebaut
+    const onMap = new Set<string>()
+
+    function buildLines(o: Obstacle): L.Layer[] {
       const lines = geomToLines(o.geom)
-      if (lines.length === 0) {
-        pointMarkers.push(makeMarker(o, onDelete))
-        continue
-      }
       const color = istEigenerEintrag(o.quelle) ? EIGEN_COLOR : PIN_GLOBAL
-      const casing = L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7 })
-      const line = L.polyline(lines, { color, weight: 3.5, opacity: 0.9, lineCap: "round" })
+      const casing = L.polyline(lines, { color: "#ffffff", weight: 6, opacity: 0.7, renderer })
+      const line = L.polyline(lines, { color, weight: 3.5, opacity: 0.9, lineCap: "round", renderer })
       line.bindTooltip(o.name, { sticky: true, direction: "top" })
       line.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
       wireDelete(line, o, onDelete)
-      const pin = makeMarker(o, onDelete)
-      geomPins.push(pin)
-      geomLayers.push(casing, line, pin)
+      return [casing, line]
     }
 
-    cluster.addLayers(pointMarkers)
-    map.addLayer(cluster)
-
-    const geomGroup = L.layerGroup()
-    let mode: "in" | "out" | null = null
-    const apply = () => {
-      const next = map.getZoom() >= LINES_MIN_ZOOM ? "in" : "out"
-      if (next === mode) return
-      mode = next
-      if (next === "in") {
-        // herangezoomt: geom-Pins aus dem Cluster, Linie + Pin gemeinsam in geomGroup
-        cluster.removeLayers(geomPins)
-        geomGroup.clearLayers()
-        for (const l of geomLayers) geomGroup.addLayer(l)
-        if (!map.hasLayer(geomGroup)) map.addLayer(geomGroup)
-      } else {
-        // herausgezoomt: Linien weg, geom-Hindernisse als geclusterte Pins in der Übersicht
-        if (map.hasLayer(geomGroup)) map.removeLayer(geomGroup)
-        geomGroup.clearLayers()
-        cluster.addLayers(geomPins)
+    function renderLines() {
+      if (map.getZoom() < LINES_MIN_ZOOM) {
+        if (onMap.size) { lineGroup.clearLayers(); onMap.clear() }
+        return
+      }
+      const bounds = map.getBounds().pad(0.3)
+      const want = new Set<string>()
+      for (const { o, mid } of geomObs) if (bounds.contains(mid)) want.add(o.id)
+      // nicht mehr Sichtbares entfernen
+      for (const id of [...onMap]) {
+        if (!want.has(id)) { for (const l of cache.get(id) ?? []) lineGroup.removeLayer(l); onMap.delete(id) }
+      }
+      // neu Sichtbares (lazy bauen + cachen) hinzufügen
+      for (const { o } of geomObs) {
+        if (!want.has(o.id) || onMap.has(o.id)) continue
+        let layers = cache.get(o.id)
+        if (!layers) { layers = buildLines(o); cache.set(o.id, layers) }
+        for (const l of layers) lineGroup.addLayer(l)
+        onMap.add(o.id)
       }
     }
-    apply()
-    map.on("zoomend", apply)
+
+    let t: ReturnType<typeof setTimeout> | null = null
+    const onMove = () => { if (t) clearTimeout(t); t = setTimeout(renderLines, 150) }
+    renderLines()
+    map.on("moveend zoomend", onMove)
     return () => {
-      map.off("zoomend", apply)
+      if (t) clearTimeout(t)
+      map.off("moveend zoomend", onMove)
       map.removeLayer(cluster)
-      if (map.hasLayer(geomGroup)) map.removeLayer(geomGroup)
+      map.removeLayer(lineGroup)
     }
   }, [map, obstacles, onDelete])
   return null
