@@ -442,7 +442,7 @@ function FindingRow({
             sev.accent,
           )}
         >
-          <p className="text-sm text-neutral-700">{finding.beschreibung}</p>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-700">{finding.beschreibung}</p>
 
           {/* Strukturierte Details */}
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">

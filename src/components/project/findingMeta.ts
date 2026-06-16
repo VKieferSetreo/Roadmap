@@ -90,12 +90,14 @@ export function attrEntries(
 
 const fmtDate = (iso?: string | null) => (iso ? iso.split("-").reverse().join(".") : null)
 
-/** "von – bis" / "ab von" / "bis bis" / "unbefristet". */
+/** "von – bis" / "ab/am von" / "bis bis" / "unbefristet".
+ *  Nur Start, kein Ende: oft eine 1-Tages-Baustelle (Quelle liefert kein Enddatum),
+ *  daher "ab/am" statt "ab" — ehrlich, weil wir Eintägigkeit nicht sicher wissen. */
 export function formatGueltigkeit(von?: string | null, bis?: string | null): string {
   const v = fmtDate(von)
   const b = fmtDate(bis)
   if (v && b) return `${v} – ${b}`
-  if (v) return `ab ${v}`
+  if (v) return `ab/am ${v}`
   if (b) return `bis ${b}`
   return "unbefristet"
 }

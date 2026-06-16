@@ -85,7 +85,7 @@ function obstaclePopupHtml(o: Obstacle): string {
     <p class="font-semibold text-neutral-900">${esc(o.name)}</p>
     <p class="mt-0.5 text-xs text-neutral-500">${esc(katMeta(o.kategorie).label)}${o.strassenRef ? ` · ${esc(o.strassenRef)}` : ""}</p>
     ${o.kiAufbereitet ? `<span class="mt-1 inline-block rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">✨ mit KI-Aufbereitung</span>` : ""}
-    ${o.beschreibung ? `<p class="mt-1.5 text-xs leading-relaxed text-neutral-600">${esc(o.beschreibung)}</p>` : ""}
+    ${o.beschreibung ? `<p class="mt-1.5 whitespace-pre-line text-xs leading-relaxed text-neutral-600">${esc(o.beschreibung)}</p>` : ""}
     <div class="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-xs tabular-nums">${rows.join("")}</div>
     ${kontaktZeilen.length ? `<div class="mt-2 flex flex-col gap-1 rounded-lg bg-sky-50/70 px-2.5 py-1.5 text-xs text-neutral-600">${kontaktZeilen.join("")}</div>` : ""}
     ${quelleHtml ? `<p class="mt-2 border-t border-neutral-100 pt-1.5 text-[11px] text-neutral-400">Quelle: ${quelleHtml}${o.quelle?.aktualisiertAm ? ` · ${esc(o.quelle.aktualisiertAm)}` : ""}</p>` : ""}

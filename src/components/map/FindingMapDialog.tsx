@@ -65,7 +65,7 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
         </MapContainer>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-neutral-200 px-6 py-3 text-xs text-neutral-600">
-        {finding.beschreibung ? <span>{finding.beschreibung}</span> : null}
+        {finding.beschreibung ? <span className="w-full whitespace-pre-line leading-relaxed">{finding.beschreibung}</span> : null}
         <span className="tabular-nums">
           <span className="text-neutral-400">Gültig:</span>{" "}
           {formatGueltigkeit(finding.gueltigVon, finding.gueltigBis)}

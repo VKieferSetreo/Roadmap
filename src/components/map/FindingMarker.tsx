@@ -65,7 +65,7 @@ function FindingDetail({
       </div>
 
       {f.beschreibung ? (
-        <p className="mt-2 text-sm leading-relaxed text-neutral-600">{f.beschreibung}</p>
+        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-neutral-600">{f.beschreibung}</p>
       ) : null}
 
       <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-neutral-200/70 pt-3 text-xs">
