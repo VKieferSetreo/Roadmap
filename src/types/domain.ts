@@ -137,6 +137,8 @@ export interface Project {
   updatedAt: string
   /** Mandant, dem das Projekt gehört. */
   tenantId?: string
+  /** E-Mail des Erstellers (wer hat das Projekt angelegt) — Tracking + Mail-Empfänger + Icon. */
+  erstelltVon?: string | null
   /** Hochgeladene Strecken (Hin-/Rückfahrt, Varianten …). */
   routes: ProjectRoute[]
   transport: TransportData

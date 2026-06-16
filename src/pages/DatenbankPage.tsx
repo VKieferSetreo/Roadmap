@@ -2,14 +2,16 @@
 // darunter die Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar,
 // geclustert). Keine Funde-/Auswertungs-Tabelle hier — Funde leben im Projekt.
 
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Database, Map as MapIcon } from "lucide-react"
+import { Database, Map as MapIcon, BarChart3 } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
+import { AbdeckungBoard } from "@/components/db/AbdeckungBoard"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
@@ -17,18 +19,34 @@ import { ApiError } from "@/api/client"
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
   const live = mode === "live"
+  const [tab, setTab] = useState<"ansicht" | "abdeckung">("ansicht")
 
   return (
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Datenquellen aktualisieren und gemeldete Ereignisse (Baustellen, Sperrungen) auf der Karte. Permanente Infrastruktur wird mitgeführt, hier aber nicht angezeigt."
+        description="Datenquellen aktualisieren und gemeldete Ereignisse auf der Karte — plus die Datenabdeckung je Bundesland."
         width="wide"
       >
-        <div className="flex flex-col gap-4">
-          {live ? <SyncBar /> : null}
-          <ObstacleKarte live={live} />
-        </div>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "ansicht" | "abdeckung")} className="mb-4">
+          <TabsList>
+            <TabsTrigger value="ansicht">
+              <MapIcon className="h-4 w-4" /> Ansicht
+            </TabsTrigger>
+            <TabsTrigger value="abdeckung">
+              <BarChart3 className="h-4 w-4" /> Abdeckung
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {tab === "ansicht" ? (
+          <div className="flex flex-col gap-4">
+            {live ? <SyncBar /> : null}
+            <ObstacleKarte live={live} />
+          </div>
+        ) : (
+          <AbdeckungBoard />
+        )}
       </PageContainer>
     </div>
   )

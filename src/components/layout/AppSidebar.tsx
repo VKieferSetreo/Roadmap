@@ -21,6 +21,7 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useContextStore } from "@/store/context"
 import { ProjectMenu } from "@/components/project/ProjectMenu"
+import { CreatorAvatar } from "@/components/project/CreatorAvatar"
 import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 import type { Project } from "@/types/domain"
@@ -79,9 +80,11 @@ function ProjectNavRow({
         )}
         aria-current={active ? "page" : undefined}
       >
-        <Folder
-          className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")}
-        />
+        {project.erstelltVon ? (
+          <CreatorAvatar email={project.erstelltVon} size={18} />
+        ) : (
+          <Folder className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
+        )}
         <span className="truncate">{project.name}</span>
       </button>
       <div
@@ -131,7 +134,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     .filter((p) => !p.archiviertAm)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   const q = suche.trim().toLowerCase()
-  const sorted = q ? aktive.filter((p) => p.name.toLowerCase().includes(q)) : aktive
+  const sorted = q
+    ? aktive.filter(
+        (p) => p.name.toLowerCase().includes(q) || (p.erstelltVon ?? "").toLowerCase().includes(q),
+      )
+    : aktive
 
   return (
     <div className="flex h-full flex-col">

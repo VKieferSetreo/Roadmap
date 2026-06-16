@@ -26,13 +26,13 @@ export function DashboardHome() {
   const sorted = [...aktive].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   const sortedArchiv = [...archivierte].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 
-  // Suche ab vielen Projekten einblenden; filtert nach Name/Beschreibung (case-insensitiv).
+  // Suche ab vielen Projekten einblenden; filtert nach Name, Ersteller-Mail & Beschreibung.
   const zeigeSuche = aktive.length > 6
   const q = suche.trim().toLowerCase()
   const gefiltert =
     zeigeSuche && q
       ? sorted.filter((p) =>
-          [p.name, (p as { beschreibung?: string }).beschreibung]
+          [p.name, p.erstelltVon, (p as { beschreibung?: string }).beschreibung]
             .some((f) => String(f ?? "").toLowerCase().includes(q)),
         )
       : sorted

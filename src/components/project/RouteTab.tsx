@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Link2, Loader2, MapPin, Navigation, Pencil, Plus, Route, Upload, Waypoints, X } from "lucide-react"
+import { Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, Waypoints, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -44,7 +44,6 @@ export function RouteTab({ project }: { project: Project }) {
   const [linkBusy, setLinkBusy] = useState(false)
   const [szStart, setSzStart] = useState("")
   const [szZiel, setSzZiel] = useState("")
-  const [szVias, setSzVias] = useState<string[]>([])
   const [szBusy, setSzBusy] = useState(false)
 
   const countBySource = (s: RouteSource) =>
@@ -99,12 +98,10 @@ export function RouteTab({ project }: { project: Project }) {
     }
     setSzBusy(true)
     try {
-      const vias = szVias.map((v) => v.trim()).filter(Boolean)
-      const res = await api.route.startziel(start, ziel, vias)
+      const res = await api.route.startziel(start, ziel, [])
       addRouteFromResult(res, `${start} → ${ziel}`, "startziel")
       setSzStart("")
       setSzZiel("")
-      setSzVias([])
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Route konnte nicht berechnet werden.")
     } finally {
@@ -201,56 +198,27 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
-              <PlaceAutocomplete
-                value={szStart}
-                onChange={setSzStart}
-                placeholder="Start (Ort oder Adresse)"
-                disabled={szBusy}
-              />
-              {szVias.map((v, i) => (
-                <div key={i} className="flex gap-2">
-                  <PlaceAutocomplete
-                    value={v}
-                    onChange={(val) => setSzVias((arr) => arr.map((x, j) => (j === i ? val : x)))}
-                    placeholder={`Zwischenstopp ${i + 1}`}
-                    disabled={szBusy}
-                    className="flex-1"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setSzVias((arr) => arr.filter((_, j) => j !== i))}
-                    aria-label={`Zwischenstopp ${i + 1} entfernen`}
-                    disabled={szBusy}
-                    className="rounded-md p-2 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-              <PlaceAutocomplete
-                value={szZiel}
-                onChange={setSzZiel}
-                placeholder="Ziel (Ort oder Adresse)"
-                disabled={szBusy}
-              />
-              <div className="flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSzVias((a) => [...a, ""])}
+              {/* Start + Ziel nebeneinander (kompakt) */}
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                <PlaceAutocomplete
+                  value={szStart}
+                  onChange={setSzStart}
+                  placeholder="Start (Ort oder Adresse)"
                   disabled={szBusy}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 transition-colors hover:text-primary-700 disabled:opacity-50"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Zwischenstopp
-                </button>
+                />
+                <PlaceAutocomplete
+                  value={szZiel}
+                  onChange={setSzZiel}
+                  placeholder="Ziel (Ort oder Adresse)"
+                  disabled={szBusy}
+                />
+              </div>
+              <div className="flex justify-end">
                 <Button onClick={() => void onStartZiel()} disabled={szBusy || !szStart.trim() || !szZiel.trim()}>
                   {szBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
                   Route berechnen
                 </Button>
               </div>
-              <p className="text-[11px] text-neutral-400">
-                Optimaler Weg ohne LKW-Restriktionen — die Restriktionen prüft anschließend die
-                Auswertung gegen die Hindernis-Datenbank.
-              </p>
             </div>
           )}
           </div>

@@ -6,6 +6,7 @@ import { ArrowRight, Route as RouteIcon, TriangleAlert } from "lucide-react"
 import { Badge } from "@/components/ui/Badge"
 import { MapPreview } from "@/components/shared/MapPreview"
 import { ProjectMenu } from "./ProjectMenu"
+import { CreatorAvatar } from "./CreatorAvatar"
 import type { Project, ProjectStatus } from "@/types/domain"
 import { formatRelativeDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
@@ -69,7 +70,10 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 font-semibold leading-snug text-neutral-900">{project.name}</h3>
+        <div className="flex items-start gap-2">
+          {project.erstelltVon ? <CreatorAvatar email={project.erstelltVon} size={22} /> : null}
+          <h3 className="line-clamp-2 font-semibold leading-snug text-neutral-900">{project.name}</h3>
+        </div>
         <p className="mt-1.5 flex items-center gap-1.5 text-sm text-neutral-500">
           <RouteIcon className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">{routeLabel(project)}</span>
@@ -115,8 +119,9 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
         onKeyDown={(e) => {
           if (e.key === "Enter") navigate(`/projekte/${project.id}`)
         }}
-        className="group flex w-full cursor-pointer items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-neutral-50 focus-visible:bg-neutral-50 focus-visible:outline-none"
+        className="group flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-neutral-50 focus-visible:bg-neutral-50 focus-visible:outline-none"
       >
+        {project.erstelltVon ? <CreatorAvatar email={project.erstelltVon} size={24} /> : null}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-neutral-900">{project.name}</p>
           <p className="truncate text-xs text-neutral-500">
