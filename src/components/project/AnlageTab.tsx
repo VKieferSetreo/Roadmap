@@ -29,7 +29,7 @@ export function AnlageTab({ project }: { project: Project }) {
 
   const onRun = () => {
     if (!routeReady) {
-      toast.error("Bitte zuerst im Reiter Route eine Strecke anlegen.")
+      toast.error("Bitte zuerst oben eine Strecke anlegen.")
       return
     }
     runAnalysis(project.id)
@@ -253,7 +253,7 @@ export function AnlageTab({ project }: { project: Project }) {
                 ) : routeReady ? (
                   "Bereit zur Auswertung."
                 ) : (
-                  "Im Reiter Route eine Strecke anlegen, um die Auswertung zu starten."
+                  "Oben eine Strecke anlegen, um die Auswertung zu starten."
                 )}
               </div>
               {/* Aktionen nebeneinander: „Ergebnis öffnen" links, „Erneut auswerten" rechts

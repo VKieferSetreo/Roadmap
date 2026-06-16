@@ -32,10 +32,6 @@ export interface TransportData {
   hoehe: number
   /** Gesamtgewicht in Tonnen. */
   gesamtgewicht: number
-  /** Anzahl Achsen (min. 2 — Zugmaschine). */
-  achsen: number
-  /** Achslast pro Achse in Tonnen (Länge === achsen). */
-  achslasten: number[]
 }
 
 export type FindingKategorie =
@@ -380,8 +376,6 @@ export const DEFAULT_TRANSPORT: TransportData = {
   breite: 3.0,
   hoehe: 4.2,
   gesamtgewicht: 68,
-  achsen: 8,
-  achslasten: [11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5, 11.5],
 }
 
 /** Farb-Palette für Projekt-Strecken (Reihenfolge = Vergabe-Reihenfolge). */

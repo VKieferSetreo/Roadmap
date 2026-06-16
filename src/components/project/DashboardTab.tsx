@@ -80,7 +80,7 @@ export function DashboardTab({ project }: { project: Project }) {
           title="Noch keine Auswertung"
           description="Sobald die Auswertung gefahren wurde, erscheinen hier alle Funde mit Details."
           cta={
-            <Button onClick={() => navigate(`/projekte/${project.id}/anlage`)}>Zur Anlage</Button>
+            <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
           }
         />
       </div>

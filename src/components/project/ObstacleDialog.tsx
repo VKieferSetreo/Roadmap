@@ -20,7 +20,6 @@ const ATTR_FELDER: Record<
   bruecke: [
     { key: "maxHoeheM", label: "Durchfahrtshöhe", unit: "m", step: 0.05 },
     { key: "maxGewichtT", label: "Zul. Gesamtlast", unit: "t" },
-    { key: "maxAchslastT", label: "Zul. Achslast", unit: "t", step: 0.5 },
   ],
   tunnel: [
     { key: "maxHoeheM", label: "Durchfahrtshöhe", unit: "m", step: 0.05 },
@@ -29,7 +28,6 @@ const ATTR_FELDER: Record<
   engstelle: [{ key: "maxBreiteM", label: "Restbreite", unit: "m", step: 0.05 }],
   gewicht: [
     { key: "maxGewichtT", label: "Zul. Gesamtlast", unit: "t" },
-    { key: "maxAchslastT", label: "Zul. Achslast", unit: "t", step: 0.5 },
   ],
   baustelle: [
     { key: "restbreiteM", label: "Restbreite", unit: "m", step: 0.05 },

@@ -1,9 +1,9 @@
-// Projekt-Detail mit 3 Reitern: Anlage · Karte · Dashboard.
+// Projekt-Detail mit 3 Reitern: Eingabe (Strecke + Stammdaten) · Karte · Dashboard.
 // Tab steckt in der URL (/projekte/:id/:tab). Karte rendert vollflächig.
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { ClipboardList, MapPin, MapPinned, SlidersHorizontal, type LucideIcon } from "lucide-react"
+import { ClipboardList, MapPin, MapPinned, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useProjectStore } from "@/store/projects"
 import { RouteTab } from "@/components/project/RouteTab"
@@ -12,8 +12,7 @@ import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 
 const TABS: { slug: string; label: string; icon: LucideIcon }[] = [
-  { slug: "route", label: "Route", icon: MapPin },
-  { slug: "anlage", label: "Anlage", icon: SlidersHorizontal },
+  { slug: "route", label: "Eingabe", icon: MapPin },
   { slug: "karte", label: "Karte", icon: MapPinned },
   { slug: "dashboard", label: "Dashboard", icon: ClipboardList },
 ]
@@ -81,9 +80,11 @@ export function ProjectDetail() {
         ) : (
           <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
             {tab === "route" ? (
-              <RouteTab project={project} />
-            ) : tab === "anlage" ? (
-              <AnlageTab project={project} />
+              // Eingabe: Streckenanlage + Transport-Stammdaten/Zeitraum/Veröffentlichung auf einer Seite.
+              <div className="flex flex-col gap-8">
+                <RouteTab project={project} />
+                <AnlageTab project={project} />
+              </div>
             ) : (
               <DashboardTab project={project} />
             )}

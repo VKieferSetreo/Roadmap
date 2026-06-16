@@ -116,24 +116,31 @@ export function angleDeltaDeg(a, b) {
 }
 
 /**
- * Verhältnis einer Strecken-Meldung (Linien-Geometrie) zur Route im Korridor:
- *   "parallel" — überlappt überwiegend MIT der Reiserichtung → relevant, behalten
- *   "opposite" — überlappt NUR/überwiegend gegen die Richtung (Gegenfahrbahn) → ausblenden
- *   "none"     — keine Überlappung im Korridor (oder Punkt) → behalten
+ * Verhältnis einer Strecken-Meldung (Linien-Geometrie) zur Route:
+ *   "parallel" — liegt auf UNSERER Fahrbahn (deckungsgleich) → relevant, behalten
+ *   "opposite" — liegt VERSETZT neben der Route und läuft überwiegend GEGEN die Reiserichtung
+ *                (separate Gegenfahrbahn einer Richtungsfahrbahn) → ausblenden
+ *   "none"     — zu wenig Evidenz → behalten
  *
- * Längen-gewichtet über alle Linien-Segmente, deren Mittelpunkt im Korridor liegt, mit
- * LOKALEM Segment-Kurs (statt grobem erster→letzter). Robust gegen kurze/verrauschte
- * Stützpunkte und gegen Hin-/Rückfahrt-Routen. Es wird NUR gedroppt, wenn die Linie
- * REIN gegen die Reiserichtung läuft (kein nennenswerter Parallel-Anteil ≥ PARALLEL_MIN_KM).
- * Fährt der Transport die Linie irgendwo in gleicher Richtung (auch nur ein Stück), bleibt
- * sie drin — lieber eine Gegenfahrbahn zeigen als eine relevante Meldung verlieren.
+ * Zwei Korridore: `coincidentM` (eng, ~Match-Korridor) = „auf unserer Fahrbahn"; `relationM`
+ * (weit, deckt die Mittelstreifen-Breite ab) erfasst auch die versetzte Gegenfahrbahn. Je
+ * Liniensegment im weiten Korridor:
+ *  - Distanz ≤ coincidentM → unsere Fahrbahn (richtungsunabhängig — Stützpunkt-Reihenfolge ist
+ *    bei einbahnigen Straßen nicht verlässlich, physische Nähe schon) → onRouteKm.
+ *  - versetzt (coincidentM..relationM) → nach lokalem Kurs als gegenläufig / gleichläufig zählen.
+ * Behalten, sobald nennenswert (≥ PARALLEL_MIN_KM) auf unserer Fahrbahn. Ausblenden nur, wenn
+ * der versetzte Anteil ÜBERWIEGEND gegenläufig ist (klare Gegenfahrbahn) — sonst behalten.
+ * So verschwindet die sichtbar daneben liegende Gegenfahrbahn, ohne relevante Funde zu verlieren.
  */
-const PARALLEL_MIN_KM = 0.1 // ab so viel Gleichrichtungs-Überlappung gilt die Linie als befahren
-export function obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, oppositeDeg = 120) {
+const PARALLEL_MIN_KM = 0.1
+export function obstacleRouteRelation(
+  obstaclePts, geometry, cum, { coincidentM = 20, relationM = 60, oppositeDeg = 120 } = {},
+) {
   if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return "none"
-  const parallelMax = 180 - oppositeDeg // darunter = klar gleiche Richtung
-  let parallelKm = 0
-  let oppositeKm = 0
+  const parallelMax = 180 - oppositeDeg
+  let onRouteKm = 0
+  let oppositeOffKm = 0
+  let parallelOffKm = 0
   for (let i = 0; i < obstaclePts.length - 1; i++) {
     const a = obstaclePts[i]
     const b = obstaclePts[i + 1]
@@ -141,16 +148,16 @@ export function obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, opp
     if (segKm === 0) continue
     const mid = { lat: (a.lat + b.lat) / 2, lng: (a.lng + b.lng) / 2 }
     const near = nearestOnRoute(mid, geometry, cum)
-    if (near.distM > corridorM) continue
+    if (near.distM > relationM) continue
+    if (near.distM <= coincidentM) { onRouteKm += segKm; continue } // physisch auf unserer Fahrbahn
     const routeBear = routeBearingAtKm(geometry, cum, near.km)
     if (routeBear == null) continue
     const delta = angleDeltaDeg(bearingDeg(a, b), routeBear)
-    if (delta > oppositeDeg) oppositeKm += segKm
-    else if (delta < parallelMax) parallelKm += segKm
-    // dazwischen (quer/zweideutig): zählt nicht
+    if (delta > oppositeDeg) oppositeOffKm += segKm
+    else if (delta < parallelMax) parallelOffKm += segKm
   }
-  if (parallelKm >= PARALLEL_MIN_KM) return "parallel" // irgendwo gleiche Richtung → behalten
-  if (oppositeKm > 0) return "opposite" // rein Gegenfahrbahn → ausblenden
+  if (onRouteKm >= PARALLEL_MIN_KM) return "parallel" // auf unserer Fahrbahn → behalten
+  if (oppositeOffKm >= PARALLEL_MIN_KM && oppositeOffKm > parallelOffKm) return "opposite" // versetzte Gegenfahrbahn → ausblenden
   return "none"
 }
 

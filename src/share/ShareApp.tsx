@@ -163,7 +163,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       createdAt: data.updatedAt,
       updatedAt: data.updatedAt,
       routes: data.routes,
-      transport: { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0, achsen: 2, achslasten: [] },
+      transport: { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0 },
       zeitraum: {},
       findings: data.findings,
       distanzKm: data.distanzKm,

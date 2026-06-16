@@ -155,48 +155,29 @@ function ruleEngstelle(attrs, transport) {
   }
 }
 
-/** Höchste Achslast aus dem v2-Array (achslasten: number[]) — null wenn leer/fehlt. */
-function maxAchslast(transport) {
-  const lasten = Array.isArray(transport.achslasten)
-    ? transport.achslasten.filter((v) => typeof v === "number" && Number.isFinite(v))
-    : []
-  return lasten.length ? Math.max(...lasten) : null
-}
-
+// Bewertung NUR über das Gesamtgewicht (Achslast-Thema entfernt, Max 2026-06-16): die
+// Achslast-Verteilung war zu fehleranfällig/aufwändig; relevant ist die zulässige Gesamtlast.
 function ruleGewicht(attrs, transport) {
   const maxG = num(attrs.maxGewichtT)
-  const maxAchs = num(attrs.maxAchslastT)
-  if (maxG == null && maxAchs == null) {
+  if (maxG == null) {
     return {
       severity: "hinweis",
       beschreibung: "Gewichtsbeschränkung ohne hinterlegte Traglast. Bescheid prüfen.",
       detail: { Gesamtgewicht: fmtT(transport.gesamtgewicht) },
     }
   }
-  let severity = "hinweis"
-  const detail = {}
-  if (maxG != null) {
-    const rest = round2(maxG - transport.gesamtgewicht)
-    severity = sev3(rest < 0, rest < 10)
-    detail["Zul. Gesamtlast"] = fmtT(maxG)
-    detail["Gesamtgewicht"] = fmtT(transport.gesamtgewicht)
-    detail["Reserve"] = fmtT(rest)
-  }
-  if (maxAchs != null) {
-    const achslast = maxAchslast(transport)
-    detail["Zul. Achslast"] = fmtT(maxAchs)
-    if (achslast != null) {
-      detail["Achslast"] = fmtT(achslast)
-      if (round2(maxAchs - achslast) < 0) severity = "kritisch"
-    }
-  }
+  const rest = round2(maxG - transport.gesamtgewicht)
   return {
-    severity,
+    severity: sev3(rest < 0, rest < 10),
     beschreibung:
-      severity === "kritisch"
+      rest < 0
         ? "Zulässige Last überschritten. Ausnahmegenehmigung bzw. Lastverteilungsnachweis erforderlich."
         : "Zulässige Last auf Brücke oder Strecke prüfen, ggf. Lastverteilung nachweisen.",
-    detail,
+    detail: {
+      "Zul. Gesamtlast": fmtT(maxG),
+      Gesamtgewicht: fmtT(transport.gesamtgewicht),
+      Reserve: fmtT(rest),
+    },
   }
 }
 

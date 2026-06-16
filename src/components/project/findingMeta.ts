@@ -48,7 +48,6 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   maxBreiteM: { label: "Restbreite", unit: "m" },
   restbreiteM: { label: "Restbreite", unit: "m" },
   maxGewichtT: { label: "Zul. Gesamtlast", unit: "t" },
-  maxAchslastT: { label: "Zul. Achslast", unit: "t" },
   steigungPct: { label: "Steigung", unit: "%" },
   radiusM: { label: "Außenradius", unit: "m" },
   maxLaengeM: { label: "Max. Länge", unit: "m" },

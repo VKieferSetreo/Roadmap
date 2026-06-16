@@ -276,7 +276,6 @@ const KATEGORIEN: FindKategorieDef[] = [
         detail: {
           "Zul. Last": t(last),
           Gesamtgewicht: t(tr.gesamtgewicht),
-          Achslast: t(Math.max(...tr.achslasten, 0)),
         },
         severity: sev(last < tr.gesamtgewicht, last < tr.gesamtgewicht * 1.15),
       }

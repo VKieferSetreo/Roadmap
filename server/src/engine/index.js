@@ -126,9 +126,14 @@ export async function analyze({ db, project, corridorM }) {
       // Reiserichtung (Gegenfahrbahn), passiert der Transport sie nicht → ausblenden.
       // obstacleRouteRelation gewichtet segmentweise nach Länge mit lokalem Kurs; Punkte
       // und nur-quer/zweideutig liegende Linien → "none"/"parallel" → bleiben IMMER drin.
-      if (obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, OPPOSITE_DEG) === "opposite") {
-        continue
-      }
+      // coincidentM = Match-Korridor (auf unserer Fahrbahn); relationM weiter, damit die versetzte
+      // Gegenfahrbahn (Mittelstreifen-Abstand) überhaupt erfasst und als gegenläufig erkannt wird.
+      const relation = obstacleRouteRelation(obstaclePts, geometry, cum, {
+        coincidentM: corridorM,
+        relationM: Math.max(corridorM * 3, 60),
+        oppositeDeg: OPPOSITE_DEG,
+      })
+      if (relation === "opposite") continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle

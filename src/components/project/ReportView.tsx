@@ -90,12 +90,6 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
                     {t.gesamtgewicht.toLocaleString("de-DE")} t
                   </td>
                 </tr>
-                <tr>
-                  <td className="py-0.5 pr-4 text-neutral-500">Achsen / max. Achslast</td>
-                  <td className="py-0.5 font-medium tabular-nums text-neutral-900">
-                    {t.achsen} / {Math.max(...t.achslasten, 0).toLocaleString("de-DE")} t
-                  </td>
-                </tr>
                 {project.zeitraum?.von ? (
                   <tr>
                     <td className="py-0.5 pr-4 text-neutral-500">Zeitraum</td>

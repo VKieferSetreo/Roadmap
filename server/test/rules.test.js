@@ -126,7 +126,7 @@ describe("engstelle — Marge", () => {
   })
 })
 
-describe("gewicht — Rest + Achslast", () => {
+describe("gewicht — nur Gesamtgewicht (Achslast entfernt)", () => {
   it.each([
     [67.9, "kritisch"], // Rest −0,1 t
     [68, "warnung"], //    Rest 0 t
@@ -138,27 +138,15 @@ describe("gewicht — Rest + Achslast", () => {
     else expect(r.severity).toBe(severity)
   })
 
-  it("Achslast-Überschreitung (max aus achslasten[]) eskaliert auf kritisch", () => {
-    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), TR, {})
-    expect(r.severity).toBe("kritisch") // max(achslasten) = 11,5 > 11
-    expect(r.detail["Achslast"]).toBe("11,5 t")
+  it("Achslast wird NICHT mehr bewertet: maxAchslastT allein (kein maxGewichtT) → kein Fund", () => {
+    // ohne Gesamtlast bleibt nur ein hinweis → evaluate() blendet aus (Achslast zählt nicht mehr)
+    expect(evaluate(ob("gewicht", { maxAchslastT: 11 }), TR, {})).toBeNull()
   })
 
-  it("Achslast eingehalten + Rest ausreichend → ausgeblendet (keine Abweichung)", () => {
-    expect(evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 12 }), TR, {})).toBeNull()
-  })
-
-  it("heterogene achslasten: die höchste Achse zählt", () => {
-    const tr = { ...TR, achslasten: [9, 12, 10] }
-    const r = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), tr, {})
-    expect(r.severity).toBe("kritisch") // 12 > 11
-    expect(r.detail["Achslast"]).toBe("12,0 t")
-  })
-
-  it("leeres/fehlendes achslasten[] → keine Achslast-Eskalation → ausgeblendet (Rest ausreichend)", () => {
-    // Rest 32 t ausreichend, Achslast nicht prüfbar (leeres Array) → keine Abweichung → null
-    expect(evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 11 }), { ...TR, achslasten: [] }, {}))
-      .toBeNull()
+  it("maxAchslastT zusätzlich zu maxGewichtT ändert nichts (nur Gesamtgewicht zählt)", () => {
+    const mitAchs = evaluate(ob("gewicht", { maxGewichtT: 100, maxAchslastT: 5 }), TR, {})
+    const ohneAchs = evaluate(ob("gewicht", { maxGewichtT: 100 }), TR, {})
+    expect(mitAchs?.severity ?? null).toBe(ohneAchs?.severity ?? null)
   })
 })
 

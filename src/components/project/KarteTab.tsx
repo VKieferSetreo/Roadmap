@@ -77,7 +77,7 @@ export function KarteTab({ project }: { project: Project }) {
           title="Noch keine Auswertung"
           description="Lade die Strecke(n) hoch und starte die Auswertung — die Funde erscheinen dann hier auf der Karte."
           cta={
-            <Button onClick={() => navigate(`/projekte/${project.id}/anlage`)}>Zur Anlage</Button>
+            <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
           }
         />
       </div>

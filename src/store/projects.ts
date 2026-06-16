@@ -153,7 +153,7 @@ export const useProjectStore = create<ProjectStore>()(
           createdAt: now(),
           updatedAt: now(),
           routes: [],
-          transport: { ...DEFAULT_TRANSPORT, achslasten: [...DEFAULT_TRANSPORT.achslasten] },
+          transport: { ...DEFAULT_TRANSPORT },
           zeitraum: {},
           findings: [],
         })

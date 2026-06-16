@@ -38,27 +38,31 @@ describe("angleDeltaDeg", () => {
   it("symmetrisch", () => expect(angleDeltaDeg(120, 0)).toBe(120))
 })
 
-describe("obstacleRouteRelation (Korridor 20 m, lokal + längen-gewichtet)", () => {
-  const route = [{ lat: 50.0, lng: 8.0 }, { lat: 50.5, lng: 8.0 }] // Nord-Route
+describe("obstacleRouteRelation (auf-Fahrbahn behalten, versetzte Gegenfahrbahn droppen)", () => {
+  const route = [{ lat: 50.0, lng: 8.0 }, { lat: 50.5, lng: 8.0 }] // Nord-Route bei lng 8.0
   const cum = cumulativeKm(route)
-  it("gleiche Richtung auf der Route → parallel (behalten)", () => {
+  it("gleiche Richtung auf unserer Fahrbahn → parallel (behalten)", () => {
     const linie = [{ lat: 50.1, lng: 8.0 }, { lat: 50.4, lng: 8.0 }]
-    expect(obstacleRouteRelation(linie, route, cum, 20)).toBe("parallel")
+    expect(obstacleRouteRelation(linie, route, cum, {})).toBe("parallel")
   })
-  it("Gegenrichtung auf der Route → opposite (droppen)", () => {
+  it("Koords umgekehrt, aber AUF unserer Fahrbahn → parallel (nicht droppen — physisch unsere Straße)", () => {
     const linie = [{ lat: 50.4, lng: 8.0 }, { lat: 50.1, lng: 8.0 }]
-    expect(obstacleRouteRelation(linie, route, cum, 20)).toBe("opposite")
+    expect(obstacleRouteRelation(linie, route, cum, {})).toBe("parallel")
+  })
+  it("versetzte Gegenfahrbahn (~28 m daneben, gegenläufig) → opposite (droppen)", () => {
+    const linie = [{ lat: 50.4, lng: 8.0004 }, { lat: 50.1, lng: 8.0004 }]
+    expect(obstacleRouteRelation(linie, route, cum, {})).toBe("opposite")
+  })
+  it("versetzt, aber gleichläufig (Nebenfahrbahn gleiche Richtung) → nicht droppen", () => {
+    const linie = [{ lat: 50.1, lng: 8.0004 }, { lat: 50.4, lng: 8.0004 }]
+    expect(obstacleRouteRelation(linie, route, cum, {})).not.toBe("opposite")
   })
   it("abseits der Route → none (behalten)", () => {
     const linie = [{ lat: 60.0, lng: 20.0 }, { lat: 60.2, lng: 20.0 }]
-    expect(obstacleRouteRelation(linie, route, cum, 20)).toBe("none")
-  })
-  it("Hin-und-zurück-Linie über der Route → parallel (Gleichrichtungs-Anteil zählt)", () => {
-    const linie = [{ lat: 50.1, lng: 8.0 }, { lat: 50.4, lng: 8.0 }, { lat: 50.1, lng: 8.0 }]
-    expect(obstacleRouteRelation(linie, route, cum, 20)).toBe("parallel")
+    expect(obstacleRouteRelation(linie, route, cum, {})).toBe("none")
   })
   it("Punkt / <2 Stützpunkte → none (nie droppen)", () => {
-    expect(obstacleRouteRelation([{ lat: 50.2, lng: 8.0 }], route, cum, 20)).toBe("none")
+    expect(obstacleRouteRelation([{ lat: 50.2, lng: 8.0 }], route, cum, {})).toBe("none")
   })
 })
 

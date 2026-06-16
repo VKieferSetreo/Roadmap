@@ -112,7 +112,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   const m = pathname.match(/^\/projekte\/([^/]+)(?:\/([^/]+))?/)
   const activeId = m?.[1]
-  const activeTab = m?.[2] ?? "anlage"
+  const activeTab = m?.[2] ?? "route"
   const onHome = pathname === "/"
   const onDb = pathname.startsWith("/datenbank")
   const onTenants = pathname.startsWith("/mandanten")
