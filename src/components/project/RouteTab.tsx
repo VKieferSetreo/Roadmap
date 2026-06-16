@@ -162,12 +162,11 @@ export function RouteTab({ project }: { project: Project }) {
             })}
           </div>
 
-          {/* Quellen-Inhalt mit fester Mindesthöhe → kein Springen beim Tab-Wechsel; oben ausgerichtet */}
-          <div className="flex min-h-[184px] flex-col justify-start">
+          {/* Quellen-Inhalt mit moderater Mindesthöhe → kein Springen beim Tab-Wechsel; oben ausgerichtet */}
+          <div className="flex min-h-[116px] flex-col justify-start">
           {tab === "datei" ? (
             <DropZone
               compact
-              fill
               label={
                 project.routes.length > 0
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
@@ -255,22 +254,18 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           )}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* ── Angelegte Strecken ── */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <MapPin className="h-4 w-4 text-primary-600" /> Angelegte Strecken
-            {project.routes.length > 0 ? (
-              <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-600">
-                {project.routes.length}
-              </span>
-            ) : null}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+          {/* ── Angelegte Strecken — im selben Block, durch Trennlinie abgesetzt ── */}
+          <div className="flex flex-col gap-3 border-t border-neutral-100 pt-4">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-primary-600" />
+              <span className="text-sm font-semibold text-neutral-900">Angelegte Strecken</span>
+              {project.routes.length > 0 ? (
+                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-600">
+                  {project.routes.length}
+                </span>
+              ) : null}
+            </div>
           {project.routes.length === 0 ? (
             <p className="rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-center text-sm text-neutral-500">
               Noch keine Strecke. Oben über Datei, Google-Link oder Start / Ziel anlegen.
@@ -341,6 +336,7 @@ export function RouteTab({ project }: { project: Project }) {
               Alle Strecken erscheinen farblich getrennt auf der Karte — einzeln ein-/ausblendbar.
             </p>
           ) : null}
+          </div>
         </CardContent>
       </Card>
     </div>

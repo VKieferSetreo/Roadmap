@@ -2,6 +2,7 @@
 // Modul-Reitern auf) · unten Datenbank/Einstellungen/Abmelden.
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
+import { useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Bug,
@@ -11,6 +12,7 @@ import {
   Home,
   LogOut,
   Plus,
+  Search,
   Settings,
   X,
   type LucideIcon,
@@ -124,37 +126,59 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     onNavigate?.()
   }
 
-  const sorted = [...projects]
+  const [suche, setSuche] = useState("")
+  const aktive = [...projects]
     .filter((p) => !p.archiviertAm)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  const q = suche.trim().toLowerCase()
+  const sorted = q ? aktive.filter((p) => p.name.toLowerCase().includes(q)) : aktive
 
   return (
     <div className="flex h-full flex-col">
       <nav className="flex-1 overflow-y-auto p-3">
         <NavRow icon={Home} label="Home" active={onHome} onClick={() => go("/")} />
 
-        <div className="mt-5 flex items-center justify-between pl-3 pr-1">
+        <div className="mb-1.5 mt-5 pl-3 pr-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
             Projekte
           </span>
+        </div>
+
+        {/* Suchleiste + Plus-Button rechts daneben */}
+        <div className="mb-1.5 flex items-center gap-1.5 px-3">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+            <input
+              type="text"
+              value={suche}
+              onChange={(e) => setSuche(e.target.value)}
+              placeholder="Projekt suchen …"
+              aria-label="Projekt suchen"
+              className="w-full rounded-md border border-neutral-200 bg-white py-1.5 pl-7 pr-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100"
+            />
+          </div>
           <button
             onClick={() => {
               openNewProject()
               onNavigate?.()
             }}
             aria-label="Neues Projekt"
-            className="rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-primary-600"
+            className="shrink-0 rounded-md border border-neutral-200 bg-white p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-primary-600"
           >
             <Plus className="h-4 w-4" />
           </button>
         </div>
 
         <div className="mt-1 flex flex-col gap-0.5">
-          {sorted.length === 0 ? (
+          {aktive.length === 0 ? (
             <div className="mt-6 flex flex-col items-center px-3 text-center">
               <Folder className="h-6 w-6 text-neutral-300" />
               <p className="mt-3 text-sm text-neutral-400">Noch keine Projekte.</p>
             </div>
+          ) : sorted.length === 0 ? (
+            <p className="px-3 py-4 text-center text-xs text-neutral-400">
+              Kein Projekt für „{suche.trim()}".
+            </p>
           ) : (
             sorted.map((p) => {
               const isActive = p.id === activeId
