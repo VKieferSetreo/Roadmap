@@ -91,11 +91,22 @@ describe("obstacles v3 — Kunden-POST", () => {
     expect(res.body.realerStart).toBe("2026-01-01")
   })
 
-  it("Nutzer ohne Mandanten-Zuordnung → 403 kein-mandant", async () => {
+  it("Externer ohne Mandanten-Zuordnung → 403 kein-mandant", async () => {
     const { app } = await makeTwoTenantApp()
-    const res = await asUser("ghost@nirgendwo.de")(request(app).post("/api/obstacles")).send(OBSTACLE)
+    const res = await asUser("ghost@nirgendwo.de")(request(app).post("/api/obstacles"))
+      .set("X-Auth-Gateway", "extern")
+      .send(OBSTACLE)
     expect(res.status).toBe(403)
     expect(res.body).toEqual({ error: "kein-mandant" })
+  })
+
+  it("Interner SSO-Nutzer ohne tenant_members-Zeile → eigener Eintrag im Setreo-Mandanten", async () => {
+    const { app, tenant } = await makeTwoTenantApp()
+    // gateway default "intern", keine Mitgliedschaft → automatisch Setreo-Mandant
+    const res = await asUser("neu@setreo.de")(request(app).post("/api/obstacles")).send(OBSTACLE)
+    expect(res.status).toBe(201)
+    expect(res.body.tenantId).toBe(tenant.id)
+    expect(res.body.herkunft).toBe("eigen")
   })
 
   it("Admin: ohne global → eigen im aktiven Tenant (X-Tenant), mit global:true → global", async () => {
@@ -158,8 +169,9 @@ describe("obstacles v3 — Sichtbarkeit (GET)", () => {
     const kundeA = await asUser("a@kunde-a.de")(request(app).get("/api/obstacles"))
     expect(kundeA.body.obstacles.map((o) => o.name).sort()).toEqual(["Globale Ampel", "KundeA-Ampel"])
 
-    // Nutzer ohne Tenant: nur globale
+    // Externer ohne Tenant: nur globale (intern würde Setreo-Mandant bekommen)
     const ghost = await asUser("ghost@nirgendwo.de")(request(app).get("/api/obstacles"))
+      .set("X-Auth-Gateway", "extern")
     expect(ghost.body.obstacles.map((o) => o.name)).toEqual(["Globale Ampel"])
   })
 })

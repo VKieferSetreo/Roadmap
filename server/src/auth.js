@@ -2,9 +2,16 @@
 // vertraut den dort gesetzten Headern. Trust internal, validate boundary.
 //
 // v2: Tenant-Kontext pro Request (req.ctx = { email, isAdmin, tenant }).
-// - Non-Admin: Tenant über tenant_members (E-Mail) — kein Mapping → tenant null.
+// - Non-Admin extern: Tenant über tenant_members (E-Mail) — kein Mapping → tenant null.
+// - Non-Admin intern (Setreo-Hub-SSO): ohne tenant_members-Zeile automatisch Mandant "setreo"
+//   (kein eigenes Roadmap-Passwort, keine Provisionierung nötig — SSO genügt).
 // - Admin (Rolle "admin"): Header X-Tenant wählt den Tenant, ohne Header → "setreo".
 // Tenant-pflichtige Routen (projects/findings/stats) hängen requireTenant davor.
+
+// Interner Default-Mandant für SSO-Nutzer ohne explizite tenant_members-Zuordnung.
+// Identisch zum Admin-Default ("setreo", siehe tenantContext). ponytail: hardcoded wie
+// dort — bei Umbenennung beide Stellen ändern.
+const INTERNAL_TENANT_SLUG = "setreo"
 
 import { getTenantBySlug, getTenantForEmail } from "./tenants.js"
 import { asyncHandler } from "./util.js"
@@ -81,6 +88,13 @@ export function tenantContext({ db }) {
       tenant = await getTenantBySlug(db, slug)
     } else {
       tenant = await getTenantForEmail(db, email)
+      // Interner SSO-Nutzer (Setreo-Hub, gateway != "extern") ohne explizite Mitgliedschaft:
+      // automatisch dem Setreo-Mandanten zuordnen — so braucht kein interner Nutzer ein
+      // eigenes Roadmap-Passwort oder eine vorab angelegte tenant_members-Zeile. Externe
+      // (gateway "extern") bleiben strikt auf ihre Mitgliedschaft beschränkt → sonst 403.
+      if (!tenant && req.user?.gateway !== "extern") {
+        tenant = await getTenantBySlug(db, INTERNAL_TENANT_SLUG)
+      }
     }
     req.ctx = { email, isAdmin, tenant }
     next()

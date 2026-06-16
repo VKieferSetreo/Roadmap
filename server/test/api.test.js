@@ -94,9 +94,10 @@ describe("context", () => {
     })
   })
 
-  it("Nutzer ohne Mandanten-Zuordnung: context ok (tenant null), projects → 403 kein-mandant", async () => {
+  it("Externer ohne Mandanten-Zuordnung: tenant null, projects → 403 kein-mandant", async () => {
     const { app } = makeApp({ requireAuth: true })
-    const asGhost = (req) => req.set("X-Auth-User", "ghost@nirgendwo.de").set("X-Auth-Roles", "user")
+    const asGhost = (req) =>
+      req.set("X-Auth-User", "ghost@nirgendwo.de").set("X-Auth-Roles", "user").set("X-Auth-Gateway", "extern")
     const ctx = await asGhost(request(app).get("/api/context"))
     expect(ctx.status).toBe(200)
     expect(ctx.body.tenant).toBeNull()
@@ -106,6 +107,18 @@ describe("context", () => {
       expect(res.status).toBe(403)
       expect(res.body).toEqual({ error: "kein-mandant" })
     }
+  })
+
+  it("Interner SSO-Nutzer ohne tenant_members-Zeile → automatisch Mandant setreo", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    // gateway default "intern" (kein X-Auth-Gateway), keine Mitgliedschaft, Rolle user
+    const asIntern = (req) => req.set("X-Auth-User", "neu@setreo.de").set("X-Auth-Roles", "user")
+    const ctx = await asIntern(request(app).get("/api/context"))
+    expect(ctx.status).toBe(200)
+    expect(ctx.body.isAdmin).toBe(false)
+    expect(ctx.body.tenant).toMatchObject({ slug: "setreo", name: "Setreo" })
+    // und die tenant-pflichtigen Routen sind damit offen
+    expect((await asIntern(request(app).get("/api/projects"))).status).toBe(200)
   })
 })
 
