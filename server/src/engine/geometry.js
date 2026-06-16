@@ -125,8 +125,9 @@ export function angleDeltaDeg(a, b) {
  * Zwei Korridore: `coincidentM` (eng, ~Match-Korridor) = „auf unserer Fahrbahn"; `relationM`
  * (weit, deckt die Mittelstreifen-Breite ab) erfasst auch die versetzte Gegenfahrbahn. Je
  * Liniensegment im weiten Korridor:
- *  - Distanz ≤ coincidentM → unsere Fahrbahn (richtungsunabhängig — Stützpunkt-Reihenfolge ist
- *    bei einbahnigen Straßen nicht verlässlich, physische Nähe schon) → onRouteKm.
+ *  - Distanz ≤ coincidentM → unsere Fahrbahn (richtungsunabhängig behalten). WICHTIG: coincidentM ist
+ *    der ENGE Same-Lane-Radius (~8 m), NICHT der Match-Korridor (20 m) — sonst fiele die nur wenige
+ *    Meter daneben liegende Gegenfahrbahn unter „unsere Fahrbahn" und würde nie ausgeblendet.
  *  - versetzt (coincidentM..relationM) → nach lokalem Kurs als gegenläufig / gleichläufig zählen.
  * Behalten, sobald nennenswert (≥ PARALLEL_MIN_KM) auf unserer Fahrbahn. Ausblenden nur, wenn
  * der versetzte Anteil ÜBERWIEGEND gegenläufig ist (klare Gegenfahrbahn) — sonst behalten.
@@ -134,7 +135,7 @@ export function angleDeltaDeg(a, b) {
  */
 const PARALLEL_MIN_KM = 0.1
 export function obstacleRouteRelation(
-  obstaclePts, geometry, cum, { coincidentM = 20, relationM = 60, oppositeDeg = 120 } = {},
+  obstaclePts, geometry, cum, { coincidentM = 8, relationM = 60, oppositeDeg = 120 } = {},
 ) {
   if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return "none"
   const parallelMax = 180 - oppositeDeg
@@ -149,7 +150,7 @@ export function obstacleRouteRelation(
     const mid = { lat: (a.lat + b.lat) / 2, lng: (a.lng + b.lng) / 2 }
     const near = nearestOnRoute(mid, geometry, cum)
     if (near.distM > relationM) continue
-    if (near.distM <= coincidentM) { onRouteKm += segKm; continue } // physisch auf unserer Fahrbahn
+    if (near.distM <= coincidentM) { onRouteKm += segKm; continue } // deckungsgleich auf unserer Fahrbahn
     const routeBear = routeBearingAtKm(geometry, cum, near.km)
     if (routeBear == null) continue
     const delta = angleDeltaDeg(bearingDeg(a, b), routeBear)

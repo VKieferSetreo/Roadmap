@@ -47,6 +47,11 @@ const SEV_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
 // Route-Richtung gilt die Linie als Gegenfahrbahn → für diese Fahrtrichtung irrelevant.
 // 120° = klar entgegengesetzt; alles darunter (parallel/quer/zweideutig) bleibt drin.
 const OPPOSITE_DEG = 120
+// Enger "Same-Lane"-Radius für den Gegenfahrbahn-Filter: Segmente ≤ SAME_LANE_M gelten
+// richtungsunabhängig als unsere Fahrbahn. MUSS kleiner sein als der Match-Korridor (corridorM,
+// ~20 m) — sonst fällt die nur wenige Meter daneben liegende Gegenfahrbahn unter "unsere
+// Fahrbahn" und würde nie ausgeblendet (genau der Gegenverkehr-Bug). 8 m ≈ Fahrstreifenbreite.
+const SAME_LANE_M = Number(process.env.SAME_LANE_M ?? 8)
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
 export function dedupeFindings(findings) {
@@ -126,10 +131,11 @@ export async function analyze({ db, project, corridorM }) {
       // Reiserichtung (Gegenfahrbahn), passiert der Transport sie nicht → ausblenden.
       // obstacleRouteRelation gewichtet segmentweise nach Länge mit lokalem Kurs; Punkte
       // und nur-quer/zweideutig liegende Linien → "none"/"parallel" → bleiben IMMER drin.
-      // coincidentM = Match-Korridor (auf unserer Fahrbahn); relationM weiter, damit die versetzte
-      // Gegenfahrbahn (Mittelstreifen-Abstand) überhaupt erfasst und als gegenläufig erkannt wird.
+      // coincidentM = enger Same-Lane-Radius (NICHT der 20-m-Match-Korridor!), damit die nur
+      // wenige Meter daneben liegende Gegenfahrbahn in den Bearing-Check-Ring fällt und als
+      // gegenläufig ausgeblendet wird; relationM weiter, um den Mittelstreifen-Abstand zu erfassen.
       const relation = obstacleRouteRelation(obstaclePts, geometry, cum, {
-        coincidentM: corridorM,
+        coincidentM: Math.min(SAME_LANE_M, corridorM),
         relationM: Math.max(corridorM * 3, 60),
         oppositeDeg: OPPOSITE_DEG,
       })

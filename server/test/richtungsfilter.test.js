@@ -53,6 +53,11 @@ describe("obstacleRouteRelation (auf-Fahrbahn behalten, versetzte Gegenfahrbahn 
     const linie = [{ lat: 50.4, lng: 8.0004 }, { lat: 50.1, lng: 8.0004 }]
     expect(obstacleRouteRelation(linie, route, cum, {})).toBe("opposite")
   })
+  it("ENG benachbarte Gegenfahrbahn (~12 m, schmaler Mittelstreifen, gegenläufig) → opposite (Bug-Fix: vorher fälschlich behalten)", () => {
+    // ~12 m Versatz: über dem Same-Lane-Radius (8 m), unter dem alten coincidentM (20 m).
+    const linie = [{ lat: 50.4, lng: 8.000168 }, { lat: 50.1, lng: 8.000168 }]
+    expect(obstacleRouteRelation(linie, route, cum, {})).toBe("opposite")
+  })
   it("versetzt, aber gleichläufig (Nebenfahrbahn gleiche Richtung) → nicht droppen", () => {
     const linie = [{ lat: 50.1, lng: 8.0004 }, { lat: 50.4, lng: 8.0004 }]
     expect(obstacleRouteRelation(linie, route, cum, {})).not.toBe("opposite")
