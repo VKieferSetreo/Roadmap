@@ -18,11 +18,11 @@ export const KATEGORIEN = [
 // die nur bei einer echten Abweichung (warnung/kritisch) angezeigt wird.
 const EVENT_KATEGORIEN = new Set(["baustelle", "sperrung"])
 
-// Bauwerke (Brücke/Tunnel/sonstige Bauwerke) werden vom Strecken-Engineering separat bewertet
-// (Durchfahrtshöhe/Tragfähigkeit) → NICHT in der Karten-Auswertung als Fund zeigen. Sie bleiben als
-// Daten in der DB/Karte erhalten, erzeugen aber keinen Routen-Fund. Fokus der Auswertung: gemeldete
-// Ereignisse (Baustellen/Sperrungen) + dynamische Restriktionen. Leicht umkehrbar (Liste anpassen).
-export const AUSWERTUNG_AUSGESCHLOSSEN = ["bruecke", "tunnel", "sonstige"]
+// Brücke + Tunnel SIND wieder Teil der Auswertung (ruleBauwerk: Durchfahrtshöhe +
+// Tragfähigkeit + grundsätzliche GST-Sperre). Funde ohne hinterlegte Werte bleiben "hinweis"
+// und werden von evaluate() ausgeblendet (kein Flut an „Brücke ohne Höhe"). Nur "sonstige"
+// (Stützmauern, Lärmschutz …) bleibt ausgeschlossen — keine GST-Relevanz (evaluate() → null).
+export const AUSWERTUNG_AUSGESCHLOSSEN = ["sonstige"]
 
 const DEFAULT_TITEL = {
   bruecke: "Brückendurchfahrt",
@@ -71,28 +71,67 @@ const sev3 = (kritisch, warnung) => (kritisch ? "kritisch" : warnung ? "warnung"
 
 // ── Kategorie-Regeln ──────────────────────────────────────────────────────────
 
-function ruleHoehe(art, attrs, transport) {
+const SEV_ORDER = { hinweis: 1, warnung: 2, kritisch: 3 }
+const schlimmer = (a, b) => (SEV_ORDER[a] >= SEV_ORDER[b] ? a : b)
+
+/**
+ * Bauwerk (Brücke/Tunnel): bewertet alle hinterlegten Restriktionen gemeinsam —
+ * lichte Durchfahrtshöhe (maxHoeheM), Tragfähigkeit (maxGewichtT) und die grundsätzliche
+ * Schwertransport-Sperre der Behörde (grundsaetzlicheGstSperre). Ergebnis = schlimmste
+ * Einzelbewertung. Ohne JEDEN hinterlegten Wert → "hinweis" → evaluate() blendet aus
+ * (kein Flut an „Brücke ohne Maße"). NRW liefert z.B. nur Last, BAYSIS Höhe+Last.
+ */
+function ruleBauwerk(art, attrs, transport) {
   const maxH = num(attrs.maxHoeheM)
-  if (maxH == null) {
+  const maxG = num(attrs.maxGewichtT)
+  const gstSperre = attrs.grundsaetzlicheGstSperre === true
+
+  if (maxH == null && maxG == null && !gstSperre) {
     return {
       severity: "hinweis",
-      beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe. Vor Ort prüfen.`,
-      detail: { Transporthöhe: fmtM(transport.hoehe) },
+      beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe oder Tragfähigkeit. Vor Ort prüfen.`,
+      detail: { Transporthöhe: fmtM(transport.hoehe), Gesamtgewicht: fmtT(transport.gesamtgewicht) },
     }
   }
-  const spielraum = round2(maxH - transport.hoehe)
-  return {
-    severity: sev3(spielraum < 0.10, spielraum < 0.50),
-    beschreibung:
-      spielraum < 0.10
-        ? `Durchfahrtshöhe reicht für den Transport nicht aus. ${art} umfahren oder Höhe reduzieren.`
-        : `Begrenzte Durchfahrtshöhe. Spielraum knapp, Durchfahrt prüfen.`,
-    detail: {
-      Durchfahrtshöhe: fmtM(maxH),
-      Transporthöhe: fmtM(transport.hoehe),
-      Spielraum: fmtM(spielraum),
-    },
+
+  let severity = "hinweis"
+  const detail = {}
+  const gruende = []
+
+  if (maxH != null) {
+    const spielraum = round2(maxH - transport.hoehe)
+    detail["Durchfahrtshöhe"] = fmtM(maxH)
+    detail["Transporthöhe"] = fmtM(transport.hoehe)
+    detail["Spielraum"] = fmtM(spielraum)
+    severity = schlimmer(severity, sev3(spielraum < 0.1, spielraum < 0.5))
+    if (spielraum < 0.1) gruende.push("Durchfahrtshöhe reicht nicht aus")
+    else if (spielraum < 0.5) gruende.push("Durchfahrtshöhe knapp")
   }
+
+  if (maxG != null) {
+    const rest = round2(maxG - transport.gesamtgewicht)
+    detail["Zul. Brückenlast"] = fmtT(maxG)
+    detail["Gesamtgewicht"] = fmtT(transport.gesamtgewicht)
+    detail["Reserve"] = fmtT(rest)
+    severity = schlimmer(severity, sev3(rest < 0, rest < 10))
+    if (rest < 0) gruende.push("Tragfähigkeit überschritten")
+    else if (rest < 10) gruende.push("Tragfähigkeit knapp")
+  }
+
+  if (gstSperre) {
+    severity = schlimmer(severity, "warnung")
+    detail["Schwertransport"] = "grundsätzlich gesperrt/auflagenpflichtig"
+    gruende.push("grundsätzliche Schwertransport-Sperre")
+  }
+
+  const beschreibung =
+    severity === "kritisch"
+      ? `${art}: ${gruende.join(", ")}. Umfahren oder Ausnahmegenehmigung bzw. Nachweis erforderlich.`
+      : severity === "warnung"
+        ? `${art}: ${gruende.length ? `${gruende.join(", ")}. ` : ""}Vor der Fahrt prüfen.`
+        : `${art} mit hinterlegten Werten im Rahmen.`
+
+  return { severity, beschreibung, detail }
 }
 
 function ruleEngstelle(attrs, transport) {
@@ -315,10 +354,10 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   let result
   switch (obstacle.kategorie) {
     case "bruecke":
-      result = ruleHoehe("Brücke", attrs, transport)
+      result = ruleBauwerk("Brücke", attrs, transport)
       break
     case "tunnel":
-      result = ruleHoehe("Tunnel", attrs, transport)
+      result = ruleBauwerk("Tunnel", attrs, transport)
       break
     case "engstelle":
       result = ruleEngstelle(attrs, transport)

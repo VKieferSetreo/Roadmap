@@ -74,6 +74,45 @@ describe("bruecke/tunnel — Spielraum", () => {
   })
 })
 
+describe("bruecke/tunnel — Tragfähigkeit + GST-Sperre (ruleBauwerk)", () => {
+  // NRW-Fall: Brücke NUR mit Lastgrenze (keine Höhe). Früher fälschlich als "hinweis"
+  // gedroppt — jetzt korrekt bewertet (Transport 68 t).
+  it.each([
+    [60, "kritisch"], // 68 > 60 → überschritten
+    [70, "warnung"], //  Reserve 2 t < 10 → knapp
+    [90, null], //       Reserve 22 t → ausreichend → ausgeblendet
+  ])("maxGewichtT %f → %s", (maxGewichtT, severity) => {
+    const r = evaluate(ob("bruecke", { maxGewichtT }), TR, {})
+    if (severity === null) expect(r).toBeNull()
+    else {
+      expect(r.severity).toBe(severity)
+      expect(r.detail["Zul. Brückenlast"]).toBeTruthy()
+    }
+  })
+
+  it("grundsätzliche GST-Sperre ohne weitere Werte → warnung (nicht ausgeblendet)", () => {
+    const r = evaluate(ob("bruecke", { grundsaetzlicheGstSperre: true }), TR, {})
+    expect(r).not.toBeNull()
+    expect(r.severity).toBe("warnung")
+  })
+
+  it("Höhe ausreichend ABER GST-Sperre → warnung (Sperre hebt an)", () => {
+    const r = evaluate(ob("bruecke", { maxHoeheM: 5.0, grundsaetzlicheGstSperre: true }), TR, {})
+    expect(r.severity).toBe("warnung")
+  })
+
+  it("Höhe UND Last gemeinsam — schlimmste zählt (Last überschritten)", () => {
+    const r = evaluate(ob("bruecke", { maxHoeheM: 5.0, maxGewichtT: 50 }), TR, {})
+    expect(r.severity).toBe("kritisch")
+    expect(r.detail["Durchfahrtshöhe"]).toBe("5,00 m")
+    expect(r.detail["Zul. Brückenlast"]).toBe("50,0 t")
+  })
+
+  it("Tunnel mit Lastgrenze wird ebenfalls bewertet", () => {
+    expect(evaluate(ob("tunnel", { maxGewichtT: 50 }), TR, {}).severity).toBe("kritisch")
+  })
+})
+
 describe("engstelle — Marge", () => {
   it.each([
     [3.05, "kritisch"],
