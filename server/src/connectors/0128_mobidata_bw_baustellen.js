@@ -37,6 +37,11 @@ export const mobidataBwBaustellenConnector = {
     const obstacles = feats.map((f) => {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunkt(f.geometry)
+      // Strecke durchreichen statt auf einen Punkt zu kollabieren: nur Linien werden zu Strecken-
+      // Funden (Linien-Render + geometrischer Gegenfahrbahn-Filter, der die Reiserichtung aus der
+      // Geometrie liest). Punkt-Features bleiben Punkt-Meldungen (immer sichtbar).
+      const typ = f.geometry?.type
+      const geom = typ === "LineString" || typ === "MultiLineString" ? f.geometry : null
       const istSperrung = String(p.type ?? "").toUpperCase().includes("ROAD_CLOSED")
       const text = [p.description, p.subtype].filter(Boolean).join(" ")
       const tonnage = tonnageAusText(text)
@@ -55,6 +60,7 @@ export const mobidataBwBaustellenConnector = {
         realerStart: dateOnly(p.starttime),
         gueltigVon: dateOnly(p.starttime),
         gueltigBis: dateOnly(p.endtime),
+        geom,
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
       })
     })

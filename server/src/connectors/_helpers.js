@@ -2,6 +2,8 @@
 // Connectoren ziehen den vollen Quell-Bestand und mappen via makeNormalized() in den
 // Importer-Vertrag (NormalizedObstacle). Koordinaten-Plausibilität + UTM-Reprojektion inklusive.
 
+import zlib from "node:zlib"
+
 /** Plausibilität: Punkt in der DE-Bbox? (verwirft kaputte Quell-Koords). */
 export function inDeBbox(lat, lng) {
   return lat != null && lng != null && lat >= 47.2 && lat <= 55.1 && lng >= 5.8 && lng <= 15.1
@@ -432,4 +434,41 @@ export function utmZuWgs84(easting, northing, zone = 32) {
       ((5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * ep2 + 24 * T1 * T1) * D ** 5) / 120) / Math.cos(phi1)
   const lng0 = (zone * 6 - 183) * (Math.PI / 180)
   return [(lng0 + lng) * (180 / Math.PI), lat * (180 / Math.PI)]
+}
+
+/** Binär-Abruf (für ZIP/Downloads). Buffer oder null bei Fehler. */
+export async function getBuffer(url, { timeoutMs = 45000, headers = {} } = {}) {
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
+    if (!r.ok) return null
+    return Buffer.from(await r.arrayBuffer())
+  } catch {
+    return null
+  }
+}
+
+/** Eine Datei aus einem ZIP-Buffer entpacken (dependency-frei, stored + deflate über zlib).
+ *  Scannt lokale Datei-Header (PK\x03\x04); erster Treffer auf nameRegex gewinnt. Buffer oder null. */
+export function unzipEntry(buf, nameRegex) {
+  if (!buf || buf.length < 30) return null
+  for (let i = 0; i + 30 <= buf.length; i++) {
+    if (buf.readUInt32LE(i) !== 0x04034b50) continue // kein lokaler Header hier
+    const method = buf.readUInt16LE(i + 8)
+    const compSize = buf.readUInt32LE(i + 18)
+    const nameLen = buf.readUInt16LE(i + 26)
+    const extraLen = buf.readUInt16LE(i + 28)
+    const name = buf.toString("utf8", i + 30, i + 30 + nameLen)
+    const dataStart = i + 30 + nameLen + extraLen
+    if (compSize === 0) continue // Data-Descriptor-ZIP (Größe erst nach den Daten) — nicht unterstützt
+    if (nameRegex.test(name)) {
+      const data = buf.subarray(dataStart, dataStart + compSize)
+      try {
+        return method === 0 ? data : zlib.inflateRawSync(data)
+      } catch {
+        return null
+      }
+    }
+    i = dataStart + compSize - 1 // hinter diesen Eintrag springen (i++ der Schleife addiert 1)
+  }
+  return null
 }

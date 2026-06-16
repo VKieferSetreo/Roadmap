@@ -47,6 +47,13 @@ import { rostockGstRoutenConnector } from "./0223_rostock_gst_routen.js"
 // Overpass/OSM (0301) bewusst ENTFERNT: crowdsourced, unzuverlässig, ~120k Bloat — keine gewünschte Quelle.
 import { rvrGeonetzwerkRuhrBaustellenConnector } from "./0302_rvr_geonetzwerk_ruhr_baustellen.js"
 import { gstWsvKreuzungsbauwerkeConnector } from "./0303_gst_wsv_kreuzungsbauwerke.js"
+import { rlpBaustellenConnector } from "./0129_rlp_baustellen.js"
+import { sachsenBaustellenConnector } from "./0130_sachsen_baustellen.js"
+import { ingolstadtBaustellenConnector } from "./0224_ingolstadt_baustellen.js"
+import { osnabrueckBaustellenConnector } from "./0225_osnabrueck_baustellen.js"
+import { freiburgBaustellenConnector } from "./0226_freiburg_baustellen.js"
+import { heidelbergBaustellenConnector } from "./0227_heidelberg_baustellen.js"
+import { duisburgBaustellenConnector } from "./0228_duisburg_baustellen.js"
 
 export const CONNECTORS = [
   autobahnConnector,
@@ -83,6 +90,13 @@ export const CONNECTORS = [
   rostockGstRoutenConnector,
   rvrGeonetzwerkRuhrBaustellenConnector,
   gstWsvKreuzungsbauwerkeConnector,
+  rlpBaustellenConnector,
+  sachsenBaustellenConnector,
+  ingolstadtBaustellenConnector,
+  osnabrueckBaustellenConnector,
+  freiburgBaustellenConnector,
+  heidelbergBaustellenConnector,
+  duisburgBaustellenConnector,
 ]
 
 // Vollständiger Pool = statische + env-getriebene (Mobilithek aus MOBILITHEK_FEEDS, leer bis Account).
