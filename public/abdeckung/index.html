@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Roadmap — Datenabdeckung Deutschland</title>
+<style>
+  :root{
+    --rot:#dc2626; --rot-bg:#fef2f2; --gelb:#d97706; --gelb-bg:#fffbeb; --gruen:#16a34a; --gruen-bg:#f0fdf4;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --primary:#0e7490;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f8fafc;color:var(--ink);font-family:"Helvetica Neue",-apple-system,Arial,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 20px 56px}
+  header h1{font-size:24px;margin:0 0 4px;letter-spacing:-0.3px}
+  header p.sub{color:var(--muted);margin:0 0 2px;font-size:14px}
+  header p.meta{color:#94a3b8;font-size:12px;margin:2px 0 0}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:18px 0 6px;font-size:13px;color:#334155}
+  .legend .item{display:flex;align-items:center;gap:7px}
+  .dot{width:15px;height:15px;border-radius:50%;display:inline-block;flex:none}
+  .dot.r{background:var(--rot)} .dot.y{background:var(--gelb)} .dot.g{background:var(--gruen)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:720px}
+  th,td{padding:0;text-align:center}
+  thead th{background:#f1f5f9;color:#334155;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:11px 8px;border-bottom:2px solid #cbd5e1;position:sticky;top:0}
+  thead th.land{text-align:left;padding-left:16px;min-width:188px}
+  tbody th.land{text-align:left;font-weight:600;font-size:13.5px;padding:0 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{border-bottom:1px solid var(--line);border-left:1px solid #f1f5f9;height:54px;vertical-align:middle}
+  tbody tr:hover{background:#fcfdff}
+  .ball{position:relative;width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;cursor:default;font-variant-numeric:tabular-nums}
+  .ball.r{background:var(--rot)} .ball.y{background:var(--gelb)} .ball.g{background:var(--gruen)}
+  .ball.na{background:#e2e8f0;color:#94a3b8}
+  td .avg,th .avg{font-weight:700}
+  tbody th.land .lavg{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:1px}
+  .sumrow td,.sumrow th{background:#f8fafc;border-top:2px solid #cbd5e1;font-weight:700}
+  .sumrow th.land{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#475569}
+  .note{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .note h2{font-size:15px;margin:0 0 8px}
+  .note p,.note li{font-size:13px;color:#475569;margin:6px 0}
+  .note code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12px}
+  .pill{display:inline-block;background:var(--gruen-bg);color:var(--gruen);border:1px solid #bbf7d0;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:600;margin-left:6px}
+  .pill.pend{background:var(--gelb-bg);color:var(--gelb);border-color:#fde68a}
+  footer{margin-top:26px;color:#94a3b8;font-size:11.5px;text-align:center}
+  .tip{position:fixed;z-index:50;background:#0f172a;color:#fff;font-size:12px;line-height:1.4;padding:8px 10px;border-radius:8px;max-width:280px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Datenabdeckung Deutschland</h1>
+    <p class="sub">Roadmap — Schwertransport-Planung · Abdeckung amtlicher Datenquellen je Bundesland und Datentyp</p>
+    <p class="meta">Stand: 16.06.2026 · Ampel = Verfügbarkeit/Qualität einer amtlichen Quelle (nicht tagesaktuelle Fallzahl)</p>
+  </header>
+
+  <div class="legend">
+    <span class="item"><span class="dot g"></span> grün — &gt; 90 % (flächendeckende amtliche Quelle)</span>
+    <span class="item"><span class="dot y"></span> gelb — 60–90 % (teilweise: Städte / nur eine Dimension)</span>
+    <span class="item"><span class="dot r"></span> rot — &lt; 60 % (Lücke / nur indirekt)</span>
+  </div>
+
+  <div class="card scroll">
+    <table id="board"></table>
+  </div>
+
+  <div class="note">
+    <h2>Methodik</h2>
+    <p>Die Ampel bewertet, ob für ein Bundesland und einen Datentyp eine <b>flächendeckende amtliche Quelle</b> angebunden ist — nicht die (tagesabhängige) Anzahl aktiver Meldungen. Grundlage: 44 angebundene Connectoren (Autobahn GmbH, Landesbetriebe, GDI der Länder, Kommunen, WSV).</p>
+    <ul>
+      <li><b>Autobahn</b> ist bundesweit grün (Autobahn GmbH, Verkehr.API — alle BAB).</li>
+      <li><b>Baustellen/Sperrungen</b>: grün, wo eine landesweite Quelle existiert (z. B. RLP-Mobilitätsatlas, Sachsen LASuV, Thüringen TLBV, Brandenburg GDI, BW BEMaS, SH/MV/Saarland, Stadtstaaten); gelb bei reiner Stadt-/Teilabdeckung (NRW nachgeordnetes Netz); rot bei Lücke (Bayern, Niedersachsen, Hessen, Bremen — teils über Mobilithek in Anbindung <span class="pill pend">in Freigabe</span>).</li>
+      <li><b>Brücken/Tunnel/Gewicht-GST</b>: grün/gelb bei dediziertem Bauwerks-/GST-Kataster (NRW, Bayern, Berlin, Hamburg, Hessen, Sachsen); rot, wo nur die bundesweiten Brücken über Bundeswasserstraßen (WSV) vorliegen.</li>
+    </ul>
+    <p>Lücken in Anbindung: Niedersachsen, Hessen, Bremen (Baustellen, via Mobilithek — Datengeber-Freigabe ausstehend). Bayern landesweite Baustellen offen.</p>
+  </div>
+
+  <footer>© 2026 Setreo · Roadmap Datenabdeckung · interne/halböffentliche Übersicht</footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const KATS = ["Autobahn","Baustellen","Sperrungen","Brücken","Tunnel","Gewicht/GST"]
+// je Bundesland: [score, quelle] pro Kategorie (Reihenfolge = KATS)
+const DATA = {
+  "Baden-Württemberg":      [[95,"Autobahn GmbH (0001)"],[95,"MobiData BW / BEMaS (0128) + Stuttgart/Karlsruhe/Freiburg/Heidelberg"],[90,"BEMaS-Sperrungen"],[35,"nur WSV-Brücken (0303)"],[30,"nur WSV"],[40,"keine dedizierte GST-Quelle"]],
+  "Bayern":                 [[95,"Autobahn GmbH (0001)"],[35,"nur Städte (München 0210, Ingolstadt 0224) — keine landesweite Quelle"],[35,"nur Städte"],[80,"BAYSIS Bauwerke (0123)"],[70,"BAYSIS"],[35,"keine dedizierte GST-Quelle"]],
+  "Berlin":                 [[95,"Autobahn GmbH (0001)"],[95,"VIZ Berlin (0114/0115)"],[95,"VIZ Berlin"],[88,"Detailnetz Ingenieurbauwerke (0116)"],[80,"Detailnetz (0116)"],[50,"indirekt über VIZ"]],
+  "Brandenburg":            [[95,"Autobahn GmbH (0001)"],[92,"GDI-BB Baustellen-WFS (0132)"],[90,"GDI-BB (0132)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[35,"keine dedizierte GST-Quelle"]],
+  "Bremen":                 [[95,"Autobahn GmbH (0001)"],[15,"keine freie Quelle — Mobilithek in Freigabe"],[15,"Mobilithek in Freigabe"],[25,"nur WSV-Brücken (0303)"],[20,"nur WSV"],[20,"keine"]],
+  "Hamburg":                [[95,"Autobahn GmbH (0001)"],[95,"Baustellen HH (0112) + Umleitungen (0113)"],[92,"HH (0112/0113)"],[88,"Brücken/Ingenieurbauwerke HH (0111)"],[75,"LSBG (0111)"],[90,"GST-Routen HH (0110)"]],
+  "Hessen":                 [[95,"Autobahn GmbH (0001)"],[22,"keine landesweite freie Quelle — Mobilithek (ivm) in Freigabe"],[22,"Mobilithek in Freigabe"],[80,"Hessen Mobil lastbeschränkte Brücken (0126)"],[55,"Hessen Mobil (0126)"],[70,"Hessen Mobil GST (0126)"]],
+  "Mecklenburg-Vorpommern": [[95,"Autobahn GmbH (0001)"],[90,"LS M-V Baustellen (0119) + Rostock (0222)"],[88,"LS M-V (0119)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[60,"Rostock GST (0223)"]],
+  "Niedersachsen":          [[95,"Autobahn GmbH (0001)"],[25,"nur Osnabrück (0225) — landesweit via Mobilithek (NLStBV) in Freigabe"],[25,"Mobilithek in Freigabe"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[30,"keine"]],
+  "Nordrhein-Westfalen":    [[95,"Autobahn GmbH (0001)"],[70,"Städte (Aachen/Köln/Münster/Dortmund/Bonn/Duisburg) + RVR-Ruhr (0302) — nachgeordnetes Netz nur teils"],[70,"Städte + RVR"],[90,"Straßen.NRW Bauwerke (0125) + GST-Karte (0124)"],[80,"Straßen.NRW (0125)"],[88,"GST-Schwertransportkarte NRW (0124)"]],
+  "Rheinland-Pfalz":        [[95,"Autobahn GmbH (0001)"],[95,"Mobilitätsatlas RLP — landesweit bis Gemeinde (0129)"],[92,"Mobilitätsatlas RLP (0129)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[35,"keine dedizierte GST-Quelle"]],
+  "Saarland":               [[95,"Autobahn GmbH (0001)"],[90,"baustellen.saarland (0127)"],[88,"LfS Saarland (0127)"],[28,"nur WSV-Brücken (0303)"],[22,"nur WSV"],[30,"keine"]],
+  "Sachsen":                [[95,"Autobahn GmbH (0001)"],[95,"Baustelleninfo Sachsen LASuV (0130) + Dresden/Leipzig"],[92,"LASuV (0130)"],[65,"GST-Negativkarten gesperrte Brücken (0121)"],[40,"teilweise (0121)"],[75,"Leipzig Verkehrszeichen (0221) + GST-Negativ (0121)"]],
+  "Sachsen-Anhalt":         [[95,"Autobahn GmbH (0001)"],[65,"LSBB Sperrinfo (0120) — schwerpunktmäßig Sperrungen"],[90,"LSBB Sperrinfo (0120)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[35,"keine dedizierte GST-Quelle"]],
+  "Schleswig-Holstein":     [[95,"Autobahn GmbH (0001)"],[92,"LBV.SH Baustellen (0117) + Umleitungen (0118)"],[90,"LBV.SH (0117/0118)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[35,"keine"]],
+  "Thüringen":              [[95,"Autobahn GmbH (0001)"],[95,"TLBV BIS — landesweit A/B/L/K/G (0131)"],[92,"TLBV BIS (0131)"],[30,"nur WSV-Brücken (0303)"],[25,"nur WSV"],[40,"teilweise über TLBV"]],
+}
+
+const cls = (s) => s == null ? "na" : s > 90 ? "g" : s >= 60 ? "y" : "r"
+const avg = (arr) => Math.round(arr.reduce((a,b)=>a+b,0)/arr.length)
+
+const tip = document.getElementById("tip")
+function showTip(e, html){ tip.innerHTML = html; tip.style.opacity = "1"; moveTip(e) }
+function moveTip(e){ const x=Math.min(e.clientX+14, window.innerWidth-300); tip.style.left=x+"px"; tip.style.top=(e.clientY+14)+"px" }
+function hideTip(){ tip.style.opacity = "0" }
+
+const t = document.getElementById("board")
+let html = "<thead><tr><th class='land'>Bundesland</th>"
+for (const k of KATS) html += `<th>${k}</th>`
+html += "<th>Ø</th></tr></thead><tbody>"
+
+const colScores = KATS.map(()=>[])
+for (const [land, cells] of Object.entries(DATA)) {
+  const scores = cells.map(c=>c[0])
+  const la = avg(scores)
+  html += `<tr><th class='land'>${land}<span class='lavg'>Ø ${la}%</span></th>`
+  cells.forEach((c,i)=>{
+    colScores[i].push(c[0])
+    html += `<td><span class="ball ${cls(c[0])}" data-q="${land} · ${KATS[i]}: ${String(c[1]).replace(/"/g,'&quot;')}">${c[0]}</span></td>`
+  })
+  html += `<td><span class="ball ${cls(la)} avg">${la}</span></td>`
+  html += "</tr>"
+}
+// Spalten-Summe (kategorische Stärke)
+html += "<tr class='sumrow'><th class='land'>Ø je Datentyp</th>"
+for (const cs of colScores) html += `<td><span class="ball ${cls(avg(cs))} avg">${avg(cs)}</span></td>`
+const all = colScores.flat()
+html += `<td><span class="ball ${cls(avg(all))} avg">${avg(all)}</span></td>`
+html += "</tr></tbody>"
+t.innerHTML = html
+
+document.querySelectorAll(".ball[data-q]").forEach(el=>{
+  el.addEventListener("mouseenter", e=>showTip(e, el.getAttribute("data-q")))
+  el.addEventListener("mousemove", moveTip)
+  el.addEventListener("mouseleave", hideTip)
+})
+</script>
+</body>
+</html>
