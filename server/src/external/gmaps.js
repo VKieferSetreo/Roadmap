@@ -6,17 +6,22 @@
 // "lat,lng" (Google nutzt im Pfad und in ?api=1 die Reihenfolge lat,lng).
 const COORD = /^(-?\d{1,3}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)$/
 const SHORT_HOST = /(^|\.)(goo\.gl|maps\.app\.goo\.gl|g\.co)$/i
-const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+// BEWUSST KEIN Browser-UA: bei maps.app.goo.gl (Firebase Dynamic Links) liefert Google einem
+// Desktop-Browser-UA ein JS-Interstitial (HTTP 200, kein Redirect) → Link bleibt unaufgelöst.
+// Mit einem Nicht-Browser-UA kommt das saubere 302 auf die echte google.de/maps/dir/-URL.
+const UA = "roadmap-route-resolver/1.0 (+https://setreo-cloud.com)"
 
 /** Kurz-Link server-seitig auf die volle Maps-URL auflösen (Redirects folgen).
- *  Auf DE/EU-Hosts leitet Google sonst auf consent.google.com um statt auf die Maps-Seite
- *  → CONSENT-Cookie mitschicken; landet man trotzdem auf der Consent-Seite, steckt die echte
- *  Ziel-URL im continue-Param. */
+ *  WICHTIG: KEINEN CONSENT-Cookie mitschicken. Bei maps.app.goo.gl (Firebase Dynamic Links)
+ *  führt `Cookie: CONSENT=YES+` dazu, dass Google statt eines 302 auf die Maps-URL ein
+ *  JS-Interstitial (HTTP 200) ausliefert → der Link bleibt unaufgelöst. Ohne den Cookie
+ *  kommt das saubere 302 auf google.de/maps/dir/…. Landet man doch auf consent.google.com,
+ *  steckt die echte Ziel-URL im continue-Param (Fallback unten). */
 async function resolveShort(url, fetchImpl) {
   try {
     const res = await fetchImpl(url, {
       redirect: "follow",
-      headers: { "User-Agent": UA, "Accept-Language": "de", Cookie: "CONSENT=YES+" },
+      headers: { "User-Agent": UA, "Accept-Language": "de" },
       signal: AbortSignal.timeout(8000),
     })
     let final = res?.url || url
@@ -80,14 +85,22 @@ function parseStops(finalUrl) {
     for (const w of (sp.get("waypoints") || "").split("|").filter(Boolean)) add(w)
     add(sp.get("destination"))
   } else if (u.pathname.includes("/maps/dir/")) {
-    // 2) /maps/dir/<a>/<b>/.../@center/data=... — Pfad-Segmente sind die Stopps.
-    //    "@lat,lng,zoom" = Kartenmitte (KEIN Stopp), "data=..." = Metadaten → überspringen.
+    // 2) /maps/dir/<a>/<b>/.../@center/data=... — der Pfad trägt nur Start+Ziel als Namen;
+    //    ZWISCHENstopps stehen NUR im data=-Blob als geordnete !1d<lng>!2d<lat>-Paare.
+    //    Liefert der data-Blob ≥2 Koordinaten und mind. so viele wie die Pfad-Namen, nehmen
+    //    wir diese exakten (geordneten) Koordinaten — sonst die Pfad-Namen (zu geokodieren).
     const after = u.pathname.split("/maps/dir/")[1] || ""
+    const nameStops = []
     for (const seg of after.split("/")) {
       if (!seg || seg.startsWith("@") || seg.startsWith("data=")) continue
       const s = toStop(seg)
-      if (s) stops.push(s)
+      if (s) nameStops.push(s)
     }
+    const dataCoords = [...finalUrl.matchAll(/!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
+      .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
+      .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
+    if (dataCoords.length >= 2 && dataCoords.length >= nameStops.length) return dataCoords
+    stops.push(...nameStops)
   } else if (u.pathname.includes("/maps/place/")) {
     // 3) Einzel-Ort: kein Routen-Link, aber Koordinate (falls @lat,lng) als EIN Stopp.
     const at = u.pathname.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)
