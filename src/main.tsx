@@ -23,7 +23,7 @@ ReactDOM.createRoot(rootEl).render(
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-        <Toaster position="bottom-right" richColors />
+        <Toaster position="bottom-right" richColors closeButton duration={5000} />
         {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
       </QueryClientProvider>
     </ErrorBoundary>

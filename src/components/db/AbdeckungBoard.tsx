@@ -26,34 +26,20 @@ const DATA: Record<string, [number, number, string][]> = {
 }
 
 const cls = (s: number) => (s >= 85 ? "g" : s >= 60 ? "y" : "r")
-const COL: Record<string, string> = { g: "#16a34a", y: "#d97706", r: "#dc2626" }
+// AA-sichere Textfarben auf Weiss (grün/amber dunkler als die früheren #16a34a/#d97706,
+// die als 14px-Text < 4.5:1 lagen). Rot #dc2626 = 4.83:1 ok.
+const COL: Record<string, string> = { g: "#15803d", y: "#a16207", r: "#dc2626" }
 const avg = (a: number[]) => Math.round(a.reduce((x, y) => x + y, 0) / a.length)
 
-function Pill({ score, outline }: { score: number; outline?: boolean }) {
-  const c = COL[cls(score)]
-  return (
-    <span
-      className="inline-flex min-w-[30px] items-center justify-center rounded-md px-1.5 py-0.5 text-xs font-bold tabular-nums"
-      style={outline ? { color: c, border: `1.6px solid ${c}` } : { background: c, color: "#fff" }}
-    >
-      {score}
-    </span>
-  )
-}
-
 // Erreichte Quote = Ist ÷ Max in % ("wieviel vom öffentlich Möglichen haben wir schon"),
-// eingefärbt nach denselben Schwellen (grün ≥85, gelb 60–84, rot <60).
+// eingefärbt nach denselben Schwellen (grün ≥85, gelb 60–84, rot <60). Ist/Max im Tooltip.
 const quote = (ist: number, max: number) => (max > 0 ? Math.round((ist / max) * 100) : 0)
 
 function Cell({ ist, max, quelle, land, kat }: { ist: number; max: number; quelle: string; land: string; kat: string }) {
   const pct = quote(ist, max)
   return (
-    <td className="border-l border-neutral-100 px-2 py-2 text-center" title={`${land} · ${kat} — Ist ${ist} → Max ${max} (${pct}% erreicht): ${quelle}`}>
-      <span className="inline-flex items-center gap-1.5">
-        <Pill score={ist} />
-        <Pill score={max} outline />
-        <span className="tabular-nums text-xs font-bold" style={{ color: COL[cls(pct)] }}>{pct}%</span>
-      </span>
+    <td className="border-l border-neutral-100 px-2 py-2 text-center" title={`${land} · ${kat} — ${pct}% (Ist ${ist} / Max ${max}): ${quelle}`}>
+      <span className="tabular-nums text-sm font-bold" style={{ color: COL[cls(pct)] }}>{pct}%</span>
     </td>
   )
 }
@@ -66,16 +52,14 @@ export function AbdeckungBoard() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-neutral-600">
-        <span className="flex items-center gap-1.5"><Pill score={90} /> Ist (was wir haben)</span>
-        <span className="flex items-center gap-1.5"><Pill score={90} outline /> Maximum (öffentlich verfügbar)</span>
-        <span className="flex items-center gap-1.5"><b className="tabular-nums" style={{ color: COL.g }}>NN%</b> Anteil am Maximum (Ist ÷ Max)</span>
+        <span className="flex items-center gap-1.5"><b className="tabular-nums" style={{ color: COL.g }}>NN%</b> erreichte Abdeckung (Ist ÷ Max, öffentlich Mögliches) — Ist/Max im Tooltip</span>
         <span>
           Farbe: <b style={{ color: COL.g }}>grün ≥ 85</b> · <b style={{ color: COL.y }}>gelb 60–84</b> · <b style={{ color: COL.r }}>rot &lt; 60</b>
         </span>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
-        <table className="w-full min-w-[1000px] border-collapse">
+        <table className="w-full min-w-[720px] border-collapse">
           <thead>
             <tr>
               <th className="sticky left-0 bg-neutral-100 px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-600">Bundesland</th>
@@ -93,7 +77,7 @@ export function AbdeckungBoard() {
                 <tr key={land} className="border-t border-neutral-100 hover:bg-neutral-50/60">
                   <th className="px-4 py-1.5 text-left text-[13.5px] font-semibold text-neutral-900">
                     {land}
-                    <span className="block text-[11px] font-normal text-neutral-400">Ø Ist {avg(ist)} · Max {avg(max)}</span>
+                    <span className="block text-[11px] font-normal text-neutral-500">Ø {quote(avg(ist), avg(max))}%</span>
                   </th>
                   {cells.map((c, i) => (
                     <Cell key={i} ist={c[0]} max={c[1]} quelle={c[2]} land={land} kat={KATS[i]} />

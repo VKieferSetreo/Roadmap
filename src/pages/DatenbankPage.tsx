@@ -2,7 +2,8 @@
 // darunter die Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar,
 // geclustert). Keine Funde-/Auswertungs-Tabelle hier — Funde leben im Projekt.
 
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
+import { useSearchParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Database, Map as MapIcon, BarChart3 } from "lucide-react"
@@ -19,7 +20,9 @@ import { ApiError } from "@/api/client"
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
   const live = mode === "live"
-  const [tab, setTab] = useState<"ansicht" | "abdeckung">("ansicht")
+  // Tab in der URL (?tab=abdeckung) statt lokalem State: deeplinkbar, überlebt Reload/Back.
+  const [params, setParams] = useSearchParams()
+  const tab = params.get("tab") === "abdeckung" ? "abdeckung" : "ansicht"
 
   return (
     <div className="h-full overflow-y-auto">
@@ -28,7 +31,11 @@ export function DatenbankPage() {
         description="Datenquellen aktualisieren und gemeldete Ereignisse auf der Karte — plus die Datenabdeckung je Bundesland."
         width="wide"
       >
-        <Tabs value={tab} onValueChange={(v) => setTab(v as "ansicht" | "abdeckung")} className="mb-4">
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setParams(v === "abdeckung" ? { tab: "abdeckung" } : {}, { replace: true })}
+          className="mb-4"
+        >
           <TabsList>
             <TabsTrigger value="ansicht">
               <MapIcon className="h-4 w-4" /> Ansicht

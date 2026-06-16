@@ -7,12 +7,15 @@ interface DropdownMenuProps {
   children: ReactNode
   align?: "start" | "end"
   className?: string
+  /** Barrierefreier Name des Trigger-Buttons (Pflicht bei Icon-only-Triggern —
+   *  ein aria-label auf einem Kind-<span> benennt den fokussierbaren Button NICHT). */
+  triggerLabel?: string
 }
 
 // Menü hängt per Portal an document.body (fixed, am Trigger ausgerichtet). So wird es
 // NICHT von overflow-Containern (z.B. der scrollbaren Sidebar) geclippt und liegt mit
 // z-[1700] zuverlässig über Karten/Overlays (unter Dialogen z-[2000]).
-export function DropdownMenu({ trigger, children, align = "end", className }: DropdownMenuProps) {
+export function DropdownMenu({ trigger, children, align = "end", className, triggerLabel }: DropdownMenuProps) {
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -52,7 +55,14 @@ export function DropdownMenu({ trigger, children, align = "end", className }: Dr
 
   return (
     <div className="relative inline-block">
-      <button ref={triggerRef} type="button" onClick={() => setOpen((o) => !o)}>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-label={triggerLabel}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
         {trigger}
       </button>
       {open && pos

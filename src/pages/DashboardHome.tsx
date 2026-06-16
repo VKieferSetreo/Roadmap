@@ -138,12 +138,13 @@ export function DashboardHome() {
               onChange={(e) => setSuche(e.target.value)}
               placeholder="Projekte durchsuchen …"
               aria-label="Projekte durchsuchen"
-              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-9 pr-9 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100"
+              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-9 pr-9 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400"
             />
             {suche ? (
               <button
                 onClick={() => setSuche("")}
                 title="Suche leeren"
+                aria-label="Suche leeren"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-neutral-400 transition-colors hover:text-neutral-700"
               >
                 <X className="h-4 w-4" />

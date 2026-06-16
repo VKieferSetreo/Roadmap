@@ -161,7 +161,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               onChange={(e) => setSuche(e.target.value)}
               placeholder="Projekt suchen …"
               aria-label="Projekt suchen"
-              className="w-full rounded-md border border-neutral-200 bg-white py-1.5 pl-7 pr-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100"
+              className="w-full rounded-md border border-neutral-200 bg-white py-1.5 pl-7 pr-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400"
             />
           </div>
           <button
@@ -180,10 +180,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           {aktive.length === 0 ? (
             <div className="mt-6 flex flex-col items-center px-3 text-center">
               <Folder className="h-6 w-6 text-neutral-300" />
-              <p className="mt-3 text-sm text-neutral-400">Noch keine Projekte.</p>
+              <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
             </div>
           ) : sorted.length === 0 ? (
-            <p className="px-3 py-4 text-center text-xs text-neutral-400">
+            <p className="px-3 py-4 text-center text-xs text-neutral-500">
               Kein Projekt für „{suche.trim()}".
             </p>
           ) : (

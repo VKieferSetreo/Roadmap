@@ -103,11 +103,11 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
 
       {/* Profil-Menü: Avatar klicken → E-Mail + Abmelden */}
       <DropdownMenu
+        triggerLabel="Profil-Menü öffnen"
         trigger={
           <span
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 ring-offset-1 transition-shadow hover:ring-2 hover:ring-primary-300"
             title="Profil"
-            aria-label="Profil-Menü öffnen"
           >
             {init}
           </span>

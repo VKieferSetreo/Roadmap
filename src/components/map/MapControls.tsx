@@ -104,6 +104,7 @@ export function MapSearch() {
             if (e.key === "Escape") setOpen(false)
           }}
           placeholder="Ort suchen …"
+          aria-label="Ort suchen"
           className="h-9 w-full bg-transparent text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none"
         />
         {q ? (

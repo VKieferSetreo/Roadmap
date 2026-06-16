@@ -13,13 +13,14 @@ export function SeverityDonut({ findings }: { findings: Finding[] }) {
 
   if (findings.length === 0) {
     return (
-      <div className="flex h-44 items-center justify-center text-sm text-neutral-400">
+      <div className="flex h-44 items-center justify-center text-sm text-neutral-500">
         Keine Funde
       </div>
     )
   }
 
   return (
+    <div>
     <div className="relative h-44">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
@@ -55,10 +56,25 @@ export function SeverityDonut({ findings }: { findings: Finding[] }) {
       {/* Zentrum: Gesamtzahl */}
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-2xl font-bold tabular-nums text-neutral-900">{findings.length}</span>
-        <span className="text-[11px] font-medium uppercase tracking-wide text-neutral-400">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
           Funde
         </span>
       </div>
+    </div>
+      {/* Statische Legende: Severity nicht nur über Farbe (Label + Anzahl je Schweregrad). */}
+      <ul className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs">
+        {data.map((d) => (
+          <li key={d.sev} className="flex items-center gap-1.5 text-neutral-600">
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-sm"
+              style={{ background: SEVERITY_META[d.sev as FindingSeverity].marker }}
+              aria-hidden
+            />
+            {d.name}
+            <span className="font-semibold tabular-nums text-neutral-800">{d.value}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

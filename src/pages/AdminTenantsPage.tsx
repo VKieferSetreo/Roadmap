@@ -119,7 +119,7 @@ export function AdminTenantsPage() {
                 <Label htmlFor="t-slug">Kürzel (für Links)</Label>
                 <Input id="t-slug" value={slug} onChange={(e) => setSlug(e.target.value.toLowerCase())} placeholder="z.B. krause" className="font-mono" />
               </div>
-              <Button onClick={() => void create()} disabled={busy}>
+              <Button onClick={() => void create()} loading={busy}>
                 <Plus className="h-4 w-4" /> Anlegen
               </Button>
             </CardContent>
@@ -376,7 +376,7 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
               <Button variant="outline" size="sm" onClick={addRow}>
                 <Plus className="h-3.5 w-3.5" /> Nutzer hinzufügen
               </Button>
-              <Button size="sm" onClick={() => void save()} disabled={busy}>
+              <Button size="sm" onClick={() => void save()} loading={busy}>
                 <Save className="h-3.5 w-3.5" /> {busy ? "Speichern…" : "Speichern"}
               </Button>
             </div>

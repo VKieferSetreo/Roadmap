@@ -49,9 +49,9 @@ export function ProjectMenu({ project }: { project: Project }) {
   return (
     <span onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
       <DropdownMenu
+        triggerLabel={`Aktionen für ${project.name}`}
         trigger={
           <span
-            aria-label={`Aktionen für ${project.name}`}
             title="Aktionen"
             className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
           >

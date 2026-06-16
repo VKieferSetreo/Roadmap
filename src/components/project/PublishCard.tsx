@@ -186,7 +186,7 @@ export function PublishCard({ project }: { project: Project }) {
           <Button variant="ghost" onClick={() => setDialogOpen(false)}>
             Abbrechen
           </Button>
-          <Button onClick={() => void submit()} disabled={busy}>
+          <Button onClick={() => void submit()} loading={busy}>
             {share ? "Speichern" : "Veröffentlichen"}
           </Button>
         </div>

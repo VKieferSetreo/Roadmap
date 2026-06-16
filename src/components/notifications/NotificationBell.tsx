@@ -152,7 +152,7 @@ export function NotificationBell() {
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
             <div>
               <p className="text-sm font-semibold text-neutral-900">Nachrichten</p>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 Änderungen an deinen Auswertungen
               </p>
             </div>
@@ -195,7 +195,7 @@ export function NotificationBell() {
               <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
                 <Bell className="h-7 w-7 text-neutral-300" />
                 <p className="text-sm font-medium text-neutral-600">Keine Nachrichten</p>
-                <p className="max-w-[260px] text-xs text-neutral-400">
+                <p className="max-w-[260px] text-xs text-neutral-500">
                   Sobald sich nach einer Datenaktualisierung Funde auf deinen Strecken ändern,
                   erscheint hier eine Meldung.
                 </p>
@@ -234,8 +234,8 @@ export function NotificationBell() {
                               {n.beschreibung}
                             </span>
                           ) : null}
-                          <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-neutral-400">
-                            <span className="font-medium text-neutral-500">{meta.label}</span>
+                          <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-neutral-500">
+                            <span className="font-medium text-neutral-600">{meta.label}</span>
                             {kat ? <span>· {kat}</span> : null}
                             {n.projektName ? <span>· {n.projektName}</span> : null}
                             {n.routeName ? <span>· {n.routeName}</span> : null}

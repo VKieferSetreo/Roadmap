@@ -40,7 +40,10 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
       tabIndex={0}
       onClick={() => navigate(`/projekte/${project.id}`)}
       onKeyDown={(e) => {
-        if (e.key === "Enter") navigate(`/projekte/${project.id}`)
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          navigate(`/projekte/${project.id}`)
+        }
       }}
       className={cn(
         "group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-neutral-200/80 bg-white text-left shadow-card",
@@ -91,12 +94,12 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
               ) : null}
             </div>
           ) : (
-            <span className="text-xs text-neutral-400">Noch keine Auswertung</span>
+            <span className="text-xs text-neutral-500">Noch keine Auswertung</span>
           )}
           <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition-all group-hover:translate-x-0.5 group-hover:text-primary-600" />
         </div>
 
-        <p className="mt-2 text-[11px] text-neutral-400">
+        <p className="mt-2 text-[11px] text-neutral-500">
           Aktualisiert {formatRelativeDE(project.updatedAt)}
         </p>
       </div>

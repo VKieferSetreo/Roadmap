@@ -317,7 +317,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         <Button variant="ghost" onClick={onClose}>
           Abbrechen
         </Button>
-        <Button onClick={() => void submit()} disabled={busy}>
+        <Button onClick={() => void submit()} loading={busy}>
           Eintrag speichern
         </Button>
       </div>

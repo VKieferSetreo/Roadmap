@@ -1,6 +1,7 @@
-import { useEffect, type ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 import { X } from "lucide-react"
 import { cn } from "@/lib/cn"
+import { useFocusTrap } from "@/lib/useFocusTrap"
 
 interface SheetProps {
   open: boolean
@@ -11,6 +12,8 @@ interface SheetProps {
 }
 
 export function Sheet({ open, onClose, children, size = "default", ariaLabel }: SheetProps) {
+  const panelRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!open) return
     const onEsc = (e: KeyboardEvent) => {
@@ -24,6 +27,8 @@ export function Sheet({ open, onClose, children, size = "default", ariaLabel }: 
     }
   }, [open, onClose])
 
+  useFocusTrap(panelRef, open)
+
   if (!open) return null
 
   return (
@@ -34,8 +39,10 @@ export function Sheet({ open, onClose, children, size = "default", ariaLabel }: 
         aria-hidden
       />
       <div
+        ref={panelRef}
+        tabIndex={-1}
         className={cn(
-          "absolute inset-y-0 right-0 flex animate-slide-in-right flex-col overflow-hidden border-l border-neutral-200 bg-white shadow-2xl",
+          "absolute inset-y-0 right-0 flex animate-slide-in-right flex-col overflow-hidden border-l border-neutral-200 bg-white shadow-overlay outline-none",
           size === "wide" ? "w-full sm:max-w-3xl" : "w-full sm:max-w-[480px] xl:max-w-[640px]",
         )}
       >
