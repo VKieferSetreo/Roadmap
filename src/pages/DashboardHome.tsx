@@ -1,7 +1,7 @@
 // Home — Hero (schlank) + Projekt-Übersicht mit Karten-/Listen-Ansicht.
 // Seed/Initial-Load passiert zentral im AppLayout (Datasource-Detection).
 
-import { Archive, ChevronDown, FolderPlus, LayoutGrid, List, Plus } from "lucide-react"
+import { Archive, ChevronDown, FolderPlus, LayoutGrid, List, Plus, Search, X } from "lucide-react"
 import { useState } from "react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
@@ -19,11 +19,23 @@ export function DashboardHome() {
   const ansicht = useSettingsStore((s) => s.projektAnsicht)
   const setAnsicht = useSettingsStore((s) => s.setProjektAnsicht)
   const [archivOffen, setArchivOffen] = useState(false)
+  const [suche, setSuche] = useState("")
 
   const aktive = projects.filter((p) => !p.archiviertAm)
   const archivierte = projects.filter((p) => Boolean(p.archiviertAm))
   const sorted = [...aktive].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   const sortedArchiv = [...archivierte].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+
+  // Suche ab vielen Projekten einblenden; filtert nach Name/Beschreibung (case-insensitiv).
+  const zeigeSuche = aktive.length > 6
+  const q = suche.trim().toLowerCase()
+  const gefiltert =
+    zeigeSuche && q
+      ? sorted.filter((p) =>
+          [p.name, (p as { beschreibung?: string }).beschreibung]
+            .some((f) => String(f ?? "").toLowerCase().includes(q)),
+        )
+      : sorted
 
   return (
     <div className="h-full overflow-y-auto">
@@ -116,6 +128,30 @@ export function DashboardHome() {
           </div>
         </div>
 
+        {/* Suchleiste — erst ab vielen Projekten (sonst überflüssig) */}
+        {!loading && zeigeSuche ? (
+          <div className="relative mt-5">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              type="text"
+              value={suche}
+              onChange={(e) => setSuche(e.target.value)}
+              placeholder="Projekte durchsuchen …"
+              aria-label="Projekte durchsuchen"
+              className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-9 pr-9 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100"
+            />
+            {suche ? (
+              <button
+                onClick={() => setSuche("")}
+                title="Suche leeren"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-neutral-400 transition-colors hover:text-neutral-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+
         {loading ? (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2].map((i) => (
@@ -141,16 +177,24 @@ export function DashboardHome() {
               cta={<Button onClick={openNewProject}>Neues Projekt anlegen</Button>}
             />
           </div>
+        ) : gefiltert.length === 0 ? (
+          <div className="mt-6">
+            <EmptyState
+              icon={Search}
+              title="Keine Treffer"
+              description={`Kein Projekt passt zu „${suche.trim()}".`}
+            />
+          </div>
         ) : ansicht === "karten" ? (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {sorted.map((p, i) => (
+            {gefiltert.map((p, i) => (
               <ProjectCard key={p.id} project={p} index={i} />
             ))}
           </div>
         ) : (
           <Card className="mt-6">
             <ul className="divide-y divide-neutral-100">
-              {sorted.map((p, i) => (
+              {gefiltert.map((p, i) => (
                 <ProjectListRow key={p.id} project={p} index={i} />
               ))}
             </ul>
