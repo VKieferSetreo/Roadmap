@@ -10,7 +10,7 @@ import { rowToObstacle } from "../map.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, cumulativeKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, clipGeomToCorridor, cumulativeKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -131,6 +131,12 @@ export async function analyze({ db, project, corridorM }) {
       }
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
+      // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
+      // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle
+      // Linie, falls der Clip leer ausfällt — nie die Info ganz verlieren.
+      const geomFuerFund = obstacle.geom
+        ? (clipGeomToCorridor(obstacle.geom, geometry, cum, Math.max(corridorM * 3, 60)) ?? obstacle.geom)
+        : null
       findings.push({
         obstacleId: obstacle.id,
         kategorie: obstacle.kategorie,
@@ -143,7 +149,7 @@ export async function analyze({ db, project, corridorM }) {
         detail: verdict.detail,
         lat: obstacle.lat,
         lng: obstacle.lng,
-        geom: obstacle.geom ?? null, // GeoJSON-Strecke (Linie) für FE-Rendering, sonst Punkt
+        geom: geomFuerFund, // auf den Routen-Korridor geclippte Strecke (nur durchfahrener Teil), sonst Punkt
         km: round1(near.km), // Position auf SEINER Route
         routeId: route.id,
         routeName: route.name,

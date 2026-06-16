@@ -154,6 +154,72 @@ export function obstacleRouteRelation(obstaclePts, geometry, cum, corridorM, opp
   return "none"
 }
 
+/**
+ * Clippt die Linien-Geometrie eines Hindernisses auf den Routen-Korridor: behält NUR die
+ * Abschnitte, die innerhalb clipM um die Route liegen (= die der Transport tatsächlich
+ * durchfährt). Verhindert, dass eine lange Baustellen-Linie auf der Karte weit über den
+ * relevanten Streckenteil hinaus gezeichnet wird.
+ *
+ * Verfahren: Linie auf ≤ stepM densifizieren → je Stützpunkt Distanz zur Route → zusammen-
+ * hängende In-Korridor-Läufe bilden; kurze Aussetzer (≤ bridgeM, Digitalisierungs-Rauschen)
+ * überbrücken, damit der sichtbare Abschnitt nicht zerfasert. Rückgabe: GeoJSON LineString
+ * (ein Lauf) / MultiLineString (mehrere) / null (nichts im Korridor → Aufrufer behält Fallback).
+ */
+export function clipGeomToCorridor(geom, geometry, cum, clipM, { stepM = 15, bridgeM = 60 } = {}) {
+  const lines = []
+  if (geom?.type === "LineString") lines.push(geom.coordinates)
+  else if (geom?.type === "MultiLineString" && Array.isArray(geom.coordinates)) lines.push(...geom.coordinates)
+  else return null
+
+  const bridgeN = Math.max(1, Math.ceil(bridgeM / stepM))
+  const outLines = []
+
+  for (const line of lines) {
+    if (!Array.isArray(line) || line.length < 2) continue
+    // 1) densifizieren ([lng,lat]-Reihenfolge wie GeoJSON beibehalten)
+    const dense = []
+    for (let i = 0; i < line.length - 1; i++) {
+      const a = { lng: line[i][0], lat: line[i][1] }
+      const b = { lng: line[i + 1][0], lat: line[i + 1][1] }
+      if (!isFiniteLngLat(a) || !isFiniteLngLat(b)) continue
+      const n = Math.max(1, Math.ceil((haversineKm(a, b) * 1000) / stepM))
+      for (let s = 0; s < n; s++) {
+        const t = s / n
+        dense.push([a.lng + t * (b.lng - a.lng), a.lat + t * (b.lat - a.lat)])
+      }
+    }
+    const last = line[line.length - 1]
+    if (Array.isArray(last)) dense.push(last)
+    if (dense.length < 2) continue
+
+    // 2) In-Korridor markieren
+    const inCorr = dense.map((c) => nearestOnRoute({ lat: c[1], lng: c[0] }, geometry, cum).distM <= clipM)
+    // 3) kurze Aussetzer überbrücken (false-Inseln ≤ bridgeN zwischen true)
+    for (let i = 0; i < inCorr.length; i++) {
+      if (inCorr[i]) continue
+      let j = i
+      while (j < inCorr.length && !inCorr[j]) j++
+      if (i > 0 && j < inCorr.length && j - i <= bridgeN) {
+        for (let k = i; k < j; k++) inCorr[k] = true
+      }
+      i = j - 1
+    }
+    // 4) zusammenhängende true-Läufe extrahieren
+    let run = []
+    for (let i = 0; i < dense.length; i++) {
+      if (inCorr[i]) run.push(dense[i])
+      else if (run.length >= 2) { outLines.push(run); run = [] }
+      else run = []
+    }
+    if (run.length >= 2) outLines.push(run)
+  }
+
+  if (outLines.length === 0) return null
+  if (outLines.length === 1) return { type: "LineString", coordinates: outLines[0] }
+  return { type: "MultiLineString", coordinates: outLines }
+}
+function isFiniteLngLat(p) { return Number.isFinite(p.lng) && Number.isFinite(p.lat) }
+
 /** Bounding-Box der Geometrie, um pufferM (Meter) erweitert — für den SQL-Vorfilter. */
 export function bboxWithBuffer(geometry, pufferM) {
   let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity
