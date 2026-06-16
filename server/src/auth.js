@@ -9,6 +9,16 @@
 import { getTenantBySlug, getTenantForEmail } from "./tenants.js"
 import { asyncHandler } from "./util.js"
 
+// Admin-Rechte (Mandanten-Wechsel, Debugging, globale Schreibrechte) auf eine E-Mail-Allowlist
+// beschränken: NUR wenn ROADMAP_ADMIN_EMAILS gesetzt ist, gilt sie — dann bekommen ALLE anderen
+// internen Hub-Nutzer normale User-Rechte (kein Switch/Debugging/Global-Write), Tenant-Zugang
+// bleibt. Ist die Env nicht gesetzt (z.B. Tests/Dev), greift das bisherige Verhalten. Per-Request
+// gelesen, damit die Liste ohne Code-Deploy pflegbar ist. Prod: "mxk@setreo.de,vki@setreo.de".
+function adminAllowlist() {
+  return String(process.env.ROADMAP_ADMIN_EMAILS ?? "")
+    .split(",").map((e) => e.trim().toLowerCase()).filter(Boolean)
+}
+
 export function authMiddleware({ requireAuth }) {
   return (req, res, next) => {
     // setreo-auth setzt X-Auth-User = User-ID (UUID) und X-Auth-Email = E-Mail.
@@ -32,7 +42,17 @@ export function authMiddleware({ requireAuth }) {
       .filter(Boolean)
     // Externe Identitäten bekommen NIE interne Rollen — egal was im Header steht.
     // "admin" existiert nur im internen Gateway; extern zählt allein tenant_members.
-    if (gateway === "extern") roles = ["extern"]
+    if (gateway === "extern") {
+      roles = ["extern"]
+    } else {
+      const allow = adminAllowlist()
+      if (allow.length > 0 && !allow.includes(email.toLowerCase())) {
+        // Interner Hub-Nutzer, aber NICHT in der Admin-Allowlist → normale User-Rechte:
+        // kein Mandanten-Wechsel, kein Debugging, kein globaler Schreibzugriff. Tenant-Zugang
+        // (über tenant_members) bleibt. So bekommt nicht jeder Hub-Nutzer Admin auf Roadmap.
+        roles = roles.filter((r) => r !== "admin" && r !== "roadmap")
+      }
+    }
     req.user = { email, roles, gateway }
     next()
   }

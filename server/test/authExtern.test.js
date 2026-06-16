@@ -181,3 +181,27 @@ describe("kunden-provisioning POST /api/admin/tenants/:id/users", () => {
     expect(res.status).toBe(403)
   })
 })
+
+describe("Admin-Allowlist (ROADMAP_ADMIN_EMAILS)", () => {
+  it("gesetzt: nur gelistete interne Mail ist Admin; andere → normale User (Tenant-Zugang bleibt)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    await makeTenantWithMember(app, db, { slug: "firma-x", members: ["team@setreo.de"] })
+    process.env.ROADMAP_ADMIN_EMAILS = "chef@setreo.de"
+    try {
+      const a = await request(app)
+        .get("/api/context")
+        .set("X-Auth-Email", "chef@setreo.de")
+        .set("X-Auth-Roles", "admin")
+      expect(a.body.isAdmin).toBe(true)
+
+      const b = await request(app)
+        .get("/api/context")
+        .set("X-Auth-Email", "team@setreo.de")
+        .set("X-Auth-Roles", "admin")
+      expect(b.body.isAdmin).toBe(false)
+      expect(b.body.tenant?.slug).toBe("firma-x") // normaler User behält Tenant-Zugang
+    } finally {
+      delete process.env.ROADMAP_ADMIN_EMAILS
+    }
+  })
+})

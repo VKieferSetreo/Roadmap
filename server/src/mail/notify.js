@@ -117,7 +117,18 @@ export async function sendProjectNotificationMail(
   if (!mailEnabled(env)) return { sent: 0, skipped: true }
   let recipients = []
   try {
-    recipients = await recipientsFor(db, project.tenantId)
+    if (project.erstelltVon) {
+      // Mails NUR an den Projekt-Ersteller — nicht an alle Mandanten-Mitglieder (kein Spam, wenn
+      // viele Nutzer im selben Mandanten sind). Opt-out des Erstellers respektieren.
+      const { rows } = await db.query(
+        "SELECT 1 FROM mail_optout WHERE tenant_id = $1 AND email = $2",
+        [project.tenantId, project.erstelltVon],
+      )
+      recipients = rows.length ? [] : [{ email: project.erstelltVon }]
+    } else {
+      // Legacy-Projekte ohne hinterlegten Ersteller: bisher (alle Mitglieder minus Opt-out).
+      recipients = await recipientsFor(db, project.tenantId)
+    }
   } catch (err) {
     log(`mail: Empfänger-Lookup fehlgeschlagen — ${err?.message ?? err}`)
     return { sent: 0, error: "recipients" }

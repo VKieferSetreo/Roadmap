@@ -11,6 +11,7 @@ export function rowToProject(row, findings = [], share = null) {
     createdAt: toIso(row.created_at),
     updatedAt: toIso(row.updated_at),
     tenantId: row.tenant_id,
+    erstelltVon: row.created_by ?? null, // Ersteller-E-Mail (Tracking + Mail-Empfänger + Icon)
     routes: row.routes ?? [],
     transport: row.transport ?? {},
     zeitraum: row.zeitraum ?? {},
