@@ -436,6 +436,13 @@ export function utmZuWgs84(easting, northing, zone = 32) {
   return [(lng0 + lng) * (180 / Math.PI), lat * (180 / Math.PI)]
 }
 
+/** Ganze GeoJSON-Geometrie (Point/Line/Multi) aus UTM (zone) → WGS84 [lng,lat] reprojizieren. */
+export function reprojGeom(geom, zone) {
+  if (!geom?.coordinates) return null
+  const map = (c) => (Array.isArray(c[0]) ? c.map(map) : utmZuWgs84(c[0], c[1], zone))
+  return { type: geom.type, coordinates: map(geom.coordinates) }
+}
+
 /** Binär-Abruf (für ZIP/Downloads). Buffer oder null bei Fehler. */
 export async function getBuffer(url, { timeoutMs = 45000, headers = {} } = {}) {
   try {
