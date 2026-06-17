@@ -15,6 +15,7 @@ import { api } from "@/api/roadmap"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { useContextStore } from "@/store/context"
+import { useProjectStore } from "@/store/projects"
 import type { SyncJob } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -123,6 +124,10 @@ export function SyncBar() {
     void qc.invalidateQueries({ queryKey: ["db-findings"] })
     void qc.invalidateQueries({ queryKey: ["notif-unread"] })
     void qc.invalidateQueries({ queryKey: ["notif-list"] })
+    // Der Sync fährt am Ende ALLE Projekte neu aus (rerun-Phase) → deren updated_at + Funde
+    // ändern sich in der DB. Die Projekte liegen im Zustand-Store (nicht react-query), also
+    // hier explizit neu laden, damit „Zuletzt aktualisiert" + Funde sofort den neuen Stand zeigen.
+    if (j.status !== "error") void useProjectStore.getState().loadProjects()
     const t = setTimeout(() => setJobId(null), 2_500)
     return () => clearTimeout(t)
   }, [job.data, qc])
