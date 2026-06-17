@@ -12,22 +12,21 @@
 
 import { dedupeObstacles } from "../connectors/_helpers.js"
 import {
-  assignFachId, insertObstacle, istLiveVerkehrsmeldung, istReineInfrastruktur, sachfeldParams, todayIso,
-  UPDATE_SACHFELDER_SQL, validateObstacle,
+  buildFachId, insertObstacle, istLiveVerkehrsmeldung, istReineInfrastruktur, OBSTACLE_COLS,
+  sachfeldParams, todayIso, UPDATE_SACHFELDER_SQL, validateObstacle,
 } from "../obstaclesRepo.js"
 
-const EXISTING_SQL = "SELECT * FROM obstacles WHERE quellen_id = $1 AND externe_id = $2"
+// Bulk-Import-Speed (T-042): EINMAL je Lauf den Quellen-Bestand laden statt per-Zeile zu
+// SELECTen — Upsert/Drift-Match/fachId laufen dann in-memory (kein N+1, kein per-Zeile-Lock).
+const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles WHERE quellen_id = $1`
+const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index
+  FROM obstacles WHERE quellen_id = $1 AND fach_id ~ '^[0-9]{4}'`
 
 // Drift-Schutz (T-078): findet ein bestehendes AKTIVES Hindernis derselben Quelle mit
 // gleicher Kategorie + gleichem (normalisiertem) Namen im ~300m-Umkreis. Greift NUR wenn
 // die exakte (quellen_id, externe_id) nicht matcht — fängt driftende Quell-IDs UND
 // positions-bedingt kippende dup#-Hashes ab, sodass das obstacle_id stabil bleibt.
 // Sonst meldet der Finding-Diff jeden Lauf „entfallen (km77)" + „neu (km76,9)".
-const FUZZY_MATCH_SQL = `SELECT id, externe_id, lat, lng FROM obstacles
-   WHERE quellen_id = $1 AND aktiv = true AND kategorie = $2
-     AND lower(regexp_replace(btrim(name), '\\s+', ' ', 'g')) = $3
-     AND lat IS NOT NULL AND lng IS NOT NULL
-     AND lat BETWEEN $4 AND $5 AND lng BETWEEN $6 AND $7`
 
 // ~300 m Bounding-Box (1° lat ≈ 111 km; 1° lng ≈ 70 km bei 51°N).
 const FUZZY_LAT = 0.003
@@ -88,6 +87,26 @@ export async function runImport({
     // EIN tx pro Run: fachId-Sequenz konsistent, halbfertige Runs rollen zurück.
     const seen = new Set()
     await db.tx(async (q) => {
+      // EINMAL den Quellen-Bestand laden → Exakt-Match + Drift-Match laufen in-memory (kein
+      // per-Zeile-SELECT, T-042). byExterneId = Upsert-Schlüssel; fuzzyIndex = Drift-Kandidaten.
+      const { rows: existingRows } = await q.query(EXISTING_ALL_SQL, [connector.quelleId])
+      const byExterneId = new Map(existingRows.map((r) => [r.externe_id, r]))
+      const fuzzyIndex = new Map() // `kategorie|normName` → [{id, externe_id, lat, lng}]
+      for (const r of existingRows) {
+        if (r.aktiv && r.lat != null && r.lng != null) {
+          const k = `${r.kategorie}|${normName(r.name)}`
+          const cand = { id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng) }
+          const arr = fuzzyIndex.get(k)
+          if (arr) arr.push(cand)
+          else fuzzyIndex.set(k, [cand])
+        }
+      }
+      // fachId-Sequenz EINMAL bestimmen: Advisory-Lock je Quelle (hält bis Commit) + MAX einmal,
+      // dann in-memory hochzählen — statt Lock+MAX pro neuer Zeile (der T-042-Flaschenhals).
+      await q.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`roadmap_fachid_${connector.quelleId}`])
+      const maxRes = await q.query(MAX_INDEX_SQL, [connector.quelleId])
+      let nextIndex = Number(maxRes.rows[0]?.max_index ?? 0) + 1
+
       for (const [index, item] of items.entries()) {
         const externeId =
           typeof item?.externeId === "string" && item.externeId.trim() ? item.externeId.trim() : null
@@ -116,17 +135,17 @@ export async function runImport({
         value.externeId = externeId
         value.demo = false
 
-        const { rows: existing } = await q.query(EXISTING_SQL, [connector.quelleId, externeId])
-        let target = existing[0] ?? null
-        // Kein exakter Treffer? → Drift-Schutz: dasselbe reale Hindernis unter neuer
-        // Quell-ID / leicht versetzter Position wiederfinden, statt es neu anzulegen
-        // (sonst Reconcile-Churn jeden Lauf, T-078).
+        let target = byExterneId.get(externeId) ?? null
+        // Kein exakter Treffer? → Drift-Schutz in-memory: dasselbe reale Hindernis unter neuer
+        // Quell-ID / leicht versetzter Position wiederfinden (gleiche Kategorie+Name, ~300m),
+        // statt es neu anzulegen (sonst Reconcile-Churn jeden Lauf, T-078).
         if (!target && value.name && value.lat != null && value.lng != null) {
-          const { rows: near } = await q.query(FUZZY_MATCH_SQL, [
-            connector.quelleId, value.kategorie, normName(value.name),
-            value.lat - FUZZY_LAT, value.lat + FUZZY_LAT,
-            value.lng - FUZZY_LNG, value.lng + FUZZY_LNG,
-          ])
+          const cand = fuzzyIndex.get(`${value.kategorie}|${normName(value.name)}`)
+          const near = cand
+            ? cand.filter(
+                (r) => Math.abs(r.lat - value.lat) <= FUZZY_LAT && Math.abs(r.lng - value.lng) <= FUZZY_LNG,
+              )
+            : []
           if (near.length) {
             target = near.reduce((best, r) => (dist2(r, value) < dist2(best, value) ? r : best), near[0])
             // Der Treffer behält seine externe_id — die ins seen-Set, damit der
@@ -138,16 +157,15 @@ export async function runImport({
           // Sachfeld-Update — fachId/realerStart bleiben stabil
           await q.query(UPDATE_SACHFELDER_SQL, sachfeldParams(target.id, value))
           stats.aktualisiert += 1
-          // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen)
+          // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
+          // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.
           if (connector.vollbestand && target.aktiv === false) {
             await q.query(REACTIVATE_SQL, [target.id])
             stats.reaktiviert += 1
           }
         } else {
           value.realerStart = value.realerStart ?? todayIso()
-          value.fachId = await assignFachId(q, {
-            quellenId: connector.quelleId, realerStart: value.realerStart,
-          })
+          value.fachId = buildFachId(nextIndex++, connector.quelleId, value.realerStart)
           await insertObstacle(q, value)
           stats.neu += 1
         }

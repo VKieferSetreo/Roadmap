@@ -379,6 +379,10 @@ export function createFakeDb() {
         state.obstacles.filter((o) => o.quellen_id === params[0] && o.externe_id === params[1]),
       )
     }
+    // Bulk-Import (T-042): kompletter Quellen-Bestand in EINEM SELECT (OBSTACLE_COLS, ohne externe_id-Filter).
+    if (sql.startsWith("SELECT id, kategorie, name") && sql.includes("FROM obstacles WHERE quellen_id = $1")) {
+      return ok(state.obstacles.filter((o) => o.quellen_id === params[0]))
+    }
     // Drift-Schutz-Fuzzy-Match (Importer): aktiv, gleiche Kategorie + normalisierter Name + ~Umkreis
     if (sql.startsWith("SELECT id, externe_id, lat, lng FROM obstacles WHERE quellen_id = $1 AND aktiv = true AND kategorie = $2")) {
       const [quellenId, kategorie, normNameParam, minLat, maxLat, minLng, maxLng] = params
