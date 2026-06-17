@@ -1,11 +1,12 @@
 // Tab 2 — Vollbild-Karte mit allen Strecken (farblich getrennt) + Fund-Markern.
 // Ebenen-Panel (aufklappbar, Checkboxen) blendet Strecken samt ihrer Funde ein/aus.
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
   ChevronDown,
+  ChevronUp,
   Clock,
   Eye,
   EyeOff,
@@ -13,6 +14,8 @@ import {
   MapPinned,
   MapPinPlus,
   Route as RouteIcon,
+  Search,
+  X,
 } from "lucide-react"
 import { RouteMap } from "@/components/map/RouteMap"
 import { Button } from "@/components/ui/Button"
@@ -70,6 +73,40 @@ export function KarteTab({ project }: { project: Project }) {
     [project.findings, hidden],
   )
   const ausgeblendetN = useMemo(() => project.findings.filter((f) => f.hidden).length, [project.findings])
+
+  // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
+  const [suche, setSuche] = useState("")
+  const [trefferIdx, setTrefferIdx] = useState(-1) // -1 = noch nicht gesprungen
+  const [focusPoint, setFocusPoint] = useState<{ lat: number; lng: number; nonce: number } | null>(null)
+  const nonceRef = useRef(0)
+
+  const treffer = useMemo(() => {
+    const s = suche.trim().toLowerCase()
+    if (!s) return []
+    return sichtbareFindings.filter((f) => {
+      const text = [
+        f.titel, f.beschreibung, f.strassenRef, f.routeName, f.quelle?.name,
+        ...Object.values(f.detail ?? {}),
+      ].filter(Boolean).join(" ").toLowerCase()
+      return text.includes(s)
+    })
+  }, [suche, sichtbareFindings])
+
+  const springeZu = (idx: number) => {
+    if (treffer.length === 0) return
+    const i = ((idx % treffer.length) + treffer.length) % treffer.length
+    setTrefferIdx(i)
+    const f = treffer[i]
+    setSelectedId(f.id)
+    if (Number.isFinite(f.lat) && Number.isFinite(f.lng)) {
+      nonceRef.current += 1
+      setFocusPoint({ lat: f.lat, lng: f.lng, nonce: nonceRef.current })
+    }
+  }
+  const sucheLeeren = () => {
+    setSuche("")
+    setTrefferIdx(-1)
+  }
 
   if (project.status !== "fertig" || !project.routes.some((r) => r.points.length >= 2)) {
     return (
@@ -133,11 +170,69 @@ export function KarteTab({ project }: { project: Project }) {
         onSelect={setSelectedId}
         onRouteClick={live ? onRouteClick : undefined}
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
+        focusPoint={focusPoint}
       />
 
-      {/* Hinweis: Eintrag per Strecken-Klick (nur Live) — dezent, oben mittig */}
+      {/* Ticket-Suche — oben mittig, durchsucht alle sichtbaren Funde (Titel/Text/km/Quelle/Details). */}
+      <div className="absolute left-1/2 top-3 z-[1100] w-[min(92%,460px)] -translate-x-1/2">
+        <div className="glass flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 shadow-lg">
+          <Search className="h-4 w-4 shrink-0 text-neutral-400" />
+          <input
+            value={suche}
+            onChange={(e) => {
+              setSuche(e.target.value)
+              setTrefferIdx(-1)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                springeZu(e.shiftKey ? trefferIdx - 1 : trefferIdx + 1)
+              } else if (e.key === "Escape") {
+                sucheLeeren()
+              }
+            }}
+            placeholder="In Tickets suchen (z. B. Bauwerksnummer) …"
+            aria-label="Tickets in der Karte durchsuchen"
+            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+          />
+          {suche ? (
+            <span className="shrink-0 text-xs tabular-nums text-neutral-500">
+              {treffer.length === 0 ? "0" : trefferIdx < 0 ? `${treffer.length} Treffer` : `${trefferIdx + 1}/${treffer.length}`}
+            </span>
+          ) : null}
+          {treffer.length > 0 ? (
+            <>
+              <button
+                onClick={() => springeZu(trefferIdx - 1)}
+                aria-label="Vorheriger Treffer"
+                className="shrink-0 cursor-pointer rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+              >
+                <ChevronUp className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => springeZu(trefferIdx + 1)}
+                aria-label="Nächster Treffer"
+                className="shrink-0 cursor-pointer rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </>
+          ) : null}
+          {suche ? (
+            <button
+              onClick={sucheLeeren}
+              aria-label="Suche leeren"
+              className="shrink-0 cursor-pointer rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Hinweis: Eintrag per Strecken-Klick (nur Live) — dezent, unter der Suchleiste */}
       {live ? (
-        <div className="pointer-events-none absolute left-1/2 top-3 z-[600] -translate-x-1/2">
+        <div className="pointer-events-none absolute left-1/2 top-16 z-[600] -translate-x-1/2">
           <div className="glass flex animate-rise-in items-center gap-2 px-3.5 py-2">
             <MapPinPlus className="h-4 w-4 shrink-0 text-primary-600" />
             <span className="text-xs font-medium text-neutral-700">

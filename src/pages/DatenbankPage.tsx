@@ -6,53 +6,65 @@ import { useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Database, Map as MapIcon, BarChart3 } from "lucide-react"
+import { Database, Map as MapIcon, BarChart3, ListTree } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
 import { AbdeckungBoard } from "@/components/db/AbdeckungBoard"
+import { QuellenRegister } from "@/components/db/QuellenRegister"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useDataSourceStore } from "@/store/datasource"
+import { useContextStore } from "@/store/context"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
   const live = mode === "live"
-  // Tab in der URL (?tab=abdeckung) statt lokalem State: deeplinkbar, überlebt Reload/Back.
+  // Abdeckung + Quellenregister nur für Setreo-intern (kein externer Kunden-Gateway).
+  // Die "Ansicht" (Karte + Sync) ist immer sichtbar.
+  const intern = !useContextStore((s) => s.extern)
   const [params, setParams] = useSearchParams()
-  const tab = params.get("tab") === "abdeckung" ? "abdeckung" : "ansicht"
+  const wunsch = params.get("tab")
+  const tab = intern && (wunsch === "abdeckung" || wunsch === "quellen") ? wunsch : "ansicht"
 
   return (
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Datenquellen aktualisieren und gemeldete Ereignisse auf der Karte — plus die Datenabdeckung je Bundesland."
+        description="Datenquellen aktualisieren und gemeldete Ereignisse auf der Karte — plus Datenabdeckung und Quellenregister."
         width="wide"
       >
-        <Tabs
-          value={tab}
-          onValueChange={(v) => setParams(v === "abdeckung" ? { tab: "abdeckung" } : {}, { replace: true })}
-          className="mb-4"
-        >
-          <TabsList>
-            <TabsTrigger value="ansicht">
-              <MapIcon className="h-4 w-4" /> Ansicht
-            </TabsTrigger>
-            <TabsTrigger value="abdeckung">
-              <BarChart3 className="h-4 w-4" /> Abdeckung
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {intern ? (
+          <Tabs
+            value={tab}
+            onValueChange={(v) => setParams(v === "ansicht" ? {} : { tab: v }, { replace: true })}
+            className="mb-4"
+          >
+            <TabsList>
+              <TabsTrigger value="ansicht">
+                <MapIcon className="h-4 w-4" /> Ansicht
+              </TabsTrigger>
+              <TabsTrigger value="abdeckung">
+                <BarChart3 className="h-4 w-4" /> Abdeckung
+              </TabsTrigger>
+              <TabsTrigger value="quellen">
+                <ListTree className="h-4 w-4" /> Quellenregister
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        ) : null}
 
         {tab === "ansicht" ? (
           <div className="flex flex-col gap-4">
             {live ? <SyncBar /> : null}
             <ObstacleKarte live={live} />
           </div>
-        ) : (
+        ) : tab === "abdeckung" ? (
           <AbdeckungBoard />
+        ) : (
+          <QuellenRegister />
         )}
       </PageContainer>
     </div>

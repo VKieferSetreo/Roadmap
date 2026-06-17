@@ -44,6 +44,8 @@ interface RouteMapProps {
   onRouteClick?: (p: RoutePoint) => void
   /** wenn gesetzt: eigener Eintrag kann aus dem Popup verworfen werden (obstacleId). */
   onDeleteOwn?: (obstacleId: string) => void
+  /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
+  focusPoint?: { lat: number; lng: number; nonce: number } | null
   className?: string
 }
 
@@ -54,6 +56,7 @@ export function RouteMap({
   onSelect,
   onRouteClick,
   onDeleteOwn,
+  focusPoint,
   className,
 }: RouteMapProps) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
@@ -82,6 +85,14 @@ export function RouteMap({
     document.addEventListener("fullscreenchange", onChange)
     return () => document.removeEventListener("fullscreenchange", onChange)
   }, [])
+
+  // Such-Treffer: Karte auf den Fund zentrieren (mind. Zoom 14), wenn sich nonce ändert.
+  useEffect(() => {
+    if (!focusPoint || !mapRef.current) return
+    const z = Math.max(mapRef.current.getZoom() ?? 0, 14)
+    mapRef.current.setView([focusPoint.lat, focusPoint.lng], z, { animate: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusPoint?.nonce])
 
   const toggleFullscreen = () => {
     if (document.fullscreenElement) void document.exitFullscreen()

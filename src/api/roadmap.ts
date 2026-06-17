@@ -197,6 +197,13 @@ export const api = {
     start: () => axiosClient<SyncJob>({ url: "/sync", method: "POST" }),
     /** Fortschritt pollen. */
     job: (id: string) => axiosClient<SyncJob>({ url: `/sync/${id}`, method: "GET" }),
+    /** Eine Quelle live anpingen (Test-Fetch, kein DB-Write) — nur intern. */
+    ping: (quelleId: string) =>
+      axiosClient<{ ok: boolean; anzahl?: number; ms: number; error?: string }>({
+        url: `/sync/ping/${quelleId}`,
+        method: "POST",
+        timeout: 30_000,
+      }),
   },
 
   // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──
