@@ -97,6 +97,19 @@ describe("parseDatex2", () => {
     expect(noResolve.lat).toBeNull()
   })
 
+  it("verschachtelter generalPublicComment (<value lang=de>) → sauberer Text statt XML-Müll", () => {
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="NI-9" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment><comment><values><value lang="de">B72 KP Bagband</value></values></comment><commentExtension><commentExtended><commentType2>roadworksName</commentType2></commentExtended></commentExtension></generalPublicComment>
+        <roadNumber>B72</roadNumber>
+        <groupOfLocations xsi:type="Linear"><alertCLinear><alertCMethod4PrimaryPointLocation><alertCLocation><specificLocation>52089</specificLocation></alertCLocation></alertCMethod4PrimaryPointLocation></alertCLinear></groupOfLocations>
+      </situationRecord></situation></d2LogicalModel>`
+    const [o] = parseDatex2(xml, { quelleName: "NI", resolveTmc: () => ({ lat: 53.8, lng: 9.0, geom: null }) })
+    expect(o.name).toBe("B72 KP Bagband")
+    expect(o.beschreibung).toBe("B72 KP Bagband")
+    expect(o.name).not.toMatch(/<|comment|roadworksName/)
+  })
+
   it("leeres/kaputtes XML → leere Liste (kein Wurf)", () => {
     expect(parseDatex2("")).toEqual([])
     expect(parseDatex2("<html>kein datex</html>")).toEqual([])

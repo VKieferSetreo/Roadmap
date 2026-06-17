@@ -16,6 +16,17 @@ const attrOf = (openTag, attr) => {
   const m = openTag.match(new RegExp(`${attr}\\s*=\\s*"([^"]*)"`, "i"))
   return m ? m[1] : null
 }
+// DATEX-II-Freitext: der eigentliche Text steckt oft verschachtelt in
+// <comment><values><value lang="de">…</value></values></comment><commentExtension>…roadworksName…
+// Wir ziehen den deutschen <value> (sonst ersten value), sonst tag-frei. Verhindert, dass roher
+// XML-Müll als Fund-Name/Beschreibung landet (NI/BAB-Feeds). Plain-Text bleibt unverändert.
+function commentText(raw) {
+  if (!raw) return null
+  const de = raw.match(/<value\b[^>]*lang="de"[^>]*>([\s\S]*?)<\/value>/i)
+  const any = de || raw.match(/<value\b[^>]*>([\s\S]*?)<\/value>/i)
+  const txt = (any ? any[1] : raw).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+  return txt || null
+}
 const num = (s) => {
   if (s == null) return null
   const n = Number(String(s).replace(",", "."))
@@ -128,8 +139,8 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
     const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
     const { lat, lng, geom } = koordAusRecord(rec, resolveTmc)
     const name =
-      tag(rec, "generalPublicComment") ||
-      tag(rec, "comment") ||
+      commentText(tag(rec, "generalPublicComment")) ||
+      commentText(tag(rec, "comment")) ||
       tag(rec, "situationRecordCreationReference") ||
       `${kategorie} (DATEX)`
     const strasse = tag(rec, "roadNumber") || tag(rec, "roadName") || null
@@ -138,7 +149,7 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       externeId: String(externeId),
       kategorie,
       name: String(name).slice(0, 200),
-      beschreibung: tag(rec, "generalPublicComment") || null,
+      beschreibung: commentText(tag(rec, "generalPublicComment")),
       lat,
       lng,
       ...(geom && { geom }),
