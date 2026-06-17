@@ -1,4 +1,0 @@
-# BVV/LDBV ATKIS Basis-DLM — Endpunkt zu-bestätigen, über diese Seiten auflösen:
-Dienste:        https://www.ldbv.bayern.de/produkte/dienste/geodatendienste.html
-ATKIS Download: https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm
-INSPIRE-WMS:    https://inspire-geoportal.ec.europa.eu/srv/api/records/459d9c1c-4996-4076-8de3-5540ff16886a
