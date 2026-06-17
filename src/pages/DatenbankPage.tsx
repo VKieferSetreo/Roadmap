@@ -33,7 +33,7 @@ export function DatenbankPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Datenquellen aktualisieren und gemeldete Ereignisse auf der Karte — plus Datenabdeckung und Quellenregister."
+        description="Datenquellen aktualisieren und alle Einträge auf der Karte (Baustellen, Sperrungen, lastbeschränkte Brücken …) — plus Datenabdeckung und Quellenregister."
         width="wide"
       >
         {intern ? (
@@ -72,13 +72,13 @@ export function DatenbankPage() {
 }
 
 function ObstacleKarte({ live }: { live: boolean }) {
-  // Nur gemeldete, aktive Ereignisse (Baustellen/Sperrungen) — die permanente
-  // Infrastruktur (Brücken/Tunnel/Ampeln/Gewichtslimits …) ziehen wir zwar mit,
-  // wird auf der Übersichtskarte aber bewusst nicht angezeigt.
+  // ALLE aktiven Einträge anzeigen — gemeldete Ereignisse (Baustellen/Sperrungen) UND
+  // permanente Infrastruktur (lastbeschränkte Brücken, Tunnel, Gewichtslimits, GST …).
+  // Max-Vorgabe: auf der Übersichtskarte nichts mehr rausfiltern.
   const queryClient = useQueryClient()
   const obstacles = useQuery({
-    queryKey: ["obstacles-alle", "gemeldet", "geom"],
-    queryFn: () => api.listObstacles({ gemeldet: true, aktiv: true, geom: true }),
+    queryKey: ["obstacles-alle", "geom"],
+    queryFn: () => api.listObstacles({ aktiv: true, geom: true }),
     enabled: live,
     staleTime: 60_000,
   })
