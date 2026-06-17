@@ -117,7 +117,8 @@ function wireDelete(layer: L.Layer, o: Obstacle, onDelete?: DeleteFn) {
 function makeMarker(o: Obstacle, onDelete?: DeleteFn): L.Marker {
   const eigen = istEigenerEintrag(o.quelle)
   const pos = geomMidpoint(o.geom) ?? ([o.lat, o.lng] as [number, number])
-  const m = L.marker(pos, { icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false) })
+  const signKey = (o.attrs as Record<string, unknown> | undefined)?.gesperrtKomplett === true ? "fahrverbot" : undefined
+  const m = L.marker(pos, { icon: findingPinIcon(o.kategorie, eigen ? EIGEN_COLOR : PIN_GLOBAL, false, signKey) })
   m.bindPopup(() => obstaclePopupHtml(o), { maxWidth: 320, minWidth: 240 })
   wireDelete(m, o, onDelete)
   return m

@@ -3,7 +3,7 @@
 // Frontendweit verwendet: Karten-Legende, Dashboard-Liste, Detail-Overlay etc.
 
 import type { FindingKategorie } from "@/types/domain"
-import { SIGN_DATA_URI } from "@/components/map/signAssets"
+import { signUri } from "@/components/map/signAssets"
 import { katMeta } from "./findingMeta"
 import { cn } from "@/lib/cn"
 
@@ -11,10 +11,12 @@ interface KategorieGlyphProps {
   kategorie: FindingKategorie
   /** Tailwind-Klassen für die Gesamtgröße (Default h-4 w-4). */
   className?: string
+  /** Sonder-Schild statt Kategorie (z.B. "fahrverbot" für komplett gesperrte Bauwerke). */
+  signKey?: string
 }
 
-export function KategorieGlyph({ kategorie, className }: KategorieGlyphProps) {
-  const uri = SIGN_DATA_URI[kategorie] ?? SIGN_DATA_URI.sonstige
+export function KategorieGlyph({ kategorie, className, signKey }: KategorieGlyphProps) {
+  const uri = signUri(signKey ?? kategorie)
   if (uri) {
     return (
       <span
@@ -24,7 +26,7 @@ export function KategorieGlyph({ kategorie, className }: KategorieGlyphProps) {
         )}
         aria-hidden
       >
-        <img src={uri} alt="" className="h-[80%] w-[80%] object-contain" />
+        <img src={uri} alt="" className="h-[88%] w-[88%] object-contain" />
       </span>
     )
   }

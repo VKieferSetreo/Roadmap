@@ -37,15 +37,15 @@ function SidebarToggleChip() {
       onClick={toggle}
       aria-label={open ? "Navigation einklappen" : "Navigation ausklappen"}
       aria-expanded={open}
-      className="glass pointer-events-auto inline-flex animate-rise-in items-center gap-2 self-start px-3 py-2 text-sm font-medium text-neutral-700 transition-colors hover:text-primary-600"
+      title={open ? "Menü einklappen" : "Menü ausklappen"}
+      className="glass pointer-events-auto inline-flex h-9 w-9 animate-rise-in items-center justify-center self-start rounded-lg text-neutral-500 transition-colors hover:text-primary-600"
       style={{ animationDelay: "120ms" }}
     >
       {open ? (
-        <PanelLeftClose className="h-4 w-4 text-primary-600" />
+        <PanelLeftClose className="h-[18px] w-[18px] text-primary-600" />
       ) : (
-        <PanelLeftOpen className="h-4 w-4 text-primary-600" />
+        <PanelLeftOpen className="h-[18px] w-[18px] text-primary-600" />
       )}
-      <span>{open ? "Menü einklappen" : "Menü ausklappen"}</span>
     </button>
   )
 }

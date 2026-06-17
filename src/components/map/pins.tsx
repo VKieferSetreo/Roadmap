@@ -9,16 +9,17 @@ import L from "leaflet"
 import { renderToStaticMarkup } from "react-dom/server"
 import { MapPin as MapPinIcon } from "lucide-react"
 import type { FindingKategorie } from "@/types/domain"
-import { SIGN_DATA_URI } from "./signAssets"
+import { SIGN_DATA_URI, signUri } from "./signAssets"
 
 // Einheitliche Pin-Geometrie: 36×42, Kopf-Center (18,16), Spitze unten (18,42).
 const PIN_W = 36
 const PIN_H = 42
 const PIN_ANCHOR_X = 18
 const PIN_ANCHOR_Y = 42
-// Schild-Box im weißen Kreis (r=9.5): klein genug, dass auch Dreieck-Ecken NICHT
-// über den Kreis ragen (Max-Wunsch). Zentriert auf den Kopf (18,16).
-const SIGN_BOX = 11
+// Schild-Box im weißen Kreis (r=10.5): etwas größer (Max-Wunsch „VKZ bisschen größer"),
+// Ecken bleiben innerhalb des Kreises. Zentriert auf den Kopf (18,16).
+const WHITE_R = 10.5
+const SIGN_BOX = 13.5
 const SIGN_X = 18 - SIGN_BOX / 2
 const SIGN_Y = 16 - SIGN_BOX / 2
 
@@ -27,8 +28,9 @@ const DROP_BODY = (color: string) =>
   `<path d="M18 2 C10 2 4 8 4 16 c0 11 13.6 24.5 13.7 24.6 a0.5 0.5 0 0 0 0.6 0 C18.4 40.5 32 27 32 16 c0 -8 -6 -14 -14 -14 z" fill="${color}" stroke="#ffffff" stroke-width="2"/>`
 
 // StVO-Schild mittig im weißen Kreis (SIGN_BOX zentriert auf 18,16 → sitzt komplett innen).
-function glyphHtml(kategorie: FindingKategorie): string {
-  const uri = SIGN_DATA_URI[kategorie] ?? SIGN_DATA_URI.sonstige
+// signKey überschreibt die Kategorie (z.B. "fahrverbot" für komplett gesperrte Bauwerke).
+function glyphHtml(kategorie: FindingKategorie, signKey?: string): string {
+  const uri = signUri(signKey ?? kategorie)
   if (uri) {
     return `<image href="${uri}" x="${SIGN_X}" y="${SIGN_Y}" width="${SIGN_BOX}" height="${SIGN_BOX}" preserveAspectRatio="xMidYMid meet"/>`
   }
@@ -38,17 +40,17 @@ function glyphHtml(kategorie: FindingKategorie): string {
   )}</g>`
 }
 
-function pinSvg(color: string, kategorie: FindingKategorie, selected: boolean): string {
+function pinSvg(color: string, kategorie: FindingKategorie, selected: boolean, signKey?: string): string {
   // Schatten als gezeichnete Ellipse (kein CSS-Filter → flickerfrei beim Zoom/Pan).
   const groundShadow = `<ellipse cx="18" cy="40.5" rx="5" ry="1.7" fill="#00000026"/>`
   const ring = selected ? `<circle cx="18" cy="16" r="18" fill="${color}33"/>` : ""
-  const whiteCircle = `<circle cx="18" cy="16" r="9.5" fill="#ffffff"/>`
+  const whiteCircle = `<circle cx="18" cy="16" r="${WHITE_R}" fill="#ffffff"/>`
   return `<svg width="${PIN_W}" height="${PIN_H}" viewBox="0 0 ${PIN_W} ${PIN_H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
     ${groundShadow}
     ${ring}
     ${DROP_BODY(color)}
     ${whiteCircle}
-    ${glyphHtml(kategorie)}
+    ${glyphHtml(kategorie, signKey)}
   </svg>`
 }
 
@@ -60,14 +62,15 @@ export function findingPinIcon(
   kategorie: FindingKategorie,
   color: string,
   selected: boolean,
+  signKey?: string,
 ): L.DivIcon {
-  const key = `${kategorie}|${color}|${selected ? 1 : 0}`
+  const key = `${kategorie}|${color}|${selected ? 1 : 0}|${signKey ?? ""}`
   const cached = pinCache.get(key)
   if (cached) return cached
 
   const icon = L.divIcon({
     className: "rm-pin",
-    html: pinSvg(color, kategorie, selected),
+    html: pinSvg(color, kategorie, selected, signKey),
     iconSize: [PIN_W, PIN_H],
     iconAnchor: [PIN_ANCHOR_X, PIN_ANCHOR_Y],
     popupAnchor: [0, -PIN_H + 4],

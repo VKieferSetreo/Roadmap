@@ -39,7 +39,11 @@ function FindingDetail({
     <>
       <div className="flex items-start gap-2.5">
         <span className={cn("shrink-0 rounded-lg p-2", meta.chip)}>
-          <KategorieGlyph kategorie={f.kategorie} className="h-4 w-4" />
+          <KategorieGlyph
+            kategorie={f.kategorie}
+            signKey={f.detail?.["Schwertransport"] === "gesperrt" ? "fahrverbot" : undefined}
+            className="h-4 w-4"
+          />
         </span>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-neutral-900">{f.titel}</p>
@@ -180,7 +184,12 @@ export function FindingMarker({
   return (
     <Marker
       position={pos}
-      icon={findingPinIcon(primary.kategorie, eigen ? EIGEN_COLOR : SEVERITY_META[primary.severity].marker, active)}
+      icon={findingPinIcon(
+        primary.kategorie,
+        eigen ? EIGEN_COLOR : SEVERITY_META[primary.severity].marker,
+        active,
+        primary.detail?.["Schwertransport"] === "gesperrt" ? "fahrverbot" : undefined,
+      )}
       eventHandlers={{ click: () => onSelect?.(primary.id) }}
       zIndexOffset={active ? 1000 : 0}
     >
