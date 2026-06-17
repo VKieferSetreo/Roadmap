@@ -1,1 +1,0 @@
-SKIP: Der einzige Hindernis-Layer (MobiData-BW:roadworks) ist exakt derselbe Datensatz wie der BEMaS-GeoJSON-Feed (gleiche 648 Features) — wird bereits von mobidata-bw-baustellen-bemas (0110) gezogen. Der WFS ist nur ein redundanter Ausgabe-Kanal derselben Quelle; weitere Layer sind Visualisierung/Geobasis, kein eigener Hindernis-Producer.

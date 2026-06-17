@@ -1,1 +1,0 @@
-SKIP: Reine Straßennetz-/Verkehrsnetz-Daten (INSPIRE Road Transport Network, ATKIS Basis-DLM) — Netzgeometrie/Topologie ohne Bauwerks-Restriktion (Traglast/Höhe). Kein diskreter Hindernis-Producer.

@@ -1,3 +1,0 @@
-# daten.bw — reines Open-Data-Portal (Meta-Katalog), kein maschineller Endpunkt
-Portal:          https://www.daten-bw.de/
-Gefilterte Suche: https://www.daten-bw.de/daten/-/searchresult/f/format:csv,format:geojson,format:datex+ii,format:wms%252Fwfs,type:dataset/s/title_asc
