@@ -136,19 +136,12 @@ export function QuellenRegister() {
                       )}
                       <ChevronDown className={cn("h-4 w-4 shrink-0 text-neutral-400 transition-transform", isOpen && "rotate-180")} />
                     </button>
-                    <Button
-                      variant="outline"
-                      size="xs"
-                      onClick={() => void ping(qq.id)}
-                      loading={p?.loading}
-                      disabled={!qq.connector}
-                      title={qq.connector ? "Live anpingen (Test-Abruf)" : "Kein Connector"}
-                    >
-                      <Signal className="h-3.5 w-3.5" /> Anpingen
-                    </Button>
-                    {p && !p.loading ? (
-                      <span className={cn("min-w-[90px] text-right text-xs tabular-nums", p.ok ? "text-severity-hinweis-strong" : "text-severity-kritisch")}>
-                        {p.ok ? `live · ${p.anzahl} (${((p.ms ?? 0) / 1000).toFixed(1)}s)` : `Fehler · ${p.error ?? ""}`}
+                    {p ? (
+                      <span className={cn(
+                        "min-w-[96px] shrink-0 text-right text-xs tabular-nums",
+                        p.loading ? "text-neutral-400" : p.ok ? "text-severity-hinweis-strong" : "text-severity-kritisch",
+                      )}>
+                        {p.loading ? "pinge …" : p.ok ? `live · ${p.anzahl} (${((p.ms ?? 0) / 1000).toFixed(1)}s)` : `Fehler · ${p.error ?? ""}`}
                       </span>
                     ) : null}
                   </div>
