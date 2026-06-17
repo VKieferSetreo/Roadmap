@@ -36,7 +36,10 @@ export const rlpBaustellenConnector = {
       const [lng, lat] = ersterPunkt(f.geometry)
       const text = [p.art_der_arbeiten, p.beschreibung].filter(Boolean).join(" ")
       const tonnage = tonnageAusText(text)
-      const vollsperrung = /vollsperr/i.test(text) || undefined
+      // typ=N = "Sperrung für LKW" (strukturiertes RLP-Vokabular, am Feed verifiziert) → eine
+      // LKW-Sperre blockiert den Schwertransport → vollsperrung. Plus der Freitext-Vollsperr-Fall.
+      const lkwSperre = p.typ === "N" || /für lkw/i.test(text)
+      const vollsperrung = /vollsperr/i.test(text) || lkwSperre || undefined
       return makeNormalized({
         externeId: f.id, // kein eigenes ID-Property → Feature-Level f.id
         kategorie: tonnage ? "gewicht" : vollsperrung ? "sperrung" : "baustelle",
