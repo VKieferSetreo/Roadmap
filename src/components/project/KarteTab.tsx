@@ -21,13 +21,14 @@ import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { ObstacleDialog } from "./ObstacleDialog"
+import { HideReasonDialog } from "./HideReasonDialog"
 import { katMeta, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { Project, RoutePoint } from "@/types/domain"
+import type { Finding, Project, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Snap des Karten-Klicks auf den nächstgelegenen Streckenpunkt (Haversine, km). */
@@ -71,6 +72,9 @@ export function KarteTab({
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
+  const hideFinding = useProjectStore((s) => s.hideFinding)
+  /** Fund, der gerade ausgeblendet wird (öffnet die Grund-Abfrage). */
+  const [hideTarget, setHideTarget] = useState<Finding | null>(null)
 
   const sichtbareRouten = useMemo(
     () => project.routes.filter((r) => !hidden.has(r.id)),
@@ -193,6 +197,7 @@ export function KarteTab({
         onSelect={setSelectedId}
         onRouteClick={live ? onRouteClick : undefined}
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
+        onHide={live ? (f) => setHideTarget(f) : undefined}
         focusPoint={focusPoint}
       />
 
@@ -438,6 +443,15 @@ export function KarteTab({
           })
         }}
       />
+
+      {/* Fund für die Sichtung ausblenden (nicht löschen) — Grund-Abfrage wie im Dashboard. */}
+      {hideTarget ? (
+        <HideReasonDialog
+          finding={hideTarget}
+          onClose={() => setHideTarget(null)}
+          onConfirm={(grund, grundText) => hideFinding(project.id, hideTarget, grund, grundText)}
+        />
+      ) : null}
     </div>
   )
 }

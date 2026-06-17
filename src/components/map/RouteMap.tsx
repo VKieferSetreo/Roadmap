@@ -44,6 +44,8 @@ interface RouteMapProps {
   onRouteClick?: (p: RoutePoint) => void
   /** wenn gesetzt: eigener Eintrag kann aus dem Popup verworfen werden (obstacleId). */
   onDeleteOwn?: (obstacleId: string) => void
+  /** wenn gesetzt: Fund aus dem Popup ausblenden (nicht löschen) — für die Sichtung. */
+  onHide?: (finding: Finding) => void
   /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
   focusPoint?: { lat: number; lng: number; nonce: number } | null
   className?: string
@@ -56,6 +58,7 @@ export function RouteMap({
   onSelect,
   onRouteClick,
   onDeleteOwn,
+  onHide,
   focusPoint,
   className,
 }: RouteMapProps) {
@@ -251,6 +254,7 @@ export function RouteMap({
             selectedId={selectedId}
             onSelect={onSelect}
             onDeleteOwn={onDeleteOwn}
+            onHide={onHide}
           />
         ))}
       </MapContainer>

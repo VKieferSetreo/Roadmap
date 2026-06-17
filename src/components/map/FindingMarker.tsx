@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import { Marker, Popup } from "react-leaflet"
-import { Building2, ExternalLink, Phone, Trash2, User } from "lucide-react"
+import { Building2, ExternalLink, EyeOff, Phone, Trash2, User } from "lucide-react"
 import type { Finding, ProjectRoute } from "@/types/domain"
 import {
   EIGEN_BADGE,
@@ -26,10 +26,12 @@ function FindingDetail({
   f,
   routeColor,
   onDeleteOwn,
+  onHide,
 }: {
   f: Finding
   routeColor: string
   onDeleteOwn?: (obstacleId: string) => void
+  onHide?: (finding: Finding) => void
 }) {
   const meta = SEVERITY_META[f.severity]
   const kat = katMeta(f.kategorie)
@@ -133,6 +135,18 @@ function FindingDetail({
         </button>
       ) : null}
 
+      {/* Nicht-relevanten Fund für die Sichtung ausblenden (nicht löschen) — z.B. eine
+          Überführung ÜBER die Autobahn, die den Transport darunter nicht betrifft. */}
+      {!eigen && onHide && !f.hidden ? (
+        <button
+          type="button"
+          onClick={() => onHide(f)}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-[11px] font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-severity-kritisch"
+        >
+          <EyeOff className="h-3.5 w-3.5" /> Für die Auswertung ausblenden
+        </button>
+      ) : null}
+
       <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
         <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium", meta.soft)}>
           <span className={cn("h-1.5 w-1.5 rounded-full", meta.dot)} />
@@ -164,12 +178,14 @@ export function FindingMarker({
   selectedId,
   onSelect,
   onDeleteOwn,
+  onHide,
 }: {
   group: Finding[]
   routes: ProjectRoute[]
   selectedId?: string | null
   onSelect?: (id: string) => void
   onDeleteOwn?: (obstacleId: string) => void
+  onHide?: (finding: Finding) => void
 }) {
   const [tab, setTab] = useState(0)
   // schwerster Fund bestimmt Pin-Farbe + Position
@@ -217,7 +233,7 @@ export function FindingMarker({
               ))}
             </div>
           ) : null}
-          <FindingDetail f={current} routeColor={routeColor} onDeleteOwn={onDeleteOwn} />
+          <FindingDetail f={current} routeColor={routeColor} onDeleteOwn={onDeleteOwn} onHide={onHide} />
         </div>
       </Popup>
     </Marker>
