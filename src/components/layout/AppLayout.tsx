@@ -1,7 +1,7 @@
 // App-Shell: Setreo-Header (oben) + [Sidebar | Inhalt] + Setreo-Footer (unten).
 // Hält den globalen "Neues Projekt"-Dialog.
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { SetreoHeader } from "./SetreoHeader"
 import { SetreoFooter } from "./SetreoFooter"
@@ -23,9 +23,6 @@ export function AppLayout() {
   // UI-Store (persistiert), damit auch das Karten-Overlay den Toggle bedienen kann.
   const sidebarOpen = useUiStore((s) => s.sidebarOpen)
   const toggleSidebar = useUiStore((s) => s.toggleSidebar)
-  // Auf der Karte sitzt der Toggle im Overlay (unter dem "Strecken"-Kasten) — dort den
-  // seitlichen Kanten-Griff ausblenden, sonst gäbe es ihn doppelt.
-  const isKarteView = useMemo(() => /^\/projekte\/[^/]+\/karte$/.test(pathname), [pathname])
   const createProject = useProjectStore((s) => s.createProject)
   const initData = useProjectStore((s) => s.initData)
   const newProjectOpen = useUiStore((s) => s.newProjectOpen)
@@ -59,7 +56,6 @@ export function AppLayout() {
         <AppSidebar
           open={sidebarOpen}
           onToggle={toggleSidebar}
-          showEdgeToggle={!isKarteView}
           mobileOpen={mobileNavOpen}
           onClose={() => setMobileNavOpen(false)}
         />

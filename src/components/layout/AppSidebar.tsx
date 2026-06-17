@@ -313,7 +313,7 @@ export function AppSidebar({
             onClick={onToggle}
             aria-label={open ? "Sidebar einklappen" : "Sidebar ausklappen"}
             aria-expanded={open}
-            className="absolute -right-8 top-1/2 z-[1100] hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
+            className="absolute -right-8 top-1/2 z-[1200] hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
           >
             {open ? "«" : "»"}
           </button>

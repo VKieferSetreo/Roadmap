@@ -28,6 +28,7 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
 import { ReportView } from "./ReportView"
+import { ExportDialog, type ExportConfig } from "./ExportDialog"
 import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import {
@@ -63,12 +64,10 @@ export function DashboardTab({ project }: { project: Project }) {
   const [routeFilter, setRouteFilter] = useState<string>("alle")
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [reportOpen, setReportOpen] = useState(false)
+  const [exportTarget, setExportTarget] = useState<"pdf" | "csv" | null>(null)
+  const [reportCfg, setReportCfg] = useState<ExportConfig | null>(null)
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
   const [showHidden, setShowHidden] = useState(false)
-  // Export-Zeitfenster (für Teiltransporte): nur Funde im Zeitraum exportieren. Leer = alle.
-  const [exportVon, setExportVon] = useState("")
-  const [exportBis, setExportBis] = useState("")
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
@@ -127,6 +126,23 @@ export function DashboardTab({ project }: { project: Project }) {
         ?.querySelector(`[data-finding-id="${id}"]`)
         ?.scrollIntoView({ behavior: "smooth", block: "center" })
     })
+  }
+
+  // Export-Dialog bestätigt: Funde auf Zeitfenster + gewählte Strecken filtern, dann CSV sofort
+  // bzw. PDF-Bericht öffnen (der filtert anhand der Config selbst).
+  const handleExport = (cfg: ExportConfig) => {
+    const target = exportTarget
+    setExportTarget(null)
+    if (target === "csv") {
+      const findings = visibleFindings(project.findings).filter(
+        (f) =>
+          imExportZeitraum(f, cfg.von, cfg.bis) &&
+          (f.routeId == null || cfg.routeIds.includes(f.routeId)),
+      )
+      exportCsv(project, findings)
+    } else if (target === "pdf") {
+      setReportCfg(cfg)
+    }
   }
 
   return (
@@ -214,69 +230,16 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       ) : null}
 
-      {/* Export — optionales Zeitfenster (Teiltransporte): nur Funde, die im Zeitraum gelten. */}
-      <div className="print-hidden flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="export-von" className="text-xs font-medium text-neutral-500">
-              Zeitraum von
-            </label>
-            <Input
-              id="export-von"
-              type="date"
-              value={exportVon}
-              max={exportBis || undefined}
-              onChange={(e) => setExportVon(e.target.value)}
-              className="h-9 w-[150px]"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="export-bis" className="text-xs font-medium text-neutral-500">
-              bis
-            </label>
-            <Input
-              id="export-bis"
-              type="date"
-              value={exportBis}
-              min={exportVon || undefined}
-              onChange={(e) => setExportBis(e.target.value)}
-              className="h-9 w-[150px]"
-            />
-          </div>
-          {exportVon || exportBis ? (
-            <button
-              type="button"
-              onClick={() => {
-                setExportVon("")
-                setExportBis("")
-              }}
-              className="mb-1 inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-neutral-700"
-            >
-              <RotateCcw className="h-3 w-3" /> zurücksetzen
-            </button>
-          ) : (
-            <span className="mb-1.5 text-xs text-neutral-400">leer = alle Funde</span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setReportOpen(true)}>
-            <FileDown className="h-3.5 w-3.5" />
-            PDF-Bericht
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              exportCsv(
-                project,
-                visibleFindings(project.findings).filter((f) => imExportZeitraum(f, exportVon, exportBis)),
-              )
-            }
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-            Excel (CSV)
-          </Button>
-        </div>
+      {/* Export — Klick öffnet den Dialog (Zeitraum + Strecken wählen), dann läuft der Export. */}
+      <div className="print-hidden flex items-center justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={() => setExportTarget("pdf")}>
+          <FileDown className="h-3.5 w-3.5" />
+          PDF-Bericht
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => setExportTarget("csv")}>
+          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+          Excel (CSV)
+        </Button>
       </div>
 
       {/* Filterleiste */}
@@ -377,12 +340,21 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       ) : null}
 
-      {reportOpen ? (
+      {exportTarget ? (
+        <ExportDialog
+          project={project}
+          target={exportTarget}
+          onClose={() => setExportTarget(null)}
+          onConfirm={handleExport}
+        />
+      ) : null}
+      {reportCfg ? (
         <ReportView
           project={project}
-          exportVon={exportVon}
-          exportBis={exportBis}
-          onClose={() => setReportOpen(false)}
+          exportVon={reportCfg.von}
+          exportBis={reportCfg.bis}
+          routeIds={reportCfg.routeIds}
+          onClose={() => setReportCfg(null)}
         />
       ) : null}
       {hideTarget ? (

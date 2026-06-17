@@ -3,17 +3,9 @@
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import {
-  ClipboardList,
-  MapPin,
-  MapPinned,
-  PanelLeftClose,
-  PanelLeftOpen,
-  type LucideIcon,
-} from "lucide-react"
+import { ClipboardList, MapPin, MapPinned, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useProjectStore } from "@/store/projects"
-import { useUiStore } from "@/store/ui"
 import { RouteTab } from "@/components/project/RouteTab"
 import { AnlageTab } from "@/components/project/AnlageTab"
 import { KarteTab } from "@/components/project/KarteTab"
@@ -25,30 +17,6 @@ const TABS: { slug: string; label: string; icon: LucideIcon }[] = [
   { slug: "dashboard", label: "Dashboard", icon: ClipboardList },
 ]
 const VALID = new Set(TABS.map((t) => t.slug))
-
-// Sidebar-Ein-/Ausklapp-Toggle als Overlay-Chip — sitzt im Karten-Overlay gap-2
-// unter dem "Strecken"-Kasten (gleicher Glas-Look wie die Karten darüber).
-function SidebarToggleChip() {
-  const open = useUiStore((s) => s.sidebarOpen)
-  const toggle = useUiStore((s) => s.toggleSidebar)
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={open ? "Navigation einklappen" : "Navigation ausklappen"}
-      aria-expanded={open}
-      title={open ? "Menü einklappen" : "Menü ausklappen"}
-      className="glass pointer-events-auto inline-flex h-9 w-9 animate-rise-in items-center justify-center self-start rounded-lg text-neutral-500 transition-colors hover:text-primary-600"
-      style={{ animationDelay: "120ms" }}
-    >
-      {open ? (
-        <PanelLeftClose className="h-[18px] w-[18px] text-primary-600" />
-      ) : (
-        <PanelLeftOpen className="h-[18px] w-[18px] text-primary-600" />
-      )}
-    </button>
-  )
-}
 
 export function ProjectDetail() {
   const navigate = useNavigate()
@@ -108,7 +76,7 @@ export function ProjectDetail() {
       {/* Reiter-Inhalt */}
       <div className="min-h-0 flex-1">
         {tab === "karte" ? (
-          <KarteTab project={project} overlayFooter={<SidebarToggleChip />} />
+          <KarteTab project={project} />
         ) : (
           <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
             {tab === "route" ? (

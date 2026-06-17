@@ -22,13 +22,17 @@ export function ReportView({
   project,
   exportVon = "",
   exportBis = "",
+  routeIds,
   onClose,
 }: {
   project: Project
   exportVon?: string
   exportBis?: string
+  /** Nur diese Strecken in den Bericht (leer/undefined = alle). */
+  routeIds?: string[]
   onClose: () => void
 }) {
+  const routeSel = routeIds && routeIds.length ? new Set(routeIds) : null
   // Druck-Isolation: nur der Report ist beim Drucken sichtbar
   useEffect(() => {
     document.body.classList.add("printing-report")
@@ -42,16 +46,20 @@ export function ReportView({
     }
   }, [onClose])
 
-  // Optionales Export-Zeitfenster (Teiltransporte): nur Funde, die im Zeitraum gelten.
-  const sichtbar = visibleFindings(project.findings).filter((f) =>
-    imExportZeitraum(f, exportVon, exportBis),
+  // Optionales Export-Zeitfenster (Teiltransporte) + Strecken-Auswahl.
+  const sichtbar = visibleFindings(project.findings).filter(
+    (f) =>
+      imExportZeitraum(f, exportVon, exportBis) &&
+      (!routeSel || f.routeId == null || routeSel.has(f.routeId)),
   )
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
     n: sichtbar.filter((f) => f.severity === sev).length,
   }))
   const t = project.transport
-  const routen = project.routes.filter((r) => r.points.length >= 2)
+  const routen = project.routes.filter(
+    (r) => r.points.length >= 2 && (!routeSel || routeSel.has(r.id)),
+  )
 
   return (
     <div id="report-print-root" className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100">
