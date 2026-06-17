@@ -55,11 +55,35 @@ function attrsAusRecord(recordXml) {
   return attrs
 }
 
-/** Erstes Koordinatenpaar (lat/lng) aus den Locations des Records. */
+/** Koordinaten aus GML <posList> (Format "lat lng lat lng …", srsName WGS84 EPSG 4326).
+ *  Liefert erste Position als Punkt + ganze Linie als GeoJSON LineString ([lng,lat]-Reihenfolge).
+ *  null bei fehlenden/zu wenigen Werten. */
+function posListGeom(recordXml) {
+  const raw = tag(recordXml, "posList")
+  if (!raw) return null
+  const nums = raw.trim().split(/\s+/).map(Number).filter(Number.isFinite)
+  const coords = []
+  for (let i = 0; i + 1 < nums.length; i += 2) {
+    const la = nums[i]
+    const ln = nums[i + 1]
+    // WGS84-Plausibilität (DE ~47–55°N, 5–15°E) → schützt vor vertauschter Achse/Müll
+    if (la >= -90 && la <= 90 && ln >= -180 && ln <= 180) coords.push([ln, la])
+  }
+  if (coords.length === 0) return null
+  return {
+    lat: coords[0][1],
+    lng: coords[0][0],
+    geom: coords.length >= 2 ? { type: "LineString", coordinates: coords } : null,
+  }
+}
+
+/** Erstes Koordinatenpaar (lat/lng) aus den Locations des Records — bevorzugt explizite
+ *  latitude/longitude, sonst GML posList (gibt zusätzlich eine Linien-geom zurück). */
 function koordAusRecord(recordXml) {
   const lat = num(tag(recordXml, "latitude"))
   const lng = num(tag(recordXml, "longitude"))
-  return { lat, lng }
+  if (lat != null && lng != null) return { lat, lng, geom: null }
+  return posListGeom(recordXml) ?? { lat: null, lng: null, geom: null }
 }
 
 /**
@@ -84,7 +108,7 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null } =
     const kategorie = kategorieAusTyp(openTag, rec)
     const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))
     const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
-    const { lat, lng } = koordAusRecord(rec)
+    const { lat, lng, geom } = koordAusRecord(rec)
     const name =
       tag(rec, "generalPublicComment") ||
       tag(rec, "comment") ||
@@ -99,6 +123,7 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null } =
       beschreibung: tag(rec, "generalPublicComment") || null,
       lat,
       lng,
+      ...(geom && { geom }),
       strassenRef: strasse,
       attrs: attrsAusRecord(rec),
       ...(von && { gueltigVon: von, realerStart: von }),

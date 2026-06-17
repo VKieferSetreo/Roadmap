@@ -58,6 +58,23 @@ describe("parseDatex2", () => {
     expect(wl.strassenRef).toBe("L390")
   })
 
+  it("GML posList (lat lng …, WGS84) → Punkt + LineString-geom", () => {
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="BB-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment>L1 Sperrung</generalPublicComment><roadNumber>L1</roadNumber>
+        <groupOfLocations xsi:type="Linear"><linearExtension><linearExtended><gmlLineString>
+          <srsName>WGS84 EPSG 4326</srsName>
+          <posList>52.5 13.4 52.51 13.41 52.52 13.42</posList>
+        </gmlLineString></linearExtended></linearExtension></groupOfLocations>
+      </situationRecord></situation></d2LogicalModel>`
+    const [o] = parseDatex2(xml, { quelleName: "Mobilithek BB" })
+    expect(o.lat).toBeCloseTo(52.5, 3)
+    expect(o.lng).toBeCloseTo(13.4, 3)
+    expect(o.geom.type).toBe("LineString")
+    expect(o.geom.coordinates[0]).toEqual([13.4, 52.5]) // GeoJSON [lng,lat]
+    expect(o.geom.coordinates).toHaveLength(3)
+  })
+
   it("leeres/kaputtes XML → leere Liste (kein Wurf)", () => {
     expect(parseDatex2("")).toEqual([])
     expect(parseDatex2("<html>kein datex</html>")).toEqual([])
