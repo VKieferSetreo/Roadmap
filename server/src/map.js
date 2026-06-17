@@ -3,6 +3,17 @@
 
 import { toIso, toIsoDate } from "./util.js"
 
+const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+
+/** Stabile Fund-Identität über Re-Analysen hinweg (findings.id wechselt bei jeder Analyse).
+ *  Primär obstacle_id|route_id; Fallback Content-Hash für Funde ohne obstacle_id (manuell/Legacy).
+ *  Akzeptiert eine findings-DB-Row (snake_case). Identisch zum FE-Vertrag (FE echot nur f.key). */
+export function findingKey(row) {
+  const routeId = row.route_id ?? ""
+  if (row.obstacle_id) return `${row.obstacle_id}|${routeId}`
+  return `c|${normName(row.kategorie)}|${normName(row.titel)}|${Math.round(Number(row.km ?? 0) * 10)}|${routeId}`
+}
+
 export function rowToProject(row, findings = [], share = null) {
   return {
     id: row.id,
@@ -26,6 +37,7 @@ export function rowToProject(row, findings = [], share = null) {
 export function rowToFinding(row) {
   return {
     id: row.id,
+    key: findingKey(row), // stabile Identität für Ausblenden (FE echot sie nur zurück)
     kategorie: row.kategorie,
     titel: row.titel ?? "",
     beschreibung: row.beschreibung ?? "",

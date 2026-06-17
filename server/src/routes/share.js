@@ -27,7 +27,14 @@ async function loadShareData(db, projectId) {
     "SELECT * FROM findings WHERE project_id = $1 ORDER BY km ASC",
     [projectId],
   )
-  return rowToShareData(project.rows[0], findings.rows.map(rowToFinding))
+  // Ausgeblendete Funde dürfen extern NIE erscheinen (Karte + Auswertung).
+  const hidden = await db.query(
+    "SELECT finding_key, grund, grund_text FROM hidden_findings WHERE project_id = $1",
+    [projectId],
+  )
+  const hiddenKeys = new Set(hidden.rows.map((h) => h.finding_key))
+  const sichtbar = findings.rows.map(rowToFinding).filter((f) => !hiddenKeys.has(f.key))
+  return rowToShareData(project.rows[0], sichtbar)
 }
 
 export function shareRouter({ db, sessionSalt }) {

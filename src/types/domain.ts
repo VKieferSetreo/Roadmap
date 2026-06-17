@@ -50,6 +50,43 @@ export type FindingKategorie =
 /** Wie kritisch ein Fund für den konkreten Transport ist. */
 export type FindingSeverity = "kritisch" | "warnung" | "hinweis"
 
+/** Grund fürs manuelle Ausblenden eines Funds (fließt in die /debug-Triage). */
+export type HideReason =
+  | "falsche_fahrbahn"
+  | "falsche_daten"
+  | "nicht_relevant"
+  | "dublette"
+  | "bereits_erledigt"
+  | "sonstiges"
+
+export const HIDE_REASON_LABEL: Record<HideReason, string> = {
+  falsche_fahrbahn: "Falsche Fahrbahn / Gegenrichtung",
+  falsche_daten: "Falsche Daten extrahiert",
+  nicht_relevant: "Nicht relevant für diesen Transport",
+  dublette: "Dublette",
+  bereits_erledigt: "Bereits erledigt / vor Ort",
+  sonstiges: "Sonstiges",
+}
+
+/** /debug-Triage: ein ausgeblendeter Fund (Admin-übergreifend). */
+export interface HiddenFindingEntry {
+  id: string
+  projektId: string
+  projektName: string | null
+  findingKey: string
+  obstacleId: string | null
+  grund: HideReason
+  grundText: string | null
+  kontext: { kategorie?: string; titel?: string; quelleName?: string; strassenRef?: string }
+  hiddenBy: string | null
+  createdAt: string
+}
+export interface HiddenFindingsResponse {
+  eintraege: HiddenFindingEntry[]
+  grundZaehler: Partial<Record<HideReason, number>>
+  quelleZaehler: Record<string, number>
+}
+
 /** Kontaktdaten eines eigenen (Kunden-)Eintrags. */
 export interface Kontakt {
   /** Wer hat die Information gemeldet / kontaktiert. */
@@ -74,6 +111,12 @@ export interface FindingSource {
 /** Ein auf der Strecke gefundenes Hindernis / eine Auffälligkeit. */
 export interface Finding {
   id: string
+  /** Stabile Fund-Identität über Re-Analysen hinweg (vom Backend gesetzt) — für Ausblenden. */
+  key?: string
+  /** Vom Nutzer für dieses Projekt ausgeblendet (zählt nicht in Aggregate, nicht im Share). */
+  hidden?: boolean
+  hiddenGrund?: HideReason
+  hiddenGrundText?: string
   /** ID des zugrundeliegenden Hindernisses (für „eigenen Eintrag verwerfen"). */
   obstacleId?: string | null
   kategorie: FindingKategorie

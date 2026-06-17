@@ -52,12 +52,36 @@ async function loadProjectRow(db, id, tenantId) {
   return rows[0] ?? null
 }
 
+// Gültige Ausblend-Gründe (app-seitige Validierung; DB speichert frei als text).
+const HIDE_GRUND = new Set([
+  "falsche_fahrbahn", "falsche_daten", "nicht_relevant", "dublette", "bereits_erledigt", "sonstiges",
+])
+
+/** Setzt hidden/hiddenGrund/hiddenGrundText auf den Findings anhand der hidden_findings-Rows. */
+function applyHidden(findings, hiddenRows) {
+  if (!hiddenRows?.length) return findings
+  const m = new Map(hiddenRows.map((h) => [h.finding_key, h]))
+  for (const f of findings) {
+    const h = m.get(f.key)
+    if (h) {
+      f.hidden = true
+      f.hiddenGrund = h.grund
+      if (h.grund_text != null) f.hiddenGrundText = h.grund_text
+    }
+  }
+  return findings
+}
+
 async function loadFindings(db, projectId) {
   const { rows } = await db.query(
     "SELECT * FROM findings WHERE project_id = $1 ORDER BY km ASC",
     [projectId],
   )
-  return rows.map(rowToFinding)
+  const { rows: hidden } = await db.query(
+    "SELECT finding_key, grund, grund_text FROM hidden_findings WHERE project_id = $1",
+    [projectId],
+  )
+  return applyHidden(rows.map(rowToFinding), hidden)
 }
 
 async function loadShare(db, projectId) {
@@ -97,6 +121,16 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
         if (!findingsBy.has(f.project_id)) findingsBy.set(f.project_id, [])
         findingsBy.get(f.project_id).push(rowToFinding(f))
       }
+      const hRes = await db.query(
+        "SELECT project_id, finding_key, grund, grund_text FROM hidden_findings WHERE project_id = ANY($1::uuid[])",
+        [ids],
+      )
+      const hiddenBy = new Map()
+      for (const h of hRes.rows) {
+        if (!hiddenBy.has(h.project_id)) hiddenBy.set(h.project_id, [])
+        hiddenBy.get(h.project_id).push(h)
+      }
+      for (const [pid, fs] of findingsBy) applyHidden(fs, hiddenBy.get(pid) ?? [])
       const sRes = await db.query(
         "SELECT * FROM shares WHERE project_id = ANY($1::uuid[]) AND revoked_at IS NULL",
         [ids],
@@ -199,6 +233,44 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     }
     const fresh = await loadProjectRow(db, row.id, req.ctx.tenant.id)
     res.json(await present(req, fresh))
+  }))
+
+  // ── Fund ausblenden / wieder einblenden (pro Projekt, an stabiler finding_key) ──
+
+  r.post("/:id/findings/hide", asyncHandler(async (req, res) => {
+    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    if (!row) throw new ApiError(404, "Projekt nicht gefunden")
+    const findingKey = String(req.body?.findingKey ?? "").trim()
+    if (!findingKey) throw new ApiError(400, "findingKey erforderlich")
+    const grund = String(req.body?.grund ?? "")
+    if (!HIDE_GRUND.has(grund)) throw new ApiError(400, "Ungültiger Grund")
+    const grundText = req.body?.grundText != null ? String(req.body.grundText).slice(0, 2000) : null
+    if (grund === "sonstiges" && (!grundText || grundText.trim().length < 3)) {
+      throw new ApiError(400, "Bitte den Grund kurz beschreiben.")
+    }
+    const obstacleId = isUuid(req.body?.obstacleId) ? req.body.obstacleId : null
+    let kontext = req.body?.kontext ?? {}
+    if (typeof kontext !== "object" || Array.isArray(kontext) || kontext === null) kontext = {}
+    await db.query(
+      `INSERT INTO hidden_findings (project_id, finding_key, obstacle_id, grund, grund_text, kontext, hidden_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (project_id, finding_key) DO UPDATE SET grund = EXCLUDED.grund,
+         grund_text = EXCLUDED.grund_text, kontext = EXCLUDED.kontext, hidden_by = EXCLUDED.hidden_by`,
+      [row.id, findingKey, obstacleId, grund, grundText, JSON.stringify(kontext), req.ctx.email ?? null],
+    )
+    res.json({ ok: true })
+  }))
+
+  r.post("/:id/findings/unhide", asyncHandler(async (req, res) => {
+    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    if (!row) throw new ApiError(404, "Projekt nicht gefunden")
+    const findingKey = String(req.body?.findingKey ?? "").trim()
+    if (!findingKey) throw new ApiError(400, "findingKey erforderlich")
+    await db.query(
+      "DELETE FROM hidden_findings WHERE project_id = $1 AND finding_key = $2",
+      [row.id, findingKey],
+    )
+    res.json({ ok: true })
   }))
 
   // ── Share-Links ─────────────────────────────────────────────────────────────

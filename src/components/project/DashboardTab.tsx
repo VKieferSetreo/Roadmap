@@ -10,10 +10,12 @@ import {
   ClipboardList,
   Clock,
   ExternalLink,
+  EyeOff,
   FileDown,
   FileSpreadsheet,
   MapPin,
   Radio,
+  RotateCcw,
   Route as RouteIcon,
   Search,
 } from "lucide-react"
@@ -26,10 +28,19 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
 import { ReportView } from "./ReportView"
+import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
-import { katMeta, KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import {
+  hiddenFindings as selectHidden,
+  katMeta,
+  KATEGORIE_META,
+  SEVERITY_META,
+  SEVERITY_ORDER,
+  visibleFindings,
+} from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
-import type { Finding, FindingSeverity, Project } from "@/types/domain"
+import { useProjectStore } from "@/store/projects"
+import { HIDE_REASON_LABEL, type Finding, type FindingSeverity, type HideReason, type Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 // Recharts nur laden, wenn der Dashboard-Tab wirklich offen ist (Code-Splitting)
@@ -52,11 +63,19 @@ export function DashboardTab({ project }: { project: Project }) {
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<string | null>(null)
   const [reportOpen, setReportOpen] = useState(false)
+  const [hideTarget, setHideTarget] = useState<Finding | null>(null)
+  const [showHidden, setShowHidden] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
+  const hideFinding = useProjectStore((s) => s.hideFinding)
+  const unhideFinding = useProjectStore((s) => s.unhideFinding)
+
+  // Ausgeblendete Funde fließen NIE in Aggregate/Liste/Charts — nur separat als "Ausgeblendet".
+  const sichtbar = useMemo(() => visibleFindings(project.findings), [project.findings])
+  const ausgeblendet = useMemo(() => selectHidden(project.findings), [project.findings])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return project.findings
+    return sichtbar
       .filter((f) => (sevFilter === "alle" ? true : f.severity === sevFilter))
       .filter((f) => (katFilter === "alle" ? true : f.kategorie === katFilter))
       .filter((f) => (routeFilter === "alle" ? true : f.routeId === routeFilter))
@@ -70,7 +89,7 @@ export function DashboardTab({ project }: { project: Project }) {
       .sort(
         (a, b) => SEVERITY_META[a.severity].rank - SEVERITY_META[b.severity].rank || a.km - b.km,
       )
-  }, [project.findings, sevFilter, katFilter, routeFilter, query])
+  }, [sichtbar, sevFilter, katFilter, routeFilter, query])
 
   if (project.status !== "fertig") {
     return (
@@ -89,7 +108,7 @@ export function DashboardTab({ project }: { project: Project }) {
 
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
-    n: project.findings.filter((f) => f.severity === sev).length,
+    n: sichtbar.filter((f) => f.severity === sev).length,
   }))
 
   /** StreckenBand-Klick: Fund in der Liste aufklappen + hinscrollen. */
@@ -136,7 +155,7 @@ export function DashboardTab({ project }: { project: Project }) {
           </CardHeader>
           <CardContent className="pt-1">
             <Suspense fallback={<ChartSkeleton />}>
-              <SeverityDonut findings={project.findings} />
+              <SeverityDonut findings={sichtbar} />
             </Suspense>
           </CardContent>
         </Card>
@@ -146,14 +165,14 @@ export function DashboardTab({ project }: { project: Project }) {
           </CardHeader>
           <CardContent className="pt-1">
             <Suspense fallback={<ChartSkeleton />}>
-              <KategorieBar findings={project.findings} />
+              <KategorieBar findings={sichtbar} />
             </Suspense>
           </CardContent>
         </Card>
       </div>
 
       {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse) */}
-      {project.findings.length > 0 ? (
+      {sichtbar.length > 0 ? (
         <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
@@ -164,7 +183,7 @@ export function DashboardTab({ project }: { project: Project }) {
             {project.routes
               .filter((r) => r.points.length >= 2)
               .map((r) => {
-                const routeFindings = project.findings.filter((f) => f.routeId === r.id)
+                const routeFindings = sichtbar.filter((f) => f.routeId === r.id)
                 if (routeFindings.length === 0) return null
                 return (
                   <div key={r.id}>
@@ -259,6 +278,7 @@ export function DashboardTab({ project }: { project: Project }) {
                   zeigeStrecke={project.routes.length > 1}
                   open={expanded === f.id}
                   onToggle={() => setExpanded(expanded === f.id ? null : f.id)}
+                  onHide={() => setHideTarget(f)}
                 />
               ))}
             </ul>
@@ -266,7 +286,48 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       )}
 
+      {/* Ausgeblendete Funde — separat, zählen nicht in die Aggregate; wieder einblendbar. */}
+      {ausgeblendet.length > 0 ? (
+        <Card className="print-hidden">
+          <button
+            onClick={() => setShowHidden((v) => !v)}
+            aria-expanded={showHidden}
+            className="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm font-medium text-neutral-600 hover:bg-neutral-50"
+          >
+            <EyeOff className="h-4 w-4 text-neutral-400" />
+            <span className="flex-1">Ausgeblendet ({ausgeblendet.length})</span>
+            <ChevronDown className={cn("h-4 w-4 text-neutral-400 transition-transform", showHidden && "rotate-180")} />
+          </button>
+          {showHidden ? (
+            <ul className="divide-y divide-neutral-100 border-t border-neutral-100">
+              {ausgeblendet.map((f) => (
+                <li key={f.id} className="flex items-center gap-3 px-4 py-2.5">
+                  <KategorieGlyph kategorie={f.kategorie} className="h-4 w-4 shrink-0 text-neutral-400" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm text-neutral-600">{f.titel}</p>
+                    <p className="truncate text-xs text-neutral-400">
+                      {katMeta(f.kategorie).label} · km {f.km.toLocaleString("de-DE")}
+                      {f.hiddenGrund ? ` · ${HIDE_REASON_LABEL[f.hiddenGrund]}` : ""}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => unhideFinding(project.id, f)}>
+                    <RotateCcw className="h-3.5 w-3.5" /> Einblenden
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </Card>
+      ) : null}
+
       {reportOpen ? <ReportView project={project} onClose={() => setReportOpen(false)} /> : null}
+      {hideTarget ? (
+        <HideReasonDialog
+          finding={hideTarget}
+          onClose={() => setHideTarget(null)}
+          onConfirm={(grund, grundText) => hideFinding(project.id, hideTarget, grund, grundText)}
+        />
+      ) : null}
     </div>
   )
 }
@@ -292,7 +353,7 @@ function exportCsv(project: Project) {
     "Quelle",
     "Quelle-URL",
   ]
-  const rows = project.findings
+  const rows = visibleFindings(project.findings)
     .slice()
     .sort((a, b) => a.km - b.km)
     .map((f) =>
@@ -384,57 +445,66 @@ function FindingRow({
   zeigeStrecke,
   open,
   onToggle,
+  onHide,
 }: {
   finding: Finding
   routeFarbe?: string
   zeigeStrecke?: boolean
   open: boolean
   onToggle: () => void
+  onHide: () => void
 }) {
   const kat = katMeta(finding.kategorie)
   const sev = SEVERITY_META[finding.severity]
   return (
     <li data-finding-id={finding.id}>
-      <button
-        onClick={onToggle}
-        aria-expanded={open}
-        className={cn(
-          "flex w-full cursor-pointer items-center gap-3 border-l-2 px-4 py-3 text-left transition-colors hover:bg-neutral-50",
-          sev.accent,
-        )}
-      >
-        <span className={cn("rounded-md p-2", sev.chip)}>
-          <KategorieGlyph kategorie={finding.kategorie} className="h-4 w-4" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-neutral-900">{finding.titel}</p>
-          <p className="flex items-center gap-1.5 truncate text-xs text-neutral-500">
-            {zeigeStrecke && finding.routeName ? (
-              <span className="inline-flex shrink-0 items-center gap-1">
-                <span
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{ background: routeFarbe ?? "#A1A1AA" }}
-                  aria-hidden
-                />
-                {finding.routeName} ·
+      <div className={cn("flex items-stretch border-l-2", sev.accent)}>
+        <button
+          onClick={onToggle}
+          aria-expanded={open}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-neutral-50"
+        >
+          <span className={cn("rounded-md p-2", sev.chip)}>
+            <KategorieGlyph kategorie={finding.kategorie} className="h-4 w-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-neutral-900">{finding.titel}</p>
+            <p className="flex items-center gap-1.5 truncate text-xs text-neutral-500">
+              {zeigeStrecke && finding.routeName ? (
+                <span className="inline-flex shrink-0 items-center gap-1">
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ background: routeFarbe ?? "#A1A1AA" }}
+                    aria-hidden
+                  />
+                  {finding.routeName} ·
+                </span>
+              ) : null}
+              <span className="truncate">
+                {kat.label} · km {finding.km.toLocaleString("de-DE")}
+                {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
               </span>
-            ) : null}
-            <span className="truncate">
-              {kat.label} · km {finding.km.toLocaleString("de-DE")}
-              {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
-            </span>
-          </p>
-        </div>
-        <Badge variant={sev.badge} size="sm">
-          {sev.label}
-        </Badge>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200",
-            open && "rotate-180",
-          )}
-        />
-      </button>
+            </p>
+          </div>
+          <Badge variant={sev.badge} size="sm">
+            {sev.label}
+          </Badge>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200",
+              open && "rotate-180",
+            )}
+          />
+        </button>
+        <button
+          onClick={onHide}
+          aria-label="Fund ausblenden"
+          title="Ausblenden (zählt nicht mehr in die Auswertung)"
+          className="flex shrink-0 cursor-pointer items-center px-3 text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-severity-kritisch"
+        >
+          <EyeOff className="h-4 w-4" />
+        </button>
+      </div>
       {open ? (
         <div
           className={cn(

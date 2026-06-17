@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge"
 import { MapPreview } from "@/components/shared/MapPreview"
 import { ProjectMenu } from "./ProjectMenu"
 import { CreatorAvatar } from "./CreatorAvatar"
+import { visibleFindings } from "./findingMeta"
 import type { Project, ProjectStatus } from "@/types/domain"
 import { formatRelativeDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
@@ -31,7 +32,8 @@ function routeLabel(project: Project): string {
 export function ProjectCard({ project, index = 0 }: { project: Project; index?: number }) {
   const navigate = useNavigate()
   const status = STATUS_META[project.status]
-  const kritisch = project.findings.filter((f) => f.severity === "kritisch").length
+  const sichtbar = visibleFindings(project.findings)
+  const kritisch = sichtbar.filter((f) => f.severity === "kritisch").length
   const hasRoute = project.routes.some((r) => r.points.length >= 2)
 
   return (
@@ -55,7 +57,7 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
       {/* Karten-Vorschau mit geografischer Einordnung */}
       <div className="relative h-28 w-full shrink-0 border-b border-neutral-100 bg-neutral-50">
         {hasRoute ? (
-          <MapPreview routes={project.routes} findings={project.findings} />
+          <MapPreview routes={project.routes} findings={sichtbar} />
         ) : (
           <div className="flex h-full items-center justify-center gap-2 text-neutral-300">
             <RouteIcon className="h-5 w-5" />
@@ -86,7 +88,7 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           {project.status === "fertig" ? (
             <div className="flex items-center gap-3 text-xs text-neutral-600">
               <span className="tabular-nums">{project.distanzKm?.toLocaleString("de-DE")} km</span>
-              <span className="tabular-nums">{project.findings.length} Funde</span>
+              <span className="tabular-nums">{sichtbar.length} Funde</span>
               {kritisch > 0 ? (
                 <span className="flex items-center gap-1 font-medium text-severity-kritisch">
                   <TriangleAlert className="h-3.5 w-3.5" /> {kritisch} kritisch
@@ -111,7 +113,8 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
 export function ProjectListRow({ project, index = 0 }: { project: Project; index?: number }) {
   const navigate = useNavigate()
   const status = STATUS_META[project.status]
-  const kritisch = project.findings.filter((f) => f.severity === "kritisch").length
+  const sichtbar = visibleFindings(project.findings)
+  const kritisch = sichtbar.filter((f) => f.severity === "kritisch").length
 
   return (
     <li className="animate-rise-in" style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}>
@@ -134,7 +137,7 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
         {project.status === "fertig" ? (
           <div className="hidden items-center gap-3 text-xs text-neutral-600 sm:flex">
             <span className="tabular-nums">{project.distanzKm?.toLocaleString("de-DE")} km</span>
-            <span className="tabular-nums">{project.findings.length} Funde</span>
+            <span className="tabular-nums">{sichtbar.length} Funde</span>
             {kritisch > 0 ? (
               <span className="flex items-center gap-1 font-medium text-severity-kritisch">
                 <TriangleAlert className="h-3.5 w-3.5" /> {kritisch}

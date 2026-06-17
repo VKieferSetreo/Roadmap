@@ -12,6 +12,8 @@ import type {
   Finding,
   FindingKategorie,
   FindingSeverity,
+  HideReason,
+  HiddenFindingsResponse,
   Obstacle,
   ObstacleCreate,
   Project,
@@ -99,6 +101,31 @@ export const api = {
 
   revokeShare: (id: string) =>
     axiosClient<void>({ url: `/projects/${id}/share`, method: "DELETE" }),
+
+  // ── Funde ausblenden (pro Projekt, nachhaltig) ─────────────────────────────
+  hideFinding: (
+    projectId: string,
+    body: {
+      findingKey: string
+      obstacleId?: string | null
+      grund: HideReason
+      grundText?: string
+      kontext?: Record<string, unknown>
+    },
+  ) =>
+    axiosClient<{ ok: true }>({
+      url: `/projects/${projectId}/findings/hide`,
+      method: "POST",
+      data: body,
+    }),
+  unhideFinding: (projectId: string, findingKey: string) =>
+    axiosClient<{ ok: true }>({
+      url: `/projects/${projectId}/findings/unhide`,
+      method: "POST",
+      data: { findingKey },
+    }),
+  hiddenFindings: () =>
+    axiosClient<HiddenFindingsResponse>({ url: "/admin/hidden-findings", method: "GET" }),
 
   // ── Mandanten-Verwaltung (nur Setreo-Admin) ────────────────────────────────
   listTenants: () =>

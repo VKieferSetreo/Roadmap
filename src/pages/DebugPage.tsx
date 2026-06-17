@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  EyeOff,
   MapPin,
   RefreshCw,
   Trash2,
@@ -21,6 +22,7 @@ import { Card, CardContent } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
 import { Textarea } from "@/components/ui/Input"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { cn } from "@/lib/cn"
 import { formatDateTimeDE, formatRelativeDE } from "@/lib/format"
@@ -28,7 +30,7 @@ import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { BugReport, BugReportStatus } from "@/types/domain"
+import { HIDE_REASON_LABEL, type BugReport, type BugReportStatus, type HiddenFindingsResponse, type HideReason } from "@/types/domain"
 
 const STATUS_META: Record<
   BugReportStatus,
@@ -52,6 +54,7 @@ export function DebugPage() {
   const [zaehler, setZaehler] = useState<Record<string, number>>({})
   const [filter, setFilter] = useState<Filter>("offen")
   const [loading, setLoading] = useState(true)
+  const [view, setView] = useState<"bugs" | "hidden">("bugs")
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -91,8 +94,22 @@ export function DebugPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Roadmap-Debugging"
-        description="Von Nutzern gemeldete Probleme — einsehen, triagieren und abarbeiten."
+        description="Von Nutzern gemeldete Probleme + manuell ausgeblendete Funde — einsehen und auswerten."
       >
+        <Tabs value={view} onValueChange={(v) => setView(v as "bugs" | "hidden")} className="mb-4">
+          <TabsList>
+            <TabsTrigger value="bugs">
+              <Bug className="h-4 w-4" /> Bug-Reports
+            </TabsTrigger>
+            <TabsTrigger value="hidden">
+              <EyeOff className="h-4 w-4" /> Ausgeblendete Funde
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {view === "hidden" ? (
+          <HiddenFindingsTab />
+        ) : (
         <div className="flex flex-col gap-4">
           {/* Filter-Leiste + Aktualisieren */}
           <div className="flex flex-wrap items-center gap-2">
@@ -143,6 +160,7 @@ export function DebugPage() {
             </div>
           )}
         </div>
+        )}
       </PageContainer>
     </div>
   )
@@ -309,5 +327,119 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+/** Triage der manuell ausgeblendeten Funde — Zähler je Grund + je Quelle zeigen, welche
+ *  Datenquelle die meisten Falsch-Funde produziert (systematischer Verbesserungs-Loop). */
+function HiddenFindingsTab() {
+  const [data, setData] = useState<HiddenFindingsResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      setData(await api.hiddenFindings())
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Konnte ausgeblendete Funde nicht laden.")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  if (!data) {
+    return <EmptyState icon={EyeOff} title={loading ? "Lädt…" : "Noch nichts ausgeblendet"} />
+  }
+
+  const grundEintraege = Object.entries(data.grundZaehler) as [HideReason, number][]
+  const quelleEintraege = Object.entries(data.quelleZaehler).sort((a, b) => b[1] - a[1])
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <p className="text-sm text-neutral-600">{data.eintraege.length} ausgeblendete Funde</p>
+        <div className="flex-1" />
+        <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
+          <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} /> Aktualisieren
+        </Button>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Card>
+          <CardContent className="p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">Nach Grund</p>
+            <ul className="flex flex-col gap-1 text-sm">
+              {grundEintraege.length === 0 ? (
+                <li className="text-neutral-400">—</li>
+              ) : (
+                grundEintraege.map(([g, n]) => (
+                  <li key={g} className="flex justify-between gap-3">
+                    <span className="text-neutral-700">{HIDE_REASON_LABEL[g] ?? g}</span>
+                    <span className="font-semibold tabular-nums text-neutral-900">{n}</span>
+                  </li>
+                ))
+              )}
+            </ul>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              Nach Quelle (Falsch-Fund-Verursacher)
+            </p>
+            <ul className="flex flex-col gap-1 text-sm">
+              {quelleEintraege.length === 0 ? (
+                <li className="text-neutral-400">—</li>
+              ) : (
+                quelleEintraege.map(([q, n]) => (
+                  <li key={q} className="flex justify-between gap-3">
+                    <span className="truncate text-neutral-700">{q}</span>
+                    <span className="font-semibold tabular-nums text-neutral-900">{n}</span>
+                  </li>
+                ))
+              )}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+
+      {data.eintraege.length === 0 ? (
+        <EmptyState icon={EyeOff} title="Noch nichts ausgeblendet" />
+      ) : (
+        <div className="flex flex-col gap-2">
+          {data.eintraege.map((e) => (
+            <Card key={e.id}>
+              <CardContent className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 text-sm">
+                <Badge variant="muted" size="sm">
+                  {HIDE_REASON_LABEL[e.grund] ?? e.grund}
+                </Badge>
+                <span className="font-medium text-neutral-900">{e.kontext?.titel ?? e.findingKey}</span>
+                {e.kontext?.quelleName ? (
+                  <span className="text-xs text-neutral-500">· {e.kontext.quelleName}</span>
+                ) : null}
+                {e.projektName ? (
+                  <span className="text-xs text-neutral-500">· Projekt: {e.projektName}</span>
+                ) : null}
+                {e.grundText ? (
+                  <span className="w-full text-xs italic text-neutral-500">„{e.grundText}"</span>
+                ) : null}
+                <div className="flex-1" />
+                <span
+                  className="inline-flex items-center gap-1 text-xs text-neutral-400"
+                  title={formatDateTimeDE(e.createdAt)}
+                >
+                  <Clock className="h-3.5 w-3.5" /> {formatRelativeDE(e.createdAt)}
+                  {e.hiddenBy ? ` · ${e.hiddenBy}` : ""}
+                </span>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

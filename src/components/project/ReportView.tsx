@@ -6,7 +6,7 @@ import { useEffect } from "react"
 import { Printer, X } from "lucide-react"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { Button } from "@/components/ui/Button"
-import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER, visibleFindings } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { formatDateDE } from "@/lib/format"
 import type { Project } from "@/types/domain"
@@ -26,9 +26,10 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
     }
   }, [onClose])
 
+  const sichtbar = visibleFindings(project.findings)
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
-    n: project.findings.filter((f) => f.severity === sev).length,
+    n: sichtbar.filter((f) => f.severity === sev).length,
   }))
   const t = project.transport
   const routen = project.routes.filter((r) => r.points.length >= 2)
@@ -104,7 +105,7 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
           </div>
           <div>
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
-              Funde ({project.findings.length})
+              Funde ({sichtbar.length})
             </h2>
             <div className="mt-1.5 flex gap-2">
               {counts.map(({ sev, n }) => (
@@ -124,7 +125,7 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
 
         {/* Funde je Strecke */}
         {routen.map((r) => {
-          const findings = project.findings
+          const findings = sichtbar
             .filter((f) => f.routeId === r.id || (!f.routeId && routen.length === 1))
             .sort((a, b) => a.km - b.km)
           return (

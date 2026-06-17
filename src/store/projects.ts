@@ -7,7 +7,7 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
-import type { Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
+import type { Finding, HideReason, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
 import { DEFAULT_TRANSPORT, ROUTE_FARBEN } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
@@ -65,6 +65,8 @@ interface ProjectStore {
   /** Veröffentlichen / Share-Link verwalten (nur live). */
   publishProject: (id: string, password?: string) => Promise<void>
   revokeShare: (id: string) => Promise<void>
+  hideFinding: (projectId: string, finding: Finding, grund: HideReason, grundText?: string) => void
+  unhideFinding: (projectId: string, finding: Finding) => void
 }
 
 // Laufende Intervalle + Sync-Debounces außerhalb des States (nicht serialisierbar).
@@ -211,6 +213,67 @@ export const useProjectStore = create<ProjectStore>()(
         if (isLive()) {
           api.deleteProject(id).catch(() => {
             toast.error("Projekt konnte auf dem Server nicht gelöscht werden.")
+          })
+        }
+      },
+
+      hideFinding: (projectId, finding, grund, grundText) => {
+        const key = finding.key
+        if (!key) {
+          toast.error("Dieser Fund kann nicht ausgeblendet werden.")
+          return
+        }
+        const patch = (hidden: boolean) =>
+          set((s) => ({
+            projects: s.projects.map((p) =>
+              p.id === projectId
+                ? {
+                    ...p,
+                    findings: p.findings.map((f) =>
+                      f.key === key ? { ...f, hidden, hiddenGrund: grund, hiddenGrundText: grundText } : f,
+                    ),
+                  }
+                : p,
+            ),
+          }))
+        patch(true)
+        if (isLive()) {
+          api
+            .hideFinding(projectId, {
+              findingKey: key,
+              obstacleId: finding.obstacleId ?? undefined,
+              grund,
+              grundText,
+              kontext: {
+                kategorie: finding.kategorie,
+                titel: finding.titel,
+                quelleName: finding.quelle?.name,
+                strassenRef: finding.strassenRef,
+              },
+            })
+            .catch(() => {
+              toast.error("Ausblenden konnte nicht gespeichert werden.")
+              patch(false)
+            })
+        }
+      },
+
+      unhideFinding: (projectId, finding) => {
+        const key = finding.key
+        if (!key) return
+        const patch = (hidden: boolean) =>
+          set((s) => ({
+            projects: s.projects.map((p) =>
+              p.id === projectId
+                ? { ...p, findings: p.findings.map((f) => (f.key === key ? { ...f, hidden } : f)) }
+                : p,
+            ),
+          }))
+        patch(false)
+        if (isLive()) {
+          api.unhideFinding(projectId, key).catch(() => {
+            toast.error("Wieder einblenden fehlgeschlagen.")
+            patch(true)
           })
         }
       },

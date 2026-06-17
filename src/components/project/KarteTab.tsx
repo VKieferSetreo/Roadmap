@@ -64,10 +64,12 @@ export function KarteTab({ project }: { project: Project }) {
     () => project.routes.filter((r) => !hidden.has(r.id)),
     [project.routes, hidden],
   )
+  // Ausgeblendete Funde (f.hidden) erscheinen NIE auf der Karte/Legende/Zählung.
   const sichtbareFindings = useMemo(
-    () => project.findings.filter((f) => !f.routeId || !hidden.has(f.routeId)),
+    () => project.findings.filter((f) => !f.hidden && (!f.routeId || !hidden.has(f.routeId))),
     [project.findings, hidden],
   )
+  const ausgeblendetN = useMemo(() => project.findings.filter((f) => f.hidden).length, [project.findings])
 
   if (project.status !== "fertig" || !project.routes.some((r) => r.points.length >= 2)) {
     return (
@@ -213,7 +215,7 @@ export function KarteTab({ project }: { project: Project }) {
             <ul className="border-t border-neutral-200/70 px-2 py-1.5">
               {project.routes.map((r) => {
                 const sichtbar = !hidden.has(r.id)
-                const funde = project.findings.filter((f) => f.routeId === r.id).length
+                const funde = project.findings.filter((f) => !f.hidden && f.routeId === r.id).length
                 return (
                   <li key={r.id}>
                     <label
@@ -275,6 +277,13 @@ export function KarteTab({ project }: { project: Project }) {
                   </li>
                 )
               })}
+              {ausgeblendetN > 0 ? (
+                <li className="flex items-center gap-2 border-t border-neutral-100 pt-1.5 text-xs text-neutral-400">
+                  <EyeOff className="h-4 w-4 shrink-0" />
+                  <span className="flex-1">Ausgeblendet</span>
+                  <span className="tabular-nums">{ausgeblendetN}</span>
+                </li>
+              ) : null}
             </ul>
           </div>
         </div>

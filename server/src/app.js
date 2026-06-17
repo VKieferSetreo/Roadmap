@@ -22,6 +22,7 @@ import { createOsrm } from "./external/osrm.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
+import { hiddenFindingsRouter } from "./routes/hiddenFindings.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
 import { notificationsRouter } from "./routes/notifications.js"
@@ -111,6 +112,7 @@ export function createApp({
   }))
 
   app.use("/api/admin/tenants", adminTenantsRouter({ db, fetchImpl, authExtern }))
+  app.use("/api/admin/hidden-findings", hiddenFindingsRouter({ db }))
   app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))

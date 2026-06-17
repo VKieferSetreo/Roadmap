@@ -33,6 +33,7 @@ export function createFakeDb() {
     importRuns: [],
     notifications: [],
     bugReports: [],
+    hiddenFindings: [], // { project_id, finding_key, obstacle_id, grund, grund_text, kontext, hidden_by, created_at }
     geocodeCache: new Map(),
     routeCache: new Map(),
   }
@@ -266,6 +267,7 @@ export function createFakeDb() {
         state.findings = state.findings.filter((f) => f.project_id !== params[0])
         state.runs = state.runs.filter((r) => r.project_id !== params[0])
         state.shares = state.shares.filter((s) => s.project_id !== params[0])
+        state.hiddenFindings = state.hiddenFindings.filter((h) => h.project_id !== params[0])
       }
       return ok([], removed)
     }
@@ -657,6 +659,65 @@ export function createFakeDb() {
       const before = state.bugReports.length
       state.bugReports = state.bugReports.filter((b) => b.id !== params[0])
       return ok([], before - state.bugReports.length)
+    }
+
+    // ── hidden_findings (ausgeblendete Funde, pro Projekt) ────────────────────
+    if (sql.startsWith("SELECT finding_key, grund, grund_text FROM hidden_findings WHERE project_id = $1")) {
+      return ok(
+        state.hiddenFindings
+          .filter((h) => h.project_id === params[0])
+          .map((h) => ({ finding_key: h.finding_key, grund: h.grund, grund_text: h.grund_text })),
+      )
+    }
+    if (sql.startsWith("SELECT project_id, finding_key, grund, grund_text FROM hidden_findings WHERE project_id = ANY")) {
+      const ids = params[0]
+      return ok(
+        state.hiddenFindings
+          .filter((h) => ids.includes(h.project_id))
+          .map((h) => ({
+            project_id: h.project_id, finding_key: h.finding_key, grund: h.grund, grund_text: h.grund_text,
+          })),
+      )
+    }
+    if (sql.startsWith("INSERT INTO hidden_findings (project_id, finding_key,")) {
+      let row = state.hiddenFindings.find(
+        (h) => h.project_id === params[0] && h.finding_key === params[1],
+      )
+      if (row) {
+        Object.assign(row, {
+          grund: params[3], grund_text: params[4], kontext: J(params[5]), hidden_by: params[6],
+        })
+      } else {
+        row = {
+          id: randomUUID(),
+          project_id: params[0], finding_key: params[1], obstacle_id: params[2],
+          grund: params[3], grund_text: params[4], kontext: J(params[5]), hidden_by: params[6],
+          created_at: now(),
+        }
+        state.hiddenFindings.push(row)
+      }
+      return ok([row], 1)
+    }
+    if (sql.startsWith("DELETE FROM hidden_findings WHERE project_id = $1 AND finding_key = $2")) {
+      const before = state.hiddenFindings.length
+      state.hiddenFindings = state.hiddenFindings.filter(
+        (h) => !(h.project_id === params[0] && h.finding_key === params[1]),
+      )
+      return ok([], before - state.hiddenFindings.length)
+    }
+    if (sql.startsWith("SELECT h.id, h.project_id, h.finding_key")) {
+      const rows = [...state.hiddenFindings]
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+        .slice(0, 500)
+        .map((h) => {
+          const p = state.projects.find((pr) => pr.id === h.project_id)
+          return {
+            id: h.id, project_id: h.project_id, finding_key: h.finding_key, obstacle_id: h.obstacle_id,
+            grund: h.grund, grund_text: h.grund_text, kontext: h.kontext ?? {},
+            hidden_by: h.hidden_by, created_at: h.created_at, projekt_name: p?.name ?? null,
+          }
+        })
+      return ok(rows)
     }
 
     // ── caches ────────────────────────────────────────────────────────────────

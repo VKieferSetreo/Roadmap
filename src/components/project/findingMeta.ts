@@ -13,8 +13,13 @@ import {
   Weight,
   type LucideIcon,
 } from "lucide-react"
-import type { FindingKategorie, FindingSeverity } from "@/types/domain"
+import type { Finding, FindingKategorie, FindingSeverity } from "@/types/domain"
 import type { BadgeProps } from "@/components/ui/Badge"
+
+/** Sichtbare Funde = ohne manuell ausgeblendete. Basis ALLER Zählungen/Anzeigen/Karte/PDF —
+ *  ausgeblendete Funde fließen nie in Aggregate ein (nur separat als „Ausgeblendet"). */
+export const visibleFindings = (findings: Finding[]): Finding[] => findings.filter((f) => !f.hidden)
+export const hiddenFindings = (findings: Finding[]): Finding[] => findings.filter((f) => f.hidden)
 
 export const KATEGORIE_META: Record<FindingKategorie, { label: string; icon: LucideIcon }> = {
   // bruecke + tunnel haben CUSTOM-SVG (siehe CUSTOM_KAT_SVG unten) — das icon ist nur Fallback.

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/Input"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { TransportDataForm } from "./TransportDataForm"
 import { PublishCard } from "./PublishCard"
+import { visibleFindings } from "./findingMeta"
 import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
 import { useDataSourceStore } from "@/store/datasource"
 import type { Project } from "@/types/domain"
@@ -246,7 +247,7 @@ export function AnlageTab({ project }: { project: Project }) {
                 {project.status === "fertig" ? (
                   <span>
                     Auswertung abgeschlossen ·{" "}
-                    <strong className="text-neutral-800">{project.findings.length} Funde</strong>{" "}
+                    <strong className="text-neutral-800">{visibleFindings(project.findings).length} Funde</strong>{" "}
                     auf {project.distanzKm?.toLocaleString("de-DE")} km
                     {project.routes.length > 1 ? ` (${project.routes.length} Strecken)` : ""}
                   </span>
