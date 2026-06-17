@@ -99,7 +99,17 @@ function parseStops(finalUrl) {
     const dataCoords = [...finalUrl.matchAll(/!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
       .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
       .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
-    if (dataCoords.length >= 2 && dataCoords.length >= nameStops.length) return dataCoords
+    // Der Pfad (/dir/A/B/C/) listet ALLE Stopps in Reihenfolge — autoritativ und VOLLSTÄNDIG
+    // (inkl. Ziel). Der data=-Blob enthält oft ZUSÄTZLICHE !1d!2d (Karten-Mitte, Viewport-Ecken,
+    // POI-Thumbnails) → mehr Koordinaten als echte Wegpunkte. Die frühere Regel (dataCoords.length
+    // >= nameStops.length → dataCoords) übernahm diese Müll-Koordinaten und verdrängte das echte
+    // Ziel → "letztes Stück fehlt". Jetzt: exakte data-Koordinaten NUR bei exakter Anzahl-
+    // Übereinstimmung (sauberer Blob), sonst die kompletten Pfad-Namen — so geht kein Stopp
+    // (insb. das Ziel) verloren, 100% der Strecke wird geladen.
+    if (nameStops.length >= 2) {
+      return dataCoords.length === nameStops.length ? dataCoords : nameStops
+    }
+    if (dataCoords.length >= 2) return dataCoords
     stops.push(...nameStops)
   } else if (u.pathname.includes("/maps/place/")) {
     // 3) Einzel-Ort: kein Routen-Link, aber Koordinate (falls @lat,lng) als EIN Stopp.

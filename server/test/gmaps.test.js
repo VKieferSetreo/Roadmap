@@ -46,6 +46,23 @@ describe("extractMapsStops", () => {
     expect(stops).toEqual([{ lat: 48.5, lng: 8.0 }, { lat: 49.0, lng: 8.4 }])
   })
 
+  it("echter Share-Link: Viewport-/POI-Müll-Koordinaten im data-Blob verdrängen NICHT das Ziel", async () => {
+    // Pfad nennt 3 Stopps; data-Blob hat ZUSÄTZLICHE !1d!2d (Karten-Mitte/Viewport) → früher
+    // wurden die mitgenommen und das Ziel fiel raus. Jetzt: vollständige Pfad-Stopps.
+    const url =
+      "https://www.google.com/maps/dir/Freiburg/Frankfurt/Hamburg/@50.1,8.6,7z/" +
+      "data=!4m2!1d7.85!2d47.99!1d8.68!2d50.11!1d9.99!2d53.55!1d6.5!2d51.0!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([{ name: "Freiburg" }, { name: "Frankfurt" }, { name: "Hamburg" }])
+  })
+
+  it("data-Koordinaten exakt so viele wie Pfad-Stopps → präzise Koordinaten nutzen", async () => {
+    const url =
+      "https://www.google.com/maps/dir/Freiburg/Hamburg/@50,9,7z/data=!4m2!1d7.85!2d47.99!1d9.99!2d53.55!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([{ lat: 47.99, lng: 7.85 }, { lat: 53.55, lng: 9.99 }])
+  })
+
   it("data=-Fallback (!3d lat !4d lng) wenn Pfad keine Stopps hat", async () => {
     const url = "https://www.google.com/maps/dir/@48.7,8.2,9z/data=!3d48.5!4d8.0!3d49.0!4d8.4"
     const { stops } = await extractMapsStops(url)
