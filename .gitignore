@@ -46,3 +46,6 @@ certificate.p12
 *.p12
 *.pfx
 mob_*.pem
+
+# BASt-LCL Rohdaten (nur generierte server/src/data/tmc_de.json wird committed)
+LCL22_deutsch/

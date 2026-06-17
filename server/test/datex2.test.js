@@ -75,6 +75,28 @@ describe("parseDatex2", () => {
     expect(o.geom.coordinates).toHaveLength(3)
   })
 
+  it("ALERT-C/TMC ohne lat/lng → via resolveTmc geocodiert (Primary/Secondary-LCD)", () => {
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="NI-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment>B3 Bauarbeiten</generalPublicComment><roadNumber>B3</roadNumber>
+        <groupOfLocations xsi:type="Linear"><alertCLinear xsi:type="AlertCMethod4Linear">
+          <alertCLocationCountryCode>D</alertCLocationCountryCode><alertCLocationTableNumber>1</alertCLocationTableNumber>
+          <alertCMethod4PrimaryPointLocation><alertCLocation><specificLocation>52089</specificLocation></alertCLocation></alertCMethod4PrimaryPointLocation>
+          <alertCMethod4SecondaryPointLocation><alertCLocation><specificLocation>25016</specificLocation></alertCLocation></alertCMethod4SecondaryPointLocation>
+        </alertCLinear></groupOfLocations>
+      </situationRecord></situation></d2LogicalModel>`
+    const fakeResolve = ({ primary, secondary }) =>
+      primary === 52089 && secondary === 25016
+        ? { lat: 53.8, lng: 9.03, geom: { type: "LineString", coordinates: [[9.03, 53.8], [9.17, 53.69]] } }
+        : null
+    const [withTmc] = parseDatex2(xml, { quelleName: "NI", resolveTmc: fakeResolve })
+    expect(withTmc.lat).toBeCloseTo(53.8, 2)
+    expect(withTmc.geom.type).toBe("LineString")
+    // ohne resolveTmc → keine Koordinaten (Record wird später verworfen)
+    const [noResolve] = parseDatex2(xml, { quelleName: "NI" })
+    expect(noResolve.lat).toBeNull()
+  })
+
   it("leeres/kaputtes XML → leere Liste (kein Wurf)", () => {
     expect(parseDatex2("")).toEqual([])
     expect(parseDatex2("<html>kein datex</html>")).toEqual([])

@@ -16,6 +16,7 @@ import { readFileSync } from "node:fs"
 import { request as httpsRequest } from "node:https"
 import { gunzip } from "node:zlib"
 import { parseDatex2 } from "./datex2.js"
+import { resolveTmc } from "./tmcResolver.js"
 
 const DEFAULT_SCHEDULE = "0 8,12,18 * * *" // 3× täglich (Max-Vorgabe)
 
@@ -99,7 +100,7 @@ const lastModifiedBySub = new Map()
 /** Baut einen Connector für EIN gebuchtes Mobilithek-Angebot.
  *  `url` = der Client-Pull-Endpunkt mit subscriptionID, z.B.
  *  https://mobilithek.info:8443/mobilithek/api/V1.0/subscription?subscriptionID=<ID> */
-export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAULT_SCHEDULE }) {
+export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAULT_SCHEDULE, tmc = false }) {
   return {
     quelleId,
     name: name || `Mobilithek ${quelleId}`,
@@ -127,7 +128,10 @@ export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAUL
         return { obstacles: [] }
       }
       if (res.lastModified) lastModifiedBySub.set(url, res.lastModified)
-      const obstacles = parseDatex2(res.xml, { quelleName: name, quelleUrl: url })
+      // tmc=true (ALERT-C-only-Quellen wie NI): Location-Codes über die BASt-LCL geocodieren.
+      const obstacles = parseDatex2(res.xml, {
+        quelleName: name, quelleUrl: url, resolveTmc: tmc ? resolveTmc : undefined,
+      })
       log(`${quelleId}: ${obstacles.length} DATEX-II-Records normalisiert`)
       return { obstacles }
     },
@@ -137,6 +141,8 @@ export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAUL
 /** Alle aktuell konfigurierten Mobilithek-Connectoren (leer bis Account+Feeds gesetzt). */
 export function mobilithekConnectors(env = process.env) {
   return mobilithekFeeds(env).map((f) =>
-    makeMobilithekConnector({ quelleId: f.quelleId, name: f.name, url: f.url, schedule: f.schedule }),
+    makeMobilithekConnector({
+      quelleId: f.quelleId, name: f.name, url: f.url, schedule: f.schedule, tmc: f.tmc === true,
+    }),
   )
 }

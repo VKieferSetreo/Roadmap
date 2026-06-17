@@ -77,13 +77,31 @@ function posListGeom(recordXml) {
   }
 }
 
+/** ALERT-C-Linear-Codes (Primary/Secondary-Location) aus dem Record — für TMC-only-Quellen
+ *  (z.B. Niedersachsen) ohne lat/lng/posList. null wenn kein specificLocation vorhanden. */
+function tmcAusRecord(recordXml) {
+  const priBlock = tag(recordXml, "alertCMethod4PrimaryPointLocation")
+  const secBlock = tag(recordXml, "alertCMethod4SecondaryPointLocation")
+  const primary = num(tag(priBlock ?? recordXml, "specificLocation"))
+  if (primary == null) return null
+  const secondary = secBlock ? num(tag(secBlock, "specificLocation")) : null
+  return { primary, secondary }
+}
+
 /** Erstes Koordinatenpaar (lat/lng) aus den Locations des Records — bevorzugt explizite
- *  latitude/longitude, sonst GML posList (gibt zusätzlich eine Linien-geom zurück). */
-function koordAusRecord(recordXml) {
+ *  latitude/longitude, dann GML posList (+ Linien-geom), dann ALERT-C/TMC via resolveTmc. */
+function koordAusRecord(recordXml, resolveTmc) {
   const lat = num(tag(recordXml, "latitude"))
   const lng = num(tag(recordXml, "longitude"))
   if (lat != null && lng != null) return { lat, lng, geom: null }
-  return posListGeom(recordXml) ?? { lat: null, lng: null, geom: null }
+  const pl = posListGeom(recordXml)
+  if (pl) return pl
+  if (resolveTmc) {
+    const tmc = tmcAusRecord(recordXml)
+    const r = tmc && resolveTmc(tmc)
+    if (r && Number.isFinite(r.lat) && Number.isFinite(r.lng)) return r
+  }
+  return { lat: null, lng: null, geom: null }
 }
 
 /**
@@ -91,7 +109,7 @@ function koordAusRecord(recordXml) {
  * @param xml   DATEX-II-XML (SituationPublication)
  * @param meta  { quelleName, quelleUrl } für die quelle-Referenz
  */
-export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null } = {}) {
+export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, resolveTmc = null } = {}) {
   if (typeof xml !== "string" || !xml.includes("ituation")) return []
   const now = new Date().toISOString()
   const obstacles = []
@@ -108,7 +126,7 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null } =
     const kategorie = kategorieAusTyp(openTag, rec)
     const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))
     const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
-    const { lat, lng, geom } = koordAusRecord(rec)
+    const { lat, lng, geom } = koordAusRecord(rec, resolveTmc)
     const name =
       tag(rec, "generalPublicComment") ||
       tag(rec, "comment") ||
