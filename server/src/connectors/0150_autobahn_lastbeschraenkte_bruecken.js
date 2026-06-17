@@ -17,10 +17,6 @@ const QUELLE_URL =
   "https://services-eu1.arcgis.com/46eZsDVh7oveCuwo/arcgis/rest/services/lastbeschr%C3%A4nkte_Br%C3%BCcken/FeatureServer/0"
 const LAYER = `${QUELLE_URL}/query`
 
-const HART_GESPERRT = /gesperrt|sperre|jeglichen verkehr|kein(?:e|en)? schwer(?:transport|verkehr)/i
-// Sperre/Auflage allgemein (auch bei numerischem Limit) — fürs Detail "grundsätzlich gesperrt".
-const AUFLAGE = /gesperrt|sperre|schwerverkehr|schwertransport|alleinfahrt|fahrverbot/i
-
 function ersteKoordinate(geom) {
   if (!geom || !Array.isArray(geom.coordinates)) return [null, null]
   let cur = geom.coordinates
@@ -61,10 +57,12 @@ export const autobahnLastbeschraenkteBrueckenConnector = {
       const bwNr = p.Bauwerksnummer != null ? String(p.Bauwerksnummer).trim() : null
 
       const tonnage = tonnageAusText(beschr)
-      // Harte Vollsperre (kein numerisches Limit, aber "gesperrt"/"ST-Sperre"): makeNormalized
-      // droppt maxGewichtT=0 → stattdessen boolesches gesperrtKomplett (Engine → kritisch).
-      const hartGesperrt = tonnage == null && HART_GESPERRT.test(beschr)
       const maxHoeheM = meterAusText(beschr, /durchfahrtsh[öo]he|h[öo]he/i)
+      // JEDE Brücke auf der lastbeschränkte-Brücken-Liste IST beschränkt. Ohne numerisches
+      // Gewichtslimit UND ohne Höhenangabe → konservativ als Vollsperre behandeln (kritisch),
+      // auch bei "gesperrt"/"ST-Sperre" ODER unparsebarem/leerem Text — Max: "auch die ohne
+      // Abmaße mitnehmen, kann sein dass wir die gar nicht fahren können". Kein Feature fällt raus.
+      const gesperrtKomplett = tonnage == null && maxHoeheM == null
 
       // Straßen-Ref aus dem Bauwerksnamen ("A 7 / NOK …" → A7).
       const strM = bwName.match(/\bA\s?(\d+)\b/i)
@@ -80,14 +78,16 @@ export const autobahnLastbeschraenkteBrueckenConnector = {
         kategorie: "bruecke",
         name: bwName || (bwNr ? `Brücke ${bwNr}` : "Lastbeschränkte Brücke"),
         // Bauwerksnummer mit in den Text → über die Karten-Suche (Strg+F) auffindbar.
-        beschreibung: [beschr, bwNr ? `Bauwerksnummer ${bwNr}` : null].filter(Boolean).join(" · ") || null,
+        beschreibung: [
+          beschr || "Lastbeschränkte Brücke — Beschränkung vor Ort prüfen",
+          bwNr ? `Bauwerksnummer ${bwNr}` : null,
+        ].filter(Boolean).join(" · "),
         lat, lng,
         strassenRef,
         attrs: {
           ...(tonnage != null && { maxGewichtT: tonnage }),
           ...(maxHoeheM != null && { maxHoeheM }),
-          ...(hartGesperrt && { gesperrtKomplett: true }),
-          ...(!hartGesperrt && tonnage == null && AUFLAGE.test(beschr) && { grundsaetzlicheGstSperre: true }),
+          ...(gesperrtKomplett && { gesperrtKomplett: true }),
         },
         quelleName: QUELLE_NAME,
         quelleUrl: "https://autobahn.maps.arcgis.com/apps/webappviewer/index.html?id=b6b86f3d26ab4f07a73e265aad097f38",
