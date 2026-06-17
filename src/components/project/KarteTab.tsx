@@ -1,7 +1,7 @@
 // Tab 2 — Vollbild-Karte mit allen Strecken (farblich getrennt) + Fund-Markern.
 // Ebenen-Panel (aufklappbar, Checkboxen) blendet Strecken samt ihrer Funde ein/aus.
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState, type ReactNode } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
@@ -52,7 +52,15 @@ function snapToRoutes(
   return best
 }
 
-export function KarteTab({ project }: { project: Project }) {
+export function KarteTab({
+  project,
+  overlayFooter,
+}: {
+  project: Project
+  /** Optionales Element unten im linken Overlay-Stack (gap-2 unter "Strecken").
+   *  In der App = Sidebar-Toggle; in der öffentlichen Freigabe-Ansicht leer. */
+  overlayFooter?: ReactNode
+}) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
@@ -349,6 +357,10 @@ export function KarteTab({ project }: { project: Project }) {
             </ul>
           ) : null}
         </div>
+
+        {/* Slot unter dem "Strecken"-Kasten — gap-2 (exakt wie zwischen den Karten oben).
+            In der App: Sidebar-Ein-/Ausklapp-Toggle. */}
+        {overlayFooter}
       </div>
 
       {/* Legende oben rechts: Kategorien, die auf den sichtbaren Strecken vorkommen */}

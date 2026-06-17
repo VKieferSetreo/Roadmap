@@ -1,7 +1,7 @@
 // App-Shell: Setreo-Header (oben) + [Sidebar | Inhalt] + Setreo-Footer (unten).
 // Hält den globalen "Neues Projekt"-Dialog.
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { SetreoHeader } from "./SetreoHeader"
 import { SetreoFooter } from "./SetreoFooter"
@@ -15,34 +15,21 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { Building2 } from "lucide-react"
 
-const SIDEBAR_OPEN_KEY = "roadmap.sidebar.open"
-
 export function AppLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  // Desktop-Sidebar: nativ offen (Kollision-Format), einklappbar; Wahl persistiert.
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    try {
-      const v = localStorage.getItem(SIDEBAR_OPEN_KEY)
-      return v === null ? true : v === "true"
-    } catch {
-      return true
-    }
-  })
-  const toggleSidebar = () =>
-    setSidebarOpen((o) => {
-      const next = !o
-      try {
-        localStorage.setItem(SIDEBAR_OPEN_KEY, String(next))
-      } catch {
-        /* ignore */
-      }
-      return next
-    })
+  // Desktop-Sidebar: nativ offen (Kollision-Format), einklappbar; Zustand+Wahl im
+  // UI-Store (persistiert), damit auch das Karten-Overlay den Toggle bedienen kann.
+  const sidebarOpen = useUiStore((s) => s.sidebarOpen)
+  const toggleSidebar = useUiStore((s) => s.toggleSidebar)
+  // Auf der Karte sitzt der Toggle im Overlay (unter dem "Strecken"-Kasten) — dort den
+  // seitlichen Kanten-Griff ausblenden, sonst gäbe es ihn doppelt.
+  const isKarteView = useMemo(() => /^\/projekte\/[^/]+\/karte$/.test(pathname), [pathname])
   const createProject = useProjectStore((s) => s.createProject)
   const initData = useProjectStore((s) => s.initData)
-  const { newProjectOpen, closeNewProject } = useUiStore()
+  const newProjectOpen = useUiStore((s) => s.newProjectOpen)
+  const closeNewProject = useUiStore((s) => s.closeNewProject)
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
   const detect = useDataSourceStore((s) => s.detect)
   const mode = useDataSourceStore((s) => s.mode)
@@ -72,6 +59,7 @@ export function AppLayout() {
         <AppSidebar
           open={sidebarOpen}
           onToggle={toggleSidebar}
+          showEdgeToggle={!isKarteView}
           mobileOpen={mobileNavOpen}
           onClose={() => setMobileNavOpen(false)}
         />

@@ -249,11 +249,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 export function AppSidebar({
   open,
   onToggle,
+  showEdgeToggle = true,
   mobileOpen,
   onClose,
 }: {
   open: boolean
   onToggle: () => void
+  /** Seitlichen Kanten-Griff zeigen? Auf der Karte aus (Toggle sitzt dort im Overlay). */
+  showEdgeToggle?: boolean
   mobileOpen: boolean
   onClose: () => void
 }) {
@@ -277,15 +280,18 @@ export function AppSidebar({
           <SidebarContent />
         </div>
 
-        {/* Vertikaler Griff — immer sichtbar, auch eingeklappt */}
-        <button
-          onClick={onToggle}
-          aria-label={open ? "Sidebar einklappen" : "Sidebar ausklappen"}
-          aria-expanded={open}
-          className="absolute -right-8 top-1/2 z-[1100] hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
-        >
-          {open ? "«" : "»"}
-        </button>
+        {/* Vertikaler Griff — sichtbar (auch eingeklappt). Auf der Karte ausgeblendet:
+            dort liegt der Toggle im Overlay unter dem "Strecken"-Kasten. */}
+        {showEdgeToggle ? (
+          <button
+            onClick={onToggle}
+            aria-label={open ? "Sidebar einklappen" : "Sidebar ausklappen"}
+            aria-expanded={open}
+            className="absolute -right-8 top-1/2 z-[1100] hidden h-14 w-8 -translate-y-1/2 items-center justify-center rounded-r-lg border border-l-0 border-neutral-200 bg-white text-base text-neutral-500 shadow-sm transition-colors hover:text-primary-600 lg:flex"
+          >
+            {open ? "«" : "»"}
+          </button>
+        ) : null}
       </aside>
 
       {/* Mobile-Drawer */}
