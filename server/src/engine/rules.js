@@ -85,8 +85,10 @@ function ruleBauwerk(art, attrs, transport) {
   const maxH = num(attrs.maxHoeheM)
   const maxG = num(attrs.maxGewichtT)
   const gstSperre = attrs.grundsaetzlicheGstSperre === true
+  // Harte Vollsperre für (genehmigungspflichtigen) Schwerverkehr → Schwertransport darf NIE drüber.
+  const komplett = attrs.gesperrtKomplett === true
 
-  if (maxH == null && maxG == null && !gstSperre) {
+  if (maxH == null && maxG == null && !gstSperre && !komplett) {
     return {
       severity: "hinweis",
       beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe oder Tragfähigkeit. Vor Ort prüfen.`,
@@ -118,7 +120,11 @@ function ruleBauwerk(art, attrs, transport) {
     else if (rest < 10) gruende.push("Tragfähigkeit knapp")
   }
 
-  if (gstSperre) {
+  if (komplett) {
+    severity = "kritisch"
+    detail["Schwertransport"] = "gesperrt"
+    gruende.push("für genehmigungspflichtigen Schwerverkehr gesperrt")
+  } else if (gstSperre) {
     severity = schlimmer(severity, "warnung")
     detail["Schwertransport"] = "grundsätzlich gesperrt/auflagenpflichtig"
     gruende.push("grundsätzliche Schwertransport-Sperre")

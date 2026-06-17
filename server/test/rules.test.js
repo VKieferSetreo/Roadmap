@@ -101,6 +101,13 @@ describe("bruecke/tunnel — Tragfähigkeit + GST-Sperre (ruleBauwerk)", () => {
     expect(r.severity).toBe("warnung")
   })
 
+  it("gesperrtKomplett (harte Schwerverkehr-Sperre) → kritisch, auch ohne Maße", () => {
+    const r = evaluate(ob("bruecke", { gesperrtKomplett: true }), TR, {})
+    expect(r).not.toBeNull()
+    expect(r.severity).toBe("kritisch")
+    expect(r.beschreibung).toMatch(/gesperrt/i)
+  })
+
   it("Höhe UND Last gemeinsam — schlimmste zählt (Last überschritten)", () => {
     const r = evaluate(ob("bruecke", { maxHoeheM: 5.0, maxGewichtT: 50 }), TR, {})
     expect(r.severity).toBe("kritisch")

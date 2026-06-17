@@ -67,6 +67,21 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
     res.status(202).json(jobView(job, req.ctx?.isAdmin === true))
   }))
 
+  /** Eine Quelle live anpingen (Test-Fetch ohne DB-Write) → ist sie erreichbar + wie viele
+   *  Datensätze? Nur intern (kein externer Kunde). Für das Quellenregister im DB-Tab. */
+  r.post("/ping/:quelleId", asyncHandler(async (req, res) => {
+    if (req.user?.gateway === "extern") throw new ApiError(403, "Nur intern")
+    const connector = getConnector(req.params.quelleId)
+    if (!connector) throw new ApiError(404, "Kein Connector für diese Quelle")
+    const t0 = Date.now()
+    try {
+      const { obstacles } = await connector.fetch({ env, fetchImpl, timeoutMs: 25000, log: () => {} })
+      res.json({ ok: true, anzahl: Array.isArray(obstacles) ? obstacles.length : 0, ms: Date.now() - t0 })
+    } catch (err) {
+      res.json({ ok: false, error: req.ctx?.isAdmin ? String(err?.message ?? err) : "nicht erreichbar", ms: Date.now() - t0 })
+    }
+  }))
+
   /** Fortschritt eines Sync-Jobs pollen. */
   r.get("/:jobId", asyncHandler(async (req, res) => {
     const job = getSyncJob(req.params.jobId)

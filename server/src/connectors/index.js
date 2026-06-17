@@ -57,6 +57,7 @@ import { duisburgBaustellenConnector } from "./0228_duisburg_baustellen.js"
 import { thueringenBaustellenConnector } from "./0131_thueringen_baustellen.js"
 import { brandenburgBaustellenConnector } from "./0132_brandenburg_baustellen.js"
 import { dortmundGeplantConnector } from "./0229_dortmund_geplant.js"
+import { autobahnLastbeschraenkteBrueckenConnector } from "./0150_autobahn_lastbeschraenkte_bruecken.js"
 
 export const CONNECTORS = [
   autobahnConnector,
@@ -103,6 +104,7 @@ export const CONNECTORS = [
   thueringenBaustellenConnector,
   brandenburgBaustellenConnector,
   dortmundGeplantConnector,
+  autobahnLastbeschraenkteBrueckenConnector,
 ]
 
 // Vollständiger Pool = statische + env-getriebene (Mobilithek aus MOBILITHEK_FEEDS, leer bis Account).
