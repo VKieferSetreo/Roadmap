@@ -1,1 +1,0 @@
-Katalog-/Metadatenportal (Transparenzportal Hamburg) — listet Datensätze, ist selbst kein Hindernis-Producer. Die konkreten HH-Hindernis-Dienste (GST-Routen 0110, Brücken 0111, Baustellen 0112, Bedarfsumleitungen 0113) sind eigene Crons.

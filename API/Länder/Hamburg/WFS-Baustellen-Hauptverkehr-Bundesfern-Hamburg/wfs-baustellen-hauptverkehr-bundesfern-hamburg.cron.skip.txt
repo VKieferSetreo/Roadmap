@@ -1,1 +1,0 @@
-Dedizierter Hauptverkehr-/Bundesfern-Baustellen-Layer hat KEINEN auflösbaren Live-Endpunkt mehr (HH_WFS_Verkehr_opendata endgültig abgeschaltet, GetCapabilities=404; re-verifiziert 2026-06-13). Inhaltlich vollständig redundant zum grünen hh_wfs_baustellen → siehe ../WFS-Baustellen-Hamburg (Quelle 0112). Kein erfundener Ersatz-Endpunkt.

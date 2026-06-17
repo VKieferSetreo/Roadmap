@@ -1,3 +1,0 @@
-Mobilithek-Plattform (Registrierung + X.509-Zertifikat erforderlich, kein offener Endpunkt):
-Mobilithek: https://mobilithek.info
-DATEX-II-Standard: https://www.datex2.eu/

@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **127 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **106 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (83) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (12) · 🟡 Endpunkt/Parsing zu bestätigen (21) · ⚪ nur Portal (10)
+**Legende:** 🟢 live getestet (71) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (18) · ⚪ nur Portal (8)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -11,42 +11,24 @@
 | 🟢 | Bundesweit | Autobahn GmbH API (verkehr.autobahn.de) | Baustellen (roadworks), Sperru | REST-JSON | offen |
 | 🟢 | Bundesweit | BASt BISStra — Bundesfernstraßennetz (ASB-basi | Straßennetz Bundesfernstraßen  | WFS, WMS (OGC), zusätz | offen |
 | 🟡 | Bundesweit | BASt Brückenkarte / Brückenstatistik (Bundesfe | Brücken der Bundesfernstraßen  | Web-Karte mit Export/D | offen |
-| 🟢 | Bundesweit | BKG Geodatenzentrum — INSPIRE Verkehrsnetze (D | Straßen- und Schienennetz-Topo | WFS, WMS (OGC, INSPIRE | offen |
 | ⚪ | Bundesweit | DATEX II — europäischer Austauschstandard (Ver | Format/Profile (KEIN Datenanbi | DATEX II XML (v2 + v3) | offen |
-| 🟢 | Bundesweit | DB InfraGO — Schienennetz (INSPIRE Verkehrsnet | Streckennetz/Schienennetz-Topo | WFS (GML, INSPIRE tn-r | offen |
-| 🟢 | Bundesweit | DWD — Wetterwarnungen (DWD GeoServer WFS / Ope | Wetterwarnungen (Sturm, Glätte | WFS (GeoJSON/GML), zus | offen |
-| ⚪ | Bundesweit | ELWIS / GDWS (WSV) — Brückendurchfahrtshöhen ü | Lichte Höhe (Durchfahrtshöhe)  | PDF-Dokumente (statisc | offen |
-| 🟡 | Bundesweit | GST.Autobahn — Genehmigungs-/Befahrbarkeits-To | Befahrbarkeits-/Streckenbewert | internes Tool / Verfah | eingeschränkt |
 | 🟡 | Bundesweit | Lastbeschränkte Brücken NRW — Schwertransportk | Bauwerke (Brücken), die für Sc | Web-Karte (ArcGIS WebA | offen |
 | 🔑 | Bundesweit | Mobilithek — Nationaler Zugangspunkt (NAP) Deu | Bundesweite Verkehrs-/Mobilitä | DATEX II (v2 + v3, XML | account |
-| 🟢 | Bundesweit | PEGELONLINE — Gewässerkundliches Informationss | Wasserstände an >640 Pegeln an | REST-JSON | offen |
 | 🟡 | Bundesweit | SIB-Bauwerke / ASB-ING — Bauwerks-Fachsystem ( | DIE Kern-Bauwerksrestriktionen | Fachdatenformat ASB-IN | eingeschränkt |
-| 🔑 | Bundesweit | VEMAGS — Verfahrensmanagement Großraum- und Sc | Genehmigungs-/Antragsdaten, Ro | SOAP/XML — Xvemags (Xv | eingeschränkt |
-| 🟢 | Bundesweit | bund.dev / bundesAPI "deutschland" — API-Katal | Meta — kuratierter Katalog von | OpenAPI 3 (YAML/JSON); | offen |
-| 🟢 | Baden-Württemberg | INSPIRE-WFS/WMS BW Verkehrsnetze (ATKIS Basis- | INSPIRE Road Transport Network | WFS (GML 4.0) / WMS | offen |
-| 🟢 | Baden-Württemberg | LGL-BW Open GeoData / GDI-BW — Geobasis (WFS / | Geobasis — ATKIS Basis-DLM / D | WMS / WMTS / WFS / WCS | offen |
 | 🟢 | Baden-Württemberg | MobiData BW IPL — Baustelleninformationen (BEM | Baustellen / Arbeitsstellen (g | CIFS-JSON / GeoJSON /  | offen |
-| 🟢 | Baden-Württemberg | MobiData BW IPL — Geoserver (WFS / WMS) | Vektor-/Visualisierungs-Layer  | WFS / WMS | offen |
 | 🟢 | Baden-Württemberg | MobiData BW IPL — Verkehrsmeldungen (LMS BW) | Sperrungen / Gefahrenmeldungen | TIC3 XML / DATEX II XM | offen |
-| 🟢 | Baden-Württemberg | Straßennetz und Netzknoten Baden-Württemberg | Klassifiziertes Straßennetz (B | GML (+XSD) / MapInfo M | offen |
-| ⚪ | Baden-Württemberg | daten.bw — Open-Data-Portal Baden-Württemberg  | Meta-Katalog (Verweis auf Mobi | Web-Portal | offen |
 | 🟢 | Baden-Württemberg / Karlsruhe | Karlsruhe / TechnologieRegion Karlsruhe (TRK)  | Baustellen aktuell + Vorschau  | GeoJSON / SHAPE-ZIP /  | offen |
 | 🟡 | Baden-Württemberg / Karlsruhe | Karlsruhe Geoportal — Brücken & Bauwerke / Ver | explizite Kategorien 'Brücken  | WMS / WFS / GeoJSON /  | eingeschränkt  |
-| 🟡 | Baden-Württemberg / Mannheim | Mannheim — Open Data (Opendatasoft) + Geoporta | offen v.a. Verkehrszähler (Eco | GeoJSON / CSV / Openda | offen |
 | 🟢 | Baden-Württemberg / Stuttgart | Stuttgart — Baustellen (Open Data Stuttgart /  | aktuelle + geplante Straßenbau | WFS (GeoServer), GeoJS | offen |
 | 🟢 | Bayern | BAYSIS Bauwerke — WFS / WMS (Brücken + Tunnel  | Brücken + Tunnel- + Trogbauwer | WFS (GML / GeoJSON / S | offen |
 | 🟢 | Bayern | BAYSIS Fachnetze (+ Verkehrsdaten / Verwaltung | Fachnetze = bedarfsabhängige U | WFS (GML / GeoJSON) /  | offen |
 | 🟢 | Bayern | BAYSIS Straßennetz + Straßenbestand — WFS / WM | Straßennetz (klass. Netz B/St/ | WFS (GML / GeoJSON) /  | offen |
-| 🟢 | Bayern | Bayerische Vermessungsverwaltung (LDBV/BVV) —  | ATKIS Basis-DLM (topographisch | Download (Shapefile /  | offen |
-| 🔑 | Bayern | BayernInfo / ArbIS → Mobilithek — Baustellen ( | Arbeits-/Baustellen (geplant + | DATEX II XML (HTTPS/SO | registrierung |
-| 🔑 | Bayern | BayernInfo / VIZ → Mobilithek — Verkehrsmeldun | Verkehrsmeldungen — Stau, Sper | DATEX II XML (HTTPS/SO | registrierung |
 | ⚪ | Bayern | open.bydata — Open-Data-Portal Bayern (Meta-Ka | Meta-Katalog (verlinkt BAYSIS- | Web-Portal | offen |
 | 🟢 | Bayern / München | München — Baustellen (Temporäre Einschränkunge | Baustellen + Haltverbote (aktu | WFS (GeoJSON / GML / C | offen |
 | 🟡 | Bayern / Nürnberg | Nürnberg — GeoPortal | städtische Geodaten (GIS); ÖPN | WMS / WFS (ArcGIS-Serv | offen (Geo-Die |
 | 🟢 | Berlin | Berlin VIZ — Baustellen, Sperrungen und sonsti | Baustellen, Sperrungen, Störun | WFS 2.0 (GeoServer), D | offen |
 | 🟢 | Berlin | Detailnetz Berlin — Ingenieurbauwerke (Brücken | Brücken, Tunnel (Geometrie/Ide | WFS 2.0 (GML) | offen |
 | 🟢 | Berlin | Geoportal Berlin (Nachfolger FIS-Broker) — div | ALKIS-Bauwerke (Gebäude/Brücke | WFS 1.0/1.1/2.0 (GeoJS | offen |
-| 🔑 | Berlin | Mobilithek (BMDV) — Berlin-Publikation (DATEX  | Baustellen, Verkehrsmeldungen  | DATEX II (SOAP/Pull) | registrierung |
 | 🟢 | Berlin | OpenStreetMap via Overpass / Geofabrik-Extrakt | GST-Restriktionen — maxheight, | OSM-JSON → GeoJSON | offen |
 | 🟢 | Berlin | VIZ Berlin — "Verkehrsredaktion" + "Landesmeld | Baustellen, Sperrungen (Featur | GeoJSON (statisch gene | offen |
 | 🟢 | Brandenburg | ALKIS Brandenburg (WMS/WFS) | Liegenschaftskataster (Gebäude | WMS (live), WFS (ALKIS | offen |
@@ -59,12 +41,9 @@
 | 🟡 | Bremen | Transparenzportal Bremen — Offene Daten | Querschnitt (Umwelt, Geo, Verk | CSV/JSON/XML; Geo-Date | offen |
 | 🟡 | Bremen | VMZ Bremen (Verkehrsmanagementzentrale) | Verkehrslage, Baustellen (Über | Web-Portal; RSS-Pfad r | offen |
 | 🟢 | Hamburg | Baustellen Hamburg (stadtweit) — Verkehrsdaten | Baustellen (bis zu 50 größte B | WFS 1.1.0/2.0.0 (GML 3 | offen |
-| 🟡 | Hamburg | Baustellen auf Hauptverkehrs- und Bundesfernst | Baustellen auf Haupt-/Bundesfe | WFS (GML), WMS | offen |
 | 🟢 | Hamburg | Großraum- und Schwertransport-Routen in Hambur | GST-Vorzugsrouten-Netz (Routen | WFS (GML/CSV/GeoJSON), | offen |
-| 🟢 | Hamburg | Transparenzportal Hamburg — Gruppe "Transport  | ~100+ Geodatensätze Transport/ | CKAN-API (JSON); Daten | offen |
 | 🟢 | Hamburg | WFS Bedarfsumleitungen Hamburg | ausgeschilderte Notumleitungen | WFS 1.1.0/2.0.0 (GML 3 | offen |
 | 🟢 | Hamburg | WFS Brücken und sonstige Ingenieurbauwerke Ham | Straßenbrücken, Fußgängerbrück | WFS 1.1.0 / 2.0.0 (GML | offen |
-| 🟢 | Hamburg | WFS Straßen- und Wegenetz Hamburg (HH-SIB, Kno | Straßen-/Wegenetz mit verschie | WFS 1.1.0/2.0.0 (GML) | offen |
 | 🟢 | Hessen | Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkeh | Straßennetz-Topologie / Verkeh | OGC API Features (GeoJ | offen |
 | 📄 | Hessen | Hessen Mobil — Lastbeschränkte Brücken (B/L/K) | Lastbeschränkte Brücken (zul.  | PDF-Liste (Stand 2026- | offen |
 | ⚪ | Hessen | Hessen Mobil — Positivkarten GST (Gewichts-/Hö | GST-befahrbare Strecken nach G | PDF-Karten (je Landkre | offen |

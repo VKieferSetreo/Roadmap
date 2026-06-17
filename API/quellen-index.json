@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 84,
+  "anzahl": 72,
   "quellen": [
     {
       "name": "GeoPortal.rlp.de — Straßennetz LBM (OGC API Features / WFS / WMS)",
@@ -202,17 +202,6 @@
       "test": "Länder/Niedersachsen/NLStBV-INSPIRE-WMS-Strassennetz/test.sh"
     },
     {
-      "name": "Straßennetz und Netzknoten Baden-Württemberg",
-      "ebene": "Baden-Württemberg",
-      "datentyp": "Klassifiziertes Straßennetz (B/L/K) + Netzknoten (ASB-Bezug, Stationierung) — Grundnetz",
-      "format": "GML (+XSD) / MapInfo MIF-MID / CSV (Download, kein Live-Dienst)",
-      "endpunkt": "https://mobidata-bw.de/vm/Strassennetz_Netzknoten_BW/GML_Strassennetz_250101.zip",
-      "lizenz": "dl-de/by-2.0 (Datenlizenz Deutschland Namensnennung 2.0)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Baden-Württemberg/Strassennetz-Netzknoten-BW",
-      "test": "Länder/Baden-Württemberg/Strassennetz-Netzknoten-BW/test.sh"
-    },
-    {
       "name": "MobiData BW IPL — Verkehrsmeldungen (LMS BW)",
       "ebene": "Baden-Württemberg",
       "datentyp": "Sperrungen / Gefahrenmeldungen / Staus / Unfälle / Veranstaltungen / Ereignisse",
@@ -257,39 +246,6 @@
       "test": "Länder/Baden-Württemberg/Städte/Stuttgart/stuttgart-geoportal-opendata/test.sh"
     },
     {
-      "name": "INSPIRE-WFS/WMS BW Verkehrsnetze (ATKIS Basis-DLM)",
-      "ebene": "Baden-Württemberg",
-      "datentyp": "INSPIRE Road Transport Network (GML Application Schema v4.0) — Straßenverkehrsnetz",
-      "format": "WFS (GML 4.0) / WMS",
-      "endpunkt": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_INSP_BW_Verkehrsnetz_ATKIS_BasisDLM?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=tn-ro:RoadLink&COUNT=1   (INSPIRE TN WFS; GML 3.2)",
-      "lizenz": "dl-de/by-2-0 (Open Data) — laut Live-Capabilities: \"Unentgeltliche Nutzung nach Open Data Lizenz\"; Quellenvermerk z.B. \"LGL-BW (2024), dl-de/by-2-0, www.lgl-bw.de\"",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Baden-Württemberg/INSPIRE-WFS-BW-Verkehrsnetze",
-      "test": "Länder/Baden-Württemberg/INSPIRE-WFS-BW-Verkehrsnetze/test.sh"
-    },
-    {
-      "name": "MobiData BW IPL — Geoserver (WFS / WMS)",
-      "ebene": "Baden-Württemberg",
-      "datentyp": "Vektor-/Visualisierungs-Layer der Mobilitätsdaten (u.a. roadworks; weitere je Bestand)",
-      "format": "WFS / WMS",
-      "endpunkt": "https://api.mobidata-bw.de/geoserver/MobiData-BW/ows",
-      "lizenz": "je Layer (roadworks: dl-de/by-2.0)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Baden-Württemberg/MobiData-BW-Geoserver-WFS-WMS",
-      "test": "Länder/Baden-Württemberg/MobiData-BW-Geoserver-WFS-WMS/test.sh"
-    },
-    {
-      "name": "LGL-BW Open GeoData / GDI-BW — Geobasis (WFS / WMS)",
-      "ebene": "Baden-Württemberg",
-      "datentyp": "Geobasis — ATKIS Basis-DLM / DLM50 (Objektart Verkehr/Straßen), Straßennetzkarten, ALKIS; INSPIRE-Dienste",
-      "format": "WMS / WMTS / WFS / WCS / GeoPackage / Shapefile",
-      "endpunkt": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ATKIS_Basis-DLM?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=nora:v_verkehrslinie&COUNT=1   (offener LGL-BW ATKIS-Basis-DLM-WFS, NOrA-Schema; GML 3.2)",
-      "lizenz": "Open Data mit Namensnennung (Quellenangabe LGL-BW; Lizenz-Code je Produkt: dl-de/by oder CC BY)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Baden-Württemberg/LGL-BW-Open-GeoData-WFS-WMS",
-      "test": "Länder/Baden-Württemberg/LGL-BW-Open-GeoData-WFS-WMS/test.sh"
-    },
-    {
       "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Brandenburg",
       "ebene": "Brandenburg",
       "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
@@ -323,17 +279,6 @@
       "test": "Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS/test.sh"
     },
     {
-      "name": "WFS Straßen- und Wegenetz Hamburg (HH-SIB, Knoten-Kanten-Modell)",
-      "ebene": "Hamburg",
-      "datentyp": "Straßen-/Wegenetz mit verschiedenen Merkmalen (Klassifizierung etc.), Knoten-Kanten-Modell mit Netzknoten + Stationierung",
-      "format": "WFS 1.1.0/2.0.0 (GML)",
-      "endpunkt": "https://geodienste.hamburg.de/HH_WFS_Strassen_und_Wegenetz?SERVICE=WFS&REQUEST=GetCapabilities",
-      "lizenz": "dl-de/by-2.0",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Hamburg/WFS-Strassen-und-Wegenetz-Hamburg",
-      "test": "Länder/Hamburg/WFS-Strassen-und-Wegenetz-Hamburg/test.sh"
-    },
-    {
       "name": "Baustellen Hamburg (stadtweit) — Verkehrsdaten OpenData",
       "ebene": "Hamburg",
       "datentyp": "Baustellen (bis zu 50 größte Baustellen stadtweit, \"Bauweiser\"); Steckbrief-Visualisierung",
@@ -365,17 +310,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Hamburg/WFS-Bedarfsumleitungen-Hamburg",
       "test": "Länder/Hamburg/WFS-Bedarfsumleitungen-Hamburg/test.sh"
-    },
-    {
-      "name": "Transparenzportal Hamburg — Gruppe \"Transport und Verkehr\" (Dachkatalog)",
-      "ebene": "Hamburg",
-      "datentyp": "~100+ Geodatensätze Transport/Verkehr (Baustellen, GST-Routen, Brücken, Verkehrslage, Verkehrsstärken, automatisiertes Fahren, Verwaltungsgrenzen u.v.m.)",
-      "format": "CKAN-API (JSON); Datensätze als WFS, WMS, GML, CSV, GeoJSON",
-      "endpunkt": "https://suche.transparenz.hamburg.de/api/3/action/package_search?q=groups:transport-und-verkehr",
-      "lizenz": "je Datensatz (überwiegend dl-de/by-2.0)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Hamburg/Transparenzportal-Hamburg-Katalog",
-      "test": "Länder/Hamburg/Transparenzportal-Hamburg-Katalog/test.sh"
     },
     {
       "name": "Großraum- und Schwertransport-Routen in Hamburg (GST-Netz) ⭐",
@@ -686,17 +620,6 @@
       "test": "Länder/Bayern/BAYSIS-Bauwerke-WFS-WMS/test.sh"
     },
     {
-      "name": "Bayerische Vermessungsverwaltung (LDBV/BVV) — ATKIS Basis-DLM / Geobasis",
-      "ebene": "Bayern",
-      "datentyp": "ATKIS Basis-DLM (topographisches Landschaftsmodell inkl. Objektbereich Verkehr/Straßen); INSPIRE-WMS \"Verkehrsnetze ATKIS Basis-DLM\"",
-      "format": "Download (Shapefile / GeoPackage) / WFS / WMS / WMTS",
-      "endpunkt": "https://geoservices.bayern.de/wfs/v1/ogc_atkis_basisdlm.cgi?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Strassenachse&COUNT=1   (offener BVV-WFS ATKIS Basis-DLM, AAA 7.1.2; GML 3.2.1)",
-      "lizenz": "CC BY 4.0 — \"Datenquelle: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de\"",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Bayern/BVV-ATKIS-Basis-DLM",
-      "test": "Länder/Bayern/BVV-ATKIS-Basis-DLM/test.sh"
-    },
-    {
       "name": "München — Baustellen (Temporäre Einschränkungen, Opendata)",
       "ebene": "Bayern / München",
       "datentyp": "Baustellen + Haltverbote (aktuell + geplant, nächste 4 Wochen) mit Verkehrseinschränkung",
@@ -763,39 +686,6 @@
       "test": "Länder/Bremen/GeoPortal-Bremen-GIS-Hub-GDI-HB/test.sh"
     },
     {
-      "name": "BKG Geodatenzentrum — INSPIRE Verkehrsnetze (DLM250)",
-      "ebene": "Bundesweit",
-      "datentyp": "Straßen- und Schienennetz-Topologie (Verkehrsnetze) aus ATKIS DLM250 (1:250.000). Nur Netz/Geometrie — KEINE Restriktionsattribute (keine Traglast/lichte Höhe)",
-      "format": "WFS, WMS (OGC, INSPIRE-konform)",
-      "endpunkt": "WFS: https://sgx.geodatenzentrum.de/wfs_dlm250_inspire?service=WFS&request=GetCapabilities  | WMS: https://sgx.geodatenzentrum.de/wms_dlm250_inspire?service=WMS&request=GetCapabilities",
-      "lizenz": "BKG Open Data; Namensnennung (GeoNutzV / dl-de) — pro Dienst prüfen",
-      "typ": "live-endpunkt",
-      "ordner": "Bundesweit/bkg-geodatenzentrum",
-      "test": "Bundesweit/bkg-geodatenzentrum/test.sh"
-    },
-    {
-      "name": "DWD — Wetterwarnungen (DWD GeoServer WFS / Open Data)",
-      "ebene": "Bundesweit",
-      "datentyp": "Wetterwarnungen (Sturm, Glätte, Starkregen) — für GST dynamische, wetterbedingte Fahr-Restriktionen (Windlast bei großvolumiger Ladung, Brückensperrung bei Sturm)",
-      "format": "WFS (GeoJSON/GML), zusätzlich WMS; Open-Data-Files auf CDC-Server",
-      "endpunkt": "https://maps.dwd.de/geoserver/dwd/ows  (Layer u.a. dwd:Warnungen_Gemeinden, dwd:Warnungen_Landkreise, dwd:Warngebiete_*); CDC Open Data: https://opendata.dwd.de/",
-      "lizenz": "DWD Open Data (GeoNutzV; Namensnennung, https://www.dwd.de/copyright)",
-      "typ": "live-endpunkt",
-      "ordner": "Bundesweit/dwd-api",
-      "test": "Bundesweit/dwd-api/test.sh"
-    },
-    {
-      "name": "PEGELONLINE — Gewässerkundliches Informationssystem (WSV)",
-      "ebene": "Bundesweit",
-      "datentyp": "Wasserstände an >640 Pegeln an Bundeswasserstraßen (indirekt: aktuelle lichte Höhe unter Brücken über Wasserstraßen schwankt mit Wasserstand)",
-      "format": "REST-JSON",
-      "endpunkt": "https://www.pegelonline.wsv.de/webservices/rest-api/v2  (u.a. /stations.json, /stations/{station}.json, /stations/{station}/{timeseries}/measurements.json, /waters.json)",
-      "lizenz": "offen (Bundesbehörde; GovData-gelistet)",
-      "typ": "live-endpunkt",
-      "ordner": "Bundesweit/pegelonline",
-      "test": "Bundesweit/pegelonline/test.sh"
-    },
-    {
       "name": "Autobahn GmbH API (verkehr.autobahn.de)",
       "ebene": "Bundesweit",
       "datentyp": "Baustellen (roadworks), Sperrungen (closure), Verkehrswarnungen (warning, inkl. Gewichtsbeschränkungs-Hinweise), Lkw-Parkplätze, Ladesäulen, Webcams",
@@ -807,17 +697,6 @@
       "test": "Bundesweit/autobahn-api/test.sh"
     },
     {
-      "name": "bund.dev / bundesAPI \"deutschland\" — API-Katalog (Meta-Quelle)",
-      "ebene": "Bundesweit",
-      "datentyp": "Meta — kuratierter Katalog von >30 Bundes-APIs (Autobahn, DWD, PEGELONLINE, NINA u.a.) als OpenAPI-3-Specs. Kein eigener Datenlieferant",
-      "format": "OpenAPI 3 (YAML/JSON); Python-Wrapper (pip: deutschland)",
-      "endpunkt": "https://bund.dev/apis  (je gelistete API eigener Endpunkt; Specs z.B. https://autobahn.api.bund.dev/openapi.yaml)",
-      "lizenz": "Doku offen (GitHub); je API unterschiedlich",
-      "typ": "live-endpunkt",
-      "ordner": "Bundesweit/bund-dev-katalog",
-      "test": "Bundesweit/bund-dev-katalog/test.sh"
-    },
-    {
       "name": "BASt BISStra — Bundesfernstraßennetz (ASB-basiert), Geodienste",
       "ebene": "Bundesweit",
       "datentyp": "Straßennetz Bundesfernstraßen mit ASB-Bezug — Netzknoten (NK), Nullpunkte (NP), Sektoren, Geometrien. Netz-Grundriss/Stationierung, an den Restriktionen gehängt werden. KEINE Bauwerksattribute (Traglast/lichte Höhe)",
@@ -827,17 +706,6 @@
       "typ": "live-endpunkt",
       "ordner": "Bundesweit/bast-bisstra",
       "test": "Bundesweit/bast-bisstra/test.sh"
-    },
-    {
-      "name": "DB InfraGO — Schienennetz (INSPIRE Verkehrsnetze Schiene)",
-      "ebene": "Bundesweit",
-      "datentyp": "Streckennetz/Schienennetz-Topologie (RailwayLink/Node/Line, Spurweite, Elektrifizierung, Geschwindigkeit). Bahnübergänge als GST-Hindernistyp NICHT als eigener Layer geführt. Stationsdaten (StaDa/RIS) separat über DB API Marketplace (Key nötig)",
-      "format": "WFS (GML, INSPIRE tn-ra); StaDa/RIS = REST-JSON über DB API Marketplace",
-      "endpunkt": "WFS: https://geoviewer.deutschebahn.com/geoviewer-geoserver/tn-ra/ows?service=wfs&request=GetCapabilities  (StaDa Marketplace: https://developers.deutschebahn.com/db-api-marketplace/apis/product/stada)",
-      "lizenz": "Open Data häufig CC-BY 4.0 / nach GeoZG; pro Datensatz prüfen. (DB API Marketplace StaDa/RIS separat: Registrierung + Key)",
-      "typ": "live-endpunkt",
-      "ordner": "Bundesweit/db-infrago",
-      "test": "Bundesweit/db-infrago/test.sh"
     },
     {
       "name": "Overpass API (OpenStreetMap Query-Engine)",

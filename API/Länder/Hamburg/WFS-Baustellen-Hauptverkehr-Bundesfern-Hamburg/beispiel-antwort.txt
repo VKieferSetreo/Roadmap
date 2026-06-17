@@ -1,7 +1,0 @@
-== Alter Verkehr-WFS (abgelöst, erwartet 404) ==
-HTTP 404 | text/html
-
-== Nachfolger hh_wfs_baustellen (grün, erwartet 200) ==
-HTTP 200 | text/xml;charset=UTF-8
-
-Bezug: ../WFS-Baustellen-Hamburg (FeatureType de.hh.up:baustelle)
