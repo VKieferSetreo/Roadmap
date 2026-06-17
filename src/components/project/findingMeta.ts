@@ -21,6 +21,22 @@ import type { BadgeProps } from "@/components/ui/Badge"
 export const visibleFindings = (findings: Finding[]): Finding[] => findings.filter((f) => !f.hidden)
 export const hiddenFindings = (findings: Finding[]): Finding[] => findings.filter((f) => f.hidden)
 
+/** Liegt ein Fund im Export-Zeitfenster [von, bis]? Leere Grenze = offen.
+ *  Permanente Funde ohne Gültigkeit (z.B. lastbeschränkte Brücken, Höhenlimits) gelten IMMER —
+ *  sie betreffen jeden Transport, unabhängig vom Datum. Zeitlich begrenzte Funde
+ *  (Baustellen/Sperrungen) nur, wenn ihr Gültigkeitsfenster das Export-Fenster überschneidet.
+ *  Anwendung: Teiltransporte, die nur einen Datumsabschnitt der Strecke betrachten. */
+export function imExportZeitraum(f: Finding, von: string, bis: string): boolean {
+  if (!von && !bis) return true
+  const tag = (s?: string | null) => (s ? s.slice(0, 10) : "")
+  const fVon = tag(f.gueltigVon)
+  const fBis = tag(f.gueltigBis)
+  if (!fVon && !fBis) return true // permanent → immer relevant
+  if (bis && fVon && fVon > bis) return false // beginnt erst nach dem Fenster
+  if (von && fBis && fBis < von) return false // endet schon vor dem Fenster
+  return true
+}
+
 export const KATEGORIE_META: Record<FindingKategorie, { label: string; icon: LucideIcon }> = {
   // bruecke + tunnel haben CUSTOM-SVG (siehe CUSTOM_KAT_SVG unten) — das icon ist nur Fallback.
   bruecke: { label: "Brücke", icon: MoveHorizontal },

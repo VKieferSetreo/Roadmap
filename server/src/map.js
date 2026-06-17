@@ -1,7 +1,7 @@
 // Row-Mapper: DB snake_case → API camelCase, exakt passend zum v2-Contract
 // (SPEC-backend-v2.md — das FE wird parallel 1:1 dagegen gebaut).
 
-import { toIso, toIsoDate } from "./util.js"
+import { cleanText, toIso, toIsoDate } from "./util.js"
 
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
@@ -39,8 +39,8 @@ export function rowToFinding(row) {
     id: row.id,
     key: findingKey(row), // stabile Identität für Ausblenden (FE echot sie nur zurück)
     kategorie: row.kategorie,
-    titel: row.titel ?? "",
-    beschreibung: row.beschreibung ?? "",
+    titel: cleanText(row.titel),
+    beschreibung: cleanText(row.beschreibung),
     lat: Number(row.lat),
     lng: Number(row.lng),
     km: row.km != null ? Number(row.km) : 0,
@@ -62,8 +62,8 @@ export function rowToObstacle(row) {
   return {
     id: row.id,
     kategorie: row.kategorie,
-    name: row.name ?? "",
-    beschreibung: row.beschreibung ?? "",
+    name: cleanText(row.name),
+    beschreibung: cleanText(row.beschreibung),
     lat: Number(row.lat),
     lng: Number(row.lng),
     strassenRef: row.strassen_ref ?? null,
@@ -124,8 +124,8 @@ export function rowToNotification(row) {
     severity: row.severity ?? null,
     obstacleId: row.obstacle_id ?? null,
     kategorie: row.kategorie ?? null,
-    titel: row.titel ?? "",
-    beschreibung: row.beschreibung ?? null,
+    titel: cleanText(row.titel),
+    beschreibung: row.beschreibung != null ? cleanText(row.beschreibung) : null,
     km: row.km != null ? Number(row.km) : null,
     routeName: row.route_name ?? null,
     strassenRef: row.strassen_ref ?? null,

@@ -26,6 +26,19 @@ export function toIsoDate(v) {
   return String(v).slice(0, 10)
 }
 
+/** Bereinigt eingebetteten Markup-/DATEX-Müll in Anzeigetexten: zieht den deutschen
+ *  <value lang="de">…</value> heraus, sonst strippt alle Tags. Leerstring wenn nichts bleibt.
+ *  ponytail: Read-Time-Schutz gegen Alt-Daten mit <comment>-Brackets. Neue Importe sind schon
+ *  sauber (Connector commentText), eine Re-Analyse macht das hier überflüssig. */
+export function cleanText(raw) {
+  if (raw == null) return ""
+  const s = String(raw)
+  if (!s.includes("<")) return s
+  const de = s.match(/<value\b[^>]*lang="de"[^>]*>([\s\S]*?)<\/value>/i)
+  const any = de || s.match(/<value\b[^>]*>([\s\S]*?)<\/value>/i)
+  return (any ? any[1] : s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+}
+
 export const isPlainObject = (v) => v != null && typeof v === "object" && !Array.isArray(v)
 
 export const isFiniteNumber = (v) => typeof v === "number" && Number.isFinite(v)

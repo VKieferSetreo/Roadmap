@@ -6,13 +6,29 @@ import { useEffect } from "react"
 import { Printer, X } from "lucide-react"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { Button } from "@/components/ui/Button"
-import { KATEGORIE_META, SEVERITY_META, SEVERITY_ORDER, visibleFindings } from "./findingMeta"
+import {
+  imExportZeitraum,
+  KATEGORIE_META,
+  SEVERITY_META,
+  SEVERITY_ORDER,
+  visibleFindings,
+} from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { formatDateDE } from "@/lib/format"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
-export function ReportView({ project, onClose }: { project: Project; onClose: () => void }) {
+export function ReportView({
+  project,
+  exportVon = "",
+  exportBis = "",
+  onClose,
+}: {
+  project: Project
+  exportVon?: string
+  exportBis?: string
+  onClose: () => void
+}) {
   // Druck-Isolation: nur der Report ist beim Drucken sichtbar
   useEffect(() => {
     document.body.classList.add("printing-report")
@@ -26,7 +42,10 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
     }
   }, [onClose])
 
-  const sichtbar = visibleFindings(project.findings)
+  // Optionales Export-Zeitfenster (Teiltransporte): nur Funde, die im Zeitraum gelten.
+  const sichtbar = visibleFindings(project.findings).filter((f) =>
+    imExportZeitraum(f, exportVon, exportBis),
+  )
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
     n: sichtbar.filter((f) => f.severity === sev).length,
@@ -66,6 +85,12 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
               {project.distanzKm?.toLocaleString("de-DE")} km gesamt ·{" "}
               {Math.floor((project.fahrzeitMin ?? 0) / 60)} h {(project.fahrzeitMin ?? 0) % 60} min
             </p>
+            {exportVon || exportBis ? (
+              <p className="mt-1 inline-flex rounded border border-primary-200 bg-primary-50/60 px-2 py-0.5 text-[11px] font-medium text-primary-700">
+                Export-Zeitraum: {exportVon ? formatDateDE(exportVon) : "Beginn"} –{" "}
+                {exportBis ? formatDateDE(exportBis) : "offen"} (nur Funde, die in diesem Zeitraum gelten)
+              </p>
+            ) : null}
           </div>
           <SetreoLogo height={34} />
         </header>
@@ -176,14 +201,31 @@ export function ReportView({ project, onClose }: { project: Project; onClose: ()
                               </span>
                             ) : null}
                           </p>
-                          <p className="text-xs tabular-nums text-neutral-500">
-                            {Object.entries(f.detail)
-                              .map(([k, v]) => `${k}: ${v}`)
-                              .join(" · ")}
-                            {f.gueltigBis
-                              ? ` · gültig bis ${f.gueltigBis.split("-").reverse().join(".")}`
-                              : ""}
-                          </p>
+                          {/* Beschreibung — nur wenn vorhanden und nicht reine Titel-Wiederholung. */}
+                          {f.beschreibung && f.beschreibung.trim() !== f.titel.trim() ? (
+                            <p className="text-xs leading-snug text-neutral-600">{f.beschreibung}</p>
+                          ) : null}
+                          {Object.keys(f.detail).length || f.gueltigBis ? (
+                            <p className="text-xs tabular-nums text-neutral-500">
+                              {Object.entries(f.detail)
+                                .map(([k, v]) => `${k}: ${v}`)
+                                .join(" · ")}
+                              {f.gueltigBis
+                                ? `${Object.keys(f.detail).length ? " · " : ""}gültig bis ${f.gueltigBis
+                                    .slice(0, 10)
+                                    .split("-")
+                                    .reverse()
+                                    .join(".")}`
+                                : ""}
+                            </p>
+                          ) : null}
+                          {/* Quelle + URL — Nachvollziehbarkeit der Datenherkunft im Bericht. */}
+                          {f.quelle?.name ? (
+                            <p className="text-[10px] text-neutral-400">
+                              Quelle: {f.quelle.name}
+                              {f.quelle.url ? <span className="font-mono"> · {f.quelle.url}</span> : null}
+                            </p>
+                          ) : null}
                         </td>
                         <td className="py-1.5 pr-2">
                           <span

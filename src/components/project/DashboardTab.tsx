@@ -32,6 +32,7 @@ import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import {
   hiddenFindings as selectHidden,
+  imExportZeitraum,
   katMeta,
   KATEGORIE_META,
   SEVERITY_META,
@@ -65,6 +66,9 @@ export function DashboardTab({ project }: { project: Project }) {
   const [reportOpen, setReportOpen] = useState(false)
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
   const [showHidden, setShowHidden] = useState(false)
+  // Export-Zeitfenster (für Teiltransporte): nur Funde im Zeitraum exportieren. Leer = alle.
+  const [exportVon, setExportVon] = useState("")
+  const [exportBis, setExportBis] = useState("")
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
@@ -210,16 +214,69 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       ) : null}
 
-      {/* Export */}
-      <div className="print-hidden flex items-center justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={() => setReportOpen(true)}>
-          <FileDown className="h-3.5 w-3.5" />
-          PDF-Bericht
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => exportCsv(project)}>
-          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-          Excel (CSV)
-        </Button>
+      {/* Export — optionales Zeitfenster (Teiltransporte): nur Funde, die im Zeitraum gelten. */}
+      <div className="print-hidden flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="export-von" className="text-xs font-medium text-neutral-500">
+              Zeitraum von
+            </label>
+            <Input
+              id="export-von"
+              type="date"
+              value={exportVon}
+              max={exportBis || undefined}
+              onChange={(e) => setExportVon(e.target.value)}
+              className="h-9 w-[150px]"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="export-bis" className="text-xs font-medium text-neutral-500">
+              bis
+            </label>
+            <Input
+              id="export-bis"
+              type="date"
+              value={exportBis}
+              min={exportVon || undefined}
+              onChange={(e) => setExportBis(e.target.value)}
+              className="h-9 w-[150px]"
+            />
+          </div>
+          {exportVon || exportBis ? (
+            <button
+              type="button"
+              onClick={() => {
+                setExportVon("")
+                setExportBis("")
+              }}
+              className="mb-1 inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-neutral-700"
+            >
+              <RotateCcw className="h-3 w-3" /> zurücksetzen
+            </button>
+          ) : (
+            <span className="mb-1.5 text-xs text-neutral-400">leer = alle Funde</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setReportOpen(true)}>
+            <FileDown className="h-3.5 w-3.5" />
+            PDF-Bericht
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              exportCsv(
+                project,
+                visibleFindings(project.findings).filter((f) => imExportZeitraum(f, exportVon, exportBis)),
+              )
+            }
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+            Excel (CSV)
+          </Button>
+        </div>
       </div>
 
       {/* Filterleiste */}
@@ -320,7 +377,14 @@ export function DashboardTab({ project }: { project: Project }) {
         </Card>
       ) : null}
 
-      {reportOpen ? <ReportView project={project} onClose={() => setReportOpen(false)} /> : null}
+      {reportOpen ? (
+        <ReportView
+          project={project}
+          exportVon={exportVon}
+          exportBis={exportBis}
+          onClose={() => setReportOpen(false)}
+        />
+      ) : null}
       {hideTarget ? (
         <HideReasonDialog
           finding={hideTarget}
@@ -332,8 +396,9 @@ export function DashboardTab({ project }: { project: Project }) {
   )
 }
 
-/** CSV-Export der Funde (Excel-tauglich: BOM + Semikolon). */
-function exportCsv(project: Project) {
+/** CSV-Export der Funde (Excel-tauglich: BOM + Semikolon). `findings` = bereits sichtbar +
+ *  auf das Export-Zeitfenster gefiltert (Teiltransporte). */
+function exportCsv(project: Project, findings: Finding[]) {
   const esc = (v: string | number | undefined) => {
     const s = String(v ?? "")
     return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
@@ -353,7 +418,7 @@ function exportCsv(project: Project) {
     "Quelle",
     "Quelle-URL",
   ]
-  const rows = visibleFindings(project.findings)
+  const rows = findings
     .slice()
     .sort((a, b) => a.km - b.km)
     .map((f) =>

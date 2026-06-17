@@ -7,6 +7,8 @@
 // NormalizedObstacle (Connector-Vertrag): { externeId, kategorie, name, beschreibung?, lat, lng,
 //   strassenRef?, attrs, gueltigVon?, gueltigBis?, realerStart?, quelle:{name,url,aktualisiertAm} }
 
+import { cleanText } from "../util.js"
+
 const tag = (xml, name) => {
   // erstes <name ...>…</name> (namespace-tolerant), non-greedy
   const m = xml.match(new RegExp(`<(?:[\\w.-]+:)?${name}\\b[^>]*>([\\s\\S]*?)</(?:[\\w.-]+:)?${name}>`, "i"))
@@ -21,11 +23,7 @@ const attrOf = (openTag, attr) => {
 // Wir ziehen den deutschen <value> (sonst ersten value), sonst tag-frei. Verhindert, dass roher
 // XML-Müll als Fund-Name/Beschreibung landet (NI/BAB-Feeds). Plain-Text bleibt unverändert.
 function commentText(raw) {
-  if (!raw) return null
-  const de = raw.match(/<value\b[^>]*lang="de"[^>]*>([\s\S]*?)<\/value>/i)
-  const any = de || raw.match(/<value\b[^>]*>([\s\S]*?)<\/value>/i)
-  const txt = (any ? any[1] : raw).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
-  return txt || null
+  return cleanText(raw) || null
 }
 const num = (s) => {
   if (s == null) return null
