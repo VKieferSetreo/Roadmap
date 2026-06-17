@@ -1,1 +1,0 @@
-SKIP: Hindernis-Producer (Verkehrsmeldungen/Sperrungen DATEX II), aber kein offener Zugang — Abruf nur nach Mobilithek-Registrierung + Datennutzungsvertrag (Angebot 110000000002506000), Maschinenabruf via Client-Zertifikat/mTLS (.env-gated). Cron erst nach Vertragsabschluss baubar.
