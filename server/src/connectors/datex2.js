@@ -41,6 +41,9 @@ function kategorieAusTyp(recordOpenTag, recordXml) {
   const t = (attrOf(recordOpenTag, "xsi:type") || "").toLowerCase()
   const low = (recordXml || "").toLowerCase()
   if (t.includes("maintenanceworks") || t.includes("roadworks") || t.includes("constructionworks")) return "baustelle"
+  // Reale Feeds (Mobilithek): Bau-Sperrungen sind xsi:type RoadOrCarriagewayOrLaneManagement
+  // MIT constructionWorkType/managedCause=roadworks → das sind Arbeitsstellen, keine reinen Sperrungen.
+  if (low.includes("constructionworktype") || low.includes("roadworks") || low.includes("maintenanceworks")) return "baustelle"
   if (t.includes("roadorcarriageway") || t.includes("closure") || low.includes("carriagewayclosed") || low.includes("roadclosed")) return "sperrung"
   if (t.includes("networkmanagement") && (low.includes("weight") || low.includes("gewicht"))) return "gewicht"
   if (low.includes("heightlimit") || low.includes("maximumheight") || low.includes("durchfahrtshöhe")) return "bruecke"
@@ -48,6 +51,37 @@ function kategorieAusTyp(recordOpenTag, recordXml) {
   if (low.includes("weightlimit") || low.includes("maximumweight") || low.includes("gewichtsbesch")) return "gewicht"
   // Fallback: Verkehrsbehinderung mit Bauwerksbezug → baustelle, sonst sperrung
   return t.includes("roadworks") || low.includes("baustelle") ? "baustelle" : "sperrung"
+}
+
+// Alle Werte eines wiederholbaren Tags im Record (z.B. mehrere Management-Typen je Carriageway).
+function tagAll(recordXml, name) {
+  const re = new RegExp(`<(?:[\\w.-]+:)?${name}\\b[^>]*>([\\s\\S]*?)</(?:[\\w.-]+:)?${name}>`, "gi")
+  return [...recordXml.matchAll(re)].map((mm) => mm[1].trim()).filter(Boolean)
+}
+
+// roadOrCarriagewayOrLaneManagementType-Werte, die eine VOLLE Sperrung bedeuten (DATEX-Enum).
+const MGMT_VOLL = /^(roadclosed|carriagewayclosed)$/i
+
+/** Strukturierte Sperr-Information aus RoadOrCarriagewayOrLaneManagement-Records — das EINZIGE,
+ *  was die Mobilithek-Bau/Sperr-Feeds strukturiert führen (verifiziert am Live-XML 2026-06-17;
+ *  Höhe/Gewicht/Länge sind in diesen Feeds NICHT enthalten). Liefert Sperrart, Spuren, Richtung. */
+function sperrAttrsAusRecord(recordXml) {
+  const out = {}
+  const typen = tagAll(recordXml, "roadOrCarriagewayOrLaneManagementType")
+  if (typen.length) {
+    out.sperrungArt = typen[0]
+    if (typen.some((t) => MGMT_VOLL.test(t))) out.vollsperrung = true
+    // laneClosures/carriagewayPartiallyClosed/…AlternateLineTraffic = Teilsperrung (informativ,
+    // KEIN harter Block-Flag — Schwertransport kann oft passieren).
+    else if (typen.some((t) => /lane|partial|alternate|contraflow|shoulder/i.test(t))) out.teilsperrung = true
+  }
+  const gesperrt = num(tag(recordXml, "numberOfLanesRestricted"))
+  const gesamt = num(tag(recordXml, "totalNumberOfLanes") || tag(recordXml, "numberOfLanes"))
+  if (gesperrt != null) out.spurenGesperrt = gesperrt
+  if (gesamt != null) out.spurenGesamt = gesamt
+  const dir = (tag(recordXml, "directionRelativeOnLinearSection") || tag(recordXml, "alertCDirectionCoded") || "").trim()
+  if (dir) out.richtung = dir
+  return out
 }
 
 /** Restriktionswerte (Höhe/Breite/Gewicht in m/t) aus dem Record ziehen, soweit DATEX sie führt. */
@@ -152,7 +186,8 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       lng,
       ...(geom && { geom }),
       strassenRef: strasse,
-      attrs: attrsAusRecord(rec),
+      // Höhe/Gewicht/Breite (falls eine DATEX-Quelle sie führt) + strukturierte Sperrart/Spuren/Richtung.
+      attrs: { ...attrsAusRecord(rec), ...sperrAttrsAusRecord(rec) },
       ...(von && { gueltigVon: von, realerStart: von }),
       ...(bis && { gueltigBis: bis }),
       quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: now },

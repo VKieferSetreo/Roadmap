@@ -58,6 +58,32 @@ describe("parseDatex2", () => {
     expect(wl.strassenRef).toBe("L390")
   })
 
+  it("RoadOrCarriagewayOrLaneManagement → strukturierte Sperrart/Spuren/Richtung (echtes Feed-Profil)", () => {
+    // Volle Bau-Sperrung (roadClosed) mit constructionWorkType → baustelle + vollsperrung.
+    const voll = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="GEOM_SPERR_1" xsi:type="RoadOrCarriagewayOrLaneManagement" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment>L1234 Vollsperrung</generalPublicComment><roadNumber>L1234</roadNumber>
+        <managedCause><constructionWorkType>construction</constructionWorkType></managedCause>
+        <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+        <numberOfLanesRestricted>2</numberOfLanesRestricted><totalNumberOfLanes>2</totalNumberOfLanes>
+        <directionRelativeOnLinearSection>both</directionRelativeOnLinearSection>
+        <groupOfLocations><locationForDisplay><latitude>50.98</latitude><longitude>12.30</longitude></locationForDisplay></groupOfLocations>
+      </situationRecord></situation></d2LogicalModel>`
+    const [o] = parseDatex2(voll, { quelleName: "Mobilithek TH" })
+    expect(o.kategorie).toBe("baustelle") // constructionWorkType → Arbeitsstelle, nicht generisch "sperrung"
+    expect(o.attrs.vollsperrung).toBe(true)
+    expect(o.attrs.sperrungArt).toBe("roadClosed")
+    expect(o.attrs.spurenGesperrt).toBe(2)
+    expect(o.attrs.spurenGesamt).toBe(2)
+    expect(o.attrs.richtung).toBe("both")
+
+    // Teilsperrung (laneClosures) → teilsperrung (KEIN harter Block-Flag).
+    const teil = voll.replace("roadClosed", "laneClosures").replace("<constructionWorkType>construction</constructionWorkType>", "")
+    const [t] = parseDatex2(teil, { quelleName: "Mobilithek TH" })
+    expect(t.attrs.teilsperrung).toBe(true)
+    expect(t.attrs.vollsperrung).toBeUndefined()
+  })
+
   it("GML posList (lat lng …, WGS84) → Punkt + LineString-geom", () => {
     const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
       <situationRecord id="BB-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
