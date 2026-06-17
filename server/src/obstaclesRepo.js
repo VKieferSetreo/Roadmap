@@ -64,7 +64,7 @@ export const buildFachId = (index, quellenId, realerStart) =>
 // die das Strecken-Engineering abdeckt. SOBALD eine Abweichung dranhängt (Höhen-/Breiten-/Gewichts-/
 // Achslast-Limit, GST-Sperre, Vollsperrung, Bezugsgewicht) ist es zu behalten — auch bei Brücken.
 const RESTRIKTIONS_ATTRS = ["maxHoeheM", "maxBreiteM", "maxGewichtT", "maxAchslastT", "restbreiteM", "maxLaengeM", "bezugsgewichtT"]
-const BLOCK_FLAGS = ["vollsperrung", "halbseitig", "grundsaetzlicheGstSperre"]
+const BLOCK_FLAGS = ["vollsperrung", "halbseitig", "grundsaetzlicheGstSperre", "gesperrtKomplett"]
 const INFRA_KATEGORIEN = new Set(["bruecke", "tunnel", "sonstige"])
 
 export function istReineInfrastruktur(o) {

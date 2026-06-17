@@ -15,6 +15,7 @@ describe("istReineInfrastruktur — reine Infrastruktur ohne Abweichung raus, Ab
   it("Bauwerk MIT Abweichung (Limit/Sperre/Last) → false (bleibt)", () => {
     expect(istReineInfrastruktur({ kategorie: "bruecke", attrs: { maxHoeheM: 3.5 } })).toBe(false)
     expect(istReineInfrastruktur({ kategorie: "bruecke", attrs: { grundsaetzlicheGstSperre: true } })).toBe(false)
+    expect(istReineInfrastruktur({ kategorie: "bruecke", attrs: { gesperrtKomplett: true } })).toBe(false)
     expect(istReineInfrastruktur({ kategorie: "bruecke", attrs: { bezugsgewichtT: 48 } })).toBe(false)
     expect(istReineInfrastruktur({ kategorie: "tunnel", attrs: { maxBreiteM: 4 } })).toBe(false)
   })
