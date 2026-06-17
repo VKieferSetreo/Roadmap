@@ -81,7 +81,7 @@ export function ProjectDetail() {
           <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
             {tab === "route" ? (
               // Eingabe: Streckenanlage + Transport-Stammdaten/Zeitraum/Veröffentlichung auf einer Seite.
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-5">
                 <RouteTab project={project} />
                 <AnlageTab project={project} />
               </div>

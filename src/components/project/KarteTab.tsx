@@ -65,6 +65,8 @@ export function KarteTab({
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [layersOpen, setLayersOpen] = useState(true)
+  /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
+  const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
   /** gesnappte Position des Strecken-Klicks fürs Eintrag-Formular. */
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
@@ -80,6 +82,12 @@ export function KarteTab({
     [project.findings, hidden],
   )
   const ausgeblendetN = useMemo(() => project.findings.filter((f) => f.hidden).length, [project.findings])
+  // Kategorie-Filter (oben rechts) angewandt → nur das landet auf der Karte + in der Suche.
+  // kategoriesOnRoute (Filter-Liste) bleibt aus sichtbareFindings → alle Kategorien immer wählbar.
+  const gefilterteFindings = useMemo(
+    () => (katHidden.size === 0 ? sichtbareFindings : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie))),
+    [sichtbareFindings, katHidden],
+  )
 
   // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
   const [suche, setSuche] = useState("")
@@ -90,14 +98,14 @@ export function KarteTab({
   const treffer = useMemo(() => {
     const s = suche.trim().toLowerCase()
     if (!s) return []
-    return sichtbareFindings.filter((f) => {
+    return gefilterteFindings.filter((f) => {
       const text = [
         f.titel, f.beschreibung, f.strassenRef, f.routeName, f.quelle?.name,
         ...Object.values(f.detail ?? {}),
       ].filter(Boolean).join(" ").toLowerCase()
       return text.includes(s)
     })
-  }, [suche, sichtbareFindings])
+  }, [suche, gefilterteFindings])
 
   const springeZu = (idx: number) => {
     if (treffer.length === 0) return
@@ -146,6 +154,14 @@ export function KarteTab({
       return next
     })
   }
+  /** Kategorie im Filter (oben rechts) ein-/ausblenden. */
+  const toggleKat = (kat: string) =>
+    setKatHidden((prev) => {
+      const next = new Set(prev)
+      if (next.has(kat)) next.delete(kat)
+      else next.add(kat)
+      return next
+    })
 
   /** Klick direkt auf eine Strecke (nur Live): an den nächsten Streckenpunkt
    *  snappen und die Eintrag-Maske öffnen. Kein Modus, kein Button. */
@@ -172,7 +188,7 @@ export function KarteTab({
     <div className="relative h-full w-full">
       <RouteMap
         routes={sichtbareRouten}
-        findings={sichtbareFindings}
+        findings={gefilterteFindings}
         selectedId={selectedId}
         onSelect={setSelectedId}
         onRouteClick={live ? onRouteClick : undefined}
@@ -350,29 +366,56 @@ export function KarteTab({
         {overlayFooter}
       </div>
 
-      {/* Legende oben rechts: Kategorien, die auf den sichtbaren Strecken vorkommen */}
+      {/* Kategorie-Filter oben rechts: Kategorien auf den sichtbaren Strecken — anklickbar
+          ein-/ausblenden (echtes StVO-Schild je Kategorie). Filtert Karte + Ticket-Suche. */}
       {kategoriesOnRoute.length > 0 ? (
         <div className="pointer-events-none absolute right-3 top-3 z-[500] hidden sm:block">
           <div
-            className="glass pointer-events-auto min-w-[190px] animate-rise-in px-3 py-2.5"
+            className="glass pointer-events-auto min-w-[200px] animate-rise-in px-3 py-2.5"
             style={{ animationDelay: "80ms" }}
           >
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
-              Legende
-            </p>
-            <ul className="flex flex-col gap-1.5">
+            <div className="mb-1.5 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+                Kategorien
+              </p>
+              {katHidden.size > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setKatHidden(new Set())}
+                  className="text-[10px] font-semibold uppercase tracking-wider text-primary-600 hover:text-primary-700"
+                >
+                  Alle
+                </button>
+              ) : null}
+            </div>
+            <ul className="flex flex-col gap-0.5">
               {kategoriesOnRoute.map((kat) => {
                 const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
+                const aus = katHidden.has(kat)
                 return (
-                  <li key={kat} className="flex items-center gap-2 text-xs text-neutral-700">
-                    <KategorieGlyph kategorie={kat} className="h-6 w-6 shrink-0" />
-                    <span className="flex-1">{katMeta(kat).label}</span>
-                    <span className="tabular-nums text-neutral-400">{count}</span>
+                  <li key={kat}>
+                    <button
+                      type="button"
+                      onClick={() => toggleKat(kat)}
+                      aria-pressed={!aus}
+                      title={aus ? "Einblenden" : "Ausblenden"}
+                      className={cn(
+                        "flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-xs transition-colors hover:bg-neutral-100/70",
+                        aus ? "text-neutral-400" : "text-neutral-700",
+                      )}
+                    >
+                      <KategorieGlyph
+                        kategorie={kat}
+                        className={cn("h-6 w-6 shrink-0 transition", aus && "opacity-40 grayscale")}
+                      />
+                      <span className={cn("flex-1 truncate", aus && "line-through")}>{katMeta(kat).label}</span>
+                      <span className="tabular-nums text-neutral-400">{count}</span>
+                    </button>
                   </li>
                 )
               })}
               {ausgeblendetN > 0 ? (
-                <li className="flex items-center gap-2 border-t border-neutral-100 pt-1.5 text-xs text-neutral-400">
+                <li className="mt-0.5 flex items-center gap-2 border-t border-neutral-100 px-1.5 pt-1.5 text-xs text-neutral-400">
                   <EyeOff className="h-4 w-4 shrink-0" />
                   <span className="flex-1">Ausgeblendet</span>
                   <span className="tabular-nums">{ausgeblendetN}</span>
