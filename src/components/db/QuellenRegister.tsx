@@ -39,6 +39,7 @@ export function QuellenRegister() {
   const [q, setQ] = useState("")
   const [pings, setPings] = useState<Record<string, PingState>>({})
   const [open, setOpen] = useState<string | null>(null)
+  const [allPinging, setAllPinging] = useState(false)
 
   const quellen = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -55,6 +56,24 @@ export function QuellenRegister() {
     } catch {
       setPings((p) => ({ ...p, [id]: { ok: false, error: "Fehler" } }))
     }
+  }
+
+  // Zentral: alle Quellen mit Connector anpingen (5er-Pool, damit langsame Feeds nicht blockieren).
+  const pingAlle = async () => {
+    const ids = quellen.filter((qq) => qq.connector).map((qq) => qq.id)
+    if (ids.length === 0) return
+    setAllPinging(true)
+    setPings((p) => {
+      const n = { ...p }
+      for (const id of ids) n[id] = { loading: true }
+      return n
+    })
+    let i = 0
+    const arbeiter = async () => {
+      while (i < ids.length) await ping(ids[i++])
+    }
+    await Promise.all(Array.from({ length: 5 }, arbeiter))
+    setAllPinging(false)
   }
 
   if (!live) {
@@ -110,7 +129,6 @@ export function QuellenRegister() {
                     >
                       <span className="font-mono text-xs tabular-nums text-neutral-400">{qq.id}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-800">{qq.name}</span>
-                      <Badge variant="muted" size="sm">{landAus(qq.name)}</Badge>
                       {qq.connector ? (
                         <Badge variant="success" size="sm">Connector</Badge>
                       ) : (
@@ -136,7 +154,6 @@ export function QuellenRegister() {
                   </div>
                   {isOpen ? (
                     <dl className="grid grid-cols-2 gap-x-6 gap-y-1.5 border-t border-neutral-100 bg-neutral-50/60 px-4 py-3 text-xs sm:grid-cols-4">
-                      <Detail label="Land / Region" value={landAus(qq.name)} />
                       <Detail label="Typ" value={qq.typ ?? "—"} />
                       <Detail label="Abruf-Intervall" value={qq.abrufIntervall ?? "—"} />
                       <Detail label="Vollbestand" value={qq.vollbestand ? "ja (Reconcile)" : "nein"} />
@@ -154,6 +171,18 @@ export function QuellenRegister() {
           </ul>
         </Card>
       )}
+
+      {/* Zentral: alle Quellen auf einmal anpingen (ganz unten). */}
+      <div className="flex justify-center pt-1">
+        <Button
+          onClick={() => void pingAlle()}
+          loading={allPinging}
+          disabled={!(status.data?.quellen ?? []).some((x) => x.connector)}
+        >
+          <Signal className="h-4 w-4" />
+          {allPinging ? "Pinge alle Quellen …" : `Alle Quellen anpingen (${(status.data?.quellen ?? []).filter((x) => x.connector).length})`}
+        </Button>
+      </div>
     </div>
   )
 }

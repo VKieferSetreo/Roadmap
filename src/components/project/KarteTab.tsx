@@ -12,7 +12,6 @@ import {
   EyeOff,
   Layers,
   MapPinned,
-  MapPinPlus,
   Route as RouteIcon,
   Search,
   X,
@@ -237,18 +236,6 @@ export function KarteTab({
           ) : null}
         </div>
       </div>
-
-      {/* Hinweis: Eintrag per Strecken-Klick (nur Live) — dezent, unter der Suchleiste */}
-      {live ? (
-        <div className="pointer-events-none absolute left-1/2 top-16 z-[600] -translate-x-1/2">
-          <div className="glass flex animate-rise-in items-center gap-2 px-3.5 py-2">
-            <MapPinPlus className="h-4 w-4 shrink-0 text-primary-600" />
-            <span className="text-xs font-medium text-neutral-700">
-              Auf die Strecke klicken, um einen Eintrag anzulegen
-            </span>
-          </div>
-        </div>
-      ) : null}
 
       {/* Links oben: Routen-Kennzahlen + Ebenen-Panel */}
       <div className="pointer-events-none absolute left-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
