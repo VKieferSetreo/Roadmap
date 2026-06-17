@@ -176,6 +176,19 @@ describe("Sync-API", () => {
     expect(res.body.quellen.find((q) => q.id === "0002").connector).toBe(false)
   })
 
+  it("/status spiegelt den letzten Import-Lauf-Status je Quelle (letzterStatus)", async () => {
+    const { app, db } = makeApp()
+    // Zwei Läufe für 0001: alt 'ok', neu 'error' → letzterStatus muss 'error' sein (jüngster gewinnt).
+    db.state.importRuns.push(
+      { id: randomUUID(), quelle_id: "0001", status: "ok", started_at: "2026-06-17T08:00:00.000Z" },
+      { id: randomUUID(), quelle_id: "0001", status: "error", started_at: "2026-06-17T12:00:00.000Z" },
+    )
+    const res = await request(app).get("/api/sync/status")
+    expect(res.body.quellen.find((q) => q.id === "0001").letzterStatus).toBe("error")
+    // Quelle ohne Lauf → null.
+    expect(res.body.quellen.find((q) => q.id === "0002").letzterStatus).toBe(null)
+  })
+
   it("POST startet einen Sync-Job, der bis 'done' durchläuft", async () => {
     // Deterministischer 2-Connector-Satz injiziert (prod zieht allConnectors). So
     // testet der Lifecycle ohne 35 echte Connectoren — schnell und stabil.

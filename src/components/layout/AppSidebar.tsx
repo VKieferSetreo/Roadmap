@@ -23,6 +23,7 @@ import { useContextStore } from "@/store/context"
 import { ProjectMenu } from "@/components/project/ProjectMenu"
 import { CreatorAvatar } from "@/components/project/CreatorAvatar"
 import { handleLogout } from "@/lib/auth"
+import { useSourceHealth } from "@/lib/sourceHealth"
 import { cn } from "@/lib/cn"
 import type { Project } from "@/types/domain"
 
@@ -31,9 +32,12 @@ interface NavRowProps {
   label: string
   active?: boolean
   onClick: () => void
+  /** Warn-Indikator (rotes „!") — z.B. Datenquellen nicht erreichbar. */
+  warn?: boolean
+  warnTitle?: string
 }
 
-function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
+function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle }: NavRowProps) {
   return (
     <button
       onClick={onClick}
@@ -47,6 +51,15 @@ function NavRow({ icon: Icon, label, active, onClick }: NavRowProps) {
     >
       <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
       <span className="truncate">{label}</span>
+      {warn ? (
+        <span
+          title={warnTitle}
+          aria-label={warnTitle}
+          className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-severity-kritisch text-[10px] font-bold leading-none text-white"
+        >
+          !
+        </span>
+      ) : null}
     </button>
   )
 }
@@ -114,6 +127,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   // Admin per Dropdown auf einen Kunden-Mandanten, sieht er dessen 1:1-Ansicht (ohne diese
   // Reiter) — das Dropdown bleibt oben zum Zurückwechseln.
   const adminKontext = isAdmin && (tenant?.slug ?? "setreo") === "setreo"
+  // Warn-„!" an „Datenbank", wenn beim letzten automatischen Abruf (3×/Tag) Quellen unerreichbar waren.
+  const { unreachable } = useSourceHealth()
 
   const m = pathname.match(/^\/projekte\/([^/]+)(?:\/([^/]+))?/)
   const activeId = m?.[1]
@@ -215,7 +230,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             + Neues Projekt
           </button>
         ) : null}
-        <NavRow icon={Database} label="Datenbank" active={onDb} onClick={() => go("/datenbank")} />
+        <NavRow
+          icon={Database}
+          label="Datenbank"
+          active={onDb}
+          onClick={() => go("/datenbank")}
+          warn={unreachable > 0}
+          warnTitle={
+            unreachable > 0
+              ? `${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} beim letzten Abruf nicht erreichbar`
+              : undefined
+          }
+        />
         {adminKontext ? (
           <NavRow
             icon={Building2}

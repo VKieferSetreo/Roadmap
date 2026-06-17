@@ -40,12 +40,19 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
   /** Übersicht für die DB-Tab-Kopfzeile: Quellen-Status + zuletzt aktualisiert. */
   r.get("/status", asyncHandler(async (req, res) => {
     const { rows } = await db.query("SELECT * FROM quellen ORDER BY id ASC")
+    // Letzter Import-Lauf-Status je Quelle (3×/Tag automatisch) → Erreichbarkeits-Signal:
+    // "error" = beim letzten Abruf nicht erreichbar/fehlgeschlagen → Warn-Indikator im FE.
+    const { rows: runRows } = await db.query(
+      "SELECT DISTINCT ON (quelle_id) quelle_id, status FROM import_runs ORDER BY quelle_id, started_at DESC",
+    )
+    const statusBy = new Map(runRows.map((r) => [r.quelle_id, r.status]))
     const quellen = rows.map((row) => {
       const connector = getConnector(row.id)
       return {
         ...rowToQuelle(row),
         connector: connector != null,
         vollbestand: connector?.vollbestand === true,
+        letzterStatus: statusBy.get(row.id) ?? null,
       }
     })
     const letzteAbrufe = rows.map((x) => x.letzter_abruf).filter(Boolean)

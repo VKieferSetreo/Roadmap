@@ -320,6 +320,9 @@ export interface SyncSourceStatus {
   connector: boolean
   /** Liefert der Connector den vollen Bestand (Reconcile aktiv)? */
   vollbestand: boolean
+  /** Status des letzten (automatischen) Import-Laufs: "ok" | "error" | null (nie gelaufen).
+   *  "error" = beim letzten 3×/Tag-Abruf nicht erreichbar → Warn-Indikator. */
+  letzterStatus?: "ok" | "error" | string | null
 }
 
 export interface SyncStatus {

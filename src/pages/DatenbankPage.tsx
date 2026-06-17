@@ -6,7 +6,7 @@ import { useCallback } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Database, Map as MapIcon, BarChart3, ListTree } from "lucide-react"
+import { AlertTriangle, Database, Map as MapIcon, BarChart3, ListTree } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
@@ -16,6 +16,7 @@ import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
+import { useSourceHealth } from "@/lib/sourceHealth"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 
@@ -28,6 +29,7 @@ export function DatenbankPage() {
   const [params, setParams] = useSearchParams()
   const wunsch = params.get("tab")
   const tab = intern && (wunsch === "abdeckung" || wunsch === "quellen") ? wunsch : "ansicht"
+  const { unreachable } = useSourceHealth()
 
   return (
     <div className="h-full overflow-y-auto">
@@ -45,6 +47,14 @@ export function DatenbankPage() {
             <TabsList>
               <TabsTrigger value="ansicht">
                 <MapIcon className="h-4 w-4" /> Ansicht
+                {unreachable > 0 ? (
+                  <span
+                    title={`${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} nicht erreichbar`}
+                    className="ml-1 inline-flex items-center text-severity-kritisch"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                  </span>
+                ) : null}
               </TabsTrigger>
               <TabsTrigger value="abdeckung">
                 <BarChart3 className="h-4 w-4" /> Abdeckung

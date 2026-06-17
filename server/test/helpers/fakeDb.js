@@ -571,6 +571,14 @@ export function createFakeDb() {
       })
       return ok([row])
     }
+    if (sql.startsWith("SELECT DISTINCT ON (quelle_id) quelle_id, status FROM import_runs")) {
+      const latest = new Map()
+      for (const r of state.importRuns) {
+        const prev = latest.get(r.quelle_id)
+        if (!prev || prev.started_at < r.started_at) latest.set(r.quelle_id, r)
+      }
+      return ok([...latest.values()].map((r) => ({ quelle_id: r.quelle_id, status: r.status })))
+    }
     if (sql.startsWith("SELECT * FROM import_runs ORDER BY started_at DESC LIMIT 50")) {
       return ok(
         [...state.importRuns].sort((a, b) => (a.started_at < b.started_at ? 1 : -1)).slice(0, 50),

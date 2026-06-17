@@ -9,11 +9,12 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Database, RefreshCw } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Database, RefreshCw, Signal } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
+import { useContextStore } from "@/store/context"
 import type { SyncJob } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -126,10 +127,44 @@ export function SyncBar() {
     return () => clearTimeout(t)
   }, [job.data, qc])
 
+  // "Anpingen": alle Connector-Quellen live testen (erreichbar? wie viele Datensätze?), 5er-Pool.
+  // Nur intern — der externe Kunden-Gateway darf /sync/ping nicht (403).
+  const intern = !useContextStore((s) => s.extern)
+  const [pinging, setPinging] = useState(false)
+  const [pingRes, setPingRes] = useState<{ ok: number; fail: number; failed: string[] } | null>(null)
+
   const running = job.data?.status === "running" || start.isPending
   const { pct, phaseLabel } = progress(job.data)
   const quellen = status.data?.quellen ?? []
   const aktiveQuellen = quellen.filter((q) => q.connector)
+  // Import-abgeleitetes Warnsignal: beim letzten automatischen Abruf (3×/Tag) nicht erreichbar.
+  const autoFehler = aktiveQuellen.filter((q) => q.letzterStatus === "error")
+
+  const pingAlle = async () => {
+    if (aktiveQuellen.length === 0 || pinging) return
+    setPinging(true)
+    setPingRes(null)
+    const failed: string[] = []
+    let ok = 0
+    let i = 0
+    const arbeiter = async () => {
+      while (i < aktiveQuellen.length) {
+        const q = aktiveQuellen[i++]
+        try {
+          const r = await api.sync.ping(q.id)
+          if (r.ok) ok++
+          else failed.push(q.name)
+        } catch {
+          failed.push(q.name)
+        }
+      }
+    }
+    await Promise.all(Array.from({ length: 5 }, arbeiter))
+    setPinging(false)
+    setPingRes({ ok, fail: failed.length, failed })
+    if (failed.length === 0) toast.success(`Alle ${ok} Quellen erreichbar.`)
+    else toast.error(`${failed.length} von ${aktiveQuellen.length} Quellen nicht erreichbar.`)
+  }
   // Laufende Summe der bereits geschriebenen Einträge (neu + aktualisiert) über
   // die abgeschlossenen Quellen — macht sichtbar, dass wirklich geschrieben wird.
   const geschrieben =
@@ -152,17 +187,56 @@ export function SyncBar() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => start.mutate()}
-          disabled={running}
-          className="shrink-0"
-        >
-          <RefreshCw className={cn("h-4 w-4", running && "animate-spin")} />
-          {running ? "Aktualisiere …" : "Aktualisieren"}
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          {intern ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void pingAlle()}
+              disabled={pinging || aktiveQuellen.length === 0}
+              title="Alle Quellen live anpingen: erreichbar?"
+            >
+              <Signal className={cn("h-4 w-4", pinging && "animate-pulse")} />
+              {pinging ? "Pinge …" : "Anpingen"}
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => start.mutate()}
+            disabled={running}
+          >
+            <RefreshCw className={cn("h-4 w-4", running && "animate-spin")} />
+            {running ? "Aktualisiere …" : "Aktualisieren"}
+          </Button>
+        </div>
       </div>
+
+      {/* Erreichbarkeit: Live-Ping-Ergebnis (manuell) ODER der letzte automatische Abruf (3×/Tag). */}
+      {intern && pingRes ? (
+        pingRes.fail === 0 ? (
+          <p className="flex items-center gap-1.5 text-xs font-medium text-severity-hinweis-strong">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+            Alle {pingRes.ok} Quellen erreichbar.
+          </p>
+        ) : (
+          <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>
+              {pingRes.fail} von {pingRes.ok + pingRes.fail} Quellen nicht erreichbar:{" "}
+              <span className="font-normal">{pingRes.failed.join(", ")}</span>
+            </span>
+          </p>
+        )
+      ) : intern && autoFehler.length > 0 ? (
+        <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span>
+            Letzter automatischer Abruf: {autoFehler.length} Quelle{autoFehler.length === 1 ? "" : "n"} nicht
+            erreichbar — <span className="font-normal">{autoFehler.map((q) => q.name).join(", ")}</span>
+          </span>
+        </p>
+      ) : null}
 
       {/* Fortschritt — Quellen werden SEQUENZIELL gezogen: eine wird komplett geladen
           UND geschrieben, bevor die nächste startet. Der Balken = geladene / alle. */}
