@@ -38,6 +38,10 @@ export const baustellenShConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunkt(f.geometry)
+      // Quelle ist nativ EPSG:4326 (srsName) → Geometrie ohne Reprojektion durchreichen.
+      // Nur Linien/Flächen als geom (Korridor-Clip/Linien-Render/Gegenfahrbahn); Punkte bleiben reiner Pin.
+      const gt = f.geometry?.type
+      const geom = gt && gt !== "Point" && gt !== "MultiPoint" ? f.geometry : null
       const { von, bis } = dauer(p.Dauer_der_Bauphase)
       const gewicht = num(p.Gewichtsbeschränkung_in_t)
       const text = [p.Verkehrseinschränkung, p.Art_der_Maßnahme, p.Hinweise_zur_Verkehrsführung].filter(Boolean).join(" — ")
@@ -50,11 +54,13 @@ export const baustellenShConnector = {
         strassenRef: refAus(p.Straßenname) ?? (p.Straßenname || null),
         attrs: {
           restbreiteM: num(p.Verbleibende_Restbreite_in_m) ?? undefined,
+          maxHoeheM: num(p.Höhenbeschränkung_in_m) ?? undefined, // live-Feldname mit ö
           maxGewichtT: gewicht ?? undefined,
           sperrlaengeM: num(p.Länge_in_m) ?? undefined, // einheitlicher Key (FE-Label "Länge der Maßnahme")
           vollsperrung: /vollsperr|gesperrt|durchgangsverkehr.*gesperrt/i.test(text) || undefined,
         },
         gueltigVon: von, gueltigBis: bis, realerStart: von,
+        geom,
         quelleName: QUELLE_NAME,
         quelleUrl: QUELLE_URL,
       }))

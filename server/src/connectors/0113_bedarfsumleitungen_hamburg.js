@@ -48,12 +48,17 @@ export const bedarfsumleitungenHamburgConnector = {
     const obstacles = []
     for (const { gmlId, props: p, coords } of feats) {
       const first = coords?.[0] ?? [null, null]
+      // coords sind bereits WGS84 [lng,lat] (parseGml reprojiziert per utmZuWgs84(...,32)) →
+      // die volle Linie direkt durchreichen (KEIN erneutes reprojGeom — wäre Doppel-Reprojektion).
+      // Korridor-Clip / Linien-Render / Gegenfahrbahn-Filter brauchen die echte LineString-Geometrie.
+      const geom = coords && coords.length >= 2 ? { type: "LineString", coordinates: coords } : null
       obstacles.push(makeNormalized({
         externeId: gmlId,
         kategorie: "sperrung",
         name: `Bedarfsumleitung ${p.umleitung ?? ""} (${p.strassenname ?? ""})`.trim(),
         beschreibung: p.wegeart ? `${p.wegeart}${p.umleitung ? ` · ${p.umleitung}` : ""}` : null,
         lat: first[1], lng: first[0],
+        geom,
         strassenRef: p.strassenschluessel ?? (p.strassenname?.match(/\b([ABLK])\s?(\d{1,4})\b/)?.slice(1, 3).join("") ?? null),
         attrs: { umleitung: true },
         quelleName: QUELLE_NAME,

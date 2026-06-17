@@ -7,8 +7,21 @@
 
 import {
   makeNormalized, dateOnly, tonnageAusText, meterAusText,
-  stabilHash, fetchAllFeatures, ersterPunkt,
+  stabilHash, fetchAllFeatures, ersterPunkt, reprojGeom,
 } from "./_helpers.js"
+
+// Linien-/Flächen-Geometrien werden zusätzlich als geom durchgereicht (Korridor-Clip,
+// Linien-Render, Gegenfahrbahn-Filter). Reine Punkte tragen keine Strecke → kein geom.
+const LINIEN_FLAECHE = new Set([
+  "LineString", "MultiLineString", "Polygon", "MultiPolygon",
+])
+
+/** Volle Linien-/Flächen-Geometrie in WGS84 (EPSG:25832 → Zone 32, identisch zum Punkt-Pfad).
+ *  Point/MultiPoint → null (kein Strecken-Render). */
+function streckenGeom(g) {
+  if (!g || !LINIEN_FLAECHE.has(g.type)) return null
+  return reprojGeom(g, 32)
+}
 
 const QUELLE_NAME = "RVR / GEONETZWERK.RUHR — Baustellen"
 
@@ -96,6 +109,7 @@ export const rvrGeonetzwerkRuhrBaustellenConnector = {
           gueltigBis: dateOnly(p.ende),
           quelleName: `${QUELLE_NAME} (${inst.stadt})`,
           quelleUrl: inst.base,
+          geom: streckenGeom(f.geometry),
         }))
       }
     }

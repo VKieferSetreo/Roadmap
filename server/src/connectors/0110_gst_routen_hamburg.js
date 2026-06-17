@@ -44,6 +44,10 @@ export const gstRoutenHamburgConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunkt(f.geometry)
+      // Quelle ist EPSG:4326 (keine Reprojektion, wie auch der Punkt-Pfad oben) → GeoJSON-Linie
+      // unverändert als geom durchreichen, damit Korridor-Clip/Linien-Render/Gegenfahrbahn greifen.
+      const gt = f.geometry?.type
+      const geom = gt === "LineString" || gt === "MultiLineString" ? f.geometry : null
       obstacles.push(makeNormalized({
         externeId: f.id,
         kategorie: "sperrung",
@@ -55,6 +59,7 @@ export const gstRoutenHamburgConnector = {
           gstRoute: true,
           fahrstreifen: p.fahrstreifenanzahl_in_stationierungsrichtung ?? undefined,
         },
+        geom,
         quelleName: QUELLE_NAME,
         quelleUrl: QUELLE_URL,
       }))

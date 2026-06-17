@@ -32,6 +32,12 @@ export const dresdenVerkehrseinschraenkungenConnector = {
         const grund = String(p.sperrgrund_format ?? "")
         const istVoll = /vollsperrung|gesperrt/i.test(typ) && !/halbseitig|fahrstreifen/i.test(typ)
         const [lng, lat] = ersterPunkt(f.geometry)
+        // OGC API liefert GeoJSON EPSG:4326 (WGS84, Grad) — KEINE UTM-Reprojektion nötig (ersterPunkt
+        // greift hier nie auf utmZuWgs84 zu, da |lng|≈13.7 < 1000). Volle Linie/Fläche zusätzlich als
+        // geom durchreichen, damit Korridor-Clip, Linien-Render und Gegenfahrbahn-Filter greifen. Nur
+        // Linien/Flächen — Point bleibt reiner Pin (lat/lng-Pfad).
+        const gt = f.geometry?.type
+        const geom = /^(Multi)?(LineString|Polygon)$/.test(gt ?? "") ? f.geometry : null
         obstacles.push(makeNormalized({
           // staid/f.id teils dublett über die Pages UND staid selbst nicht eindeutig (71 Gruppen
           // mit 2-3 echten, verschiedenen Maßnahmen am selben Ort). Nur (lat,lng) reicht NICHT:
@@ -61,6 +67,7 @@ export const dresdenVerkehrseinschraenkungenConnector = {
           gueltigBis: dateOnly(p.datum_bis_format ?? p.datum_bis),
           quelleName: QUELLE_NAME,
           quelleUrl: PORTAL,
+          geom,
         }))
       }
       log(`Dresden/${col.id} (${col.label}): ${feats.length} Features`)

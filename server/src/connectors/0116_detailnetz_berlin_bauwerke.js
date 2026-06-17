@@ -2,7 +2,7 @@
 // Port aus API/Länder/Berlin/Detailnetz-Berlin-Bauwerke-WFS/detailnetz-berlin-bauwerke.cron.mjs.
 // GeoServer WFS 2.0, GeoJSON, EPSG:25833 (UTM Zone 33N!) → ersterPunkt(geom, 33). 1005 Bauwerke.
 
-import { makeNormalized, fetchAllFeatures, ersterPunkt } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, ersterPunkt, reprojGeom } from "./_helpers.js"
 
 const QUELLE_NAME = "Detailnetz Berlin — Ingenieurbauwerke (Brücken/Tunnel)"
 const QUELLE_URL = "https://daten.berlin.de/datensaetze/detailnetz-bauwerke-wfs"
@@ -34,6 +34,11 @@ export const detailnetzBerlinBauwerkeConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunkt(f.geometry, 33)
+      // Volle Linien-/Flächen-Geometrie zusätzlich durchreichen (Korridor-Clip, Linien-Render,
+      // Gegenfahrbahn-Filter). Punkt-Geometrien bleiben ein reiner Pin (kein geom). Quell-CRS =
+      // EPSG:25833 (UTM Zone 33N) → reprojGeom(…, 33), gleiche Zone wie ersterPunkt oben.
+      const gt = f.geometry?.type
+      const geom = gt && gt !== "Point" && gt !== "MultiPoint" ? reprojGeom(f.geometry, 33) : null
       obstacles.push(makeNormalized({
         externeId: p.dnbr__sdatenid ?? p.bauwerksnummer ?? f.id,
         kategorie: katAus(p.bauwerksart),
@@ -42,6 +47,7 @@ export const detailnetzBerlinBauwerkeConnector = {
         lat, lng,
         strassenRef: refAus(p.bauwerksname),
         attrs: {},
+        geom,
         quelleName: QUELLE_NAME,
         quelleUrl: QUELLE_URL,
       }))

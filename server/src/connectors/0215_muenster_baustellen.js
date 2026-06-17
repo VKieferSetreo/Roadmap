@@ -34,12 +34,20 @@ export const muensterBaustellenConnector = {
       const vollsperrung = /vollsperrung/i.test(typBez) || /vollsperr/i.test(text) || undefined
       const istSperrung = /sperrung/i.test(typBez)
       const [lng, lat] = ersterPunkt(f.geometry)
+      // Volle Linien-/Flächen-Geometrie als geom durchreichen (für Korridor-Clip, Linien-Render,
+      // Gegenfahrbahn-Filter). Quelle liefert WGS84 lng/lat (CRS84, SRSNAME=EPSG:4326) → KEINE
+      // Reprojektion. Nur Linien/Flächen, nicht Point (Punkt-Pfad via lat/lng bleibt unverändert).
+      const gt = f.geometry?.type
+      const geom = gt === "LineString" || gt === "MultiLineString" || gt === "Polygon" || gt === "MultiPolygon"
+        ? f.geometry
+        : null
       obstacles.push(makeNormalized({
         externeId: p.fuid ?? f.id,
         kategorie: istSperrung ? "sperrung" : "baustelle",
         name: p.bezeichnung ?? "Baustelle Münster",
         beschreibung: p.information ?? null,
         lat, lng,
+        geom,
         strassenRef: refAusBezeichnung(p.bezeichnung),
         attrs: {
           vollsperrung,

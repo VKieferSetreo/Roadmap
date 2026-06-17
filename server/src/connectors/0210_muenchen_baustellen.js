@@ -3,7 +3,7 @@
 // EPSG:25832), Referenz-Koordinate UTM32 → WGS84. Pagination via startIndex.
 // maxPages so hoch, dass der VOLLE Bestand (~5.880) kommt → vollbestand=true.
 
-import { makeNormalized, getJson, utmZuWgs84, tonnageAusText, meterAusText, dateOnly, stabilHash } from "./_helpers.js"
+import { makeNormalized, getJson, utmZuWgs84, reprojGeom, tonnageAusText, meterAusText, dateOnly, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://geoportal.muenchen.de/portal/opendata/"
 const QUELLE_NAME = "München — Baustellen (GeoPortal München, mor_wfs)"
@@ -66,6 +66,10 @@ export const muenchenBaustellenConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunktUtm32(f.geometry)
+      // Volle (Multi)Polygon-Fläche zusätzlich als geom durchreichen — DERSELBE UTM-Zone-32-Pfad
+      // wie der Punkt (EPSG:25832). Reaktiviert Korridor-Clip, Linien-/Flächen-Render und den
+      // Gegenfahrbahn-Filter (vorher fiel die Geometrie auf einen Pin zurück). Punkt-Pfad unverändert.
+      const geom = f.geometry?.type === "Point" ? null : reprojGeom(f.geometry, 32)
       const text = [p.beschreibung, p.beeintraechtigung, p.weitere_info].filter(Boolean).join(" ")
       const beeintr = String(p.beeintraechtigung ?? "")
       const vollsperrung = /vollsperr/i.test(beeintr) || /vollsperr/i.test(text) || undefined
@@ -104,6 +108,7 @@ export const muenchenBaustellenConnector = {
         gueltigBis: dateOnly(p.ende_datum_kombiniert),
         quelleName: QUELLE_NAME,
         quelleUrl: PORTAL,
+        geom,
       }))
     }
     log(`München: ${feats.length} Features → ${obstacles.length} obstacles`)

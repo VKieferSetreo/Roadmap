@@ -40,6 +40,25 @@ function geomPunkt(geometry) {
   }
   return [null, null]
 }
+// Volle Linien-/Flächen-Geometrie aus der GeometryCollection ziehen (Quelle ist EPSG:4326 →
+// KEINE Reprojektion, identisch zum Punkt-Pfad). Eine GC trägt 0..n LineStrings (+ einen Point):
+// einer → LineString, mehrere → MultiLineString. So bleiben Korridor-Clip, Linien-Render und
+// Gegenfahrbahn-Filter erhalten, statt die Strecke auf einen Pin zu reduzieren.
+function geomLinie(geometry) {
+  if (!geometry) return null
+  const geoms = geometry.type === "GeometryCollection" ? (geometry.geometries ?? []) : [geometry]
+  const lines = []
+  for (const g of geoms) {
+    if (!g?.coordinates) continue
+    if (g.type === "LineString") lines.push(g.coordinates)
+    else if (g.type === "MultiLineString") lines.push(...g.coordinates)
+    else if (g.type === "Polygon") return { type: "Polygon", coordinates: g.coordinates }
+    else if (g.type === "MultiPolygon") return { type: "MultiPolygon", coordinates: g.coordinates }
+  }
+  if (lines.length === 1) return { type: "LineString", coordinates: lines[0] }
+  if (lines.length > 1) return { type: "MultiLineString", coordinates: lines }
+  return null
+}
 function validity(v) {
   if (!v) return { von: null, bis: null }
   try { const o = typeof v === "string" ? JSON.parse(v) : v; return { von: dateOnly(o.from), bis: dateOnly(o.to) } }
@@ -62,6 +81,7 @@ export const vizBerlinBaustellenConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const point = geomPunkt(f.geometry)
+      const geom = geomLinie(f.geometry) // EPSG:4326 → unverändert durchreichen (keine Reprojektion)
       const { von, bis } = validity(p.validity)
       const text = [p.section, p.content].filter(Boolean).join(" — ")
       const kat = katAus(p.subtype)
@@ -86,6 +106,7 @@ export const vizBerlinBaustellenConnector = {
           vollsperrung: /vollsperr|gesperrt/i.test(text) || undefined,
         },
         gueltigVon: von, gueltigBis: bis, realerStart: von,
+        geom,
         quelleName: QUELLE_NAME,
         quelleUrl: QUELLE_URL,
       }))

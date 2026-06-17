@@ -64,6 +64,10 @@ export const mobidataBwLmsConnector = {
       // Koordinaten tolerant (Shape-Paare, sonst beliebiges Lat/Lng-Paar) → Referenzpunkt (erstes Paar):
       const coords = alleKoords(b)
       const [lng, lat] = coords[0] ?? [null, null]
+      // Volle Strecken-Geometrie als geom durchreichen (Korridor-Clip / Linien-Render /
+      // Gegenfahrbahn-Filter). alleKoords liefert bereits [lng,lat] in WGS84 (TIC3 ist WGS84,
+      // KEINE UTM-Reprojektion nötig) → direkt als LineString. Ab 2 Punkten; sonst Punkt-only.
+      const geom = coords.length >= 2 ? { type: "LineString", coordinates: coords } : null
       const txt = (beschr ?? "").toLowerCase()
       // externeId STABIL + EINDEUTIG: Quell-ID + deterministischer Diskriminator-Hash. Verhindert,
       // dass je-Richtung/-Teilstück gesplittete Blöcke mit gleichem DataIdentifier sich beim Upsert
@@ -77,6 +81,7 @@ export const mobidataBwLmsConnector = {
         lat, lng,
         strassenRef: normRef(roadNr),
         attrs: { vollsperrung: /vollsperr/.test(txt) || undefined },
+        geom,
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
       })
     })

@@ -28,6 +28,20 @@ function geomPunkt(geometry) {
   if (point[0] == null && line) { let c = line.coordinates; while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]; point = c }
   return point
 }
+// Volle Linien-Geometrie (für Korridor-Clip + Linien-Render + Gegenfahrbahn-Filter): ALLE LineStrings
+// aus der GeometryCollection einsammeln. Feeds sind EPSG:4326 (siehe Kopf) → keine Reprojektion.
+// 0 Linien → null (reiner Point), 1 → LineString, ≥2 → MultiLineString.
+function geomLinie(geometry) {
+  if (!geometry) return null
+  const geoms = geometry.type === "GeometryCollection" ? geometry.geometries : [geometry]
+  const lines = []
+  for (const g of geoms) {
+    if (g.type === "LineString") lines.push(g.coordinates)
+    else if (g.type === "MultiLineString") lines.push(...g.coordinates)
+  }
+  if (!lines.length) return null
+  return lines.length === 1 ? { type: "LineString", coordinates: lines[0] } : { type: "MultiLineString", coordinates: lines }
+}
 function validity(v) {
   if (!v || typeof v !== "object") return { von: null, bis: null }
   return { von: dateOnly(v.from), bis: dateOnly(v.to) }
@@ -49,6 +63,7 @@ export const vizBerlinGeojsonFeedsConnector = {
       for (const f of feats) {
         const p = f.properties ?? {}
         const point = geomPunkt(f.geometry)
+        const geom = geomLinie(f.geometry)
         const { von, bis } = validity(p.validity)
         const text = [p.section, p.content].filter(Boolean).join(" — ")
         const kat = katAus(p.subtype)
@@ -68,6 +83,7 @@ export const vizBerlinGeojsonFeedsConnector = {
           gueltigVon: von, gueltigBis: bis, realerStart: von,
           quelleName: QUELLE_NAME,
           quelleUrl: url,
+          geom,
         }))
       }
     }
