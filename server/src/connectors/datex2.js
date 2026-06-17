@@ -25,6 +25,20 @@ const attrOf = (openTag, attr) => {
 function commentText(raw) {
   return cleanText(raw) || null
 }
+
+// Manche Feeds (z.B. Autobahn-GmbH/BAB-AkD) verdoppeln den Namen selbst im Quell-<value>:
+// "A44 Grünpflege - A44 Grünpflege - Lage-1" bzw. "X - Y - X - Y - tail". Kollabiert einen
+// wiederholten führenden Block (k Segmente == die nächsten k) zu einem.
+function dedupeName(s) {
+  if (!s || !s.includes(" - ")) return s
+  const seg = s.split(" - ")
+  for (let k = Math.floor(seg.length / 2); k >= 1; k--) {
+    if (seg.slice(0, k).join("") === seg.slice(k, 2 * k).join("")) {
+      return [...seg.slice(0, k), ...seg.slice(2 * k)].join(" - ")
+    }
+  }
+  return s
+}
 const num = (s) => {
   if (s == null) return null
   const n = Number(String(s).replace(",", "."))
@@ -157,44 +171,51 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
   const now = new Date().toISOString()
   const obstacles = []
 
-  // Alle <situationRecord ...>…</situationRecord>-Blöcke (namespace-tolerant)
+  // Über <situation>-Blöcke iterieren (DATEX-Hierarchie): so ist der SITUATIONS-Kommentar
+  // (Geschwister des Records) als Namens-Fallback verfügbar — manche Feeds (KA-Tiefbauamt 0144)
+  // tragen den beschreibenden Straßentext DORT, nicht im Record. Ohne <situation>-Wrapper
+  // (abweichende Profile): global über die Records.
+  const sitMatches = [...xml.matchAll(/<(?:[\w.-]+:)?situation\b[^>]*>([\s\S]*?)<\/(?:[\w.-]+:)?situation>/gi)]
+  const blocks = sitMatches.length ? sitMatches.map((s) => s[1]) : [xml]
   const recRe = /<(?:[\w.-]+:)?situationRecord\b([^>]*)>([\s\S]*?)<\/(?:[\w.-]+:)?situationRecord>/gi
-  let m
-  while ((m = recRe.exec(xml)) !== null) {
-    const openTag = m[1]
-    const rec = m[2]
-    const externeId = attrOf(openTag, "id") || attrOf(openTag, "version") || null
-    if (!externeId) continue
+  for (const sitBlock of blocks) {
+    const sitComment = commentText(tag(sitBlock, "generalPublicComment")) || commentText(tag(sitBlock, "comment"))
+    recRe.lastIndex = 0
+    let m
+    while ((m = recRe.exec(sitBlock)) !== null) {
+      const openTag = m[1]
+      const rec = m[2]
+      const externeId = attrOf(openTag, "id") || attrOf(openTag, "version") || null
+      if (!externeId) continue
 
-    const kategorie = kategorieAusTyp(openTag, rec)
-    const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))
-    const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
-    const { lat, lng, geom } = koordAusRecord(rec, resolveTmc)
-    const name =
-      commentText(tag(rec, "generalPublicComment")) ||
-      commentText(tag(rec, "comment")) ||
-      tag(rec, "situationRecordCreationReference") ||
-      `${kategorie} (DATEX)`
-    // roadNumber/roadName können — wie der Kommentar — verschachtelt sein
-    // (<values><value lang="de">…</value></values>) → über commentText bereinigen, sonst leakt
-    // roher XML als Straßen-Ref (z.B. Karlsruhe-Feed 0144).
-    const strasse = commentText(tag(rec, "roadNumber")) || commentText(tag(rec, "roadName")) || null
+      const kategorie = kategorieAusTyp(openTag, rec)
+      const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))
+      const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
+      const { lat, lng, geom } = koordAusRecord(rec, resolveTmc)
+      // Beschreibender Text: Record-Kommentar, sonst Situations-Kommentar (0144). Verdopplung
+      // mancher Quellen ("X - X - Y", BAB-AkD 0145) über dedupeName glätten.
+      const beschr = commentText(tag(rec, "generalPublicComment")) || commentText(tag(rec, "comment")) || sitComment || null
+      const name = dedupeName(beschr || tag(rec, "situationRecordCreationReference") || `${kategorie} (DATEX)`)
+      // roadNumber/roadName können — wie der Kommentar — verschachtelt sein → über commentText
+      // bereinigen, sonst leakt roher XML als Straßen-Ref.
+      const strasse = commentText(tag(rec, "roadNumber")) || commentText(tag(rec, "roadName")) || null
 
-    obstacles.push({
-      externeId: String(externeId),
-      kategorie,
-      name: String(name).slice(0, 200),
-      beschreibung: commentText(tag(rec, "generalPublicComment")),
-      lat,
-      lng,
-      ...(geom && { geom }),
-      strassenRef: strasse,
-      // Höhe/Gewicht/Breite (falls eine DATEX-Quelle sie führt) + strukturierte Sperrart/Spuren/Richtung.
-      attrs: { ...attrsAusRecord(rec), ...sperrAttrsAusRecord(rec) },
-      ...(von && { gueltigVon: von, realerStart: von }),
-      ...(bis && { gueltigBis: bis }),
-      quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: now },
-    })
+      obstacles.push({
+        externeId: String(externeId),
+        kategorie,
+        name: String(name).slice(0, 200),
+        beschreibung: dedupeName(beschr),
+        lat,
+        lng,
+        ...(geom && { geom }),
+        strassenRef: strasse,
+        // Höhe/Gewicht/Breite (falls geführt) + strukturierte Sperrart/Spuren/Richtung.
+        attrs: { ...attrsAusRecord(rec), ...sperrAttrsAusRecord(rec) },
+        ...(von && { gueltigVon: von, realerStart: von }),
+        ...(bis && { gueltigBis: bis }),
+        quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: now },
+      })
+    }
   }
   return obstacles
 }

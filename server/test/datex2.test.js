@@ -136,6 +136,30 @@ describe("parseDatex2", () => {
     expect(o.name).not.toMatch(/<|comment|roadworksName/)
   })
 
+  it("Situations-Kommentar als Name, wenn der Record keinen trägt (KA-Tiefbauamt 0144-Profil)", () => {
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S1">
+      <situationRecord id="ka-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <roadMaintenanceType>installationWork</roadMaintenanceType>
+        <groupOfLocations><locationForDisplay><latitude>49.0</latitude><longitude>8.4</longitude></locationForDisplay></groupOfLocations>
+      </situationRecord>
+      <comment><values><value lang="de">Markgrafenstraße zwischen Kreuzstraße und Rondellplatz</value></values></comment>
+    </situation></d2LogicalModel>`
+    const [o] = parseDatex2(xml, { quelleName: "KA" })
+    expect(o.name).toBe("Markgrafenstraße zwischen Kreuzstraße und Rondellplatz") // statt "baustelle (DATEX)"
+    expect(o.beschreibung).toBe("Markgrafenstraße zwischen Kreuzstraße und Rondellplatz")
+  })
+
+  it("verdoppelter Quell-Name (X-X-Y, BAB-AkD 0145-Profil) wird entdoppelt", () => {
+    const mk = (val) => `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="bab" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment><values><value>${val}</value></values></generalPublicComment>
+        <groupOfLocations><locationForDisplay><latitude>51.0</latitude><longitude>7.0</longitude></locationForDisplay></groupOfLocations>
+      </situationRecord></situation></d2LogicalModel>`
+    expect(parseDatex2(mk("A44 Grünpflege - A44 Grünpflege - Lage-1"), {})[0].name).toBe("A44 Grünpflege - Lage-1")
+    expect(parseDatex2(mk("A5 Markierungsarbeiten - 2026-016892 - A5 Markierungsarbeiten - 2026-016892 - RF KA"), {})[0].name)
+      .toBe("A5 Markierungsarbeiten - 2026-016892 - RF KA")
+  })
+
   it("leeres/kaputtes XML → leere Liste (kein Wurf)", () => {
     expect(parseDatex2("")).toEqual([])
     expect(parseDatex2("<html>kein datex</html>")).toEqual([])
