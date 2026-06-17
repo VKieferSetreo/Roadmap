@@ -33,16 +33,11 @@ function zahlMitEinheit(v) {
   const n = Number(m[1])
   return Number.isFinite(n) ? n : null
 }
-// Brückenklasse (DIN 1072) als Tonnage-Proxy, wenn keine explizite Gewichtsbeschränkung vorliegt
-// (Live verifiziert: Gewichtsbeschränkung fast immer leer, Brückenklasse 400/400 gesetzt).
-// "DIN: 60/30" / "DIN: 30" → führende Lastklasse als grober Gewichts-Schwellwert. Moderne
-// Eurocode-Klassen (LM1/LMM/G+R/ND) tragen keine simple Tonnage → kein Proxy.
-function bkProxyTonnage(bk) {
-  const m = String(bk ?? "").match(/DIN:\s*(\d+(?:\.\d+)?)/i)
-  if (!m) return null
-  const n = Number(m[1])
-  return Number.isFinite(n) && n > 0 ? n : null
-}
+// HINWEIS: Brückenklasse NICHT als maxGewichtT-Proxy nutzen. JEDE Brücke trägt eine Brückenklasse
+// (400/400) — ein Proxy würde alle ~12.000 bayerischen Brücken von "reiner Infrastruktur" (wird
+// übersprungen) zu gespeicherten Hindernissen machen → N+1-Import-Explosion (~100s) + Funde-Flut.
+// BK-Bewusstsein gehört in die Routing-Auswertung (BK der Brücken auf der Route vs. Transportgewicht),
+// nicht in den Import als globales Hindernis. (Revert von efcd717, Performance-Regression.)
 
 export const baysisBauwerkeConnector = {
   quelleId: QUELLE,
@@ -81,8 +76,7 @@ export const baysisBauwerkeConnector = {
         strassenRef: normRef(p.Straßenbezeichnung),
         attrs: {
           maxHoeheM: zahlMitEinheit(p.Höhenbeschränkung),
-          // Explizite Gewichtsbeschränkung bevorzugen, sonst Brückenklasse als Proxy.
-          maxGewichtT: zahlMitEinheit(p.Gewichtsbeschränkung) ?? bkProxyTonnage(p.Brückenklasse),
+          maxGewichtT: zahlMitEinheit(p.Gewichtsbeschränkung),
           grundsaetzlicheGstSperre: gstSperre || undefined,
         },
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
