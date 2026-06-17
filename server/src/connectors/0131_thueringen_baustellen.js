@@ -15,6 +15,19 @@ const BASE = "https://baustellen.tlbv.de"
 const MBR = [560000, 5550000, 760000, 5790000]
 
 function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?(\d{1,4})\b/); return m ? `${m[1]}${m[2]}` : null }
+const posNum = (v) => { const n = Number(String(v ?? "").replace(",", ".")); return Number.isFinite(n) && n > 0 ? n : null }
+
+/** BESCHRSP ist kontrolliertes Vokabular (verifiziert am Live-Feed 2026-06-17) — strukturiert
+ *  mappen statt /vollsperr/i raten. "Sperrung für LKW" = für Schwertransport faktisch dicht.
+ *  Nur Boolean-Flags (makeNormalized behält keine String-attrs). */
+function sperrAusBeschrsp(beschrsp) {
+  const s = String(beschrsp ?? "")
+  const out = {}
+  if (/vollsperrung/i.test(s)) out.vollsperrung = true
+  else if (/lkw/i.test(s)) out.vollsperrung = true // LKW-Sperre blockiert den Schwertransport
+  else if (/halbseitig|richtungsfahrbahn|einer fahrtrichtung/i.test(s)) out.halbseitig = true
+  return out
+}
 
 function envelope() {
   return {
@@ -57,31 +70,40 @@ export const thueringenBaustellenConnector = {
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
     const gj = await ladeGeoJSON({ timeoutMs })
     const feats = gj?.features ?? []
-    const obstacles = feats.map((f) => {
+    // Abgelaufene Maßnahmen aussortieren — die Quelle liefert IS_ABGELAUFEN=1 mit (Live: 486/994).
+    // Vollbestand-Reconcile deaktiviert dadurch bereits importierte Altlasten automatisch.
+    const aktiv = feats.filter((f) => Number((f.properties ?? {}).IS_ABGELAUFEN) !== 1)
+    const obstacles = aktiv.map((f) => {
       const p = f.properties ?? {}
       const geom = reprojGeom(f.geometry, 32)
       let c = geom?.coordinates
       while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
       const [lng, lat] = Array.isArray(c) ? c : [null, null]
       const istLinie = geom?.type === "LineString" || geom?.type === "MultiLineString"
-      const sperrtext = [p.BESCHRSP, p.ARTSP, p.TYPSP].filter(Boolean).join(" ")
-      const vollsperrung = /vollsperr/i.test(sperrtext) || undefined
       const grund = [p.S_GRUND, p.S_ORTBEZ].filter(Boolean).join(" · ")
-      const tonnage = tonnageAusText(grund)
+      // Strukturierte Felder bevorzugen (KFZ_GEW/BREITE/LAENGE), Freitext nur als Fallback.
+      const tonnage = posNum(p.KFZ_GEW) ?? tonnageAusText(grund)
+      const sperr = sperrAusBeschrsp(p.BESCHRSP)
       return makeNormalized({
         externeId: p.DOKSPERRID != null ? `tlbv#${p.DOKSPERRID}#${p.RID ?? ""}` : `tlbv#${stabilHash(lat, lng, p.S_GRUND)}`,
-        kategorie: tonnage ? "gewicht" : vollsperrung ? "sperrung" : "baustelle",
-        name: p.S_GRUND || p.S_STRBEZ || "Baustelle",
+        kategorie: tonnage ? "gewicht" : sperr.vollsperrung ? "sperrung" : "baustelle",
+        name: p.S_GRUND || p.STRNAME || p.S_STRBEZ || "Baustelle",
         beschreibung: grund || null,
         lat, lng,
-        strassenRef: refAus(p.S_STRBEZ) ?? (p.S_STRBEZ || null),
-        attrs: { maxGewichtT: tonnage, restbreiteM: meterAusText(grund, /breite|einengung/i), vollsperrung },
+        strassenRef: refAus(p.STRNAME) ?? refAus(p.S_STRBEZ) ?? (p.STRNAME || p.S_STRBEZ || null),
+        attrs: {
+          maxGewichtT: tonnage,
+          maxBreiteM: posNum(p.KFZ_BREITE), // KFZ_BREITE = Breiten-Limit der Quelle
+          maxLaengeM: posNum(p.KFZ_LAENGE),
+          restbreiteM: meterAusText(grund, /breite|einengung/i), // Restbreite an der Engstelle (Freitext)
+          ...sperr,
+        },
         gueltigVon: dateOnly(p.S_VON), gueltigBis: dateOnly(p.S_BIS), realerStart: dateOnly(p.S_VON),
         geom: istLinie ? geom : null,
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
       })
     })
-    log(`${QUELLE}: ${feats.length} Maßnahmen`)
+    log(`${QUELLE}: ${feats.length} Maßnahmen (${feats.length - aktiv.length} abgelaufen gefiltert)`)
     return { obstacles }
   },
 }

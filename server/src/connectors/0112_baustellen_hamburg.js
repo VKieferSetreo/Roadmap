@@ -106,7 +106,9 @@ export const baustellenHamburgConnector = {
         lat, lng,
         attrs: {
           restbreiteM: meterAusText(p.umfang, /breite/i) ?? undefined,
-          vollsperrung: p.iststoerung === "true" ? true : undefined,
+          // iststoerung = bloßes Störungs-Flag, KEINE Vollsperrung (überflaggte jede Baustelle).
+          // Echte Sperrung nur, wenn der Umfang-Text sie nennt.
+          vollsperrung: /vollsperr|voll gesperrt/i.test(p.umfang ?? "") ? true : undefined,
         },
         realerStart: dateOnly(p.baubeginn),
         gueltigVon: dateOnly(p.baubeginn),

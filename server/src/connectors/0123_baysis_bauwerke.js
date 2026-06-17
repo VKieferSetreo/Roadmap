@@ -33,6 +33,16 @@ function zahlMitEinheit(v) {
   const n = Number(m[1])
   return Number.isFinite(n) ? n : null
 }
+// Brückenklasse (DIN 1072) als Tonnage-Proxy, wenn keine explizite Gewichtsbeschränkung vorliegt
+// (Live verifiziert: Gewichtsbeschränkung fast immer leer, Brückenklasse 400/400 gesetzt).
+// "DIN: 60/30" / "DIN: 30" → führende Lastklasse als grober Gewichts-Schwellwert. Moderne
+// Eurocode-Klassen (LM1/LMM/G+R/ND) tragen keine simple Tonnage → kein Proxy.
+function bkProxyTonnage(bk) {
+  const m = String(bk ?? "").match(/DIN:\s*(\d+(?:\.\d+)?)/i)
+  if (!m) return null
+  const n = Number(m[1])
+  return Number.isFinite(n) && n > 0 ? n : null
+}
 
 export const baysisBauwerkeConnector = {
   quelleId: QUELLE,
@@ -71,7 +81,8 @@ export const baysisBauwerkeConnector = {
         strassenRef: normRef(p.Straßenbezeichnung),
         attrs: {
           maxHoeheM: zahlMitEinheit(p.Höhenbeschränkung),
-          maxGewichtT: zahlMitEinheit(p.Gewichtsbeschränkung),
+          // Explizite Gewichtsbeschränkung bevorzugen, sonst Brückenklasse als Proxy.
+          maxGewichtT: zahlMitEinheit(p.Gewichtsbeschränkung) ?? bkProxyTonnage(p.Brückenklasse),
           grundsaetzlicheGstSperre: gstSperre || undefined,
         },
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
