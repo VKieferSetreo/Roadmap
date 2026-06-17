@@ -13,7 +13,7 @@ import { MapResize } from "./MapResize"
 import { endPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { groupFindings } from "@/lib/findingGroups"
-import { geomToLines } from "@/lib/geom"
+import { geomToLines, sliceRouteByKm } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
@@ -187,7 +187,16 @@ export function RouteMap({
             Severity-Farbe — weißes Casing darunter + Klick wählt den Fund. So sieht man
             die betroffene Strecke, nicht nur einen Punkt. */}
         {findings.flatMap((f) => {
-          const lines = geomToLines(f.geom)
+          let lines = geomToLines(f.geom)
+          if (lines.length === 0) {
+            // Kein eigenes Hindernis-geom (viele Quellen liefern nur einen Punkt) → den betroffenen
+            // Routen-Abschnitt um f.km (±150 m) als Segment markieren, statt nur die Fahrbahnlinie zu zeigen.
+            const route = drawn.find((r) => r.id === f.routeId)
+            if (route) {
+              const seg = sliceRouteByKm(route.positions, f.km - 0.15, f.km + 0.15)
+              if (seg.length >= 2) lines = [seg]
+            }
+          }
           if (lines.length === 0) return []
           const meta = SEVERITY_META[f.severity]
           const eigen = istEigenerEintrag(f.quelle)
