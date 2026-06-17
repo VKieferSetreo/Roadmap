@@ -10,8 +10,12 @@ import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
 
 export function useSourceHealth(): { unreachable: number; total: number } {
-  // Nur intern + live relevant: der externe Kunden-Gateway darf /sync/status nicht abfragen.
-  const enabled = useDataSourceStore((s) => s.mode) === "live" && !useContextStore((s) => s.extern)
+  // Beide Store-Hooks IMMER aufrufen (kein && davor — sonst Conditional-Hook: bei mode
+  // "checking"→"live" springt die Hook-Anzahl und React crasht). Nur intern + live relevant:
+  // der externe Kunden-Gateway darf /sync/status nicht abfragen.
+  const mode = useDataSourceStore((s) => s.mode)
+  const extern = useContextStore((s) => s.extern)
+  const enabled = mode === "live" && !extern
   const status = useQuery({
     queryKey: ["sync-status"],
     queryFn: () => api.sync.status(),
