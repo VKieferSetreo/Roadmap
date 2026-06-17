@@ -49,7 +49,7 @@ export function DatenbankPage() {
                 <MapIcon className="h-4 w-4" /> Ansicht
                 {unreachable > 0 ? (
                   <span
-                    title={`${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} nicht erreichbar`}
+                    title={`${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} mit Fehler beim letzten Abruf`}
                     className="ml-1 inline-flex items-center text-severity-kritisch"
                   >
                     <AlertTriangle className="h-3.5 w-3.5" />

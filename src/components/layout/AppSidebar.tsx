@@ -238,7 +238,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           warn={unreachable > 0}
           warnTitle={
             unreachable > 0
-              ? `${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} beim letzten Abruf nicht erreichbar`
+              ? `${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} mit Fehler beim letzten Abruf`
               : undefined
           }
         />

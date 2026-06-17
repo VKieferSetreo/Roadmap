@@ -166,7 +166,11 @@ export async function runImport({
         } else {
           value.realerStart = value.realerStart ?? todayIso()
           value.fachId = buildFachId(nextIndex++, connector.quelleId, value.realerStart)
-          await insertObstacle(q, value)
+          const inserted = await insertObstacle(q, value)
+          // In-Run-Insert in die Map → ein weiteres Item mit GLEICHER externe_id im selben Feed
+          // findet diese Zeile (UPDATE) statt erneut zu INSERTen — sonst duplicate key
+          // (obstacles_quelle_extern_ux). Bildet das frühere per-Zeile-SELECT-Verhalten nach.
+          if (inserted) byExterneId.set(externeId, inserted)
           stats.neu += 1
         }
       }

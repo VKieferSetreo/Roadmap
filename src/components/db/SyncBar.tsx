@@ -237,8 +237,8 @@ export function SyncBar() {
         <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>
-            Letzter automatischer Abruf: {autoFehler.length} Quelle{autoFehler.length === 1 ? "" : "n"} nicht
-            erreichbar — <span className="font-normal">{autoFehler.map((q) => q.name).join(", ")}</span>
+            Letzter automatischer Abruf: {autoFehler.length} Quelle{autoFehler.length === 1 ? "" : "n"} mit
+            Fehler — <span className="font-normal">{autoFehler.map((q) => q.name).join(", ")}</span>
           </span>
         </p>
       ) : null}

@@ -95,6 +95,17 @@ describe("runImport (Mock-Connector)", () => {
     expect(db.state.obstacles[0].externe_id).toMatch(/^dup#/)
   })
 
+  it("zwei Items mit GLEICHER externeId (versch. Inhalt) → UPDATE statt zweitem INSERT (kein duplicate-key, T-042-Regression)", async () => {
+    const db = createFakeDb()
+    // Unterschiedlicher Inhalt + weit auseinander → überleben den Dubletten-Filter, teilen aber externeId.
+    const a = { ...ITEM_A, externeId: "dup-x", name: "Baustelle Nord", lat: 52.3, lng: 9.7 }
+    const b = { ...ITEM_A, externeId: "dup-x", name: "Baustelle Süd", lat: 53.0, lng: 10.2 }
+    const run = await runImport({ db, connector: mockConnector([a, b]), log: quiet })
+    expect(run.status).toBe("ok")
+    const rows = db.state.obstacles.filter((o) => o.quellen_id === "0009" && o.externe_id === "dup-x")
+    expect(rows).toHaveLength(1) // 2. Item aktualisiert das 1., kein zweites INSERT (sonst Dup-Key in PROD)
+  })
+
   it("Drift-Schutz: gleiche Baustelle mit neuer externeId + ~100m Versatz bleibt EIN Eintrag (kein entfallen+neu)", async () => {
     const db = createFakeDb()
     const base = {

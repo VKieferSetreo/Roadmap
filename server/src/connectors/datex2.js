@@ -175,7 +175,10 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       commentText(tag(rec, "comment")) ||
       tag(rec, "situationRecordCreationReference") ||
       `${kategorie} (DATEX)`
-    const strasse = tag(rec, "roadNumber") || tag(rec, "roadName") || null
+    // roadNumber/roadName können — wie der Kommentar — verschachtelt sein
+    // (<values><value lang="de">…</value></values>) → über commentText bereinigen, sonst leakt
+    // roher XML als Straßen-Ref (z.B. Karlsruhe-Feed 0144).
+    const strasse = commentText(tag(rec, "roadNumber")) || commentText(tag(rec, "roadName")) || null
 
     obstacles.push({
       externeId: String(externeId),
