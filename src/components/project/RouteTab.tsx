@@ -4,18 +4,20 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, Waypoints, X } from "lucide-react"
+import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, Waypoints, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { DropZone } from "@/components/upload/DropZone"
 import { PlaceAutocomplete } from "./PlaceAutocomplete"
 import { RoutePreview } from "./RoutePreview"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
+import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
 import { useProjectStore } from "@/store/projects"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import { api, type RouteResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { Project, RouteSource } from "@/types/domain"
+import type { Project, ProjectRoute, RouteSource } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Die drei Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel. */
@@ -29,6 +31,31 @@ const SOURCE_LABEL: Record<RouteSource, string> = {
   datei: "Datei",
   link: "Google-Link",
   startziel: "Start/Ziel",
+}
+
+/** Download/Öffnen je Strecke: Google-Maps-Route (neuer Tab) oder KML (Datei).
+ *  Beides aus der Punkt-Geometrie erzeugt — egal wie die Strecke entstand. */
+function RouteDownloadMenu({ route }: { route: ProjectRoute }) {
+  return (
+    <DropdownMenu
+      triggerLabel={`Strecke ${route.name} herunterladen oder öffnen`}
+      trigger={
+        <span
+          title="Herunterladen / in Google Maps öffnen"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+        >
+          <Download className="h-4 w-4" />
+        </span>
+      }
+    >
+      <DropdownItem onClick={() => openInGoogleMaps(route)}>
+        <ExternalLink className="h-4 w-4 text-neutral-400" /> In Google Maps öffnen
+      </DropdownItem>
+      <DropdownItem onClick={() => downloadKml(route)}>
+        <FileDown className="h-4 w-4 text-neutral-400" /> Als KML herunterladen
+      </DropdownItem>
+    </DropdownMenu>
+  )
 }
 
 export function RouteTab({ project }: { project: Project }) {
@@ -273,6 +300,7 @@ export function RouteTab({ project }: { project: Project }) {
                       {routeLengthKm(r.points).toLocaleString("de-DE")} km
                     </p>
                   </div>
+                  <RouteDownloadMenu route={r} />
                   <button
                     type="button"
                     onClick={() => {

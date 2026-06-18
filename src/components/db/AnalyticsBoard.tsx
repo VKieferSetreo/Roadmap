@@ -95,13 +95,13 @@ export function AnalyticsBoard() {
         <Card className="p-4">
           <p className="mb-3 text-sm font-semibold text-neutral-800">Aktive Nutzer je Tag (14 Tage)</p>
           <Suspense fallback={<div className="skeleton h-56 w-full rounded-lg" />}>
-            <AktiveNutzerProTag data={d.proTag} />
+            <AktiveNutzerProTag data={d.proTag ?? []} />
           </Suspense>
         </Card>
         <Card className="p-4">
           <p className="mb-3 text-sm font-semibold text-neutral-800">Nutzung je Nutzer (aktive Zeit)</p>
           <Suspense fallback={<div className="skeleton h-56 w-full rounded-lg" />}>
-            <NutzungJeNutzer data={d.proNutzer} />
+            <NutzungJeNutzer data={d.proNutzer ?? []} />
           </Suspense>
         </Card>
       </div>
