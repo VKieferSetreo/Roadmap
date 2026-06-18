@@ -77,4 +77,16 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
       .send({ code: gb.body.codes[0].code })
     expect(second.status).toBe(409)
   })
+
+  it("GET seat-codes liefert Lizenz + Codes (Backoffice-Lesepfad)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "enercon", name: "Enercon" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`))
+      .send({ plan: "pro", maxSeats: 3, validUntil: "2027-01-01" })
+    await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({})
+    const res = await asAdmin(request(app).get(`/api/admin/tenants/${k.id}/seat-codes`))
+    expect(res.status).toBe(200)
+    expect(res.body.license).toEqual({ plan: "pro", maxSeats: 3, validUntil: "2027-01-01" })
+    expect(res.body.codes).toHaveLength(3)
+  })
 })

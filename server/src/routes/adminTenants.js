@@ -236,10 +236,22 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     res.status(201).json({ codes: await listSeatCodes(db, tenant.id) })
   }))
 
-  /** Seat-Codes eines Mandanten + Belegung (für die Lizenz-/Mandanten-Seite). */
+  /** Lizenz + Seat-Codes eines Mandanten (für die Backoffice-/Lizenz-Seite). */
   r.get("/:id/seat-codes", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
-    res.json({ codes: await listSeatCodes(db, req.params.id) })
+    const { rows } = await db.query(
+      "SELECT plan, max_seats, valid_until FROM tenants WHERE id = $1",
+      [req.params.id],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    res.json({
+      license: {
+        plan: rows[0].plan ?? "standard",
+        maxSeats: rows[0].max_seats ?? 0,
+        validUntil: rows[0].valid_until ?? null,
+      },
+      codes: await listSeatCodes(db, req.params.id),
+    })
   }))
 
   return r

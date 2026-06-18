@@ -204,6 +204,14 @@ export function createFakeDb() {
       const row = state.tenants.find((t) => t.id === params[0])
       return ok(row ? [{ max_seats: row.max_seats ?? 0 }] : [])
     }
+    if (sql.startsWith("SELECT plan, max_seats, valid_until FROM tenants WHERE id = $1")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      return ok(
+        row
+          ? [{ plan: row.plan ?? null, max_seats: row.max_seats ?? null, valid_until: row.valid_until ?? null }]
+          : [],
+      )
+    }
 
     // ── shares ────────────────────────────────────────────────────────────────
     if (sql.startsWith("SELECT * FROM shares WHERE project_id = ANY")) {
