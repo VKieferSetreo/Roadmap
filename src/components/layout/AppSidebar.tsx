@@ -11,6 +11,7 @@ import {
   Folder,
   Home,
   LogOut,
+  Newspaper,
   Plus,
   Search,
   Settings,
@@ -137,6 +138,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const onDb = pathname.startsWith("/datenbank")
   const onTenants = pathname.startsWith("/mandanten")
   const onDebug = pathname.startsWith("/debug")
+  const onNews = pathname.startsWith("/news")
   const onSettings = pathname.startsWith("/einstellungen")
 
   const go = (path: string) => {
@@ -251,8 +253,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           />
         ) : null}
         {adminKontext ? (
-          <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debug")} />
+          <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debugging")} />
         ) : null}
+        <NavRow icon={Newspaper} label="News" active={onNews} onClick={() => go("/news")} />
         <NavRow
           icon={Settings}
           label="Einstellungen"

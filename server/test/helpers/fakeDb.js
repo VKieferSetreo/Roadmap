@@ -34,6 +34,7 @@ export function createFakeDb() {
     importRuns: [],
     notifications: [],
     bugReports: [],
+    news: [], // { id, kategorie, titel, body, created_by, published_at }
     hiddenFindings: [], // { project_id, finding_key, obstacle_id, grund, grund_text, kontext, hidden_by, created_at }
     geocodeCache: new Map(),
     routeCache: new Map(),
@@ -734,6 +735,26 @@ export function createFakeDb() {
       const before = state.bugReports.length
       state.bugReports = state.bugReports.filter((b) => b.id !== params[0])
       return ok([], before - state.bugReports.length)
+    }
+
+    // ── news ──────────────────────────────────────────────────────────────────
+    if (sql.startsWith("SELECT * FROM news ORDER BY published_at DESC LIMIT 50")) {
+      return ok(
+        [...state.news].sort((a, b) => (a.published_at < b.published_at ? 1 : -1)).slice(0, 50),
+      )
+    }
+    if (sql.startsWith("INSERT INTO news (kategorie, titel, body, created_by)")) {
+      const row = {
+        id: randomUUID(), kategorie: params[0], titel: params[1], body: params[2],
+        created_by: params[3], published_at: now(),
+      }
+      state.news.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("DELETE FROM news WHERE id = $1")) {
+      const before = state.news.length
+      state.news = state.news.filter((n) => n.id !== params[0])
+      return ok([], before - state.news.length)
     }
 
     // ── hidden_findings (ausgeblendete Funde, pro Projekt) ────────────────────

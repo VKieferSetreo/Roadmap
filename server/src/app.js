@@ -23,6 +23,7 @@ import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
 import { sourceRequestsRouter } from "./routes/sourceRequests.js"
+import { newsRouter } from "./routes/news.js"
 import { hiddenFindingsRouter } from "./routes/hiddenFindings.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
@@ -132,6 +133,8 @@ export function createApp({
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
   app.use("/api/bug-reports", bugReportsRouter({ db }))
   app.use("/api/source-requests", sourceRequestsRouter({ db }))
+  // News-Feed — Liste für jeden Eingeloggten, Anlegen/Löschen nur Admin (im Router gegated)
+  app.use("/api/news", newsRouter({ db }))
   // Eigenes Konto: Passwortänderung (extern) + Seat-Code-Einlösung (ohne Tenant-Pflicht)
   app.use("/api/account", accountRouter({ db, fetchImpl, authExtern }))
 

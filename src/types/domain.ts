@@ -234,6 +234,19 @@ export interface SeatCode {
   usedAt: string | null
 }
 
+/** News-Kategorie (steuert Badge/Label im Feed). */
+export type NewsKategorie = "datenquelle" | "version" | "hinweis"
+
+/** Eine Plattform-News (Setreo postet, alle sehen). */
+export interface News {
+  id: string
+  kategorie: NewsKategorie
+  titel: string
+  body: string
+  createdBy: string | null
+  publishedAt: string
+}
+
 /** Eintrag der zentralen Hindernis-Datenbank (Backend). Die Analyse-Engine matcht
  *  diese Einträge gegen den Strecken-Korridor und bewertet sie pro Transport. */
 export interface Obstacle {

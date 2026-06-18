@@ -15,6 +15,8 @@ import type {
   HideReason,
   HiddenFindingsResponse,
   MailPref,
+  News,
+  NewsKategorie,
   Obstacle,
   ObstacleCreate,
   Project,
@@ -346,6 +348,14 @@ export const api = {
     /** Löschen (nur Admin). */
     remove: (id: string) =>
       axiosClient<void>({ url: `/source-requests/${id}`, method: "DELETE" }),
+  },
+
+  // ── News-Feed (Liste: jeder; Anlegen/Löschen: Admin) ───────────────────────
+  news: {
+    list: () => axiosClient<{ news: News[] }>({ url: "/news", method: "GET" }).then((r) => r.news),
+    create: (payload: { kategorie: NewsKategorie; titel: string; body: string }) =>
+      axiosClient<News>({ url: "/news", method: "POST", data: payload }),
+    remove: (id: string) => axiosClient<void>({ url: `/news/${id}`, method: "DELETE" }),
   },
 
   // ── Eigenes Konto ──────────────────────────────────────────────────────────
