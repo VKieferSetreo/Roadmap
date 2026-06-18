@@ -11,7 +11,7 @@
 //     /api/obstacles|geocode          — global (zentrale Hindernis-DB / Geocoding)
 //   GET /:tenantSlug/:projectId       — Share-SPA-HTML (nach allen API-Routen)
 
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 import express from "express"
@@ -39,7 +39,19 @@ import { analyticsRouter } from "./routes/analytics.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
-export const APP_VERSION = "3.0.0"
+// Version single-sourced aus server/package.json (kein doppeltes Pflegen, erscheint in den
+// Einstellungen). Robuster Fallback, damit ein Lesefehler den Boot nie verhindert (T-175).
+function readAppVersion() {
+  try {
+    return JSON.parse(
+      readFileSync(fileURLToPath(new URL("../package.json", import.meta.url)), "utf8"),
+    ).version
+  } catch {
+    return "0.0.0"
+  }
+}
+
+export const APP_VERSION = readAppVersion()
 
 const SHARE_DIR = fileURLToPath(new URL("../public/share", import.meta.url))
 
