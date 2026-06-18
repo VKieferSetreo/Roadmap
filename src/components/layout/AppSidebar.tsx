@@ -5,8 +5,6 @@
 import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
-  Bug,
-  Building2,
   Database,
   FilePlus,
   Folder,
@@ -22,7 +20,6 @@ import {
 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
-import { useContextStore } from "@/store/context"
 import { useSettingsStore } from "@/store/settings"
 import { useNewsStore } from "@/store/news"
 import { ProjectTree } from "@/components/layout/ProjectTree"
@@ -87,12 +84,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const unreadNews = useNewsStore((s) =>
     s.seenAt === null ? s.news.length : s.news.filter((n) => n.publishedAt > s.seenAt!).length,
   )
-  const isAdmin = useContextStore((s) => s.isAdmin)
-  const tenant = useContextStore((s) => s.tenant)
-  // Admin-Werkzeuge (Mandanten/Debugging) NUR im eigenen Setreo-Kontext zeigen. Wechselt der
-  // Admin per Dropdown auf einen Kunden-Mandanten, sieht er dessen 1:1-Ansicht (ohne diese
-  // Reiter) — das Dropdown bleibt oben zum Zurückwechseln.
-  const adminKontext = isAdmin && (tenant?.slug ?? "setreo") === "setreo"
   // Warn-„!" an „Datenbank", wenn beim letzten automatischen Abruf (3×/Tag) Quellen unerreichbar waren.
   const { unreachable } = useSourceHealth()
 
@@ -101,8 +92,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const activeTab = m?.[2] ?? "route"
   const onHome = pathname === "/"
   const onDb = pathname.startsWith("/datenbank")
-  const onTenants = pathname.startsWith("/mandanten")
-  const onDebug = pathname.startsWith("/debug")
   const onNews = pathname.startsWith("/news")
   const onSettings = pathname.startsWith("/einstellungen")
 
@@ -191,17 +180,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               : undefined
           }
         />
-        {adminKontext ? (
-          <NavRow
-            icon={Building2}
-            label="Mandanten"
-            active={onTenants}
-            onClick={() => go("/mandanten")}
-          />
-        ) : null}
-        {adminKontext ? (
-          <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debugging")} />
-        ) : null}
+        {/* Mandanten + Debugging sind KEINE Reiter mehr (Max 2026-06-18): eigene Admin-Seiten,
+            nur intern + admin erreichbar (setreo-intern.com/roadmap/mandanten bzw. /debugging).
+            Navigation folgt über das /slider-Admin-Menü. Routen bleiben self-guarded (!isAdmin → "/"). */}
         <NavRow icon={Newspaper} label="News" active={onNews} onClick={() => go("/news")} badge={unreadNews} />
         <NavRow
           icon={Settings}
