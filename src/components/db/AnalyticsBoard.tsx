@@ -2,6 +2,7 @@
 // wer ist jetzt online, wie viele Nutzer/Sessions, manuelle Auswertungen, aktive
 // Verweildauer je Nutzer. Daten aus /api/analytics/overview (30-s-Poll).
 
+import { Suspense, lazy } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Activity, Clock, PlayCircle, RefreshCw, Users, type LucideIcon } from "lucide-react"
 import { Card } from "@/components/ui/Card"
@@ -11,6 +12,14 @@ import { api } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { formatRelativeDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
+
+// Charts lazy (recharts als eigener Chunk, wie SeverityDonut/KategorieBar).
+const AktiveNutzerProTag = lazy(() =>
+  import("@/components/charts/AnalyticsCharts").then((m) => ({ default: m.AktiveNutzerProTag })),
+)
+const NutzungJeNutzer = lazy(() =>
+  import("@/components/charts/AnalyticsCharts").then((m) => ({ default: m.NutzungJeNutzer })),
+)
 
 function fmtDauer(min: number): string {
   if (!min || min < 1) return "< 1 min"
@@ -81,6 +90,21 @@ export function AnalyticsBoard() {
           </div>
         </Card>
       ) : null}
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card className="p-4">
+          <p className="mb-3 text-sm font-semibold text-neutral-800">Aktive Nutzer je Tag (14 Tage)</p>
+          <Suspense fallback={<div className="skeleton h-56 w-full rounded-lg" />}>
+            <AktiveNutzerProTag data={d.proTag} />
+          </Suspense>
+        </Card>
+        <Card className="p-4">
+          <p className="mb-3 text-sm font-semibold text-neutral-800">Nutzung je Nutzer (aktive Zeit)</p>
+          <Suspense fallback={<div className="skeleton h-56 w-full rounded-lg" />}>
+            <NutzungJeNutzer data={d.proNutzer} />
+          </Suspense>
+        </Card>
+      </div>
 
       <Card>
         <div className="border-b border-neutral-100 px-4 py-2.5 text-sm font-semibold text-neutral-800">

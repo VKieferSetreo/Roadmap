@@ -83,6 +83,7 @@ export interface AnalyticsOverview {
     ersterBesuch: string
     letzterBesuch: string
   }[]
+  proTag: { tag: string; nutzer: number; sessions: number; auswertungen: number }[]
   letzteSessions: {
     email: string
     tenantSlug: string | null

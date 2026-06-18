@@ -61,7 +61,7 @@ export function analyticsRouter({ db }) {
 
   // Übersicht — nur Admin. Online-Status + Totals + Nutzung je Nutzer + letzte Sessions.
   r.get("/overview", requireRole("admin"), asyncHandler(async (_req, res) => {
-    const [online, proNutzer, events, letzte, totals] = await Promise.all([
+    const [online, proNutzer, events, letzte, totals, proTagRows, analysenProTag] = await Promise.all([
       db.query(
         `SELECT email, max(last_seen) AS last_seen FROM analytics_sessions
           WHERE last_seen > now() - interval '${ONLINE_FENSTER}'
@@ -87,6 +87,20 @@ export function analyticsRouter({ db }) {
            (SELECT count(DISTINCT email) FROM analytics_sessions) AS nutzer,
            (SELECT count(*) FROM analytics_events WHERE typ = 'manual_analysis') AS manuelle`,
       ),
+      // Zeitreihe der letzten 14 Tage, lückenlos (generate_series füllt nutzungsfreie Tage mit 0).
+      db.query(
+        `SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
+           count(DISTINCT s.email) AS nutzer, count(s.id) AS sessions
+         FROM generate_series(current_date - interval '13 days', current_date, interval '1 day') d
+         LEFT JOIN analytics_sessions s ON date_trunc('day', s.last_seen)::date = d::date
+         GROUP BY d ORDER BY d`,
+      ),
+      db.query(
+        `SELECT to_char(date_trunc('day', created_at), 'YYYY-MM-DD') AS tag, count(*) AS n
+         FROM analytics_events
+         WHERE typ = 'manual_analysis' AND created_at >= current_date - interval '13 days'
+         GROUP BY 1`,
+      ),
     ])
 
     const analysenJeNutzer = new Map(events.rows.map((e) => [e.email, Number(e.n)]))
@@ -102,6 +116,14 @@ export function analyticsRouter({ db }) {
       }))
       .sort((a, b) => b.aktivMin - a.aktivMin)
 
+    const analysenTag = new Map(analysenProTag.rows.map((e) => [e.tag, Number(e.n)]))
+    const proTag = proTagRows.rows.map((t) => ({
+      tag: t.tag,
+      nutzer: Number(t.nutzer),
+      sessions: Number(t.sessions),
+      auswertungen: analysenTag.get(t.tag) ?? 0,
+    }))
+
     res.json({
       onlineJetzt: online.rows.length,
       online: online.rows.map((o) => ({ email: o.email, lastSeen: o.last_seen })),
@@ -112,6 +134,7 @@ export function analyticsRouter({ db }) {
         aktivMinGesamt: proNutzerOut.reduce((s, u) => s + u.aktivMin, 0),
       },
       proNutzer: proNutzerOut,
+      proTag,
       letzteSessions: letzte.rows.map((s) => ({
         email: s.email,
         tenantSlug: s.tenant_slug,

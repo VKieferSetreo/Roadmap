@@ -24,10 +24,11 @@ import {
 } from "@/components/project/findingMeta"
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
-import { MapFullscreen, MapSearch } from "./MapControls"
+import { MapFullscreen } from "./MapControls"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { geomMidpoint, geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
+import type { OrtTreffer } from "@/components/db/OrtsSuche"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
 const PIN_GLOBAL = "#475569" // Slate — globaler Setreo-/Connector-Bestand
@@ -217,18 +218,37 @@ function ObstacleLayers({ obstacles, onDelete }: { obstacles: Obstacle[]; onDele
   return null
 }
 
-export function ObstaclesMap({ obstacles, onDelete }: { obstacles: Obstacle[]; onDelete?: DeleteFn }) {
+/** Fliegt die Karte zum gewählten Ort (aus der Header-Ortssuche). */
+function FlyTo({ target }: { target?: OrtTreffer }) {
+  const map = useMap()
+  useEffect(() => {
+    if (!target) return
+    const bb = target.bbox
+    if (bb) map.fitBounds(L.latLngBounds([bb[0], bb[2]], [bb[1], bb[3]]), { padding: [40, 40], maxZoom: 15 })
+    else map.setView([target.lat, target.lng], 14)
+  }, [map, target])
+  return null
+}
+
+export function ObstaclesMap({
+  obstacles,
+  onDelete,
+  flyTo,
+}: {
+  obstacles: Obstacle[]
+  onDelete?: DeleteFn
+  flyTo?: OrtTreffer
+}) {
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom zoomControl={false} className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
-        {/* Zoom nach unten-rechts — oben-links sitzt die Ortssuche (sonst verdeckt sie +/-) */}
         <ZoomControl position="bottomright" />
         <MapResize />
-        <MapSearch />
         <MapFullscreen />
+        <FlyTo target={flyTo} />
         <ObstacleLayers obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">

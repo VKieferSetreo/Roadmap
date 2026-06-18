@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
 import { AbdeckungBoard } from "@/components/db/AbdeckungBoard"
 import { AnalyticsBoard } from "@/components/db/AnalyticsBoard"
+import { OrtsSuche, type OrtTreffer } from "@/components/db/OrtsSuche"
 import { QuellenRegister } from "@/components/db/QuellenRegister"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
 import { Input } from "@/components/ui/Input"
@@ -124,6 +125,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
   )
 
   const [suche, setSuche] = useState("")
+  const [flyTo, setFlyTo] = useState<OrtTreffer | undefined>()
   const alle = useMemo(() => obstacles.data ?? [], [obstacles.data])
   // Inhaltssuche über alle geladenen (aktiven) Hindernisse — Text + Maße (attrs).
   // Komma→Punkt, damit "4,5" die als 4.5 gespeicherte Höhe findet; attrEntries liefert
@@ -183,8 +185,11 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative max-w-md flex-1">
+      {/* Zwei gleich breite Suchfelder nebeneinander: links Ort (schwenkt die Karte),
+          rechts Inhalt (filtert die Einträge). */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <OrtsSuche onSelect={setFlyTo} />
+        <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <Input
             value={suche}
@@ -204,13 +209,15 @@ function ObstacleKarte({ live }: { live: boolean }) {
             </button>
           ) : null}
         </div>
+      </div>
+      <div className="flex justify-end">
         <span className="text-sm text-neutral-500">
           <span className="font-semibold tabular-nums text-neutral-800">{gefiltert.length}</span>
           {suche ? ` von ${alle.length} Einträgen` : " Einträge"}
         </span>
       </div>
-      <div className="h-[calc(100vh-420px)] min-h-[420px]">
-        <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} />
+      <div className="h-[calc(100vh-460px)] min-h-[420px]">
+        <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo} />
       </div>
     </div>
   )
