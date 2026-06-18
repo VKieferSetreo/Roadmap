@@ -89,4 +89,17 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     expect(res.body.license).toEqual({ plan: "pro", maxSeats: 3, validUntil: "2027-01-01" })
     expect(res.body.codes).toHaveLength(3)
   })
+
+  it("Seat-Limit: PUT members über max_seats → 409 (T-146)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "limit", name: "Limit" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
+    const res = await asAdmin(request(app).put(`/api/admin/tenants/${k.id}/members`)).send({
+      members: [
+        { email: "a@limit.de", role: "user", password: "passwort-123" },
+        { email: "b@limit.de", role: "user", password: "passwort-123" },
+      ],
+    })
+    expect(res.status).toBe(409)
+  })
 })

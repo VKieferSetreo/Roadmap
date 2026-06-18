@@ -148,6 +148,9 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT count(*)::int AS n FROM projects WHERE tenant_id = $1")) {
       return ok([{ n: state.projects.filter((p) => p.tenant_id === params[0]).length }])
     }
+    if (sql.startsWith("SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1")) {
+      return ok([{ n: state.members.filter((m) => m.tenant_id === params[0]).length }])
+    }
 
     // ── seat_codes (Lizenz-Seats) ─────────────────────────────────────────────
     if (sql.startsWith("INSERT INTO seat_codes (tenant_id, code)")) {

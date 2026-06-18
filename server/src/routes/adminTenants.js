@@ -118,6 +118,18 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       }
     }
 
+    // Seat-Limit (T-146): die Lizenz deckelt die Mitgliederzahl. max_seats > 0 = Limit aktiv,
+    // 0 = unbegrenzt (interner Mandant / vor Lizenzierung angelegt). PUT setzt die volle Liste,
+    // daher ist incoming.length die neue Gesamtzahl.
+    const { rows: licRows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+    const maxSeats = Number(licRows[0]?.max_seats ?? 0)
+    if (maxSeats > 0 && incoming.length > maxSeats) {
+      throw new ApiError(
+        409,
+        `Lizenz erlaubt höchstens ${maxSeats} Seats (${incoming.length} angefragt) — Seats erhöhen oder Nutzer entfernen.`,
+      )
+    }
+
     const currentByEmail = new Map((await tenantMembers(db, tenant.id)).map((m) => [m.email, m]))
 
     // Provisionierung (externe Calls) VOR der DB-Transaktion — schlägt eine fehl, wird nichts geschrieben.
@@ -167,6 +179,25 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     )
     if (conflict.rows.length) {
       throw new ApiError(409, `${email} ist bereits einem anderen Mandanten zugeordnet`)
+    }
+
+    // Seat-Limit (T-146): neue Zuordnung nur, wenn die Lizenz noch Platz hat (max_seats > 0).
+    const { rows: licRows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+    const maxSeats = Number(licRows[0]?.max_seats ?? 0)
+    if (maxSeats > 0) {
+      const vorhanden = await db.query(
+        "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2",
+        [email, tenant.id],
+      )
+      if (!vorhanden.rows.length) {
+        const { rows: cnt } = await db.query(
+          "SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1",
+          [tenant.id],
+        )
+        if (Number(cnt[0]?.n ?? 0) >= maxSeats) {
+          throw new ApiError(409, `Lizenz erlaubt höchstens ${maxSeats} Seats — Seats erhöhen.`)
+        }
+      }
     }
 
     const created = await provisionExtern({ authExtern, fetchImpl, email, password })
