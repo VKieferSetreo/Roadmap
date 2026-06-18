@@ -28,6 +28,7 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
+import { formatDateDE } from "@/lib/format"
 import type { SeatCode, Tenant, TenantMember, TenantRole } from "@/types/domain"
 import { ApiError } from "@/api/client"
 
@@ -460,7 +461,7 @@ function TenantLicensePanel({ tenant }: { tenant: Tenant }) {
     const tage = Math.ceil((new Date(`${validUntil}T23:59:59`).getTime() - Date.now()) / 86_400_000)
     if (tage < 0) return { cls: "bg-severity-kritisch-bg text-severity-kritisch-text", text: "Lizenz abgelaufen" }
     if (tage <= 30) return { cls: "bg-severity-warnung-bg text-severity-warnung-text", text: `läuft in ${tage} Tag(en) ab` }
-    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${validUntil}` }
+    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${formatDateDE(validUntil)}` }
   })()
 
   return (

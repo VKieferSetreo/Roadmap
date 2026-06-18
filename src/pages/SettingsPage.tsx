@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Database, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal } from "lucide-react"
 import { toast } from "sonner"
+import { formatDateDE } from "@/lib/format"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Input, Label } from "@/components/ui/Input"
@@ -254,10 +255,14 @@ function LicenseCard() {
 
   const expiry = (() => {
     if (!lic.validUntil) return { cls: "bg-neutral-100 text-neutral-600", text: "unbefristet" }
-    const tage = Math.ceil((new Date(`${lic.validUntil}T23:59:59`).getTime() - Date.now()) / 86_400_000)
-    if (tage < 0) return { cls: "bg-severity-kritisch-bg text-severity-kritisch-text", text: `abgelaufen (${lic.validUntil})` }
-    if (tage <= 30) return { cls: "bg-severity-warnung-bg text-severity-warnung-text", text: `läuft in ${tage} Tag(en) ab (${lic.validUntil})` }
-    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${lic.validUntil}` }
+    // validUntil kann volle ISO sein (…T00:00:00.000Z) → auf Datum normalisieren, sonst
+    // ist `${...}T23:59:59` ein Invalid Date und die Ablauf-Rechnung (und Anzeige) kaputt.
+    const tag = lic.validUntil.slice(0, 10)
+    const datum = formatDateDE(tag)
+    const tage = Math.ceil((new Date(`${tag}T23:59:59`).getTime() - Date.now()) / 86_400_000)
+    if (tage < 0) return { cls: "bg-severity-kritisch-bg text-severity-kritisch-text", text: `abgelaufen am ${datum}` }
+    if (tage <= 30) return { cls: "bg-severity-warnung-bg text-severity-warnung-text", text: `läuft in ${tage} Tag(en) ab (${datum})` }
+    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${datum}` }
   })()
 
   return (
