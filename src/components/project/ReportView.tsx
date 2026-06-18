@@ -15,7 +15,7 @@ import {
 } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { formatDateDE } from "@/lib/format"
-import type { Project } from "@/types/domain"
+import type { FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 export function ReportView({
@@ -23,6 +23,7 @@ export function ReportView({
   exportVon = "",
   exportBis = "",
   routeIds,
+  severities,
   onClose,
 }: {
   project: Project
@@ -30,9 +31,12 @@ export function ReportView({
   exportBis?: string
   /** Nur diese Strecken in den Bericht (leer/undefined = alle). */
   routeIds?: string[]
+  /** Nur diese Schweregrade (leer/undefined = alle). */
+  severities?: FindingSeverity[]
   onClose: () => void
 }) {
   const routeSel = routeIds && routeIds.length ? new Set(routeIds) : null
+  const sevSel = severities && severities.length ? new Set(severities) : null
   // Druck-Isolation: nur der Report ist beim Drucken sichtbar
   useEffect(() => {
     document.body.classList.add("printing-report")
@@ -50,6 +54,7 @@ export function ReportView({
   const sichtbar = visibleFindings(project.findings).filter(
     (f) =>
       imExportZeitraum(f, exportVon, exportBis) &&
+      (!sevSel || sevSel.has(f.severity)) &&
       (!routeSel || f.routeId == null || routeSel.has(f.routeId)),
   )
   const counts = SEVERITY_ORDER.map((sev) => ({

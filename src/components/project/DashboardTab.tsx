@@ -137,6 +137,7 @@ export function DashboardTab({ project }: { project: Project }) {
       const findings = visibleFindings(project.findings).filter(
         (f) =>
           imExportZeitraum(f, cfg.von, cfg.bis) &&
+          (cfg.severities.length === 0 || cfg.severities.includes(f.severity)) &&
           (f.routeId == null || cfg.routeIds.includes(f.routeId)),
       )
       exportCsv(project, findings)
@@ -354,6 +355,7 @@ export function DashboardTab({ project }: { project: Project }) {
           exportVon={reportCfg.von}
           exportBis={reportCfg.bis}
           routeIds={reportCfg.routeIds}
+          severities={reportCfg.severities}
           onClose={() => setReportCfg(null)}
         />
       ) : null}

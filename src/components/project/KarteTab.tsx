@@ -28,7 +28,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { Finding, Project, RoutePoint } from "@/types/domain"
+import type { Finding, FindingSeverity, Project, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Snap des Karten-Klicks auf den nächstgelegenen Streckenpunkt (Haversine, km). */
@@ -68,6 +68,8 @@ export function KarteTab({
   const [layersOpen, setLayersOpen] = useState(true)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
   const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
+  /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Leer = alle sichtbar. */
+  const [severityHidden, setSeverityHidden] = useState<Set<FindingSeverity>>(new Set())
   /** gesnappte Position des Strecken-Klicks fürs Eintrag-Formular. */
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
@@ -89,8 +91,11 @@ export function KarteTab({
   // Kategorie-Filter (oben rechts) angewandt → nur das landet auf der Karte + in der Suche.
   // kategoriesOnRoute (Filter-Liste) bleibt aus sichtbareFindings → alle Kategorien immer wählbar.
   const gefilterteFindings = useMemo(
-    () => (katHidden.size === 0 ? sichtbareFindings : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie))),
-    [sichtbareFindings, katHidden],
+    () =>
+      katHidden.size === 0 && severityHidden.size === 0
+        ? sichtbareFindings
+        : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie) && !severityHidden.has(f.severity)),
+    [sichtbareFindings, katHidden, severityHidden],
   )
 
   // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
@@ -164,6 +169,14 @@ export function KarteTab({
       const next = new Set(prev)
       if (next.has(kat)) next.delete(kat)
       else next.add(kat)
+      return next
+    })
+  /** Severity per Klick auf die Zähler-Marke (oben links) ein-/ausblenden. */
+  const toggleSeverity = (sev: FindingSeverity) =>
+    setSeverityHidden((prev) => {
+      const next = new Set(prev)
+      if (next.has(sev)) next.delete(sev)
+      else next.add(sev)
       return next
     })
 
@@ -277,25 +290,36 @@ export function KarteTab({
             </span>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
-            {counts.map(({ sev, n }) => (
-              <span
-                key={sev}
-                className={cn(
-                  "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
-                  n > 0
-                    ? SEVERITY_META[sev].soft
-                    : "border-neutral-200 bg-neutral-50 text-neutral-400",
-                )}
-              >
-                <span
+            {counts.map(({ sev, n }) => {
+              const aus = severityHidden.has(sev)
+              // Nur "leuchtende" Stufen (n>0) sind klickbar: Klick blendet diese Funde
+              // auf der Karte aus und dimmt die Marke grau. n=0 = inert (eh nichts da).
+              const aktiv = n > 0 && !aus
+              return (
+                <button
+                  key={sev}
+                  type="button"
+                  onClick={n > 0 ? () => toggleSeverity(sev) : undefined}
+                  disabled={n === 0}
+                  aria-pressed={n > 0 ? !aus : undefined}
+                  title={n > 0 ? (aus ? `${SEVERITY_META[sev].label} einblenden` : `${SEVERITY_META[sev].label} ausblenden`) : undefined}
                   className={cn(
-                    "inline-block h-2 w-2 shrink-0 rounded-full",
-                    n > 0 ? SEVERITY_META[sev].dot : "bg-neutral-300",
+                    "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition",
+                    aktiv ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                    n > 0 && "cursor-pointer hover:opacity-80",
+                    aus && "line-through",
                   )}
-                />
-                {n} {SEVERITY_META[sev].label}
-              </span>
-            ))}
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-2 w-2 shrink-0 rounded-full",
+                      aktiv ? SEVERITY_META[sev].dot : "bg-neutral-300",
+                    )}
+                  />
+                  {n} {SEVERITY_META[sev].label}
+                </button>
+              )
+            })}
           </div>
         </div>
 

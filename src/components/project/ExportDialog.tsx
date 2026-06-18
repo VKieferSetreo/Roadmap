@@ -7,13 +7,16 @@ import { FileDown, FileSpreadsheet } from "lucide-react"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { imExportZeitraum, visibleFindings } from "./findingMeta"
-import type { Project } from "@/types/domain"
+import { imExportZeitraum, visibleFindings, SEVERITY_ORDER, SEVERITY_META } from "./findingMeta"
+import type { FindingSeverity, Project } from "@/types/domain"
+import { cn } from "@/lib/cn"
 
 export interface ExportConfig {
   von: string
   bis: string
   routeIds: string[]
+  /** Welche Schweregrade exportiert werden. Leer/alle = keine Einschränkung. */
+  severities: FindingSeverity[]
 }
 
 export function ExportDialog({
@@ -31,11 +34,16 @@ export function ExportDialog({
   const [von, setVon] = useState("")
   const [bis, setBis] = useState("")
   const [selected, setSelected] = useState<string[]>(() => routen.map((r) => r.id))
+  const [selectedSev, setSelectedSev] = useState<FindingSeverity[]>(() => [...SEVERITY_ORDER])
+  const toggleSev = (s: FindingSeverity) =>
+    setSelectedSev((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]))
 
   const sichtbar = useMemo(() => visibleFindings(project.findings), [project.findings])
-  // Live-Vorschau: wie viele Funde je Strecke fallen ins gewählte Zeitfenster?
+  // Live-Vorschau: wie viele Funde je Strecke fallen ins Zeitfenster + Kritikalitäts-Filter?
   const countFor = (routeId: string) =>
-    sichtbar.filter((f) => f.routeId === routeId && imExportZeitraum(f, von, bis)).length
+    sichtbar.filter(
+      (f) => f.routeId === routeId && imExportZeitraum(f, von, bis) && selectedSev.includes(f.severity),
+    ).length
 
   const alleAn = routen.length > 0 && selected.length === routen.length
   const toggle = (id: string) =>
@@ -47,9 +55,10 @@ export function ExportDialog({
       sichtbar.filter(
         (f) =>
           imExportZeitraum(f, von, bis) &&
+          selectedSev.includes(f.severity) &&
           (f.routeId == null || selected.includes(f.routeId)),
       ).length,
-    [sichtbar, von, bis, selected],
+    [sichtbar, von, bis, selected, selectedSev],
   )
 
   const Icon = target === "pdf" ? FileDown : FileSpreadsheet
@@ -149,6 +158,38 @@ export function ExportDialog({
             ))}
           </div>
         </div>
+
+        {/* Kritikalität — welche Schweregrade exportiert werden */}
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-sm font-semibold text-neutral-800">Kritikalität</p>
+            <button
+              type="button"
+              onClick={() => setSelectedSev(selectedSev.length === SEVERITY_ORDER.length ? [] : [...SEVERITY_ORDER])}
+              className="text-xs font-medium text-primary-600 hover:text-primary-700"
+            >
+              {selectedSev.length === SEVERITY_ORDER.length ? "Keine" : "Alle"}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {SEVERITY_ORDER.map((sev) => {
+              const an = selectedSev.includes(sev)
+              return (
+                <label
+                  key={sev}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors",
+                    an ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                  )}
+                >
+                  <input type="checkbox" checked={an} onChange={() => toggleSev(sev)} className="h-4 w-4 accent-primary-600" />
+                  <span className={cn("inline-block h-2 w-2 rounded-full", an ? SEVERITY_META[sev].dot : "bg-neutral-300")} aria-hidden />
+                  {SEVERITY_META[sev].label}
+                </label>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-neutral-200 px-6 py-4">
@@ -159,7 +200,7 @@ export function ExportDialog({
           <Button variant="outline" onClick={onClose}>
             Abbrechen
           </Button>
-          <Button onClick={() => onConfirm({ von, bis, routeIds: selected })} disabled={selected.length === 0}>
+          <Button onClick={() => onConfirm({ von, bis, routeIds: selected, severities: selectedSev })} disabled={selected.length === 0 || selectedSev.length === 0}>
             <Icon className="h-4 w-4" />
             {target === "pdf" ? "Bericht erstellen" : "CSV exportieren"}
           </Button>
