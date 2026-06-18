@@ -24,6 +24,7 @@ export function createFakeDb() {
     members: [], // { tenant_id, email, created_at }
     seatCodes: [], // { id, tenant_id, code, used_by_email, used_at, created_at }
     disclaimerAcceptances: [], // { email, version, accepted_at }
+    auditLog: [], // { id, tenant_id, actor_email, action, detail, at }
     shares: [],
     projects: [],
     findings: [],
@@ -150,6 +151,21 @@ export function createFakeDb() {
     }
     if (sql.startsWith("SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1")) {
       return ok([{ n: state.members.filter((m) => m.tenant_id === params[0]).length }])
+    }
+    if (sql.startsWith("INSERT INTO tenant_audit_log (tenant_id, actor_email, action, detail)")) {
+      state.auditLog.push({
+        id: randomUUID(), tenant_id: params[0], actor_email: params[1],
+        action: params[2], detail: params[3], at: now(),
+      })
+      return ok([], 1)
+    }
+    if (sql.startsWith("SELECT id, tenant_id, actor_email, action, detail, at FROM tenant_audit_log WHERE tenant_id = $1")) {
+      return ok(
+        [...state.auditLog]
+          .filter((a) => a.tenant_id === params[0])
+          .sort((a, b) => (a.at < b.at ? 1 : -1))
+          .slice(0, 200),
+      )
     }
 
     // ── seat_codes (Lizenz-Seats) ─────────────────────────────────────────────
