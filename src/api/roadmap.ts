@@ -370,6 +370,12 @@ export const api = {
         method: "POST",
         data: { code },
       }),
+    /** Hat der Nutzer die aktuelle Disclaimer-Version akzeptiert? */
+    disclaimerStatus: () =>
+      axiosClient<{ version: string; accepted: boolean }>({ url: "/account/disclaimer", method: "GET" }),
+    /** Aktuellen Disclaimer akzeptieren. */
+    acceptDisclaimer: () =>
+      axiosClient<{ ok: true; version: string }>({ url: "/account/disclaimer", method: "POST" }),
   },
 }
 

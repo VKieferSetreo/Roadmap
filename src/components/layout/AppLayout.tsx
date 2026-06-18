@@ -15,6 +15,8 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { useHeartbeat } from "@/hooks/useHeartbeat"
 import { RedeemSeat } from "@/components/account/RedeemSeat"
+import { DisclaimerModal } from "@/components/account/DisclaimerModal"
+import { api } from "@/api/roadmap"
 import { Building2 } from "lucide-react"
 
 export function AppLayout() {
@@ -38,6 +40,8 @@ export function AppLayout() {
   const tenant = useContextStore((s) => s.tenant)
   const extern = useContextStore((s) => s.extern)
   const email = useContextStore((s) => s.email)
+  const [needDisclaimer, setNeedDisclaimer] = useState(false)
+  const [acceptingDisc, setAcceptingDisc] = useState(false)
 
   // App-weiter Heartbeat (Plattform-Analytics) — pingt im Live-Modus, solange eingeloggt.
   useHeartbeat()
@@ -51,6 +55,33 @@ export function AppLayout() {
       await initData(m)
     })
   }, [fetchIdentity, detect, initData, loadContext])
+
+  // Haftungsausschluss: beim Erst-Login (pro Person + Version) blockierend anzeigen.
+  useEffect(() => {
+    if (mode !== "live" || !ctxLoaded || !email) return
+    let active = true
+    void api.account
+      .disclaimerStatus()
+      .then((s) => {
+        if (active && !s.accepted) setNeedDisclaimer(true)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [mode, ctxLoaded, email])
+
+  const acceptDisclaimer = async () => {
+    setAcceptingDisc(true)
+    try {
+      await api.account.acceptDisclaimer()
+      setNeedDisclaimer(false)
+    } catch {
+      // bleibt offen — Nutzer kann erneut akzeptieren
+    } finally {
+      setAcceptingDisc(false)
+    }
+  }
 
   // Live + eingeloggt, aber keinem Mandanten zugeordnet → Arbeit nicht möglich.
   const keinMandant = mode === "live" && ctxLoaded && !isAdmin && !tenant
@@ -107,6 +138,14 @@ export function AppLayout() {
           })
         }}
       />
+
+      {needDisclaimer ? (
+        <DisclaimerModal
+          mode="accept"
+          busy={acceptingDisc}
+          onAccept={() => void acceptDisclaimer()}
+        />
+      ) : null}
     </div>
   )
 }

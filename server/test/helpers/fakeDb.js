@@ -23,6 +23,7 @@ export function createFakeDb() {
     tenants: [],
     members: [], // { tenant_id, email, created_at }
     seatCodes: [], // { id, tenant_id, code, used_by_email, used_at, created_at }
+    disclaimerAcceptances: [], // { email, version, accepted_at }
     shares: [],
     projects: [],
     findings: [],
@@ -201,6 +202,20 @@ export function createFakeDb() {
       const row = state.tenants.find((t) => t.id === params[0])
       return ok(row ? [{ max_seats: row.max_seats ?? 0 }] : [])
     }
+    // ── disclaimer_acceptances ──────────────────────────────────────────────
+    if (sql.startsWith("SELECT 1 FROM disclaimer_acceptances WHERE email = $1 AND version = $2")) {
+      const hit = state.disclaimerAcceptances.some(
+        (d) => d.email === params[0] && d.version === params[1],
+      )
+      return ok(hit ? [{ "?column?": 1 }] : [])
+    }
+    if (sql.startsWith("INSERT INTO disclaimer_acceptances (email, version)")) {
+      if (!state.disclaimerAcceptances.some((d) => d.email === params[0] && d.version === params[1])) {
+        state.disclaimerAcceptances.push({ email: params[0], version: params[1], accepted_at: now() })
+      }
+      return ok([], 1)
+    }
+
     if (sql.startsWith("SELECT plan, max_seats, valid_until FROM tenants WHERE id = $1")) {
       const row = state.tenants.find((t) => t.id === params[0])
       return ok(

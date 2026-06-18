@@ -13,6 +13,10 @@ import { ApiError, asyncHandler } from "../util.js"
 
 const MIN_PASSWORD_LEN = 10 // identisch zu adminTenants (setreo-auth-extern-Mindestlänge)
 
+// Aktuelle Disclaimer-Version. Erhöhen, wenn der Haftungstext sich ändert → der Nutzer
+// muss dann erneut bestätigen (PK email+version in disclaimer_acceptances, Migration 031).
+const DISCLAIMER_VERSION = "1"
+
 export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = null }) {
   const r = Router()
 
@@ -61,6 +65,28 @@ export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = n
     if (!email) throw new ApiError(401, "Nicht angemeldet")
     const result = await redeemSeatCode(db, req.body?.code, email)
     res.status(201).json({ ok: true, ...result })
+  }))
+
+  /** Disclaimer-Status: hat der Nutzer die aktuelle Version akzeptiert? */
+  r.get("/disclaimer", asyncHandler(async (req, res) => {
+    const email = req.ctx?.email
+    if (!email) throw new ApiError(401, "Nicht angemeldet")
+    const { rows } = await db.query(
+      "SELECT 1 FROM disclaimer_acceptances WHERE email = $1 AND version = $2",
+      [email, DISCLAIMER_VERSION],
+    )
+    res.json({ version: DISCLAIMER_VERSION, accepted: rows.length > 0 })
+  }))
+
+  /** Disclaimer akzeptieren — pro Person + Version (idempotent). */
+  r.post("/disclaimer", asyncHandler(async (req, res) => {
+    const email = req.ctx?.email
+    if (!email) throw new ApiError(401, "Nicht angemeldet")
+    await db.query(
+      "INSERT INTO disclaimer_acceptances (email, version) VALUES ($1, $2) ON CONFLICT (email, version) DO NOTHING",
+      [email, DISCLAIMER_VERSION],
+    )
+    res.status(201).json({ ok: true, version: DISCLAIMER_VERSION })
   }))
 
   return r

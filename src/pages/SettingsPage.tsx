@@ -1,7 +1,7 @@
 // Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
 import { useEffect, useState } from "react"
-import { Database, FlaskConical, KeyRound, LogOut, Mail, Signal } from "lucide-react"
+import { Database, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal } from "lucide-react"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -14,6 +14,7 @@ import { useProjectStore } from "@/store/projects"
 import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
+import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
 import type { FindingSeverity, MailPref } from "@/types/domain"
@@ -239,6 +240,7 @@ export function SettingsPage() {
   const extern = useContextStore((s) => s.extern)
   const mode = useDataSourceStore((s) => s.mode)
   const apiVersion = useDataSourceStore((s) => s.apiVersion)
+  const [showDisc, setShowDisc] = useState(false)
 
   return (
     <div className="h-full overflow-y-auto">
@@ -311,6 +313,22 @@ export function SettingsPage() {
             </Card>
           ) : null}
 
+          {/* Rechtliches — Haftungsausschluss jederzeit erneut ansehen. */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <ShieldAlert className="h-4 w-4 text-neutral-400" />
+                Rechtliches
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center justify-between gap-3">
+              <p className="text-sm text-neutral-600">Haftungsausschluss der Setreo Roadmap.</p>
+              <Button variant="outline" size="sm" onClick={() => setShowDisc(true)}>
+                Anzeigen
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* E-Mail-Benachrichtigungen (Opt-out) — nur live + mit Mandant. */}
           {mode === "live" ? <MailNotificationCard /> : null}
 
@@ -345,6 +363,7 @@ export function SettingsPage() {
           ) : null}
         </div>
       </PageContainer>
+      {showDisc ? <DisclaimerModal mode="view" onClose={() => setShowDisc(false)} /> : null}
     </div>
   )
 }
