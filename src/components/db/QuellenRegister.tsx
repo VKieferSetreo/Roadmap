@@ -107,6 +107,10 @@ export function QuellenRegister() {
         <Button variant="outline" size="sm" onClick={() => void status.refetch()} disabled={status.isFetching}>
           <RefreshCw className={cn("h-3.5 w-3.5", status.isFetching && "animate-spin")} /> Aktualisieren
         </Button>
+        <Button size="sm" onClick={() => void pingAlle()} loading={allPinging} disabled={mitConnector === 0}>
+          <Signal className="h-3.5 w-3.5" />
+          {allPinging ? "Pinge alle …" : `Alle anpingen (${mitConnector})`}
+        </Button>
       </div>
 
       {status.isLoading ? (
@@ -164,18 +168,6 @@ export function QuellenRegister() {
           </ul>
         </Card>
       )}
-
-      {/* Zentral: alle Quellen auf einmal anpingen (ganz unten). */}
-      <div className="flex justify-center pt-1">
-        <Button
-          onClick={() => void pingAlle()}
-          loading={allPinging}
-          disabled={!(status.data?.quellen ?? []).some((x) => x.connector)}
-        >
-          <Signal className="h-4 w-4" />
-          {allPinging ? "Pinge alle Quellen …" : `Alle Quellen anpingen (${(status.data?.quellen ?? []).filter((x) => x.connector).length})`}
-        </Button>
-      </div>
     </div>
   )
 }

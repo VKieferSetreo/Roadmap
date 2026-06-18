@@ -98,13 +98,13 @@ async function persistEvents(db, project, events) {
   })
 }
 
-// Wie viele Projekt-Reruns gleichzeitig laufen. Parallel (Max-Wunsch), aber
-// gedeckelt, damit der pg-Pool (max 10) nicht erschöpft wird und die API
-// während eines Syncs weiter Requests bedienen kann. 2 statt 4: jede runAnalysis
-// zieht den vollen Bounding-Box-Bestand (inkl. geom-jsonb) in den Heap — ×4 parallel
-// über alle Mandanten ließ den Container OOMen (sah aus wie DB-Crash). Plus: der
-// Advisory-Lock unten hält selbst eine Connection.
-const RERUN_CONCURRENCY = 2
+// Wie viele Projekt-Reruns gleichzeitig laufen. SEQUENZIELL (=1, Max 2026-06-18):
+// jede runAnalysis zieht den vollen Bounding-Box-Bestand (inkl. geom-jsonb) in den
+// Heap — schon ×2 parallel über alle Mandanten ließ den Container bei vielen Strecken
+// OOMen (sah aus wie DB-Crash). Bei künftig ~100 Strecken muss der Auto-Lauf eine
+// Strecke nach der anderen abarbeiten, statt DB-Pool/Heap parallel zu fluten.
+// Langsamer, aber robust — die Batch-Schleife unten läuft mit 1 trivial sequenziell.
+const RERUN_CONCURRENCY = 1
 
 // Prozessübergreifende Rerun-Sperre (siehe rerunAffectedProjects).
 const RERUN_LOCK_KEY = "roadmap_rerun_global"
@@ -137,8 +137,8 @@ async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
 
 /**
  * Fährt alle nicht-archivierten, bereits ausgewerteten Projekte (status='fertig')
- * mit ≥1 nutzbarer Strecke PARALLEL (gebündelt) neu und erzeugt Benachrichtigungen
- * aus dem Fund-Diff.
+ * mit ≥1 nutzbarer Strecke SEQUENZIELL (eine nach der anderen) neu und erzeugt
+ * Benachrichtigungen aus dem Fund-Diff.
  *
  * Serialisiert prozessübergreifend über einen nicht-blockierenden Advisory-XACT-Lock:
  * API-Sync-Rerun (sync.js) und Worker-Auto-Rerun (worker/index.js) laufen in GETRENNTEN
@@ -147,7 +147,7 @@ async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
  * kippt. Bekommt ein Lauf den Lock nicht, überspringt er (der nächste Sync/Cron holt es
  * nach). Der Lock hält bis zum COMMIT dieser tx (= Rerun-Ende), kein manuelles unlock.
  * ponytail: die Lock-tx hält ihre Connection für die Rerun-Dauer idle-in-transaction —
- * unkritisch bei RERUN_CONCURRENCY=2 und ohne idle_in_transaction_session_timeout.
+ * unkritisch bei RERUN_CONCURRENCY=1 (sequenziell) und ohne idle_in_transaction_session_timeout.
  *
  * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen, skipped?}>}
  */

@@ -42,7 +42,7 @@ import {
 } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { useProjectStore } from "@/store/projects"
-import { HIDE_REASON_LABEL, type Finding, type FindingSeverity, type HideReason, type Project } from "@/types/domain"
+import { HIDE_REASON_LABEL, type Finding, type FindingSeverity, type Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 // Recharts nur laden, wenn der Dashboard-Tab wirklich offen ist (Code-Splitting)

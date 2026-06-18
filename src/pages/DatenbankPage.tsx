@@ -24,11 +24,14 @@ export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
   const live = mode === "live"
   // Abdeckung + Quellenregister nur für Setreo-intern (kein externer Kunden-Gateway).
-  // Die "Ansicht" (Karte + Sync) ist immer sichtbar.
+  // Abdeckung zusätzlich nur für Admins (mxk/vki) — normale interne Nutzer brauchen nur
+  // Ansicht + Quellenregister (Max 2026-06-18). Die "Ansicht" (Karte + Sync) ist immer sichtbar.
   const intern = !useContextStore((s) => s.extern)
+  const isAdmin = useContextStore((s) => s.isAdmin)
   const [params, setParams] = useSearchParams()
   const wunsch = params.get("tab")
-  const tab = intern && (wunsch === "abdeckung" || wunsch === "quellen") ? wunsch : "ansicht"
+  const erlaubteTabs = intern ? (isAdmin ? ["abdeckung", "quellen"] : ["quellen"]) : []
+  const tab = wunsch && erlaubteTabs.includes(wunsch) ? wunsch : "ansicht"
   const { unreachable } = useSourceHealth()
 
   return (
@@ -56,9 +59,11 @@ export function DatenbankPage() {
                   </span>
                 ) : null}
               </TabsTrigger>
-              <TabsTrigger value="abdeckung">
-                <BarChart3 className="h-4 w-4" /> Abdeckung
-              </TabsTrigger>
+              {isAdmin ? (
+                <TabsTrigger value="abdeckung">
+                  <BarChart3 className="h-4 w-4" /> Abdeckung
+                </TabsTrigger>
+              ) : null}
               <TabsTrigger value="quellen">
                 <ListTree className="h-4 w-4" /> Quellenregister
               </TabsTrigger>

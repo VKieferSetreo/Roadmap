@@ -9,7 +9,7 @@ import L from "leaflet"
 import { renderToStaticMarkup } from "react-dom/server"
 import { MapPin as MapPinIcon } from "lucide-react"
 import type { FindingKategorie } from "@/types/domain"
-import { SIGN_DATA_URI, signUri } from "./signAssets"
+import { signUri } from "./signAssets"
 
 // Einheitliche Pin-Geometrie: 36×42, Kopf-Center (18,16), Spitze unten (18,42).
 const PIN_W = 36
