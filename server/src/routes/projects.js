@@ -4,12 +4,21 @@
 
 import { randomUUID } from "node:crypto"
 import { Router } from "express"
+import { createSemaphore } from "../concurrency.js"
 import { runAnalysis } from "../engine/index.js"
 import { logAnalyticsEvent } from "./analytics.js"
 import { downsample } from "../engine/fallback.js"
 import { rowToFinding, rowToProject } from "../map.js"
 import { hashPassword, rowToShareInfo } from "../shares.js"
 import { ApiError, asyncHandler, isFiniteNumber, isPlainObject, isUuid } from "../util.js"
+
+// Begrenzte Parallelität für manuelle Auswertungen (In-Process, eine API-Instanz): viele
+// gleichzeitige runAnalysis (Schwer-SELECT je Lauf) würden sonst Event-Loop + Heap überlasten
+// (OOM-Risiko bei ~100 parallelen Auswertungen). Weitere Läufe warten FIFO auf einen Slot.
+// Echte horizontale Skalierung später via DB-Queue (T-173 Vollausbau, nach T-162). Per
+// ANALYSIS_CONCURRENCY übersteuerbar.
+const ANALYSIS_CONCURRENCY = Number(process.env.ANALYSIS_CONCURRENCY ?? 4)
+const runAnalysisGated = createSemaphore(ANALYSIS_CONCURRENCY)
 
 // DEFAULT_TRANSPORT v2 (Contract: TransportData ohne fahrzeugTyp/ladung/achslast).
 export const DEFAULT_TRANSPORT = {
@@ -224,7 +233,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
 
     try {
-      await runAnalysis({ db, project: rowToProject(row, [], null), corridorM })
+      await runAnalysisGated(() => runAnalysis({ db, project: rowToProject(row, [], null), corridorM }))
     } catch (err) {
       if (err instanceof ApiError) throw err
       // Projekt bleibt unverändert (Persistenz ist transaktional). Loggen, damit
