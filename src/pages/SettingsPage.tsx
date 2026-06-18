@@ -17,7 +17,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { handleLogout } from "@/lib/auth"
 import { cn } from "@/lib/cn"
-import type { FindingSeverity, MailPref } from "@/types/domain"
+import type { AccountLicense, FindingSeverity, MailPref } from "@/types/domain"
 
 const MIN_PW_LEN = 10
 
@@ -234,6 +234,58 @@ function DbPingButton() {
   )
 }
 
+/** Eigene Mandanten-Lizenz: Plan, Laufzeit (mit Ablauf-Warnung), Seat-Belegung. */
+function LicenseCard() {
+  const [lic, setLic] = useState<AccountLicense | null>(null)
+  const [available, setAvailable] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    api.account
+      .license()
+      .then((l) => active && setLic(l))
+      .catch(() => active && setAvailable(false)) // kein Mandant o.ä. → Karte ausblenden
+    return () => {
+      active = false
+    }
+  }, [])
+
+  if (!available || !lic) return null
+
+  const expiry = (() => {
+    if (!lic.validUntil) return { cls: "bg-neutral-100 text-neutral-600", text: "unbefristet" }
+    const tage = Math.ceil((new Date(`${lic.validUntil}T23:59:59`).getTime() - Date.now()) / 86_400_000)
+    if (tage < 0) return { cls: "bg-severity-kritisch-bg text-severity-kritisch-text", text: `abgelaufen (${lic.validUntil})` }
+    if (tage <= 30) return { cls: "bg-severity-warnung-bg text-severity-warnung-text", text: `läuft in ${tage} Tag(en) ab (${lic.validUntil})` }
+    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${lic.validUntil}` }
+  })()
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <KeyRound className="h-4 w-4 text-neutral-400" />
+          Lizenz
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="rounded-md bg-neutral-100 px-2 py-1 font-medium capitalize text-neutral-700">
+            Plan: {lic.plan}
+          </span>
+          <span className="rounded-md bg-white px-2 py-1 font-medium text-neutral-700 ring-1 ring-neutral-200">
+            Seats: {lic.seatsUsed} / {Math.max(lic.maxSeats, lic.seatsTotal)}
+          </span>
+          <span className={`rounded-md px-2 py-1 font-medium ${expiry.cls}`}>{expiry.text}</span>
+        </div>
+        <p className="text-xs text-neutral-500">
+          Bei Fragen zur Lizenz oder Verlängerung wenden Sie sich an Ihren Setreo-Ansprechpartner.
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function SettingsPage() {
   const resetToSeed = useProjectStore((s) => s.resetToSeed)
   const identity = useAuthStore((s) => s.identity)
@@ -292,6 +344,10 @@ export function SettingsPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Eigene Lizenz — Plan, Laufzeit, Seat-Belegung (nur live + mit Mandant). */}
+          {mode === "live" ? <LicenseCard /> : null}
+
           {/* SSO-Konto — echte Anmelde-Identität vom Setreo-Hub (read-only). */}
           {identity ? (
             <Card>

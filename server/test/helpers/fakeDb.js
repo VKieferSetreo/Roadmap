@@ -166,6 +166,10 @@ export function createFakeDb() {
       state.seatCodes.push(row)
       return ok([row])
     }
+    if (sql.startsWith("SELECT count(*)::int AS total, count(used_by_email)::int AS used FROM seat_codes WHERE tenant_id = $1")) {
+      const codes = state.seatCodes.filter((s) => s.tenant_id === params[0])
+      return ok([{ total: codes.length, used: codes.filter((c) => c.used_by_email).length }])
+    }
     if (sql.startsWith("SELECT code, used_by_email, used_at FROM seat_codes WHERE tenant_id = $1")) {
       return ok(
         state.seatCodes

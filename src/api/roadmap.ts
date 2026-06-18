@@ -3,6 +3,7 @@
 
 import axiosClient from "./client"
 import type {
+  AccountLicense,
   AppNotification,
   AppStats,
   BugReport,
@@ -376,6 +377,8 @@ export const api = {
     /** Aktuellen Disclaimer akzeptieren. */
     acceptDisclaimer: () =>
       axiosClient<{ ok: true; version: string }>({ url: "/account/disclaimer", method: "POST" }),
+    /** Eigene Mandanten-Lizenz (Plan, Laufzeit, Seat-Belegung). */
+    license: () => axiosClient<AccountLicense>({ url: "/account/license", method: "GET" }),
   },
 }
 

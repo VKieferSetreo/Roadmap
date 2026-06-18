@@ -89,5 +89,27 @@ export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = n
     res.status(201).json({ ok: true, version: DISCLAIMER_VERSION })
   }))
 
+  /** Eigene Mandanten-Lizenz: Plan, Laufzeit, Seat-Belegung (für die Lizenz-Anzeige des Kunden). */
+  r.get("/license", asyncHandler(async (req, res) => {
+    const tenant = req.ctx?.tenant
+    if (!tenant) throw new ApiError(403, "kein-mandant")
+    const { rows } = await db.query(
+      "SELECT plan, max_seats, valid_until FROM tenants WHERE id = $1",
+      [tenant.id],
+    )
+    const lic = rows[0] ?? {}
+    const { rows: s } = await db.query(
+      "SELECT count(*)::int AS total, count(used_by_email)::int AS used FROM seat_codes WHERE tenant_id = $1",
+      [tenant.id],
+    )
+    res.json({
+      plan: lic.plan ?? "standard",
+      maxSeats: lic.max_seats ?? 0,
+      validUntil: lic.valid_until ?? null,
+      seatsTotal: s[0]?.total ?? 0,
+      seatsUsed: s[0]?.used ?? 0,
+    })
+  }))
+
   return r
 }

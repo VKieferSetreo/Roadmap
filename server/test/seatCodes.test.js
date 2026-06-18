@@ -102,4 +102,16 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     })
     expect(res.status).toBe(409)
   })
+
+  it("GET /api/account/license: eigener Mandant sieht Plan/Laufzeit/Seats (T-171)", async () => {
+    const { app, tenant } = makeApp({ requireAuth: true })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${tenant.id}/license`))
+      .send({ plan: "pro", maxSeats: 2, validUntil: "2027-06-30" })
+    await asAdmin(request(app).post(`/api/admin/tenants/${tenant.id}/seat-codes`)).send({})
+    const res = await asAdmin(request(app).get("/api/account/license"))
+    expect(res.status).toBe(200)
+    expect(res.body).toMatchObject({
+      plan: "pro", maxSeats: 2, validUntil: "2027-06-30", seatsTotal: 2, seatsUsed: 0,
+    })
+  })
 })

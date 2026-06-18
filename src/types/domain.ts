@@ -246,6 +246,15 @@ export interface News {
   publishedAt: string
 }
 
+/** Eigene Mandanten-Lizenz (Anzeige für den Kunden): Plan, Laufzeit, Seat-Belegung. */
+export interface AccountLicense {
+  plan: string
+  maxSeats: number
+  validUntil: string | null
+  seatsTotal: number
+  seatsUsed: number
+}
+
 /** Eintrag der zentralen Hindernis-Datenbank (Backend). Die Analyse-Engine matcht
  *  diese Einträge gegen den Strecken-Korridor und bewertet sie pro Transport. */
 export interface Obstacle {
