@@ -32,16 +32,29 @@ const gueltig = (f) => {
   return "unbefristet"
 }
 
-/** Empfänger eines Projekts: Mandanten-Mitglieder ohne Opt-out für diesen Mandanten. */
-async function recipientsFor(db, tenantId) {
+const ALL_SEV = ["kritisch", "warnung", "hinweis"]
+
+/** Mandanten-Mitglieder + ihre Mail-Präferenz (Default, wenn keine Zeile). */
+async function membersWithPrefs(db, tenantId) {
   if (!tenantId) return []
   const { rows } = await db.query(
-    `SELECT m.email FROM tenant_members m
-       WHERE m.tenant_id = $1
-         AND NOT EXISTS (SELECT 1 FROM mail_optout o WHERE o.tenant_id = $1 AND o.email = m.email)`,
+    `SELECT m.email,
+       COALESCE(p.enabled, true) AS enabled,
+       COALESCE(p.scope, 'eigene') AS scope,
+       COALESCE(p.severities, '["kritisch","warnung","hinweis"]'::jsonb) AS severities
+     FROM tenant_members m
+     LEFT JOIN mail_prefs p ON p.tenant_id = m.tenant_id AND p.email = m.email
+     WHERE m.tenant_id = $1`,
     [tenantId],
   )
-  return rows.map((r) => ({ email: r.email }))
+  return rows
+}
+
+/** Events auf die gewählten Schweregrade filtern. „weggefallen" (severity=info) über die
+ *  Severity des entfallenen Funds (e.finding.severity) berücksichtigen. */
+function filterEventsForSev(events, severities) {
+  const set = new Set(Array.isArray(severities) ? severities : ALL_SEV)
+  return events.filter((e) => set.has(e.severity) || set.has(e.finding?.severity))
 }
 
 function buildSubject(project, events) {
@@ -115,33 +128,33 @@ export async function sendProjectNotificationMail(
   // Früher Ausstieg wenn Mail nicht konfiguriert/aktiv → kein DB-Lookup (hält den
   // Auto-Rerun-Pfad ohne Mailjet komplett DB-neutral, u.a. für Tests).
   if (!mailEnabled(env)) return { sent: 0, skipped: true }
-  let recipients = []
+  let members = []
   try {
-    if (project.erstelltVon) {
-      // Mails NUR an den Projekt-Ersteller — nicht an alle Mandanten-Mitglieder (kein Spam, wenn
-      // viele Nutzer im selben Mandanten sind). Opt-out des Erstellers respektieren.
-      const { rows } = await db.query(
-        "SELECT 1 FROM mail_optout WHERE tenant_id = $1 AND email = $2",
-        [project.tenantId, project.erstelltVon],
-      )
-      recipients = rows.length ? [] : [{ email: project.erstelltVon }]
-    } else {
-      // Legacy-Projekte ohne hinterlegten Ersteller: bisher (alle Mitglieder minus Opt-out).
-      recipients = await recipientsFor(db, project.tenantId)
-    }
+    members = await membersWithPrefs(db, project.tenantId)
   } catch (err) {
     log(`mail: Empfänger-Lookup fehlgeschlagen — ${err?.message ?? err}`)
     return { sent: 0, error: "recipients" }
   }
-  if (recipients.length === 0) return { sent: 0, skipped: true }
 
-  return sendMail(
-    {
-      recipients,
-      subject: buildSubject(project, events),
-      html: buildHtml(project, events, env),
-      text: buildText(project, events, env),
-    },
-    { env, fetchImpl, log },
-  )
+  // Pro Mitglied nach Präferenz versenden: aktiv? Scope (eigene = nur Ersteller, alle = jedes
+  // Mandanten-Projekt)? Events auf die gewählten Schweregrade gefiltert? Jeder bekommt nur seine
+  // relevanten Änderungen — kein Spam, gezielt nach Kritikalität.
+  let totalSent = 0
+  for (const m of members) {
+    if (!m.enabled) continue
+    if (m.scope === "eigene" && project.erstelltVon !== m.email) continue
+    const evs = filterEventsForSev(events, m.severities)
+    if (evs.length === 0) continue
+    const res = await sendMail(
+      {
+        recipients: [{ email: m.email }],
+        subject: buildSubject(project, evs),
+        html: buildHtml(project, evs, env),
+        text: buildText(project, evs, env),
+      },
+      { env, fetchImpl, log },
+    )
+    totalSent += res?.sent ?? 0
+  }
+  return totalSent > 0 ? { sent: totalSent } : { sent: 0, skipped: true }
 }

@@ -14,6 +14,7 @@ import type {
   FindingSeverity,
   HideReason,
   HiddenFindingsResponse,
+  MailPref,
   Obstacle,
   ObstacleCreate,
   Project,
@@ -274,18 +275,11 @@ export const api = {
     /** Alle Nachrichten löschen (Papierkorb). */
     deleteAll: () =>
       axiosClient<{ deleted: number }>({ url: "/notifications", method: "DELETE" }),
-    /** Bekommt der Nutzer E-Mail-Benachrichtigungen? (Opt-out je Mandant + Adresse) */
-    mailPref: () =>
-      axiosClient<{ enabled: boolean }>({ url: "/notifications/mail-pref", method: "GET" }).then(
-        (r) => r.enabled,
-      ),
-    /** E-Mail-Benachrichtigungen ein-/ausschalten. */
-    setMailPref: (enabled: boolean) =>
-      axiosClient<{ enabled: boolean }>({
-        url: "/notifications/mail-pref",
-        method: "POST",
-        data: { enabled },
-      }),
+    /** E-Mail-Präferenz des Nutzers (an/aus, Scope eigene|alle, Schweregrade). */
+    mailPref: () => axiosClient<MailPref>({ url: "/notifications/mail-pref", method: "GET" }),
+    /** E-Mail-Präferenz setzen. */
+    setMailPref: (pref: MailPref) =>
+      axiosClient<MailPref>({ url: "/notifications/mail-pref", method: "POST", data: pref }),
   },
 
   // ── Bug-Reports (Melden: jeder; Liste/Triage: Admin) ───────────────────────

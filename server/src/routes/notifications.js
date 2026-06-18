@@ -54,32 +54,34 @@ export function notificationsRouter({ db }) {
     res.json({ deleted: result.rowCount })
   }))
 
-  // ── E-Mail-Benachrichtigungen (Opt-out je Mandant + eigene Adresse) ──────────
-  /** Bekommt der angemeldete Nutzer Mails? (enabled = NICHT in mail_optout) */
+  // ── E-Mail-Benachrichtigungs-Präferenz je (Mandant, Adresse) ────────────────
+  const ALL_SEV = ["kritisch", "warnung", "hinweis"]
+  const DEFAULT_PREF = { enabled: true, scope: "eigene", severities: ALL_SEV }
+
+  /** Präferenz des angemeldeten Nutzers (Default, wenn keine Zeile). */
   r.get("/mail-pref", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
-      "SELECT 1 FROM mail_optout WHERE tenant_id = $1 AND email = $2",
+      "SELECT enabled, scope, severities FROM mail_prefs WHERE tenant_id = $1 AND email = $2",
       [req.ctx.tenant.id, req.ctx.email],
     )
-    res.json({ enabled: rows.length === 0 })
+    if (rows.length === 0) return res.json(DEFAULT_PREF)
+    res.json({ enabled: rows[0].enabled, scope: rows[0].scope, severities: rows[0].severities })
   }))
 
-  /** E-Mail-Benachrichtigungen ein-/ausschalten (Opt-out setzen/entfernen). */
+  /** Präferenz setzen (an/aus, Scope eigene|alle, Schweregrade). */
   r.post("/mail-pref", asyncHandler(async (req, res) => {
-    const enabled = req.body?.enabled === true
-    if (enabled) {
-      await db.query(
-        "DELETE FROM mail_optout WHERE tenant_id = $1 AND email = $2",
-        [req.ctx.tenant.id, req.ctx.email],
-      )
-    } else {
-      await db.query(
-        `INSERT INTO mail_optout (tenant_id, email) VALUES ($1, $2)
-           ON CONFLICT (tenant_id, email) DO NOTHING`,
-        [req.ctx.tenant.id, req.ctx.email],
-      )
-    }
-    res.json({ enabled })
+    const enabled = req.body?.enabled !== false
+    const scope = req.body?.scope === "alle" ? "alle" : "eigene"
+    const sevIn = Array.isArray(req.body?.severities) ? req.body.severities : ALL_SEV
+    const severities = ALL_SEV.filter((s) => sevIn.includes(s))
+    await db.query(
+      `INSERT INTO mail_prefs (tenant_id, email, enabled, scope, severities)
+         VALUES ($1, $2, $3, $4, $5::jsonb)
+       ON CONFLICT (tenant_id, email)
+         DO UPDATE SET enabled = $3, scope = $4, severities = $5::jsonb`,
+      [req.ctx.tenant.id, req.ctx.email, enabled, scope, JSON.stringify(severities)],
+    )
+    res.json({ enabled, scope, severities })
   }))
 
   return r

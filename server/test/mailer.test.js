@@ -73,7 +73,7 @@ describe("Projekt-Benachrichtigungsmail", () => {
   })
 
   it("aktiv: Empfänger aus DB → Mail mit Projektname + Event im HTML", async () => {
-    const db = { query: vi.fn(async () => ({ rows: [{ email: "kunde@firma.de" }] })) }
+    const db = { query: vi.fn(async () => ({ rows: [{ email: "kunde@firma.de", enabled: true, scope: "alle", severities: ["kritisch", "warnung", "hinweis"] }] })) }
     const fetchImpl = okFetch()
     const r = await sendProjectNotificationMail({ db, project, events: [event()] }, { env: ENV_ON, fetchImpl })
     expect(r.sent).toBe(1)
@@ -95,5 +95,27 @@ describe("Projekt-Benachrichtigungsmail", () => {
     const db = { query: vi.fn() }
     const r = await sendProjectNotificationMail({ db, project, events: [] }, { env: ENV_ON })
     expect(r.skipped).toBe(true)
+  })
+
+  it("Präferenz: Scope 'eigene' bei fremdem Projekt → kein Versand", async () => {
+    const db = { query: vi.fn(async () => ({ rows: [{ email: "x@x.de", enabled: true, scope: "eigene", severities: ["kritisch"] }] })) }
+    const fetchImpl = okFetch()
+    const r = await sendProjectNotificationMail(
+      { db, project: { ...project, erstelltVon: "andere@x.de" }, events: [event()] },
+      { env: ENV_ON, fetchImpl },
+    )
+    expect(r.skipped).toBe(true)
+    expect(fetchImpl).not.toHaveBeenCalled()
+  })
+
+  it("Präferenz: Severity-Filter blendet nicht gewählte Schweregrade aus", async () => {
+    const db = { query: vi.fn(async () => ({ rows: [{ email: "x@x.de", enabled: true, scope: "alle", severities: ["kritisch"] }] })) }
+    const fetchImpl = okFetch()
+    const r = await sendProjectNotificationMail(
+      { db, project, events: [event({ severity: "hinweis" })] },
+      { env: ENV_ON, fetchImpl },
+    )
+    expect(r.skipped).toBe(true)
+    expect(fetchImpl).not.toHaveBeenCalled()
   })
 })

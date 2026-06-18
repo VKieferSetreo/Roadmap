@@ -1,22 +1,22 @@
 // Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
 import { useEffect, useState } from "react"
-import { Database, FlaskConical, KeyRound, LogOut, Mail } from "lucide-react"
+import { Database, FlaskConical, KeyRound, LogOut, Mail, Signal } from "lucide-react"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Input, Label } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
 import { Switch } from "@/components/ui/Switch"
 import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
 import { api } from "@/api/roadmap"
-import { TILE_LAYERS, useSettingsStore, type TileStyle } from "@/store/settings"
+import { SEVERITY_META } from "@/components/project/findingMeta"
 import { useProjectStore } from "@/store/projects"
 import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { handleLogout } from "@/lib/auth"
+import { cn } from "@/lib/cn"
+import type { FindingSeverity, MailPref } from "@/types/domain"
 
 const MIN_PW_LEN = 10
 
@@ -91,35 +91,47 @@ function ChangePasswordCard() {
   )
 }
 
-/** E-Mail-Benachrichtigungen bei neuen/geänderten Funden auf den eigenen Strecken. */
+const MAIL_SEVS: { key: FindingSeverity; label: string }[] = [
+  { key: "kritisch", label: "Kritisch" },
+  { key: "warnung", label: "Warnung" },
+  { key: "hinweis", label: "Hinweis" },
+]
+
+/** E-Mail-Benachrichtigungen: an/aus + nach welcher Kritikalität + für welche Projekte. */
 function MailNotificationCard() {
-  const [enabled, setEnabled] = useState<boolean | null>(null)
+  const [pref, setPref] = useState<MailPref | null>(null)
   const [available, setAvailable] = useState(true)
 
   useEffect(() => {
     let active = true
     api.notifications
       .mailPref()
-      .then((v) => active && setEnabled(v))
+      .then((p) => active && setPref(p))
       .catch(() => active && setAvailable(false)) // kein Mandant o.ä. → Karte ausblenden
     return () => {
       active = false
     }
   }, [])
 
-  const toggle = async (next: boolean) => {
-    const prev = enabled
-    setEnabled(next) // optimistisch
+  const save = async (next: MailPref) => {
+    const prev = pref
+    setPref(next) // optimistisch
     try {
       await api.notifications.setMailPref(next)
-      toast.success(next ? "E-Mail-Benachrichtigungen aktiviert." : "E-Mail-Benachrichtigungen deaktiviert.")
     } catch {
-      setEnabled(prev ?? null)
+      setPref(prev)
       toast.error("Einstellung konnte nicht gespeichert werden.")
     }
   }
 
-  if (!available || enabled === null) return null
+  if (!available || !pref) return null
+  const toggleSev = (s: FindingSeverity) =>
+    void save({
+      ...pref,
+      severities: pref.severities.includes(s)
+        ? pref.severities.filter((x) => x !== s)
+        : [...pref.severities, s],
+    })
 
   return (
     <Card>
@@ -129,22 +141,99 @@ function MailNotificationCard() {
           Benachrichtigungen
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-neutral-800">E-Mail bei neuen Funden</p>
-          <p className="text-xs text-neutral-500">
-            Wir schicken Ihnen eine E-Mail, wenn auf einer Ihrer ausgewerteten Strecken ein neuer
-            Fund auftaucht, sich etwas ändert oder ein Fund entfällt.
-          </p>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-neutral-800">E-Mail bei neuen Funden</p>
+            <p className="text-xs text-neutral-500">
+              E-Mail, wenn auf einer ausgewerteten Strecke ein Fund neu auftaucht, sich ändert oder entfällt.
+            </p>
+          </div>
+          <Switch
+            checked={pref.enabled}
+            onCheckedChange={(v) => void save({ ...pref, enabled: v })}
+            ariaLabel="E-Mail-Benachrichtigungen"
+          />
         </div>
-        <Switch checked={enabled} onCheckedChange={(v) => void toggle(v)} ariaLabel="E-Mail-Benachrichtigungen" />
+
+        {pref.enabled ? (
+          <>
+            <div className="border-t border-neutral-100 pt-3">
+              <p className="mb-2 text-xs font-medium text-neutral-500">Bei welcher Kritikalität</p>
+              <div className="flex flex-wrap gap-2">
+                {MAIL_SEVS.map((s) => {
+                  const on = pref.severities.includes(s.key)
+                  return (
+                    <label
+                      key={s.key}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors",
+                        on ? SEVERITY_META[s.key].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                      )}
+                    >
+                      <input type="checkbox" checked={on} onChange={() => toggleSev(s.key)} className="h-4 w-4 accent-primary-600" />
+                      {s.label}
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="border-t border-neutral-100 pt-3">
+              <p className="mb-2 text-xs font-medium text-neutral-500">Für welche Projekte</p>
+              <div className="flex flex-col gap-1.5">
+                {([
+                  ["eigene", "Nur meine eigenen Projekte"],
+                  ["alle", "Alle Projekte des Mandanten"],
+                ] as const).map(([val, label]) => (
+                  <label key={val} className="flex cursor-pointer items-center gap-2 text-sm text-neutral-700">
+                    <input
+                      type="radio"
+                      name="mail-scope"
+                      checked={pref.scope === val}
+                      onChange={() => void save({ ...pref, scope: val })}
+                      className="h-4 w-4 accent-primary-600"
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </CardContent>
     </Card>
   )
 }
 
+/** Pingt unsere eigene Datenbank/Backend (Health) — erreichbar? Wie schnell? */
+function DbPingButton() {
+  const [state, setState] = useState<{ loading?: boolean; ms?: number; ok?: boolean } | null>(null)
+  const ping = async () => {
+    setState({ loading: true })
+    const t0 = performance.now()
+    try {
+      const h = await api.health()
+      setState({ ok: h.db === true, ms: Math.round(performance.now() - t0) })
+    } catch {
+      setState({ ok: false, ms: Math.round(performance.now() - t0) })
+    }
+  }
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-1">
+      <Button variant="outline" size="sm" onClick={() => void ping()} disabled={state?.loading}>
+        <Signal className={cn("h-3.5 w-3.5", state?.loading && "animate-pulse")} />
+        {state?.loading ? "Prüfe …" : "Datenbank anpingen"}
+      </Button>
+      {state && !state.loading ? (
+        <span className={cn("text-xs tabular-nums", state.ok ? "text-severity-hinweis-strong" : "text-severity-kritisch")}>
+          {state.ok ? `erreichbar · ${state.ms} ms` : "nicht erreichbar"}
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
 export function SettingsPage() {
-  const { tileStyle, autoFit, setTileStyle, setAutoFit } = useSettingsStore()
   const resetToSeed = useProjectStore((s) => s.resetToSeed)
   const identity = useAuthStore((s) => s.identity)
   const extern = useContextStore((s) => s.extern)
@@ -170,7 +259,7 @@ export function SettingsPage() {
                   <span className="mt-0.5 rounded-lg bg-primary-50 p-2 text-primary-700">
                     <Database className="h-5 w-5" />
                   </span>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="flex items-center gap-2 text-sm font-medium text-neutral-900">
                       Live-Datenbank verbunden
                       <span className="relative flex h-2 w-2">
@@ -179,11 +268,10 @@ export function SettingsPage() {
                       </span>
                     </p>
                     <p className="mt-0.5 text-xs text-neutral-500">
-                      Projekte, Analysen und die Hindernis-Datenbank laufen über das Roadmap-Backend
-                      {apiVersion ? ` (v${apiVersion})` : ""}. Analysen matchen den
-                      Strecken-Korridor gegen die zentrale Hindernis-Datenbank.
+                      Version {apiVersion ? `v${apiVersion}` : "—"}
                     </p>
                   </div>
+                  <DbPingButton />
                 </>
               ) : (
                 <>
@@ -213,18 +301,6 @@ export function SettingsPage() {
                   <p className="text-xs text-neutral-500">Angemeldet als</p>
                   <p className="text-sm font-medium text-neutral-900">{identity.email}</p>
                 </div>
-                {identity.roles.length > 0 ? (
-                  <div className="flex flex-col gap-1.5">
-                    <p className="text-xs text-neutral-500">Freigeschaltete Tools</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {identity.roles.map((r) => (
-                        <Badge key={r} variant="muted" size="sm">
-                          {r}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
                 <div>
                   <Button variant="outline" onClick={handleLogout}>
                     <LogOut className="mr-1.5 h-4 w-4" />
@@ -241,40 +317,6 @@ export function SettingsPage() {
           {/* Passwort ändern — nur externe Kunden-Accounts. Interne Setreo-Konten
               verwalten ihr Passwort im Setreo-Hub, nicht hier. */}
           {extern ? <ChangePasswordCard /> : null}
-
-          {/* Karte */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Karte</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="tile">Kartenstil</Label>
-                <Select
-                  id="tile"
-                  value={tileStyle}
-                  onChange={(e) => setTileStyle(e.target.value as TileStyle)}
-                >
-                  {Object.entries(TILE_LAYERS).map(([key, t]) => (
-                    <option key={key} value={key}>
-                      {t.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-neutral-800">
-                    Strecke automatisch einpassen
-                  </p>
-                  <p className="text-xs text-neutral-500">
-                    Kartenausschnitt beim Öffnen auf die gesamte Route zoomen.
-                  </p>
-                </div>
-                <Switch checked={autoFit} onCheckedChange={setAutoFit} ariaLabel="Auto-Einpassen" />
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Demo-Daten — nur relevant ohne Backend */}
           {mode !== "live" ? (

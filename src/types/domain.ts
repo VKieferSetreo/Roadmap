@@ -376,6 +376,13 @@ export interface SyncJob {
 
 export type BugReportStatus = "offen" | "in_arbeit" | "erledigt" | "verworfen"
 
+/** E-Mail-Benachrichtigungs-Präferenz des Nutzers. */
+export interface MailPref {
+  enabled: boolean
+  scope: "eigene" | "alle"
+  severities: FindingSeverity[]
+}
+
 /** Automatisch erfasster Kontext-Snapshot zum Meldezeitpunkt. */
 export interface BugReportKontext {
   appVersion?: string
