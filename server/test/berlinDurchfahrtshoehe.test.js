@@ -1,29 +1,37 @@
-// Berlin Durchfahrtshöhen (0133): GeoJSON-Mapping → bruecke + maxHoeheM, EPSG:4326 (kein Reproj).
+// Berlin Durchfahrtshöhen (0133): Raster-Cluster je ~33m, niedrigste Höhe je Ort behalten.
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { berlinDurchfahrtshoehenConnector as conn } from "../src/connectors/0133_berlin_durchfahrtshoehe.js"
 
 const fc = {
   type: "FeatureCollection",
-  numberMatched: 3,
+  numberMatched: 4,
   features: [
+    // Zwei Punkte am selben Ort (fahrstreifenscharf): nur das Minimum (3,8) bleibt.
     {
       type: "Feature",
       id: "al_durchfahrtshoehe.1",
-      geometry: { type: "Point", coordinates: [13.40018958, 52.49014675] },
-      properties: { bezeichnun: "Durchfahrtshoehe", gis_id: "Pk_1", hoehe: 5.2 },
+      geometry: { type: "Point", coordinates: [13.40018, 52.49014] },
+      properties: { hoehe: 4.2 },
     },
     {
       type: "Feature",
       id: "al_durchfahrtshoehe.2",
-      geometry: { type: "Point", coordinates: [13.4005, 52.4906] },
-      properties: { gis_id: "Pk_2", hoehe: 3 },
+      geometry: { type: "Point", coordinates: [13.40019, 52.49015] },
+      properties: { hoehe: 3.8 },
     },
-    // ohne verwertbare Höhe → kein Fund
+    // Klar entfernter Ort (~1 km) → eigene Zelle.
     {
       type: "Feature",
       id: "al_durchfahrtshoehe.3",
-      geometry: { type: "Point", coordinates: [13.41, 52.5] },
-      properties: { gis_id: "Pk_3", hoehe: 0 },
+      geometry: { type: "Point", coordinates: [13.42, 52.5] },
+      properties: { hoehe: 5 },
+    },
+    // ohne verwertbare Höhe → verworfen
+    {
+      type: "Feature",
+      id: "al_durchfahrtshoehe.4",
+      geometry: { type: "Point", coordinates: [13.43, 52.51] },
+      properties: { hoehe: 0 },
     },
   ],
 }
@@ -31,21 +39,22 @@ const fc = {
 afterEach(() => vi.restoreAllMocks())
 
 describe("Berlin Durchfahrtshöhen 0133", () => {
-  it("mappt Höhenpunkte → bruecke mit maxHoeheM (WGS84, kein Reproj), droppt hoehe<=0", async () => {
+  it("clustert je ~33m und behält die niedrigste (bindende) Höhe", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => fc })
     const { obstacles } = await conn.fetch({ timeoutMs: 1000 })
 
-    expect(obstacles).toHaveLength(2) // Pk_3 (hoehe 0) verworfen
+    // 2 Orte: der zusammengefasste Punkt 1/2 + der entfernte Punkt 3; Punkt 4 (hoehe 0) raus.
+    expect(obstacles).toHaveLength(2)
 
-    const a = obstacles[0]
-    expect(a.kategorie).toBe("bruecke")
-    expect(a.externeId).toBe("al_durchfahrtshoehe.1")
-    expect(a.name).toBe("Durchfahrtshöhe 5,2 m")
-    expect(a.lat).toBeCloseTo(52.49014675, 6)
-    expect(a.lng).toBeCloseTo(13.40018958, 6)
-    expect(a.attrs.maxHoeheM).toBe(5.2)
-    expect(a.kiAufbereitet).toBe(false) // strukturierte Quelle, keine Freitext-Extraktion
+    const tief = obstacles.find((o) => o.attrs.maxHoeheM === 3.8)
+    expect(tief).toBeTruthy()
+    expect(tief.kategorie).toBe("bruecke")
+    expect(tief.name).toBe("Durchfahrtshöhe 3,8 m") // Minimum gewinnt
+    expect(tief.externeId).toMatch(/^be-h#/) // rasterstabile ID
+    expect(tief.kiAufbereitet).toBe(false)
 
-    expect(obstacles[1].attrs.maxHoeheM).toBe(3)
+    expect(obstacles.find((o) => o.attrs.maxHoeheM === 5)).toBeTruthy()
+    // Der 4,2er Punkt wurde vom 3,8er verdrängt (selbe Zelle)
+    expect(obstacles.find((o) => o.attrs.maxHoeheM === 4.2)).toBeFalsy()
   })
 })

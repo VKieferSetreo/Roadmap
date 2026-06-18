@@ -24,6 +24,7 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useContextStore } from "@/store/context"
 import { useSettingsStore } from "@/store/settings"
+import { useNewsStore } from "@/store/news"
 import { ProjectTree } from "@/components/layout/ProjectTree"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { handleLogout } from "@/lib/auth"
@@ -38,9 +39,11 @@ interface NavRowProps {
   /** Warn-Indikator (rotes „!") — z.B. Datenquellen nicht erreichbar. */
   warn?: boolean
   warnTitle?: string
+  /** Roter Zähler-Punkt (ungelesene News). 0/undefined = aus. */
+  badge?: number
 }
 
-function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle }: NavRowProps) {
+function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle, badge }: NavRowProps) {
   return (
     <button
       onClick={onClick}
@@ -62,6 +65,13 @@ function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle }: NavRowP
         >
           !
         </span>
+      ) : badge && badge > 0 ? (
+        <span
+          aria-label={`${badge} ungelesene News`}
+          className="ml-auto flex h-4 min-w-[16px] shrink-0 items-center justify-center rounded-full bg-severity-kritisch px-1 text-[10px] font-bold leading-none text-white"
+        >
+          {badge > 99 ? "99+" : badge}
+        </span>
       ) : null}
     </button>
   )
@@ -73,6 +83,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const projects = useProjectStore((s) => s.projects ?? [])
   const openNewProject = useUiStore((s) => s.openNewProject)
   const requestNewFolder = useUiStore((s) => s.requestNewFolder)
+  // Ungelesene News (reaktiv über news + seenAt) → roter Zähler am News-Nav.
+  const unreadNews = useNewsStore((s) =>
+    s.seenAt === null ? s.news.length : s.news.filter((n) => n.publishedAt > s.seenAt!).length,
+  )
   const isAdmin = useContextStore((s) => s.isAdmin)
   const tenant = useContextStore((s) => s.tenant)
   // Admin-Werkzeuge (Mandanten/Debugging) NUR im eigenen Setreo-Kontext zeigen. Wechselt der
@@ -188,7 +202,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {adminKontext ? (
           <NavRow icon={Bug} label="Debugging" active={onDebug} onClick={() => go("/debugging")} />
         ) : null}
-        <NavRow icon={Newspaper} label="News" active={onNews} onClick={() => go("/news")} />
+        <NavRow icon={Newspaper} label="News" active={onNews} onClick={() => go("/news")} badge={unreadNews} />
         <NavRow
           icon={Settings}
           label="Einstellungen"

@@ -51,11 +51,46 @@ export function foldersRouter({ db }) {
     )
     const folder = cur.rows[0]
     if (!folder) throw new ApiError(404, "Ordner nicht gefunden")
+
     const name = req.body?.name !== undefined ? String(req.body.name).trim() : folder.name
     if (!name) throw new ApiError(400, "name darf nicht leer sein")
+
+    // Verschieben (Drag-n-Drop): parentId = null (Wurzel) oder ein anderer Ordner.
+    let parentId = folder.parent_id
+    if (req.body?.parentId !== undefined) {
+      parentId = req.body.parentId ?? null
+      if (parentId != null) {
+        if (parentId === folder.id) throw new ApiError(400, "Ordner kann nicht in sich selbst")
+        await assertParent(db, parentId, req.ctx.tenant.id)
+        // Zyklus verhindern: das Ziel darf kein Nachfahre dieses Ordners sein.
+        const all = await db.query(
+          "SELECT id, parent_id FROM folders WHERE tenant_id = $1",
+          [req.ctx.tenant.id],
+        )
+        const childrenOf = new Map()
+        for (const r2 of all.rows) {
+          if (!childrenOf.has(r2.parent_id)) childrenOf.set(r2.parent_id, [])
+          childrenOf.get(r2.parent_id).push(r2.id)
+        }
+        const descendants = new Set()
+        const stack = [folder.id]
+        while (stack.length) {
+          for (const c of childrenOf.get(stack.pop()) ?? []) {
+            if (!descendants.has(c)) {
+              descendants.add(c)
+              stack.push(c)
+            }
+          }
+        }
+        if (descendants.has(parentId)) {
+          throw new ApiError(400, "Ordner kann nicht in einen eigenen Unterordner verschoben werden")
+        }
+      }
+    }
+
     const { rows } = await db.query(
-      "UPDATE folders SET name = $2 WHERE id = $1 RETURNING *",
-      [folder.id, name],
+      "UPDATE folders SET name = $2, parent_id = $3 WHERE id = $1 RETURNING *",
+      [folder.id, name, parentId],
     )
     res.json(rowToFolder(rows[0]))
   }))

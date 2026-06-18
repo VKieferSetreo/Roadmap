@@ -15,6 +15,8 @@ interface FolderStore {
   loadFolders: () => Promise<void>
   createFolder: (name: string, parentId?: string | null) => Promise<Folder | null>
   renameFolder: (id: string, name: string) => void
+  /** Ordner verschieben (Drag-n-Drop): parentId = Zielordner oder null (Wurzel). */
+  moveFolder: (id: string, parentId: string | null) => void
   removeFolder: (id: string) => void
 }
 
@@ -57,6 +59,18 @@ export const useFolderStore = create<FolderStore>()((set, get) => ({
     if (isLive()) {
       api.folders.rename(id, clean).catch(() => {
         toast.error("Umbenennen fehlgeschlagen.")
+        set({ folders: prev })
+      })
+    }
+  },
+
+  moveFolder: (id, parentId) => {
+    const prev = get().folders
+    if ((prev.find((f) => f.id === id)?.parentId ?? null) === (parentId ?? null)) return
+    set((s) => ({ folders: s.folders.map((f) => (f.id === id ? { ...f, parentId } : f)) }))
+    if (isLive()) {
+      api.folders.move(id, parentId).catch(() => {
+        toast.error("Ordner verschieben fehlgeschlagen.")
         set({ folders: prev })
       })
     }

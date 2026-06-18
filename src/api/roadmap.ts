@@ -362,6 +362,9 @@ export const api = {
       axiosClient<Folder>({ url: "/folders", method: "POST", data: { name, parentId: parentId ?? null } }),
     rename: (id: string, name: string) =>
       axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { name } }),
+    /** Ordner verschieben: parentId = anderer Ordner oder null (Wurzel). */
+    move: (id: string, parentId: string | null) =>
+      axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { parentId } }),
     remove: (id: string) => axiosClient<void>({ url: `/folders/${id}`, method: "DELETE" }),
   },
 

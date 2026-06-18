@@ -11,6 +11,7 @@ import { Input, Label, Textarea } from "@/components/ui/Input"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
+import { useNewsStore } from "@/store/news"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import { formatRelativeDE } from "@/lib/format"
@@ -32,10 +33,15 @@ export function NewsPage() {
   const [body, setBody] = useState("")
   const [busy, setBusy] = useState(false)
 
+  const syncNews = useNewsStore((s) => s.loadNews)
+  const markAllSeen = useNewsStore((s) => s.markAllSeen)
+
   const load = async () => {
     setLoading(true)
     try {
       setItems(await api.news.list())
+      await syncNews() // Store mitziehen, damit der Ungelesen-Zähler stimmt
+      markAllSeen() // Öffnen der Seite = alles gelesen → roter Punkt verschwindet
     } catch {
       // Liste leer lassen — Fehler ist hier nicht kritisch.
     } finally {
@@ -45,13 +51,11 @@ export function NewsPage() {
 
   useEffect(() => {
     if (mode === "live") void load()
-    else setLoading(false)
-    // Gelesen-Stempel (für eine spätere Ungelesen-Markierung in der Navigation).
-    try {
-      window.localStorage.setItem("roadmap-news-seen", new Date().toISOString())
-    } catch {
-      // localStorage nicht verfügbar
+    else {
+      setLoading(false)
+      markAllSeen()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
 
   const publish = async () => {

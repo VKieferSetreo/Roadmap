@@ -54,6 +54,34 @@ describe("Folders API (T-177)", () => {
     expect(after.body.folderId).toBe(null) // Projekt überlebt, Zuordnung weg
   })
 
+  it("verschiebt einen Ordner per parentId und wieder zur Wurzel", async () => {
+    const { app } = makeApp()
+    const a = (await request(app).post("/api/folders").send({ name: "A" })).body
+    const b = (await request(app).post("/api/folders").send({ name: "B" })).body
+
+    const into = await request(app).patch(`/api/folders/${b.id}`).send({ parentId: a.id })
+    expect(into.status).toBe(200)
+    expect(into.body.parentId).toBe(a.id)
+
+    const out = await request(app).patch(`/api/folders/${b.id}`).send({ parentId: null })
+    expect(out.status).toBe(200)
+    expect(out.body.parentId).toBe(null)
+  })
+
+  it("verhindert Zyklen: Ordner kann nicht in seinen eigenen Unterordner", async () => {
+    const { app } = makeApp()
+    const parent = (await request(app).post("/api/folders").send({ name: "Parent" })).body
+    const child = (await request(app).post("/api/folders").send({ name: "Child", parentId: parent.id })).body
+
+    // parent unter child schieben → Zyklus → 400
+    const cyc = await request(app).patch(`/api/folders/${parent.id}`).send({ parentId: child.id })
+    expect(cyc.status).toBe(400)
+
+    // in sich selbst → 400
+    const self = await request(app).patch(`/api/folders/${parent.id}`).send({ parentId: parent.id })
+    expect(self.status).toBe(400)
+  })
+
   it("weist Projekt einem fremden Ordner ab (404)", async () => {
     const { app } = makeApp()
     const project = await createProject(app, "P3")

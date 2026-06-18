@@ -312,6 +312,13 @@ export function createFakeDb() {
           .map((f) => ({ id: f.id })),
       )
     }
+    if (sql.startsWith("SELECT id, parent_id FROM folders WHERE tenant_id = $1")) {
+      return ok(
+        state.folders
+          .filter((f) => f.tenant_id === params[0])
+          .map((f) => ({ id: f.id, parent_id: f.parent_id ?? null })),
+      )
+    }
     if (sql.startsWith("SELECT * FROM folders WHERE id = $1 AND tenant_id = $2")) {
       return ok(state.folders.filter((f) => f.id === params[0] && f.tenant_id === params[1]))
     }
@@ -327,10 +334,11 @@ export function createFakeDb() {
       state.folders.push(row)
       return ok([row])
     }
-    if (sql.startsWith("UPDATE folders SET name = $2 WHERE id = $1")) {
+    if (sql.startsWith("UPDATE folders SET name = $2, parent_id = $3 WHERE id = $1")) {
       const row = state.folders.find((f) => f.id === params[0])
       if (!row) return ok([])
       row.name = params[1]
+      row.parent_id = params[2] ?? null
       return ok([row])
     }
     if (sql.startsWith("DELETE FROM folders WHERE id = $1 AND tenant_id = $2")) {
@@ -399,11 +407,11 @@ export function createFakeDb() {
     if (sql.startsWith("UPDATE projects SET status = $2,")) {
       const row = state.projects.find((p) => p.id === params[0])
       if (!row) return ok([], 0)
+      // updated_at bewusst NICHT anfassen (Analyse ist keine Nutzer-Bearbeitung, T-181).
       Object.assign(row, {
         status: params[1],
         distanz_km: params[2],
         fahrzeit_min: params[3],
-        updated_at: now(),
       })
       return ok([], 1)
     }

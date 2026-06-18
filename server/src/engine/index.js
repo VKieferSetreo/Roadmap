@@ -231,9 +231,12 @@ export async function runAnalysis({ db, project, corridorM = 20 }) {
           ],
         )
       }
+      // updated_at NICHT anfassen: die Analyse (v.a. der nächtliche Auto-Rerun über ALLE
+      // Projekte) ist keine Nutzer-Bearbeitung. Würde sie updated_at hochziehen, landeten
+      // alle Projekte auf der Sync-Zeit und die „zuletzt bearbeitet"-Sortierung auf Home
+      // wäre wertlos. updated_at bleibt damit = letzte echte Nutzer-Änderung (T-181).
       await q.query(
-        `UPDATE projects SET status = $2, distanz_km = $3, fahrzeit_min = $4,
-           updated_at = now() WHERE id = $1`,
+        `UPDATE projects SET status = $2, distanz_km = $3, fahrzeit_min = $4 WHERE id = $1`,
         [project.id, "fertig", result.distanzKm, result.fahrzeitMin],
       )
     })

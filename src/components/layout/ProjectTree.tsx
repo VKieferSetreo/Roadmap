@@ -37,6 +37,9 @@ interface TreeCtx {
   openTo: (id: string, depth: number, parent?: string) => void
   dragId: string | null
   setDragId: (id: string | null) => void
+  dragFolderId: string | null
+  setDragFolderId: (id: string | null) => void
+  canDropFolder: (draggedId: string, targetId: string | null) => boolean
   dragOver: string | null
   setDragOver: (v: string | null) => void
   drop: (folderId: string | null) => void
@@ -160,11 +163,22 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
   const over = ctx.dragOver === id
   const indent = depth * 14
 
+  // Gültiges Drop-Ziel? Projekt immer; Ordner nur, wenn nicht er selbst / kein eigener Nachfahre.
+  const accepts = ctx.dragId != null || (ctx.dragFolderId != null && ctx.canDropFolder(ctx.dragFolderId, id))
+
   return (
     <div className="select-none">
       <div
+        draggable={!isRenaming}
+        onDragStart={(e) => {
+          e.stopPropagation()
+          e.dataTransfer.effectAllowed = "move"
+          e.dataTransfer.setData("text/plain", `folder:${id}`)
+          ctx.setDragFolderId(id)
+        }}
+        onDragEnd={() => ctx.setDragFolderId(null)}
         onDragOver={(e) => {
-          if (!ctx.dragId) return
+          if (!accepts) return
           e.preventDefault()
           e.stopPropagation()
           ctx.setDragOver(id)
@@ -172,13 +186,14 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
         }}
         onDragLeave={() => ctx.setDragOver(ctx.dragOver === id ? null : ctx.dragOver)}
         onDrop={(e) => {
+          if (!accepts) return
           e.preventDefault()
           e.stopPropagation()
           ctx.drop(id)
         }}
         className={cn(
           "group/folder relative flex items-center rounded-md pr-1 transition-colors",
-          over ? "bg-primary-100 ring-1 ring-primary-300" : "hover:bg-neutral-100",
+          over && accepts ? "bg-primary-100 ring-1 ring-primary-300" : "hover:bg-neutral-100",
         )}
         style={{ paddingLeft: indent }}
       >
@@ -287,10 +302,12 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const folders = useFolderStore((s) => s.folders)
   const createFolder = useFolderStore((s) => s.createFolder)
   const renameFolder = useFolderStore((s) => s.renameFolder)
+  const moveFolder = useFolderStore((s) => s.moveFolder)
   const removeFolder = useFolderStore((s) => s.removeFolder)
 
   const [openPath, setOpenPath] = useState<string[]>([])
   const [dragId, setDragId] = useState<string | null>(null)
+  const [dragFolderId, setDragFolderId] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState<string | null>(null)
   const [creatingIn, setCreatingIn] = useState<string | null | undefined>(undefined)
   const [newName, setNewName] = useState("")
@@ -344,6 +361,20 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const childrenOf = (id: string) => folders.filter((f) => f.parentId === id)
   const projectsIn = (folderId: string | null) => aktive.filter((p) => (p.folderId ?? null) === folderId)
 
+  // Ein Ordner darf nicht in sich selbst oder einen eigenen Nachfahren gezogen werden (Zyklus).
+  const canDropFolder = (draggedId: string, targetId: string | null) => {
+    if (targetId == null) return true // auf Wurzel lösen ist immer erlaubt
+    if (targetId === draggedId) return false
+    const stack = [draggedId]
+    while (stack.length) {
+      for (const c of childrenOf(stack.pop() as string)) {
+        if (c.id === targetId) return false
+        stack.push(c.id)
+      }
+    }
+    return true
+  }
+
   const commitCreate = async () => {
     const parentId = creatingIn ?? null
     const name = newName.trim()
@@ -365,11 +396,16 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     openTo: (id, depth, parent) => setOpenPath(depth === 0 ? [id] : [parent as string, id]),
     dragId,
     setDragId,
+    dragFolderId,
+    setDragFolderId,
+    canDropFolder,
     dragOver,
     setDragOver,
     drop: (folderId) => {
-      if (dragId) setProjectFolder(dragId, folderId)
+      if (dragFolderId && canDropFolder(dragFolderId, folderId)) moveFolder(dragFolderId, folderId)
+      else if (dragId) setProjectFolder(dragId, folderId)
       setDragId(null)
+      setDragFolderId(null)
       setDragOver(null)
     },
     renaming,
@@ -428,10 +464,11 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
         />
       ) : null}
 
-      {/* Wurzel-Projekte (ohne Ordner) — zugleich Drop-Zone „auf Wurzelebene" */}
+      {/* Wurzel-Projekte (ohne Ordner) — zugleich Drop-Zone „auf Wurzelebene"
+          (Projekt aus Ordner lösen ODER Unterordner zum Überordner machen). */}
       <div
         onDragOver={(e) => {
-          if (!dragId) return
+          if (!dragId && !dragFolderId) return
           e.preventDefault()
           setDragOver(ROOT)
         }}
@@ -443,7 +480,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
         className={cn(
           "mt-0.5 flex flex-col gap-0.5 rounded-md",
           rootOver && "bg-primary-50 ring-1 ring-primary-200",
-          dragId && rootFolders.length ? "min-h-[28px]" : "",
+          (dragId || dragFolderId) && rootFolders.length ? "min-h-[32px]" : "",
         )}
       >
         {rootProjects.map((p) => (
@@ -456,8 +493,8 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
             setDragId={setDragId}
           />
         ))}
-        {dragId && rootFolders.length && !rootProjects.length ? (
-          <p className="px-3 py-1 text-center text-xs text-neutral-400">Hierher = aus Ordner lösen</p>
+        {(dragId || dragFolderId) && rootFolders.length && !rootProjects.length ? (
+          <p className="px-3 py-1 text-center text-xs text-neutral-400">Hierher = auf Wurzelebene</p>
         ) : null}
       </div>
     </div>

@@ -8,7 +8,7 @@
 // Transporthöhe > Durchfahrtshöhe (sonst "hinweis" = ausgeblendet). So flutet das
 // Kataster die Auswertung nicht, liefert aber jede echte Höhen-Kollision entlang der Route.
 
-import { fetchAllFeatures, makeNormalized, num, stabilHash } from "./_helpers.js"
+import { fetchAllFeatures, makeNormalized, num } from "./_helpers.js"
 
 const QUELLE = "0133"
 const QUELLE_NAME = "Berlin — Durchfahrtshöhen (Straßenbefahrung, GDI-BE)"
@@ -17,6 +17,13 @@ const BASE =
   `${QUELLE_URL}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature` +
   "&TYPENAMES=strassenbefahrung:al_durchfahrtshoehe&OUTPUTFORMAT=application/json" +
   "&SRSNAME=urn:ogc:def:crs:EPSG::4326"
+
+// Raster (~33m) zum Zusammenfassen der fahrstreifenscharfen Punkte je Bauwerk. Die
+// Straßenbefahrung liefert pro Spur/Richtung einen Höhenpunkt (oft 3+ je Unterführung) →
+// rohe ~23k Features bei nur ~6k echten Orten. Fürs Routing zählt die NIEDRIGSTE lichte
+// Höhe je Ort (bindende Beschränkung), darum behalten wir je Rasterzelle das Minimum.
+// Konservativ: lieber zu niedrig warnen als eine niedrige Durchfahrt übersehen.
+const GRID = 0.0003
 
 export const berlinDurchfahrtshoehenConnector = {
   quelleId: QUELLE,
@@ -32,30 +39,35 @@ export const berlinDurchfahrtshoehenConnector = {
       timeoutMs,
       log,
     })
-    const obstacles = []
+    // Je ~33m-Rasterzelle den niedrigsten Höhenwert behalten (bindende Beschränkung).
+    const cells = new Map()
     let ohneHoehe = 0
     for (const f of feats) {
       const c = f?.geometry?.coordinates
-      const [lng, lat] = Array.isArray(c) ? c : [null, null]
+      const lng = Array.isArray(c) ? Number(c[0]) : null
+      const lat = Array.isArray(c) ? Number(c[1]) : null
       const hoehe = num(f?.properties?.hoehe)
-      if (!(hoehe > 0)) {
+      if (!(hoehe > 0) || !Number.isFinite(lat) || !Number.isFinite(lng)) {
         ohneHoehe++
-        continue // ohne verwertbare Höhe kein Höhen-Fund
+        continue
       }
-      obstacles.push(
-        makeNormalized({
-          externeId: f.id ?? f.properties?.gis_id ?? `be-h#${stabilHash(lat, lng, hoehe)}`,
-          kategorie: "bruecke",
-          name: `Durchfahrtshöhe ${String(hoehe).replace(".", ",")} m`,
-          lat,
-          lng,
-          attrs: { maxHoeheM: hoehe },
-          quelleName: QUELLE_NAME,
-          quelleUrl: QUELLE_URL,
-        }),
-      )
+      const key = `${Math.round(lat / GRID)}:${Math.round(lng / GRID)}`
+      const cur = cells.get(key)
+      if (!cur || hoehe < cur.hoehe) cells.set(key, { lat, lng, hoehe, key })
     }
-    log(`${QUELLE}: ${feats.length} geladen · ${obstacles.length} Durchfahrtshöhen · ${ohneHoehe} ohne Höhe`)
+    const obstacles = [...cells.values()].map(({ lat, lng, hoehe, key }) =>
+      makeNormalized({
+        externeId: `be-h#${key}`, // rasterstabil → Upsert statt Insert über Läufe
+        kategorie: "bruecke",
+        name: `Durchfahrtshöhe ${String(hoehe).replace(".", ",")} m`,
+        lat,
+        lng,
+        attrs: { maxHoeheM: hoehe },
+        quelleName: QUELLE_NAME,
+        quelleUrl: QUELLE_URL,
+      }),
+    )
+    log(`${QUELLE}: ${feats.length} geladen · ${obstacles.length} Orte (niedrigste Höhe je ~33m) · ${ohneHoehe} ohne Höhe`)
     return { obstacles }
   },
 }
