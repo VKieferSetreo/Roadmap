@@ -231,12 +231,13 @@ function FlyTo({ target }: { target?: OrtTreffer }) {
   return null
 }
 
-// Welt-Rechteck (für die Spotlight-Maske als äusserer Ring).
+// Welt-Rechteck (äusserer Ring der Spotlight-Maske). Mercator-sichere Breite ±85.05° —
+// ±90° projiziert gegen Unendlich und erzeugt Render-Glitches/fehlende Flächen.
 const WORLD: [number, number][] = [
-  [-90, -180],
-  [90, -180],
-  [90, 180],
-  [-90, 180],
+  [-85.05, -180],
+  [85.05, -180],
+  [85.05, 180],
+  [-85.05, 180],
 ]
 
 /** Spotlight auf Deutschland: alles ausserhalb DE grau überlagern (Maske = Welt-Polygon mit
@@ -245,11 +246,15 @@ function DeSpotlight() {
   const map = useMap()
   useEffect(() => {
     const rings = germanyRings as [number, number][][]
+    // Eigener SVG-Renderer mit grossem Padding → die Maske wird weit über den sichtbaren
+    // Bereich hinaus gezeichnet und „fehlt" beim Pannen/Zoomen nicht mehr.
+    const renderer = L.svg({ padding: 2 })
     const mask = L.polygon([WORLD, ...rings], {
       stroke: false,
       fillColor: "#64748b",
       fillOpacity: 0.5,
       interactive: false,
+      renderer,
     })
     const border = L.polygon(rings, {
       fill: false,
@@ -257,6 +262,7 @@ function DeSpotlight() {
       weight: 1.5,
       opacity: 0.6,
       interactive: false,
+      renderer,
     })
     mask.addTo(map)
     border.addTo(map)

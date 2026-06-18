@@ -194,7 +194,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
           <Input
             value={suche}
             onChange={(e) => setSuche(e.target.value)}
-            placeholder="In allen Einträgen suchen (Text, Bauwerksnummer, Maß wie 4,5 …)"
+            placeholder="In Einträgen suchen …"
             className="pl-9"
             aria-label="Hindernis-Datenbank nach Inhalten durchsuchen"
           />

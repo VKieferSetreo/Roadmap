@@ -93,7 +93,7 @@ export function OrtsSuche({ onSelect }: { onSelect: (t: OrtTreffer) => void }) {
           if (e.key === "Enter" && hits[0]) pick(hits[0])
           if (e.key === "Escape") setOpen(false)
         }}
-        placeholder="Ort suchen (Stadt, Adresse) …"
+        placeholder="Ort suchen …"
         className="pl-9"
         aria-label="Ort auf der Karte suchen"
       />
