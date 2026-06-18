@@ -26,6 +26,7 @@ export function createFakeDb() {
     disclaimerAcceptances: [], // { email, version, accepted_at }
     auditLog: [], // { id, tenant_id, actor_email, action, detail, at }
     shares: [],
+    folders: [], // { id, tenant_id, parent_id, name, sort_order, created_at }
     projects: [],
     findings: [],
     obstacles: [],
@@ -296,6 +297,56 @@ export function createFakeDb() {
     }
 
     // ── projects ──────────────────────────────────────────────────────────────
+    // ── Ordner (T-177) ──────────────────────────────────────────────────────
+    if (sql.startsWith("SELECT * FROM folders WHERE tenant_id = $1 ORDER BY")) {
+      return ok(
+        state.folders
+          .filter((f) => f.tenant_id === params[0])
+          .sort((a, b) => a.sort_order - b.sort_order || String(a.name).localeCompare(b.name)),
+      )
+    }
+    if (sql.startsWith("SELECT id FROM folders WHERE id = $1 AND tenant_id = $2")) {
+      return ok(
+        state.folders
+          .filter((f) => f.id === params[0] && f.tenant_id === params[1])
+          .map((f) => ({ id: f.id })),
+      )
+    }
+    if (sql.startsWith("SELECT * FROM folders WHERE id = $1 AND tenant_id = $2")) {
+      return ok(state.folders.filter((f) => f.id === params[0] && f.tenant_id === params[1]))
+    }
+    if (sql.startsWith("INSERT INTO folders (tenant_id, parent_id, name)")) {
+      const row = {
+        id: randomUUID(),
+        tenant_id: params[0],
+        parent_id: params[1] ?? null,
+        name: params[2],
+        sort_order: 0,
+        created_at: now(),
+      }
+      state.folders.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("UPDATE folders SET name = $2 WHERE id = $1")) {
+      const row = state.folders.find((f) => f.id === params[0])
+      if (!row) return ok([])
+      row.name = params[1]
+      return ok([row])
+    }
+    if (sql.startsWith("DELETE FROM folders WHERE id = $1 AND tenant_id = $2")) {
+      const before = state.folders.length
+      // ON DELETE CASCADE (Unterordner) + projects.folder_id ON DELETE SET NULL nachbilden
+      const del = new Set(
+        state.folders
+          .filter((f) => (f.id === params[0] || f.parent_id === params[0]) && f.tenant_id === params[1])
+          .map((f) => f.id),
+      )
+      if (!del.size) return ok([], 0)
+      state.folders = state.folders.filter((f) => !del.has(f.id))
+      for (const p of state.projects) if (del.has(p.folder_id)) p.folder_id = null
+      return ok([], before - state.folders.length)
+    }
+
     if (sql.startsWith("SELECT * FROM projects WHERE tenant_id = $1 ORDER BY updated_at DESC")) {
       return ok(
         state.projects
@@ -339,6 +390,8 @@ export function createFakeDb() {
         routes: J(params[2]),
         transport: J(params[3]),
         zeitraum: J(params[4]),
+        archived_at: params[5],
+        folder_id: params[6],
         updated_at: now(),
       })
       return ok([row])

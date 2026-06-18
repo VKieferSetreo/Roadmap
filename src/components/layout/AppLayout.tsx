@@ -9,6 +9,7 @@ import { AppSidebar } from "./AppSidebar"
 import { ContentErrorBoundary } from "./ContentErrorBoundary"
 import { NewProjectDialog } from "@/components/project/NewProjectDialog"
 import { useProjectStore } from "@/store/projects"
+import { useFolderStore } from "@/store/folders"
 import { useUiStore } from "@/store/ui"
 import { useAuthStore } from "@/store/auth"
 import { useDataSourceStore } from "@/store/datasource"
@@ -30,6 +31,7 @@ export function AppLayout() {
   const toggleSidebar = useUiStore((s) => s.toggleSidebar)
   const createProject = useProjectStore((s) => s.createProject)
   const initData = useProjectStore((s) => s.initData)
+  const loadFolders = useFolderStore((s) => s.loadFolders)
   const newProjectOpen = useUiStore((s) => s.newProjectOpen)
   const closeNewProject = useUiStore((s) => s.closeNewProject)
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
@@ -54,8 +56,9 @@ export function AppLayout() {
     void detect().then(async (m) => {
       if (m === "live") await loadContext()
       await initData(m)
+      await loadFolders()
     })
-  }, [fetchIdentity, detect, initData, loadContext])
+  }, [fetchIdentity, detect, initData, loadContext, loadFolders])
 
   // Haftungsausschluss: beim Erst-Login (pro Person + Version) blockierend anzeigen.
   useEffect(() => {

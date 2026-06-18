@@ -2,7 +2,7 @@
 // Modul-Reitern auf) · unten Datenbank/Einstellungen/Abmelden.
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Bug,
@@ -21,12 +21,11 @@ import {
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useContextStore } from "@/store/context"
-import { ProjectMenu } from "@/components/project/ProjectMenu"
-import { CreatorAvatar } from "@/components/project/CreatorAvatar"
+import { useSettingsStore } from "@/store/settings"
+import { ProjectTree } from "@/components/layout/ProjectTree"
 import { handleLogout } from "@/lib/auth"
 import { useSourceHealth } from "@/lib/sourceHealth"
 import { cn } from "@/lib/cn"
-import type { Project } from "@/types/domain"
 
 interface NavRowProps {
   icon: LucideIcon
@@ -65,58 +64,6 @@ function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle }: NavRowP
   )
 }
 
-// Projekt-Zeile mit eigenem Drei-Punkte-Menü (Umbenennen/Archivieren/Löschen) — wie auf der
-// Home-Kartenansicht. Nav-Button und Menü sind Geschwister (kein Button-im-Button), das ⋮
-// erscheint auf Hover/Fokus und bleibt sichtbar, solange die Zeile aktiv ist.
-function ProjectNavRow({
-  project,
-  active,
-  onClick,
-}: {
-  project: Project
-  active?: boolean
-  onClick: () => void
-}) {
-  return (
-    <div
-      className={cn(
-        "group relative flex items-center rounded-md transition-colors",
-        active
-          ? "bg-primary-50 before:absolute before:bottom-1.5 before:left-0 before:top-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
-          : "hover:bg-neutral-100",
-      )}
-    >
-      <button
-        onClick={onClick}
-        className={cn(
-          "flex min-w-0 flex-1 items-center gap-2.5 rounded-md py-2 pl-3 pr-1 text-sm transition-colors",
-          active ? "font-medium text-primary-700" : "text-neutral-600 group-hover:text-neutral-900",
-        )}
-        aria-current={active ? "page" : undefined}
-      >
-        {project.erstelltVon ? (
-          <CreatorAvatar email={project.erstelltVon} size={18} />
-        ) : (
-          <Folder className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
-        )}
-        <span className="truncate">{project.name}</span>
-      </button>
-      <div
-        className={cn(
-          "pr-1.5 transition-opacity",
-          // aktiv → immer sichtbar; sonst auf Hover/Fokus einblenden. Im Mobile-Drawer (kein
-          // Hover) per max-lg dauerhaft sichtbar, damit das Menü auf Touch erreichbar bleibt.
-          active
-            ? "opacity-100"
-            : "opacity-0 focus-within:opacity-100 group-hover:opacity-100 max-lg:opacity-100",
-        )}
-      >
-        <ProjectMenu project={project} />
-      </div>
-    </div>
-  )
-}
-
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -147,15 +94,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   const [suche, setSuche] = useState("")
-  const aktive = [...projects]
-    .filter((p) => !p.archiviertAm)
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-  const q = suche.trim().toLowerCase()
-  const sorted = q
-    ? aktive.filter(
-        (p) => p.name.toLowerCase().includes(q) || (p.erstelltVon ?? "").toLowerCase().includes(q),
-      )
-    : aktive
+  const aktive = projects.filter((p) => !p.archiviertAm)
 
   return (
     <div className="flex h-full flex-col">
@@ -193,35 +132,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </button>
         </div>
 
-        <div className="mt-1 flex flex-col gap-0.5">
-          {aktive.length === 0 ? (
-            <div className="mt-6 flex flex-col items-center px-3 text-center">
-              <Folder className="h-6 w-6 text-neutral-300" />
-              <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
-            </div>
-          ) : sorted.length === 0 ? (
-            <p className="px-3 py-4 text-center text-xs text-neutral-500">
-              Kein Projekt für „{suche.trim()}".
-            </p>
-          ) : (
-            sorted.map((p) => {
-              const isActive = p.id === activeId
-              return (
-                <ProjectNavRow
-                  key={p.id}
-                  project={p}
-                  active={isActive}
-                  onClick={() => go(`/projekte/${p.id}/${isActive ? activeTab : "route"}`)}
-                />
-              )
-            })
-          )}
-        </div>
+        {aktive.length === 0 ? (
+          <div className="mt-6 flex flex-col items-center px-3 text-center">
+            <Folder className="h-6 w-6 text-neutral-300" />
+            <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
+          </div>
+        ) : (
+          <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
+        )}
       </nav>
 
       <div className="border-t border-neutral-100 p-3">
         {/* Bei leerer Projektliste: „Neues Projekt" hier unten (über Datenbank) statt oben. */}
-        {sorted.length === 0 ? (
+        {aktive.length === 0 ? (
           <button
             onClick={() => {
               openNewProject()
@@ -289,25 +212,61 @@ export function AppSidebar({
   mobileOpen: boolean
   onClose: () => void
 }) {
+  const sidebarWidth = useSettingsStore((s) => s.sidebarWidth)
+  const setSidebarWidth = useSettingsStore((s) => s.setSidebarWidth)
+  const [resizing, setResizing] = useState(false)
+  const widthRef = useRef(sidebarWidth)
+  widthRef.current = sidebarWidth
+
+  // Breite per Kanten-Griff ziehen (T-177). Globale Pointer-Listener bis Loslassen.
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault()
+    const startX = e.clientX
+    const startW = widthRef.current
+    setResizing(true)
+    const move = (ev: PointerEvent) => setSidebarWidth(startW + (ev.clientX - startX))
+    const up = () => {
+      setResizing(false)
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }
+
   return (
     <>
       {/* Desktop — links angedockt, nativ offen, einklappbar via Seiten-Chevron
-          (Kollision-Format). Header/Footer bleiben left-bound (sind Geschwister). */}
+          (Kollision-Format). Breite resizable (T-177). */}
       <aside
         className={cn(
-          "relative hidden shrink-0 border-r border-neutral-200 bg-white transition-[width] duration-200 ease-in-out lg:block",
-          open ? "w-72" : "w-0",
+          "relative hidden shrink-0 border-r border-neutral-200 bg-white lg:block",
+          !resizing && "transition-[width] duration-200 ease-in-out",
         )}
+        style={{ width: open ? sidebarWidth : 0 }}
         aria-label="Hauptnavigation"
       >
         <div
           className={cn(
-            "h-full w-72 overflow-hidden transition-opacity duration-200",
+            "h-full overflow-hidden transition-opacity duration-200",
             open ? "opacity-100" : "pointer-events-none opacity-0",
           )}
+          style={{ width: sidebarWidth }}
         >
           <SidebarContent />
         </div>
+
+        {/* Resize-Griff an der rechten Kante (nur wenn offen). */}
+        {open ? (
+          <div
+            onPointerDown={onResizeStart}
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Sidebar-Breite ändern"
+            title="Breite ziehen"
+            className="absolute -right-1 top-0 z-[1100] hidden h-full w-2 cursor-col-resize hover:bg-primary-200/50 lg:block"
+          />
+        ) : null}
 
         {/* Vertikaler Griff — sichtbar (auch eingeklappt). Auf der Karte ausgeblendet:
             dort liegt der Toggle im Overlay unter dem "Strecken"-Kasten. */}

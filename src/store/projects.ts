@@ -52,6 +52,8 @@ interface ProjectStore {
   /** Projekt archivieren (true) bzw. wiederherstellen (false). */
   archiveProject: (id: string, archiviert: boolean) => void
   removeProject: (id: string) => void
+  /** Projekt einem Ordner zuordnen (T-177); folderId=null → zurück auf Wurzelebene. */
+  setProjectFolder: (id: string, folderId: string | null) => void
 
   /** Strecke hinzufügen (Farbe wird automatisch aus der Palette vergeben). */
   addRoute: (id: string, route: Omit<ProjectRoute, "id" | "farbe">) => void
@@ -192,6 +194,22 @@ export const useProjectStore = create<ProjectStore>()(
         if (isLive()) {
           api.patchProject(id, { archiviert }).catch(() => {
             toast.error("Archiv-Status konnte nicht gespeichert werden.")
+          })
+        }
+      },
+
+      setProjectFolder: (id, folderId) => {
+        const prev = get().getProject(id)?.folderId ?? null
+        if (prev === folderId) return
+        set((s) => ({
+          projects: s.projects.map((p) => (p.id === id ? { ...p, folderId } : p)),
+        }))
+        if (isLive()) {
+          api.patchProject(id, { folderId }).catch(() => {
+            toast.error("Verschieben konnte nicht gespeichert werden.")
+            set((s) => ({
+              projects: s.projects.map((p) => (p.id === id ? { ...p, folderId: prev } : p)),
+            }))
           })
         }
       },

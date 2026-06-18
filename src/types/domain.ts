@@ -196,6 +196,16 @@ export interface Project {
   share?: ShareInfo | null
   /** gesetzt = Projekt ist archiviert (aus der Hauptliste ausgeblendet). */
   archiviertAm?: string | null
+  /** Ordner-Zuordnung (T-177), null/undefined = Wurzelebene. */
+  folderId?: string | null
+}
+
+/** Projekt-Ordner (T-177) — tenant-geteilt. parentId=null → Überordner, sonst Unterordner. */
+export interface Folder {
+  id: string
+  name: string
+  parentId: string | null
+  sortOrder: number
 }
 
 /** Rolle eines Nutzers innerhalb seines Mandanten. */

@@ -1,0 +1,449 @@
+// Projektansicht mit Ordnerstruktur (T-177): Über-/Unterordner, Projekte per Drag-n-Drop
+// in Ordner, Accordion (immer nur EIN Ordner je Ebene offen; beim Drüberziehen klappt der
+// Zielordner auf). Native HTML5-DnD (kein Lib). Bei aktiver Suche: flache Trefferliste.
+//
+// FolderNode/NewFolderInput sind bewusst Modul-Komponenten (nicht im Render definiert):
+// sonst remounten sie bei jedem Tastendruck und das Eingabefeld verliert den Fokus.
+
+import { useState } from "react"
+import { ChevronRight, Folder, FolderOpen, FolderPlus, Pencil, Trash2 } from "lucide-react"
+import { useProjectStore } from "@/store/projects"
+import { useFolderStore } from "@/store/folders"
+import { ProjectMenu } from "@/components/project/ProjectMenu"
+import { CreatorAvatar } from "@/components/project/CreatorAvatar"
+import { cn } from "@/lib/cn"
+import type { Folder as FolderT, Project } from "@/types/domain"
+
+const ROOT = "__root__"
+
+interface TreeProps {
+  query: string
+  activeId?: string
+  activeTab: string
+  go: (path: string) => void
+}
+
+/** Gebündelter Zustand + Aktionen, die durch den Baum gereicht werden. */
+interface TreeCtx {
+  activeId?: string
+  activeTab: string
+  go: (path: string) => void
+  folderById: (id: string) => FolderT | undefined
+  childrenOf: (id: string) => FolderT[]
+  projectsIn: (folderId: string | null) => Project[]
+  isOpen: (id: string) => boolean
+  toggle: (id: string, depth: number, parent?: string) => void
+  openTo: (id: string, depth: number, parent?: string) => void
+  dragId: string | null
+  setDragId: (id: string | null) => void
+  dragOver: string | null
+  setDragOver: (v: string | null) => void
+  drop: (folderId: string | null) => void
+  renaming: string | null
+  startRename: (id: string, name: string) => void
+  renameVal: string
+  setRenameVal: (v: string) => void
+  commitRename: (id: string) => void
+  cancelRename: () => void
+  removeFolder: (id: string) => void
+  creatingIn: string | null | undefined
+  startCreate: (parentId: string | null) => void
+  newName: string
+  setNewName: (v: string) => void
+  commitCreate: () => void
+  cancelCreate: () => void
+}
+
+/** Eine Projekt-Zeile — draggable (Drag-n-Drop in Ordner) + Drei-Punkte-Menü. */
+function ProjectRow({
+  project,
+  active,
+  go,
+  activeTab,
+  setDragId,
+}: {
+  project: Project
+  active: boolean
+  go: (path: string) => void
+  activeTab: string
+  setDragId: (id: string | null) => void
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("text/plain", project.id)
+        setDragId(project.id)
+      }}
+      onDragEnd={() => setDragId(null)}
+      className={cn(
+        "group relative flex items-center rounded-md transition-colors",
+        active
+          ? "bg-primary-50 before:absolute before:bottom-1.5 before:left-0 before:top-1.5 before:w-0.5 before:rounded-full before:bg-primary-600"
+          : "hover:bg-neutral-100",
+      )}
+    >
+      <button
+        onClick={() => go(`/projekte/${project.id}/${active ? activeTab : "route"}`)}
+        className={cn(
+          "flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-md py-2 pl-3 pr-1 text-sm transition-colors",
+          active ? "font-medium text-primary-700" : "text-neutral-600 group-hover:text-neutral-900",
+        )}
+        aria-current={active ? "page" : undefined}
+      >
+        {project.erstelltVon ? (
+          <CreatorAvatar email={project.erstelltVon} size={18} />
+        ) : (
+          <Folder className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
+        )}
+        <span className="truncate">{project.name}</span>
+      </button>
+      <div
+        className={cn(
+          "pr-1.5 transition-opacity",
+          active
+            ? "opacity-100"
+            : "opacity-0 focus-within:opacity-100 group-hover:opacity-100 max-lg:opacity-100",
+        )}
+      >
+        <ProjectMenu project={project} />
+      </div>
+    </div>
+  )
+}
+
+/** Inline-Eingabe für einen neuen Ordnernamen. */
+function NewFolderInput({
+  indent,
+  value,
+  onChange,
+  onCommit,
+  onCancel,
+}: {
+  indent: number
+  value: string
+  onChange: (v: string) => void
+  onCommit: () => void
+  onCancel: () => void
+}) {
+  return (
+    <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: indent }}>
+      <FolderPlus className="ml-2 h-4 w-4 shrink-0 text-primary-500" />
+      <input
+        autoFocus
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onCommit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onCommit()
+          else if (e.key === "Escape") onCancel()
+        }}
+        placeholder="Ordnername …"
+        className="min-w-0 flex-1 rounded border border-primary-300 px-1.5 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary-400"
+      />
+    </div>
+  )
+}
+
+/** Ordnerzeile + (rekursiv) Unterordner & enthaltene Projekte. */
+function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; parent?: string; ctx: TreeCtx }) {
+  const f = ctx.folderById(id)
+  if (!f) return null
+
+  const open = ctx.isOpen(id)
+  const subs = ctx.childrenOf(id)
+  const eigene = ctx.projectsIn(id)
+  const count = eigene.length + subs.reduce((n, s) => n + ctx.projectsIn(s.id).length, 0)
+  const isRenaming = ctx.renaming === id
+  const over = ctx.dragOver === id
+  const indent = depth * 14
+
+  return (
+    <div className="select-none">
+      <div
+        onDragOver={(e) => {
+          if (!ctx.dragId) return
+          e.preventDefault()
+          e.stopPropagation()
+          ctx.setDragOver(id)
+          if (!open) ctx.openTo(id, depth, parent) // Drüberziehen klappt den Zielordner auf
+        }}
+        onDragLeave={() => ctx.setDragOver(ctx.dragOver === id ? null : ctx.dragOver)}
+        onDrop={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          ctx.drop(id)
+        }}
+        className={cn(
+          "group/folder relative flex items-center rounded-md pr-1 transition-colors",
+          over ? "bg-primary-100 ring-1 ring-primary-300" : "hover:bg-neutral-100",
+        )}
+        style={{ paddingLeft: indent }}
+      >
+        <button
+          onClick={() => ctx.toggle(id, depth, parent)}
+          className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md py-1.5 pl-2 pr-1 text-sm text-neutral-700"
+        >
+          <ChevronRight className={cn("h-3.5 w-3.5 shrink-0 text-neutral-400 transition-transform", open && "rotate-90")} />
+          {open ? (
+            <FolderOpen className="h-4 w-4 shrink-0 text-primary-500" />
+          ) : (
+            <Folder className="h-4 w-4 shrink-0 text-neutral-400" />
+          )}
+          {isRenaming ? (
+            <input
+              autoFocus
+              value={ctx.renameVal}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => ctx.setRenameVal(e.target.value)}
+              onBlur={() => ctx.commitRename(id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") ctx.commitRename(id)
+                else if (e.key === "Escape") ctx.cancelRename()
+              }}
+              className="min-w-0 flex-1 rounded border border-primary-300 px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary-400"
+            />
+          ) : (
+            <>
+              <span className="truncate font-medium">{f.name}</span>
+              {count > 0 ? <span className="shrink-0 text-xs text-neutral-400">{count}</span> : null}
+            </>
+          )}
+        </button>
+        {!isRenaming ? (
+          <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/folder:opacity-100 max-lg:opacity-100">
+            {depth === 0 ? (
+              <button
+                onClick={() => ctx.startCreate(id)}
+                title="Unterordner anlegen"
+                className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-primary-600"
+              >
+                <FolderPlus className="h-3.5 w-3.5" />
+              </button>
+            ) : null}
+            <button
+              onClick={() => ctx.startRename(id, f.name)}
+              title="Umbenennen"
+              className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm(`Ordner „${f.name}" löschen? Die Projekte bleiben erhalten.`)) {
+                  ctx.removeFolder(id)
+                }
+              }}
+              title="Ordner löschen"
+              className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-severity-kritisch"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {open ? (
+        <div className="mt-0.5 flex flex-col gap-0.5">
+          {subs.map((s) => (
+            <FolderNode key={s.id} id={s.id} depth={depth + 1} parent={id} ctx={ctx} />
+          ))}
+          {ctx.creatingIn === id ? (
+            <NewFolderInput
+              indent={(depth + 1) * 14}
+              value={ctx.newName}
+              onChange={ctx.setNewName}
+              onCommit={ctx.commitCreate}
+              onCancel={ctx.cancelCreate}
+            />
+          ) : null}
+          {eigene.map((p) => (
+            <div key={p.id} style={{ paddingLeft: (depth + 1) * 14 }}>
+              <ProjectRow
+                project={p}
+                active={p.id === ctx.activeId}
+                go={ctx.go}
+                activeTab={ctx.activeTab}
+                setDragId={ctx.setDragId}
+              />
+            </div>
+          ))}
+          {!subs.length && !eigene.length && ctx.creatingIn !== id ? (
+            <p className="py-1 text-xs text-neutral-400" style={{ paddingLeft: (depth + 1) * 14 + 8 }}>
+              Leer — Projekt hierher ziehen.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
+  const projects = useProjectStore((s) => s.projects ?? [])
+  const setProjectFolder = useProjectStore((s) => s.setProjectFolder)
+  const folders = useFolderStore((s) => s.folders)
+  const createFolder = useFolderStore((s) => s.createFolder)
+  const renameFolder = useFolderStore((s) => s.renameFolder)
+  const removeFolder = useFolderStore((s) => s.removeFolder)
+
+  const [openPath, setOpenPath] = useState<string[]>([])
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [dragOver, setDragOver] = useState<string | null>(null)
+  const [creatingIn, setCreatingIn] = useState<string | null | undefined>(undefined)
+  const [newName, setNewName] = useState("")
+  const [renaming, setRenaming] = useState<string | null>(null)
+  const [renameVal, setRenameVal] = useState("")
+
+  const aktive = [...projects]
+    .filter((p) => !p.archiviertAm)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+
+  // ── Suchmodus: flache Trefferliste über ALLE Ordner ──────────────────────────
+  const q = query.trim().toLowerCase()
+  if (q) {
+    const treffer = aktive.filter(
+      (p) => p.name.toLowerCase().includes(q) || (p.erstelltVon ?? "").toLowerCase().includes(q),
+    )
+    if (!treffer.length) {
+      return <p className="px-3 py-4 text-center text-xs text-neutral-500">Kein Projekt für „{query.trim()}".</p>
+    }
+    return (
+      <div className="mt-1 flex flex-col gap-0.5">
+        {treffer.map((p) => (
+          <ProjectRow
+            key={p.id}
+            project={p}
+            active={p.id === activeId}
+            go={go}
+            activeTab={activeTab}
+            setDragId={() => {}}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  // ── Baum ─────────────────────────────────────────────────────────────────────
+  const rootFolders = folders.filter((f) => f.parentId == null)
+  const folderById = (id: string) => folders.find((f) => f.id === id)
+  const childrenOf = (id: string) => folders.filter((f) => f.parentId === id)
+  const projectsIn = (folderId: string | null) => aktive.filter((p) => (p.folderId ?? null) === folderId)
+
+  const commitCreate = async () => {
+    const parentId = creatingIn ?? null
+    const name = newName.trim()
+    setCreatingIn(undefined)
+    setNewName("")
+    if (name) await createFolder(name, parentId)
+  }
+
+  const ctx: TreeCtx = {
+    activeId,
+    activeTab,
+    go,
+    folderById,
+    childrenOf,
+    projectsIn,
+    isOpen: (id) => openPath.includes(id),
+    toggle: (id, depth, parent) =>
+      setOpenPath((cur) => (cur[depth] === id ? cur.slice(0, depth) : depth === 0 ? [id] : [parent as string, id])),
+    openTo: (id, depth, parent) => setOpenPath(depth === 0 ? [id] : [parent as string, id]),
+    dragId,
+    setDragId,
+    dragOver,
+    setDragOver,
+    drop: (folderId) => {
+      if (dragId) setProjectFolder(dragId, folderId)
+      setDragId(null)
+      setDragOver(null)
+    },
+    renaming,
+    startRename: (id, name) => {
+      setRenaming(id)
+      setRenameVal(name)
+    },
+    renameVal,
+    setRenameVal,
+    commitRename: (id) => {
+      renameFolder(id, renameVal)
+      setRenaming(null)
+    },
+    cancelRename: () => setRenaming(null),
+    removeFolder,
+    creatingIn,
+    startCreate: (parentId) => {
+      setCreatingIn(parentId)
+      setNewName("")
+      if (parentId) setOpenPath([parentId]) // Elternordner offen halten
+    },
+    newName,
+    setNewName,
+    commitCreate,
+    cancelCreate: () => {
+      setCreatingIn(undefined)
+      setNewName("")
+    },
+  }
+
+  const rootProjects = projectsIn(null)
+  const rootOver = dragOver === ROOT
+
+  return (
+    <div className="mt-1 flex flex-col gap-0.5">
+      <button
+        onClick={() => ctx.startCreate(null)}
+        className="mb-0.5 flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-primary-600"
+      >
+        <FolderPlus className="h-3.5 w-3.5" /> Ordner anlegen
+      </button>
+
+      {rootFolders.map((f) => (
+        <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
+      ))}
+      {creatingIn === null ? (
+        <NewFolderInput
+          indent={0}
+          value={newName}
+          onChange={setNewName}
+          onCommit={commitCreate}
+          onCancel={ctx.cancelCreate}
+        />
+      ) : null}
+
+      {/* Wurzel-Projekte (ohne Ordner) — zugleich Drop-Zone „auf Wurzelebene" */}
+      <div
+        onDragOver={(e) => {
+          if (!dragId) return
+          e.preventDefault()
+          setDragOver(ROOT)
+        }}
+        onDragLeave={() => setDragOver(dragOver === ROOT ? null : dragOver)}
+        onDrop={(e) => {
+          e.preventDefault()
+          ctx.drop(null)
+        }}
+        className={cn(
+          "mt-0.5 flex flex-col gap-0.5 rounded-md",
+          rootOver && "bg-primary-50 ring-1 ring-primary-200",
+          dragId && rootFolders.length ? "min-h-[28px]" : "",
+        )}
+      >
+        {rootProjects.map((p) => (
+          <ProjectRow
+            key={p.id}
+            project={p}
+            active={p.id === activeId}
+            go={go}
+            activeTab={activeTab}
+            setDragId={setDragId}
+          />
+        ))}
+        {dragId && rootFolders.length && !rootProjects.length ? (
+          <p className="px-3 py-1 text-center text-xs text-neutral-400">Hierher = aus Ordner lösen</p>
+        ) : null}
+      </div>
+    </div>
+  )
+}

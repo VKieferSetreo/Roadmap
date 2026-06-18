@@ -13,6 +13,7 @@ import type {
   Finding,
   FindingKategorie,
   FindingSeverity,
+  Folder,
   HideReason,
   HiddenFindingsResponse,
   MailPref,
@@ -66,6 +67,8 @@ export interface ProjectPatch {
   zeitraum?: TransportZeitraum
   /** true = archivieren, false = wiederherstellen. */
   archiviert?: boolean
+  /** Ordner-Zuordnung (T-177): Ordner-ID oder null (zurück auf Wurzelebene). */
+  folderId?: string | null
 }
 
 /** Ergebnis einer Routen-Berechnung (Start/Ziel oder Google-Maps-Link). */
@@ -349,6 +352,17 @@ export const api = {
     /** Löschen (nur Admin). */
     remove: (id: string) =>
       axiosClient<void>({ url: `/source-requests/${id}`, method: "DELETE" }),
+  },
+
+  // ── Projekt-Ordner (T-177, tenant-geteilt) ─────────────────────────────────
+  folders: {
+    list: () =>
+      axiosClient<{ folders: Folder[] }>({ url: "/folders", method: "GET" }).then((r) => r.folders),
+    create: (name: string, parentId?: string | null) =>
+      axiosClient<Folder>({ url: "/folders", method: "POST", data: { name, parentId: parentId ?? null } }),
+    rename: (id: string, name: string) =>
+      axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { name } }),
+    remove: (id: string) => axiosClient<void>({ url: `/folders/${id}`, method: "DELETE" }),
   },
 
   // ── News-Feed (Liste: jeder; Anlegen/Löschen: Admin) ───────────────────────

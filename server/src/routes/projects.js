@@ -210,10 +210,24 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
           ? (row.archived_at ?? new Date())
           : null
 
+    // folderId: Ordner-Zuordnung (T-177). null = Wurzel; Ordner muss demselben Mandanten gehören.
+    let folderId = row.folder_id
+    if (body.folderId !== undefined) {
+      folderId = body.folderId
+      if (folderId != null) {
+        if (!isUuid(folderId)) throw new ApiError(400, "folderId ungültig")
+        const f = await db.query(
+          "SELECT id FROM folders WHERE id = $1 AND tenant_id = $2",
+          [folderId, req.ctx.tenant.id],
+        )
+        if (!f.rows[0]) throw new ApiError(404, "Ordner nicht gefunden")
+      }
+    }
+
     const { rows } = await db.query(
       `UPDATE projects SET name = $2, routes = $3, transport = $4, zeitraum = $5,
-         archived_at = $6, updated_at = now() WHERE id = $1 RETURNING *`,
-      [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt],
+         archived_at = $6, folder_id = $7, updated_at = now() WHERE id = $1 RETURNING *`,
+      [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId],
     )
     res.json(await present(req, rows[0]))
   }))

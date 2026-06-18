@@ -18,11 +18,19 @@ interface SettingsStore {
   tileStyle: TileStyle
   autoFit: boolean
   projektAnsicht: ProjektAnsicht
+  /** Breite der linken Sidebar in px (resizable, T-177). */
+  sidebarWidth: number
   setProfile: (patch: Partial<Profile>) => void
   setTileStyle: (s: TileStyle) => void
   setAutoFit: (v: boolean) => void
   setProjektAnsicht: (v: ProjektAnsicht) => void
+  setSidebarWidth: (px: number) => void
 }
+
+/** Sidebar-Breite: Grenzen + Default. Drag klemmt auf [MIN, MAX]. */
+export const SIDEBAR_MIN = 240
+export const SIDEBAR_MAX = 560
+export const SIDEBAR_DEFAULT = 288 // = bisheriges w-72
 
 export const TILE_LAYERS: Record<TileStyle, { url: string; attribution: string; label: string }> = {
   standard: {
@@ -48,10 +56,13 @@ export const useSettingsStore = create<SettingsStore>()(
       tileStyle: "standard",
       autoFit: true,
       projektAnsicht: "karten",
+      sidebarWidth: SIDEBAR_DEFAULT,
       setProfile: (patch) => set((s) => ({ profile: { ...s.profile, ...patch } })),
       setTileStyle: (tileStyle) => set({ tileStyle }),
       setAutoFit: (autoFit) => set({ autoFit }),
       setProjektAnsicht: (projektAnsicht) => set({ projektAnsicht }),
+      setSidebarWidth: (px) =>
+        set({ sidebarWidth: Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(px))) }),
     }),
     { name: "roadmap-settings", storage: createJSONStorage(() => localStorage) },
   ),
