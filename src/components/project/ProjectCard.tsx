@@ -21,12 +21,11 @@ const STATUS_META: Record<
   fertig: { label: "Fertig", variant: "success" },
 }
 
-/** Strecken-Beschriftung: ein Name bei einer Strecke, sonst Anzahl. */
+/** Strecken-Beschriftung: immer die Anzahl ("1 Strecke", "2 Strecken") — nicht den Dateinamen. */
 function routeLabel(project: Project): string {
-  const withPoints = project.routes.filter((r) => r.points.length >= 2)
-  if (withPoints.length === 0) return "Noch keine Strecke"
-  if (withPoints.length === 1) return withPoints[0].fileName ?? withPoints[0].name
-  return `${withPoints.length} Strecken`
+  const n = project.routes.filter((r) => r.points.length >= 2).length
+  if (n === 0) return "Noch keine Strecke"
+  return `${n} Strecke${n === 1 ? "" : "n"}`
 }
 
 export function ProjectCard({ project, index = 0 }: { project: Project; index?: number }) {

@@ -77,8 +77,9 @@ export function DashboardHome() {
               Routenanalyse für Schwertransporte
             </h1>
             <p className="mt-2 max-w-xl text-sm text-neutral-600">
-              Strecke hochladen, Transport-Stammdaten erfassen, Auswertung starten — alle Hindernisse
-              entlang der Route auf einen Blick.
+              Strecke hochladen, Transport-Stammdaten erfassen, Auswertung starten.
+              <br />
+              Alle Hindernisse entlang der Route auf einen Blick.
             </p>
           </div>
         </div>

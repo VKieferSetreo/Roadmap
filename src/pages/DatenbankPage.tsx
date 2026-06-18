@@ -42,7 +42,7 @@ export function DatenbankPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Datenbank"
-        description="Datenquellen aktualisieren und alle Einträge auf der Karte (Baustellen, Sperrungen, lastbeschränkte Brücken …) — plus Datenabdeckung und Quellenregister."
+        description="Datenquellen aktualisieren und alle Einträge auf der Karte sehen."
         width="wide"
       >
         {intern ? (
@@ -210,13 +210,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
           ) : null}
         </div>
       </div>
-      <div className="flex justify-end">
-        <span className="text-sm text-neutral-500">
-          <span className="font-semibold tabular-nums text-neutral-800">{gefiltert.length}</span>
-          {suche ? ` von ${alle.length} Einträgen` : " Einträge"}
-        </span>
-      </div>
-      <div className="h-[calc(100vh-460px)] min-h-[420px]">
+      <div className="h-[calc(100vh-420px)] min-h-[420px]">
         <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo} />
       </div>
     </div>

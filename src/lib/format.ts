@@ -28,9 +28,12 @@ export function formatStampDE(iso: string | null | undefined): string {
 export function formatRelativeDE(d: Date | string): string {
   const date = typeof d === "string" ? parseISO(d) : d
   const days = daysUntil(date)
-  if (days === 0) return "heute"
+  // Uhrzeit an "heute"/"gestern" anhängen ("WANN heute?"). 00:00 = reines Datum ohne Zeit → weglassen.
+  const zeit = date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })
+  const mitZeit = zeit === "00:00" ? "" : `, ${zeit}`
+  if (days === 0) return `heute${mitZeit}`
   if (days === 1) return "morgen"
-  if (days === -1) return "gestern"
+  if (days === -1) return `gestern${mitZeit}`
   if (days > 1) return `in ${days} Tagen`
   return `vor ${Math.abs(days)} Tagen`
 }

@@ -112,9 +112,21 @@ function attrsAusRecord(recordXml) {
   return attrs
 }
 
+// Deutschland-Plausibilität: ALLE DATEX-Quellen sind deutschlandweit. Manche Records liefern
+// lat/lng VERTAUSCHT (→ Hindernis landet im Meer/Ausland, z.B. 0143 Brandenburg bei Jemen).
+// Wir korrigieren vertauschte Koordinaten automatisch und verwerfen echte Müll-Koordinaten.
+const inDe = (lat, lng) => lat >= 46 && lat <= 56 && lng >= 4 && lng <= 16
+/** Liste von [lng,lat]-Paaren → korrigierte Liste (ggf. lat/lng-Tausch) oder null (ausserhalb DE). */
+function correctDeCoords(coords) {
+  const [lng, lat] = coords[0]
+  if (inDe(lat, lng)) return coords
+  if (inDe(lng, lat)) return coords.map(([a, b]) => [b, a]) // vertauscht → drehen
+  return null // ausserhalb DE, nicht durch Tausch erklärbar → verwerfen
+}
+
 /** Koordinaten aus GML <posList> (Format "lat lng lat lng …", srsName WGS84 EPSG 4326).
  *  Liefert erste Position als Punkt + ganze Linie als GeoJSON LineString ([lng,lat]-Reihenfolge).
- *  null bei fehlenden/zu wenigen Werten. */
+ *  null bei fehlenden/zu wenigen Werten ODER Koordinaten ausserhalb DE (nach Tausch-Korrektur). */
 function posListGeom(recordXml) {
   const raw = tag(recordXml, "posList")
   if (!raw) return null
@@ -123,14 +135,16 @@ function posListGeom(recordXml) {
   for (let i = 0; i + 1 < nums.length; i += 2) {
     const la = nums[i]
     const ln = nums[i + 1]
-    // WGS84-Plausibilität (DE ~47–55°N, 5–15°E) → schützt vor vertauschter Achse/Müll
+    // WGS84-Grobcheck; DE-Feincheck + Tausch-Korrektur danach in correctDeCoords.
     if (la >= -90 && la <= 90 && ln >= -180 && ln <= 180) coords.push([ln, la])
   }
   if (coords.length === 0) return null
+  const fixed = correctDeCoords(coords)
+  if (!fixed) return null
   return {
-    lat: coords[0][1],
-    lng: coords[0][0],
-    geom: coords.length >= 2 ? { type: "LineString", coordinates: coords } : null,
+    lat: fixed[0][1],
+    lng: fixed[0][0],
+    geom: fixed.length >= 2 ? { type: "LineString", coordinates: fixed } : null,
   }
 }
 
@@ -150,7 +164,11 @@ function tmcAusRecord(recordXml) {
 function koordAusRecord(recordXml, resolveTmc) {
   const lat = num(tag(recordXml, "latitude"))
   const lng = num(tag(recordXml, "longitude"))
-  if (lat != null && lng != null) return { lat, lng, geom: null }
+  if (lat != null && lng != null) {
+    if (inDe(lat, lng)) return { lat, lng, geom: null }
+    if (inDe(lng, lat)) return { lat: lng, lng: lat, geom: null } // vertauscht → drehen
+    // sonst ausserhalb DE → ignorieren, weiter mit posList/TMC
+  }
   const pl = posListGeom(recordXml)
   if (pl) return pl
   if (resolveTmc) {
