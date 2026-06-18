@@ -110,6 +110,10 @@ export function createApp({
   // Statisches Share-FE; Verzeichnis wird später vendored — fehlt es, greift 404
   app.use("/_share", express.static(shareDir))
 
+  // Service-zu-Service (auth-extern → roadmap-api): VOR der Gateway-Auth, da der Aufruf
+  // KEINE X-Auth-Header trägt (Docker-Netz, direkt). Eigener Secret-Gate im Router.
+  app.use("/api/internal", internalRouter({ db, provisionSecret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "" }))
+
   // ── Gated API ────────────────────────────────────────────────────────────────
   app.use("/api", authMiddleware({ requireAuth }))
   app.use("/api", tenantContext({ db }))
@@ -131,9 +135,6 @@ export function createApp({
   app.use("/api/admin/tenants", adminTenantsRouter({ db, fetchImpl, authExtern }))
   app.use("/api/admin/hidden-findings", hiddenFindingsRouter({ db }))
   app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
-  // Service-zu-Service (auth-extern → roadmap-api, Docker-Netz, secret-gated). KEIN requireTenant,
-  // KEINE Gateway-Identität — die E-Mail kommt aus dem secret-authentifizierten Aufruf.
-  app.use("/api/internal", internalRouter({ db, provisionSecret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "" }))
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/folders", requireTenant, foldersRouter({ db }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))
