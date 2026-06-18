@@ -167,6 +167,22 @@ export function rowToBugReport(row) {
     kontext: row.kontext ?? {},
     status: row.status,
     notiz: row.notiz ?? null,
+    screenshot: row.screenshot ?? null,
+    createdAt: toIso(row.created_at),
+    resolvedAt: toIso(row.resolved_at) ?? null,
+  }
+}
+
+/** source_requests-Row → API-Shape (camelCase). */
+export function rowToSourceRequest(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    tenantSlug: row.tenant_slug ?? null,
+    url: row.url,
+    beschreibung: row.beschreibung,
+    status: row.status,
+    notiz: row.notiz ?? null,
     createdAt: toIso(row.created_at),
     resolvedAt: toIso(row.resolved_at) ?? null,
   }

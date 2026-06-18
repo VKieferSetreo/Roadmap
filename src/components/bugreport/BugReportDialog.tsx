@@ -11,7 +11,15 @@ import { collectBugContext } from "@/lib/bugContext"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 
-export function BugReportDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function BugReportDialog({
+  open,
+  onClose,
+  screenshot,
+}: {
+  open: boolean
+  onClose: () => void
+  screenshot?: string | null
+}) {
   const [beschreibung, setBeschreibung] = useState("")
   const [busy, setBusy] = useState(false)
   const [showKontext, setShowKontext] = useState(false)
@@ -31,6 +39,7 @@ export function BugReportDialog({ open, onClose }: { open: boolean; onClose: () 
         beschreibung: text,
         viewPath: snapshot?.viewPath,
         kontext: snapshot?.kontext,
+        screenshot: screenshot ?? null,
       })
       toast.success("Danke! Dein Bug-Report ist bei uns angekommen.")
       setBeschreibung("")
@@ -63,6 +72,18 @@ export function BugReportDialog({ open, onClose }: { open: boolean; onClose: () 
           />
           <p className="mt-1 text-right text-[11px] text-neutral-400">{beschreibung.length}/5000</p>
         </div>
+
+        {/* Automatisch erfasster Seiten-Screenshot (wird mitgesendet) */}
+        {screenshot ? (
+          <div className="rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
+            <p className="mb-1.5 text-xs font-medium text-neutral-600">Screenshot der Seite — wird mitgesendet</p>
+            <img
+              src={screenshot}
+              alt="Seiten-Screenshot"
+              className="max-h-40 w-full rounded border border-neutral-200 object-contain"
+            />
+          </div>
+        ) : null}
 
         {/* Automatisch erfasster Kontext — einklappbar */}
         <div className="rounded-md border border-neutral-200 bg-neutral-50/60">

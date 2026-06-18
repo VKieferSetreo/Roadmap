@@ -34,11 +34,18 @@ export function bugReportsRouter({ db }) {
       throw new ApiError(400, "Kontext-Daten zu groß.")
     }
 
+    // Optionaler Seiten-Screenshot (data:image-JPEG, base64) — defensiv begrenzt.
+    const rawShot = req.body?.screenshot
+    const screenshot =
+      typeof rawShot === "string" && /^data:image\//.test(rawShot) && rawShot.length <= 6_000_000
+        ? rawShot
+        : null
+
     const { email, isAdmin, tenant } = req.ctx
     const { rows } = await db.query(
-      `INSERT INTO bug_reports (email, tenant_slug, is_admin, beschreibung, view_path, kontext)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [email, tenant?.slug ?? null, Boolean(isAdmin), beschreibung, viewPath, JSON.stringify(kontext)],
+      `INSERT INTO bug_reports (email, tenant_slug, is_admin, beschreibung, view_path, kontext, screenshot)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [email, tenant?.slug ?? null, Boolean(isAdmin), beschreibung, viewPath, JSON.stringify(kontext), screenshot],
     )
     res.status(201).json(rowToBugReport(rows[0]))
   }))

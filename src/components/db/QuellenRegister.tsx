@@ -4,12 +4,13 @@
 
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { ChevronDown, Database, RefreshCw, Search, Signal, X } from "lucide-react"
+import { ChevronDown, Database, Plus, RefreshCw, Search, Signal, X } from "lucide-react"
 import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { SourceRequestDialog } from "./SourceRequestDialog"
 import { api } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { formatRelativeDE } from "@/lib/format"
@@ -40,6 +41,7 @@ export function QuellenRegister() {
   const [pings, setPings] = useState<Record<string, PingState>>({})
   const [open, setOpen] = useState<string | null>(null)
   const [allPinging, setAllPinging] = useState(false)
+  const [anfrageOpen, setAnfrageOpen] = useState(false)
 
   const quellen = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -111,6 +113,9 @@ export function QuellenRegister() {
           <Signal className="h-3.5 w-3.5" />
           {allPinging ? "Pinge …" : "Ping"}
         </Button>
+        <Button variant="outline" size="sm" onClick={() => setAnfrageOpen(true)}>
+          <Plus className="h-3.5 w-3.5" /> Quelle anfragen
+        </Button>
       </div>
 
       {status.isLoading ? (
@@ -168,6 +173,7 @@ export function QuellenRegister() {
           </ul>
         </Card>
       )}
+      <SourceRequestDialog open={anfrageOpen} onClose={() => setAnfrageOpen(false)} />
     </div>
   )
 }

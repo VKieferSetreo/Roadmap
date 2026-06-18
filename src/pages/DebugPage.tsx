@@ -12,6 +12,8 @@ import {
   ChevronRight,
   Clock,
   EyeOff,
+  Link2,
+  ListPlus,
   MapPin,
   RefreshCw,
   Trash2,
@@ -30,7 +32,7 @@ import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import { HIDE_REASON_LABEL, type BugReport, type BugReportStatus, type HiddenFindingsResponse, type HideReason } from "@/types/domain"
+import { HIDE_REASON_LABEL, type BugReport, type BugReportStatus, type HiddenFindingsResponse, type HideReason, type SourceRequest } from "@/types/domain"
 
 const STATUS_META: Record<
   BugReportStatus,
@@ -54,7 +56,7 @@ export function DebugPage() {
   const [zaehler, setZaehler] = useState<Record<string, number>>({})
   const [filter, setFilter] = useState<Filter>("offen")
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<"bugs" | "hidden">("bugs")
+  const [view, setView] = useState<"bugs" | "hidden" | "quellen">("bugs")
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -96,10 +98,13 @@ export function DebugPage() {
         title="Roadmap-Debugging"
         description="Von Nutzern gemeldete Probleme + manuell ausgeblendete Funde — einsehen und auswerten."
       >
-        <Tabs value={view} onValueChange={(v) => setView(v as "bugs" | "hidden")} className="mb-4">
+        <Tabs value={view} onValueChange={(v) => setView(v as "bugs" | "hidden" | "quellen")} className="mb-4">
           <TabsList>
             <TabsTrigger value="bugs">
               <Bug className="h-4 w-4" /> Bug-Reports
+            </TabsTrigger>
+            <TabsTrigger value="quellen">
+              <ListPlus className="h-4 w-4" /> Quellen-Vorschläge
             </TabsTrigger>
             <TabsTrigger value="hidden">
               <EyeOff className="h-4 w-4" /> Ausgeblendete Funde
@@ -109,6 +114,8 @@ export function DebugPage() {
 
         {view === "hidden" ? (
           <HiddenFindingsTab />
+        ) : view === "quellen" ? (
+          <SourceRequestsTab />
         ) : (
         <div className="flex flex-col gap-4">
           {/* Filter-Leiste + Aktualisieren */}
@@ -251,6 +258,23 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
           <p className="inline-flex items-center gap-1 font-mono text-[11px] text-neutral-500">
             <MapPin className="h-3.5 w-3.5 text-neutral-400" /> {report.viewPath}
           </p>
+        ) : null}
+
+        {/* Seiten-Screenshot beim Melden (was der Nutzer sah) — Klick öffnet groß */}
+        {report.screenshot ? (
+          <a
+            href={report.screenshot}
+            target="_blank"
+            rel="noreferrer"
+            title="Screenshot in neuem Tab öffnen"
+            className="block w-fit"
+          >
+            <img
+              src={report.screenshot}
+              alt="Seiten-Screenshot beim Melden"
+              className="max-h-56 rounded-md border border-neutral-200 object-contain"
+            />
+          </a>
         ) : null}
 
         {/* Kontext-Snapshot — einklappbar */}
@@ -441,5 +465,221 @@ function HiddenFindingsTab() {
         </div>
       )}
     </div>
+  )
+}
+
+// ── Quellen-Vorschläge (Nutzer schlagen neue Datenquellen vor) ───────────────
+function SourceRequestsTab() {
+  const [requests, setRequests] = useState<SourceRequest[]>([])
+  const [zaehler, setZaehler] = useState<Record<string, number>>({})
+  const [filter, setFilter] = useState<Filter>("offen")
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await api.sourceRequests.list(filter === "alle" ? undefined : filter)
+      setRequests(res.requests)
+      setZaehler(res.zaehler)
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Konnte Vorschläge nicht laden.")
+    } finally {
+      setLoading(false)
+    }
+  }, [filter])
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const gesamt = Object.values(zaehler).reduce((a, b) => a + b, 0)
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-2">
+        {FILTERS.map((f) => {
+          const count = f === "alle" ? gesamt : (zaehler[f] ?? 0)
+          const active = filter === f
+          return (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                active
+                  ? "border-primary-300 bg-primary-50 text-primary-700"
+                  : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50",
+              )}
+            >
+              {f === "alle" ? "Alle" : STATUS_META[f].label}
+              <span
+                className={cn(
+                  "rounded-full px-1.5 text-[10px] tabular-nums",
+                  active ? "bg-primary-100 text-primary-700" : "bg-neutral-100 text-neutral-500",
+                )}
+              >
+                {count}
+              </span>
+            </button>
+          )
+        })}
+        <div className="flex-1" />
+        <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}>
+          <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} /> Aktualisieren
+        </Button>
+      </div>
+
+      {requests.length === 0 ? (
+        <EmptyState
+          icon={ListPlus}
+          title={loading ? "Lädt…" : "Keine Vorschläge"}
+          description={loading ? undefined : "In dieser Ansicht ist aktuell kein Quellen-Vorschlag."}
+        />
+      ) : (
+        <div className="flex flex-col gap-3">
+          {requests.map((r) => (
+            <SourceRequestCard key={r.id} request={r} onChanged={load} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SourceRequestCard({ request, onChanged }: { request: SourceRequest; onChanged: () => void }) {
+  const [editNotiz, setEditNotiz] = useState(false)
+  const [notizDraft, setNotizDraft] = useState(request.notiz ?? "")
+  const [busy, setBusy] = useState(false)
+  const meta = STATUS_META[request.status]
+
+  const setStatus = async (status: BugReportStatus) => {
+    if (status === request.status) return
+    setBusy(true)
+    try {
+      await api.sourceRequests.patch(request.id, { status })
+      onChanged()
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Status konnte nicht geändert werden.")
+    } finally {
+      setBusy(false)
+    }
+  }
+  const saveNotiz = async () => {
+    setEditNotiz(false)
+    if (notizDraft === (request.notiz ?? "")) return
+    try {
+      await api.sourceRequests.patch(request.id, { notiz: notizDraft.trim() || null })
+      toast.success("Notiz gespeichert.")
+      onChanged()
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Notiz konnte nicht gespeichert werden.")
+    }
+  }
+  const remove = async () => {
+    if (!window.confirm("Diesen Vorschlag wirklich löschen?")) return
+    try {
+      await api.sourceRequests.remove(request.id)
+      toast.success("Gelöscht.")
+      onChanged()
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Löschen fehlgeschlagen.")
+    }
+  }
+
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant={meta.variant} size="sm">
+            {meta.label}
+          </Badge>
+          <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
+            <User className="h-3.5 w-3.5 text-neutral-400" /> {request.email}
+          </span>
+          {request.tenantSlug ? (
+            <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
+              <Building2 className="h-3.5 w-3.5 text-neutral-400" /> {request.tenantSlug}
+            </span>
+          ) : null}
+          <span
+            className="inline-flex items-center gap-1 text-xs text-neutral-400"
+            title={formatDateTimeDE(request.createdAt)}
+          >
+            <Clock className="h-3.5 w-3.5" /> {formatRelativeDE(request.createdAt)}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void remove()}
+            aria-label="Vorschlag löschen"
+            className="text-neutral-400 hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <a
+          href={request.url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 break-all text-sm font-medium text-primary-600 hover:underline"
+        >
+          <Link2 className="h-3.5 w-3.5 shrink-0" /> {request.url}
+        </a>
+        <p className="whitespace-pre-wrap text-sm text-neutral-800">{request.beschreibung}</p>
+
+        {/* Interne Notiz */}
+        <div className="border-t border-neutral-100 pt-3">
+          {editNotiz ? (
+            <div className="flex flex-col gap-2">
+              <Textarea
+                autoFocus
+                rows={2}
+                value={notizDraft}
+                onChange={(e) => setNotizDraft(e.target.value)}
+                placeholder="Interne Notiz (z.B. geprüft, Connector geplant, Ticket-Verweis) …"
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setEditNotiz(false)}>
+                  Abbrechen
+                </Button>
+                <Button size="sm" onClick={() => void saveNotiz()}>
+                  Notiz speichern
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setNotizDraft(request.notiz ?? "")
+                setEditNotiz(true)
+              }}
+              className="text-left text-xs text-neutral-500 hover:text-neutral-800"
+            >
+              {request.notiz ? (
+                <span className="whitespace-pre-wrap">📝 {request.notiz}</span>
+              ) : (
+                <span className="italic text-neutral-400">+ Interne Notiz hinzufügen</span>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Status-Aktionen */}
+        <div className="flex flex-wrap gap-1.5 border-t border-neutral-100 pt-3">
+          {(Object.keys(STATUS_META) as BugReportStatus[]).map((s) => (
+            <Button
+              key={s}
+              variant={s === request.status ? "default" : "outline"}
+              size="xs"
+              disabled={busy || s === request.status}
+              onClick={() => void setStatus(s)}
+            >
+              {STATUS_META[s].label}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

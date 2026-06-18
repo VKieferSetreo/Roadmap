@@ -396,6 +396,8 @@ export interface BugReportCreate {
   beschreibung: string
   viewPath?: string
   kontext?: BugReportKontext
+  /** Optionaler Seiten-Screenshot (data:image-JPEG, base64). */
+  screenshot?: string | null
 }
 
 /** Ein Bug-Report (GET /api/bug-reports, nur Admin). */
@@ -409,12 +411,35 @@ export interface BugReport {
   kontext: BugReportKontext
   status: BugReportStatus
   notiz?: string | null
+  /** Optionaler Seiten-Screenshot (data:image-JPEG, base64). */
+  screenshot?: string | null
   createdAt: string
   resolvedAt?: string | null
 }
 
 export interface BugReportList {
   reports: BugReport[]
+  zaehler: Record<BugReportStatus, number>
+}
+
+// ── Quellen-Vorschläge (Nutzer schlägt neue Datenquelle vor → /debug-Triage) ──
+export interface SourceRequestCreate {
+  url: string
+  beschreibung: string
+}
+export interface SourceRequest {
+  id: string
+  email: string
+  tenantSlug?: string | null
+  url: string
+  beschreibung: string
+  status: BugReportStatus
+  notiz?: string | null
+  createdAt: string
+  resolvedAt?: string | null
+}
+export interface SourceRequestList {
+  requests: SourceRequest[]
   zaehler: Record<BugReportStatus, number>
 }
 

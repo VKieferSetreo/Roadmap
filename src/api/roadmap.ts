@@ -20,6 +20,9 @@ import type {
   ProjectRoute,
   RoutePoint,
   ShareInfo,
+  SourceRequest,
+  SourceRequestCreate,
+  SourceRequestList,
   SyncJob,
   SyncStatus,
   Tenant,
@@ -303,6 +306,26 @@ export const api = {
     /** Löschen (nur Admin). */
     remove: (id: string) =>
       axiosClient<void>({ url: `/bug-reports/${id}`, method: "DELETE" }),
+  },
+
+  // ── Quellen-Vorschläge ───────────────────────────────────────────────────────
+  sourceRequests: {
+    /** Quelle vorschlagen — jeder eingeloggte Nutzer. */
+    create: (payload: SourceRequestCreate) =>
+      axiosClient<SourceRequest>({ url: "/source-requests", method: "POST", data: payload }),
+    /** Liste + Status-Zähler (nur Admin). */
+    list: (status?: BugReportStatus) =>
+      axiosClient<SourceRequestList>({
+        url: "/source-requests",
+        method: "GET",
+        params: status ? { status } : undefined,
+      }),
+    /** Status/Notiz pflegen (nur Admin). */
+    patch: (id: string, patch: { status?: BugReportStatus; notiz?: string | null }) =>
+      axiosClient<SourceRequest>({ url: `/source-requests/${id}`, method: "PATCH", data: patch }),
+    /** Löschen (nur Admin). */
+    remove: (id: string) =>
+      axiosClient<void>({ url: `/source-requests/${id}`, method: "DELETE" }),
   },
 
   // ── Eigenes Konto ──────────────────────────────────────────────────────────

@@ -22,6 +22,7 @@ import { createOsrm } from "./external/osrm.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
+import { sourceRequestsRouter } from "./routes/sourceRequests.js"
 import { hiddenFindingsRouter } from "./routes/hiddenFindings.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
@@ -130,6 +131,7 @@ export function createApp({
   app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
   app.use("/api/bug-reports", bugReportsRouter({ db }))
+  app.use("/api/source-requests", sourceRequestsRouter({ db }))
   // Eigenes Konto: Self-Service-Passwortänderung (nur externe Kunden-Accounts)
   app.use("/api/account", accountRouter({ fetchImpl, authExtern }))
 
