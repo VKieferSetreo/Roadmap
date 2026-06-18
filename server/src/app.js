@@ -132,8 +132,8 @@ export function createApp({
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
   app.use("/api/bug-reports", bugReportsRouter({ db }))
   app.use("/api/source-requests", sourceRequestsRouter({ db }))
-  // Eigenes Konto: Self-Service-Passwortänderung (nur externe Kunden-Accounts)
-  app.use("/api/account", accountRouter({ fetchImpl, authExtern }))
+  // Eigenes Konto: Passwortänderung (extern) + Seat-Code-Einlösung (ohne Tenant-Pflicht)
+  app.use("/api/account", accountRouter({ db, fetchImpl, authExtern }))
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Nicht gefunden" }))
 

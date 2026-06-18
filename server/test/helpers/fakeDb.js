@@ -22,6 +22,7 @@ export function createFakeDb() {
   const state = {
     tenants: [],
     members: [], // { tenant_id, email, created_at }
+    seatCodes: [], // { id, tenant_id, code, used_by_email, used_at, created_at }
     shares: [],
     projects: [],
     findings: [],
@@ -148,6 +149,60 @@ export function createFakeDb() {
     }
     if (sql.startsWith("SELECT count(*)::int AS n FROM projects WHERE tenant_id = $1")) {
       return ok([{ n: state.projects.filter((p) => p.tenant_id === params[0]).length }])
+    }
+
+    // ── seat_codes (Lizenz-Seats) ─────────────────────────────────────────────
+    if (sql.startsWith("INSERT INTO seat_codes (tenant_id, code)")) {
+      if (state.seatCodes.some((s) => s.code === params[1])) {
+        const e = new Error("fakeDb: unique violation seat_codes_code")
+        e.code = "23505"
+        throw e
+      }
+      const row = {
+        id: randomUUID(), tenant_id: params[0], code: params[1],
+        used_by_email: null, used_at: null, created_at: now(),
+      }
+      state.seatCodes.push(row)
+      return ok([row])
+    }
+    if (sql.startsWith("SELECT code, used_by_email, used_at FROM seat_codes WHERE tenant_id = $1")) {
+      return ok(
+        state.seatCodes
+          .filter((s) => s.tenant_id === params[0])
+          .sort((a, b) => (a.created_at < b.created_at ? -1 : 1))
+          .map((s) => ({ code: s.code, used_by_email: s.used_by_email, used_at: s.used_at })),
+      )
+    }
+    if (sql.startsWith("SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until FROM seat_codes sc JOIN tenants t")) {
+      const sc = state.seatCodes.find((s) => s.code === params[0])
+      if (!sc) return ok([])
+      const t = state.tenants.find((x) => x.id === sc.tenant_id)
+      return ok([{
+        id: sc.id, tenant_id: sc.tenant_id, used_by_email: sc.used_by_email,
+        slug: t?.slug ?? null, name: t?.name ?? null, valid_until: t?.valid_until ?? null,
+      }])
+    }
+    if (sql.startsWith("UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2")) {
+      const sc = state.seatCodes.find((s) => s.id === params[1])
+      if (!sc) return ok([], 0)
+      sc.used_by_email = params[0]
+      sc.used_at = now()
+      return ok([], 1)
+    }
+    if (sql.startsWith("UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      if (!row) return ok([])
+      row.plan = params[1]
+      row.max_seats = params[2]
+      row.valid_until = params[3]
+      return ok([{
+        id: row.id, slug: row.slug, name: row.name,
+        plan: row.plan, max_seats: row.max_seats, valid_until: row.valid_until,
+      }])
+    }
+    if (sql.startsWith("SELECT max_seats FROM tenants WHERE id = $1")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      return ok(row ? [{ max_seats: row.max_seats ?? 0 }] : [])
     }
 
     // ── shares ────────────────────────────────────────────────────────────────

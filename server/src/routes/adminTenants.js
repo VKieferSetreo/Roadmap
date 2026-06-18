@@ -6,6 +6,7 @@
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
+import { generateSeatCodes, listSeatCodes } from "../seatCodes.js"
 import { getTenantById, listTenants, rowToTenant, slugError, tenantMembers } from "../tenants.js"
 import { ApiError, asyncHandler, isUuid } from "../util.js"
 
@@ -193,6 +194,52 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       created,
       tenant: rowToTenant(tenant, await tenantMembers(db, tenant.id), await projectCount(db, tenant.id)),
     })
+  }))
+
+  /** Lizenz setzen: Plan, Seats (Anzahl Codes), Laufzeit. Buchhaltung rechnet extern. */
+  r.patch("/:id/license", asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const plan = typeof req.body?.plan === "string" && req.body.plan.trim() ? req.body.plan.trim() : "standard"
+    const maxSeats = Number(req.body?.maxSeats)
+    if (!Number.isInteger(maxSeats) || maxSeats < 0 || maxSeats > 1000) {
+      throw new ApiError(400, "maxSeats muss eine ganze Zahl 0..1000 sein")
+    }
+    const validUntil = req.body?.validUntil ? String(req.body.validUntil).slice(0, 10) : null
+    if (validUntil && !/^\d{4}-\d{2}-\d{2}$/.test(validUntil)) {
+      throw new ApiError(400, "validUntil muss YYYY-MM-DD sein")
+    }
+    const { rows } = await db.query(
+      "UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1 RETURNING id, slug, name, plan, max_seats, valid_until",
+      [req.params.id, plan, maxSeats, validUntil],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    res.json(rows[0])
+  }))
+
+  /** Seat-Codes generieren: auf max_seats auffüllen, oder body.count zusätzliche. */
+  r.post("/:id/seat-codes", asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const tenant = await getTenantById(db, req.params.id)
+    if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
+    const existing = await listSeatCodes(db, tenant.id)
+    let count
+    if (req.body?.count != null) {
+      count = Number(req.body.count)
+      if (!Number.isInteger(count) || count < 1 || count > 1000) {
+        throw new ApiError(400, "count muss eine ganze Zahl 1..1000 sein")
+      }
+    } else {
+      const { rows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+      count = Math.max(0, Number(rows[0]?.max_seats ?? 0) - existing.length)
+    }
+    if (count > 0) await generateSeatCodes(db, tenant.id, count)
+    res.status(201).json({ codes: await listSeatCodes(db, tenant.id) })
+  }))
+
+  /** Seat-Codes eines Mandanten + Belegung (für die Lizenz-/Mandanten-Seite). */
+  r.get("/:id/seat-codes", asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    res.json({ codes: await listSeatCodes(db, req.params.id) })
   }))
 
   return r
