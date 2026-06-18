@@ -29,6 +29,7 @@ import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { geomMidpoint, geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
 import type { OrtTreffer } from "@/components/db/OrtsSuche"
+import germanyRings from "@/assets/germanyRings.json"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
 const PIN_GLOBAL = "#475569" // Slate — globaler Setreo-/Connector-Bestand
@@ -230,6 +231,43 @@ function FlyTo({ target }: { target?: OrtTreffer }) {
   return null
 }
 
+// Welt-Rechteck (für die Spotlight-Maske als äusserer Ring).
+const WORLD: [number, number][] = [
+  [-90, -180],
+  [90, -180],
+  [90, 180],
+  [-90, 180],
+]
+
+/** Spotlight auf Deutschland: alles ausserhalb DE grau überlagern (Maske = Welt-Polygon mit
+ *  Deutschland als Löchern), DE bleibt farbig. Plus dünne grüne DE-Grenze als Akzent. */
+function DeSpotlight() {
+  const map = useMap()
+  useEffect(() => {
+    const rings = germanyRings as [number, number][][]
+    const mask = L.polygon([WORLD, ...rings], {
+      stroke: false,
+      fillColor: "#64748b",
+      fillOpacity: 0.5,
+      interactive: false,
+    })
+    const border = L.polygon(rings, {
+      fill: false,
+      color: "#87b52d",
+      weight: 1.5,
+      opacity: 0.6,
+      interactive: false,
+    })
+    mask.addTo(map)
+    border.addTo(map)
+    return () => {
+      map.removeLayer(mask)
+      map.removeLayer(border)
+    }
+  }, [map])
+  return null
+}
+
 export function ObstaclesMap({
   obstacles,
   onDelete,
@@ -245,6 +283,7 @@ export function ObstaclesMap({
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom zoomControl={false} className="h-full w-full">
         <TileLayer attribution={tiles.attribution} url={tiles.url} />
+        <DeSpotlight />
         <ZoomControl position="bottomright" />
         <MapResize />
         <MapFullscreen />
