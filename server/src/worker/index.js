@@ -37,7 +37,6 @@ async function waitForSchema({ tries = 120, delayMs = 5000 } = {}) {
 }
 
 const jobs = []
-const running = new Set()
 let rerunTimer = null
 let rerunning = false
 
@@ -81,23 +80,44 @@ async function runRerun(grund) {
   }
 }
 
-async function execute(connector) {
-  if (running.has(connector.quelleId)) {
-    log(`${connector.quelleId} (${connector.name}): vorheriger Run läuft noch — übersprungen`)
-    return
-  }
-  running.add(connector.quelleId)
-  log(`${connector.quelleId} (${connector.name}): Run startet`)
+// Prozessübergreifender Lock pro Connector (pg-Advisory-Lock auf dediziertem Client).
+// Ersetzt die frühere In-Memory-Set: verhindert Doppel-Runs NICHT nur im selben Prozess,
+// sondern über mehrere Worker-Instanzen hinweg. Cron-Duplikation (2 Worker feuern denselben
+// Cron) wird damit harmlos — nur einer bekommt den Lock, der andere überspringt. Bei einem
+// Worker ist das Verhalten identisch (Lock immer frei). Muster wie engine/rerunAll.js.
+const LOCK_NS = "roadmap_connector:"
+
+async function withConnectorLock(connector, fn) {
+  const client = await pool.connect()
+  const key = LOCK_NS + connector.quelleId
   try {
-    const run = await runImport({ db, connector, log: (m) => log(m) })
-    log(`${connector.quelleId}: Run ${run.status} — ${JSON.stringify(run.stats)}`)
-    if (run.status === "ok" && changed(run.stats)) scheduleRerun()
-  } catch (err) {
-    // runImport wirft eigentlich nie — letzte Verteidigungslinie, Worker läuft weiter
-    log(`${connector.quelleId}: unerwarteter Fehler — ${err?.message ?? err}`)
+    const { rows } = await client.query("SELECT pg_try_advisory_lock(hashtext($1)) AS ok", [key])
+    if (!rows[0]?.ok) {
+      log(`${connector.quelleId} (${connector.name}): läuft bereits (anderer Worker/Run) — übersprungen`)
+      return
+    }
+    try {
+      await fn()
+    } finally {
+      await client.query("SELECT pg_advisory_unlock(hashtext($1))", [key])
+    }
   } finally {
-    running.delete(connector.quelleId)
+    client.release()
   }
+}
+
+async function execute(connector) {
+  await withConnectorLock(connector, async () => {
+    log(`${connector.quelleId} (${connector.name}): Run startet`)
+    try {
+      const run = await runImport({ db, connector, log: (m) => log(m) })
+      log(`${connector.quelleId}: Run ${run.status} — ${JSON.stringify(run.stats)}`)
+      if (run.status === "ok" && changed(run.stats)) scheduleRerun()
+    } catch (err) {
+      // runImport wirft eigentlich nie — letzte Verteidigungslinie, Worker läuft weiter
+      log(`${connector.quelleId}: unerwarteter Fehler — ${err?.message ?? err}`)
+    }
+  })
 }
 
 function shutdown(signal) {
