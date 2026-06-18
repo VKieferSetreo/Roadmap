@@ -1,8 +1,9 @@
 // Mandanten-Verwaltung — ausschließlich Setreo-Admin (Rolle "admin").
 // Slug serverseitig hart validiert (Regex + Reserved-Liste), E-Mail gehört
 // immer genau EINEM Tenant (UNIQUE auf tenant_members.email → 409 mit Hinweis).
-// Kunden-Accounts werden gegen setreo-auth-extern provisioniert (PUT /internal/users);
-// das Klartext-Passwort wird zur Admin-Einsicht in tenant_members.passwort_klar gehalten.
+// Kunden-Accounts werden gegen setreo-auth-extern provisioniert (PUT /internal/users).
+// KEIN Klartext-Passwort in dieser DB (DSGVO, T-151) — Passwoerter liegen ausschliesslich
+// gehasht in setreo-auth-extern. Ein gesetztes Passwort wird dort (re)provisioniert, nicht hier gespeichert.
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
@@ -120,30 +121,26 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     const currentByEmail = new Map((await tenantMembers(db, tenant.id)).map((m) => [m.email, m]))
 
     // Provisionierung (externe Calls) VOR der DB-Transaktion — schlägt eine fehl, wird nichts geschrieben.
-    const resolved = []
+    // Gesetztes Passwort → in setreo-auth-extern (re)provisionieren (Hash), NICHT hier speichern.
+    // Leeres Passwort = unverändert (bestehende Mitglieder behalten ihren Login).
     for (const m of incoming) {
-      const cur = currentByEmail.get(m.email)
-      let passwortKlar = cur?.passwort ?? null
-      const pwGeaendert = m.password && m.password !== passwortKlar
-      if (pwGeaendert) {
+      if (m.password) {
         if (m.password.length < MIN_PASSWORD_LEN) {
           throw new ApiError(400, `Passwort für ${m.email}: mindestens ${MIN_PASSWORD_LEN} Zeichen`)
         }
         await provisionExtern({ authExtern, fetchImpl, email: m.email, password: m.password })
-        passwortKlar = m.password
-      } else if (!cur && !m.password) {
+      } else if (!currentByEmail.has(m.email)) {
         // neuer Eintrag ohne Passwort → nicht erlaubt (nur-mit-Passwort)
         throw new ApiError(400, `Neuer Nutzer ${m.email} braucht ein Passwort`)
       }
-      resolved.push({ email: m.email, role: m.role, passwortKlar })
     }
 
     await db.tx(async (q) => {
       await q.query("DELETE FROM tenant_members WHERE tenant_id = $1", [tenant.id])
-      for (const m of resolved) {
+      for (const m of incoming) {
         await q.query(
-          "INSERT INTO tenant_members (tenant_id, email, role, passwort_klar) VALUES ($1, $2, $3, $4)",
-          [tenant.id, m.email, m.role, m.passwortKlar],
+          "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
+          [tenant.id, m.email, m.role],
         )
       }
     })
@@ -180,13 +177,13 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     )
     if (already.rows.length) {
       await db.query(
-        "UPDATE tenant_members SET role = $3, passwort_klar = $4 WHERE tenant_id = $1 AND email = $2",
-        [tenant.id, email, role, password],
+        "UPDATE tenant_members SET role = $3 WHERE tenant_id = $1 AND email = $2",
+        [tenant.id, email, role],
       )
     } else {
       await db.query(
-        "INSERT INTO tenant_members (tenant_id, email, role, passwort_klar) VALUES ($1, $2, $3, $4)",
-        [tenant.id, email, role, password],
+        "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
+        [tenant.id, email, role],
       )
     }
     res.status(created ? 201 : 200).json({

@@ -88,8 +88,8 @@ export async function redeemSeatCode(db, codeInput, email) {
 
     await q.query("UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2", [mail, sc.id])
     await q.query(
-      "INSERT INTO tenant_members (tenant_id, email, role, passwort_klar) VALUES ($1, $2, $3, $4)",
-      [sc.tenant_id, mail, "user", null],
+      "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
+      [sc.tenant_id, mail, "user"],
     )
     return { tenant: { id: sc.tenant_id, slug: sc.slug, name: sc.name } }
   })

@@ -48,7 +48,7 @@ export async function listTenants(db) {
 /** Map tenant_id → [{email, role, passwort}] (alle Mandanten). */
 export async function membersByTenant(db) {
   const { rows } = await db.query(
-    "SELECT tenant_id, email, role, passwort_klar FROM tenant_members ORDER BY email ASC",
+    "SELECT tenant_id, email, role FROM tenant_members ORDER BY email ASC",
   )
   const map = new Map()
   for (const m of rows) {
@@ -63,12 +63,12 @@ export async function tenantMembers(db, tenantId) {
   return (await membersByTenant(db)).get(tenantId) ?? []
 }
 
-/** tenant_members-Row → FE-Member-Shape. passwort = Klartext (nur Admin sieht das). */
+/** tenant_members-Row → FE-Member-Shape. Kein Klartext-Passwort mehr (DSGVO) —
+ *  Passwörter liegen ausschließlich gehasht in setreo-auth-extern. */
 export function rowToMember(row) {
   return {
     email: row.email,
     role: row.role === "admin" ? "admin" : "user",
-    passwort: row.passwort_klar ?? null,
   }
 }
 

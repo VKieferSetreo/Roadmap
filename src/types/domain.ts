@@ -201,12 +201,11 @@ export interface Project {
 /** Rolle eines Nutzers innerhalb seines Mandanten. */
 export type TenantRole = "admin" | "user"
 
-/** Nutzer eines Mandanten (Admin-Verwaltung). passwort = Klartext (nur Setreo-Admin sieht das;
- *  null bei internen Hub-Konten ohne hier verwaltetes Passwort). */
+/** Nutzer eines Mandanten (Admin-Verwaltung). Kein Klartext-Passwort mehr (DSGVO) —
+ *  Passwörter liegen ausschließlich gehasht in setreo-auth-extern. */
 export interface TenantMember {
   email: string
   role: TenantRole
-  passwort: string | null
 }
 
 /** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Nutzer. */

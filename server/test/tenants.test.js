@@ -79,7 +79,7 @@ describe("admin tenants API", () => {
     expect((await asUser("vki@setreo.de")(request(app).get("/api/admin/tenants"))).status).toBe(403)
   })
 
-  it("GET liefert Tenant-Shape mit Mitglieder-Objekten {email, role, passwort}", async () => {
+  it("GET liefert Tenant-Shape mit Mitglieder-Objekten {email, role}", async () => {
     const { app } = makeApp()
     await createProject(app, "P1")
     const res = await request(app).get("/api/admin/tenants")
@@ -89,7 +89,7 @@ describe("admin tenants API", () => {
       id: expect.any(String),
       slug: "setreo",
       name: "Setreo",
-      mitglieder: [{ email: "vki@setreo.de", role: "user", passwort: null }],
+      mitglieder: [{ email: "vki@setreo.de", role: "user" }],
       projekte: 1,
     })
   })
@@ -128,12 +128,12 @@ describe("admin tenants API", () => {
     const fetchImpl = provisionFetch(201)
     const { app, tenant } = makeApp({ fetchImpl, authExtern: AUTH_EXTERN })
 
-    // Neuer Nutzer mit Passwort + Admin-Rolle → provisioniert, Klartext gespeichert
+    // Neuer Nutzer mit Passwort + Admin-Rolle → provisioniert (Hash in auth-extern), KEIN Klartext in der DB
     const put = await request(app).put(`/api/admin/tenants/${tenant.id}/members`).send({
       members: [{ email: "Neu@Setreo.DE", role: "admin", password: "geheim1234" }],
     })
     expect(put.status).toBe(200)
-    expect(put.body.mitglieder).toEqual([{ email: "neu@setreo.de", role: "admin", passwort: "geheim1234" }])
+    expect(put.body.mitglieder).toEqual([{ email: "neu@setreo.de", role: "admin" }])
     expect(fetchImpl).toHaveBeenCalledTimes(1)
 
     // Neuer Nutzer OHNE Passwort → 400 (nur-mit-Passwort)

@@ -12,8 +12,6 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
-  Eye,
-  EyeOff,
   FolderKanban,
   KeyRound,
   Pencil,
@@ -46,7 +44,7 @@ interface Draft {
 const toDraft = (m: TenantMember): Draft => ({
   email: m.email,
   role: m.role,
-  passwort: m.passwort ?? "",
+  passwort: "", // Klartext wird nicht mehr geladen — leer = unverändert, ausfüllen = neu setzen
   isNew: false,
 })
 
@@ -147,7 +145,6 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
   const [editingName, setEditingName] = useState(false)
   const [nameDraft, setNameDraft] = useState(tenant.name)
   const [members, setMembers] = useState<Draft[]>(tenant.mitglieder.map(toDraft))
-  const [showPw, setShowPw] = useState(true)
   const [busy, setBusy] = useState(false)
 
   // Bei externer Änderung (refresh) den Draft neu aus dem Tenant aufbauen.
@@ -305,19 +302,7 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
                   <tr>
                     <th className="px-3 py-2 text-left font-medium">E-Mail</th>
                     <th className="w-28 px-3 py-2 text-left font-medium">Rolle</th>
-                    <th className="px-3 py-2 text-left font-medium">
-                      <span className="inline-flex items-center gap-1.5">
-                        Passwort
-                        <button
-                          type="button"
-                          onClick={() => setShowPw((s) => !s)}
-                          className="text-neutral-400 hover:text-neutral-700"
-                          aria-label={showPw ? "Passwörter verbergen" : "Passwörter zeigen"}
-                        >
-                          {showPw ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-                        </button>
-                      </span>
-                    </th>
+                    <th className="px-3 py-2 text-left font-medium">Passwort (neu setzen)</th>
                     <th className="w-10 px-2 py-2" />
                   </tr>
                 </thead>
@@ -352,7 +337,8 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
                         </td>
                         <td className="px-3 py-1.5">
                           <Input
-                            type={showPw ? "text" : "password"}
+                            type="password"
+                            autoComplete="new-password"
                             value={m.passwort}
                             onChange={(e) => setRow(i, { passwort: e.target.value })}
                             placeholder={m.isNew ? `Passwort (min. ${MIN_PW})` : "(unverändert)"}
@@ -385,8 +371,9 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
               </Button>
             </div>
             <p className="mt-2 text-[11px] text-neutral-400">
-              Nutzer werden mit Passwort als Kunden-Zugang angelegt (Login: app.setreo-cloud.com). Passwörter
-              sind hier im Klartext einsehbar und änderbar.
+              Nutzer werden mit Passwort als Kunden-Zugang angelegt (Login: setreo-cloud.com/roadmap). Passwörter
+              werden ausschließlich gehasht in setreo-auth-extern gespeichert und sind hier nicht einsehbar. Feld
+              leer lassen = unverändert.
             </p>
           </div>
         ) : null}

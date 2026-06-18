@@ -90,7 +90,7 @@ describe("context", () => {
     expect(res.body.tenants).toHaveLength(1)
     expect(res.body.tenants[0]).toMatchObject({
       slug: "setreo", name: "Setreo",
-      mitglieder: [{ email: "vki@setreo.de", role: "user", passwort: null }], projekte: 0,
+      mitglieder: [{ email: "vki@setreo.de", role: "user" }], projekte: 0,
     })
   })
 

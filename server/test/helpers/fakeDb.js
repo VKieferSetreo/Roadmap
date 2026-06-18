@@ -79,13 +79,11 @@ export function createFakeDb() {
         }))
       return ok(rows)
     }
-    if (sql.startsWith("SELECT tenant_id, email, role, passwort_klar FROM tenant_members")) {
+    if (sql.startsWith("SELECT tenant_id, email, role FROM tenant_members")) {
       return ok(
         [...state.members]
           .sort((a, b) => (a.email < b.email ? -1 : 1))
-          .map((m) => ({
-            tenant_id: m.tenant_id, email: m.email, role: m.role ?? "user", passwort_klar: m.passwort_klar ?? null,
-          })),
+          .map((m) => ({ tenant_id: m.tenant_id, email: m.email, role: m.role ?? "user" })),
       )
     }
     if (sql.startsWith("INSERT INTO tenants (slug, name)")) {
@@ -134,18 +132,16 @@ export function createFakeDb() {
       state.members = state.members.filter((m) => m.tenant_id !== params[0])
       return ok([], before - state.members.length)
     }
-    if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email, role, passwort_klar)")) {
+    if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email, role)")) {
       state.members.push({
-        tenant_id: params[0], email: params[1], role: params[2] ?? "user",
-        passwort_klar: params[3] ?? null, created_at: now(),
+        tenant_id: params[0], email: params[1], role: params[2] ?? "user", created_at: now(),
       })
       return ok([], 1)
     }
-    if (sql.startsWith("UPDATE tenant_members SET role = $3, passwort_klar = $4 WHERE tenant_id = $1 AND email = $2")) {
+    if (sql.startsWith("UPDATE tenant_members SET role = $3 WHERE tenant_id = $1 AND email = $2")) {
       const m = state.members.find((x) => x.tenant_id === params[0] && x.email === params[1])
       if (!m) return ok([], 0)
       m.role = params[2]
-      m.passwort_klar = params[3]
       return ok([], 1)
     }
     if (sql.startsWith("SELECT count(*)::int AS n FROM projects WHERE tenant_id = $1")) {
