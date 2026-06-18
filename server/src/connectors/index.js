@@ -10,7 +10,8 @@ import { autobahnConnector } from "./autobahn.js"
 import { gstRoutenHamburgConnector } from "./0110_gst_routen_hamburg.js"
 import { brueckenbauwerkeHamburgConnector } from "./0111_brueckenbauwerke_hamburg.js"
 import { baustellenHamburgConnector } from "./0112_baustellen_hamburg.js"
-import { bedarfsumleitungenHamburgConnector } from "./0113_bedarfsumleitungen_hamburg.js"
+// 0113 (Bedarfsumleitungen Hamburg, BWVI) ENTFERNT (Max 2026-06-18): nicht benötigt.
+// import { bedarfsumleitungenHamburgConnector } from "./0113_bedarfsumleitungen_hamburg.js"
 import { vizBerlinBaustellenConnector } from "./0114_viz_berlin_baustellen.js"
 import { vizBerlinGeojsonFeedsConnector } from "./0115_viz_berlin_geojson_feeds.js"
 import { detailnetzBerlinBauwerkeConnector } from "./0116_detailnetz_berlin_bauwerke.js"
@@ -64,7 +65,6 @@ export const CONNECTORS = [
   gstRoutenHamburgConnector,
   brueckenbauwerkeHamburgConnector,
   baustellenHamburgConnector,
-  bedarfsumleitungenHamburgConnector,
   vizBerlinBaustellenConnector,
   vizBerlinGeojsonFeedsConnector,
   detailnetzBerlinBauwerkeConnector,
