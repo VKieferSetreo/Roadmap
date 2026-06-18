@@ -27,6 +27,10 @@ interface UiStore {
   newProjectOpen: boolean
   openNewProject: () => void
   closeNewProject: () => void
+  /** Zähler-Signal: erhöht sich, wenn „Ordner anlegen" aus dem +-Menü gewählt wird.
+   *  Der Projektbaum öffnet darauf seine Inline-Eingabe für einen neuen Wurzelordner. */
+  newFolderTick: number
+  requestNewFolder: () => void
   /** Desktop-Sidebar offen? Persistiert. */
   sidebarOpen: boolean
   toggleSidebar: () => void
@@ -37,6 +41,8 @@ export const useUiStore = create<UiStore>((set) => ({
   newProjectOpen: false,
   openNewProject: () => set({ newProjectOpen: true }),
   closeNewProject: () => set({ newProjectOpen: false }),
+  newFolderTick: 0,
+  requestNewFolder: () => set((s) => ({ newFolderTick: s.newFolderTick + 1 })),
   sidebarOpen: readSidebarOpen(),
   toggleSidebar: () =>
     set((s) => {

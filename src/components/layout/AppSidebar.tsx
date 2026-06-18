@@ -8,7 +8,9 @@ import {
   Bug,
   Building2,
   Database,
+  FilePlus,
   Folder,
+  FolderPlus,
   Home,
   LogOut,
   Newspaper,
@@ -23,6 +25,7 @@ import { useUiStore } from "@/store/ui"
 import { useContextStore } from "@/store/context"
 import { useSettingsStore } from "@/store/settings"
 import { ProjectTree } from "@/components/layout/ProjectTree"
+import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { handleLogout } from "@/lib/auth"
 import { useSourceHealth } from "@/lib/sourceHealth"
 import { cn } from "@/lib/cn"
@@ -69,6 +72,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { pathname } = useLocation()
   const projects = useProjectStore((s) => s.projects ?? [])
   const openNewProject = useUiStore((s) => s.openNewProject)
+  const requestNewFolder = useUiStore((s) => s.requestNewFolder)
   const isAdmin = useContextStore((s) => s.isAdmin)
   const tenant = useContextStore((s) => s.tenant)
   // Admin-Werkzeuge (Mandanten/Debugging) NUR im eigenen Setreo-Kontext zeigen. Wechselt der
@@ -120,26 +124,32 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               className="w-full rounded-md border border-neutral-200 bg-white py-1.5 pl-7 pr-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400"
             />
           </div>
-          <button
-            onClick={() => {
-              openNewProject()
-              onNavigate?.()
-            }}
-            aria-label="Neues Projekt"
-            className="shrink-0 rounded-md border border-neutral-200 bg-white p-1.5 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-primary-600"
+          <DropdownMenu
+            triggerLabel="Hinzufügen"
+            trigger={
+              <span
+                title="Hinzufügen"
+                className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-primary-600"
+              >
+                <Plus className="h-4 w-4" />
+              </span>
+            }
           >
-            <Plus className="h-4 w-4" />
-          </button>
+            <DropdownItem
+              onClick={() => {
+                openNewProject()
+                onNavigate?.()
+              }}
+            >
+              <FilePlus className="h-4 w-4 text-neutral-400" /> Projekt
+            </DropdownItem>
+            <DropdownItem onClick={() => requestNewFolder()}>
+              <FolderPlus className="h-4 w-4 text-neutral-400" /> Ordner
+            </DropdownItem>
+          </DropdownMenu>
         </div>
 
-        {aktive.length === 0 ? (
-          <div className="mt-6 flex flex-col items-center px-3 text-center">
-            <Folder className="h-6 w-6 text-neutral-300" />
-            <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
-          </div>
-        ) : (
-          <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
-        )}
+        <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
       </nav>
 
       <div className="border-t border-neutral-100 p-3">

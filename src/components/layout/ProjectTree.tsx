@@ -5,10 +5,11 @@
 // FolderNode/NewFolderInput sind bewusst Modul-Komponenten (nicht im Render definiert):
 // sonst remounten sie bei jedem Tastendruck und das Eingabefeld verliert den Fokus.
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ChevronRight, Folder, FolderOpen, FolderPlus, Pencil, Trash2 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useFolderStore } from "@/store/folders"
+import { useUiStore } from "@/store/ui"
 import { ProjectMenu } from "@/components/project/ProjectMenu"
 import { CreatorAvatar } from "@/components/project/CreatorAvatar"
 import { cn } from "@/lib/cn"
@@ -296,6 +297,18 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const [renaming, setRenaming] = useState<string | null>(null)
   const [renameVal, setRenameVal] = useState("")
 
+  // „+ → Ordner" aus der Sidebar-Kopfzeile öffnet die Inline-Eingabe für einen Wurzelordner.
+  // Tick-Signal statt Callback, weil der Auslöser in einer anderen Komponente sitzt.
+  const newFolderTick = useUiStore((s) => s.newFolderTick)
+  const lastTick = useRef(newFolderTick)
+  useEffect(() => {
+    if (newFolderTick === lastTick.current) return
+    lastTick.current = newFolderTick
+    setOpenPath([])
+    setCreatingIn(null)
+    setNewName("")
+  }, [newFolderTick])
+
   const aktive = [...projects]
     .filter((p) => !p.archiviertAm)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
@@ -390,14 +403,17 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const rootProjects = projectsIn(null)
   const rootOver = dragOver === ROOT
 
+  const leer = !rootFolders.length && !rootProjects.length && creatingIn === undefined
+
   return (
     <div className="mt-1 flex flex-col gap-0.5">
-      <button
-        onClick={() => ctx.startCreate(null)}
-        className="mb-0.5 flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-primary-600"
-      >
-        <FolderPlus className="h-3.5 w-3.5" /> Ordner anlegen
-      </button>
+      {leer ? (
+        <div className="mt-6 flex flex-col items-center px-3 text-center">
+          <Folder className="h-6 w-6 text-neutral-300" />
+          <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
+          <p className="mt-1 text-xs text-neutral-400">Über das Plus oben Projekt oder Ordner anlegen.</p>
+        </div>
+      ) : null}
 
       {rootFolders.map((f) => (
         <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
