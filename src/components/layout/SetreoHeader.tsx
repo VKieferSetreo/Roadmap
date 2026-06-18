@@ -10,6 +10,7 @@ import { BugReportButton } from "@/components/bugreport/BugReportButton"
 import { HeaderSync } from "./HeaderSync"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { setTenantHeader } from "@/api/client"
+import { BUILD_BASE, withSlug } from "@/lib/tenantUrl"
 import { useSettingsStore } from "@/store/settings"
 import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
@@ -36,7 +37,11 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const onSwitchTenant = (slug: string) => {
     if (!slug || slug === tenant?.slug) return
     setTenantHeader(slug)
-    window.location.reload()
+    // Per-Mandant-URL (Prod): zur Slug-URL des neuen Mandanten navigieren, damit URL, X-Tenant
+    // und Daten konsistent bleiben (ein bloßes reload an der alten Slug-URL würde X-Tenant beim
+    // nächsten Kontext-Load wieder überschreiben). Dev (ohne Build-Base): einfach neu laden.
+    if (BUILD_BASE) window.location.assign(withSlug(slug))
+    else window.location.reload()
   }
 
   return (

@@ -17,6 +17,7 @@ import { useHeartbeat } from "@/hooks/useHeartbeat"
 import { RedeemSeat } from "@/components/account/RedeemSeat"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { api } from "@/api/roadmap"
+import { BUILD_BASE, slugFromPath, withSlug } from "@/lib/tenantUrl"
 import { Building2 } from "lucide-react"
 
 export function AppLayout() {
@@ -82,6 +83,15 @@ export function AppLayout() {
       setAcceptingDisc(false)
     }
   }
+
+  // Per-Mandant-URL: sobald der Mandant feststeht, die URL auf /roadmap/<slug>/... bringen.
+  // Schleifensicher: nach dem Replace gilt slugFromPath() === tenant.slug → kein erneutes Replace.
+  // Admin-Mandantenwechsel ändert tenant → Effekt feuert → URL folgt dem neuen Slug.
+  useEffect(() => {
+    if (!BUILD_BASE || mode !== "live" || !ctxLoaded || !tenant) return
+    if (slugFromPath() === tenant.slug) return
+    window.location.replace(withSlug(tenant.slug) + window.location.search)
+  }, [mode, ctxLoaded, tenant])
 
   // Live + eingeloggt, aber keinem Mandanten zugeordnet → Arbeit nicht möglich.
   const keinMandant = mode === "live" && ctxLoaded && !isAdmin && !tenant

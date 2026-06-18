@@ -7,10 +7,11 @@ import { SettingsPage } from "@/pages/SettingsPage"
 import { AdminTenantsPage } from "@/pages/AdminTenantsPage"
 import { DebugPage } from "@/pages/DebugPage"
 import { NewsPage } from "@/pages/NewsPage"
+import { routerBasename } from "@/lib/tenantUrl"
 
-// Unter /roadmap ausgeliefert (Build) → Router-Basename aus Vite-BASE_URL.
-// Dev (BASE_URL "/") → Basename "/".
-const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/"
+// Router-Basename inkl. optionalem Mandanten-Slug (/roadmap/<slug>). Dev (Base /) → "/".
+// Detaillogik (Slug vs. Top-Route) in lib/tenantUrl.
+const basename = routerBasename()
 
 export const router = createBrowserRouter(
   [

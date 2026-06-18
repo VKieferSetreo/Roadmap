@@ -5,6 +5,7 @@
 import { create } from "zustand"
 import { api, type AppContext } from "@/api/roadmap"
 import { setTenantHeader } from "@/api/client"
+import { slugFromPath } from "@/lib/tenantUrl"
 import type { Tenant } from "@/types/domain"
 
 interface ContextStore {
@@ -34,6 +35,11 @@ export const useContextStore = create<ContextStore>((set) => ({
 
   load: async () => {
     try {
+      // Per-Mandant-URL: ein Slug in der URL treibt den aktiven Mandanten (Admin: via X-Tenant;
+      // Nicht-Admin: vom Backend ignoriert, dort zählt die Mitgliedschaft). So funktionieren
+      // Deeplinks/Lesezeichen auf /roadmap/<slug>.
+      const urlSlug = slugFromPath()
+      if (urlSlug) setTenantHeader(urlSlug)
       const ctx = await api.context()
       set({
         loaded: true,
