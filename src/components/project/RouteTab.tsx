@@ -4,10 +4,11 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, Waypoints, X } from "lucide-react"
+import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
+import { Input, Label } from "@/components/ui/Input"
+import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { DropZone } from "@/components/upload/DropZone"
 import { PlaceAutocomplete } from "./PlaceAutocomplete"
 import { RoutePreview } from "./RoutePreview"
@@ -17,7 +18,7 @@ import { useProjectStore } from "@/store/projects"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import { api, type RouteResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { Project, ProjectRoute, RouteSource } from "@/types/domain"
+import type { Project, ProjectRoute, RoutePoint, RouteSource } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Die drei Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel. */
@@ -72,6 +73,9 @@ export function RouteTab({ project }: { project: Project }) {
   const [szStart, setSzStart] = useState("")
   const [szZiel, setSzZiel] = useState("")
   const [szBusy, setSzBusy] = useState(false)
+  // Datei geparst, wartet auf Namensvergabe (kleine Maske) vor dem Anlegen.
+  const [pendingFile, setPendingFile] = useState<{ points: RoutePoint[]; fileName: string; suggest: string } | null>(null)
+  const [pendingName, setPendingName] = useState("")
 
   const countBySource = (s: RouteSource) =>
     project.routes.filter((r) => (r.source ?? "datei") === s).length
@@ -88,14 +92,25 @@ export function RouteTab({ project }: { project: Project }) {
   const onRouteFile = async (file: File) => {
     try {
       const parsed = await parseRouteFile(file)
-      const name = file.name.replace(/\.(gpx|kml|geojson|json|zip|shp)$/i, "")
-      addRoute(project.id, { name, fileName: file.name, points: parsed.points, source: "datei" })
-      toast.success(
-        `Strecke „${name}" geladen: ${parsed.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(parsed.points).toLocaleString("de-DE")} km.`,
-      )
+      // Nicht sofort anlegen: erst Namen vergeben lassen (keine Datei-Namen als Strecken-Namen).
+      const suggest = file.name.replace(/\.(gpx|kml|geojson|json|zip|shp)$/i, "")
+      setPendingFile({ points: parsed.points, fileName: file.name, suggest })
+      setPendingName(suggest)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
     }
+  }
+
+  const confirmPending = () => {
+    if (!pendingFile) return
+    const name = pendingName.trim()
+    if (name.length < 2) return
+    addRoute(project.id, { name, fileName: pendingFile.fileName, points: pendingFile.points, source: "datei" })
+    toast.success(
+      `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km.`,
+    )
+    setPendingFile(null)
+    setPendingName("")
   }
 
   const onLinkLoad = async () => {
@@ -330,15 +345,42 @@ export function RouteTab({ project }: { project: Project }) {
               ))}
             </ul>
           )}
-          {project.routes.length > 1 ? (
-            <p className="flex items-center gap-1.5 text-xs text-neutral-400">
-              <Waypoints className="h-3.5 w-3.5" />
-              Alle Strecken erscheinen farblich getrennt auf der Karte — einzeln ein-/ausblendbar.
-            </p>
-          ) : null}
           </div>
         </CardContent>
       </Card>
+
+      {pendingFile ? (
+        <Dialog open onClose={() => setPendingFile(null)} size="sm">
+          <DialogHeader
+            title="Strecke benennen"
+            subtitle={`${pendingFile.fileName} · ${pendingFile.points.length.toLocaleString("de-DE")} Punkte`}
+            onClose={() => setPendingFile(null)}
+          />
+          <div className="px-6 py-5">
+            <Label htmlFor="route-name">Name der Strecke</Label>
+            <Input
+              id="route-name"
+              autoFocus
+              value={pendingName}
+              onChange={(e) => setPendingName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmPending()
+              }}
+              placeholder="z.B. Hinfahrt Werk → Baustelle"
+              maxLength={80}
+            />
+            <p className="mt-1.5 text-xs text-neutral-400">Sprechender Name statt Dateiname — 2–80 Zeichen.</p>
+          </div>
+          <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">
+            <Button variant="ghost" onClick={() => setPendingFile(null)}>
+              Abbrechen
+            </Button>
+            <Button onClick={confirmPending} disabled={pendingName.trim().length < 2}>
+              Strecke anlegen
+            </Button>
+          </div>
+        </Dialog>
+      ) : null}
     </div>
   )
 }

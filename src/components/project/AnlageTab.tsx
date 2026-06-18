@@ -95,76 +95,78 @@ export function AnlageTab({ project }: { project: Project }) {
                   </label>
                 </div>
 
-                {/* Eine Zeile: Von [Datum] [Zeit] → Bis [Datum] [Zeit] */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <Input
-                    aria-label="Startdatum"
-                    type="date"
-                    value={splitDateTime(project.zeitraum?.von).date}
-                    onChange={(e) => {
-                      const time = splitDateTime(project.zeitraum?.von).time || "06:00"
-                      updateZeitraum(project.id, {
-                        von: e.target.value
-                          ? `${e.target.value}T${ganztaegigEffective ? "00:00" : time}`
-                          : "",
-                      })
-                    }}
-                    disabled={running}
-                    className="w-[150px]"
-                  />
-                  {!ganztaegigEffective ? (
-                    <TimePicker
-                      ariaLabel="Startuhrzeit"
-                      value={splitDateTime(project.zeitraum?.von).time || ""}
-                      onChange={(t) => {
-                        const date = splitDateTime(project.zeitraum?.von).date
-                        if (!date) return
-                        updateZeitraum(project.id, { von: `${date}T${t}`, ganztaegig: false })
+                {/* Zwei Zeilen: Von [Datum] [Uhrzeit] — direkt darunter Bis [Datum] [Uhrzeit]. */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 shrink-0 text-xs font-medium text-neutral-500">Von</span>
+                    <Input
+                      aria-label="Startdatum"
+                      type="date"
+                      value={splitDateTime(project.zeitraum?.von).date}
+                      onChange={(e) => {
+                        const time = splitDateTime(project.zeitraum?.von).time || "06:00"
+                        updateZeitraum(project.id, {
+                          von: e.target.value
+                            ? `${e.target.value}T${ganztaegigEffective ? "00:00" : time}`
+                            : "",
+                        })
                       }}
                       disabled={running}
-                      className="w-[110px]"
+                      className="w-[150px]"
                     />
-                  ) : null}
-                  <span aria-hidden className="px-1 text-neutral-400">
-                    →
-                  </span>
-                  <Input
-                    aria-label="Enddatum"
-                    type="date"
-                    value={splitDateTime(project.zeitraum?.bis).date}
-                    onChange={(e) => {
-                      const time = splitDateTime(project.zeitraum?.bis).time || "18:00"
-                      updateZeitraum(project.id, {
-                        bis: e.target.value
-                          ? `${e.target.value}T${ganztaegigEffective ? "23:59" : time}`
-                          : "",
-                      })
-                    }}
-                    disabled={running}
-                    min={splitDateTime(project.zeitraum?.von).date || undefined}
-                    className="w-[150px]"
-                  />
-                  {!ganztaegigEffective ? (
-                    <TimePicker
-                      ariaLabel="Enduhrzeit"
-                      value={splitDateTime(project.zeitraum?.bis).time || ""}
-                      onChange={(t) => {
-                        const date = splitDateTime(project.zeitraum?.bis).date
-                        if (!date) return
-                        updateZeitraum(project.id, { bis: `${date}T${t}`, ganztaegig: false })
+                    {!ganztaegigEffective ? (
+                      <TimePicker
+                        ariaLabel="Startuhrzeit"
+                        value={splitDateTime(project.zeitraum?.von).time || ""}
+                        onChange={(t) => {
+                          const date = splitDateTime(project.zeitraum?.von).date
+                          if (!date) return
+                          updateZeitraum(project.id, { von: `${date}T${t}`, ganztaegig: false })
+                        }}
+                        disabled={running}
+                        className="w-[110px]"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 shrink-0 text-xs font-medium text-neutral-500">Bis</span>
+                    <Input
+                      aria-label="Enddatum"
+                      type="date"
+                      value={splitDateTime(project.zeitraum?.bis).date}
+                      onChange={(e) => {
+                        const time = splitDateTime(project.zeitraum?.bis).time || "18:00"
+                        updateZeitraum(project.id, {
+                          bis: e.target.value
+                            ? `${e.target.value}T${ganztaegigEffective ? "23:59" : time}`
+                            : "",
+                        })
                       }}
                       disabled={running}
-                      className="w-[110px]"
+                      min={splitDateTime(project.zeitraum?.von).date || undefined}
+                      className="w-[150px]"
                     />
-                  ) : null}
-
-                  {project.zeitraum?.von &&
-                  project.zeitraum?.bis &&
-                  !isZeitraumInvalid(project.zeitraum) ? (
-                    <span className="ml-auto rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
-                      {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
-                    </span>
-                  ) : null}
+                    {!ganztaegigEffective ? (
+                      <TimePicker
+                        ariaLabel="Enduhrzeit"
+                        value={splitDateTime(project.zeitraum?.bis).time || ""}
+                        onChange={(t) => {
+                          const date = splitDateTime(project.zeitraum?.bis).date
+                          if (!date) return
+                          updateZeitraum(project.id, { bis: `${date}T${t}`, ganztaegig: false })
+                        }}
+                        disabled={running}
+                        className="w-[110px]"
+                      />
+                    ) : null}
+                    {project.zeitraum?.von &&
+                    project.zeitraum?.bis &&
+                    !isZeitraumInvalid(project.zeitraum) ? (
+                      <span className="ml-auto rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
+                        {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 {/* Fehlermeldung bei Bis vor Von */}
