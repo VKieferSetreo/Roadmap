@@ -107,9 +107,9 @@ export function QuellenRegister() {
         <Button variant="outline" size="sm" onClick={() => void status.refetch()} disabled={status.isFetching}>
           <RefreshCw className={cn("h-3.5 w-3.5", status.isFetching && "animate-spin")} /> Aktualisieren
         </Button>
-        <Button size="sm" onClick={() => void pingAlle()} loading={allPinging} disabled={mitConnector === 0}>
+        <Button variant="outline" size="sm" onClick={() => void pingAlle()} loading={allPinging} disabled={mitConnector === 0}>
           <Signal className="h-3.5 w-3.5" />
-          {allPinging ? "Pinge alle …" : `Alle anpingen (${mitConnector})`}
+          {allPinging ? "Pinge …" : "Ping"}
         </Button>
       </div>
 

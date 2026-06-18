@@ -83,17 +83,10 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
             placeholder="Hans Mustermann"
             maxLength={70}
           />
-          <p className="mt-1.5 text-xs text-neutral-400">
-            Leerzeichen werden zu „_". Beide Felder sind Pflicht.
-          </p>
         </div>
-        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm">
-          <span className="text-neutral-400">Projektname: </span>
-          {valid ? (
-            <span className="font-semibold text-neutral-800">{finalName}</span>
-          ) : (
-            <span className="text-neutral-400">W-…_…</span>
-          )}
+        {/* Statische Vorschau (kein Eingabefeld) — aktualisiert sich live, schon ab der W-Nummer. */}
+        <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
+          Projektname: <span className="font-medium text-neutral-500">W-{nummerClean || "…"}_{nameClean || "…"}</span>
         </div>
       </div>
       <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">
