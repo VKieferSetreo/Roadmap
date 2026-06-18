@@ -5,6 +5,7 @@
 import { randomUUID } from "node:crypto"
 import { Router } from "express"
 import { runAnalysis } from "../engine/index.js"
+import { logAnalyticsEvent } from "./analytics.js"
 import { downsample } from "../engine/fallback.js"
 import { rowToFinding, rowToProject } from "../map.js"
 import { hashPassword, rowToShareInfo } from "../shares.js"
@@ -231,6 +232,11 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
       console.error(`[analysis ${req.params.id}] fehlgeschlagen:`, err)
       throw new ApiError(502, `Analyse fehlgeschlagen: ${err.message}`)
     }
+    // Manuelle Auswertung fürs Analytics-Tab protokollieren (fire-and-forget, wirft nie).
+    void logAnalyticsEvent(db, {
+      email: req.ctx?.email, tenantSlug: req.ctx?.tenant?.slug,
+      typ: "manual_analysis", meta: { projectId: row.id },
+    })
     const fresh = await loadProjectRow(db, row.id, req.ctx.tenant.id)
     res.json(await present(req, fresh))
   }))

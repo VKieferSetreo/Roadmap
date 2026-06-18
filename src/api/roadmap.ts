@@ -69,6 +69,30 @@ export interface RouteResult {
   resolvedUrl?: string
 }
 
+/** Plattform-Analytics-Übersicht (GET /api/analytics/overview, nur Admin). */
+export interface AnalyticsOverview {
+  onlineJetzt: number
+  online: { email: string; lastSeen: string }[]
+  totals: { sessions: number; nutzer: number; manuelleAuswertungen: number; aktivMinGesamt: number }
+  proNutzer: {
+    email: string
+    sessions: number
+    hits: number
+    aktivMin: number
+    manuelleAuswertungen: number
+    ersterBesuch: string
+    letzterBesuch: string
+  }[]
+  letzteSessions: {
+    email: string
+    tenantSlug: string | null
+    startedAt: string
+    lastSeen: string
+    hits: number
+    dauerMin: number
+  }[]
+}
+
 export const api = {
   health: () => axiosClient<HealthResponse>({ url: "/health", method: "GET", timeout: 2_500 }),
 
@@ -204,6 +228,14 @@ export const api = {
         method: "POST",
         timeout: 30_000,
       }),
+  },
+
+  // ── Plattform-Analytics — Heartbeat (jeder Nutzer) + Übersicht (nur Admin) ───
+  analytics: {
+    /** Lebenszeichen — verlängert/öffnet die Session des Nutzers (Online-Zeit-Messung). */
+    heartbeat: () => axiosClient<void>({ url: "/analytics/heartbeat", method: "PUT" }),
+    /** Nutzungs-Übersicht (Admin). */
+    overview: () => axiosClient<AnalyticsOverview>({ url: "/analytics/overview", method: "GET" }),
   },
 
   // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──

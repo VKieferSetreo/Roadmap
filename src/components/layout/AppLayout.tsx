@@ -13,6 +13,7 @@ import { useUiStore } from "@/store/ui"
 import { useAuthStore } from "@/store/auth"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
+import { useHeartbeat } from "@/hooks/useHeartbeat"
 import { Building2 } from "lucide-react"
 
 export function AppLayout() {
@@ -34,6 +35,9 @@ export function AppLayout() {
   const ctxLoaded = useContextStore((s) => s.loaded)
   const isAdmin = useContextStore((s) => s.isAdmin)
   const tenant = useContextStore((s) => s.tenant)
+
+  // App-weiter Heartbeat (Plattform-Analytics) — pingt im Live-Modus, solange eingeloggt.
+  useHeartbeat()
 
   // Boot: SSO-Identität holen + Datenquelle erkennen (Backend live vs. Demo-Modus).
   // Live: erst Nutzer-/Mandanten-Kontext (setzt X-Tenant für Admins), dann Projekte.

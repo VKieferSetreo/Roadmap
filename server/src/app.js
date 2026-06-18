@@ -33,6 +33,7 @@ import { statsRouter } from "./routes/stats.js"
 import { syncRouter } from "./routes/sync.js"
 import { accountRouter } from "./routes/account.js"
 import { routeRouter } from "./routes/route.js"
+import { analyticsRouter } from "./routes/analytics.js"
 import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -119,6 +120,9 @@ export function createApp({
   app.use("/api/stats", requireTenant, statsRouter({ db }))
   app.use("/api/notifications", requireTenant, notificationsRouter({ db }))
   app.use("/api/obstacles", obstaclesRouter({ db }))
+  // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
+  // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
+  app.use("/api/analytics", analyticsRouter({ db }))
   app.use("/api/geocode", geoRouter({ db, nominatim }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
   app.use("/api/route", routeRouter({ db, nominatim, osrm, fetchImpl }))
