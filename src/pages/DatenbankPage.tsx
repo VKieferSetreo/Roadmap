@@ -2,17 +2,19 @@
 // darunter die Übersichtskarte der zentralen Hindernis-Datenbank (alles, zoombar,
 // geclustert). Keine Funde-/Auswertungs-Tabelle hier — Funde leben im Projekt.
 
-import { useCallback } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { AlertTriangle, Database, Map as MapIcon, BarChart3, ListTree } from "lucide-react"
+import { AlertTriangle, Database, Map as MapIcon, BarChart3, ListTree, Search, X } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
 import { AbdeckungBoard } from "@/components/db/AbdeckungBoard"
 import { QuellenRegister } from "@/components/db/QuellenRegister"
 import { ObstaclesMap } from "@/components/map/ObstaclesMap"
+import { Input } from "@/components/ui/Input"
+import { attrEntries } from "@/components/project/findingMeta"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
@@ -113,6 +115,27 @@ function ObstacleKarte({ live }: { live: boolean }) {
     [queryClient],
   )
 
+  const [suche, setSuche] = useState("")
+  const alle = useMemo(() => obstacles.data ?? [], [obstacles.data])
+  // Inhaltssuche über alle geladenen (aktiven) Hindernisse — Text + Maße (attrs).
+  // Komma→Punkt, damit "4,5" die als 4.5 gespeicherte Höhe findet; attrEntries liefert
+  // zusätzlich die formatierte Form ("4,5 m") + Labels ("Durchfahrtshöhe").
+  const gefiltert = useMemo(() => {
+    const s = suche.trim().toLowerCase().replace(/,/g, ".")
+    if (!s) return alle
+    return alle.filter((o) => {
+      const hay = [
+        o.name, o.beschreibung, o.strassenRef, o.zustaendig, o.fachId, o.quelle?.name,
+        ...attrEntries(o.attrs).flatMap((e) => [e.label, e.value]),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .replace(/,/g, ".")
+      return hay.includes(s)
+    })
+  }, [alle, suche])
+
   if (!live) {
     return (
       <EmptyState
@@ -151,8 +174,36 @@ function ObstacleKarte({ live }: { live: boolean }) {
   }
 
   return (
-    <div className="h-[calc(100vh-360px)] min-h-[420px]">
-      <ObstaclesMap obstacles={obstacles.data ?? []} onDelete={deleteObstacle} />
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-md flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+          <Input
+            value={suche}
+            onChange={(e) => setSuche(e.target.value)}
+            placeholder="In allen Einträgen suchen (Text, Bauwerksnummer, Maß wie 4,5 …)"
+            className="pl-9"
+            aria-label="Hindernis-Datenbank nach Inhalten durchsuchen"
+          />
+          {suche ? (
+            <button
+              onClick={() => setSuche("")}
+              aria-label="Suche leeren"
+              title="Suche leeren"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-neutral-400 hover:text-neutral-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : null}
+        </div>
+        <span className="text-sm text-neutral-500">
+          <span className="font-semibold tabular-nums text-neutral-800">{gefiltert.length}</span>
+          {suche ? ` von ${alle.length} Einträgen` : " Einträge"}
+        </span>
+      </div>
+      <div className="h-[calc(100vh-420px)] min-h-[420px]">
+        <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} />
+      </div>
     </div>
   )
 }
