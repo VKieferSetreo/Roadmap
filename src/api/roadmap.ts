@@ -327,6 +327,13 @@ export const api = {
     /** Eigenes Passwort ändern (nur externe Kunden-Accounts). */
     changePassword: (neuesPasswort: string) =>
       axiosClient<{ ok: true }>({ url: "/account/password", method: "POST", data: { neuesPasswort } }),
+    /** Seat-Code einlösen → Mandanten-Zugang freischalten (verifiziertes Konto ohne Mandant). */
+    redeemSeat: (code: string) =>
+      axiosClient<{ ok: true; tenant: { id: string; slug: string; name: string } }>({
+        url: "/account/redeem-seat",
+        method: "POST",
+        data: { code },
+      }),
   },
 }
 

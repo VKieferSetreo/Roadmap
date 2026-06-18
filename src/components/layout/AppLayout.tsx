@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/auth"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { useHeartbeat } from "@/hooks/useHeartbeat"
+import { RedeemSeat } from "@/components/account/RedeemSeat"
 import { Building2 } from "lucide-react"
 
 export function AppLayout() {
@@ -35,6 +36,8 @@ export function AppLayout() {
   const ctxLoaded = useContextStore((s) => s.loaded)
   const isAdmin = useContextStore((s) => s.isAdmin)
   const tenant = useContextStore((s) => s.tenant)
+  const extern = useContextStore((s) => s.extern)
+  const email = useContextStore((s) => s.email)
 
   // App-weiter Heartbeat (Plattform-Analytics) — pingt im Live-Modus, solange eingeloggt.
   useHeartbeat()
@@ -68,18 +71,23 @@ export function AppLayout() {
               bleiben IMMER stehen; Reset bei Routen-/Mandantenwechsel. */}
           <ContentErrorBoundary resetKey={`${pathname}|${tenant?.id ?? ""}`}>
             {keinMandant ? (
-              <div className="flex h-full items-center justify-center px-4">
-                <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
-                    <Building2 className="h-6 w-6 text-accent-700" />
+              extern ? (
+                // Externer Self-Service-Nutzer ohne Mandant → Seat-Code einlösen.
+                <RedeemSeat email={email} />
+              ) : (
+                <div className="flex h-full items-center justify-center px-4">
+                  <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
+                      <Building2 className="h-6 w-6 text-accent-700" />
+                    </div>
+                    <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
+                    <p className="mt-2 text-sm text-neutral-500">
+                      Ihr Konto ist noch keinem Mandanten zugewiesen. Bitte wenden Sie sich an Setreo.
+                      Sobald die Zuordnung steht, erscheinen hier die Projekte Ihres Teams.
+                    </p>
                   </div>
-                  <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
-                  <p className="mt-2 text-sm text-neutral-500">
-                    Dein Konto ist noch keinem Mandanten zugewiesen. Bitte wende dich an Setreo —
-                    sobald die Zuordnung steht, erscheinen hier die Projekte deines Teams.
-                  </p>
                 </div>
-              </div>
+              )
             ) : (
               <Outlet />
             )}
