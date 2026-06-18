@@ -218,6 +218,22 @@ export interface Tenant {
   projekte: number
 }
 
+/** Lizenz eines Mandanten (Plan, Seats, Laufzeit). Buchhaltung rechnet extern. */
+export interface TenantLicense {
+  plan: string
+  maxSeats: number
+  /** ISO-Datum (YYYY-MM-DD) oder null = unbefristet. */
+  validUntil: string | null
+}
+
+/** Ein Seat-Code einer Mandanten-Lizenz (ein Code = ein Seat). */
+export interface SeatCode {
+  code: string
+  /** E-Mail des Nutzers, der den Code eingelöst hat (null = frei). */
+  usedBy: string | null
+  usedAt: string | null
+}
+
 /** Eintrag der zentralen Hindernis-Datenbank (Backend). Die Analyse-Engine matcht
  *  diese Einträge gegen den Strecken-Korridor und bewertet sie pro Transport. */
 export interface Obstacle {

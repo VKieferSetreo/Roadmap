@@ -3,7 +3,7 @@
 // Passwort (Klartext, editierbar) · Entfernen. Zentraler Speichern-Button je Mandant.
 // Nutzer werden NUR mit Passwort angelegt (Konto in setreo-auth-extern, Login app.setreo-cloud.com).
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
@@ -11,9 +11,11 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
+  Copy,
   Eye,
   EyeOff,
   FolderKanban,
+  KeyRound,
   Pencil,
   Plus,
   Save,
@@ -28,7 +30,7 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
-import type { Tenant, TenantMember, TenantRole } from "@/types/domain"
+import type { SeatCode, Tenant, TenantMember, TenantRole } from "@/types/domain"
 import { ApiError } from "@/api/client"
 
 const MIN_PW = 10
@@ -294,6 +296,8 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
               )}
             </div>
 
+            <TenantLicensePanel tenant={tenant} />
+
             {/* Nutzer-Tabelle */}
             <div className="overflow-x-auto rounded-lg border border-neutral-200">
               <table className="w-full min-w-[560px] text-sm">
@@ -388,5 +392,159 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
         ) : null}
       </CardContent>
     </Card>
+  )
+}
+
+// Lizenz + Seat-Codes eines Mandanten. Lädt beim Aufklappen (GET liefert license + codes).
+// Setreo-Admin setzt Plan/Seats/Laufzeit und generiert die Codes (ein Code = ein Seat).
+function TenantLicensePanel({ tenant }: { tenant: Tenant }) {
+  const [codes, setCodes] = useState<SeatCode[]>([])
+  const [plan, setPlan] = useState("standard")
+  const [maxSeats, setMaxSeats] = useState(0)
+  const [validUntil, setValidUntil] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [savingLic, setSavingLic] = useState(false)
+  const [genBusy, setGenBusy] = useState(false)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await api.seatCodes(tenant.id)
+      setCodes(res.codes)
+      setPlan(res.license.plan || "standard")
+      setMaxSeats(res.license.maxSeats || 0)
+      setValidUntil(res.license.validUntil ? res.license.validUntil.slice(0, 10) : "")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Lizenz konnte nicht geladen werden.")
+    } finally {
+      setLoading(false)
+    }
+  }, [tenant.id])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const saveLicense = async () => {
+    if (!Number.isInteger(maxSeats) || maxSeats < 0 || maxSeats > 1000) {
+      toast.error("Seats: ganze Zahl zwischen 0 und 1000.")
+      return
+    }
+    setSavingLic(true)
+    try {
+      await api.setTenantLicense(tenant.id, {
+        plan: plan.trim() || "standard",
+        maxSeats,
+        validUntil: validUntil || null,
+      })
+      toast.success("Lizenz gespeichert.")
+      await load()
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Speichern fehlgeschlagen.")
+    } finally {
+      setSavingLic(false)
+    }
+  }
+
+  const generate = async () => {
+    setGenBusy(true)
+    const before = codes.length
+    try {
+      const res = await api.generateSeatCodes(tenant.id)
+      setCodes(res.codes)
+      const neu = res.codes.length - before
+      toast.success(neu > 0 ? `${neu} neue Seat-Code(s) erzeugt.` : "Alle Seats haben bereits einen Code.")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Generierung fehlgeschlagen.")
+    } finally {
+      setGenBusy(false)
+    }
+  }
+
+  const used = codes.filter((c) => c.usedBy).length
+  const freie = codes.filter((c) => !c.usedBy)
+  const copyFree = () => {
+    void navigator.clipboard.writeText(freie.map((c) => c.code).join("\n"))
+    toast.success(`${freie.length} freie Code(s) kopiert.`)
+  }
+
+  const expiry = (() => {
+    if (!validUntil) return null
+    const tage = Math.ceil((new Date(`${validUntil}T23:59:59`).getTime() - Date.now()) / 86_400_000)
+    if (tage < 0) return { cls: "bg-severity-kritisch-bg text-severity-kritisch-text", text: "Lizenz abgelaufen" }
+    if (tage <= 30) return { cls: "bg-severity-warnung-bg text-severity-warnung-text", text: `läuft in ${tage} Tag(en) ab` }
+    return { cls: "bg-primary-50 text-primary-700", text: `gültig bis ${validUntil}` }
+  })()
+
+  return (
+    <div className="mb-4 rounded-lg border border-neutral-200 bg-neutral-50/60 p-3">
+      <div className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+        <KeyRound className="h-3.5 w-3.5" /> Lizenz &amp; Seats
+      </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="sm:w-36">
+          <Label htmlFor={`plan-${tenant.id}`}>Plan</Label>
+          <Input id={`plan-${tenant.id}`} value={plan} onChange={(e) => setPlan(e.target.value)} placeholder="standard" className="h-8 text-xs" />
+        </div>
+        <div className="sm:w-24">
+          <Label htmlFor={`seats-${tenant.id}`}>Seats</Label>
+          <Input id={`seats-${tenant.id}`} type="number" min={0} max={1000} value={maxSeats} onChange={(e) => setMaxSeats(Number(e.target.value))} className="h-8 text-xs" />
+        </div>
+        <div className="sm:w-44">
+          <Label htmlFor={`valid-${tenant.id}`}>Laufzeit bis</Label>
+          <Input id={`valid-${tenant.id}`} type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} className="h-8 text-xs" />
+        </div>
+        <Button size="sm" variant="outline" onClick={() => void saveLicense()} loading={savingLic}>
+          <Save className="h-3.5 w-3.5" /> Lizenz speichern
+        </Button>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <span className="rounded-md bg-white px-2 py-1 font-medium text-neutral-700 ring-1 ring-neutral-200">
+          Seats belegt: {used} / {Math.max(codes.length, maxSeats)}
+        </span>
+        {expiry ? <span className={`rounded-md px-2 py-1 font-medium ${expiry.cls}`}>{expiry.text}</span> : null}
+        <span className="flex-1" />
+        <Button size="xs" variant="outline" onClick={() => void generate()} loading={genBusy}>
+          <Plus className="h-3.5 w-3.5" /> Codes auf {maxSeats} auffüllen
+        </Button>
+        {freie.length > 0 ? (
+          <Button size="xs" variant="ghost" onClick={copyFree}>
+            <Copy className="h-3.5 w-3.5" /> {freie.length} freie kopieren
+          </Button>
+        ) : null}
+      </div>
+
+      {loading ? (
+        <p className="mt-3 text-xs text-neutral-400">Lädt …</p>
+      ) : codes.length > 0 ? (
+        <div className="mt-3 max-h-44 overflow-y-auto rounded-md border border-neutral-200 bg-white">
+          <table className="w-full text-xs">
+            <tbody className="divide-y divide-neutral-100">
+              {codes.map((c) => (
+                <tr key={c.code}>
+                  <td className="px-3 py-1.5 font-mono">{c.code}</td>
+                  <td className="px-3 py-1.5 text-right">
+                    {c.usedBy ? (
+                      <span className="text-neutral-500">belegt · {c.usedBy}</span>
+                    ) : (
+                      <span className="font-medium text-primary-700">frei</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="mt-3 text-xs text-neutral-400">
+          Noch keine Seat-Codes. Seats setzen, Lizenz speichern, dann „Codes auffüllen".
+        </p>
+      )}
+      <p className="mt-2 text-[11px] text-neutral-400">
+        Kunden registrieren sich selbst auf setreo-cloud.com und lösen einen Seat-Code ein (ein Code = ein Seat).
+        Eine E-Mail gehört genau einem Mandanten.
+      </p>
+    </div>
   )
 }

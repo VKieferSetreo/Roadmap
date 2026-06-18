@@ -20,6 +20,7 @@ import type {
   Project,
   ProjectRoute,
   RoutePoint,
+  SeatCode,
   ShareInfo,
   SourceRequest,
   SourceRequestCreate,
@@ -27,6 +28,7 @@ import type {
   SyncJob,
   SyncStatus,
   Tenant,
+  TenantLicense,
   TenantRole,
   TransportData,
   TransportZeitraum,
@@ -184,6 +186,30 @@ export const api = {
       url: `/admin/tenants/${id}/users`,
       method: "POST",
       data: { email, password, role },
+    }),
+
+  // ── Lizenz & Seat-Codes (nur Setreo-Admin) ─────────────────────────────────
+  /** Lizenz eines Mandanten setzen: Plan, Seats (Anzahl Codes), Laufzeit. */
+  setTenantLicense: (id: string, license: TenantLicense) =>
+    axiosClient<{ plan: string; max_seats: number; valid_until: string | null }>({
+      url: `/admin/tenants/${id}/license`,
+      method: "PATCH",
+      data: { plan: license.plan, maxSeats: license.maxSeats, validUntil: license.validUntil },
+    }),
+
+  /** Lizenz + Seat-Codes eines Mandanten lesen. */
+  seatCodes: (id: string) =>
+    axiosClient<{ license: TenantLicense; codes: SeatCode[] }>({
+      url: `/admin/tenants/${id}/seat-codes`,
+      method: "GET",
+    }),
+
+  /** Seat-Codes generieren — füllt auf max_seats auf (oder `count` zusätzliche). */
+  generateSeatCodes: (id: string, count?: number) =>
+    axiosClient<{ codes: SeatCode[] }>({
+      url: `/admin/tenants/${id}/seat-codes`,
+      method: "POST",
+      data: count != null ? { count } : {},
     }),
 
   // ── Datenbank ──────────────────────────────────────────────────────────────
