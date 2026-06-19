@@ -285,11 +285,6 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
               />
             </div>
           ))}
-          {!subs.length && !eigene.length && ctx.creatingIn !== id ? (
-            <p className="py-1 text-xs text-neutral-400" style={{ paddingLeft: (depth + 1) * 14 + 8 }}>
-              Leer — Projekt hierher ziehen.
-            </p>
-          ) : null}
         </div>
       ) : null}
     </div>
@@ -493,9 +488,6 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
             setDragId={setDragId}
           />
         ))}
-        {(dragId || dragFolderId) && rootFolders.length && !rootProjects.length ? (
-          <p className="px-3 py-1 text-center text-xs text-neutral-400">Hierher = auf Wurzelebene</p>
-        ) : null}
       </div>
     </div>
   )
