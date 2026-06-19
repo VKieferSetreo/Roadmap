@@ -19,7 +19,6 @@ OK   Länder/Bayern/BAYSIS-Strassennetz-Strassenbestand-WFS     1659 B
 OK   Länder/Bayern/Städte/München/muenchen-baustellen        3028 B
 LEER Länder/Bayern/open-bydata-Portal                          (Endpunkt prüfen)
 OK   Länder/Berlin/Detailnetz-Berlin-Bauwerke-WFS              2443 B
-OK   Länder/Berlin/Geoportal-Berlin-ALKIS-Bauwerke             1088 B
 OK   Länder/Berlin/OSM-Overpass-Berlin                         1219 B
 OK   Länder/Berlin/VIZ-Berlin-Baustellen-WFS                   1027 B
 OK   Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds                    3987 B

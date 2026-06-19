@@ -1,1 +1,0 @@
-ALKIS-Bauwerke verweisen auf denselben Detailnetz-WFS (detailnetz:b_bauwerke) wie die eigene Quelle Detailnetz-Berlin-Bauwerke (0116) — Doppelung. ALKIS-Gebäude/Adressen sind keine Verkehrshindernisse. Kein separater Cron.

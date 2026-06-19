@@ -433,17 +433,6 @@
       "test": "Länder/Berlin/VIZ-Berlin-Baustellen-WFS/test.sh"
     },
     {
-      "name": "Geoportal Berlin (Nachfolger FIS-Broker) — diverse OGC-Dienste (ALKIS-Bauwerke etc.)",
-      "ebene": "Berlin",
-      "datentyp": "ALKIS-Bauwerke (Gebäude/Brücken-Geometrie), Adressen, Basiskarten",
-      "format": "WFS 1.0/1.1/2.0 (GeoJSON/GML/GeoPackage), WMS",
-      "endpunkt": "https://gdi.berlin.de/services/wfs/detailnetz?service=WFS&version=2.0.0&request=GetFeature&typeNames=detailnetz:b_bauwerke&count=1&outputFormat=application/json   (Detailnetz Bauwerke = Brücken/Tunnel; FeatureType detailnetz:b_bauwerke)",
-      "lizenz": "DL-DE meist /Zero oder /BY-2.0",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Berlin/Geoportal-Berlin-ALKIS-Bauwerke",
-      "test": "Länder/Berlin/Geoportal-Berlin-ALKIS-Bauwerke/test.sh"
-    },
-    {
       "name": "Aachen — Baustellen Stadtgebiet Aachen (BSIS)",
       "ebene": "Nordrhein-Westfalen / Aachen",
       "datentyp": "amtlich erfasste Straßenbaustellen (Straße, Bereich, Art/Grund, Zeitraum von/bis, Firma, Bauherr, Einschränkung, Kontakt) als Punkt/Linie/Fläche",
