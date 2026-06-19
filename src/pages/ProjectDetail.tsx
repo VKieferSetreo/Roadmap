@@ -55,7 +55,7 @@ export function ProjectDetail() {
           {/* inline-grid + auto-cols-fr → alle Tabs gleich breit = breitester (Dashboard) */}
           <TabsList className="inline-grid grid-flow-col auto-cols-fr">
             {TABS.map((t) => (
-              <TabsTrigger key={t.slug} value={t.slug} className="w-full justify-center">
+              <TabsTrigger key={t.slug} value={t.slug} className="w-full justify-start">
                 <t.icon className="h-4 w-4" />
                 {t.label}
               </TabsTrigger>
