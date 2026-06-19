@@ -9,12 +9,31 @@ import { ApiError, asyncHandler, isUuid } from "../util.js"
 export function notificationsRouter({ db }) {
   const r = Router()
 
+  // Scope-Filter wie bei der E-Mail (mail/notify.js): die Glocke zeigt je nach
+  // mail_prefs.scope nur eigene oder alle Projekte des Mandanten. Default = 'eigene'
+  // (mail_prefs-Default, Migration 030), also nur Projekte mit created_by = Nutzer.
+  // 'eigene' = Projekte, die der angemeldete Nutzer angelegt hat (projects.created_by);
+  // System-Mitteilungen ohne Projektbezug (project_id IS NULL) bleiben immer sichtbar.
+  // $1 = req.ctx.email, $2 = tenant_id. LEFT JOIN nutzt mail_prefs-PK (tenant_id, email).
+  const SCOPE_FILTER = `
+    AND (
+      (SELECT COALESCE(mp.scope, 'eigene')
+         FROM mail_prefs mp
+        WHERE mp.tenant_id = n.tenant_id AND mp.email = $1) = 'alle'
+      OR n.project_id IS NULL
+      OR EXISTS (
+        SELECT 1 FROM projects p
+         WHERE p.id = n.project_id AND p.created_by = $1
+      )
+    )`
+
   /** Liste (neueste zuerst, max 100) + Zähler der ungelesenen. */
   r.get("/", asyncHandler(async (req, res) => {
-    const tenantId = req.ctx.tenant.id
     const { rows } = await db.query(
-      "SELECT * FROM notifications WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT 100",
-      [tenantId],
+      `SELECT n.* FROM notifications n
+        WHERE n.tenant_id = $2 ${SCOPE_FILTER}
+        ORDER BY n.created_at DESC LIMIT 100`,
+      [req.ctx.email, req.ctx.tenant.id],
     )
     const unreadCount = rows.filter((x) => x.read_at == null).length
     res.json({ notifications: rows.map(rowToNotification), unreadCount })
@@ -23,8 +42,9 @@ export function notificationsRouter({ db }) {
   /** Nur der Zähler (für Glocken-Badge-Polling — schlank). */
   r.get("/unread-count", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
-      "SELECT count(*)::int AS n FROM notifications WHERE tenant_id = $1 AND read_at IS NULL",
-      [req.ctx.tenant.id],
+      `SELECT count(*)::int AS n FROM notifications n
+        WHERE n.tenant_id = $2 AND n.read_at IS NULL ${SCOPE_FILTER}`,
+      [req.ctx.email, req.ctx.tenant.id],
     )
     res.json({ count: rows[0]?.n ?? 0 })
   }))

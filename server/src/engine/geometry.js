@@ -57,6 +57,11 @@ export function nearestOnRoute(point, geometry, cum = cumulativeKm(geometry)) {
       best = { distM, km: cum[i] + t * (cum[i + 1] - cum[i]) }
     }
   }
+  // km HIER deterministisch auf 0,1 km runden (≈100 m), bevor es irgendwo gespeichert
+  // oder verglichen wird. Sonst driftet die Floating-Point-km über Re-Syncs minimal
+  // (Interpolation/Rechenreihenfolge) → der Fund-Diff (rerunAll.js) hält stabile Funde
+  // fälschlich für „neu" und die Karte zeigt Baustellen leicht verschoben (#9).
+  best.km = Math.round(best.km * 10) / 10
   return best
 }
 

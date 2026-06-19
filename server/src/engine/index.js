@@ -161,7 +161,7 @@ export async function analyze({ db, project, corridorM }) {
         lat: obstacle.lat,
         lng: obstacle.lng,
         geom: geomFuerFund, // auf den Routen-Korridor geclippte Strecke (nur durchfahrener Teil), sonst Punkt
-        km: round1(near.km), // Position auf SEINER Route
+        km: near.km, // Position auf SEINER Route — bereits deterministisch in nearestOnRoute() gerundet (#9)
         routeId: route.id,
         routeName: route.name,
         strassenRef: obstacle.strassenRef,
