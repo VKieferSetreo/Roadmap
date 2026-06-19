@@ -5,6 +5,7 @@ import { Suspense, lazy, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Building2,
+  CalendarClock,
   CalendarRange,
   ChevronDown,
   ClipboardList,
@@ -13,6 +14,7 @@ import {
   EyeOff,
   FileDown,
   FileSpreadsheet,
+  Flag,
   MapPin,
   Radio,
   RotateCcw,
@@ -148,10 +150,20 @@ export function DashboardTab({ project }: { project: Project }) {
     }
   }
 
+  // ISO „YYYY-MM-DDTHH:mm" → „03.07.26 · 06:00" (ganztägig/ohne Zeit → nur Datum). Kein TZ-Shift.
+  const fmtDateTime = (iso?: string) => {
+    if (!iso) return "—"
+    const [datePart, timePart] = iso.split("T")
+    const [y, m, day] = (datePart || "").split("-")
+    if (!y || !m || !day) return "—"
+    const date = `${day}.${m}.${y.slice(2)}`
+    return project.zeitraum?.ganztaegig || !timePart ? date : `${date} · ${timePart.slice(0, 5)}`
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
-      {/* Kennzahlen */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      {/* Kennzahlen — 4 weiße Eckdaten */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
           label="Strecke"
           value={project.distanzKm ?? 0}
@@ -165,8 +177,24 @@ export function DashboardTab({ project }: { project: Project }) {
           icon={<Clock className="h-4 w-4" />}
           index={1}
         />
+        <StatCard
+          label="Abfahrt"
+          text={fmtDateTime(project.zeitraum?.von)}
+          icon={<CalendarClock className="h-4 w-4" />}
+          index={2}
+        />
+        <StatCard
+          label="Ankunft"
+          text={fmtDateTime(project.zeitraum?.bis)}
+          icon={<Flag className="h-4 w-4" />}
+          index={3}
+        />
+      </div>
+
+      {/* Funde nach Schweregrad */}
+      <div className="grid grid-cols-3 gap-3">
         {counts.map(({ sev, n }, i) => (
-          <StatCard key={sev} label={SEVERITY_META[sev].label} value={n} sev={sev} index={2 + i} />
+          <StatCard key={sev} label={SEVERITY_META[sev].label} value={n} sev={sev} index={4 + i} />
         ))}
       </div>
 
