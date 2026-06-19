@@ -6,6 +6,7 @@ import { ProjectDetail } from "@/pages/ProjectDetail"
 import { DatenbankPage } from "@/pages/DatenbankPage"
 import { SettingsPage } from "@/pages/SettingsPage"
 import { AdminTenantsPage } from "@/pages/AdminTenantsPage"
+import { TenantUsersPage } from "@/pages/TenantUsersPage"
 import { DebugPage } from "@/pages/DebugPage"
 import { NewsPage } from "@/pages/NewsPage"
 import { routerBasename } from "@/lib/tenantUrl"
@@ -23,6 +24,7 @@ export const router = createBrowserRouter(
         { path: "/projekte/:id", element: <ProjectDetail /> },
         { path: "/projekte/:id/:tab", element: <ProjectDetail /> },
         { path: "/datenbank", element: <DatenbankPage /> },
+        { path: "/nutzer", element: <TenantUsersPage /> },
         { path: "/news", element: <NewsPage /> },
         { path: "/einstellungen", element: <SettingsPage /> },
         { path: "*", element: <Navigate to="/" replace /> },

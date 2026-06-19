@@ -15,6 +15,7 @@ import {
   Plus,
   Search,
   Settings,
+  Users,
   X,
   type LucideIcon,
 } from "lucide-react"
@@ -22,6 +23,7 @@ import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
 import { useSettingsStore } from "@/store/settings"
 import { useNewsStore } from "@/store/news"
+import { useContextStore } from "@/store/context"
 import { ProjectTree } from "@/components/layout/ProjectTree"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { handleLogout } from "@/lib/auth"
@@ -86,6 +88,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   )
   // Warn-„!" an „Datenbank", wenn beim letzten automatischen Abruf (3×/Tag) Quellen unerreichbar waren.
   const { unreachable } = useSourceHealth()
+  // Tenant-Admin (T-147): eigener Nutzerverwaltungs-Eintrag. Globaler Setreo-Admin nutzt /mandanten.
+  const isAdmin = useContextStore((s) => s.isAdmin)
+  const isTenantAdmin = useContextStore((s) => s.isTenantAdmin)
 
   const m = pathname.match(/^\/projekte\/([^/]+)(?:\/([^/]+))?/)
   const activeId = m?.[1]
@@ -94,6 +99,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const onDb = pathname.startsWith("/datenbank")
   const onNews = pathname.startsWith("/news")
   const onSettings = pathname.startsWith("/einstellungen")
+  const onUsers = pathname.startsWith("/nutzer")
 
   const go = (path: string) => {
     navigate(path)
@@ -183,6 +189,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {/* Mandanten + Debugging sind KEINE Reiter mehr (Max 2026-06-18): eigene Admin-Seiten,
             nur intern + admin erreichbar (setreo-intern.com/roadmap/mandanten bzw. /debugging).
             Navigation folgt über das /slider-Admin-Menü. Routen bleiben self-guarded (!isAdmin → "/"). */}
+        {/* Tenant-Admin (kein globaler Setreo-Admin): eigene Nutzerverwaltung (T-147). */}
+        {isTenantAdmin && !isAdmin ? (
+          <NavRow icon={Users} label="Nutzer verwalten" active={onUsers} onClick={() => go("/nutzer")} />
+        ) : null}
         <NavRow icon={Newspaper} label="News" active={onNews} onClick={() => go("/news")} badge={unreadNews} />
         <NavRow
           icon={Settings}

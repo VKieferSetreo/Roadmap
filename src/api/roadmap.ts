@@ -49,6 +49,8 @@ export interface HealthResponse {
 export interface AppContext {
   email: string
   isAdmin: boolean
+  /** true = Mandanten-eigener Admin (tenant_members.role='admin') — darf eigene Nutzer/Seats verwalten (T-147). */
+  isTenantAdmin?: boolean
   /** true = Login über setreo-auth-extern (Kunden-Gateway) — eigenes Passwort änderbar,
    *  Logo führt zur Projektübersicht statt zum Hub-Admin. */
   extern?: boolean
@@ -179,6 +181,10 @@ export const api = {
 
   deleteTenant: (id: string) =>
     axiosClient<void>({ url: `/admin/tenants/${id}`, method: "DELETE" }),
+
+  /** Einzelner Mandant inkl. Mitglieder — Lade-Endpoint der Tenant-Admin-Self-Service-Seite (T-147). */
+  getTenant: (id: string) =>
+    axiosClient<Tenant>({ url: `/admin/tenants/${id}`, method: "GET" }),
 
   /** Zentraler Speichern-Button: setzt die komplette Nutzerliste eines Mandanten
    *  (Rolle + Passwort je Nutzer). Neue brauchen ein Passwort (werden provisioniert),

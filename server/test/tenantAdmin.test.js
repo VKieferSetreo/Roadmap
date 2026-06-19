@@ -82,6 +82,15 @@ describe("Tenant-Admin Self-Service (T-147)", () => {
     expect(res.status).toBe(400)
   })
 
+  it("Tenant-Admin lädt EIGENE Mitglieder (GET /:id → 200), fremde nicht (403)", async () => {
+    const { app, a, b } = await setup()
+    const mine = await asUser("admin-a@kunde-a.de")(request(app).get(`/api/admin/tenants/${a.id}`))
+    expect(mine.status).toBe(200)
+    expect(mine.body.mitglieder.map((m) => m.email).sort()).toEqual(["admin-a@kunde-a.de", "user-a@kunde-a.de"])
+    const other = await asUser("admin-a@kunde-a.de")(request(app).get(`/api/admin/tenants/${b.id}`))
+    expect(other.status).toBe(403)
+  })
+
   it("Globaler Setreo-Admin bleibt unbeschränkt (200)", async () => {
     const { app, a } = await setup()
     const res = await asAdmin(request(app).put(`/api/admin/tenants/${a.id}/members`)).send({ members: keepA })

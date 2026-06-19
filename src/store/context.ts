@@ -12,6 +12,8 @@ interface ContextStore {
   loaded: boolean
   email: string
   isAdmin: boolean
+  /** Mandanten-eigener Admin (tenant_members.role='admin') — darf eigene Nutzer/Seats verwalten (T-147). */
+  isTenantAdmin: boolean
   /** Login über setreo-auth-extern (Kunden-Gateway). */
   extern: boolean
   tenant: AppContext["tenant"]
@@ -29,6 +31,7 @@ export const useContextStore = create<ContextStore>((set) => ({
   loaded: false,
   email: "",
   isAdmin: false,
+  isTenantAdmin: false,
   extern: false,
   tenant: null,
   tenants: [],
@@ -45,6 +48,7 @@ export const useContextStore = create<ContextStore>((set) => ({
         loaded: true,
         email: ctx.email,
         isAdmin: ctx.isAdmin,
+        isTenantAdmin: ctx.isTenantAdmin === true,
         extern: ctx.extern === true,
         tenant: ctx.tenant,
         tenants: ctx.tenants ?? [],

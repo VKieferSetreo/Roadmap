@@ -65,6 +65,14 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     res.status(201).json(rowToTenant(rows[0], [], 0))
   }))
 
+  /** Einzelner Mandant inkl. Mitglieder — Lade-Endpoint für die Tenant-Admin-Self-Service-Seite. */
+  r.get("/:id", tenantAdmin, asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const tenant = await getTenantById(db, req.params.id)
+    if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
+    res.json(rowToTenant(tenant, await tenantMembers(db, tenant.id), await projectCount(db, tenant.id)))
+  }))
+
   r.patch("/:id", adminOnly, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const name = typeof req.body?.name === "string" ? req.body.name.trim() : ""
