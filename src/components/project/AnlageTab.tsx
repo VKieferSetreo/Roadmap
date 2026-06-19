@@ -3,7 +3,7 @@
 
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { AlertTriangle, ArrowRight, CalendarRange, Check, Loader2, Play } from "lucide-react"
+import { AlertTriangle, ArrowRight, CalendarRange, Check, Loader2, Play, Truck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -42,7 +42,9 @@ export function AnlageTab({ project }: { project: Project }) {
       {/* ── Transport-Stammdaten — volle Breite ── */}
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="text-base">Transport-Stammdaten</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Truck className="h-4 w-4 text-primary-600" /> Transport-Stammdaten
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <TransportDataForm

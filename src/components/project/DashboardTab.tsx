@@ -68,6 +68,7 @@ export function DashboardTab({ project }: { project: Project }) {
   const [reportCfg, setReportCfg] = useState<ExportConfig | null>(null)
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
   const [showHidden, setShowHidden] = useState(false)
+  const [showAllFindings, setShowAllFindings] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
@@ -120,6 +121,7 @@ export function DashboardTab({ project }: { project: Project }) {
     setKatFilter("alle")
     setRouteFilter("alle")
     setQuery("")
+    setShowAllFindings(true)
     setExpanded(id)
     requestAnimationFrame(() => {
       listRef.current
@@ -284,14 +286,15 @@ export function DashboardTab({ project }: { project: Project }) {
         </Select>
       </div>
 
-      {/* Fund-Liste */}
+      {/* Fund-Liste — standardmäßig 3 Funde; Rest als nach unten weichgezeichneter
+          Teaser hinter „Mehr anzeigen", damit die Liste nicht überlädt. */}
       {filtered.length === 0 ? (
         <EmptyState title="Keine Funde für diesen Filter" />
       ) : (
         <Card>
           <div ref={listRef}>
             <ul className="divide-y divide-neutral-100">
-              {filtered.map((f) => (
+              {(showAllFindings ? filtered : filtered.slice(0, 3)).map((f) => (
                 <FindingRow
                   key={f.id}
                   finding={f}
@@ -303,6 +306,44 @@ export function DashboardTab({ project }: { project: Project }) {
                 />
               ))}
             </ul>
+
+            {/* Teaser: nächste Funde nach unten ausgeblendet + weichgezeichnet (nur Andeutung, nicht interaktiv). */}
+            {!showAllFindings && filtered.length > 3 ? (
+              <ul
+                aria-hidden
+                className="pointer-events-none select-none divide-y divide-neutral-100"
+                style={{
+                  maxHeight: 160,
+                  overflow: "hidden",
+                  filter: "blur(2px)",
+                  WebkitMaskImage: "linear-gradient(to bottom, #000, transparent)",
+                  maskImage: "linear-gradient(to bottom, #000, transparent)",
+                }}
+              >
+                {filtered.slice(3, 6).map((f) => (
+                  <FindingRow
+                    key={f.id}
+                    finding={f}
+                    routeFarbe={project.routes.find((r) => r.id === f.routeId)?.farbe}
+                    zeigeStrecke={project.routes.length > 1}
+                    open={false}
+                    onToggle={() => {}}
+                    onHide={() => {}}
+                  />
+                ))}
+              </ul>
+            ) : null}
+
+            {filtered.length > 3 ? (
+              <button
+                onClick={() => setShowAllFindings((v) => !v)}
+                aria-expanded={showAllFindings}
+                className="flex w-full cursor-pointer items-center justify-center gap-1.5 border-t border-neutral-100 px-4 py-3 text-sm font-semibold text-primary-700 transition-colors hover:bg-neutral-50"
+              >
+                {showAllFindings ? "Weniger anzeigen" : `Mehr anzeigen (${filtered.length - 3})`}
+                <ChevronDown className={cn("h-4 w-4 transition-transform", showAllFindings && "rotate-180")} />
+              </button>
+            ) : null}
           </div>
         </Card>
       )}
