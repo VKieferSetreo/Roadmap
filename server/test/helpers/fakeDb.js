@@ -432,6 +432,14 @@ export function createFakeDb() {
     }
 
     // ── findings ──────────────────────────────────────────────────────────────
+    // Defense-in-Depth (T-156): Findings nur, wenn das Projekt zum tenant gehört.
+    if (sql.startsWith("SELECT f.* FROM findings f JOIN projects p ON p.id = f.project_id")) {
+      const proj = state.projects.find((p) => p.id === params[0] && p.tenant_id === params[1])
+      if (!proj) return ok([])
+      return ok(
+        state.findings.filter((f) => f.project_id === params[0]).sort((a, b) => a.km - b.km),
+      )
+    }
     if (sql.startsWith("SELECT * FROM findings WHERE project_id = ANY")) {
       const ids = params[0]
       return ok(

@@ -97,6 +97,17 @@ describe("public share API (/_share, UNGATED)", () => {
     expect(data.findings[0]).toMatchObject({ routeId: "r-1", routeName: "Hinfahrt" })
   })
 
+  it("Defense-in-Depth (T-156): Projekt↔Share-Tenant-Mismatch → 404 statt Leak", async () => {
+    const { app, db } = makeApp()
+    const p = await analysedProject(app)
+    await request(app).post(`/api/projects/${p.id}/share`).send({})
+    // Fragiler Fall: das Projekt gehört plötzlich einem ANDEREN Mandanten als der Share.
+    db.state.projects.find((x) => x.id === p.id).tenant_id = "00000000-0000-0000-0000-0000000000ff"
+    const res = await request(app).get(`/_share/api/setreo/${p.id}`) // KEIN X-Auth (ungated)
+    expect(res.status).toBe(404) // tenant-Guard greift, keine Projekt-/Fund-Daten geleakt
+    expect(res.body.data).toBeUndefined()
+  })
+
   it("kein Share / revoked / falscher Tenant-Slug → 404", async () => {
     const { app } = makeApp()
     const p = await analysedProject(app)

@@ -82,10 +82,15 @@ function applyHidden(findings, hiddenRows) {
   return findings
 }
 
-async function loadFindings(db, projectId) {
+// Defense-in-Depth (T-156): Findings strikt über projects.tenant_id selbst-absichern,
+// nicht nur auf den project_id-Caller-Kontext vertrauen.
+async function loadFindings(db, projectId, tenantId) {
   const { rows } = await db.query(
-    "SELECT * FROM findings WHERE project_id = $1 ORDER BY km ASC",
-    [projectId],
+    `SELECT f.* FROM findings f
+       JOIN projects p ON p.id = f.project_id
+     WHERE f.project_id = $1 AND p.tenant_id = $2
+     ORDER BY f.km ASC`,
+    [projectId, tenantId],
   )
   const { rows: hidden } = await db.query(
     "SELECT finding_key, grund, grund_text FROM hidden_findings WHERE project_id = $1",
@@ -109,7 +114,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   async function present(req, row) {
     return rowToProject(
       row,
-      await loadFindings(db, row.id),
+      await loadFindings(db, row.id, req.ctx.tenant.id),
       rowToShareInfo(await loadShare(db, row.id), shareBaseUrl, req.ctx.tenant.slug),
     )
   }
