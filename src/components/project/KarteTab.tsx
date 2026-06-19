@@ -277,8 +277,8 @@ export function KarteTab({
                 sucheLeeren()
               }
             }}
-            placeholder="In Tickets suchen (z. B. Bauwerksnummer) …"
-            aria-label="Tickets in der Karte durchsuchen"
+            placeholder="In Datenpunkten suchen …"
+            aria-label="In Datenpunkten suchen"
             className="min-w-0 flex-1 bg-transparent text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400"
           />
           {suche ? (
@@ -335,7 +335,7 @@ export function KarteTab({
             </span>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
-            {counts.map(({ sev, n }) => {
+            {counts.filter(({ n }) => n > 0).map(({ sev, n }) => {
               const aus = severityHidden.has(sev)
               // Nur "leuchtende" Stufen (n>0) sind klickbar: Klick blendet diese Funde
               // auf der Karte aus und dimmt die Marke grau. n=0 = inert (eh nichts da).
