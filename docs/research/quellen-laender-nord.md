@@ -26,7 +26,6 @@
 | **P2** | HB | VMZ Bremen (vmz.bremen.de) + RSS-Feed | Baustellen, Verkehrslage, GST-Routing-Hinweise | verifiziert (Portal) |
 | **P2** | HB | GIS-Hub / GeoPortal Bremen (ArcGIS/Masterportal) | Straßennetz, Detailnetz Bauwerke (Brücken/Tunnel) | zu-bestätigen |
 | **P2** | HB | ASV Bremen — Brücken & Ingenieurbau / GST-Stelle | Bauwerksdaten, GST-Genehmigung (Kontakt-Quelle) | zu-bestätigen (gated) |
-| **P2** | SH | DigitalerAtlasNord (DANord) / GDI-SH WMS | Baustellen-Viewer A/B/L/K + Geobasis-WMS | verifiziert (Portal) |
 | **P3** | NI | NWSIB-online (Niedersächs. Straßeninformationssystem) | Straßenbestand, Bauwerke (Login-gated) | verifiziert (gated) |
 | **P3** | NI/HB | VMZ Bremen Niedersachsen-Layer | Baustellen NI über VMZ HB | verifiziert (Portal) |
 
@@ -359,28 +358,6 @@
 - **prio:** P2
 - **sonstiges:** Analog zu HH Bedarfsumleitungen — relevant für GST-Ausweichplanung.
 
-## 4.4 DigitalerAtlasNord (DANord) / GDI-SH
-
-- **quelle:** DigitalerAtlasNord (DANord) — Präsentationskomponente GDI-SH
-- **betreiber:** Landesamt für Vermessung und Geoinformation SH (LVermGeo SH), Kooperation Land/Kommunen
-- **datentyp:** zentraler Geo-Viewer; **interaktive Baustellen-Übersicht (Bundes-/Land-/teils Kreisstraßen + BAB)**; Geobasis-WMS (DTK5/25/50/100, Orthophotos)
-- **strassentyp:** A/B/L/K (Baustellen-Viewer)
-- **format:** WMS (Geobasis), Web-Viewer
-- **apiEndpunkt (verifiziert):**
-  - DANord-Portal: `https://www.gdi-sh.de/DE/AufgabenZiele/DANord`
-  - Geobasis-WMS-Übersicht LVermGeo SH: `https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH/Service/serviceGeobasisdaten/geodatenService_Geobasisdaten_Dienste.html`
-  - GDI-DE-Eintrag DANord: `https://gdk.gdi-de.org/geonetwork/srv/api/records/9f5b9d4a-b613-4de4-a905-47c67c82fc92`
-- **update:** laufend
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** CC BY 4.0 (Geobasis)
-- **abdeckung:** Schleswig-Holstein
-- **zugang:** offen (Viewer + WMS)
-- **verifiziert:** ja (Portal/WMS) / Baustellen-Layer-WFS zu-bestätigen
-- **url:** `https://www.gdi-sh.de/DE/home`
-- **prio:** P2
-- **sonstiges:** Baustellen-Viewer im DANord ist die SH-Entsprechung zum Verkehrsportal. WMS-Geobasis als Kartenhintergrund. LBVSH-Baustellenseite: `https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LBVSH/Service/Baustellen`.
-
 ---
 
 ## Anhang A — Offene Lücken / Klärungsbedarf
@@ -401,6 +378,6 @@
 ## Anhang B — Verifikations-Notizen
 
 - **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`), NI NLStBV INSPIRE WMS (Layer), SH Straßeninfo-WFS (`Strasseninfo:Strassennetz`/`Netzknoten`).
-- **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, SH DANord, NI OpenGeoData Hub.
+- **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, NI OpenGeoData Hub.
 - **Gated/blockiert:** NWSIB-online (Login), Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
 - **Casing-Hinweis:** Hamburg geodienste-Pfade sind teils case-sensitive (`hh_wfs_baustellen` lowercase vs. `HH_WFS_Brueckenbauwerke` mixed) — exakte Schreibweise aus Metadaten übernehmen.

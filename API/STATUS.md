@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **98 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **94 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (66) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (7)
+**Legende:** 🟢 live getestet (64) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (7)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -28,7 +28,6 @@
 | 🟡 | Bayern / Nürnberg | Nürnberg — GeoPortal | städtische Geodaten (GIS); ÖPN | WMS / WFS (ArcGIS-Serv | offen (Geo-Die |
 | 🟢 | Berlin | Berlin VIZ — Baustellen, Sperrungen und sonsti | Baustellen, Sperrungen, Störun | WFS 2.0 (GeoServer), D | offen |
 | 🟢 | Berlin | Detailnetz Berlin — Ingenieurbauwerke (Brücken | Brücken, Tunnel (Geometrie/Ide | WFS 2.0 (GML) | offen |
-| 🟢 | Berlin | Geoportal Berlin (Nachfolger FIS-Broker) — div | ALKIS-Bauwerke (Gebäude/Brücke | WFS 1.0/1.1/2.0 (GeoJS | offen |
 | 🟢 | Berlin | OpenStreetMap via Overpass / Geofabrik-Extrakt | GST-Restriktionen — maxheight, | OSM-JSON → GeoJSON | offen |
 | 🟢 | Berlin | VIZ Berlin — "Verkehrsredaktion" + "Landesmeld | Baustellen, Sperrungen (Featur | GeoJSON (statisch gene | offen |
 | 🟢 | Brandenburg | ALKIS Brandenburg (WMS/WFS) | Liegenschaftskataster (Gebäude | WMS (live), WFS (ALKIS | offen |
@@ -66,7 +65,6 @@
 | 🟢 | Nordrhein-Westfalen / Bonn | Bonn — Baustellen tagesaktuell + geplant | (a) tagesaktuelle Baustellen m | GeoJSON | offen |
 | 🟢 | Nordrhein-Westfalen / Dortmund | Dortmund — Baustellen (tagesaktuell + geplant, | Baustellen tagesaktuell + gepl | GeoJSON / CSV / JSON / | offen |
 | 🟢 | Nordrhein-Westfalen / Düsseldorf | Düsseldorf — Verkehrsmeldungen (Mobilitätsdate | Baustellen, verkehrsrelevante  | GeoJSON / XML (DATEX-I | offen |
-| 🟡 | Nordrhein-Westfalen / Essen | Essen — Geodaten / Baustellen (über RVR-Verbun | Baustellen/Verkehr über RVR-Ge | WFS / WMS (über RVR-Mu | offen (nur als |
 | 🟢 | Nordrhein-Westfalen / Köln | Köln — Verkehrsbeeinträchtigungen Stadt Köln ( | Verkehrsbeeinträchtigungen dur | GeoJSON (EPSG:4326) üb | offen |
 | 🟢 | Nordrhein-Westfalen / Münster | Münster — Baustellen (GeoServer/MapServer) | aktuelle + geplante Baustellen | GeoJSON / CSV / KML /  | offen |
 | ⚪ | Rheinland-Pfalz | LBM RLP — Brücken & Schwertransporte (Restrikt | Brückenprüfung/Traglast (stati | Web-Info (Themenseiten | eingeschränkt |
@@ -86,8 +84,6 @@
 | 🟢 | Sachsen-Anhalt | LSBB Sperrinfo (SPERRINFOSYS ST) — service.ifa | Baustellen, Sperrungen, Umleit | WFS 1.1.0/2.0, GeoJSON | eingeschränkt |
 | 🔑 | Sachsen-Anhalt | Mobilithek (DATEX-II ST-Baustellen, RSA-21-Mel | Baustellen, Verkehrsmeldungen  | DATEX II (SOAP/Pull) b | registrierung |
 | 🟢 | Sachsen-Anhalt | OpenStreetMap via Overpass / Geofabrik-Extrakt | GST-Restriktionen — maxheight, | OSM-JSON → GeoJSON | offen |
-| 🟢 | Schleswig-Holstein | DigitalerAtlasNord (DANord) — Präsentationskom | zentraler Geo-Viewer; interakt | WMS (Geobasis), Web-Vi | offen |
-| 🟡 | Schleswig-Holstein | GDI-SH Geoportal + Offene Geobasisdaten (OpenG | Geobasis (DTK, ALKIS, DGM/DOM) | WMS, WFS, ATKIS/Downlo | offen |
 | 🟢 | Schleswig-Holstein | Open-Data SH — Straßenbaustellen (WFS Baustell | Straßenbaustellen (Linien + Pu | WFS 2.0.0 (GML); DATEX | offen |
 | 🟢 | Schleswig-Holstein | Umleitungsstrecken Schleswig-Holstein (WFS Bau | Umleitungsstrecken (Diversion  | WFS 2.0.0 (GML) | offen |
 | 🟢 | Schleswig-Holstein | WFS SH Straßeninfo (Downloaddienst Verkehrsnet | Straßennetz (Bundesfernstraßen | WFS 2.0.0 (GML); CRS E | offen |

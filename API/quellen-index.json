@@ -598,17 +598,6 @@
       "test": "Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX/test.sh"
     },
     {
-      "name": "DigitalerAtlasNord (DANord) — Präsentationskomponente GDI-SH",
-      "ebene": "Schleswig-Holstein",
-      "datentyp": "zentraler Geo-Viewer; interaktive Baustellen-Übersicht (Bundes-/Land-/teils Kreisstraßen + BAB); Geobasis-WMS (DTK5/25/50/100, Orthophotos)",
-      "format": "WMS (Geobasis), Web-Viewer",
-      "endpunkt": "https://dienste.gdi-sh.de/WFS_SH_Baustelleninformationen?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=Baustelleninformationen:Baustellen_SH&COUNT=1&OUTPUTFORMAT=GEOJSON   (Viewer DANord liegt auf diesem offenen WFS)",
-      "lizenz": "CC BY 4.0 (Geobasis)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Schleswig-Holstein/DigitalerAtlasNord-DANord-GDI-SH",
-      "test": "Länder/Schleswig-Holstein/DigitalerAtlasNord-DANord-GDI-SH/test.sh"
-    },
-    {
       "name": "WFS SH Straßeninfo (Downloaddienst Verkehrsnetze) ⭐",
       "ebene": "Schleswig-Holstein",
       "datentyp": "Straßennetz (Bundesfernstraßen, Landesstraßen, Kreisstraßen) + Netzknoten",
