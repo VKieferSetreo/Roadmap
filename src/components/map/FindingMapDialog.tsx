@@ -1,17 +1,17 @@
 // Karten-Popup für einen einzelnen Fund (aus der Datenbank-Tabelle): On-Screen-Dialog
-// mit Leaflet-Karte, der konkrete Fund ist markiert und zentriert.
+// mit Leaflet-Karte. Gleiches Layout wie das Auswertungs-Popup (gemeinsame FindingCard),
+// die Karte sitzt als Medium zwischen Kopf und Detailtext.
 
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Dialog, DialogHeader } from "@/components/ui/Dialog"
-import { Badge } from "@/components/ui/Badge"
-import { KategorieGlyph } from "@/components/project/KategorieGlyph"
-import { formatGueltigkeit, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
+import { Building2, X } from "lucide-react"
+import { Dialog } from "@/components/ui/Dialog"
+import { katMeta, SEVERITY_META } from "@/components/project/findingMeta"
+import { FindingCard } from "./FindingCard"
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import type { DbFinding } from "@/api/roadmap"
-import { cn } from "@/lib/cn"
 
 interface FindingMapDialogProps {
   finding: DbFinding | null
@@ -23,80 +23,60 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
   if (!finding) return null
   const sev = SEVERITY_META[finding.severity]
 
+  const subtitle =
+    `${finding.projektName} · ${katMeta(finding.kategorie).label} · km ${finding.km.toLocaleString("de-DE")}` +
+    `${finding.strassenRef ? ` · ${finding.strassenRef}` : ""}${finding.fachId ? ` · ID ${finding.fachId}` : ""}`
+
   return (
     <Dialog open onClose={onClose} size="lg">
-      <DialogHeader
-        title={
-          <span className="flex items-center gap-2">
-            <span className={cn("rounded-md p-1.5", sev.chip)}>
-              <KategorieGlyph kategorie={finding.kategorie} className="h-3.5 w-3.5" />
-            </span>
-            {finding.titel}
-            <Badge variant={sev.badge} size="sm">
-              {sev.label}
-            </Badge>
-          </span>
-        }
-        subtitle={
-          <>
-            {finding.projektName} · {katMeta(finding.kategorie).label} · km{" "}
-            {finding.km.toLocaleString("de-DE")}
-            {finding.strassenRef ? ` · ${finding.strassenRef}` : ""}
-            {finding.fachId ? ` · ID ${finding.fachId}` : ""}
-          </>
-        }
-        onClose={onClose}
-      />
-      <div className="h-[55vh] min-h-[320px]">
-        {/* key erzwingt frisches Leaflet pro Fund (sauberes Zentrieren) */}
-        <MapContainer
-          key={finding.id}
-          center={[finding.lat, finding.lng]}
-          zoom={13}
-          scrollWheelZoom
-          className="h-full w-full"
+      <div className="flex justify-end px-3 pt-3">
+        <button
+          onClick={onClose}
+          aria-label="Schließen"
+          className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100"
         >
-          <TileLayer attribution={tiles.attribution} url={tiles.url} />
-          <MapResize />
-          <Marker
-            position={[finding.lat, finding.lng]}
-            icon={findingPinIcon(finding.kategorie, sev.marker, true)}
-          />
-        </MapContainer>
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-neutral-200 px-6 py-3 text-xs text-neutral-600">
-        {finding.beschreibung ? <span className="w-full whitespace-pre-line leading-relaxed">{finding.beschreibung}</span> : null}
-        <span className="tabular-nums">
-          <span className="text-neutral-400">Gültig:</span>{" "}
-          {formatGueltigkeit(finding.gueltigVon, finding.gueltigBis)}
-        </span>
-        {Object.entries(finding.detail).map(([k, v]) => (
-          <span key={k} className="tabular-nums">
-            <span className="text-neutral-400">{k}:</span> {v}
-          </span>
-        ))}
-        {finding.zustaendig ? (
-          <span>
-            <span className="text-neutral-400">Zuständig:</span> {finding.zustaendig}
-          </span>
-        ) : null}
-        {finding.quelle?.name ? (
-          <span>
-            <span className="text-neutral-400">Quelle:</span>{" "}
-            {finding.quelle.url ? (
-              <a
-                href={finding.quelle.url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary-600 underline"
+      <div className="px-6 pb-6 pt-1">
+        <FindingCard
+          kategorie={finding.kategorie}
+          titel={finding.titel}
+          severity={finding.severity}
+          subtitle={subtitle}
+          beschreibung={finding.beschreibung}
+          gueltigVon={finding.gueltigVon}
+          gueltigBis={finding.gueltigBis}
+          detail={finding.detail}
+          quelle={finding.quelle}
+          extra={
+            finding.zustaendig ? (
+              <p className="mt-2.5 flex items-center gap-1.5 text-xs text-neutral-500">
+                <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                {finding.zustaendig}
+              </p>
+            ) : undefined
+          }
+          media={
+            <div className="h-[42vh] min-h-[260px] overflow-hidden rounded-lg border border-neutral-200">
+              {/* key erzwingt frisches Leaflet pro Fund (sauberes Zentrieren) */}
+              <MapContainer
+                key={finding.id}
+                center={[finding.lat, finding.lng]}
+                zoom={13}
+                scrollWheelZoom
+                className="h-full w-full"
               >
-                {finding.quelle.name}
-              </a>
-            ) : (
-              finding.quelle.name
-            )}
-          </span>
-        ) : null}
+                <TileLayer attribution={tiles.attribution} url={tiles.url} />
+                <MapResize />
+                <Marker
+                  position={[finding.lat, finding.lng]}
+                  icon={findingPinIcon(finding.kategorie, sev.marker, true)}
+                />
+              </MapContainer>
+            </div>
+          }
+        />
       </div>
     </Dialog>
   )

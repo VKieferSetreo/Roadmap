@@ -4,170 +4,119 @@
 
 import { useState } from "react"
 import { Marker, Popup } from "react-leaflet"
-import { Building2, ExternalLink, EyeOff, Phone, Trash2, User } from "lucide-react"
+import { Building2, EyeOff, Phone, Trash2, User } from "lucide-react"
 import type { Finding, ProjectRoute } from "@/types/domain"
 import {
   EIGEN_BADGE,
   EIGEN_COLOR,
-  formatGueltigkeit,
   istEigenerEintrag,
   katMeta,
   SEVERITY_META,
 } from "@/components/project/findingMeta"
-import { KategorieGlyph } from "@/components/project/KategorieGlyph"
+import { FindingCard } from "./FindingCard"
 import { findingPinIcon } from "./pins"
 import { geomMidpoint } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const SEV_RANK: Record<string, number> = { kritisch: 3, warnung: 2, hinweis: 1 }
 
-/** Popup-Inhalt EINES Funds (eine Richtung/Variante). */
+/** Popup-Inhalt EINES Funds (eine Richtung/Variante) — gemeinsames FindingCard-Layout. */
 function FindingDetail({
   f,
-  routeColor,
   onDeleteOwn,
   onHide,
 }: {
   f: Finding
-  routeColor: string
   onDeleteOwn?: (obstacleId: string) => void
   onHide?: (finding: Finding) => void
 }) {
-  const meta = SEVERITY_META[f.severity]
   const kat = katMeta(f.kategorie)
   const eigen = istEigenerEintrag(f.quelle)
   const kontakt = eigen ? f.quelle?.kontakt : undefined
-  return (
-    <>
-      <div className="flex items-start gap-2.5">
-        <span className={cn("shrink-0 rounded-lg p-2", meta.chip)}>
-          <KategorieGlyph
-            kategorie={f.kategorie}
-            signKey={f.detail?.["Schwertransport"] === "gesperrt" ? "fahrverbot" : undefined}
-            className="h-4 w-4"
-          />
-        </span>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-neutral-900">{f.titel}</p>
-          <p className="text-xs text-neutral-500">
-            {kat.label} · km {f.km.toLocaleString("de-DE")}
-            {f.strassenRef ? ` · ${f.strassenRef}` : ""}
-          </p>
-        </div>
-      </div>
 
-      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-        {f.routeName ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-            <span className="h-2 w-2 rounded-full" style={{ background: routeColor }} />
-            {f.routeName}
-          </span>
-        ) : null}
+  const subtitle = `${kat.label} · km ${f.km.toLocaleString("de-DE")}${f.strassenRef ? ` · ${f.strassenRef}` : ""}`
+
+  // Zusatz nach den Stammdaten: eigener-Eintrag-Badge, Zuständigkeit, Kontaktblock.
+  const extra =
+    eigen || f.zustaendig || (kontakt && (kontakt.melder || kontakt.ansprechpartner || kontakt.telefon)) ? (
+      <div className="mt-2.5 flex flex-col gap-2">
         {eigen ? (
-          <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium", EIGEN_BADGE)}>
+          <span className={cn("inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-[11px] font-medium", EIGEN_BADGE)}>
             Eigener Eintrag
           </span>
         ) : null}
-      </div>
-
-      {f.beschreibung ? (
-        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-neutral-600">{f.beschreibung}</p>
-      ) : null}
-
-      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-neutral-200/70 pt-3 text-xs">
-        <div className="flex flex-col">
-          <dt className="text-neutral-400">Gültig</dt>
-          <dd className="font-medium tabular-nums text-neutral-800">
-            {formatGueltigkeit(f.gueltigVon, f.gueltigBis)}
-          </dd>
-        </div>
-        {Object.entries(f.detail).map(([k, v]) => (
-          <div key={k} className="flex flex-col">
-            <dt className="text-neutral-400">{k}</dt>
-            <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
+        {f.zustaendig ? (
+          <p className="flex items-center gap-1.5 text-xs text-neutral-500">
+            <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+            {f.zustaendig}
+          </p>
+        ) : null}
+        {kontakt && (kontakt.melder || kontakt.ansprechpartner || kontakt.telefon) ? (
+          <div className="flex flex-col gap-1 rounded-lg bg-sky-50/70 px-2.5 py-2 text-xs text-neutral-600">
+            {kontakt.melder ? (
+              <p className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                <span className="text-neutral-400">Gemeldet von:</span> {kontakt.melder}
+              </p>
+            ) : null}
+            {kontakt.ansprechpartner ? (
+              <p className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                <span className="text-neutral-400">Ansprechpartner:</span> {kontakt.ansprechpartner}
+              </p>
+            ) : null}
+            {kontakt.telefon ? (
+              <p className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-sky-500" />
+                <a href={`tel:${kontakt.telefon.replace(/\s+/g, "")}`} className="font-medium text-sky-700 hover:underline">
+                  {kontakt.telefon}
+                </a>
+              </p>
+            ) : null}
           </div>
-        ))}
-      </dl>
-
-      {f.zustaendig ? (
-        <p className="mt-2.5 flex items-center gap-1.5 text-xs text-neutral-500">
-          <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-          {f.zustaendig}
-        </p>
-      ) : null}
-
-      {kontakt && (kontakt.melder || kontakt.ansprechpartner || kontakt.telefon) ? (
-        <div className="mt-2.5 flex flex-col gap-1 rounded-lg bg-sky-50/70 px-2.5 py-2 text-xs text-neutral-600">
-          {kontakt.melder ? (
-            <p className="flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
-              <span className="text-neutral-400">Gemeldet von:</span> {kontakt.melder}
-            </p>
-          ) : null}
-          {kontakt.ansprechpartner ? (
-            <p className="flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5 shrink-0 text-sky-500" />
-              <span className="text-neutral-400">Ansprechpartner:</span> {kontakt.ansprechpartner}
-            </p>
-          ) : null}
-          {kontakt.telefon ? (
-            <p className="flex items-center gap-1.5">
-              <Phone className="h-3.5 w-3.5 shrink-0 text-sky-500" />
-              <a href={`tel:${kontakt.telefon.replace(/\s+/g, "")}`} className="font-medium text-sky-700 hover:underline">
-                {kontakt.telefon}
-              </a>
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {eigen && onDeleteOwn && f.obstacleId ? (
-        <button
-          type="button"
-          onClick={() => {
-            if (window.confirm("Diesen eigenen Eintrag wirklich verwerfen?")) {
-              onDeleteOwn(f.obstacleId as string)
-            }
-          }}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-medium text-red-600 transition-colors hover:bg-red-100"
-        >
-          <Trash2 className="h-3.5 w-3.5" /> Eintrag verwerfen
-        </button>
-      ) : null}
-
-      {/* Nicht-relevanten Fund für die Sichtung ausblenden (nicht löschen) — z.B. eine
-          Überführung ÜBER die Autobahn, die den Transport darunter nicht betrifft. */}
-      {!eigen && onHide && !f.hidden ? (
-        <button
-          type="button"
-          onClick={() => onHide(f)}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-[11px] font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-severity-kritisch"
-        >
-          <EyeOff className="h-3.5 w-3.5" /> Für die Auswertung ausblenden
-        </button>
-      ) : null}
-
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-neutral-200/70 pt-3">
-        <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium", meta.soft)}>
-          <span className={cn("h-1.5 w-1.5 rounded-full", meta.dot)} />
-          {meta.label}
-        </span>
-        {f.quelle?.name ? (
-          eigen || !f.quelle.url ? (
-            <span className="text-xs font-medium text-neutral-500">{f.quelle.name}</span>
-          ) : (
-            <a
-              href={f.quelle.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
-            >
-              {f.quelle.name} <ExternalLink className="h-3 w-3" />
-            </a>
-          )
         ) : null}
       </div>
-    </>
+    ) : null
+
+  // Aktion über volle Breite: eigene Einträge verwerfen, sonst für die Auswertung ausblenden.
+  const action =
+    eigen && onDeleteOwn && f.obstacleId ? (
+      <button
+        type="button"
+        onClick={() => {
+          if (window.confirm("Diesen eigenen Eintrag wirklich verwerfen?")) {
+            onDeleteOwn(f.obstacleId as string)
+          }
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
+      >
+        <Trash2 className="h-4 w-4" /> Eintrag verwerfen
+      </button>
+    ) : !eigen && onHide && !f.hidden ? (
+      <button
+        type="button"
+        onClick={() => onHide(f)}
+        className="flex w-full items-center justify-center gap-1.5 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-severity-kritisch"
+      >
+        <EyeOff className="h-4 w-4" /> Für die Auswertung ausblenden
+      </button>
+    ) : null
+
+  return (
+    <FindingCard
+      kategorie={f.kategorie}
+      titel={f.titel}
+      severity={f.severity}
+      signKey={f.detail?.["Schwertransport"] === "gesperrt" ? "fahrverbot" : undefined}
+      subtitle={subtitle}
+      beschreibung={f.beschreibung}
+      gueltigVon={f.gueltigVon}
+      gueltigBis={f.gueltigBis}
+      detail={f.detail}
+      quelle={eigen ? { name: f.quelle?.name } : f.quelle}
+      extra={extra}
+      action={action}
+    />
   )
 }
 
@@ -195,7 +144,6 @@ export function FindingMarker({
   const pos = geomMidpoint(primary.geom) ?? ([primary.lat, primary.lng] as [number, number])
   const idx = Math.min(tab, group.length - 1)
   const current = group[idx]
-  const routeColor = routes.find((r) => r.id === current.routeId)?.farbe ?? "#71717A"
 
   return (
     <Marker
@@ -233,7 +181,7 @@ export function FindingMarker({
               ))}
             </div>
           ) : null}
-          <FindingDetail f={current} routeColor={routeColor} onDeleteOwn={onDeleteOwn} onHide={onHide} />
+          <FindingDetail f={current} onDeleteOwn={onDeleteOwn} onHide={onHide} />
         </div>
       </Popup>
     </Marker>
