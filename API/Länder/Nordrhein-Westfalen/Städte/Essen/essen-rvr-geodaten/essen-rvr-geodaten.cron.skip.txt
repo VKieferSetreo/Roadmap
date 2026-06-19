@@ -1,9 +1,0 @@
-SKIP — kein eigener offener Baustellen-WFS für Essen (🟡 Verweis-Quelle).
-
-geodaten/geo/gis.essen.de lösen nicht auf; geoportal.essen.de hat keinen GeoServer;
-opendata.essen.de ist ein Drupal-Portal ohne CKAN-API und ohne Baustellen-Datensatz.
-Die Baustellen-Koordinierung "KOST" wird nur als HTML-Portal (essen.de/baustellen)
-publiziert.
-
-BEZUGSWEG: Essen-Baustellen über den RVR-Aggregator (Herne-GeoServer-Muster) —
-siehe API/.../Sonstige/rvr-geonetzwerk-ruhr-baustellen. Kein Städte-Cron möglich.
