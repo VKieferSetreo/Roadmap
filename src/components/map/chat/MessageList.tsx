@@ -7,6 +7,7 @@
 import { useEffect, useRef } from "react"
 import { Mail, Phone, UserRound } from "lucide-react"
 import { cn } from "@/lib/cn"
+import { initialsFromEmail } from "@/lib/auth"
 import type { FindingChatMessage } from "@/types/domain"
 
 // Kompakter de-DE-Zeitstempel (Tag.Monat, Stunde:Minute) — Intl ist erlaubt.
@@ -17,15 +18,7 @@ const fmtTime = new Intl.DateTimeFormat("de-DE", {
   minute: "2-digit",
 })
 
-// Kürzel aus dem lokalen Teil der E-Mail: an [._-] splitten, erste Buchstaben der ersten zwei
-// Segmente; sonst erste 2 Zeichen. Immer Großbuchstaben.
-function initials(email: string): string {
-  const local = (email.split("@")[0] || email).trim()
-  const segs = local.split(/[._-]+/).filter(Boolean)
-  const raw =
-    segs.length >= 2 ? segs[0][0] + segs[1][0] : local.slice(0, 2)
-  return raw.toUpperCase() || "?"
-}
+// Avatar-Kürzel = erste zwei Buchstaben der E-Mail (geteilter Helper, gleich wie im Profil).
 
 // Deterministische Avatar-Farbe aus E-Mail-Hash — gleiche E-Mail = gleiche Farbe.
 const AVATAR_COLORS = [
@@ -98,7 +91,7 @@ export function MessageList({
                   avatarColor(m.authorEmail),
                 )}
               >
-                {initials(m.authorEmail)}
+                {initialsFromEmail(m.authorEmail)}
               </div>
               <div
                 className={cn(

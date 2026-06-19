@@ -64,9 +64,12 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           </div>
         )}
         <div className="absolute right-2 top-2 flex items-center gap-1">
-          <Badge variant={status.variant} size="sm">
-            {status.label}
-          </Badge>
+          {/* „Fertig" sagt nichts aus (jede ausgewertete Strecke wäre fertig) → nur Entwurf/Analyse zeigen. */}
+          {project.status !== "fertig" ? (
+            <Badge variant={status.variant} size="sm">
+              {status.label}
+            </Badge>
+          ) : null}
           <span className="rounded-md bg-white/85 backdrop-blur-sm">
             <ProjectMenu project={project} />
           </span>
@@ -144,9 +147,11 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
             ) : null}
           </div>
         ) : null}
-        <Badge variant={status.variant} size="sm">
-          {status.label}
-        </Badge>
+        {project.status !== "fertig" ? (
+          <Badge variant={status.variant} size="sm">
+            {status.label}
+          </Badge>
+        ) : null}
         <ProjectMenu project={project} />
         <ArrowRight className="h-4 w-4 shrink-0 text-neutral-300 transition-all group-hover:translate-x-0.5 group-hover:text-primary-600" />
       </div>

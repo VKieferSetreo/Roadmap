@@ -15,10 +15,10 @@ export function handleLogout(): void {
   window.location.href = LOGOUT_URL
 }
 
-/** Initialen aus einer E-Mail (Local-Part), z.B. "mxk@setreo.de" → "MX". */
+/** Initialen aus einer E-Mail: die ersten zwei Buchstaben des Local-Parts (Punkte/Ziffern
+ *  übersprungen), z.B. "max.klattig@" → "MA", "m.sachbearbeiter@" → "MS", "mxk@" → "MX". */
 export function initialsFromEmail(email: string): string {
   const local = (email.split("@")[0] || email).trim()
-  const parts = local.split(/[._-]+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-  return local.slice(0, 2).toUpperCase() || "?"
+  const letters = local.replace(/[^\p{L}]/gu, "")
+  return (letters || local).slice(0, 2).toUpperCase() || "?"
 }

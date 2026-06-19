@@ -191,7 +191,9 @@ export function FindingMarker({
           {/* Clip-Container rechts der Hauptkarte (z-0 dahinter). overflow-hidden kappt den
               Links-Überstand, wenn das (breitere) Panel hinter der Hauptkarte hervorgeschoben
               wird — so bleibt es eine reine Schiebe-Animation ohne Transparenz. */}
-          <div className="absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
+          {/* pointer-events-none am Container → die (unsichtbare) Fläche über der Karte fängt
+              die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
+          <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
             {/* Pop-out-Panel: 40% breiter (w-420), reine translate-Animation (kein opacity/scale).
                 Überlappt links 20px hinter der Hauptkarte — Inhalt per pl-5 nach rechts gedrückt. */}
             <div
@@ -208,7 +210,7 @@ export function FindingMarker({
               className={cn(
                 "absolute inset-y-0 left-0 flex w-[420px] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-9 shadow-xl",
                 "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
-                chatOpen ? "translate-x-0" : "pointer-events-none -translate-x-full",
+                chatOpen ? "pointer-events-auto translate-x-0" : "pointer-events-none -translate-x-full",
               )}
             >
               <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
