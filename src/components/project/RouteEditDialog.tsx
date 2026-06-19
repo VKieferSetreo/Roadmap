@@ -18,16 +18,12 @@ import { routeLengthKm } from "@/lib/parseRouteFile"
 import { api } from "@/api/roadmap"
 import type { ProjectRoute, RoutePoint } from "@/types/domain"
 
-// Obergrenze der Stützpunkte (= OSRM-Wegpunkte). Dicht genug, dass man fast überall greift,
-// aber im Rahmen, was OSRM schnell routet.
-const MAX_CP = 40
-
 // Aus der Geometrie gleichmäßig verteilte Stützpunkte ableiten (Start + Ziel immer dabei).
-// Moderate Dichte: genug zum Greifen, aber Lücken zwischen den Punkten, in die man neue setzt.
+// Moderate Anfangsdichte; der Nutzer darf danach beliebig viele Punkte setzen (kein Limit).
 function deriveControlPoints(points: RoutePoint[]): RoutePoint[] {
   const pts = points.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
   if (pts.length <= 2) return pts.map((p) => ({ lat: p.lat, lng: p.lng }))
-  const want = Math.min(MAX_CP, Math.max(8, Math.round(pts.length / 20)))
+  const want = Math.min(pts.length, Math.max(8, Math.round(pts.length / 20)))
   const out: RoutePoint[] = []
   for (let i = 0; i < want; i++) {
     const idx = Math.round((i / (want - 1)) * (pts.length - 1))
@@ -194,10 +190,6 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   const onLineGrab = (e: L.LeafletMouseEvent) => {
     const map = mapRef.current
     if (!map) return
-    if (cps.length >= MAX_CP) {
-      toast.error(`Maximal ${MAX_CP} Wegpunkte.`)
-      return
-    }
     L.DomEvent.stop(e.originalEvent)
     const idx = bestInsertIndex(cps, e.latlng.lat, e.latlng.lng)
     dragIdxRef.current = idx
