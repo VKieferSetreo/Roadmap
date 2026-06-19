@@ -2,9 +2,11 @@
 // Tab steckt in der URL (/projekte/:id/:tab). Karte rendert vollflächig.
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
+import { useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { ClipboardList, MapPin, MapPinned, type LucideIcon } from "lucide-react"
+import { ClipboardList, Download, FileDown, FileSpreadsheet, MapPin, MapPinned, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { useProjectStore } from "@/store/projects"
 import { RouteTab } from "@/components/project/RouteTab"
 import { AnlageTab } from "@/components/project/AnlageTab"
@@ -24,6 +26,8 @@ export function ProjectDetail() {
   const project = useProjectStore((s) => (id ? (s.projects ?? []).find((p) => p.id === id) : undefined))
   const loading = useProjectStore((s) => s.loading)
   const seeded = useProjectStore((s) => s.seeded)
+  // Export-Anstoß aus dem Header → DashboardTab öffnet damit den Export-Dialog.
+  const [exportReq, setExportReq] = useState<"pdf" | "csv" | null>(null)
 
   // Deep-Link während des Initial-Loads: warten statt nach Home umleiten.
   if (!project && (loading || !seeded)) {
@@ -42,10 +46,31 @@ export function ProjectDetail() {
     <div className="flex h-full flex-col">
       {/* Kopfleiste */}
       <div className="shrink-0 border-b border-neutral-200 bg-white px-4 pt-4 lg:px-6">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="truncate text-lg font-bold tracking-tight text-neutral-900">
             {project.name}
           </h1>
+          {/* Download (nur im Dashboard, nach der Auswertung): PDF oder CSV → Export-Dialog. */}
+          {tab === "dashboard" && project.status === "fertig" ? (
+            <DropdownMenu
+              triggerLabel="Herunterladen — PDF oder CSV"
+              trigger={
+                <span
+                  title="Herunterladen"
+                  className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+                >
+                  <Download className="h-5 w-5" /> Download
+                </span>
+              }
+            >
+              <DropdownItem onClick={() => setExportReq("pdf")}>
+                <FileDown className="h-4 w-4 text-neutral-400" /> PDF-Bericht
+              </DropdownItem>
+              <DropdownItem onClick={() => setExportReq("csv")}>
+                <FileSpreadsheet className="h-4 w-4 text-emerald-600" /> Excel (CSV)
+              </DropdownItem>
+            </DropdownMenu>
+          ) : null}
         </div>
         <Tabs
           value={tab}
@@ -76,7 +101,11 @@ export function ProjectDetail() {
                 <AnlageTab project={project} />
               </div>
             ) : (
-              <DashboardTab project={project} />
+              <DashboardTab
+                project={project}
+                exportRequest={exportReq}
+                onExportConsumed={() => setExportReq(null)}
+              />
             )}
           </div>
         )}
