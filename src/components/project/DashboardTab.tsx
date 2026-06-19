@@ -5,7 +5,6 @@ import { Suspense, lazy, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Building2,
-  CalendarClock,
   CalendarRange,
   ChevronDown,
   ClipboardList,
@@ -14,12 +13,13 @@ import {
   EyeOff,
   FileDown,
   FileSpreadsheet,
-  Flag,
   MapPin,
   Radio,
   RotateCcw,
   Route as RouteIcon,
+  Ruler,
   Search,
+  Weight,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Badge } from "@/components/ui/Badge"
@@ -112,10 +112,6 @@ export function DashboardTab({ project }: { project: Project }) {
     )
   }
 
-  const counts = SEVERITY_ORDER.map((sev) => ({
-    sev,
-    n: sichtbar.filter((f) => f.severity === sev).length,
-  }))
 
   /** StreckenBand-Klick: Fund in der Liste aufklappen + hinscrollen. */
   const focusFinding = (id: string) => {
@@ -150,15 +146,12 @@ export function DashboardTab({ project }: { project: Project }) {
     }
   }
 
-  // ISO „YYYY-MM-DDTHH:mm" → „03.07.26 · 06:00" (ganztägig/ohne Zeit → nur Datum). Kein TZ-Shift.
-  const fmtDateTime = (iso?: string) => {
-    if (!iso) return "—"
-    const [datePart, timePart] = iso.split("T")
-    const [y, m, day] = (datePart || "").split("-")
-    if (!y || !m || !day) return "—"
-    const date = `${day}.${m}.${y.slice(2)}`
-    return project.zeitraum?.ganztaegig || !timePart ? date : `${date} · ${timePart.slice(0, 5)}`
-  }
+  // Transport-Profil für die Eckdaten (keine Daten/Uhrzeiten).
+  const t = project.transport
+  const num = (v?: number) => (v ?? 0).toLocaleString("de-DE")
+  const maße =
+    t?.laenge || t?.breite || t?.hoehe ? `${num(t?.laenge)} × ${num(t?.breite)} × ${num(t?.hoehe)} m` : "—"
+  const gewicht = t?.gesamtgewicht ? `${num(t.gesamtgewicht)} t` : "—"
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
@@ -178,24 +171,17 @@ export function DashboardTab({ project }: { project: Project }) {
           index={1}
         />
         <StatCard
-          label="Abfahrt"
-          text={fmtDateTime(project.zeitraum?.von)}
-          icon={<CalendarClock className="h-4 w-4" />}
+          label="Maße (L × B × H)"
+          text={maße}
+          icon={<Ruler className="h-4 w-4" />}
           index={2}
         />
         <StatCard
-          label="Ankunft"
-          text={fmtDateTime(project.zeitraum?.bis)}
-          icon={<Flag className="h-4 w-4" />}
+          label="Gewicht"
+          text={gewicht}
+          icon={<Weight className="h-4 w-4" />}
           index={3}
         />
-      </div>
-
-      {/* Funde nach Schweregrad */}
-      <div className="grid grid-cols-3 gap-3">
-        {counts.map(({ sev, n }, i) => (
-          <StatCard key={sev} label={SEVERITY_META[sev].label} value={n} sev={sev} index={4 + i} />
-        ))}
       </div>
 
       {/* Charts */}
