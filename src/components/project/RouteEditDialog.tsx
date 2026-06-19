@@ -22,11 +22,12 @@ import type { ProjectRoute, RoutePoint } from "@/types/domain"
 // aber im Rahmen, was OSRM schnell routet.
 const MAX_CP = 40
 
-// Aus der Geometrie viele, gleichmäßig verteilte Stützpunkte ableiten (Start + Ziel immer dabei).
+// Aus der Geometrie gleichmäßig verteilte Stützpunkte ableiten (Start + Ziel immer dabei).
+// Moderate Dichte: genug zum Greifen, aber Lücken zwischen den Punkten, in die man neue setzt.
 function deriveControlPoints(points: RoutePoint[]): RoutePoint[] {
   const pts = points.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
   if (pts.length <= 2) return pts.map((p) => ({ lat: p.lat, lng: p.lng }))
-  const want = Math.min(MAX_CP, Math.max(15, Math.round(pts.length / 8)))
+  const want = Math.min(MAX_CP, Math.max(8, Math.round(pts.length / 20)))
   const out: RoutePoint[] = []
   for (let i = 0; i < want; i++) {
     const idx = Math.round((i / (want - 1)) * (pts.length - 1))
@@ -35,18 +36,21 @@ function deriveControlPoints(points: RoutePoint[]): RoutePoint[] {
   return out
 }
 
-/** Index des bestehenden Stützpunkts, der dem Greifpunkt am nächsten liegt. */
-function nearestCpIndex(cps: RoutePoint[], lat: number, lng: number): number {
-  let best = 0
+/** Einfügeindex im Segment, dessen Mittelpunkt dem Greifpunkt am nächsten liegt. */
+function bestInsertIndex(cps: RoutePoint[], lat: number, lng: number): number {
+  if (cps.length < 2) return cps.length
+  let bestIdx = 1
   let bestD = Infinity
-  for (let i = 0; i < cps.length; i++) {
-    const d = (cps[i].lat - lat) ** 2 + (cps[i].lng - lng) ** 2
+  for (let i = 0; i < cps.length - 1; i++) {
+    const mx = (cps[i].lat + cps[i + 1].lat) / 2
+    const my = (cps[i].lng + cps[i + 1].lng) / 2
+    const d = (mx - lat) ** 2 + (my - lng) ** 2
     if (d < bestD) {
       bestD = d
-      best = i
+      bestIdx = i + 1
     }
   }
-  return best
+  return bestIdx
 }
 
 const cpIcon = (isEnd: boolean) =>
@@ -140,29 +144,73 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     setTouched(true)
   }
 
-  // GUMMIBAND: Linie greifen → nächsten bestehenden Stützpunkt an den Cursor holen und ziehen.
-  const onLineGrab = (e: L.LeafletMouseEvent) => {
+  const removeCp = (i: number) => {
+    if (i === 0 || i === cps.length - 1) {
+      toast.error("Start und Ziel bleiben erhalten.")
+      return
+    }
+    setCps((prev) => (prev.length <= 2 ? prev : prev.filter((_, idx) => idx !== i)))
+    setTouched(true)
+    toast.success("Wegpunkt entfernt.")
+  }
+
+  // Drag-Mechanik: Karten-Pan aus, Bewegung verfolgen, am Ende aufräumen.
+  const startDrag = (onMove: (ev: L.LeafletMouseEvent) => void, onEnd?: () => void) => {
+    const map = mapRef.current
+    if (!map) return
+    map.dragging.disable()
+    const up = () => {
+      map.off("mousemove", onMove)
+      map.off("mouseup", up)
+      window.removeEventListener("mouseup", up)
+      map.dragging.enable()
+      dragIdxRef.current = null
+      onEnd?.()
+    }
+    map.on("mousemove", onMove)
+    map.on("mouseup", up)
+    window.addEventListener("mouseup", up)
+  }
+
+  // Bestehenden Punkt anfassen: ziehen (Bewegung) ODER bei reinem Klick löschen.
+  const onPointGrab = (i: number) => (e: L.LeafletMouseEvent) => {
     const map = mapRef.current
     if (!map) return
     L.DomEvent.stop(e.originalEvent)
-    map.dragging.disable()
-    const idx = nearestCpIndex(cps, e.latlng.lat, e.latlng.lng)
+    const start = map.latLngToContainerPoint(e.latlng)
+    let moved = false
+    startDrag(
+      (ev) => {
+        if (!moved && map.latLngToContainerPoint(ev.latlng).distanceTo(start) > 4) moved = true
+        if (moved) moveCp(i, ev.latlng.lat, ev.latlng.lng)
+      },
+      () => {
+        if (!moved) removeCp(i) // Klick ohne Ziehen → entfernen
+      },
+    )
+  }
+
+  // Linie in einer Lücke greifen → dort NEUEN Punkt einfügen und gleich ziehen.
+  const onLineGrab = (e: L.LeafletMouseEvent) => {
+    const map = mapRef.current
+    if (!map) return
+    if (cps.length >= MAX_CP) {
+      toast.error(`Maximal ${MAX_CP} Wegpunkte.`)
+      return
+    }
+    L.DomEvent.stop(e.originalEvent)
+    const idx = bestInsertIndex(cps, e.latlng.lat, e.latlng.lng)
     dragIdxRef.current = idx
-    moveCp(idx, e.latlng.lat, e.latlng.lng)
-    const onMove = (ev: L.LeafletMouseEvent) => {
+    setCps((prev) => {
+      const next = [...prev]
+      next.splice(idx, 0, { lat: e.latlng.lat, lng: e.latlng.lng })
+      return next
+    })
+    setTouched(true)
+    startDrag((ev) => {
       if (dragIdxRef.current == null) return
       moveCp(dragIdxRef.current, ev.latlng.lat, ev.latlng.lng)
-    }
-    const onUp = () => {
-      map.off("mousemove", onMove)
-      map.off("mouseup", onUp)
-      window.removeEventListener("mouseup", onUp)
-      map.dragging.enable()
-      dragIdxRef.current = null
-    }
-    map.on("mousemove", onMove)
-    map.on("mouseup", onUp)
-    window.addEventListener("mouseup", onUp)
+    })
   }
 
   const reset = () => {
@@ -230,11 +278,18 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
                 />
               </>
             ) : null}
-            {/* Punkte sind rein visuell (nicht-interaktiv) — gezogen wird über die Greif-Linie,
-                damit Leaflets Marker-Drag nicht mit dem React-Reposition kollidiert. */}
+            {/* Punkte: greifen+ziehen zum Verschieben, reiner Klick entfernt (eigener Pointer-
+                Handler statt Leaflet-Marker-Drag → kein React-Reposition-Konflikt). */}
             {cps.map((c, i) => {
               const isEnd = i === 0 || i === cps.length - 1
-              return <Marker key={i} position={[c.lat, c.lng]} icon={cpIcon(isEnd)} interactive={false} />
+              return (
+                <Marker
+                  key={i}
+                  position={[c.lat, c.lng]}
+                  icon={cpIcon(isEnd)}
+                  eventHandlers={{ mousedown: onPointGrab(i) }}
+                />
+              )
             })}
           </MapContainer>
         </div>
