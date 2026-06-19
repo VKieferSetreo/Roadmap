@@ -70,7 +70,6 @@ OK   Länder/Sachsen/Städte/Dresden/dresden-opendata-themenstadtplan 1936 B
 OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrsraumeinschraenkungen 822 B
 OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrszeichen    1673 B
 OK   Länder/Schleswig-Holstein/DigitalerAtlasNord-DANord-GDI-SH 2079 B
-OK   Länder/Schleswig-Holstein/GDI-SH-Geoportal-OpenGBD        4144 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX 4037 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
 OK   Länder/Schleswig-Holstein/WFS-SH-Strasseninfo-LBV         4047 B
