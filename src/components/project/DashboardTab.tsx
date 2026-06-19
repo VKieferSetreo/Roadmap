@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ClipboardList,
   Clock,
+  Download,
   ExternalLink,
   EyeOff,
   FileDown,
@@ -31,6 +32,7 @@ import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
 import { ReportView } from "./ReportView"
 import { ExportDialog, type ExportConfig } from "./ExportDialog"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import {
@@ -149,12 +151,36 @@ export function DashboardTab({ project }: { project: Project }) {
   // Transport-Profil für die Eckdaten (keine Daten/Uhrzeiten).
   const t = project.transport
   const num = (v?: number) => (v ?? 0).toLocaleString("de-DE")
-  const maße =
-    t?.laenge || t?.breite || t?.hoehe ? `${num(t?.laenge)} × ${num(t?.breite)} × ${num(t?.hoehe)} m` : "—"
+  const abmessung =
+    t?.laenge || t?.breite || t?.hoehe
+      ? `${num(t?.laenge)} m × ${num(t?.breite)} m × ${num(t?.hoehe)} m`
+      : "—"
   const gewicht = t?.gesamtgewicht ? `${num(t.gesamtgewicht)} t` : "—"
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
+      {/* Zentraler Download oben rechts — Auswahl PDF oder CSV, dann der bekannte Export-Dialog. */}
+      <div className="print-hidden flex justify-end">
+        <DropdownMenu
+          triggerLabel="Herunterladen — PDF oder CSV"
+          trigger={
+            <span
+              title="Herunterladen"
+              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+            >
+              <Download className="h-4 w-4" /> Download
+            </span>
+          }
+        >
+          <DropdownItem onClick={() => setExportTarget("pdf")}>
+            <FileDown className="h-4 w-4 text-neutral-400" /> PDF-Bericht
+          </DropdownItem>
+          <DropdownItem onClick={() => setExportTarget("csv")}>
+            <FileSpreadsheet className="h-4 w-4 text-emerald-600" /> Excel (CSV)
+          </DropdownItem>
+        </DropdownMenu>
+      </div>
+
       {/* Kennzahlen — 4 weiße Eckdaten */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
@@ -171,8 +197,8 @@ export function DashboardTab({ project }: { project: Project }) {
           index={1}
         />
         <StatCard
-          label="Maße (L × B × H)"
-          text={maße}
+          label="Abmessung"
+          text={abmessung}
           icon={<Ruler className="h-4 w-4" />}
           index={2}
         />
@@ -246,18 +272,6 @@ export function DashboardTab({ project }: { project: Project }) {
           </CardContent>
         </Card>
       ) : null}
-
-      {/* Export — Klick öffnet den Dialog (Zeitraum + Strecken wählen), dann läuft der Export. */}
-      <div className="print-hidden flex items-center justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={() => setExportTarget("pdf")}>
-          <FileDown className="h-3.5 w-3.5" />
-          PDF-Bericht
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => setExportTarget("csv")}>
-          <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-          Excel (CSV)
-        </Button>
-      </div>
 
       {/* Filterleiste */}
       <div className="print-hidden flex flex-col gap-3 sm:flex-row sm:items-center">
