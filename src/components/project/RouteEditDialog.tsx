@@ -230,29 +230,13 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
                 />
               </>
             ) : null}
+            {/* Punkte sind rein visuell (nicht-interaktiv) — gezogen wird über die Greif-Linie,
+                damit Leaflets Marker-Drag nicht mit dem React-Reposition kollidiert. */}
             {cps.map((c, i) => {
               const isEnd = i === 0 || i === cps.length - 1
-              return (
-                <Marker
-                  key={i}
-                  position={[c.lat, c.lng]}
-                  icon={cpIcon(isEnd)}
-                  draggable
-                  eventHandlers={{
-                    drag: (e) => {
-                      const ll = (e.target as L.Marker).getLatLng()
-                      moveCp(i, ll.lat, ll.lng)
-                    },
-                  }}
-                />
-              )
+              return <Marker key={i} position={[c.lat, c.lng]} icon={cpIcon(isEnd)} interactive={false} />
             })}
           </MapContainer>
-
-          {/* Hinweis */}
-          <div className="pointer-events-none absolute bottom-3 left-1/2 z-[1100] -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-neutral-600 shadow ring-1 ring-black/5">
-            Strecke an beliebiger Stelle greifen und ziehen — die Route folgt
-          </div>
         </div>
       </div>
     </div>

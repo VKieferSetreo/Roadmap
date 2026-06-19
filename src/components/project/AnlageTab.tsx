@@ -56,8 +56,8 @@ export function AnlageTab({ project }: { project: Project }) {
       </Card>
 
       {/* ── Transport-Zeitraum ── */}
-      <Card>
-        <CardContent className="flex flex-col gap-3 p-4">
+      <Card className="h-full">
+        <CardContent className="flex h-full flex-col gap-3 p-4">
           {(() => {
             // Effective ganztägig: explizit gesetzt → der Wert. Sonst: true wenn weder von noch bis eine Uhrzeit haben.
             const ganztaegigEffective =
@@ -195,8 +195,8 @@ export function AnlageTab({ project }: { project: Project }) {
           und im Demo-Modus), sonst klafft hier eine Lücke. Freigeben ist jederzeit möglich; der
           Link aktualisiert sich mit der nächsten Auswertung. ── */}
       {!running ? (
-        <Card>
-          <CardContent className="p-4">
+        <Card className="h-full">
+          <CardContent className="flex h-full flex-col p-4">
             <PublishCard project={project} />
           </CardContent>
         </Card>

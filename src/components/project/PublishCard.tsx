@@ -28,7 +28,7 @@ export function PublishCard({ project }: { project: Project }) {
   const statusBadge = (
     <span
       className={cn(
-        "shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-semibold",
+        "shrink-0 rounded-md border px-2 py-1 text-[11px] font-semibold",
         live
           ? "border-primary-100 bg-primary-50/60 text-primary-800"
           : "border-neutral-200 bg-neutral-100 text-neutral-500",
@@ -72,7 +72,7 @@ export function PublishCard({ project }: { project: Project }) {
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex h-full flex-col gap-2.5">
       {share ? (
         <>
           {/* Kopfzeile mit Aktionen rechts — kompakt, umbruchsicher */}
@@ -146,12 +146,11 @@ export function PublishCard({ project }: { project: Project }) {
             </span>
             {statusBadge}
           </div>
-          {/* darunter: Text (2 Zeilen) links, Button rechts auf gleicher Höhe */}
-          <div className="flex items-center justify-between gap-3">
-            <p className="flex-1 text-xs leading-relaxed text-neutral-500">
-              Erstellt einen Link, über den Außenstehende die Karte und die Auswertung ansehen
-              können, ohne Anmeldung. Auf Wunsch durch ein Passwort geschützt.
-            </p>
+          <p className="text-xs leading-relaxed text-neutral-500">
+            Karte und Auswertung extern teilen, ohne Anmeldung. Optional mit Passwort.
+          </p>
+          {/* Button unten rechts — spiegelt die Dauer-Marke der Zeitraum-Karte */}
+          <div className="mt-auto flex justify-end pt-1">
             <Button variant="outline" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Globe2 className="h-4 w-4" /> Veröffentlichen
             </Button>
