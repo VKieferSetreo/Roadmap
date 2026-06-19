@@ -132,6 +132,23 @@
   cursor: pointer;
 }
 
+/* Strecken-Editor: Wegpunkt-Handles — taktiles Hover/Greifen. */
+.rm-handle {
+  cursor: grab;
+}
+.rm-handle:active {
+  cursor: grabbing;
+}
+.rm-handle > div {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.rm-handle:hover > div {
+  transform: scale(1.28);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
 /* KEIN transform/scale auf Hover (Max 2026-06-14): ein CSS-transform auf einem
    Marker-Kind promotet den Pin beim Hovern zu einem eigenen GPU-Layer und triggert
    ein Re-Composite des gesamten Leaflet-Marker-Panes → Pin UND alle Nachbarn

@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Loader2, RotateCcw, Save, X } from "lucide-react"
+import { Loader2, Route, RotateCcw, Save, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -49,14 +49,24 @@ function bestInsertIndex(cps: RoutePoint[], lat: number, lng: number): number {
   return bestIdx
 }
 
-const cpIcon = (isEnd: boolean) =>
-  L.divIcon({
-    className: "",
-    iconSize: isEnd ? [16, 16] : [11, 11],
-    iconAnchor: isEnd ? [8, 8] : [6, 6],
-    html: `<div style="width:100%;height:100%;border-radius:9999px;border:2px solid #fff;
-      box-shadow:0 1px 2px rgba(0,0,0,.4);background:${isEnd ? "#16a34a" : "#2563eb"}"></div>`,
+const cpIcon = (kind: "start" | "end" | "via") => {
+  if (kind === "via") {
+    return L.divIcon({
+      className: "rm-handle",
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+      html: `<div style="width:12px;height:12px;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);background:#2563eb"></div>`,
+    })
+  }
+  const bg = kind === "start" ? "#16a34a" : "#dc2626"
+  const letter = kind === "start" ? "S" : "Z"
+  return L.divIcon({
+    className: "rm-handle",
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    html: `<div style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:9999px;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.4);background:${bg};color:#fff;font:700 11px/1 Inter,system-ui,sans-serif">${letter}</div>`,
   })
+}
 
 /** Karte beim Öffnen auf die Strecke zoomen (in der Maske erst nach Layout vermessen). */
 function FitOnce({ points }: { points: RoutePoint[] }) {
@@ -237,8 +247,12 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
               placeholder={route.name}
             />
           </div>
-          <span className="flex items-center gap-1.5 text-sm tabular-nums text-neutral-500">
-            {routing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+          <span className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-neutral-600">
+            {routing ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-600" />
+            ) : (
+              <Route className="h-3.5 w-3.5 text-neutral-400" />
+            )}
             {distanzKm.toLocaleString("de-DE")} km
           </span>
           <Button variant="ghost" onClick={reset} title="Ursprünglichen Verlauf wiederherstellen">
@@ -252,6 +266,15 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
           </Button>
         </div>
 
+        {/* dezente Bedien-Hilfe */}
+        <div className="flex items-center gap-3 border-b border-neutral-200 bg-neutral-50/60 px-4 py-1.5 text-[11px] text-neutral-500">
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#2563eb]" /> Punkt ziehen verschiebt</span>
+          <span className="text-neutral-300">·</span>
+          <span>Klick auf einen Punkt entfernt ihn</span>
+          <span className="text-neutral-300">·</span>
+          <span>Linie greifen setzt einen neuen Punkt</span>
+        </div>
+
         {/* Karte */}
         <div className="relative flex-1">
           <MapContainer ref={mapRef} className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
@@ -259,12 +282,14 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
             <FitOnce points={initialPoints.current} />
             {geometry.length >= 2 ? (
               <>
+                {/* weiße Kontur unter der Strecke (sophisticated, wie Hauptkarte) */}
+                <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: "#fff", weight: 9, opacity: 0.95 }} smoothFactor={0} interactive={false} />
                 {/* sichtbare Linie */}
                 <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
                 {/* breite, durchsichtige Greif-Linie — Gummiband an beliebiger Stelle */}
                 <Polyline
                   positions={geometry.map((p) => [p.lat, p.lng])}
-                  pathOptions={{ color: "#000", weight: 20, opacity: 0, className: "cursor-grab" }}
+                  pathOptions={{ color: "#000", weight: 22, opacity: 0, className: "cursor-grab" }}
                   smoothFactor={0}
                   eventHandlers={{ mousedown: onLineGrab }}
                 />
@@ -273,12 +298,13 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
             {/* Punkte: greifen+ziehen zum Verschieben, reiner Klick entfernt (eigener Pointer-
                 Handler statt Leaflet-Marker-Drag → kein React-Reposition-Konflikt). */}
             {cps.map((c, i) => {
-              const isEnd = i === 0 || i === cps.length - 1
+              const kind = i === 0 ? "start" : i === cps.length - 1 ? "end" : "via"
               return (
                 <Marker
                   key={i}
                   position={[c.lat, c.lng]}
-                  icon={cpIcon(isEnd)}
+                  icon={cpIcon(kind)}
+                  zIndexOffset={kind === "via" ? 0 : 1000}
                   eventHandlers={{ mousedown: onPointGrab(i) }}
                 />
               )
