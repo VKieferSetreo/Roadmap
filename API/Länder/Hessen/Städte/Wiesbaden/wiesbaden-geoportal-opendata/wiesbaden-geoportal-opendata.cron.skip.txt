@@ -1,8 +1,0 @@
-SKIP — kein offener Baustellen-Endpunkt (🟡 Portal-Stub).
-
-Der Wiesbaden-Open-Data-Katalog enthält GENAU EINEN WMS/WFS-Dienst: "Planübersicht /
-Bauleitplanung" (geodata.o-sp.de/service/wiesbaden.cgi). KEINE Baustellen/Sperrungen/
-Verkehr. geoportal.wiesbaden.de hat keinen GeoServer an Standardpfaden.
-
-BEZUGSWEG: Baustellen Wiesbaden landesweit über Geoportal Hessen / Regionalverband
-FrankfurtRheinMain. Kein Städte-Cron möglich.

@@ -182,30 +182,6 @@
 - **prio:** P2
 - **sonstiges:** Erwähnt explizit „heavy vehicle routing information" — direkt GST-relevant; genauer Datenzugang zu erfragen.
 
-## 2.2 GeoPortal Bremen / GIS-Hub (GDI-HB)
-
-- **quelle:** GeoPortal Bremen + GIS-Hub (SUKW/SBMS)
-- **betreiber:** Landesamt GeoInformation Bremen (LGeoBrem); GIS-Hub: Senatorin Umwelt/Klima/Wissenschaft + Senatorin Bau/Mobilität/Stadtentwicklung
-- **datentyp:** Geobasis, Luftbilder, 3D-Bauwerke (Brücken), **Detailnetz mit Ingenieurbauwerken (Brücken/Tunnel, Netzabschnitts-Referenz)**, DOM5 (beschreibt Brücken/Leitungen/Verkehr)
-- **strassentyp:** Alle (Stadt-/Landesnetz HB)
-- **format:** WMS, WFS (über GeoPortal-Layer); GIS-Hub = ArcGIS Enterprise Portal (FeatureServer/REST)
-- **apiEndpunkt (verifiziert):**
-  - GeoPortal: `https://geoportal.bremen.de/geoportal/`
-  - GIS-Hub: `https://gis-hub.bremen.de/portal/home/index.html`
-  - GDI-FHB Einstieg: `https://www.gdi.bremen.de/`
-  - WFS DOM5 Land Bremen (AdV-MIS-Metadatensatz): `https://advmis.geodatenzentrum.de/trefferanzeige?docuuid=cca82373-c633-43dd-a833-acb044db09c3`
-  - Konkrete Verkehr/Brücken-WFS-Endpunkte: über GeoPortal-Layer / MetaVer auflösen → **zu-bestätigen**
-- **update:** GIS-Hub: täglich gepflegt
-- **auth:** keine (offene Layer)
-- **kosten:** keine
-- **lizenz:** CC BY / dl-de/by-2-0 / basemap.de (je Layer), Quellenvermerk „© Freie Hansestadt Bremen"
-- **abdeckung:** Land Bremen (Bremen + Bremerhaven)
-- **zugang:** offen (WMS/WFS via Portal); exakte Endpunkt-URLs nicht per Suche enumerierbar → im Portal/MetaVer abrufen
-- **verifiziert:** ja (Portale/Lizenz) / einzelne WFS-Endpunkte zu-bestätigen
-- **url:** `https://www.geo.bremen.de/` · `https://gis-hub.bremen.de/`
-- **prio:** P2
-- **sonstiges:** „Detailnetz Bauwerke" mit Brücken/Tunnel + Netzabschnitts-Referenz ist das Gegenstück zum Berliner Detailnetz — sehr GST-relevant. WFS-Endpunkt im GeoPortal/MetaVer (`metaver.de`) ermitteln.
-
 ## 2.3 ASV Bremen — Amt für Straßen und Verkehr (Brücken & GST-Stelle)
 
 - **quelle:** ASV Bremen, Abt. 5 (Ingenieurbau) + Verkehrsbehörde (GST-Stelle)
@@ -224,27 +200,6 @@
 - **url:** `https://www.asv.bremen.de/aufgaben/bruecken-und-ingenieurbau-1714` · `https://bruecken.bremen.de`
 - **prio:** P2
 - **sonstiges:** Maßgebliche Stelle für HB-Bauwerksrestriktionen + GST-Genehmigung — Daten per Anfrage, nicht offen. Bremerhaven separat (eigene Zuständigkeit).
-
-## 2.4 Transparenzportal / Offene Daten Bremen
-
-- **quelle:** Transparenzportal Bremen — Offene Daten
-- **betreiber:** Senatorin für Finanzen Bremen
-- **datentyp:** Querschnitt (Umwelt, Geo, Verkehr, Statistik); Verkehr-/Brücken-Datensätze über Kategorie-/Stichwortsuche
-- **strassentyp:** Alle (je Datensatz)
-- **format:** CSV/JSON/XML; Geo-Datensätze verweisen auf WFS/WMS
-- **apiEndpunkt (verifiziert):**
-  - Daten-Suche: `https://www.transparenz.bremen.de/daten-1467`
-  - Gesamtübersicht offene Daten: `https://www.transparenz.bremen.de/daten/offene-daten-bremen-gesamtuebersicht-aller-offenen-datensaetze-8249` (JSON/XML-Export)
-- **update:** laufend
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** Datensätze i.d.R. CC BY 3.0/dl-de/by; Portalseiten CC BY-NC-ND
-- **abdeckung:** Land Bremen
-- **zugang:** offen
-- **verifiziert:** ja (Portal) / konkrete Verkehr-Datensätze über Suche → zu-bestätigen
-- **url:** `https://www.transparenz.bremen.de/`
-- **prio:** P3
-- **sonstiges:** Eher dünn bei Verkehr/Brücken im Vergleich zu HH; GeoPortal/GIS-Hub (2.2) ist der ergiebigere Geo-Einstieg.
 
 ---
 

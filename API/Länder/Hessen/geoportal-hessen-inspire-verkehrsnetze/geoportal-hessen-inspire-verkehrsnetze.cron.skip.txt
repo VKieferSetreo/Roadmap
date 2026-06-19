@@ -1,1 +1,0 @@
-SKIP: INSPIRE-Verkehrsnetze (ATKIS Basis-DLM, ALKIS, OKSTRA — RoadLink/RoadArea) — Netzgeometrie/Topologie ohne Bauwerks-Restriktion. Kein Hindernis-Producer; die Hessen-Restriktion steckt in SIB-Hessen → hessen-mobil-lastbeschraenkte-bruecken (0115).

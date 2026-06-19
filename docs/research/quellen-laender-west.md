@@ -18,9 +18,7 @@
 | **P1** | RLP | GeoPortal.rlp.de — **Straßennetz LBM** (OAF/WFS/WMS, GeoJSON) | A/B/L/K-Netz, Netzknoten, Stationen | **verifiziert (offen, dl-de/by-2-0)** |
 | **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** + LBM DATEX-II-Knoten | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal + DATEX-Knoten); Feed-URL zu-bestätigen |
 | **P1** | Hessen | **Hessen Mobil — Lastbeschränkte Brücken** (PDF-Liste + SIB-Hessen-Online-Karte) | lastbeschränkte Brücken B/L/K | verifiziert (PDF/Karte; kein offenes WFS) |
-| **P1** | Hessen | Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkehrsnetze (ATKIS/ALKIS/OKSTRA) | Straßennetz-Topologie | verifiziert (offen) |
 | **P2** | Hessen | Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen) | befahrbare/verbotene GST-Strecken | verifiziert (Karten; Format zu-bestätigen) |
-| **P2** | Hessen | opendata.hessen.de — Open Traffic Data (Verkehrsleitrechner-Rohdaten CSV) | Detektor-/Zähldaten | verifiziert (offen, CSV) |
 | **P1** | Saarland | GeoPortal Saarland — **Verkehr-WFS** + INSPIRE-Verkehrsnetze (ATKIS/OKSTRA) | Straßennetz/Verkehr | verifiziert (offen, OAF/WFS) |
 | **P1** | Saarland | **baustellen.saarland** (LfS) — Baustellen/Sperrungen/Verkehrslage | Baustellen, Sperrungen, Verkehrslage | verifiziert (Portal); kein offener Feed gefunden |
 | **P2** | alle | Mobilithek (BMDV) — DATEX-II-Angebote der Länder (NW/HE/RP/SL) | Baustellen/Sperrungen bundesweit gebündelt | verifiziert (NAP); je Feed Registrierung |
@@ -155,53 +153,6 @@
 - **url:** `https://mobil.hessen.de/verkehr/grossraum-und-schwertransporte/positivkarten`
 - **prio:** **P2** (ergänzt HE-1 um routenfähige Klassifizierung)
 - **sonstiges:** Liefert direkt GST-routenrelevante Klassen (Gewicht/Höhe/BF3-Pflicht) — wertvoll, falls als GIS/Geometrie beziehbar. Datei-Links auf der Seite konkret prüfen.
-
-## HE-3. Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkehrsnetze (Straßennetz)
-
-- **quelle:** Geoportal Hessen (GDI-HE) — INSPIRE-WFS Verkehrsnetze, umgesetzt aus ATKIS Basis-DLM, ALKIS und OKSTRA (SBV-Straßennetz)
-- **betreiber:** HVBG (Hessische Verwaltung für Bodenmanagement und Geoinformation) / GDI-Hessen; OKSTRA-Straßennetz aus Hessen-Mobil-Quelldaten
-- **datentyp:** Straßennetz-Topologie/Verkehrsnetze (INSPIRE Transport Networks). Keine Bauwerks-Restriktionsattribute
-- **strassentyp:** je Datenmodell (ATKIS/ALKIS = topografisch; OKSTRA = klassifiziertes Netz A/B/L/K)
-- **format:** WFS 2.0.0 (GML), z. T. WMS, Atom (INSPIRE Download)
-- **apiEndpunkt (verifiziert):**
-  - INSPIRE-WFS HE Verkehrsnetze ATKIS Basis-DLM: `https://www.geoportal.hessen.de/spatial-objects/723`
-  - INSPIRE-WFS HE Verkehrsnetze ALKIS: `https://www.geoportal.hessen.de/spatial-objects/722`
-  - WFS-Capabilities-Muster (Mapbender): `https://www.geoportal.hessen.de/mapbender/php/wfs.php?inspire=1&featuretype_id={ID}&REQUEST=GetCapabilities&SERVICE=WFS&INSPIRE=1`
-  - Offene-Geodaten-Übersicht (214 Dienste): `https://www.geoportal.hessen.de/spatial-objects/`
-- **update:** periodisch (GDI-HE)
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** offene Geodaten Hessen (i. d. R. dl-de/by-2-0 bzw. dl-de/zero — je Datensatz prüfen; Rechtsbasis HODaG)
-- **abdeckung:** ganz Hessen
-- **zugang:** **offen** (WFS/WMS frei)
-- **verifiziert:** **ja** (spatial-objects-Dienste + WFS-Muster bestätigt)
-- **url:**
-  - Geoportal: `https://www.geoportal.hessen.de/`
-  - GDI-HE Einstieg: `https://hvbg.hessen.de/geoinformation/geodateninfrastruktur/geoportal-hessen`
-- **prio:** **P1** (Netz-Grundriss Hessen; analog NRW-1 ohne Bauwerks-Restriktion)
-- **sonstiges:** Liefert Netzgeometrie/Topologie, **nicht** Brücken-Traglast/Höhe (die stecken in SIB-Hessen, HE-1). Dienst-Inventar über `spatial-objects/` durchsuchen (auch HLNUG-Geodienste `https://www.hlnug.de/themen/geografische-informationssysteme/geodienste`).
-
-## HE-4. opendata.hessen.de — Open-Data-Portal (inkl. Open Traffic Data)
-
-- **quelle:** Zentrales Open-Data-Portal Hessen (CKAN); u. a. „Verkehrsdaten aus dem Verkehrsleitrechner im Rohformat (Open Traffic Data)"
-- **betreiber:** Land Hessen (Hessen Digitales); Verkehrsdaten von Hessen Mobil / Kommunen (Open Traffic Data auch Darmstadt)
-- **datentyp:** Detektor-/Induktionsschleifen-Rohdaten (Zählwerte `DxxZ`, Belegung `DxxB`), 1-min-Auflösung; weitere Verkehrs-/Geodatensätze
-- **strassentyp:** überwiegend kommunal/Knotenpunkte (Open Traffic Data); je Datensatz
-- **format:** CSV (ZIP je Knoten/Monat); je Datensatz auch WFS/WMS/XML/GML/CSV
-- **apiEndpunkt:** CKAN-API des Portals (`https://opendata.hessen.de/api/3/…`) — je Datensatz Distributions-URLs (Portal teils 403 bei Bot-Fetch → im Browser/CKAN-API abfragen)
-- **update:** jährlich/laufend je Datensatz (Open Traffic Data 2022–2025 verfügbar)
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** offen (HODaG; je Datensatz dl-de/by-2-0 o. ä.)
-- **abdeckung:** Hessen (je Datensatz)
-- **zugang:** **offen**
-- **verifiziert:** ja (Portal + Open-Traffic-Data-Datensatz bestätigt)
-- **url:**
-  - Portal: `https://opendata.hessen.de/`
-  - Verkehr-Kategorie: `https://opendata.hessen.de/dataset?groups=verkehr`
-  - Open Data in Hessen: `https://opendata.hessen.de/pages/open-data-in-hessen`
-- **prio:** **P2** (Rohdaten Verkehr; für GST-Restriktionen randständig, aber als Sucheinstieg für Hessen-Mobil-Datensätze)
-- **sonstiges:** Über CKAN-API nach weiteren Hessen-Mobil-Datensätzen (Baustellen/Straßennetz/Bauwerke) suchen; Portal blockt direkte Bot-Fetches (403) → CKAN-`package_search` nutzen.
 
 > **Hessen-Hinweis VEMAGS:** Hessen Mobil betreibt das bundesweite VEMAGS-Verfahren (GST-Antragsbearbeitung). VEMAGS-INS-GST ist die offizielle Routenprüfung gegen Bauwerksrestriktionen → siehe **Bundeskatalog Quelle 4** (restricted, Zugang per Anfrage). Allgemein-Info: `https://mobil.hessen.de/verkehr/wirtschaftsverkehr/grossraum-und-schwertransporte/allgemeine-informationen-und-vemags`
 

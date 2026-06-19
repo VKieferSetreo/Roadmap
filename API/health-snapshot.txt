@@ -27,17 +27,13 @@ OK   Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS              3981 B
 OK   Länder/Brandenburg/INSPIRE-WFS-BB-Verkehrsnetze           3135 B
 OK   Länder/Brandenburg/OSM-Overpass-Brandenburg               1073 B
 LEER Länder/Bremen/ASV-Bremen-Bruecken-GST                     (Endpunkt prüfen)
-OK   Länder/Bremen/GeoPortal-Bremen-GIS-Hub-GDI-HB             2245 B
-LEER Länder/Bremen/Transparenzportal-Bremen-OpenData           (Endpunkt prüfen)
 LEER Länder/Bremen/VMZ-Bremen                                  (Endpunkt prüfen)
 OK   Länder/Hamburg/GST-Routen-Hamburg                         2911 B
 OK   Länder/Hamburg/WFS-Baustellen-Hamburg                     3592 B
 OK   Länder/Hamburg/WFS-Bedarfsumleitungen-Hamburg             2531 B
 OK   Länder/Hamburg/WFS-Brueckenbauwerke-Hamburg-LSBG          2304 B
-OK   Länder/Hessen/geoportal-hessen-inspire-verkehrsnetze      2060 B
 LEER Länder/Hessen/hessen-mobil-lastbeschraenkte-bruecken      (Endpunkt prüfen)
 LEER Länder/Hessen/hessen-mobil-positivkarten                  (Endpunkt prüfen)
-OK   Länder/Hessen/opendata-hessen                             4000 B
 OK   Länder/Mecklenburg-Vorpommern/GeoPortal-MV-INSPIRE-Verkehrsnetze 2358 B
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS 3024 B
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS 2808 B

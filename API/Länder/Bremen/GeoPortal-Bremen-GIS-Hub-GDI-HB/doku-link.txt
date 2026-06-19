@@ -1,9 +1,0 @@
-GeoPortal Bremen / GIS-Hub (GDI-HB) — Portale. Konkrete WFS/FeatureServer-Endpunkte
-je Datensatz NUR über die Portal-Layer / MetaVer auflösen (nicht per Suche enumerierbar).
-
-GeoPortal:      https://geoportal.bremen.de/geoportal/
-GIS-Hub:        https://gis-hub.bremen.de/portal/home/index.html
-GDI-FHB:        https://www.gdi.bremen.de/
-Geo Bremen:     https://www.geo.bremen.de/
-MetaVer (Katalog): https://metaver.de/
-WFS DOM5 (AdV-MIS-Metadaten): https://advmis.geodatenzentrum.de/trefferanzeige?docuuid=cca82373-c633-43dd-a833-acb044db09c3

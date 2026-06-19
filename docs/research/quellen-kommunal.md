@@ -24,8 +24,8 @@
 | **P2** | **Köln — Verkehrsbeeinträchtigungen** (offenedaten-koeln.de) | Baustellen/Events/Sperrungen, TYP-codiert | GeoJSON (EPSG:4326) | verifiziert (Doku) |
 | **P2** | **Bonn — Baustellen tagesaktuell + geplant** (opengeodata-bonn) | Baustellen mit Verkehrsrelevanz, 30d/1J | GeoJSON | **verifiziert** |
 | **P2** | **Aachen — Baustellen Stadtgebiet** (offenedaten.aachen.de) | Baustellen/Verkehrsstörungen, tagesaktuell | WFS/WMS/CSV (Punkt/Linie/Fläche) | verifiziert (Doku; CKAN tw. 502) |
-| **P2** | **RVR/Geonetzwerk Ruhr** — Baustellen (geodaten.herne.de) | Baustellen Herne/Ruhr | WFS/GeoJSON/SHP | verifiziert (Doku) |
 | **P2** | **Frankfurt — Straßenverkehrsamt/IGLZ** (offenedaten.frankfurt.de) | Baustellen/Verkehrsmeldungen → auch via Mobilithek DATEX-II | WFS/GeoJSON + DATEX-II | zu-bestätigen |
+| **P2** | **RVR/Geonetzwerk Ruhr** — Baustellen (geodaten.herne.de) | Baustellen Herne/Ruhr | WFS/GeoJSON/SHP | verifiziert (Doku) |
 | **P2** | **Dresden — Themenstadtplan/Open Data** (opendata.dresden.de) | Straßenbaustellen/Umleitungen | WFS/GeoJSON | zu-bestätigen |
 | **P2** | **Karlsruhe Geoportal — Brücken/Bauwerke** | Brücken, Bauwerke, Verkehrstechnik (eigene Kategorie!) | WFS/WMS (tlw. auf Anfrage) | zu-bestätigen |
 | **P3** | **Hannover (Region) — Geoportal/HannIT** | Geodaten/Verkehr, INSPIRE | WMS/WFS/Atom | zu-bestätigen |
@@ -33,7 +33,6 @@
 | **P3** | **Stuttgart — Open Data/Geoportal** | Verkehr/Bauen | WMS/WFS | zu-bestätigen |
 | **P3** | **Mannheim — Open Data (Opendatasoft) + Geoportal** | v.a. Verkehrszähler; Baustellen im sep. Bauportal | GeoJSON/CSV/WFS | zu-bestätigen (Baustellen) |
 | **P3** | **Bremen — Transparenzportal/GeoPortal** (Land) | Geodaten, 3D-Brücken (DOM5) | WMS/WFS | zu-bestätigen |
-| **P3** | **Wiesbaden — Geoportal/Open Data** | v.a. Bauleitplanung; Baustellen unklar offen | WMS/WFS | zu-bestätigen |
 
 ---
 
@@ -453,25 +452,6 @@
 
 ---
 
-## 19. Bremen — Transparenzportal / GeoPortal (Land + Stadt)
-
-- **quelle:** Transparenzportal Bremen (Offene Daten) + GeoPortal Bremen (Landesamt GeoInformation Bremen, LGV)
-- **betreiber:** Freie Hansestadt Bremen (Stadtstaat) / Landesamt GeoInformation Bremen
-- **datentyp:** Geobasisdaten, Fachdaten (Umwelt/Verkehr/Geo); **3D-Gebäudemodell DOM5 inkl. Brücken** (Oberflächenmodell mit Brücken/Leitungen); Routenplanung mit definierbaren Sperrflächen (Baustellen) im GeoPortal
-- **strassentyp:** innerorts (Bremen + Bremerhaven)
-- **format:** WMS, WFS (z.B. DOM5-WFS)
-- **apiEndpunkt:** **zu-bestätigen** — Portal/GeoPortal bestätigt; dedizierter offener Baustellen-WFS nicht isoliert. DOM5-WFS via AdV-MIS gelistet. → `apiEndpunkt = null` (Baustellen)
-- **update:** je Dienst
-- **auth:** keine (Open-Data-Teil)
-- **kosten:** keine (Open-Data-Geobasisdaten seit 2022 kostenfrei)
-- **lizenz:** dl-de / CC-BY je Datensatz
-- **abdeckung:** Land Bremen (Bremen + Bremerhaven)
-- **zugang:** offen
-- **verifiziert:** **zu-bestätigen**
-- **url:** `https://www.transparenz.bremen.de/...offene-daten-3588` · GeoPortal: `https://www.geo.bremen.de/online-dienste/geoportal-bremen-14419` · Open-Data-Produkte: `https://www.geo.bremen.de/produkte/open-data-produktuebersicht-15654`
-- **prio:** **P3** (als Stadtstaat ggf. eher in `quellen-laender.md`)
-- **sonstiges:** Da Stadtstaat: Überschneidung mit Länder-Recherche. DOM5 (3D inkl. Brücken) interessant für lichte-Höhe-Ableitung. GeoPortal erlaubt Sperrflächen-Routing als Feature.
-
 ---
 
 ## 20. Stuttgart — Open Data / Geoportal
@@ -495,26 +475,6 @@
 
 ---
 
-## 21. Wiesbaden — Geoportal / Open Data
-
-- **quelle:** Open Data Wiesbaden + Geoportal Wiesbaden
-- **betreiber:** Landeshauptstadt Wiesbaden
-- **datentyp:** v.a. **Bauleitplanung** als Open Data (WMS/WFS, täglich aktualisiert); Spielplätze, Grünflächen, Verkehrsplanung, geplante Bauprojekte
-- **strassentyp:** innerorts
-- **format:** WMS, WFS
-- **apiEndpunkt:** **zu-bestätigen** — Geoportal + Open-Data-Seite bestätigt; **Baustellen nicht eindeutig als offener Datensatz** nachgewiesen (Open-Data-Fokus liegt auf Bauleitplanung). → `apiEndpunkt = null`
-- **update:** Bauleitplanung-WFS täglich
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** Open Data Wiesbaden (dl-de / CC-BY)
-- **abdeckung:** Stadtgebiet Wiesbaden
-- **zugang:** offen
-- **verifiziert:** **zu-bestätigen**
-- **url:** `https://www.wiesbaden.de/leben-in-wiesbaden/stadtportraet/open-data/wi-open-data` · Geoportal: `https://geoportal.wiesbaden.de/`
-- **prio:** **P3**
-- **sonstiges:** Hessen-Muster: Stadt-Open-Data dünn (Bauleitplanung), mehr über Geoportal Hessen / hvbg.hessen.de (Open Data seit 01.02.2022) und Regionalverband FrankfurtRheinMain. Baustellen Wiesbaden ggf. nur über Geoportal/Verkehrsleitzentrale.
-
----
 
 ## 22. Essen — (Stadt + RVR-Sitz)
 

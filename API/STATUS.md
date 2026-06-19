@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **106 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **101 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (71) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (18) · ⚪ nur Portal (8)
+**Legende:** 🟢 live getestet (68) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (8)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -37,19 +37,14 @@
 | 🟡 | Brandenburg | Landesbetrieb Straßenwesen Brandenburg (LS) —  | Baustellen mit Sperrung >24h a | interaktive Web-Karte  | zu-bestätigen |
 | 🟢 | Brandenburg | OpenStreetMap via Overpass / Geofabrik-Extrakt | GST-Restriktionen — maxheight, | OSM-JSON → GeoJSON | offen |
 | 🟡 | Bremen | ASV Bremen — Amt für Straßen und Verkehr (Brüc | 502 Brücken-Bauteile + Tunnel, | Web (Bauwerksportal br | eingeschränkt |
-| 🟢 | Bremen | GeoPortal Bremen + GIS-Hub (GDI-HB) | Geobasis, Luftbilder, 3D-Bauwe | WMS, WFS (über GeoPort | offen |
-| 🟡 | Bremen | Transparenzportal Bremen — Offene Daten | Querschnitt (Umwelt, Geo, Verk | CSV/JSON/XML; Geo-Date | offen |
 | 🟡 | Bremen | VMZ Bremen (Verkehrsmanagementzentrale) | Verkehrslage, Baustellen (Über | Web-Portal; RSS-Pfad r | offen |
 | 🟢 | Hamburg | Baustellen Hamburg (stadtweit) — Verkehrsdaten | Baustellen (bis zu 50 größte B | WFS 1.1.0/2.0.0 (GML 3 | offen |
 | 🟢 | Hamburg | Großraum- und Schwertransport-Routen in Hambur | GST-Vorzugsrouten-Netz (Routen | WFS (GML/CSV/GeoJSON), | offen |
 | 🟢 | Hamburg | WFS Bedarfsumleitungen Hamburg | ausgeschilderte Notumleitungen | WFS 1.1.0/2.0.0 (GML 3 | offen |
 | 🟢 | Hamburg | WFS Brücken und sonstige Ingenieurbauwerke Ham | Straßenbrücken, Fußgängerbrück | WFS 1.1.0 / 2.0.0 (GML | offen |
-| 🟢 | Hessen | Geoportal Hessen / GDI-HE — INSPIRE-WFS Verkeh | Straßennetz-Topologie / Verkeh | OGC API Features (GeoJ | offen |
 | 📄 | Hessen | Hessen Mobil — Lastbeschränkte Brücken (B/L/K) | Lastbeschränkte Brücken (zul.  | PDF-Liste (Stand 2026- | offen |
 | ⚪ | Hessen | Hessen Mobil — Positivkarten GST (Gewichts-/Hö | GST-befahrbare Strecken nach G | PDF-Karten (je Landkre | offen |
-| 🟢 | Hessen | opendata.hessen.de — zentrales Open-Data-Porta | Detektor-/Induktionsschleifen- | CKAN-API (JSON); je Da | offen |
 | 🟡 | Hessen / Frankfurt | Frankfurt am Main — Straßenverkehrsamt / IGLZ | Baustellen, Verkehrsmeldungen, | WFS 1.1.0 (GeoServer p | offen |
-| 🟡 | Hessen / Wiesbaden | Wiesbaden — Geoportal / Open Data | v.a. Bauleitplanung (WMS/WFS,  | WMS / WFS — aber nur B | offen |
 | ⚪ | Mecklenburg-Vorpommern | "Verkehrsinformationen LS M-V" (Themenkarte) + | Verkehrsinformationen (Themenk | Portal/Themenkarte + O | offen |
 | 🟢 | Mecklenburg-Vorpommern | INSPIRE-WFS MV Verkehrsnetze ATKIS Basis-DLM + | Verkehrsnetz-Topologie (INSPIR | WFS 2.0 (GML) | offen |
 | 🟢 | Mecklenburg-Vorpommern | Klassifiziertes Straßennetz Land M-V (verkehrs | klassifiziertes Straßennetz (A | WFS / WMS | offen |
