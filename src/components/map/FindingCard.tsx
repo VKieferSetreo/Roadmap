@@ -34,7 +34,7 @@ function ReadMore({ text }: { text: string }) {
       <p
         ref={ref}
         className={cn(
-          "whitespace-pre-line text-[15px] leading-relaxed text-neutral-700",
+          "whitespace-pre-line text-xs leading-relaxed text-neutral-700",
           !open && "line-clamp-4",
         )}
       >
