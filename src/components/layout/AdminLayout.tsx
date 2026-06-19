@@ -13,7 +13,7 @@ import { useAuthStore } from "@/store/auth"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { useSettingsStore } from "@/store/settings"
-import { handleLogout, initialsFromEmail } from "@/lib/auth"
+import { avatarBg, handleLogout, initialsFromEmail } from "@/lib/auth"
 
 export function AdminLayout() {
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
@@ -68,7 +68,8 @@ export function AdminLayout() {
           triggerLabel="Profil-Menü öffnen"
           trigger={
             <span
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 ring-offset-1 transition-shadow hover:ring-2 hover:ring-primary-300"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xs font-bold text-white ring-offset-1 transition-shadow hover:ring-2 hover:ring-primary-300"
+              style={{ background: avatarBg(email) }}
               title="Profil"
             >
               {initialsFromEmail(email)}

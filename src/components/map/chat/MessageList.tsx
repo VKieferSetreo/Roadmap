@@ -7,7 +7,7 @@
 import { useEffect, useRef } from "react"
 import { Mail, Phone, UserRound } from "lucide-react"
 import { cn } from "@/lib/cn"
-import { initialsFromEmail } from "@/lib/auth"
+import { avatarBg, initialsFromEmail } from "@/lib/auth"
 import type { FindingChatMessage } from "@/types/domain"
 
 // Kompakter de-DE-Zeitstempel (Tag.Monat, Stunde:Minute) — Intl ist erlaubt.
@@ -18,29 +18,6 @@ const fmtTime = new Intl.DateTimeFormat("de-DE", {
   minute: "2-digit",
 })
 
-// Avatar-Kürzel = erste zwei Buchstaben der E-Mail (geteilter Helper, gleich wie im Profil).
-
-// Deterministische Avatar-Farbe aus E-Mail-Hash — gleiche E-Mail = gleiche Farbe.
-const AVATAR_COLORS = [
-  "bg-rose-500",
-  "bg-orange-500",
-  "bg-amber-500",
-  "bg-emerald-500",
-  "bg-teal-500",
-  "bg-sky-500",
-  "bg-indigo-500",
-  "bg-violet-500",
-  "bg-fuchsia-500",
-  "bg-pink-500",
-]
-
-function avatarColor(email: string): string {
-  let h = 0
-  for (let i = 0; i < email.length; i++) {
-    h = (h * 31 + email.charCodeAt(i)) | 0
-  }
-  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length]
-}
 
 export function MessageList({
   messages,
@@ -86,10 +63,8 @@ export function MessageList({
             {/* Avatar mit Hover-Profil-Popover */}
             <div className="group relative shrink-0">
               <div
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-semibold text-white",
-                  avatarColor(m.authorEmail),
-                )}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                style={{ background: avatarBg(m.authorEmail) }}
               >
                 {initialsFromEmail(m.authorEmail)}
               </div>
