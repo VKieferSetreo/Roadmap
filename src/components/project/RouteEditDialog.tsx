@@ -1,6 +1,7 @@
-// Strecken-Editor (T-197). Vollbild-Maske aus "Bearbeiten" einer Strecke:
+// Strecken-Editor (T-197). Zentrierte Maske (Rest abgedunkelt) aus "Bearbeiten" einer Strecke:
 //  • oben Name editierbar, darunter die echte Strecke auf der Karte mit Wegpunkten
-//  • Wegpunkte ziehen → OSRM rechnet den Straßenweg live neu (debounced)
+//  • GUMMIBAND: beliebigen Punkt der Linie greifen und ziehen → an der Stelle entsteht ein
+//    Wegpunkt, der live mitzieht; OSRM rechnet den Straßenweg neu (debounced).
 //  • Wegpunkte fixieren (Pin = vor Verschieben/Löschen geschützt, MUSS durchfahren werden)
 //  • Klick auf die Karte fügt einen Wegpunkt ein; Speichern → Auswertung läuft neu.
 // Der Export (Datei/Google-Link) ist aus route.points abgeleitet → bleibt nach Save konsistent.
@@ -42,6 +43,23 @@ function deriveControlPoints(points: RoutePoint[]): ControlPoint[] {
   return out
 }
 
+/** Einfügeindex im Segment, dessen Mittelpunkt dem Punkt p am nächsten liegt. */
+function bestInsertIndex(cps: ControlPoint[], p: RoutePoint): number {
+  if (cps.length < 2) return cps.length
+  let bestIdx = 1
+  let bestD = Infinity
+  for (let i = 0; i < cps.length - 1; i++) {
+    const mx = (cps[i].lat + cps[i + 1].lat) / 2
+    const my = (cps[i].lng + cps[i + 1].lng) / 2
+    const d = (mx - p.lat) ** 2 + (my - p.lng) ** 2
+    if (d < bestD) {
+      bestD = d
+      bestIdx = i + 1
+    }
+  }
+  return bestIdx
+}
+
 const cpIcon = (pinned: boolean, isEnd: boolean) =>
   L.divIcon({
     className: "",
@@ -60,10 +78,14 @@ function FitOnce({ points }: { points: RoutePoint[] }) {
   useEffect(() => {
     if (done.current || points.length < 2) return
     done.current = true
-    map.fitBounds(
-      points.map((p) => [p.lat, p.lng] as [number, number]),
-      { padding: [40, 40] },
-    )
+    // In der Maske ist die Karte erst nach Layout korrekt vermessen.
+    setTimeout(() => {
+      map.invalidateSize()
+      map.fitBounds(
+        points.map((p) => [p.lat, p.lng] as [number, number]),
+        { padding: [40, 40] },
+      )
+    }, 60)
   }, [map, points])
   return null
 }
@@ -92,6 +114,8 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   const [routing, setRouting] = useState(false)
   const [touched, setTouched] = useState(false)
   const initialPoints = useRef<RoutePoint[]>([])
+  const mapRef = useRef<L.Map | null>(null)
+  const dragIdxRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!open || !route) return
@@ -121,7 +145,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       } finally {
         if (!cancelled) setRouting(false)
       }
-    }, 450)
+    }, 300)
     return () => {
       cancelled = true
       clearTimeout(t)
@@ -156,22 +180,50 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     }
     setCps((prev) => {
       if (prev.length < 2) return [...prev, { ...p, pinned: false }]
-      let bestIdx = 1
-      let bestD = Infinity
-      for (let i = 0; i < prev.length - 1; i++) {
-        const mx = (prev[i].lat + prev[i + 1].lat) / 2
-        const my = (prev[i].lng + prev[i + 1].lng) / 2
-        const d = (mx - p.lat) ** 2 + (my - p.lng) ** 2
-        if (d < bestD) {
-          bestD = d
-          bestIdx = i + 1
-        }
-      }
       const next = [...prev]
-      next.splice(bestIdx, 0, { ...p, pinned: false })
+      next.splice(bestInsertIndex(prev, p), 0, { ...p, pinned: false })
       return next
     })
     setTouched(true)
+  }
+
+  // GUMMIBAND: an beliebiger Stelle der Linie greifen → dort Wegpunkt einfügen und live
+  // mit dem Cursor ziehen. Karte-Pan währenddessen aus; OSRM rechnet (debounced) neu.
+  const onLineGrab = (e: L.LeafletMouseEvent) => {
+    const map = mapRef.current
+    if (!map) return
+    if (cps.length >= MAX_CP) {
+      toast.error(`Maximal ${MAX_CP} Wegpunkte.`)
+      return
+    }
+    L.DomEvent.stop(e.originalEvent)
+    map.dragging.disable()
+    const p = { lat: e.latlng.lat, lng: e.latlng.lng }
+    const idx = bestInsertIndex(cps, p)
+    dragIdxRef.current = idx
+    setCps((prev) => {
+      const next = [...prev]
+      next.splice(idx, 0, { ...p, pinned: false })
+      return next
+    })
+    setTouched(true)
+    const onMove = (ev: L.LeafletMouseEvent) => {
+      const di = dragIdxRef.current
+      if (di == null) return
+      setCps((prev) =>
+        prev.map((c, i) => (i === di ? { ...c, lat: ev.latlng.lat, lng: ev.latlng.lng } : c)),
+      )
+    }
+    const onUp = () => {
+      map.off("mousemove", onMove)
+      map.off("mouseup", onUp)
+      window.removeEventListener("mouseup", onUp)
+      map.dragging.enable()
+      dragIdxRef.current = null
+    }
+    map.on("mousemove", onMove)
+    map.on("mouseup", onUp)
+    window.addEventListener("mouseup", onUp) // Fallback, falls außerhalb der Karte losgelassen
   }
 
   const save = () => {
@@ -183,7 +235,12 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   }
 
   return (
-    <div className="fixed inset-0 z-[2000] flex flex-col bg-white">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 sm:p-6">
+      {/* abgedunkelter Rest — Klick schließt */}
+      <div className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]" onClick={onClose} />
+
+      {/* zentrierte Maske */}
+      <div className="relative flex h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-overlay">
       {/* Kopf: Name + Aktionen */}
       <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3">
         <div className="flex-1">
@@ -211,12 +268,22 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
 
       {/* Karte + Wegpunkt-Liste */}
       <div className="relative flex-1">
-        <MapContainer className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
+        <MapContainer ref={mapRef} className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
           <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
           <FitOnce points={initialPoints.current} />
           <ClickToAdd onAdd={addCp} />
           {geometry.length >= 2 ? (
-            <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
+            <>
+              {/* sichtbare Linie (nicht interaktiv) */}
+              <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
+              {/* breite, durchsichtige Greif-Linie fürs Gummiband (mousedown = ziehen) */}
+              <Polyline
+                positions={geometry.map((p) => [p.lat, p.lng])}
+                pathOptions={{ color: "#000", weight: 18, opacity: 0, className: "cursor-grab" }}
+                smoothFactor={0}
+                eventHandlers={{ mousedown: onLineGrab }}
+              />
+            </>
           ) : null}
           {cps.map((c, i) => {
             const isEnd = i === 0 || i === cps.length - 1
@@ -272,9 +339,11 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
             })}
           </ul>
           <p className="border-t border-neutral-200 px-3 py-2 text-[11px] leading-snug text-neutral-400">
-            Punkt ziehen verschiebt die Strecke. Klick auf die Karte fügt einen Wegpunkt ein.
+            Linie an beliebiger Stelle greifen und ziehen — der Punkt zieht mit (Gummiband).
+            Klick auf die Karte fügt einen Wegpunkt ein.
           </p>
         </div>
+      </div>
       </div>
     </div>
   )
