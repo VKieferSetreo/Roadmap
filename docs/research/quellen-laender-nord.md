@@ -381,30 +381,6 @@
 - **prio:** P2
 - **sonstiges:** Baustellen-Viewer im DANord ist die SH-Entsprechung zum Verkehrsportal. WMS-Geobasis als Kartenhintergrund. LBVSH-Baustellenseite: `https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LBVSH/Service/Baustellen`.
 
-## 4.5 GDI-SH Geoportal / OpenGBD (LVermGeo SH)
-
-- **quelle:** GDI-SH Geoportal + Portal Offene Geobasisdaten (OpenGBD) + SH-Downloadportal
-- **betreiber:** LVermGeo SH
-- **datentyp:** Geobasis (DTK, ALKIS, DGM/DOM), INSPIRE-Verkehrsnetze; Einstieg zu Fachdiensten
-- **strassentyp:** Alle (Geobasis/INSPIRE)
-- **format:** WMS, WFS, ATKIS/Downloaddienste
-- **apiEndpunkt (verifiziert):**
-  - GDI-SH: `https://www.gdi-sh.de/DE/home`
-  - OpenGBD (Metadatensatz): `https://gdk.gdi-de.org/geonetwork/srv/api/records/bd619e97-e584-4442-a796-acaecdac260b`
-  - Downloadportal: `https://geodaten.schleswig-holstein.de/gaialight-sh/_apps/dladownload/index.php`
-  - INSPIRE WFS Verkehrsnetze kommunal: `https://inspire-geoportal.ec.europa.eu/srv/api/records/e225cd41-d3f2-46d4-850b-359e90771804`
-  - OpenData-WFS-Liste: `https://opendata.schleswig-holstein.de/dataset?res_format=wfs`
-- **update:** laufend
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** CC BY 4.0
-- **abdeckung:** Schleswig-Holstein
-- **zugang:** offen
-- **verifiziert:** ja (Portale) / einzelne Endpunkte zu-bestätigen
-- **url:** `https://www.gdi-sh.de/`
-- **prio:** P2
-- **sonstiges:** INSPIRE WFS „Verkehrsnetze kommunal" liefert Knoten-Kanten-Modell kommunaler Straßen (Kreis-/Gemeindestraßen) — ergänzt 4.1 (das primär A/B/L abdeckt).
-
 ---
 
 ## Anhang A — Offene Lücken / Klärungsbedarf
@@ -425,6 +401,6 @@
 ## Anhang B — Verifikations-Notizen
 
 - **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`), NI NLStBV INSPIRE WMS (Layer), SH Straßeninfo-WFS (`Strasseninfo:Strassennetz`/`Netzknoten`).
-- **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, SH OpenGBD/DANord, NI OpenGeoData Hub.
+- **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, SH DANord, NI OpenGeoData Hub.
 - **Gated/blockiert:** NWSIB-online (Login), Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
 - **Casing-Hinweis:** Hamburg geodienste-Pfade sind teils case-sensitive (`hh_wfs_baustellen` lowercase vs. `HH_WFS_Brueckenbauwerke` mixed) — exakte Schreibweise aus Metadaten übernehmen.
