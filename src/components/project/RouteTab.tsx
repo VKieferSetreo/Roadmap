@@ -12,6 +12,7 @@ import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { DropZone } from "@/components/upload/DropZone"
 import { PlaceAutocomplete } from "./PlaceAutocomplete"
 import { RoutePreview } from "./RoutePreview"
+import { RouteEditDialog } from "./RouteEditDialog"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
 import { useProjectStore } from "@/store/projects"
@@ -62,12 +63,11 @@ function RouteDownloadMenu({ route }: { route: ProjectRoute }) {
 export function RouteTab({ project }: { project: Project }) {
   const addRoute = useProjectStore((s) => s.addRoute)
   const removeRoute = useProjectStore((s) => s.removeRoute)
-  const renameRoute = useProjectStore((s) => s.renameRoute)
   const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
 
   const [tab, setTab] = useState<RouteSource>("datei")
-  const [editRouteId, setEditRouteId] = useState<string | null>(null)
-  const [editName, setEditName] = useState("")
+  /** Strecke im Editor (T-197), null = geschlossen. */
+  const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
   const [linkUrl, setLinkUrl] = useState("")
   const [linkBusy, setLinkBusy] = useState(false)
   const [szStart, setSzStart] = useState("")
@@ -151,10 +151,6 @@ export function RouteTab({ project }: { project: Project }) {
     }
   }
 
-  const commitRename = () => {
-    if (editRouteId && editName.trim()) renameRoute(project.id, editRouteId, editName.trim())
-    setEditRouteId(null)
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
@@ -294,21 +290,7 @@ export function RouteTab({ project }: { project: Project }) {
                     aria-hidden
                   />
                   <div className="min-w-0 flex-1">
-                    {editRouteId === r.id ? (
-                      <Input
-                        autoFocus
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        onBlur={commitRename}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") commitRename()
-                          if (e.key === "Escape") setEditRouteId(null)
-                        }}
-                        className="h-7 text-sm"
-                      />
-                    ) : (
-                      <p className="truncate text-sm font-medium text-neutral-800">{r.name}</p>
-                    )}
+                    <p className="truncate text-sm font-medium text-neutral-800">{r.name}</p>
                     <p className="truncate text-xs tabular-nums text-neutral-400">
                       {SOURCE_LABEL[r.source ?? "datei"]} · {r.fileName ? `${r.fileName} · ` : ""}
                       {r.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}
@@ -318,15 +300,13 @@ export function RouteTab({ project }: { project: Project }) {
                   <RouteDownloadMenu route={r} />
                   <button
                     type="button"
-                    onClick={() => {
-                      setEditRouteId(r.id)
-                      setEditName(r.name)
-                    }}
-                    aria-label={`Strecke ${r.name} umbenennen`}
+                    onClick={() => setEditRoute(r)}
+                    aria-label={`Strecke ${r.name} bearbeiten`}
+                    title="Bearbeiten: Wegpunkte, Verlauf und Name"
                     disabled={running}
-                    className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                    className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil className="h-3.5 w-3.5" /> Bearbeiten
                   </button>
                   <button
                     type="button"
@@ -381,6 +361,14 @@ export function RouteTab({ project }: { project: Project }) {
           </div>
         </Dialog>
       ) : null}
+
+      {/* Strecken-Editor (T-197): Wegpunkte ziehen/fixieren, live OSRM, Speichern → Re-Auswertung. */}
+      <RouteEditDialog
+        open={!!editRoute}
+        route={editRoute}
+        projectId={project.id}
+        onClose={() => setEditRoute(null)}
+      />
     </div>
   )
 }
