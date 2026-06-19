@@ -50,23 +50,13 @@ export function ProjectDetail() {
         <Tabs
           value={tab}
           onValueChange={(v) => navigate(`/projekte/${project.id}/${v}`)}
-          className="mt-3"
+          className="mt-2"
         >
           <TabsList>
             {TABS.map((t) => (
               <TabsTrigger key={t.slug} value={t.slug}>
                 <t.icon className="h-4 w-4" />
                 {t.label}
-                {t.slug === "dashboard" && project.findings.length > 0 ? (
-                  <span className="ml-0.5 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-neutral-600">
-                    {project.findings.length}
-                  </span>
-                ) : null}
-                {t.slug === "route" && project.routes.length > 0 ? (
-                  <span className="ml-0.5 rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-neutral-600">
-                    {project.routes.length}
-                  </span>
-                ) : null}
               </TabsTrigger>
             ))}
           </TabsList>

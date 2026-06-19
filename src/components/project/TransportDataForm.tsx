@@ -61,9 +61,6 @@ export function TransportDataForm({ value, onChange, disabled }: TransportDataFo
           className="tabular-nums"
         />
       </div>
-      <p className="col-span-2 text-xs text-neutral-500 sm:col-span-4">
-        Leere Felder gelten als „nicht angegeben" und werden in der Auswertung nicht geprüft.
-      </p>
     </div>
   )
 }
