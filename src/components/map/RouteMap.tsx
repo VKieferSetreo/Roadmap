@@ -132,6 +132,7 @@ export function RouteMap({
           <Polyline
             key={`bg-${r.id}`}
             positions={r.positions}
+            smoothFactor={0}
             pathOptions={{ color: "#ffffff", weight: 9, opacity: 0.9 }}
           />
         ))}
@@ -139,6 +140,7 @@ export function RouteMap({
           <Polyline
             key={`line-${r.id}`}
             positions={r.positions}
+            smoothFactor={0}
             pathOptions={{ color: r.farbe, weight: 5, opacity: 1 }}
           />
         ))}
@@ -146,6 +148,7 @@ export function RouteMap({
           <Polyline
             key={`flow-${r.id}`}
             positions={r.positions}
+            smoothFactor={0}
             pathOptions={{
               color: "#ffffff",
               weight: 2,
@@ -164,6 +167,7 @@ export function RouteMap({
               <Polyline
                 key={`hit-${r.id}`}
                 positions={r.positions}
+                smoothFactor={0}
                 pathOptions={{
                   color: "#000000",
                   weight: 20,
