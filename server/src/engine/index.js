@@ -71,7 +71,35 @@ export function dedupeFindings(findings) {
     if (fr > dr || (fr === dr && f.geom && !dup.geom)) Object.assign(dup, f, { __key: key })
   }
   // eslint-disable-next-line no-unused-vars
-  return kept.map(({ __key, ...f }) => f)
+  const same = kept.map(({ __key, ...f }) => f)
+  return dropCrossSourceDuplicates(same)
+}
+
+// Quellenübergreifende Dubletten: dieselbe Maßnahme aus ZWEI externen Quellen (z.B. Autobahn-Live
+// + BAB-AkD-Planung über Mobilithek) erscheint doppelt — gleiche Route+Kategorie, km ≤ DUP_KM,
+// aber unterschiedliche Quelle und meist unterschiedlicher Titel (greift der Titel-Dedup oben NICHT).
+// Regel (Max 2026-06-19): den schwächeren Fund droppen, den KRITISCHEREN behalten. Gleich-schwere
+// bleiben beide (könnten zwei Fahrtrichtungen oder echte Doppelmaßnahmen sein). Eigene Einträge
+// (herkunft 'eigen') werden NIE automatisch gedroppt.
+function dropCrossSourceDuplicates(findings) {
+  const drop = new Set()
+  for (const f of findings) {
+    if (f.herkunft === "eigen" || drop.has(f)) continue
+    for (const g of findings) {
+      if (g === f || g.herkunft === "eigen" || drop.has(g)) continue
+      if (f.routeId !== g.routeId || f.kategorie !== g.kategorie) continue
+      if (Math.abs(f.km - g.km) > DUP_KM) continue
+      if (normName(f.quelle?.name) === normName(g.quelle?.name)) continue // gleiche Quelle → behalten
+      const rf = SEV_RANK[f.severity] ?? 0
+      const rg = SEV_RANK[g.severity] ?? 0
+      if (rf < rg) {
+        drop.add(f)
+        break
+      }
+      if (rg < rf) drop.add(g)
+    }
+  }
+  return findings.filter((x) => !drop.has(x))
 }
 
 /** Analysierbare Routen: nur die mit ≥2 validen Punkten (Geometrie = points). */
@@ -169,6 +197,7 @@ export async function analyze({ db, project, corridorM }) {
         gueltigBis: obstacle.gueltigBis,
         quelle: obstacle.quelle,
         zustaendig: obstacle.zustaendig,
+        herkunft: obstacle.herkunft, // 'global'|'eigen' — nur für Dedup (nicht persistiert)
       })
     }
   }

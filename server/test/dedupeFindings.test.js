@@ -54,4 +54,37 @@ describe("dedupeFindings", () => {
     const out = dedupeFindings([f({ titel: "B10  Kriegsstraße  zw. A und B" }), f({ titel: "b10 kriegsstraße zw. a und b", km: 10.1 })])
     expect(out).toHaveLength(1)
   })
+
+  it("Cross-Source: gleiche Maßnahme aus zwei Quellen (versch. Titel) → nur den kritischeren behalten", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A61 Arbeiten an Schutzeinrichtungen 1233", severity: "hinweis", quelle: { name: "Autobahn GmbH" } }),
+      f({ km: 28.35, titel: "A61 von MG-Güdderath nach MG-Wickrath", severity: "warnung", quelle: { name: "BAB AkD — Planung (Autobahn GmbH)" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("warnung")
+  })
+
+  it("Cross-Source gleich-schwer → beide bleiben (z.B. zwei Fahrtrichtungen)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A61 Quelle X", severity: "warnung", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "A61 Quelle Y", severity: "warnung", quelle: { name: "Quelle Y" } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+
+  it("Cross-Source: eigener Eintrag (herkunft 'eigen') wird NIE gedroppt", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A61 eigene Notiz", severity: "hinweis", herkunft: "eigen", quelle: { name: "Eigener Eintrag" } }),
+      f({ km: 28.35, titel: "A61 Autobahn", severity: "kritisch", quelle: { name: "Autobahn GmbH" } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+
+  it("gleiche Quelle, versch. Titel, gleicher km → bleiben getrennt (kein Cross-Source-Drop)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "Maßnahme A", severity: "hinweis", quelle: { name: "Autobahn GmbH" } }),
+      f({ km: 28.35, titel: "Maßnahme B", severity: "warnung", quelle: { name: "Autobahn GmbH" } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
 })

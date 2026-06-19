@@ -8,7 +8,7 @@ import { diffFindings, rerunAffectedProjects } from "../src/engine/rerunAll.js"
 import { expireObstacles } from "../src/worker/hygiene.js"
 import { runImport } from "../src/worker/importer.js"
 import { createFakeDb } from "./helpers/fakeDb.js"
-import { cityPoints, createRoutedProject, jsonResponse, makeApp, midOf } from "./helpers/testApp.js"
+import { cityPoints, createProject, createRoutedProject, jsonResponse, makeApp, midOf } from "./helpers/testApp.js"
 
 const quiet = () => {}
 const isoDaysAgo = (n) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10)
@@ -137,8 +137,9 @@ describe("Notifications-API", () => {
     const n1 = randomUUID()
     const n2 = randomUUID()
     const base = { tenant_id: tenant.id, created_at: new Date().toISOString(), read_at: null }
+    // System-Mitteilungen (project_id null) sind unabhängig vom Scope sichtbar.
     db.state.notifications.push(
-      { ...base, id: n1, typ: "neu", severity: "kritisch", titel: "Fund A", project_id: "p1", projekt_name: "P" },
+      { ...base, id: n1, typ: "neu", severity: "kritisch", titel: "Fund A" },
       { ...base, id: n2, typ: "weggefallen", severity: "info", titel: "Fund B" },
     )
 
@@ -161,6 +162,19 @@ describe("Notifications-API", () => {
     })
     const list = await request(app).get("/api/notifications")
     expect(list.body.notifications).toHaveLength(0)
+  })
+
+  it("Scope 'eigene' (#10): nur eigene Projekte + System sichtbar, fremdes Projekt versteckt", async () => {
+    const { app, db, tenant } = makeApp()
+    const eigen = await createProject(app, "Mein Projekt") // created_by = dev@local (Test-Identität)
+    const base = { tenant_id: tenant.id, created_at: new Date().toISOString(), read_at: null }
+    db.state.notifications.push(
+      { ...base, id: randomUUID(), typ: "neu", titel: "Eigenes", project_id: eigen.id },
+      { ...base, id: randomUUID(), typ: "neu", titel: "Fremdes Projekt", project_id: randomUUID() },
+      { ...base, id: randomUUID(), typ: "weggefallen", titel: "System" }, // project_id null
+    )
+    const list = await request(app).get("/api/notifications")
+    expect(list.body.notifications.map((n) => n.titel).sort()).toEqual(["Eigenes", "System"])
   })
 })
 

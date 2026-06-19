@@ -761,17 +761,26 @@ export function createFakeDb() {
       state.notifications.push(row)
       return ok([row])
     }
-    if (sql.startsWith("SELECT * FROM notifications WHERE tenant_id = $1 ORDER BY created_at DESC")) {
+    // Scope-Filter (#10): $1 = email, $2 = tenantId. Default-Scope 'eigene' (kein mail_prefs im
+    // Mock) → sichtbar nur System-Mitteilungen (project_id null) ODER eigene Projekte (created_by).
+    const sichtbarImScope = (n, email) =>
+      n.project_id == null ||
+      state.projects.some((p) => p.id === n.project_id && p.created_by === email)
+    if (sql.startsWith("SELECT n.* FROM notifications n")) {
+      const [email, tenantId] = params
       return ok(
         state.notifications
-          .filter((n) => n.tenant_id === params[0])
+          .filter((n) => n.tenant_id === tenantId && sichtbarImScope(n, email))
           .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
           .slice(0, 100),
       )
     }
-    if (sql.startsWith("SELECT count(*)::int AS n FROM notifications WHERE tenant_id = $1 AND read_at IS NULL")) {
+    if (sql.startsWith("SELECT count(*)::int AS n FROM notifications n")) {
+      const [email, tenantId] = params
       return ok([{
-        n: state.notifications.filter((n) => n.tenant_id === params[0] && n.read_at == null).length,
+        n: state.notifications.filter(
+          (n) => n.tenant_id === tenantId && n.read_at == null && sichtbarImScope(n, email),
+        ).length,
       }])
     }
     if (sql.startsWith("UPDATE notifications SET read_at = now() WHERE id = $1 AND tenant_id = $2")) {
