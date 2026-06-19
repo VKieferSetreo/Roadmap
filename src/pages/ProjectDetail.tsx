@@ -52,10 +52,9 @@ export function ProjectDetail() {
           onValueChange={(v) => navigate(`/projekte/${project.id}/${v}`)}
           className="mt-2"
         >
-          {/* inline-grid + auto-cols-fr → alle Tabs gleich breit = breitester (Dashboard) */}
-          <TabsList className="inline-grid grid-flow-col auto-cols-fr">
+          <TabsList>
             {TABS.map((t) => (
-              <TabsTrigger key={t.slug} value={t.slug} className="w-full justify-start">
+              <TabsTrigger key={t.slug} value={t.slug}>
                 <t.icon className="h-4 w-4" />
                 {t.label}
               </TabsTrigger>
