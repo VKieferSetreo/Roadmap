@@ -1,7 +1,7 @@
 // Leaflet-Karte mit Route-Polyline + Form+Farb-codierten Fund-Markern.
 // Form = Kategorie-Gruppe (Bauwerk, Physik, Baustelle, Verkehr), Farbe = Severity.
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
@@ -49,6 +49,9 @@ interface RouteMapProps {
   /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
   focusPoint?: { lat: number; lng: number; nonce: number } | null
   className?: string
+  /** Overlays (Suche, Panels, Zeitstrahl) — liegen IM Karten-Wrapper, damit sie auch
+   *  im Vollbild sichtbar bleiben (T-198). */
+  children?: ReactNode
 }
 
 export function RouteMap({
@@ -61,6 +64,7 @@ export function RouteMap({
   onHide,
   focusPoint,
   className,
+  children,
 }: RouteMapProps) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const autoFit = useSettingsStore((s) => s.autoFit)
@@ -310,6 +314,9 @@ export function RouteMap({
           </button>
         </div>
       </div>
+
+      {/* Caller-Overlays (Suche, Daten-Panels, Zeitstrahl) — im Wrapper, also auch im Vollbild sichtbar. */}
+      {children}
     </div>
   )
 }

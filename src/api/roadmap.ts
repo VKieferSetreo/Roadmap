@@ -288,6 +288,9 @@ export const api = {
     /** Google-Maps-Link → Wegpunkte → Strecke. */
     maps: (url: string) =>
       axiosClient<RouteResult>({ url: "/route/maps", method: "POST", data: { url } }),
+    /** Wegpunkt-Koordinaten → gesnappte Strecke (Strecken-Editor, Live-Routing beim Ziehen). */
+    waypoints: (points: RoutePoint[]) =>
+      axiosClient<RouteResult>({ url: "/route/waypoints", method: "POST", data: { points } }),
   },
 
   // ── Nachrichtenzentrum / Glocke ────────────────────────────────────────────

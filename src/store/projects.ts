@@ -59,6 +59,8 @@ interface ProjectStore {
   addRoute: (id: string, route: Omit<ProjectRoute, "id" | "farbe">) => void
   removeRoute: (id: string, routeId: string) => void
   renameRoute: (id: string, routeId: string, name: string) => void
+  /** Strecke editieren (Name und/oder Geometrie) — Strecken-Editor. */
+  updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points">>) => void
 
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
@@ -329,6 +331,21 @@ export const useProjectStore = create<ProjectStore>()(
               ? {
                   ...p,
                   routes: p.routes.map((r) => (r.id === routeId ? { ...r, name } : r)),
+                  updatedAt: now(),
+                }
+              : p,
+          ),
+        }))
+        scheduleSync(id, get)
+      },
+
+      updateRoute: (id, routeId, patch) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  routes: p.routes.map((r) => (r.id === routeId ? { ...r, ...patch } : r)),
                   updatedAt: now(),
                 }
               : p,

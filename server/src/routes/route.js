@@ -28,6 +28,19 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
     })
   }))
 
+  /** Wegpunkt-Koordinaten (≥2 {lat,lng}) → gesnappte Strecke. Für den Strecken-Editor:
+   *  Punkt ziehen/einfügen/löschen → OSRM rechnet den Straßenweg live neu (Cache via routeKey). */
+  r.post("/waypoints", asyncHandler(async (req, res) => {
+    const points = Array.isArray(req.body?.points) ? req.body.points : []
+    const out = await routeWaypoints(db, points, { osrm }, { geocoder: "manual" })
+    res.json({
+      points: out.geometry,
+      distanzKm: out.distanzKm,
+      dauerMin: out.dauerMin ?? null,
+      provider: out.provider,
+    })
+  }))
+
   /** Google-Maps-Link → Wegpunkte (server-seitig aufgelöst) → Strecke. */
   r.post("/maps", asyncHandler(async (req, res) => {
     const url = typeof req.body?.url === "string" ? req.body.url.trim() : ""

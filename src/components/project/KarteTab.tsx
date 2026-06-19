@@ -12,24 +12,36 @@ import {
   Filter,
   Layers,
   MapPinned,
+  Pencil,
   Route as RouteIcon,
   Search,
   X,
 } from "lucide-react"
 import { RouteMap } from "@/components/map/RouteMap"
+import { MapTimeline } from "@/components/map/MapTimeline"
 import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { ObstacleDialog } from "./ObstacleDialog"
 import { HideReasonDialog } from "./HideReasonDialog"
+import { RouteEditDialog } from "./RouteEditDialog"
 import { katMeta, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
-import type { Finding, FindingSeverity, Project, RoutePoint } from "@/types/domain"
+import type { Finding, FindingSeverity, Project, ProjectRoute, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
+
+/** Ist der Fund im gewählten Zeitfenster aktiv? Funde ohne Gültigkeit gelten als permanent
+ *  und bleiben immer sichtbar (T-198). [start,end] in ms; bis-Datum inkl. ganzem Tag. */
+function findingInTime(f: Finding, start: number, end: number): boolean {
+  if (!f.gueltigVon && !f.gueltigBis) return true
+  const von = f.gueltigVon ? Date.parse(f.gueltigVon) : -Infinity
+  const bis = f.gueltigBis ? Date.parse(f.gueltigBis) + 86_399_000 : Infinity
+  return von <= end && bis >= start
+}
 
 /** Snap des Karten-Klicks auf den nächstgelegenen Streckenpunkt (Haversine, km). */
 function snapToRoutes(
@@ -70,6 +82,8 @@ export function KarteTab({
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [layersOpen, setLayersOpen] = useState(false)
+  /** Strecke im Editor (T-197), null = geschlossen. */
+  const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
   /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. Beide standardmäßig EINGEKLAPPT. */
   const [katOpen, setKatOpen] = useState(false)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
@@ -96,13 +110,18 @@ export function KarteTab({
   const ausgeblendetN = useMemo(() => project.findings.filter((f) => f.hidden).length, [project.findings])
   // Kategorie-Filter (oben rechts) angewandt → nur das landet auf der Karte + in der Suche.
   // kategoriesOnRoute (Filter-Liste) bleibt aus sichtbareFindings → alle Kategorien immer wählbar.
-  const gefilterteFindings = useMemo(
-    () =>
+  /** Zeitfenster aus dem Karten-Zeitstrahl (ms) — null = kein Zeitfilter. */
+  const [timeWin, setTimeWin] = useState<{ start: number; end: number } | null>(null)
+  const zeitstrahlAktiv =
+    Boolean(project.zeitraum?.von && project.zeitraum?.bis) &&
+    Date.parse(project.zeitraum.bis!) > Date.parse(project.zeitraum.von!)
+  const gefilterteFindings = useMemo(() => {
+    const base =
       katHidden.size === 0 && severityHidden.size === 0
         ? sichtbareFindings
-        : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie) && !severityHidden.has(f.severity)),
-    [sichtbareFindings, katHidden, severityHidden],
-  )
+        : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie) && !severityHidden.has(f.severity))
+    return timeWin ? base.filter((f) => findingInTime(f, timeWin.start, timeWin.end)) : base
+  }, [sichtbareFindings, katHidden, severityHidden, timeWin])
 
   // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
   const [suche, setSuche] = useState("")
@@ -238,7 +257,7 @@ export function KarteTab({
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
         onHide={canHide ? (f) => setHideTarget(f) : undefined}
         focusPoint={focusPoint}
-      />
+      >
 
       {/* Ticket-Suche — oben links, durchsucht alle sichtbaren Funde (Titel/Text/km/Quelle/Details). */}
       <div className="absolute left-3 top-3 z-[1100] w-[min(92%,520px)]">
@@ -377,13 +396,14 @@ export function KarteTab({
               {project.routes.map((r) => {
                 const sichtbar = !hidden.has(r.id)
                 return (
-                  <li key={r.id}>
-                    <label
-                      className={cn(
-                        "flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 transition-colors hover:bg-neutral-100/70",
-                        !sichtbar && "opacity-55",
-                      )}
-                    >
+                  <li
+                    key={r.id}
+                    className={cn(
+                      "flex items-center gap-1 rounded-md transition-colors hover:bg-neutral-100/70",
+                      !sichtbar && "opacity-55",
+                    )}
+                  >
+                    <label className="flex flex-1 cursor-pointer items-center gap-2 px-1.5 py-1.5">
                       <input
                         type="checkbox"
                         checked={sichtbar}
@@ -403,6 +423,14 @@ export function KarteTab({
                         {routeLengthKm(r.points).toLocaleString("de-DE")} km
                       </span>
                     </label>
+                    <button
+                      onClick={() => setEditRoute(r)}
+                      title="Strecke bearbeiten"
+                      aria-label={`Strecke ${r.name} bearbeiten`}
+                      className="mr-1 shrink-0 rounded p-1 text-neutral-400 hover:bg-neutral-200/70 hover:text-neutral-700"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
                   </li>
                 )
               })}
@@ -485,6 +513,16 @@ export function KarteTab({
         {overlayFooter}
       </div>
 
+      {/* Zeitstrahl (T-198) — unten in der Karte, filtert Funde nach Transport-Zeitraum. */}
+      {zeitstrahlAktiv ? (
+        <MapTimeline
+          von={project.zeitraum.von!}
+          bis={project.zeitraum.bis!}
+          onWindowChange={setTimeWin}
+        />
+      ) : null}
+      </RouteMap>
+
       {/* Formular für den Kunden-Eintrag (gesnappte Position) */}
       <ObstacleDialog
         position={addPosition}
@@ -506,6 +544,14 @@ export function KarteTab({
           onConfirm={(grund, grundText) => hideFinding(project.id, hideTarget, grund, grundText)}
         />
       ) : null}
+
+      {/* Strecken-Editor (T-197): Wegpunkte ziehen/fixieren → live OSRM → Speichern re-analysiert. */}
+      <RouteEditDialog
+        open={!!editRoute}
+        route={editRoute}
+        projectId={project.id}
+        onClose={() => setEditRoute(null)}
+      />
     </div>
   )
 }
