@@ -90,15 +90,18 @@ export function FindingCard({
 }: FindingCardProps) {
   const meta = SEVERITY_META[severity]
   return (
-    <div>
-      {/* 1. Schild (ohne Kasten, groß, an der Überschrift ausgerichtet) + Titel/Untertitel */}
-      {/* Schild mittig zur Titelzeile (items-center). Untertitel direkt darunter, mit dem
-          Titel-Text bündig eingerückt (pl-12 = Schildbreite h-9/w-9 + gap-3), darf umbrechen. */}
+    <div className="fcard">
+      {/* 1. Schild (ohne Kasten, groß) mittig zum Titel+Untertitel-Block. Untertitel direkt
+          unter dem Titel — minimaler Abstand (leading-tight, kein margin), darf umbrechen. */}
       <div className="flex items-center gap-3">
         <KategorieGlyph kategorie={kategorie} signKey={signKey} className="h-9 w-9 shrink-0" />
-        <p className="min-w-0 text-[15px] font-semibold leading-snug text-neutral-900">{titel}</p>
+        {/* gap statt p-margin: Leaflet überschreibt p-margins im Popup (höhere Spezifität),
+            der Flex-gap nicht — so bleibt der Mini-Abstand zuverlässig erhalten. */}
+        <div className="flex min-w-0 flex-col gap-0.5 text-left">
+          <p className="text-[15px] font-semibold leading-tight text-neutral-900">{titel}</p>
+          <p className="text-xs leading-tight text-neutral-500">{subtitle}</p>
+        </div>
       </div>
-      <p className="mt-0.5 pl-12 text-xs leading-snug text-neutral-500">{subtitle}</p>
 
       {media ? <div className="mt-3">{media}</div> : null}
 
