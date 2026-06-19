@@ -71,7 +71,6 @@ OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrsraumeinschraenkungen 822 B
 OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrszeichen    1673 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX 4037 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
-OK   Länder/Schleswig-Holstein/WFS-SH-Strasseninfo-LBV         4047 B
 OK   Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS   2929 B
 OK   Länder/Thüringen/Geoproxy-TH-Klassif-Strassennetz-WFS    2155 B
 OK   Länder/Thüringen/OSM-Overpass-Thueringen                 702 B

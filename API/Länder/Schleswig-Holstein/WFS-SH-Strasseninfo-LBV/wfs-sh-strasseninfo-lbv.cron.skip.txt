@@ -1,1 +1,0 @@
-WFS SH Straßeninfo (Strassennetz + Netzknoten) — reine Netzdaten, kein Hindernis-Producer. Netzbezug DB-seitig zum Matching. SH-Baustellen/Umleitungen kommen über 0117/0118.

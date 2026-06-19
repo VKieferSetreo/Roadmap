@@ -598,17 +598,6 @@
       "test": "Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX/test.sh"
     },
     {
-      "name": "WFS SH Straßeninfo (Downloaddienst Verkehrsnetze) ⭐",
-      "ebene": "Schleswig-Holstein",
-      "datentyp": "Straßennetz (Bundesfernstraßen, Landesstraßen, Kreisstraßen) + Netzknoten",
-      "format": "WFS 2.0.0 (GML); CRS EPSG:4326/4258/25832 u.a.",
-      "endpunkt": "https://service.gdi-sh.de/WFS_SH_Strasseninfo?Service=WFS&Version=2.0.0&Request=GetCapabilities",
-      "lizenz": "CC BY 4.0 — Quellenvermerk \"© LBV.SH/CC BY 4.0\"",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Schleswig-Holstein/WFS-SH-Strasseninfo-LBV",
-      "test": "Länder/Schleswig-Holstein/WFS-SH-Strasseninfo-LBV/test.sh"
-    },
-    {
       "name": "Autobahn GmbH API (verkehr.autobahn.de)",
       "ebene": "Bundesweit",
       "datentyp": "Baustellen (roadworks), Sperrungen (closure), Verkehrswarnungen (warning, inkl. Gewichtsbeschränkungs-Hinweise), Lkw-Parkplätze, Ladesäulen, Webcams",

@@ -17,7 +17,6 @@
 | **P1** | HH | WFS/WMS Baustellen Hamburg (Verkehr OpenData) | Baustellen stadtweit | **verifiziert** |
 | **P1** | HH | WFS Baustellen Hauptverkehrs-/Bundesfernstraßen (LSBG) | Baustellen Hauptnetz | **verifiziert** |
 | **P1** | HH | WFS Bedarfsumleitungen Hamburg | Notumleitungen BAB/Kraftfahrstr. | **verifiziert** |
-| **P1** | SH | WFS SH Straßeninfo (LBV.SH) | Straßennetz A/B/L/K + Netzknoten | **verifiziert** |
 | **P1** | NI | NLStBV INSPIRE WMS Straßennetz | klassifiziertes Straßennetz NI | **verifiziert** |
 | **P1** | NI | OpenGeoData NI (LGLN, ArcGIS Hub) | Straßennetz, DLM, ALKIS (GeoJSON/WFS) | **verifiziert** |
 | **P2** | SH | Open-Data SH — Strassenbaustellen (DATEX II via Mobilithek) | Baustellen DATEX II | verifiziert (Portal) |
@@ -299,27 +298,6 @@
 
 # 4. SCHLESWIG-HOLSTEIN
 
-## 4.1 WFS SH Straßeninformationen (LBV.SH) ⭐
-
-- **quelle:** WFS SH Straßeninfo (Downloaddienst Verkehrsnetze)
-- **betreiber:** Landesbetrieb Straßenbau und Verkehr Schleswig-Holstein (LBV.SH); bereitgestellt über GDI-SH
-- **datentyp:** Straßennetz (Bundesfernstraßen, Landesstraßen, Kreisstraßen) + Netzknoten
-- **strassentyp:** A/B/L/K
-- **format:** WFS 2.0.0 (GML); CRS EPSG:4326/4258/25832 u.a.; Operationen GetFeature/GetPropertyValue/GetGMLObject
-- **apiEndpunkt (verifiziert):**
-  - WFS GetCapabilities: `https://service.gdi-sh.de/WFS_SH_Strasseninfo?Service=WFS&Version=2.0.0&Request=GetCapabilities` (live bestätigt)
-  - FeatureTypes: `Strasseninfo:Strassennetz`, `Strasseninfo:Netzknoten`
-- **update:** nach Bedarf
-- **auth:** keine („keine Zugriffsbeschränkungen", keine Gebühren)
-- **kosten:** keine
-- **lizenz:** CC BY 4.0 — Quellenvermerk „© LBV.SH/CC BY 4.0"
-- **abdeckung:** Schleswig-Holstein (BBox 8.27–11.29 E / 53.36–55.04 N)
-- **zugang:** offen
-- **verifiziert:** **ja** (GetCapabilities live; FeatureTypes bestätigt)
-- **url:** GDI-DE: `https://gdk.gdi-de.org/geonetwork/srv/api/records/4db88cf7-23d6-4207-a3da-8ab1a94508ba`
-- **prio:** **P1**
-- **sonstiges:** Restriktionsattribute (Höhe/Traglast) per `DescribeFeatureType` auf `Strasseninfo:Strassennetz` prüfen — Capabilities listet sie nicht explizit. Kontakt: Christina Buchholz, LBV.SH Kiel, 0431 383-2913.
-
 ## 4.2 Open-Data SH — Strassenbaustellen (DATEX II via Mobilithek)
 
 - **quelle:** Open-Data Schleswig-Holstein — Strassenbaustellen SH
@@ -372,12 +350,11 @@
 | HH | Brücken-WFS-Metadaten ohne lichte Höhe/Traglast | `DescribeFeatureType` auf `HH_WFS_Brueckenbauwerke`; via ASB-Nr. Join mit BASt SIB-Bauwerke; LSBG anfragen |
 | HH | Baustellen-Hauptnetz Live-Layer vs. Archiv-Snapshot unklar | Live-WFS `HH_WFS_Verkehr_opendata` Layer-Liste per `DescribeFeatureType` ziehen |
 | SH | Open-Data-Portal Anubis-Bot-Schutz → kein automatischer Fetch | Browser/Headers oder Mobilithek-Pfad nutzen; WFS-Endpunkte für Baustellen/Umleitung via GDI-SH bestätigen |
-| SH | Straßennetz-WFS Restriktionsattribute unklar | `DescribeFeatureType` auf `Strasseninfo:Strassennetz` |
 | Alle | Bahnübergänge, Steigungen, Schleppkurven/Kreisverkehre als eigene Layer kaum vorhanden | Bahnübergänge → DB InfraGO (Bund-Dok); Steigungen → DGM aus LVermGeo/LGLN ableiten |
 
 ## Anhang B — Verifikations-Notizen
 
-- **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`), NI NLStBV INSPIRE WMS (Layer), SH Straßeninfo-WFS (`Strasseninfo:Strassennetz`/`Netzknoten`).
+- **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`), NI NLStBV INSPIRE WMS (Layer).
 - **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, NI OpenGeoData Hub.
 - **Gated/blockiert:** NWSIB-online (Login), Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
 - **Casing-Hinweis:** Hamburg geodienste-Pfade sind teils case-sensitive (`hh_wfs_baustellen` lowercase vs. `HH_WFS_Brueckenbauwerke` mixed) — exakte Schreibweise aus Metadaten übernehmen.
