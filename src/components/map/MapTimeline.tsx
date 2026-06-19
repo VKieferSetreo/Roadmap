@@ -105,10 +105,12 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
   const handleCls =
     "absolute top-1/2 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border-2 border-primary-600 bg-white shadow-sm transition-transform hover:scale-125 active:scale-110 active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary-400"
 
-  const ticks = Math.min(days, 8)
+  // Mehr Tage → mehr Ticks (dichter), aber die Pille bleibt gleich breit. Cap, damit
+  // die Ticks bei sehr langen Zeiträumen nicht zum Vollbalken verschmelzen.
+  const ticks = Math.min(days, 24)
 
   return (
-    <div className="pointer-events-auto absolute bottom-3 left-1/2 z-[600] w-[min(420px,calc(100%-7rem))] -translate-x-1/2">
+    <div className="pointer-events-auto absolute bottom-3 left-14 z-[600] w-[min(380px,calc(100%-5rem))]">
       <div className="glass flex h-8 items-center gap-2 rounded-full px-2 shadow-lg">
         <button
           type="button"
@@ -140,10 +142,13 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
             onPointerDown={onTrackDown}
             className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 cursor-pointer rounded-full bg-neutral-300/90"
           >
-            <div
-              className="absolute top-0 h-full rounded-full bg-primary-500"
-              style={{ left: `${dual ? pct(lo) : 0}%`, right: `${100 - (dual ? pct(hi) : pct(a))}%` }}
-            />
+            {/* Füllbalken nur bei Zeitspanne — im Einzeltag-Modus zählt nur der Punkt. */}
+            {dual ? (
+              <div
+                className="absolute top-0 h-full rounded-full bg-primary-500"
+                style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }}
+              />
+            ) : null}
             {Array.from({ length: ticks + 1 }, (_, i) => (
               <span
                 key={i}
