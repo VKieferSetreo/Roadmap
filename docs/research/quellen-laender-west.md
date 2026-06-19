@@ -283,27 +283,6 @@
 - **prio:** **P1** (temporäre Restriktionen Saarland)
 - **sonstiges:** Saarland kleinstes Netz; LfS verwaltet ~1.490 km L + ~300 km B + zahlreiche Bauwerke (Brücken/Kreisverkehre). Prüfen, ob baustellen.saarland an die Mobilithek liefert (DATEX II) bzw. ob ein JSON-Backend abgreifbar ist.
 
-## SL-3. LfS Saarland — GST / Schwertransport (Restriktions-Stelle)
-
-- **quelle:** LfS — zuständig für Bauwerke (Brücken, Kreisverkehre) im B/L-Netz; GST-FAQ
-- **betreiber:** Landesbetrieb für Straßenbau (LfS)
-- **datentyp:** Bauwerke (Brücken/Kreisverkehre) im LfS-Netz; GST-Genehmigung/Anhörung. **Keine** öffentliche GST-Negativ-/Brückenkarte gefunden
-- **strassentyp:** B + L
-- **format:** Web-Info; operative Bauwerksdaten nicht offen (SIB-Bauwerke)
-- **apiEndpunkt:** **null**
-- **update:** laufend
-- **auth:** restricted
-- **kosten:** n/a
-- **lizenz:** nicht offen
-- **abdeckung:** ganz Saarland
-- **zugang:** **eingeschränkt** — GST-Routenprüfung über VEMAGS; Datenbezug per LfS-Anfrage
-- **verifiziert:** ja (Zuständigkeit bestätigt); **keine offene Brückenliste** verifiziert
-- **url:**
-  - LfS FAQ (GST): `https://www.saarland.de/lfs/DE/service/faq/haeufige_Fragen_und_Antworten_node.html`
-  - LfS Home: `https://www.saarland.de/lfs/DE/home/home_node.html`
-- **prio:** **P2** (Restriktion vorhanden, nicht offen — Lücke wie RLP)
-- **sonstiges:** **Lücke Saarland:** keine öffentliche GST-Negativkarte wie NRW/Hessen. Echte Brückenrestriktion via VEMAGS-INS-GST (Bundeskatalog Q4) oder LfS-Kooperation.
-
 ---
 
 ## Abdeckungs-Synthese & Lücken (Länder West)

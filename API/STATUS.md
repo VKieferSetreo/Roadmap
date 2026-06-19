@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **100 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **99 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (67) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (8)
+**Legende:** 🟢 live getestet (67) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (7)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -73,7 +73,6 @@
 | ⚪ | Rheinland-Pfalz | LBM RLP — Brücken & Schwertransporte (Restrikt | Brückenprüfung/Traglast (stati | Web-Info (Themenseiten | eingeschränkt |
 | 🔑 | Rheinland-Pfalz | LBM RLP — DATEX-II-Knoten (Verkehrsdaten-Austa | Verkehrsmeldungen / Baustellen | DATEX II (XML) | eingeschränkt |
 | 🟡 | Rheinland-Pfalz | Mobilitätsatlas RLP / BaustellenInfo digital — | Baustellen (Land, Autobahn Gmb | Web-Portal/Karte (JS); | offen |
-| ⚪ | Saarland | LfS Saarland — GST / Schwertransport (Restrikt | Bauwerke (Brücken/Kreisverkehr | Web-Info; operative Ba | eingeschränkt |
 | 🟢 | Saarland | baustellen.saarland (LfS) — Baustellen, Sperru | Baustellen (Punkt + Linie), Ve | GeoJSON (Leaflet-Feeds | offen |
 | 🟢 | Sachsen | Baustelleninformationen Sachsen (SPERRINFOSYS) | tagesaktuelle Baustellen-Maßna | WMS 1.3.0 (GetMap/GetF | offen |
 | 🔑 | Sachsen | GDI-SBV — Geodaten der Sächs. Straßenbauverwal | Straßenbauverwaltungs-Fachdate | WFS 2.0/1.1.0 | eingeschränkt |
