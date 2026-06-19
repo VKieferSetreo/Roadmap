@@ -1,19 +1,8 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 68,
+  "anzahl": 67,
   "quellen": [
-    {
-      "name": "GeoPortal.rlp.de — Straßennetz LBM (OGC API Features / WFS / WMS)",
-      "ebene": "Rheinland-Pfalz",
-      "datentyp": "Straßennetz: Autobahnen, Bundes-, Landes-, Kreisstraßen, Netzknoten, Stationen (A/B/L/K), ABA-Kilometer, Beschriftung. KEINE Brücken-/Bauwerks-Collection im WFS",
-      "format": "OGC API Features (GeoJSON/JSON), WFS 2.0.0 (GML), WMS, Atom (INSPIRE)",
-      "endpunkt": "https://www.geoportal.rlp.de/spatial-objects/513/collections/ms:Landesstrassen/items?f=json&limit=1",
-      "lizenz": "dl-de/by-2-0 (Datenlizenz Deutschland Namensnennung 2.0); Metadaten teils CC0",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Rheinland-Pfalz/geoportal-rlp-strassennetz",
-      "test": "Länder/Rheinland-Pfalz/geoportal-rlp-strassennetz/test.sh"
-    },
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
       "ebene": "Sachsen / Dresden",

@@ -1,1 +1,0 @@
-SKIP: Klassifiziertes Straßennetz LBM (Autobahnen/Bundes-/Landes-/Kreisstraßen, Netzknoten, Stationen) — reine Netzgeometrie, KEINE Brücken-/Bauwerks-Restriktion im WFS. Kein Hindernis-Producer.

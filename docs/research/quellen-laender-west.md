@@ -15,7 +15,6 @@
 | **P1** | NRW | OpenGeodata.NRW / Straßen.NRW — **Bauwerke** (Brücken/Tunnel) + Straßennetz (WFS/WMS/Atom/Shape) | Bauwerke, Netzknoten, Abschnitte | **verifiziert (offen, dl-de/by-2-0)** |
 | **P1** | NRW | **GST-Schwertransportkarte NRW** (lastbeschränkte Brücken, ArcGIS WebApp) | gesperrte/lastbeschränkte Brücken für GST | verifiziert (Karte offen; Rohdaten in Freigabe-Prüfung) |
 | **P1** | NRW | MOBIDROM / Verkehr.NRW — DATEX-II Baustellen/Sperrungen | Baustellen, Sperrungen, temp. Restriktionen | verifiziert (Portal); Feed-Endpunkt zu-bestätigen |
-| **P1** | RLP | GeoPortal.rlp.de — **Straßennetz LBM** (OAF/WFS/WMS, GeoJSON) | A/B/L/K-Netz, Netzknoten, Stationen | **verifiziert (offen, dl-de/by-2-0)** |
 | **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** + LBM DATEX-II-Knoten | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal + DATEX-Knoten); Feed-URL zu-bestätigen |
 | **P1** | Hessen | **Hessen Mobil — Lastbeschränkte Brücken** (PDF-Liste + SIB-Hessen-Online-Karte) | lastbeschränkte Brücken B/L/K | verifiziert (PDF/Karte; kein offenes WFS) |
 | **P2** | Hessen | Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen) | befahrbare/verbotene GST-Strecken | verifiziert (Karten; Format zu-bestätigen) |
@@ -160,35 +159,6 @@
 # ═══════════════════════════════════════════
 # RHEINLAND-PFALZ (RLP)
 # ═══════════════════════════════════════════
-
-## RP-1. GeoPortal.rlp.de — **Straßennetz LBM** (OGC API Features / WFS / WMS)
-
-- **quelle:** Straßennetz Rheinland-Pfalz (LBM) — OAF/WFS-Dienst `strassennetz_wfs_2.0.0`; zusätzlich Einzeldatensatz „Landstraßen"
-- **betreiber:** Landesbetrieb Mobilität Rheinland-Pfalz (LBM); Geoportal-Betrieb LVermGeo RLP. Techn. Kontakt `Daniel.Boden@lbm.rlp.de`
-- **datentyp:** Straßennetz: **Autobahnen, Bundesstraßen, Landesstraßen, Kreisstraßen**, Netzknoten, Stationen (A/B/L/K), ABA-Kilometer, Beschriftung. **Keine** dedizierte Brücken-/Bauwerks-Collection im WFS
-- **strassentyp:** A + B + L + K → **Alle** (klassifiziertes Netz)
-- **format:** **OGC API Features (GeoJSON/JSON)**, WFS 2.0.0 (GML), WMS, Atom (INSPIRE)
-- **apiEndpunkt (verifiziert):**
-  - **OAF-Landing (Straßennetz):** `https://www.geoportal.rlp.de/spatial-objects/513`
-  - **OAF-API-Definition:** `https://www.geoportal.rlp.de/spatial-objects/513/api`
-  - **Collections (Beispiel Landesstraßen):** `https://www.geoportal.rlp.de/spatial-objects/226/collections/Landesstrassen`
-  - **WFS (Landstraßen, INSPIRE):** `https://www.geoportal.rlp.de/mapbender/php/wfs.php?FEATURETYPE_ID=2217&REQUEST=GetCapabilities&SERVICE=WFS&INSPIRE=1`
-  - **WMS (Landstraßen):** `https://www.geoportal.rlp.de/mapbender/php/wms.php?layer_id=36536&REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS`
-  - MapServer-Quelle (Backend): `http://lbm-geo.rlp.de/cgi-bin/mapserv?map=/home/planer/wfs/strassennetz_wfs.map&`
-- **update:** Landstraßen-WFS zuletzt 13.11.2024; OAF 02.09.2024 (Datenstand prüfen)
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** **Datenlizenz Deutschland Namensnennung 2.0** (dl-de/by-2-0); Metadaten teils CC0
-- **abdeckung:** ganz RLP
-- **zugang:** **offen** (OAF/WFS/WMS frei, GeoJSON direkt)
-- **verifiziert:** **ja** (OAF-Collections + Landstraßen-WFS/WMS-URLs bestätigt; FeatureTypes gelistet)
-- **url:**
-  - Geoportal: `https://www.geoportal.rlp.de/`
-  - Spatial-Objects (Straßennetz): `https://www.geoportal.rlp.de/spatial-objects/513`
-  - Open-Data-Eintrag (open.rlp.de): `https://open.rlp.de/de/suchergebnisse/dataset/landstrassen`
-  - LVermGeo Open Data: `https://lvermgeo.rlp.de/geodaten-geoshop/open-data`
-- **prio:** **P1** (Netz-Grundriss RLP, moderne OAF/GeoJSON — sehr gut integrierbar)
-- **sonstiges:** **Keine Brücken-/Bauwerks-Restriktion im WFS** (nur Netz). LBM-3D-Gebäudemodell (LoD2) enthält Brückengeometrien, aber keine Traglast/Höhe → echte Restriktion via LBM (RP-3) / SIB. Open-Data-Portal RLP ist `open.rlp.de` (vormals `daten.rlp.de`, 301-Redirect).
 
 ## RP-2. Mobilitätsatlas RLP / BaustellenInfo digital — Baustellen & Verkehrsmeldungen
 

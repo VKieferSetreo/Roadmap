@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **99 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **98 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (67) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (7)
+**Legende:** 🟢 live getestet (66) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (16) · ⚪ nur Portal (7)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -69,7 +69,6 @@
 | 🟡 | Nordrhein-Westfalen / Essen | Essen — Geodaten / Baustellen (über RVR-Verbun | Baustellen/Verkehr über RVR-Ge | WFS / WMS (über RVR-Mu | offen (nur als |
 | 🟢 | Nordrhein-Westfalen / Köln | Köln — Verkehrsbeeinträchtigungen Stadt Köln ( | Verkehrsbeeinträchtigungen dur | GeoJSON (EPSG:4326) üb | offen |
 | 🟢 | Nordrhein-Westfalen / Münster | Münster — Baustellen (GeoServer/MapServer) | aktuelle + geplante Baustellen | GeoJSON / CSV / KML /  | offen |
-| 🟢 | Rheinland-Pfalz | GeoPortal.rlp.de — Straßennetz LBM (OGC API Fe | Straßennetz: Autobahnen, Bunde | OGC API Features (GeoJ | offen |
 | ⚪ | Rheinland-Pfalz | LBM RLP — Brücken & Schwertransporte (Restrikt | Brückenprüfung/Traglast (stati | Web-Info (Themenseiten | eingeschränkt |
 | 🔑 | Rheinland-Pfalz | LBM RLP — DATEX-II-Knoten (Verkehrsdaten-Austa | Verkehrsmeldungen / Baustellen | DATEX II (XML) | eingeschränkt |
 | 🟡 | Rheinland-Pfalz | Mobilitätsatlas RLP / BaustellenInfo digital — | Baustellen (Land, Autobahn Gmb | Web-Portal/Karte (JS); | offen |

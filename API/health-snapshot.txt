@@ -55,7 +55,6 @@ OK   Länder/Nordrhein-Westfalen/Städte/Münster/muenster-baustellen-wfs 1853 B
 OK   Länder/Nordrhein-Westfalen/gst-schwertransportkarte-nrw   1336 B
 OK   Länder/Nordrhein-Westfalen/mobidrom-mobilitaetsdaten-nrw  3970 B
 OK   Länder/Nordrhein-Westfalen/opengeodata-nrw-strassennetz   2549 B
-OK   Länder/Rheinland-Pfalz/geoportal-rlp-strassennetz         2686 B
 OK   Länder/Rheinland-Pfalz/lbm-rlp-bruecken-gst               4000 B
 🔑   Länder/Rheinland-Pfalz/lbm-rlp-datex2-knoten              Account/Key nötig
 OK   Länder/Rheinland-Pfalz/mobilitaetsatlas-rlp-baustellen    3994 B
