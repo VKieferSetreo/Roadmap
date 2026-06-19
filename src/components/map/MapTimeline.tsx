@@ -31,6 +31,7 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
   const [dual, setDual] = useState(false)
   const [a, setA] = useState(0)
   const [b, setB] = useState(days)
+  const [trackW, setTrackW] = useState(0)
   const trackRef = useRef<HTMLDivElement>(null)
 
   const fmt = (idx: number) =>
@@ -53,6 +54,16 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
   }, [dual, a, b, start0])
 
   useEffect(() => () => onWindowChange(null), []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Track-Breite messen (für die Label-Kollision in px). Reagiert auf Resize/Fullscreen.
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setTrackW(el.clientWidth))
+    ro.observe(el)
+    setTrackW(el.clientWidth)
+    return () => ro.disconnect()
+  }, [])
 
   const valueFromClientX = (clientX: number) => {
     const r = trackRef.current?.getBoundingClientRect()
@@ -92,16 +103,32 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
   const lo = Math.min(a, b)
   const hi = Math.max(a, b)
 
-  // Label am Rand bündig halten.
-  const labelStyle = (idx: number) => {
-    const p = pct(idx)
-    return { left: `${p}%`, transform: `translateX(${p < 14 ? "0" : p > 86 ? "-100%" : "-50%"})` }
+  // Beide Datums-Labels liegen OBEN. Position in px (gemessene Track-Breite); bei
+  // Überlappung werden sie symmetrisch auseinandergedrückt, sonst bündig am Rand geklemmt.
+  const HALF = 28 // halbe Label-Breite (px), grob für "01.08.26"
+  const SEP = 2 * HALF + 4 // Mindestabstand der Mittelpunkte
+  const clampX = (x: number) => Math.max(HALF, Math.min(Math.max(HALF, trackW - HALF), x))
+  const twoLabels = dual && lo !== hi
+  let xLo = (pct(lo) / 100) * trackW
+  let xHi = (pct(hi) / 100) * trackW
+  if (twoLabels && xHi - xLo < SEP) {
+    const mid = (xLo + xHi) / 2
+    xLo = mid - SEP / 2
+    xHi = mid + SEP / 2
+    // Paar als Einheit in die Bounds schieben — Abstand bleibt erhalten.
+    if (xLo < HALF) {
+      xHi += HALF - xLo
+      xLo = HALF
+    }
+    if (xHi > trackW - HALF) {
+      xLo -= xHi - (trackW - HALF)
+      xHi = trackW - HALF
+    }
   }
-  const labelCls = (where: "top" | "bottom") =>
-    cn(
-      "pointer-events-none absolute z-20 whitespace-nowrap rounded bg-white px-1.5 py-px text-[10px] font-semibold tabular-nums text-neutral-700 shadow ring-1 ring-black/5",
-      where === "top" ? "bottom-full mb-1.5" : "top-full mt-1.5",
-    )
+  xLo = clampX(xLo)
+  xHi = clampX(xHi)
+  const labelCls =
+    "pointer-events-none absolute bottom-full z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-white px-1.5 py-px text-[10px] font-semibold tabular-nums text-neutral-700 shadow ring-1 ring-black/5"
   const handleCls =
     "absolute top-1/2 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border-2 border-primary-600 bg-white shadow-sm transition-transform hover:scale-125 active:scale-110 active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-primary-400"
 
@@ -126,14 +153,16 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
         </button>
 
         <div className="relative h-full flex-1">
-          {/* Labels schweben über/unter dem Strahl */}
-          {dual ? (
+          {/* Datums-Labels — beide oben; bei Überlappung auseinandergedrückt */}
+          {twoLabels ? (
             <>
-              <span style={labelStyle(lo)} className={labelCls("top")}>{fmt(lo)}</span>
-              <span style={labelStyle(hi)} className={labelCls("bottom")}>{fmt(hi)}</span>
+              <span style={{ left: `${xLo}px` }} className={labelCls}>{fmt(lo)}</span>
+              <span style={{ left: `${xHi}px` }} className={labelCls}>{fmt(hi)}</span>
             </>
           ) : (
-            <span style={labelStyle(a)} className={labelCls("top")}>{fmt(a)}</span>
+            <span style={{ left: `${clampX((pct(a) / 100) * trackW)}px` }} className={labelCls}>
+              {fmt(a)}
+            </span>
           )}
 
           {/* Track */}

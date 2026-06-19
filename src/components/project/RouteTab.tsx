@@ -77,9 +77,6 @@ export function RouteTab({ project }: { project: Project }) {
   const [pendingFile, setPendingFile] = useState<{ points: RoutePoint[]; fileName: string; suggest: string } | null>(null)
   const [pendingName, setPendingName] = useState("")
 
-  const countBySource = (s: RouteSource) =>
-    project.routes.filter((r) => (r.source ?? "datei") === s).length
-
   const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
     addRoute(project.id, { name, points: res.points, source })
     const grob = res.provider.router === "fallback"
@@ -162,10 +159,9 @@ export function RouteTab({ project }: { project: Project }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {/* Quelle wählen — Anzahl je Quelle als Badge */}
+          {/* Quelle wählen */}
           <div className="inline-flex w-full rounded-md border border-neutral-200 bg-neutral-50 p-1">
             {STRECKE_TABS.map((opt) => {
-              const n = countBySource(opt.id)
               return (
                 <button
                   key={opt.id}
@@ -180,18 +176,6 @@ export function RouteTab({ project }: { project: Project }) {
                 >
                   <opt.icon className="h-4 w-4 shrink-0" />
                   <span className="truncate">{opt.label}</span>
-                  {n > 0 ? (
-                    <span
-                      className={cn(
-                        "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold leading-none",
-                        tab === opt.id
-                          ? "bg-primary-100 text-primary-700"
-                          : "bg-neutral-200 text-neutral-600",
-                      )}
-                    >
-                      {n}
-                    </span>
-                  ) : null}
                 </button>
               )
             })}
@@ -304,9 +288,9 @@ export function RouteTab({ project }: { project: Project }) {
                     aria-label={`Strecke ${r.name} bearbeiten`}
                     title="Bearbeiten: Wegpunkte, Verlauf und Name"
                     disabled={running}
-                    className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-800"
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
                   >
-                    <Pencil className="h-3.5 w-3.5" /> Bearbeiten
+                    <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
@@ -317,7 +301,7 @@ export function RouteTab({ project }: { project: Project }) {
                     }}
                     aria-label={`Strecke ${r.name} entfernen`}
                     disabled={running}
-                    className="rounded-md p-1.5 text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
                   >
                     <X className="h-4 w-4" />
                   </button>

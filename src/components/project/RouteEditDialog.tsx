@@ -26,12 +26,15 @@ interface ControlPoint extends RoutePoint {
 // ponytail: max. 8 Kontrollpunkte — hält OSRM schnell und die Karte übersichtlich.
 // Wir speichern keine Original-Wegpunkte (Route-Schema hat nur points), darum beim Öffnen
 // aus der Geometrie ableiten: Start, Ziel + gleichmäßig verteilte Zwischenpunkte.
-const MAX_CP = 8
+// Start mit wenigen Stützpunkten (Original-Verlauf annähern); der Nutzer darf bis MAX_CP
+// eigene Wegpunkte per Karten-/Streckenklick ergänzen.
+const INIT_CP = 8
+const MAX_CP = 25
 
 function deriveControlPoints(points: RoutePoint[]): ControlPoint[] {
   const pts = points.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
   if (pts.length <= 2) return pts.map((p) => ({ ...p, pinned: false }))
-  const inner = MAX_CP - 2
+  const inner = INIT_CP - 2
   const step = (pts.length - 1) / (inner + 1)
   const out: ControlPoint[] = [{ ...pts[0], pinned: false }]
   for (let i = 1; i <= inner; i++) out.push({ ...pts[Math.round(i * step)], pinned: false })
@@ -213,7 +216,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
           <FitOnce points={initialPoints.current} />
           <ClickToAdd onAdd={addCp} />
           {geometry.length >= 2 ? (
-            <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} />
+            <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
           ) : null}
           {cps.map((c, i) => {
             const isEnd = i === 0 || i === cps.length - 1
