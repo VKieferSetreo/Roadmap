@@ -19,7 +19,6 @@
 | **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** + LBM DATEX-II-Knoten | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal + DATEX-Knoten); Feed-URL zu-bestätigen |
 | **P1** | Hessen | **Hessen Mobil — Lastbeschränkte Brücken** (PDF-Liste + SIB-Hessen-Online-Karte) | lastbeschränkte Brücken B/L/K | verifiziert (PDF/Karte; kein offenes WFS) |
 | **P2** | Hessen | Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen) | befahrbare/verbotene GST-Strecken | verifiziert (Karten; Format zu-bestätigen) |
-| **P1** | Saarland | GeoPortal Saarland — **Verkehr-WFS** + INSPIRE-Verkehrsnetze (ATKIS/OKSTRA) | Straßennetz/Verkehr | verifiziert (offen, OAF/WFS) |
 | **P1** | Saarland | **baustellen.saarland** (LfS) — Baustellen/Sperrungen/Verkehrslage | Baustellen, Sperrungen, Verkehrslage | verifiziert (Portal); kein offener Feed gefunden |
 | **P2** | alle | Mobilithek (BMDV) — DATEX-II-Angebote der Länder (NW/HE/RP/SL) | Baustellen/Sperrungen bundesweit gebündelt | verifiziert (NAP); je Feed Registrierung |
 
@@ -261,33 +260,6 @@
 # ═══════════════════════════════════════════
 # SAARLAND
 # ═══════════════════════════════════════════
-
-## SL-1. GeoPortal Saarland (GDI-SL) — **Verkehr-WFS** + INSPIRE-Verkehrsnetze
-
-- **quelle:** GeoPortal Saarland — `Verkehr_WFS` (ausgewählte Geodaten Verkehr) + INSPIRE-WFS Verkehrsnetze (ATKIS Basis-DLM, OKSTRA)
-- **betreiber:** Geodateninfrastruktur Saarland (GDI-SL); LVGL Saarland (Landesamt für Vermessung, Geoinformation und Landentwicklung); OKSTRA-Netz aus LfS-Quelldaten
-- **datentyp:** Verkehrs-Geodaten + Straßennetz-Topologie (INSPIRE Transport Networks: Funktionsklasse der Straße etc.). Keine dedizierte Brücken-Restriktions-Collection erkennbar
-- **strassentyp:** je Dienst (ATKIS topografisch; OKSTRA = klassifiziertes Netz A/B/L/K)
-- **format:** OGC API Features (OAF) / WFS 2.0.0, WMS/WMS-T
-- **apiEndpunkt (verifiziert):**
-  - **Verkehr_WFS (OAF):** `https://geoportal.saarland.de/spatial-objects/242`
-  - **INSPIRE-WFS SL Verkehrsnetze ATKIS Basis-DLM:** `https://geoportal.saarland.de/spatial-objects/413`
-  - **INSPIRE-WFS SL Verkehrsnetze OKSTRA:** `https://geoportal.saarland.de/spatial-objects/326`
-  - OAF-Übersicht: `https://geoportal.saarland.de/spatial-objects/`
-  - Schnittstellen-Doku: `https://geoportal.saarland.de/article/Schnittstelle/`
-- **update:** periodisch (GDI-SL)
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** offene Geodaten Saarland (je Datensatz; dl-de/by-2-0 o. ä. — prüfen)
-- **abdeckung:** ganz Saarland
-- **zugang:** **offen** (OAF/WFS/WMS frei)
-- **verifiziert:** **ja** (drei Verkehrs-/Verkehrsnetz-Dienste mit URLs bestätigt)
-- **url:**
-  - GeoPortal: `https://geoportal.saarland.de/`
-  - Verkehr-App: `https://geoportal.saarland.de/apps/` (Anwendung „Verkehr — Mobilität im Saarland")
-  - Verfügbare Geodatendienste (LVGL): `https://www.saarland.de/lvgl/DE/themen-aufgaben/themen/verfuegbareGeodatendienste/verfuegbareGeodatendienste`
-- **prio:** **P1** (Netz-Grundriss Saarland; OKSTRA-Netz = klassifiziertes Straßennetz mit Funktionsklassen)
-- **sonstiges:** OKSTRA-Verkehrsnetz (`/326`) ist am nächsten am klassifizierten LfS-Netz. Collections per OAF inventarisieren; auf Bauwerks-/Brückenattribute prüfen (vermutlich nur Netz).
 
 ## SL-2. LfS / baustellen.saarland — Baustellen, Sperrungen, Verkehrslage
 

@@ -60,7 +60,6 @@ OK   Länder/Rheinland-Pfalz/lbm-rlp-bruecken-gst               4000 B
 🔑   Länder/Rheinland-Pfalz/lbm-rlp-datex2-knoten              Account/Key nötig
 OK   Länder/Rheinland-Pfalz/mobilitaetsatlas-rlp-baustellen    3994 B
 OK   Länder/Saarland/baustellen-saarland-lfs                   4000 B
-OK   Länder/Saarland/geoportal-saarland-verkehr                4000 B
 LEER Länder/Saarland/lfs-saarland-gst                          (Endpunkt prüfen)
 OK   Länder/Sachsen-Anhalt/LSBB-Sperrinfo-WFS                  1035 B
 OK   Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal   2368 B

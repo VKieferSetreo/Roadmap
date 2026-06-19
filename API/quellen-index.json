@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 69,
+  "anzahl": 68,
   "quellen": [
     {
       "name": "GeoPortal.rlp.de — Straßennetz LBM (OGC API Features / WFS / WMS)",
@@ -134,17 +134,6 @@
       "typ": "strukturiert-datei",
       "ordner": "Länder/Hessen/hessen-mobil-lastbeschraenkte-bruecken",
       "test": "Länder/Hessen/hessen-mobil-lastbeschraenkte-bruecken/test.sh"
-    },
-    {
-      "name": "GeoPortal Saarland (GDI-SL) — Verkehr_WFS + INSPIRE-Verkehrsnetze (ATKIS, OKSTRA)",
-      "ebene": "Saarland",
-      "datentyp": "Verkehrs-Geodaten (Strassennetz, Netzknoten, Rastplätze, Parken, ÖPNV, Ladestationen, Zählstellen u.a.) + INSPIRE-Straßennetz-Topologie. Keine dedizierte Brücken-Restriktions-Collection",
-      "format": "OGC API Features (OAF) / WFS 2.0.0 (GML), WMS/WMS-T",
-      "endpunkt": "https://geoportal.saarland.de/arcgis/services/Internet/Verkehr_WFS/MapServer/WFSServer?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=Verkehr_WFS:Strassennetz&COUNT=1",
-      "lizenz": "offene Geodaten Saarland (je Datensatz; dl-de/by-2-0 o.ä. — prüfen)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Saarland/geoportal-saarland-verkehr",
-      "test": "Länder/Saarland/geoportal-saarland-verkehr/test.sh"
     },
     {
       "name": "baustellen.saarland (LfS) — Baustellen, Sperrungen, Verkehrslage",
