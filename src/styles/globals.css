@@ -96,6 +96,24 @@
 .leaflet-popup-content .fcard p {
   margin: 0;
 }
+
+/* Fund-Popup: Leaflet-Hülle transparent schalten, damit die FindingCard selbst die
+   Karte zeichnet (bg/border/shadow am inneren Div) und eine zweite Karte dahinter
+   sichtbar hervorschauen kann. Nur für .fcard-popup — andere Popups unberührt. */
+.fcard-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  overflow: visible;
+}
+.fcard-popup .leaflet-popup-content {
+  margin: 6px;
+  overflow: visible;
+}
+.fcard-popup .leaflet-popup-tip {
+  display: none;
+}
 .leaflet-popup-tip {
   box-shadow: 0 2px 8px -2px rgba(16, 24, 40, 0.12);
 }

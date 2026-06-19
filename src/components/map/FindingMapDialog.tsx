@@ -4,7 +4,7 @@
 
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Building2, X } from "lucide-react"
+import { X } from "lucide-react"
 import { Dialog } from "@/components/ui/Dialog"
 import { katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingCard } from "./FindingCard"
@@ -49,14 +49,6 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
           gueltigBis={finding.gueltigBis}
           detail={finding.detail}
           quelle={finding.quelle}
-          extra={
-            finding.zustaendig ? (
-              <p className="mt-2.5 flex items-center gap-1.5 text-xs text-neutral-500">
-                <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                {finding.zustaendig}
-              </p>
-            ) : undefined
-          }
           media={
             <div className="h-[42vh] min-h-[260px] overflow-hidden rounded-lg border border-neutral-200">
               {/* key erzwingt frisches Leaflet pro Fund (sauberes Zentrieren) */}

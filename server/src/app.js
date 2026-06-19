@@ -27,6 +27,7 @@ import { newsRouter } from "./routes/news.js"
 import { hiddenFindingsRouter } from "./routes/hiddenFindings.js"
 import { internalRouter } from "./routes/internal.js"
 import { foldersRouter } from "./routes/folders.js"
+import { findingChatRouter } from "./routes/findingChat.js"
 import { findingsRouter } from "./routes/findings.js"
 import { geoRouter } from "./routes/geo.js"
 import { notificationsRouter } from "./routes/notifications.js"
@@ -137,6 +138,7 @@ export function createApp({
   app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/folders", requireTenant, foldersRouter({ db }))
+  app.use("/api/finding-chat", requireTenant, findingChatRouter({ db }))
   app.use("/api/findings", requireTenant, findingsRouter({ db }))
   app.use("/api/stats", requireTenant, statsRouter({ db }))
   app.use("/api/notifications", requireTenant, notificationsRouter({ db }))

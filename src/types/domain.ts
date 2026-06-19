@@ -256,6 +256,35 @@ export interface News {
   publishedAt: string
 }
 
+/** Kontaktdaten-Karte einer Chat-Nachricht (kind='contact') — z.B. die kontaktierte Behörde. */
+export interface FindingChatContact {
+  name?: string
+  email?: string
+  phone?: string
+}
+
+/** Eine Nachricht im Baustellen-Chat eines Funds.
+ *  scope 'public' = DB-weit sichtbar (alle Mandanten), Organisation des Autors sichtbar.
+ *  scope 'internal' = nur eigener Mandant, ohne Organisation.
+ *  Autor wird IMMER serverseitig aus dem Kontext gesetzt — nie aus dem Body.
+ *  kind 'text' = normale Nachricht (body Pflicht); 'contact' = Kontaktdaten-Karte (contact gesetzt). */
+export interface FindingChatMessage {
+  id: string
+  findingKey: string
+  scope: "public" | "internal"
+  authorEmail: string
+  /** Organisation des Autors — nur bei scope 'public' gesetzt. */
+  organisation?: string | null
+  body: string
+  /** Art der Nachricht — 'text' (Default) oder 'contact' (Kontaktdaten-Karte). */
+  kind: "text" | "contact"
+  /** Bei kind='contact' gesetzt: kontaktierte Stelle (mind. ein Feld). */
+  contact?: FindingChatContact | null
+  createdAt: string
+  /** true = vom aktuell eingeloggten Nutzer verfasst (FE-Ausrichtung). */
+  mine: boolean
+}
+
 /** Eigene Mandanten-Lizenz (Anzeige für den Kunden): Plan, Laufzeit, Seat-Belegung. */
 export interface AccountLicense {
   plan: string

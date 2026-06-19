@@ -11,6 +11,7 @@ import type {
   BugReportList,
   BugReportStatus,
   Finding,
+  FindingChatMessage,
   FindingKategorie,
   FindingSeverity,
   Folder,
@@ -366,6 +367,41 @@ export const api = {
     move: (id: string, parentId: string | null) =>
       axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { parentId } }),
     remove: (id: string) => axiosClient<void>({ url: `/folders/${id}`, method: "DELETE" }),
+  },
+
+  // ── Baustellen-Chat pro Fund (public = DB-weit, internal = nur eigener Mandant) ─
+  findingChat: {
+    /** Nachrichten eines Funds in einem Scope (created_at ASC). */
+    list: (findingKey: string, scope: "public" | "internal") =>
+      axiosClient<{ messages: FindingChatMessage[] }>({
+        url: "/finding-chat",
+        method: "GET",
+        params: { findingKey, scope },
+      }).then((r) => r.messages ?? []),
+    /** Nachricht posten — Autor wird serverseitig aus dem Kontext gesetzt.
+     *  payload: { body? } für kind='text' bzw. { kind:'contact', contact, body? } für eine
+     *  Kontaktdaten-Karte. created_at + content_hash kommen serverseitig (append-only). */
+    post: (
+      findingKey: string,
+      scope: "public" | "internal",
+      payload: {
+        body?: string
+        kind?: "text" | "contact"
+        contact?: { name?: string; email?: string; phone?: string }
+      },
+    ) =>
+      axiosClient<FindingChatMessage>({
+        url: "/finding-chat",
+        method: "POST",
+        data: { findingKey, scope, ...payload },
+      }),
+    /** Vorhandene Nachrichten je Scope + neuester Zeitstempel (für Badge/Unread am Fund). */
+    presence: (findingKey: string) =>
+      axiosClient<{ public: number; internal: number; latest: string | null }>({
+        url: "/finding-chat/presence",
+        method: "GET",
+        params: { findingKey },
+      }),
   },
 
   // ── News-Feed (Liste: jeder; Anlegen/Löschen: Admin) ───────────────────────

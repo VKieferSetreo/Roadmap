@@ -458,7 +458,13 @@ export const useProjectStore = create<ProjectStore>()(
 
       publishProject: async (id, password) => {
         if (!isLive()) {
-          toast.error("Veröffentlichen braucht die Live-Datenbank (Demo-Modus aktiv).")
+          // Demo (kein Backend): Freigabe lokal simulieren, damit die Veröffentlichen-Box testbar ist.
+          const share = {
+            url: `https://setreo-cloud.com/demo/${id}`,
+            hatPasswort: Boolean(password?.trim()),
+            createdAt: new Date().toISOString(),
+          }
+          set((s) => ({ projects: s.projects.map((p) => (p.id === id ? { ...p, share } : p)) }))
           return
         }
         const share = await api.publishProject(id, password)
@@ -468,7 +474,7 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       revokeShare: async (id) => {
-        await api.revokeShare(id)
+        if (isLive()) await api.revokeShare(id)
         set((s) => ({
           projects: s.projects.map((p) => (p.id === id ? { ...p, share: null } : p)),
         }))

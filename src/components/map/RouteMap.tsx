@@ -259,8 +259,8 @@ export function RouteMap({
         ))}
       </MapContainer>
 
-      {/* Map-Controls unten rechts: Zentrieren + Zoom +/− */}
-      <div className="pointer-events-none absolute bottom-3 right-3 z-[500] flex flex-col items-end gap-2">
+      {/* Map-Controls unten links: Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}
+      <div className="pointer-events-none absolute bottom-3 left-3 z-[500] flex flex-col items-start gap-2">
         <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
           <button
             type="button"

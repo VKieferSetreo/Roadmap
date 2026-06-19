@@ -149,7 +149,8 @@ export function PublishCard({ project }: { project: Project }) {
           {/* darunter: Text (2 Zeilen) links, Button rechts auf gleicher Höhe */}
           <div className="flex items-center justify-between gap-3">
             <p className="flex-1 text-xs leading-relaxed text-neutral-500">
-              Externer Link für Dritte — Karte + Auswertung ansehen (optional mit Passwort).
+              Erstellt einen Link, über den Außenstehende die Karte und die Auswertung ansehen
+              können, ohne Anmeldung. Auf Wunsch durch ein Passwort geschützt.
             </p>
             <Button variant="outline" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Globe2 className="h-4 w-4" /> Veröffentlichen

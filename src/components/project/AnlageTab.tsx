@@ -189,8 +189,10 @@ export function AnlageTab({ project }: { project: Project }) {
         </CardContent>
       </Card>
 
-      {/* ── Für Externe freigeben (neben dem Zeitraum) ── */}
-      {project.status === "fertig" && mode === "live" && !running ? (
+      {/* ── Für Externe freigeben (neben dem Zeitraum) — immer anzeigen (auch vor der Auswertung
+          und im Demo-Modus), sonst klafft hier eine Lücke. Freigeben ist jederzeit möglich; der
+          Link aktualisiert sich mit der nächsten Auswertung. ── */}
+      {!running ? (
         <Card>
           <CardContent className="p-4">
             <PublishCard project={project} />

@@ -8,8 +8,8 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  Eye,
   EyeOff,
+  Filter,
   Layers,
   MapPinned,
   Route as RouteIcon,
@@ -55,17 +55,23 @@ function snapToRoutes(
 export function KarteTab({
   project,
   overlayFooter,
+  canHide = false,
 }: {
   project: Project
   /** Optionales Element unten im linken Overlay-Stack (gap-2 unter "Strecken").
    *  In der App = Sidebar-Toggle; in der öffentlichen Freigabe-Ansicht leer. */
   overlayFooter?: ReactNode
+  /** Funde für die Auswertung ausblenden anbieten. App = true, öffentliche Freigabe = false.
+   *  (Demo patcht lokal, live persistiert per API — daher nicht an `live` gekoppelt.) */
+  canHide?: boolean
 }) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [layersOpen, setLayersOpen] = useState(true)
+  /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. */
+  const [katOpen, setKatOpen] = useState(true)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
   const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
   /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Leer = alle sichtbar. */
@@ -210,14 +216,14 @@ export function KarteTab({
         onSelect={setSelectedId}
         onRouteClick={live ? onRouteClick : undefined}
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
-        onHide={live ? (f) => setHideTarget(f) : undefined}
+        onHide={canHide ? (f) => setHideTarget(f) : undefined}
         focusPoint={focusPoint}
       />
 
-      {/* Ticket-Suche — oben mittig, durchsucht alle sichtbaren Funde (Titel/Text/km/Quelle/Details). */}
-      <div className="absolute left-1/2 top-3 z-[1100] w-[min(92%,460px)] -translate-x-1/2">
-        <div className="glass flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 shadow-lg">
-          <Search className="h-4 w-4 shrink-0 text-neutral-400" />
+      {/* Ticket-Suche — oben links, durchsucht alle sichtbaren Funde (Titel/Text/km/Quelle/Details). */}
+      <div className="absolute left-3 top-3 z-[1100] w-[min(92%,520px)]">
+        <div className="glass flex items-center gap-2 rounded-lg px-3 py-2.5 shadow-lg">
+          <Search className="h-[18px] w-[18px] shrink-0 text-neutral-400" />
           <input
             value={suche}
             onChange={(e) => {
@@ -234,7 +240,7 @@ export function KarteTab({
             }}
             placeholder="In Tickets suchen (z. B. Bauwerksnummer) …"
             aria-label="Tickets in der Karte durchsuchen"
-            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+            className="min-w-0 flex-1 bg-transparent text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400"
           />
           {suche ? (
             <span className="shrink-0 text-xs tabular-nums text-neutral-500">
@@ -271,8 +277,8 @@ export function KarteTab({
         </div>
       </div>
 
-      {/* Links oben: Routen-Kennzahlen + Ebenen-Panel */}
-      <div className="pointer-events-none absolute left-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
+      {/* Rechts oben: Routen-Kennzahlen + Ebenen-Panel + Kategorien */}
+      <div className="pointer-events-none absolute right-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
         <div className="glass pointer-events-auto animate-rise-in p-3">
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1.5 text-neutral-700">
@@ -350,7 +356,6 @@ export function KarteTab({
             <ul className="border-t border-neutral-200/70 px-2 py-1.5">
               {project.routes.map((r) => {
                 const sichtbar = !hidden.has(r.id)
-                const funde = project.findings.filter((f) => !f.hidden && f.routeId === r.id).length
                 return (
                   <li key={r.id}>
                     <label
@@ -375,13 +380,8 @@ export function KarteTab({
                         {r.name}
                       </span>
                       <span className="text-[10px] tabular-nums text-neutral-400">
-                        {routeLengthKm(r.points).toLocaleString("de-DE")} km · {funde}
+                        {routeLengthKm(r.points).toLocaleString("de-DE")} km
                       </span>
-                      {sichtbar ? (
-                        <Eye className="h-3.5 w-3.5 text-neutral-400" aria-hidden />
-                      ) : (
-                        <EyeOff className="h-3.5 w-3.5 text-neutral-300" aria-hidden />
-                      )}
                     </label>
                   </li>
                 )
@@ -390,70 +390,80 @@ export function KarteTab({
           ) : null}
         </div>
 
-        {/* Slot unter dem "Strecken"-Kasten — gap-2 (exakt wie zwischen den Karten oben).
-            In der App: Sidebar-Ein-/Ausklapp-Toggle. */}
-        {overlayFooter}
-      </div>
-
-      {/* Kategorie-Filter oben rechts: Kategorien auf den sichtbaren Strecken — anklickbar
-          ein-/ausblenden (echtes StVO-Schild je Kategorie). Filtert Karte + Ticket-Suche. */}
-      {kategoriesOnRoute.length > 0 ? (
-        <div className="pointer-events-none absolute right-3 top-3 z-[500] hidden sm:block">
-          <div
-            className="glass pointer-events-auto min-w-[200px] animate-rise-in px-3 py-2.5"
-            style={{ animationDelay: "80ms" }}
-          >
-            <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
-                Kategorien
-              </p>
+        {/* Kategorie-Filter — direkt unter "Strecken", gleiche Breite (Stack = w-280),
+            einklappbar. Klick blendet eine Kategorie auf Karte + Ticket-Suche aus. */}
+        {kategoriesOnRoute.length > 0 ? (
+          <div className="glass pointer-events-auto animate-rise-in" style={{ animationDelay: "80ms" }}>
+            <button
+              type="button"
+              onClick={() => setKatOpen((o) => !o)}
+              aria-expanded={katOpen}
+              className="flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left"
+            >
+              <Filter className="h-4 w-4 text-primary-600" />
+              <span className="flex-1 text-sm font-semibold text-neutral-800">Kategorien</span>
               {katHidden.size > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => setKatHidden(new Set())}
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setKatHidden(new Set())
+                  }}
                   className="text-[10px] font-semibold uppercase tracking-wider text-primary-600 hover:text-primary-700"
                 >
                   Alle
-                </button>
+                </span>
               ) : null}
-            </div>
-            <ul className="flex flex-col gap-0.5">
-              {kategoriesOnRoute.map((kat) => {
-                const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
-                const aus = katHidden.has(kat)
-                return (
-                  <li key={kat}>
-                    <button
-                      type="button"
-                      onClick={() => toggleKat(kat)}
-                      aria-pressed={!aus}
-                      title={aus ? "Einblenden" : "Ausblenden"}
-                      className={cn(
-                        "flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-xs transition-colors hover:bg-neutral-100/70",
-                        aus ? "text-neutral-400" : "text-neutral-700",
-                      )}
-                    >
-                      <KategorieGlyph
-                        kategorie={kat}
-                        className={cn("h-6 w-6 shrink-0 transition", aus && "opacity-40 grayscale")}
-                      />
-                      <span className={cn("flex-1 truncate", aus && "line-through")}>{katMeta(kat).label}</span>
-                      <span className="tabular-nums text-neutral-400">{count}</span>
-                    </button>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-neutral-400 transition-transform duration-200",
+                  katOpen && "rotate-180",
+                )}
+              />
+            </button>
+            {katOpen ? (
+              <ul className="flex flex-col gap-0.5 border-t border-neutral-200/70 px-2 py-1.5">
+                {kategoriesOnRoute.map((kat) => {
+                  const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
+                  const aus = katHidden.has(kat)
+                  return (
+                    <li key={kat}>
+                      <button
+                        type="button"
+                        onClick={() => toggleKat(kat)}
+                        aria-pressed={!aus}
+                        title={aus ? "Einblenden" : "Ausblenden"}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-xs transition-colors hover:bg-neutral-100/70",
+                          aus ? "text-neutral-400" : "text-neutral-700",
+                        )}
+                      >
+                        <KategorieGlyph
+                          kategorie={kat}
+                          className={cn("h-6 w-6 shrink-0 transition", aus && "opacity-40 grayscale")}
+                        />
+                        <span className={cn("flex-1 truncate", aus && "line-through")}>{katMeta(kat).label}</span>
+                        <span className="tabular-nums text-neutral-400">{count}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+                {ausgeblendetN > 0 ? (
+                  <li className="mt-0.5 flex items-center gap-2 border-t border-neutral-100 px-1.5 pt-1.5 text-xs text-neutral-400">
+                    <EyeOff className="h-4 w-4 shrink-0" />
+                    <span className="flex-1">Ausgeblendet</span>
+                    <span className="tabular-nums">{ausgeblendetN}</span>
                   </li>
-                )
-              })}
-              {ausgeblendetN > 0 ? (
-                <li className="mt-0.5 flex items-center gap-2 border-t border-neutral-100 px-1.5 pt-1.5 text-xs text-neutral-400">
-                  <EyeOff className="h-4 w-4 shrink-0" />
-                  <span className="flex-1">Ausgeblendet</span>
-                  <span className="tabular-nums">{ausgeblendetN}</span>
-                </li>
-              ) : null}
-            </ul>
+                ) : null}
+              </ul>
+            ) : null}
           </div>
-        </div>
-      ) : null}
+        ) : null}
+
+        {/* Slot unter den Panels — gap-2. In der App: Sidebar-Ein-/Ausklapp-Toggle. */}
+        {overlayFooter}
+      </div>
 
       {/* Formular für den Kunden-Eintrag (gesnappte Position) */}
       <ObstacleDialog

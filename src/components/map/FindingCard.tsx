@@ -34,7 +34,7 @@ function ReadMore({ text }: { text: string }) {
       <p
         ref={ref}
         className={cn(
-          "whitespace-pre-line text-sm leading-relaxed text-neutral-600",
+          "whitespace-pre-line text-[15px] leading-relaxed text-neutral-700",
           !open && "line-clamp-4",
         )}
       >
@@ -90,7 +90,10 @@ export function FindingCard({
 }: FindingCardProps) {
   const meta = SEVERITY_META[severity]
   return (
-    <div className="fcard">
+    // flex-col + Wachstums-Spacer: füllt die Mindesthöhe der Karte; Beschreibung bleibt oben,
+    // Stammdaten/Aktion/Fußzeile werden so weit wie möglich nach unten geschoben.
+    // flex-1 greift nur in einem Flex-Eltern (Popup-Hauptkarte); im DB-Dialog ohne Wirkung.
+    <div className="fcard flex flex-1 flex-col">
       {/* 1. Schild (ohne Kasten, groß) mittig zum Titel+Untertitel-Block. Untertitel direkt
           unter dem Titel — minimaler Abstand (leading-tight, kein margin), darf umbrechen. */}
       <div className="flex items-center gap-3">
@@ -112,6 +115,9 @@ export function FindingCard({
           <ReadMore text={beschreibung} />
         </>
       ) : null}
+
+      {/* Wachstums-Spacer: drückt Stammdaten + alles darunter ans untere Kartenende. */}
+      <div className="min-h-0 flex-1" aria-hidden />
 
       {/* 3. Stammdaten */}
       <Spacer />
@@ -141,12 +147,13 @@ export function FindingCard({
         </>
       ) : null}
 
-      {/* 6. Fußzeile: Severity + Quelle */}
+      {/* 6. Fußzeile: Severity + Quelle. Die Quelle nimmt die Restbreite (flex-1) und füllt
+          sie rechtsbündig — lange Namen brechen sauber statt eine schmale Spalte zu lassen. */}
       <Spacer />
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-start justify-between gap-2">
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium",
             meta.soft,
           )}
         >
@@ -159,12 +166,13 @@ export function FindingCard({
               href={quelle.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
+              className="block flex-1 text-right text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"
             >
-              {quelle.name} <ExternalLink className="h-3 w-3" />
+              {quelle.name}
+              <ExternalLink className="ml-1 inline h-3 w-3 shrink-0 align-text-bottom" />
             </a>
           ) : (
-            <span className="text-xs font-medium text-neutral-500">{quelle.name}</span>
+            <span className="flex-1 text-right text-xs font-medium text-neutral-500">{quelle.name}</span>
           )
         ) : null}
       </div>
