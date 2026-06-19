@@ -1,0 +1,19 @@
+QUELLE:         BayernInfo / ArbIS → Mobilithek — Baustellen (DATEX II)
+BETREIBER:      Bayerische Straßenbauverwaltung / VIZ Bayern; ArbIS gepflegt von Autobahn GmbH + 19 Straßenmeistereien/Bauämtern + Landkreisen
+EBENE:          Land:Bayern
+DATENTYP:       Arbeits-/Baustellen (geplant + aktuell)
+STRASSENTYP:    A / B / St / K
+FORMAT:         DATEX II XML (HTTPS/SOAP-Übertragung)
+ENDPUNKT:       https://mobilithek.info/offers/110000000002507001  (Angebots-ID; Datenabruf erst nach Mobilithek-Vertrag)
+DOKU:           https://www.bayerninfo.de/en/about-bayerninfo-1/data-offer/private-transport-data
+ZUGANG:         registrierung
+ACCOUNT_NOETIG: JA
+API_KEY_NOETIG: NEIN
+LIZENZ:         je Mobilithek-Angebot (Nutzungsbedingungen des Anbieters/Mobilithek)
+UPDATE:         alle ~3 Minuten
+STATUS:         verifiziert
+NOTIZ:          Zugang über Mobilithek-Konto (Bund-NAP): Registrierung + ggf. Datennutzungsvertrag
+                je Angebot. Kostenfrei. Mobilithek nutzt i.d.R. Client-Zertifikat (mTLS) für den
+                Maschinen-Abruf — Details nach Vertragsabschluss im Mobilithek-Account.
+                Pendant zu BW-A1, aber Zugang über Mobilithek statt offenem HTTP. Bayern hat KEINEN
+                offenen Baustellen-GeoJSON-Feed; ArbIS selbst ist eine interne Anwendung.
