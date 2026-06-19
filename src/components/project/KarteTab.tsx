@@ -69,9 +69,9 @@ export function KarteTab({
   const [selectedId, setSelectedId] = useState<string | null>(null)
   /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
   const [hidden, setHidden] = useState<Set<string>>(new Set())
-  const [layersOpen, setLayersOpen] = useState(true)
-  /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. */
-  const [katOpen, setKatOpen] = useState(true)
+  const [layersOpen, setLayersOpen] = useState(false)
+  /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. Beide standardmäßig EINGEKLAPPT. */
+  const [katOpen, setKatOpen] = useState(false)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
   const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
   /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Leer = alle sichtbar. */
