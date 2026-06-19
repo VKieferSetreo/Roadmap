@@ -122,7 +122,9 @@ export function NotificationBell() {
     if (!n.readAt) markRead.mutate(n.id)
     if (n.projektId) {
       setOpen(false)
-      navigate(`/projekte/${n.projektId}`)
+      // Direkt zur Karte des Projekts und auf die betroffene Baustelle springen (Deep-Link).
+      const focus = n.obstacleId ? `?focus=${encodeURIComponent(n.obstacleId)}` : ""
+      navigate(`/projekte/${n.projektId}/karte${focus}`)
     }
   }
 
@@ -162,9 +164,11 @@ export function NotificationBell() {
                   type="button"
                   onClick={() => markAll.mutate()}
                   disabled={markAll.isPending}
-                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 disabled:opacity-50"
+                  aria-label="Alle als gelesen markieren"
+                  title="Alle als gelesen markieren"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 disabled:opacity-50"
                 >
-                  <CheckCheck className="h-3.5 w-3.5" /> Alle gelesen
+                  <CheckCheck className="h-3.5 w-3.5" />
                 </button>
               ) : null}
               {items.length > 0 ? (

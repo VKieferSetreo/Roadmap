@@ -1,8 +1,8 @@
 // Tab 2 — Vollbild-Karte mit allen Strecken (farblich getrennt) + Fund-Markern.
 // Ebenen-Panel (aufklappbar, Checkboxen) blendet Strecken samt ihrer Funde ein/aus.
 
-import { useMemo, useRef, useState, type ReactNode } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 import {
   ChevronDown,
@@ -109,6 +109,26 @@ export function KarteTab({
   const [trefferIdx, setTrefferIdx] = useState(-1) // -1 = noch nicht gesprungen
   const [focusPoint, setFocusPoint] = useState<{ lat: number; lng: number; nonce: number } | null>(null)
   const nonceRef = useRef(0)
+
+  // Deep-Link aus einer Mitteilung: /projekte/:id/karte?focus=<obstacleId> → zum Fund springen,
+  // Marker selektieren. Wartet, bis die Funde geladen sind; feuert genau einmal.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const focusedRef = useRef(false)
+  useEffect(() => {
+    if (focusedRef.current) return
+    const focus = searchParams.get("focus")
+    if (!focus || project.findings.length === 0) return
+    const f = project.findings.find((x) => x.obstacleId === focus || x.id === focus)
+    if (f && Number.isFinite(f.lat) && Number.isFinite(f.lng)) {
+      focusedRef.current = true
+      setSelectedId(f.id)
+      nonceRef.current += 1
+      setFocusPoint({ lat: f.lat, lng: f.lng, nonce: nonceRef.current })
+      const next = new URLSearchParams(searchParams)
+      next.delete("focus")
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, project.findings, setSearchParams])
 
   const treffer = useMemo(() => {
     const s = suche.trim().toLowerCase()

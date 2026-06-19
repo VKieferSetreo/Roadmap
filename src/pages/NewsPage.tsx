@@ -26,6 +26,7 @@ const KAT_META: Record<NewsKategorie, { label: string; cls: string }> = {
 export function NewsPage() {
   const isAdmin = useContextStore((s) => s.isAdmin)
   const mode = useDataSourceStore((s) => s.mode)
+  const apiVersion = useDataSourceStore((s) => s.apiVersion)
   const [items, setItems] = useState<News[]>([])
   const [loading, setLoading] = useState(true)
   const [kategorie, setKategorie] = useState<NewsKategorie>("hinweis")
@@ -110,6 +111,12 @@ export function NewsPage() {
         description="Neue Datenquellen, neue Versionen und Hinweise zur Plattform."
       >
         <div className="flex flex-col gap-5">
+          {apiVersion ? (
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-600">
+              Aktuelle Version
+              <span className="font-semibold text-neutral-800">v{apiVersion}</span>
+            </span>
+          ) : null}
           {isAdmin ? (
             <Card>
               <CardHeader>
