@@ -7,7 +7,7 @@
 
 import { Router } from "express"
 import { auditLog, rowToAudit } from "../auditLog.js"
-import { requireRole } from "../auth.js"
+import { requireRole, requireTenantAdminParam } from "../auth.js"
 import { generateSeatCodes, listSeatCodes } from "../seatCodes.js"
 import { getTenantById, listTenants, rowToTenant, slugError, tenantMembers } from "../tenants.js"
 import { ApiError, asyncHandler, isUuid } from "../util.js"
@@ -37,13 +37,17 @@ async function provisionExtern({ authExtern, fetchImpl, email, password }) {
 
 export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExtern = null }) {
   const r = Router()
-  r.use(requireRole("admin"))
+  // T-147: kommerzielles/globales (Mandant anlegen/umbenennen/löschen, Lizenz/Seat-Codes)
+  // bleibt globalem Setreo-Admin vorbehalten; Nutzer-/Rollen-Verwaltung + Lizenz-/Audit-Einsicht
+  // darf zusätzlich der Tenant-Admin im EIGENEN Mandanten (requireTenantAdminParam).
+  const adminOnly = requireRole("admin")
+  const tenantAdmin = requireTenantAdminParam
 
-  r.get("/", asyncHandler(async (req, res) => {
+  r.get("/", adminOnly, asyncHandler(async (req, res) => {
     res.json({ tenants: await listTenants(db) })
   }))
 
-  r.post("/", asyncHandler(async (req, res) => {
+  r.post("/", adminOnly, asyncHandler(async (req, res) => {
     const slug = typeof req.body?.slug === "string" ? req.body.slug.trim().toLowerCase() : ""
     const name = typeof req.body?.name === "string" ? req.body.name.trim() : ""
     const err = slugError(slug)
@@ -61,7 +65,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     res.status(201).json(rowToTenant(rows[0], [], 0))
   }))
 
-  r.patch("/:id", asyncHandler(async (req, res) => {
+  r.patch("/:id", adminOnly, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const name = typeof req.body?.name === "string" ? req.body.name.trim() : ""
     if (!name) throw new ApiError(400, "name erforderlich")
@@ -73,7 +77,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     res.json(rowToTenant(rows[0], await tenantMembers(db, rows[0].id), await projectCount(db, rows[0].id)))
   }))
 
-  r.delete("/:id", asyncHandler(async (req, res) => {
+  r.delete("/:id", adminOnly, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const n = await projectCount(db, req.params.id)
     if (n > 0) throw new ApiError(409, `Mandant hat noch ${n} Projekt(e) — erst löschen/verschieben`)
@@ -89,7 +93,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
    *  - Geändertes Passwort → re-provisioniert; Klartext wird gespeichert (Admin-Einsicht).
    *  - Bestehende ohne Passwort-Eingabe (interne Hub-Mitglieder) bleiben unangetastet, nur Rolle.
    *  - Nicht mehr gelistete Mitglieder werden entfernt. */
-  r.put("/:id/members", asyncHandler(async (req, res) => {
+  r.put("/:id/members", tenantAdmin, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const tenant = await getTenantById(db, req.params.id)
     if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
@@ -108,6 +112,12 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       const role = m?.role === "admin" ? "admin" : "user"
       const password = typeof m?.password === "string" ? m.password : ""
       incoming.push({ email, role, password })
+    }
+
+    // T-147: ein Tenant-Admin (kein globaler Admin) darf den Mandanten nicht admin-los
+    // machen (Selbst-Aussperrung). Globaler Setreo-Admin bleibt unbeschränkt.
+    if (!req.ctx?.isAdmin && !incoming.some((m) => m.role === "admin")) {
+      throw new ApiError(400, "Mindestens ein Admin muss erhalten bleiben")
     }
 
     // E-Mail gehört genau einem Mandanten → Fremd-Zuordnung blocken
@@ -164,7 +174,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   }))
 
   /** Einzelnen Kunden-Nutzer anlegen/aktualisieren (Kompatibilität + Direkt-Anlage). */
-  r.post("/:id/users", asyncHandler(async (req, res) => {
+  r.post("/:id/users", tenantAdmin, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const tenant = await getTenantById(db, req.params.id)
     if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
@@ -229,7 +239,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   }))
 
   /** Lizenz setzen: Plan, Seats (Anzahl Codes), Laufzeit. Buchhaltung rechnet extern. */
-  r.patch("/:id/license", asyncHandler(async (req, res) => {
+  r.patch("/:id/license", adminOnly, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const plan = typeof req.body?.plan === "string" && req.body.plan.trim() ? req.body.plan.trim() : "standard"
     const maxSeats = Number(req.body?.maxSeats)
@@ -250,7 +260,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   }))
 
   /** Seat-Codes generieren: auf max_seats auffüllen, oder body.count zusätzliche. */
-  r.post("/:id/seat-codes", asyncHandler(async (req, res) => {
+  r.post("/:id/seat-codes", adminOnly, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const tenant = await getTenantById(db, req.params.id)
     if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
@@ -270,7 +280,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   }))
 
   /** Lizenz + Seat-Codes eines Mandanten (für die Backoffice-/Lizenz-Seite). */
-  r.get("/:id/seat-codes", asyncHandler(async (req, res) => {
+  r.get("/:id/seat-codes", tenantAdmin, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const { rows } = await db.query(
       "SELECT plan, max_seats, valid_until FROM tenants WHERE id = $1",
@@ -288,7 +298,7 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   }))
 
   /** Audit-Log eines Mandanten (wer hat wann was geändert). */
-  r.get("/:id/audit", asyncHandler(async (req, res) => {
+  r.get("/:id/audit", tenantAdmin, asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
     const { rows } = await db.query(
       "SELECT id, tenant_id, actor_email, action, detail, at FROM tenant_audit_log WHERE tenant_id = $1 ORDER BY at DESC LIMIT 200",

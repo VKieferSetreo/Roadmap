@@ -121,10 +121,12 @@ export function createApp({
 
   // gated, aber ohne Tenant-Pflicht — speist Identität + Tenant-Switcher des FE
   app.get("/api/context", asyncHandler(async (req, res) => {
-    const { email, isAdmin, tenant } = req.ctx
+    const { email, isAdmin, isTenantAdmin, tenant } = req.ctx
     res.json({
       email,
       isAdmin,
+      // Tenant-Admin (T-147): darf eigene Nutzer/Seats verwalten (FE schaltet das UI frei).
+      isTenantAdmin: Boolean(isTenantAdmin),
       // extern = Login über setreo-auth-extern (Kunden-Gateway). Steuert FE: eigenes
       // Passwort änderbar + Logo führt zur Projektübersicht statt zum Hub-Admin.
       extern: req.user?.gateway === "extern",

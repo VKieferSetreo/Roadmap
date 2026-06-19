@@ -76,7 +76,15 @@ export function requireRole(...allowed) {
   }
 }
 
-/** Hängt req.ctx = { email, isAdmin, tenant } an — lehnt selbst nichts ab. */
+/** Mandanten-Self-Service-Routen mit :id: globaler Setreo-Admin überall; Tenant-Admin
+ *  (tenant_members.role='admin') NUR im eigenen Mandanten. T-147. */
+export function requireTenantAdminParam(req, res, next) {
+  if (req.ctx?.isAdmin) return next()
+  if (req.ctx?.isTenantAdmin && req.ctx.tenant?.id === req.params?.id) return next()
+  return res.status(403).json({ error: "Keine Berechtigung" })
+}
+
+/** Hängt req.ctx = { email, isAdmin, isTenantAdmin, tenant } an — lehnt selbst nichts ab. */
 export function tenantContext({ db }) {
   return asyncHandler(async (req, res, next) => {
     const email = String(req.user?.email ?? "").toLowerCase()
@@ -96,7 +104,19 @@ export function tenantContext({ db }) {
         tenant = await getTenantBySlug(db, INTERNAL_TENANT_SLUG)
       }
     }
-    req.ctx = { email, isAdmin, tenant }
+    // Tenant-Admin (T-147): tenant_members.role='admin' im AKTUELLEN Mandanten erlaubt
+    // Self-Service-Nutzerverwaltung (eigener Mandant), ohne globaler Setreo-Admin zu sein.
+    // Globaler Admin ist implizit überall Tenant-Admin; auto-zugeordnete SSO-Nutzer ohne
+    // Mitgliedszeile sind es NICHT.
+    let isTenantAdmin = isAdmin
+    if (!isAdmin && tenant) {
+      const { rows } = await db.query(
+        "SELECT role FROM tenant_members WHERE email = $1 AND tenant_id = $2",
+        [email, tenant.id],
+      )
+      isTenantAdmin = rows[0]?.role === "admin"
+    }
+    req.ctx = { email, isAdmin, isTenantAdmin, tenant }
     next()
   })
 }

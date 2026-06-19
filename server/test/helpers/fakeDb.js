@@ -73,6 +73,11 @@ export function createFakeDb() {
       const member = state.members.find((m) => m.email === params[0])
       return ok(member ? state.tenants.filter((t) => t.id === member.tenant_id) : [])
     }
+    // Tenant-Admin-Check (T-147): Rolle eines Mitglieds im konkreten Mandanten.
+    if (sql.startsWith("SELECT role FROM tenant_members WHERE email = $1 AND tenant_id = $2")) {
+      const m = state.members.find((x) => x.email === params[0] && x.tenant_id === params[1])
+      return ok(m ? [{ role: m.role }] : [])
+    }
     if (sql.startsWith("SELECT t.id, t.slug, t.name, t.created_at,")) {
       const rows = [...state.tenants]
         .sort((a, b) => (a.created_at < b.created_at ? -1 : 1))
