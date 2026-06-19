@@ -17,7 +17,7 @@ import type { FindingKategorie, FindingSeverity } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 function Spacer() {
-  return <hr className="my-3 border-t border-neutral-200/70" />
+  return <hr className="my-2.5 border-t border-neutral-200/70" />
 }
 
 /** Beschreibung: 4 Zeilen, dann „mehr lesen" (klappt den vollen Text auf). */
@@ -92,11 +92,13 @@ export function FindingCard({
   return (
     <div>
       {/* 1. Schild (ohne Kasten, groß, an der Überschrift ausgerichtet) + Titel/Untertitel */}
+      {/* Schild mittig zur Titelzeile (items-center). Untertitel direkt darunter, mit dem
+          Titel-Text bündig eingerückt (pl-12 = Schildbreite h-9/w-9 + gap-3), darf umbrechen. */}
       <div className="flex items-center gap-3">
         <KategorieGlyph kategorie={kategorie} signKey={signKey} className="h-9 w-9 shrink-0" />
         <p className="min-w-0 text-[15px] font-semibold leading-snug text-neutral-900">{titel}</p>
       </div>
-      <p className="mt-1 text-xs text-neutral-500">{subtitle}</p>
+      <p className="mt-0.5 pl-12 text-xs leading-snug text-neutral-500">{subtitle}</p>
 
       {media ? <div className="mt-3">{media}</div> : null}
 

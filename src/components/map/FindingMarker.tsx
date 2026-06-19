@@ -158,7 +158,9 @@ export function FindingMarker({
       zIndexOffset={active ? 1000 : 0}
     >
       <Popup maxWidth={340} minWidth={300}>
-        <div className="w-[300px] max-w-[78vw]">
+        {/* max-h + scroll: bei langem Inhalt bleibt die ganze Karte (inkl. Ausblenden-Button
+            + Fußzeile) erreichbar — sonst schneidet das Leaflet-Popup den unteren Teil ab. */}
+        <div className="max-h-[60vh] w-[300px] max-w-[78vw] overflow-y-auto pr-0.5">
           {group.length > 1 ? (
             <div className="mb-2.5 flex gap-1 rounded-md bg-neutral-100 p-0.5">
               {group.map((g, i) => (
