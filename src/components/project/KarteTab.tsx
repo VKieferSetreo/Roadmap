@@ -68,6 +68,7 @@ export function KarteTab({
   project,
   overlayFooter,
   canHide = false,
+  canChat = true,
 }: {
   project: Project
   /** Optionales Element unten im linken Overlay-Stack (gap-2 unter "Strecken").
@@ -76,6 +77,8 @@ export function KarteTab({
   /** Funde für die Auswertung ausblenden anbieten. App = true, öffentliche Freigabe = false.
    *  (Demo patcht lokal, live persistiert per API — daher nicht an `live` gekoppelt.) */
   canHide?: boolean
+  /** Baustellen-Chat anbieten. App = true; öffentliche Freigabe = false (T-224). */
+  canChat?: boolean
 }) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -260,6 +263,7 @@ export function KarteTab({
         onRouteClick={live ? onRouteClick : undefined}
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
         onHide={canHide ? (f) => setHideTarget(f) : undefined}
+        canChat={canChat}
         focusPoint={focusPoint}
       >
 

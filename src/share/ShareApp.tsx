@@ -9,15 +9,16 @@ import { ClipboardList, Loader2, Lock, MapPinned, SearchX } from "lucide-react"
 import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
-import type { Finding, Project, ProjectRoute } from "@/types/domain"
+import type { Finding, Project, ProjectRoute, TransportData } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
-/** Daten-Payload des Public-Share-Endpoints (gestripped — keine Stammdaten). */
+/** Daten-Payload des Public-Share-Endpoints (gestripped — nur Abmessungen als Stammdaten, T-223). */
 interface ShareData {
   name: string
   distanzKm?: number
   fahrzeitMin?: number
   updatedAt: string
+  transport?: TransportData
   routes: ProjectRoute[]
   findings: Finding[]
 }
@@ -82,6 +83,13 @@ export function ShareApp() {
       }
       const body = (await res.json()) as { data: ShareData }
       setState({ status: "offen", data: body.data })
+    } catch {
+      // T-490: Netzwerkfehler beim Entsperren nicht still schlucken — Eingabe-Feld behalten.
+      setState((s) =>
+        s.status === "gesperrt"
+          ? { ...s, fehler: "Verbindung fehlgeschlagen — bitte erneut versuchen." }
+          : s,
+      )
     } finally {
       setBusy(false)
     }
@@ -163,7 +171,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       createdAt: data.updatedAt,
       updatedAt: data.updatedAt,
       routes: data.routes,
-      transport: { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0 },
+      transport: data.transport ?? { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0 },
       zeitraum: {},
       findings: data.findings,
       distanzKm: data.distanzKm,
@@ -176,7 +184,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
     <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
       <Shell projektName={data.name}>
         <Routes>
-          <Route path="/projekte/:id/karte" element={<KarteTab project={project} />} />
+          <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} />} />
           <Route
             path="/projekte/:id/dashboard"
             element={

@@ -40,8 +40,10 @@ export function AppLayout() {
   const newProjectOpen = useUiStore((s) => s.newProjectOpen)
   const closeNewProject = useUiStore((s) => s.closeNewProject)
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
+  const identity = useAuthStore((s) => s.identity)
   const detect = useDataSourceStore((s) => s.detect)
   const mode = useDataSourceStore((s) => s.mode)
+  const backendDown = useDataSourceStore((s) => s.backendDown)
   const loadContext = useContextStore((s) => s.load)
   const ctxLoaded = useContextStore((s) => s.loaded)
   const isAdmin = useContextStore((s) => s.isAdmin)
@@ -124,9 +126,23 @@ export function AppLayout() {
   // Live + eingeloggt, aber keinem Mandanten zugeordnet → Arbeit nicht möglich.
   const keinMandant = mode === "live" && ctxLoaded && !isAdmin && !tenant
 
+  // T-447: Eingeloggter Nutzer, aber Backend ist weg → Demo-Beispieldaten dürfen NICHT als
+  // echt erscheinen. Stattdessen ehrlicher Fehler-Screen. (Anonymer Demo-Modus bekommt das Banner.)
+  const backendDownForUser = mode === "demo" && backendDown && !!identity
+  // T-231: bewusster Demo-Modus (keine Live-DB, kein eingeloggter Nutzer in einer Backend-Panne)
+  const showDemoBanner = mode === "demo" && !backendDownForUser
+
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
       <SetreoHeader onMenuClick={() => setMobileNavOpen(true)} />
+
+      {/* T-231: Demo-Modus app-weit als persistentes Banner — Beispieldaten, keine Live-DB. */}
+      {showDemoBanner ? (
+        <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-100 px-4 py-1.5 text-center text-xs font-medium text-amber-800">
+          <Building2 className="h-3.5 w-3.5 shrink-0" />
+          Demo-Modus — Sie sehen Beispieldaten. Es ist keine Live-Datenbank verbunden.
+        </div>
+      ) : null}
 
       <div className="flex min-h-0 flex-1">
         <AppSidebar
@@ -139,7 +155,24 @@ export function AppLayout() {
           {/* Fehler in einer Seite kapseln → Header + Sidebar (alle Reiter + Dropdown)
               bleiben IMMER stehen; Reset bei Routen-/Mandantenwechsel. */}
           <ContentErrorBoundary resetKey={`${pathname}|${tenant?.id ?? ""}`}>
-            {ctxFailed ? (
+            {backendDownForUser ? (
+              // T-447: eingeloggt, aber Backend weg → kein getarnter Demo-Inhalt.
+              <div className="flex h-full items-center justify-center px-4">
+                <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100">
+                    <WifiOff className="h-6 w-6 text-neutral-500" />
+                  </div>
+                  <h1 className="text-lg font-bold text-neutral-900">Server nicht erreichbar</h1>
+                  <p className="mt-2 text-sm text-neutral-500">
+                    Ihre Daten konnten nicht geladen werden. Es werden bewusst keine Beispieldaten
+                    angezeigt. Bitte erneut versuchen, sobald die Verbindung wieder steht.
+                  </p>
+                  <Button className="mt-5" onClick={() => window.location.reload()}>
+                    <RefreshCcw className="h-4 w-4" /> Erneut laden
+                  </Button>
+                </div>
+              </div>
+            ) : ctxFailed ? (
               // T-479: Kontext-Abruf gescheitert → ehrlicher Wiederholen-Screen statt
               // fälschlich „Kein Mandant zugeordnet" (Backend war nur kurz nicht erreichbar).
               <div className="flex h-full items-center justify-center px-4">

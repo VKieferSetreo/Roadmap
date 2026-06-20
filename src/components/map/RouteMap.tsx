@@ -46,6 +46,8 @@ interface RouteMapProps {
   onDeleteOwn?: (obstacleId: string) => void
   /** wenn gesetzt: Fund aus dem Popup ausblenden (nicht löschen) — für die Sichtung. */
   onHide?: (finding: Finding) => void
+  /** Baustellen-Chat in den Fund-Markern anbieten (App = true, öffentliche Freigabe = false). */
+  canChat?: boolean
   /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
   focusPoint?: { lat: number; lng: number; nonce: number } | null
   className?: string
@@ -62,6 +64,7 @@ export function RouteMap({
   onRouteClick,
   onDeleteOwn,
   onHide,
+  canChat = true,
   focusPoint,
   className,
   children,
@@ -263,6 +266,7 @@ export function RouteMap({
             onSelect={onSelect}
             onDeleteOwn={onDeleteOwn}
             onHide={onHide}
+            canChat={canChat}
           />
         ))}
       </MapContainer>

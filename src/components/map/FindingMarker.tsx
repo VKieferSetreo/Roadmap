@@ -124,6 +124,7 @@ export function FindingMarker({
   onSelect,
   onDeleteOwn,
   onHide,
+  canChat = true,
 }: {
   group: Finding[]
   routes: ProjectRoute[]
@@ -131,6 +132,9 @@ export function FindingMarker({
   onSelect?: (id: string) => void
   onDeleteOwn?: (obstacleId: string) => void
   onHide?: (finding: Finding) => void
+  /** Baustellen-Chat anbieten. App = true; öffentliche Freigabe = false (T-224: kein Chat,
+   *  kein Demo-Seed-Leak an externe Empfänger). */
+  canChat?: boolean
 }) {
   const [tab, setTab] = useState(0)
   // Pop-out-Chat-Panel (Gerüst): rechts ausfahrbar, ohne das Leaflet-Popup zu verschieben.
@@ -145,7 +149,7 @@ export function FindingMarker({
   const current = group[idx]
   // Roter Punkt am Chat-Button nur bei UNGELESENEN Nachrichten; markSeen() beim Öffnen löscht
   // ihn. Query nur für den aktiven (geöffneten) Marker — sonst feuert sie für jeden Marker.
-  const { hasUnread, markSeen } = useFindingChatPresence(current.key ?? current.id, active)
+  const { hasUnread, markSeen } = useFindingChatPresence(current.key ?? current.id, active && canChat)
 
   return (
     <Marker
@@ -181,7 +185,7 @@ export function FindingMarker({
           {/* Geister-Karte als Collapsed-Hinweis: schaut rechts minimal hervor (origin-right +
               scale-90 hält die rechte Kante und schiebt sie 8px raus → man sieht, dass dahinter
               etwas ist). Nur an/aus, kein Fade. */}
-          {!chatOpen ? (
+          {canChat && !chatOpen ? (
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 origin-right translate-x-2 scale-90 rounded-xl border border-neutral-200 bg-white shadow-md"
@@ -193,6 +197,7 @@ export function FindingMarker({
               wird — so bleibt es eine reine Schiebe-Animation ohne Transparenz. */}
           {/* pointer-events-none am Container → die (unsichtbare) Fläche über der Karte fängt
               die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
+          {canChat ? (
           <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
             {/* Pop-out-Panel: 40% breiter (w-420), reine translate-Animation (kein opacity/scale).
                 Überlappt links 20px hinter der Hauptkarte — Inhalt per pl-5 nach rechts gedrückt. */}
@@ -216,6 +221,7 @@ export function FindingMarker({
               <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
             </div>
           </div>
+          ) : null}
 
           {/* Hauptkarte — bestimmt die Leaflet-Box. min-h hält eine angenehme Mindesthöhe,
               max-h + scroll fängt langen Inhalt ab. flex-col, damit die FindingCard (flex-1)
@@ -248,6 +254,7 @@ export function FindingMarker({
 
           {/* Chat-Button auf der rechten Kante (Sibling des Wrappers, NICHT im Scroll-Div) —
               öffnet/schließt das Chat-Panel. Rote Markierung bei Einträgen. */}
+          {canChat ? (
           <button
             type="button"
             aria-expanded={chatOpen}
@@ -269,6 +276,7 @@ export function FindingMarker({
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-red-500" />
             ) : null}
           </button>
+          ) : null}
         </div>
       </Popup>
     </Marker>

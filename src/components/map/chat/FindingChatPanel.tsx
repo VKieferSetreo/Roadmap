@@ -20,7 +20,9 @@ export function FindingChatPanel({
   findingKey: string
   obstacleId?: string | null
 }) {
-  const [scope, setScope] = useState<ChatScope>("public")
+  // T-448: Default = intern (nur eigener Mandant). „Öffentlich" ist DB-weit sichtbar und muss
+  // eine bewusste Wahl sein — sonst landet eine interne Notiz versehentlich bei allen Mandanten.
+  const [scope, setScope] = useState<ChatScope>("internal")
   // obstacleId vorerst ungenutzt durchgereicht — Naht für späteres Verknüpfen.
   void obstacleId
 
@@ -49,6 +51,13 @@ export function FindingChatPanel({
           </button>
         ))}
       </div>
+
+      {/* T-448: bei „Öffentlich" deutlich machen, dass dies DB-weit (alle Mandanten) sichtbar ist. */}
+      {scope === "public" ? (
+        <p className="mx-2 mb-1 rounded bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-700">
+          Öffentlich — sichtbar für alle Mandanten, inkl. Ihrer Organisation. Intern bleibt nur in Ihrem Mandanten.
+        </p>
+      ) : null}
 
       {/* Nachrichtenbereich — scrollt intern, hält das Panel auf konstanter Breite */}
       <div className="flex-1 overflow-y-auto px-3 py-2">

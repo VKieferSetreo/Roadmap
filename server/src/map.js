@@ -139,15 +139,23 @@ export function rowToNotification(row) {
 }
 
 /**
- * Gestrippte Public-Share-Sicht: KEINE Stammdaten (transport/zeitraum), KEINE
- * Admin-Felder (status, tenantId, share, createdAt). Nur Karte + Auswertung.
+ * Gestrippte Public-Share-Sicht: NUR die Transport-Abmessungen (Länge/Breite/Höhe/Gewicht —
+ * T-223: der Empfänger braucht sie zur Einordnung der Funde), KEINE weiteren Stammdaten
+ * (zeitraum) und KEINE Admin-Felder (status, tenantId, share, createdAt). Nur Karte + Auswertung.
  */
 export function rowToShareData(row, findings = []) {
+  const t = row.transport ?? {}
   return {
     name: row.name,
     ...(row.distanz_km != null && { distanzKm: Number(row.distanz_km) }),
     ...(row.fahrzeit_min != null && { fahrzeitMin: Number(row.fahrzeit_min) }),
     updatedAt: toIso(row.updated_at),
+    transport: {
+      laenge: Number(t.laenge) || 0,
+      breite: Number(t.breite) || 0,
+      hoehe: Number(t.hoehe) || 0,
+      gesamtgewicht: Number(t.gesamtgewicht) || 0,
+    },
     routes: (row.routes ?? []).map((r) => ({
       id: r.id,
       name: r.name,
