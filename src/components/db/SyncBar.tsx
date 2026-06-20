@@ -190,6 +190,15 @@ export function SyncBar() {
         </div>
       </div>
 
+      {/* T-228: Quellen-Status-Query selbst fehlgeschlagen → ehrlich melden statt stumm 0 Quellen.
+          Aktualisieren-Button bleibt als Retry aktiv. */}
+      {status.isError ? (
+        <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span>Quellen-Status nicht abrufbar — angezeigte Stände können veraltet sein.</span>
+        </p>
+      ) : null}
+
       {/* Erreichbarkeit: letzter automatischer Abruf (3×/Tag). Manuelles Anpingen → Quellen-Tab. */}
       {intern && autoFehler.length > 0 ? (
         <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">

@@ -148,10 +148,13 @@ export function AppLayout() {
         open={newProjectOpen}
         onClose={closeNewProject}
         onCreate={(name) => {
-          void createProject(name).then((p) => {
-            closeNewProject()
-            navigate(`/projekte/${p.id}/route`)
-          })
+          void createProject(name)
+            .then((p) => {
+              closeNewProject()
+              navigate(`/projekte/${p.id}/route`)
+            })
+            // T-230: bei Live-Fehler hat der Store bereits getoastet — Dialog offen lassen (Retry), kein Crash.
+            .catch(() => {})
         }}
       />
 

@@ -28,13 +28,23 @@ export function AnlageTab({ project }: { project: Project }) {
   const running = analysis?.running ?? false
   const routeReady = project.routes.some((r) => r.points.length >= 2)
 
+  // T-222: ohne Höhe/Gewicht prüft die Engine keine Durchfahrtshöhen/Traglastgrenzen — weich warnen.
+  const t = project.transport
+  const fehltHoehe = !Number.isFinite(t?.hoehe) || (t?.hoehe ?? 0) <= 0
+  const fehltGewicht = !Number.isFinite(t?.gesamtgewicht) || (t?.gesamtgewicht ?? 0) <= 0
+  const fehltMass = fehltHoehe || fehltGewicht
+
   const onRun = () => {
     if (!routeReady) {
       toast.error("Bitte zuerst oben eine Strecke anlegen.")
       return
     }
     runAnalysis(project.id)
-    toast.info("Auswertung gestartet …")
+    if (fehltMass) {
+      toast.warning("Auswertung gestartet — ohne Höhe/Gewicht bleiben Brücken-/Traglastgrenzen ungeprüft.")
+    } else {
+      toast.info("Auswertung gestartet …")
+    }
   }
 
   return (
@@ -263,6 +273,24 @@ export function AnlageTab({ project }: { project: Project }) {
                   "Oben eine Strecke anlegen, um die Auswertung zu starten."
                 )}
               </div>
+              {/* T-222: Weicher Hinweis (nicht-blockierend) wenn Höhe/Gewicht fehlen — die Auswertung
+                  kann dann Durchfahrtshöhen/Traglastgrenzen nicht prüfen. */}
+              {fehltMass && routeReady ? (
+                <div
+                  role="alert"
+                  className="mb-2 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+                >
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {fehltHoehe && fehltGewicht
+                      ? "Höhe und Gesamtgewicht fehlen"
+                      : fehltHoehe
+                        ? "Höhe fehlt"
+                        : "Gesamtgewicht fehlt"}{" "}
+                    — ohne diese Angaben prüft die Auswertung keine Durchfahrtshöhen bzw. Traglastgrenzen.
+                  </span>
+                </div>
+              ) : null}
               {/* Aktionen nebeneinander: „Ergebnis öffnen" links, „Erneut auswerten" rechts
                   (etwas breiter). „Letzter Stand" hängt direkt unter dem Auswerten-Button,
                   im selben relativen Format wie der Header-Sync (heute/gestern/Datum). */}

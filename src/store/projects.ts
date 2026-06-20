@@ -38,6 +38,7 @@ interface ProjectStore {
   /** laufende Analysen je Projekt-ID (ephemer). */
   analysis: Record<string, AnalysisState>
   seeded: boolean
+  loadError: boolean // T-228: letzter loadProjects ist mit Fehler gescheitert (≠ legitim leer)
   /** true während der initiale Live-Load läuft (Skeletons). */
   loading: boolean
 
@@ -149,6 +150,7 @@ export const useProjectStore = create<ProjectStore>()(
       analysis: {},
       seeded: false,
       loading: false,
+      loadError: false,
 
       initData: async (mode) => {
         if (mode === "demo") {
@@ -159,14 +161,15 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       loadProjects: async () => {
-        set({ loading: true })
+        set({ loading: true, loadError: false })
         try {
           const projects = await api.listProjects()
           // projects IMMER als Array halten — sonst crasht jeder s.projects.find/[...projects]
           // (z.B. ProjectDetail, AppSidebar) beim Render, u.a. nach Mandantenwechsel.
-          set({ projects: Array.isArray(projects) ? projects : [], loading: false, seeded: true })
+          set({ projects: Array.isArray(projects) ? projects : [], loading: false, loadError: false, seeded: true })
         } catch {
-          set({ loading: false })
+          // T-228: loadError markieren → DashboardHome zeigt Fehler+Retry statt Erstanlage-Onboarding.
+          set({ loading: false, loadError: true })
           toast.error("Projekte konnten nicht geladen werden.")
         }
       },
@@ -207,10 +210,14 @@ export const useProjectStore = create<ProjectStore>()(
             const project = await api.createProject(name.trim())
             set((s) => ({ projects: [project, ...s.projects] }))
             return project
-          } catch {
-            toast.error("Projekt konnte nicht auf dem Server angelegt werden — lokal angelegt.")
+          } catch (e) {
+            // T-230: im Live-Modus KEIN Phantom-Projekt mit lokaler uid() anlegen — das löste über
+            // scheduleSync Dauer-404-PATCHes aus. Fehler melden + werfen (Aufrufer fängt ab).
+            toast.error("Projekt konnte nicht angelegt werden — bitte erneut versuchen.")
+            throw e instanceof Error ? e : new Error("createProject fehlgeschlagen")
           }
         }
+        // Demo (kein Backend): lokales Projekt ist gewollt.
         const project = fallback()
         set((s) => ({ projects: [project, ...s.projects] }))
         return project

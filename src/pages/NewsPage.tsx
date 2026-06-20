@@ -29,6 +29,7 @@ export function NewsPage() {
   const apiVersion = useDataSourceStore((s) => s.apiVersion)
   const [items, setItems] = useState<News[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false) // T-228
   const [kategorie, setKategorie] = useState<NewsKategorie>("hinweis")
   const [titel, setTitel] = useState("")
   const [body, setBody] = useState("")
@@ -39,12 +40,14 @@ export function NewsPage() {
 
   const load = async () => {
     setLoading(true)
+    setError(false)
     try {
       setItems(await api.news.list())
       await syncNews() // Store mitziehen, damit der Ungelesen-Zähler stimmt
       markAllSeen() // Öffnen der Seite = alles gelesen → roter Punkt verschwindet
     } catch {
-      // Liste leer lassen — Fehler ist hier nicht kritisch.
+      // T-228: Fehler ehrlich anzeigen statt als „Noch keine News" zu tarnen.
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -168,6 +171,13 @@ export function NewsPage() {
 
           {loading ? (
             <p className="text-sm text-neutral-400">Lädt …</p>
+          ) : error ? (
+            // T-228: Ladefehler ehrlich statt „Noch keine News".
+            <EmptyState
+              icon={Newspaper}
+              title="News konnten nicht geladen werden"
+              description="Der News-Feed ist gerade nicht erreichbar. Bitte später erneut versuchen."
+            />
           ) : items.length === 0 ? (
             <EmptyState
               icon={Newspaper}

@@ -8,7 +8,7 @@ import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { Button } from "@/components/ui/Button"
 import {
   imExportZeitraum,
-  KATEGORIE_META,
+  katMeta,
   SEVERITY_META,
   SEVERITY_ORDER,
   visibleFindings,
@@ -202,7 +202,7 @@ export function ReportView({
                           {f.km.toLocaleString("de-DE")}
                         </td>
                         <td className="py-1.5 pr-2 text-neutral-700">
-                          {KATEGORIE_META[f.kategorie].label}
+                          {katMeta(f.kategorie).label}
                         </td>
                         <td className="py-1.5 pr-2">
                           <p className="font-medium text-neutral-900">

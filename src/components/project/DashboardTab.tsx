@@ -81,6 +81,8 @@ export function DashboardTab({
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
+  // T-220: läuft gerade eine (Re-)Auswertung? Dann fertigen Inhalt behalten statt Empty-Flash.
+  const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
 
   // Ausgeblendete Funde fließen NIE in Aggregate/Liste/Charts — nur separat als "Ausgeblendet".
   const sichtbar = useMemo(() => visibleFindings(project.findings), [project.findings])
@@ -104,7 +106,9 @@ export function DashboardTab({
       )
   }, [sichtbar, sevFilter, katFilter, routeFilter, query])
 
-  if (project.status !== "fertig") {
+  // T-220: Empty-State nur wenn wirklich nichts da ist — während des Re-Auswertens (running) oder
+  // bei vorhandenen Funden (z.B. server-seitig status='analyse' ohne Client-Timer) Inhalt behalten.
+  if (project.status !== "fertig" && !running && project.findings.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-10">
         <EmptyState
@@ -201,7 +205,7 @@ export function DashboardTab({
           </CardHeader>
           <CardContent className="pt-1">
             <Suspense fallback={<ChartSkeleton />}>
-              <SeverityDonut findings={sichtbar} />
+              <SeverityDonut findings={filtered} />
             </Suspense>
           </CardContent>
         </Card>
@@ -211,14 +215,14 @@ export function DashboardTab({
           </CardHeader>
           <CardContent className="pt-1">
             <Suspense fallback={<ChartSkeleton />}>
-              <KategorieBar findings={sichtbar} />
+              <KategorieBar findings={filtered} />
             </Suspense>
           </CardContent>
         </Card>
       </div>
 
-      {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse) */}
-      {sichtbar.length > 0 ? (
+      {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse). T-219: aus dem gefilterten Set. */}
+      {filtered.length > 0 ? (
         <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
@@ -229,7 +233,7 @@ export function DashboardTab({
             {project.routes
               .filter((r) => r.points.length >= 2)
               .map((r) => {
-                const routeFindings = sichtbar.filter((f) => f.routeId === r.id)
+                const routeFindings = filtered.filter((f) => f.routeId === r.id)
                 if (routeFindings.length === 0) return null
                 return (
                   <div key={r.id}>

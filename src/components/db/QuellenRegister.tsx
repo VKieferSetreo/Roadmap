@@ -120,6 +120,13 @@ export function QuellenRegister() {
 
       {status.isLoading ? (
         <div className="skeleton h-64 w-full rounded-xl" />
+      ) : status.isError ? (
+        // T-228: Ladefehler nicht als „keine Quelle" tarnen.
+        <EmptyState
+          icon={Database}
+          title="Quellenregister nicht abrufbar"
+          description="Die Quellen konnten gerade nicht geladen werden. Bitte später erneut versuchen."
+        />
       ) : quellen.length === 0 ? (
         <EmptyState icon={Search} title="Keine Quelle gefunden" description={`Kein Treffer für „${q.trim()}".`} />
       ) : (

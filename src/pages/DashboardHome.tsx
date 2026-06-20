@@ -1,7 +1,7 @@
 // Home — Hero (schlank) + Projekt-Übersicht mit Karten-/Listen-Ansicht.
 // Seed/Initial-Load passiert zentral im AppLayout (Datasource-Detection).
 
-import { Archive, ChevronDown, FolderPlus, LayoutGrid, List, Plus, Search, X } from "lucide-react"
+import { Archive, ChevronDown, FolderPlus, LayoutGrid, List, Plus, RefreshCcw, Search, WifiOff, X } from "lucide-react"
 import { useState } from "react"
 import { useProjectStore } from "@/store/projects"
 import { useUiStore } from "@/store/ui"
@@ -15,6 +15,8 @@ import { cn } from "@/lib/cn"
 export function DashboardHome() {
   const projects = useProjectStore((s) => s.projects ?? [])
   const loading = useProjectStore((s) => s.loading)
+  const loadError = useProjectStore((s) => s.loadError) // T-228
+  const loadProjects = useProjectStore((s) => s.loadProjects)
   const openNewProject = useUiStore((s) => s.openNewProject)
   const ansicht = useSettingsStore((s) => s.projektAnsicht)
   const setAnsicht = useSettingsStore((s) => s.setProjektAnsicht)
@@ -169,6 +171,20 @@ export function DashboardHome() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : loadError && sorted.length === 0 ? (
+          // T-228: Backend-Fehler NICHT als „erstes Projekt"-Onboarding tarnen (zahlender Bestandskunde).
+          <div className="mt-6">
+            <EmptyState
+              icon={WifiOff}
+              title="Projekte konnten nicht geladen werden"
+              description="Das Backend ist gerade nicht erreichbar. Bitte Verbindung prüfen und erneut laden."
+              cta={
+                <Button onClick={() => void loadProjects()}>
+                  <RefreshCcw className="h-4 w-4" /> Erneut laden
+                </Button>
+              }
+            />
           </div>
         ) : sorted.length === 0 ? (
           <div className="mt-6">

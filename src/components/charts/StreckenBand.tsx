@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from "react"
 import type { Finding } from "@/types/domain"
-import { KATEGORIE_META, SEVERITY_META } from "@/components/project/findingMeta"
+import { katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { cn } from "@/lib/cn"
 
 interface StreckenBandProps {
@@ -165,7 +165,7 @@ export function StreckenBand({
             />
             <span className="font-medium text-neutral-700">{activeItem.f.titel}</span>
             <span>
-              · {KATEGORIE_META[activeItem.f.kategorie].label} · km{" "}
+              · {katMeta(activeItem.f.kategorie).label} · km{" "}
               {activeItem.f.km.toLocaleString("de-DE")}
             </span>
           </span>

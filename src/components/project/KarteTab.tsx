@@ -94,6 +94,7 @@ export function KarteTab({
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
+  const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false) // T-220
   const hideFinding = useProjectStore((s) => s.hideFinding)
   /** Fund, der gerade ausgeblendet wird (öffnet die Grund-Abfrage). */
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
@@ -177,7 +178,10 @@ export function KarteTab({
     setTrefferIdx(-1)
   }
 
-  if (project.status !== "fertig" || !project.routes.some((r) => r.points.length >= 2)) {
+  // T-220: Karte während (Re-)Auswertung sichtbar lassen (running/vorhandene Funde) statt Empty-Flash;
+  // ohne Strecken-Punkte gibt es nichts zu zeigen.
+  const hatRouten = project.routes.some((r) => r.points.length >= 2)
+  if (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0)) {
     return (
       <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
         <EmptyState
