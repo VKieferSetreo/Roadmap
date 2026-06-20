@@ -127,9 +127,17 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response?.data && typeof error.response.data === "object") {
-      const body = error.response.data
+      const body = error.response.data as ApiErrorBody & { error?: string }
       if (body.code && body.message) {
         return Promise.reject(new ApiError(body, error.response.status))
+      }
+      // T-316: Das Backend liefert seinen Fehlerkontrakt als {error:"…deutsche Meldung…"}.
+      // Ohne dieses Mapping ginge JEDE Server-Meldung als generischer englischer NETWORK_ERROR
+      // verloren (FE erwartete nur {code,message}). Status bleibt für die status-basierte Logik erhalten.
+      if (typeof body.error === "string" && body.error) {
+        return Promise.reject(
+          new ApiError({ code: `HTTP_${error.response.status}`, message: body.error }, error.response.status),
+        )
       }
     }
 

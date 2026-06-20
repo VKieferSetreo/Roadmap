@@ -12,6 +12,8 @@
 // läuft normal weiter, es gehen nur keine Mails raus. So bleibt der Sync-/Rerun-Pfad
 // robust, falls Mailjet (vorübergehend) nicht erreichbar/konfiguriert ist.
 
+import { captureException } from "../sentry.js"
+
 const MAILJET_ENDPOINT = "https://api.mailjet.com/v3.1/send"
 
 export function mailConfig(env = process.env) {
@@ -69,12 +71,19 @@ export async function sendMail(
     if (!res.ok) {
       const detail = await res.text().catch(() => "")
       log(`mail: Mailjet-Fehler ${res.status} ${detail.slice(0, 200)}`)
+      // T-486: still scheiternde Mails (Reset/Benachrichtigung) brauchen ein Operator-Signal.
+      captureException(new Error(`Mailjet ${res.status}`), {
+        subject,
+        recipients: to.length,
+        detail: detail.slice(0, 200),
+      })
       return { sent: 0, error: `mailjet ${res.status}` }
     }
     log(`mail: ${to.length} Mail(s) versendet ("${subject}")`)
     return { sent: to.length }
   } catch (err) {
     log(`mail: Versand fehlgeschlagen — ${err?.message ?? err}`)
+    captureException(err instanceof Error ? err : new Error(String(err)), { subject, recipients: to.length }) // T-486
     return { sent: 0, error: String(err?.message ?? err) }
   }
 }

@@ -20,8 +20,11 @@ const esc = (v) =>
   String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
 const fmtDate = (d) => {
-  const s = d ? String(d).slice(0, 10) : ""
-  return s ? s.split("-").reverse().join(".") : ""
+  if (!d) return ""
+  // T-473: pg liefert DATE/timestamp mal als ISO-String, mal als Date-Objekt. String(dateObj)
+  // ergäbe "Tue Jun 30 2026 …" → kaputt. Beide Fälle robust auf TT.MM.JJJJ normalisieren.
+  const iso = d instanceof Date ? d.toISOString().slice(0, 10) : String(d).slice(0, 10)
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso.split("-").reverse().join(".") : ""
 }
 const gueltig = (f) => {
   const v = fmtDate(f.gueltig_von)
