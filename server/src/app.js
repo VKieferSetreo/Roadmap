@@ -15,6 +15,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 import express from "express"
+import compression from "compression"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { requestId } from "./requestId.js"
@@ -94,6 +95,9 @@ export function createApp({
   const app = express()
   app.disable("x-powered-by")
   app.use(requestId()) // T-468: Request-/Trace-ID-Korrelation, ganz früh (vor allem inkl. Health)
+  // T-312: gzip — die Hindernis-/Projekt-Responses sind groß (z.B. ~39k aktive Hindernisse,
+  // ~15-20 MB JSON) → komprimiert ~2-3 MB auf der Leitung. Greift für alle Responses.
+  app.use(compression())
   app.use(express.json({ limit: "20mb" }))
 
   // IMMER ungated (Docker-HEALTHCHECK, Proxy-Probes)
