@@ -10,6 +10,8 @@ import type { Tenant } from "@/types/domain"
 
 interface ContextStore {
   loaded: boolean
+  /** Kontext-Abruf ist fehlgeschlagen (Netz/Server) — NICHT mit „kein Mandant" verwechseln (T-479). */
+  loadFailed: boolean
   email: string
   isAdmin: boolean
   /** Mandanten-eigener Admin (tenant_members.role='admin') — darf eigene Nutzer/Seats verwalten (T-147). */
@@ -29,6 +31,7 @@ interface ContextStore {
 
 export const useContextStore = create<ContextStore>((set) => ({
   loaded: false,
+  loadFailed: false,
   email: "",
   isAdmin: false,
   isTenantAdmin: false,
@@ -46,6 +49,7 @@ export const useContextStore = create<ContextStore>((set) => ({
       const ctx = await api.context()
       set({
         loaded: true,
+        loadFailed: false,
         email: ctx.email,
         isAdmin: ctx.isAdmin,
         isTenantAdmin: ctx.isTenantAdmin === true,
@@ -55,7 +59,9 @@ export const useContextStore = create<ContextStore>((set) => ({
       })
       if (ctx.isAdmin && ctx.tenant) setTenantHeader(ctx.tenant.slug)
     } catch {
-      set({ loaded: true })
+      // T-479: Abruf gescheitert ≠ „kein Mandant". Flag setzen, damit das AppLayout
+      // einen Wiederholen-Screen zeigt statt fälschlich „Kein Mandant zugeordnet".
+      set({ loaded: true, loadFailed: true })
     }
   },
 

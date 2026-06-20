@@ -1,8 +1,9 @@
 // App-Shell: Setreo-Header (oben) + [Sidebar | Inhalt] + Setreo-Footer (unten).
 // Hält den globalen "Neues Projekt"-Dialog.
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import { SetreoHeader } from "./SetreoHeader"
 import { SetreoFooter } from "./SetreoFooter"
 import { AppSidebar } from "./AppSidebar"
@@ -19,8 +20,10 @@ import { useHeartbeat } from "@/hooks/useHeartbeat"
 import { RedeemSeat } from "@/components/account/RedeemSeat"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { api } from "@/api/roadmap"
+import { AUTH_FAILURE_EVENT } from "@/api/client"
+import { Button } from "@/components/ui/Button"
 import { BUILD_BASE, slugFromPath, withSlug } from "@/lib/tenantUrl"
-import { Building2 } from "lucide-react"
+import { Building2, RefreshCcw, WifiOff } from "lucide-react"
 
 export function AppLayout() {
   const navigate = useNavigate()
@@ -45,11 +48,30 @@ export function AppLayout() {
   const tenant = useContextStore((s) => s.tenant)
   const extern = useContextStore((s) => s.extern)
   const email = useContextStore((s) => s.email)
+  const ctxFailed = useContextStore((s) => s.loadFailed)
   const [needDisclaimer, setNeedDisclaimer] = useState(false)
   const [acceptingDisc, setAcceptingDisc] = useState(false)
 
   // App-weiter Heartbeat (Plattform-Analytics) — pingt im Live-Modus, solange eingeloggt.
   useHeartbeat()
+
+  // T-221: Sitzung abgelaufen (irgendein 401) → einmalig melden und in Prod zum Login leiten.
+  // Re-Entrancy-Guard, da bei einem Token-Ablauf mehrere Requests gleichzeitig 401 liefern.
+  const authHandled = useRef(false)
+  useEffect(() => {
+    const onAuthFail = () => {
+      if (authHandled.current) return
+      authHandled.current = true
+      toast.error("Ihre Sitzung ist abgelaufen — Sie werden neu angemeldet.")
+      if (import.meta.env.PROD) {
+        setTimeout(() => {
+          window.location.href = "/auth/login"
+        }, 1500)
+      }
+    }
+    window.addEventListener(AUTH_FAILURE_EVENT, onAuthFail)
+    return () => window.removeEventListener(AUTH_FAILURE_EVENT, onAuthFail)
+  }, [])
 
   // Boot: SSO-Identität holen + Datenquelle erkennen (Backend live vs. Demo-Modus).
   // Live: erst Nutzer-/Mandanten-Kontext (setzt X-Tenant für Admins), dann Projekte.
@@ -117,7 +139,25 @@ export function AppLayout() {
           {/* Fehler in einer Seite kapseln → Header + Sidebar (alle Reiter + Dropdown)
               bleiben IMMER stehen; Reset bei Routen-/Mandantenwechsel. */}
           <ContentErrorBoundary resetKey={`${pathname}|${tenant?.id ?? ""}`}>
-            {keinMandant ? (
+            {ctxFailed ? (
+              // T-479: Kontext-Abruf gescheitert → ehrlicher Wiederholen-Screen statt
+              // fälschlich „Kein Mandant zugeordnet" (Backend war nur kurz nicht erreichbar).
+              <div className="flex h-full items-center justify-center px-4">
+                <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100">
+                    <WifiOff className="h-6 w-6 text-neutral-500" />
+                  </div>
+                  <h1 className="text-lg font-bold text-neutral-900">Verbindung fehlgeschlagen</h1>
+                  <p className="mt-2 text-sm text-neutral-500">
+                    Ihr Konto-Kontext konnte nicht geladen werden. Das Backend ist gerade nicht
+                    erreichbar. Bitte erneut versuchen.
+                  </p>
+                  <Button className="mt-5" onClick={() => window.location.reload()}>
+                    <RefreshCcw className="h-4 w-4" /> Erneut laden
+                  </Button>
+                </div>
+              </div>
+            ) : keinMandant ? (
               extern ? (
                 // Externer Self-Service-Nutzer ohne Mandant → Seat-Code einlösen.
                 <RedeemSeat email={email} />

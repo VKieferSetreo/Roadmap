@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/Card"
 import { useContextStore } from "@/store/context"
 import { useProjectStore } from "@/store/projects"
 import type { SyncJob } from "@/types/domain"
+import { summarizeRuns } from "@/lib/syncSummary"
 import { cn } from "@/lib/cn"
 
 /** Sekunden → "noch ~3 min" / "noch ~25 s" (grobe ETA, daher ~). */
@@ -112,23 +113,9 @@ export function SyncBar() {
     if (j.status === "error") {
       if (initiator) toast.error("Aktualisierung fehlgeschlagen.")
     } else if (initiator) {
-      const neu = j.rerun?.benachrichtigungen ?? 0
-      const importiert = j.runs.reduce((s, r) => s + (r.stats?.neu ?? 0), 0)
-      // T-472: fehlgeschlagene/unvollständige Quellen ehrlich benennen statt pauschalem Erfolg
-      // (sonst geht eine still scheiternde Quelle als Voll-Erfolg durch — siehe 0147-Fall).
-      const fehler = j.runs.filter((r) => r.status === "error").length
-      const teil = j.runs.filter((r) => r.status === "partial").length
-      const probleme = [
-        fehler > 0 && `${fehler} Quelle${fehler === 1 ? "" : "n"} nicht erreichbar`,
-        teil > 0 && `${teil} unvollständig`,
-      ]
-        .filter(Boolean)
-        .join(", ")
-      const text =
-        `Aktualisiert · ${importiert} neue Einträge` +
-        (neu > 0 ? ` · ${neu} neue Benachrichtigung${neu === 1 ? "" : "en"}` : "") +
-        (probleme ? ` · ${probleme}` : "")
-      if (probleme) toast.warning(text)
+      // T-472/T-233: still scheiternde/unvollständige Quellen ehrlich benennen (geteilter Helper).
+      const { text, hasProblem } = summarizeRuns(j)
+      if (hasProblem) toast.warning(text)
       else toast.success(text)
     }
     void qc.invalidateQueries({ queryKey: ["sync-status"] })

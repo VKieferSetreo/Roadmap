@@ -25,12 +25,19 @@ export function RedeemSeat({ email }: { email: string }) {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
-    const trimmed = code.trim()
-    if (!trimmed || busy) return
+    if (busy) return
+    // T-245: Eingabe robust normalisieren — Groß/Klein, Leerzeichen und Trennzeichen egal.
+    // 16 alphanumerische Zeichen → kanonisch als XXXX-XXXX-XXXX-XXXX an das Backend.
+    const clean = code.toUpperCase().replace(/[^A-Z0-9]/g, "")
+    if (clean.length !== 16) {
+      setError("Ein Seat-Code hat 16 Zeichen (z. B. XXXX-XXXX-XXXX-XXXX). Bitte prüfen Sie die Eingabe.")
+      return
+    }
+    const normalized = clean.match(/.{4}/g)!.join("-")
     setBusy(true)
     setError(null)
     try {
-      await api.account.redeemSeat(trimmed)
+      await api.account.redeemSeat(normalized)
       // Erfolg → App neu booten; der Kontext lädt danach mit zugeordnetem Mandanten.
       window.location.reload()
     } catch (err) {

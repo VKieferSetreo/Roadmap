@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import {
   ArrowDownCircle, Bell, Check, CheckCheck, Pencil, Trash2, TriangleAlert,
 } from "lucide-react"
@@ -73,17 +74,21 @@ export function NotificationBell() {
     void qc.invalidateQueries({ queryKey: ["notif-list"] })
   }
 
+  // T-234: Aktionen dürfen nicht still scheitern (Badge bliebe falsch stehen) → onError-Toast.
   const markRead = useMutation({
     mutationFn: (id: string) => api.notifications.read(id),
     onSuccess: invalidate,
+    onError: () => toast.error("Konnte nicht als gelesen markiert werden."),
   })
   const markAll = useMutation({
     mutationFn: () => api.notifications.readAll(),
     onSuccess: invalidate,
+    onError: () => toast.error("Konnte nicht alle als gelesen markieren."),
   })
   const deleteAll = useMutation({
     mutationFn: () => api.notifications.deleteAll(),
     onSuccess: invalidate,
+    onError: () => toast.error("Nachrichten konnten nicht gelöscht werden."),
   })
 
   useEffect(() => {

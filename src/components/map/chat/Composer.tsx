@@ -42,6 +42,8 @@ export function Composer({
     try {
       await onSend(body.trim())
       setBody("")
+    } catch {
+      // T-234: Fehler wurde bereits getoastet (useFindingChat onError) — Eingabe für Retry behalten.
     } finally {
       setSending(false)
     }
@@ -66,6 +68,8 @@ export function Composer({
         note: cNote.trim() || undefined,
       })
       resetContact()
+    } catch {
+      // T-234: bereits getoastet — Formular offen lassen, Eingaben behalten.
     } finally {
       setSending(false)
     }

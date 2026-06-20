@@ -9,6 +9,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
+import { useProjectStore } from "@/store/projects"
+import { summarizeRuns } from "@/lib/syncSummary"
 import { cn } from "@/lib/cn"
 import { formatStampDE } from "@/lib/format"
 
@@ -77,7 +79,18 @@ export function HeaderSync() {
       return
     }
     if (startedHere.current) {
-      // kurz „fertig" (Balken 100 %) zeigen, dann harter Reload → alles frisch
+      // T-233: lief etwas schief (Quelle nicht erreichbar / unvollständig), darf der harte
+      // Reload die Warnung nicht wegwischen → Warn-Toast + In-Place-Refresh, kein Reload.
+      const { text, hasProblem } = summarizeRuns(j)
+      if (hasProblem) {
+        toast.warning(text)
+        for (const key of REFRESH_KEYS) void qc.invalidateQueries({ queryKey: [key] })
+        void useProjectStore.getState().loadProjects()
+        setJobId(null)
+        startedHere.current = false
+        return
+      }
+      // sauber durch: kurz „fertig" (Balken 100 %) zeigen, dann harter Reload → alles frisch
       const t = setTimeout(() => window.location.reload(), 900)
       return () => clearTimeout(t)
     }

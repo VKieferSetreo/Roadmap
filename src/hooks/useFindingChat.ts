@@ -6,6 +6,7 @@
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 import { api } from "@/api/roadmap"
 import { useAuthStore } from "@/store/auth"
@@ -198,6 +199,8 @@ export function useFindingChat(
       void qc.invalidateQueries({ queryKey: ["finding-chat", findingKey, scope] })
       void qc.invalidateQueries({ queryKey: ["finding-chat-presence", findingKey] })
     },
+    // T-234: Senden darf nicht still scheitern — Nachricht behalten (Composer leert nicht).
+    onError: () => toast.error("Nachricht konnte nicht gesendet werden — bitte erneut versuchen."),
   })
 
   // — DEMO —

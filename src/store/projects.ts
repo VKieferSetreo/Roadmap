@@ -443,6 +443,13 @@ export const useProjectStore = create<ProjectStore>()(
             analysis: { ...s.analysis, [id]: { running: false, progress: 100, step: "Fertig" } },
             projects: s.projects.map((pp) => (pp.id === id ? apply(pp) : pp)),
           }))
+          // T-234: Auswertung war bislang ohne Abschluss-Feedback — Erfolg klar melden.
+          const n = get().getProject(id)?.findings.length ?? 0
+          toast.success(
+            n > 0
+              ? `Auswertung abgeschlossen · ${n} Fund${n === 1 ? "" : "e"}`
+              : "Auswertung abgeschlossen · keine Hindernisse gefunden",
+          )
         }
 
         const fail = (message: string) => {
