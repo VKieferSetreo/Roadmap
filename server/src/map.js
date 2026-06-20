@@ -19,6 +19,7 @@ export function rowToProject(row, findings = [], share = null) {
     id: row.id,
     name: row.name,
     status: row.status,
+    version: row.version ?? 0, // T-466: Optimistic-Lock-Token (FE sendet es im PATCH zurück)
     createdAt: toIso(row.created_at),
     updatedAt: toIso(row.updated_at),
     tenantId: row.tenant_id,

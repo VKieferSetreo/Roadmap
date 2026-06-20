@@ -189,6 +189,18 @@ function shutdown(signal) {
 try {
   await waitForSchema()
 
+  // T-467: globaler Orphan-Sweep beim Boot. Ein harter Crash (SIGKILL/OOM) hinterlässt
+  // 'running'-Waisen in analysis_runs, die der per-Projekt-Reclaim in runAnalysis nur LAZY
+  // beim nächsten Lauf DESSELBEN Projekts heilt — ein nie wieder ausgewertetes Projekt bliebe
+  // blockiert. Der Boot ist genau der Moment nach so einem Crash → projektübergreifend freigeben.
+  await db
+    .query(
+      "UPDATE analysis_runs SET status = 'error', error = 'stale (boot sweep)', finished_at = now() " +
+        "WHERE status = 'running' AND started_at < now() - interval '15 minutes'",
+    )
+    .then((r) => r.rowCount > 0 && log(`Orphan-Sweep: ${r.rowCount} verwaiste Analyse-Läufe freigegeben`))
+    .catch((err) => log(`Orphan-Sweep fehlgeschlagen (ignoriert): ${err?.message ?? err}`))
+
   const connectors = enabledConnectors(process.env)
   if (connectors.length === 0) {
     log("CONNECTORS leer — keine Connectoren geplant, Worker läuft im Leerlauf (nur Heartbeat)")

@@ -229,11 +229,20 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
       }
     }
 
+    // T-466: Optimistic Lock. Schickt der Client seine bekannte version mit, schreibt der UPDATE
+    // nur, wenn sie noch aktuell ist — ein veralteter Schreiber (zweiter Disponent) bekommt 409
+    // statt den frischeren Stand still zu überschreiben. Alt-Clients ohne version → blinder
+    // Overwrite wie bisher (abwärtskompatibel, kein 409-Sturm während des Deploys).
+    const expectedVersion = Number.isInteger(body.version) ? body.version : undefined
+    const params = [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId]
+    if (expectedVersion !== undefined) params.push(expectedVersion)
     const { rows } = await db.query(
       `UPDATE projects SET name = $2, routes = $3, transport = $4, zeitraum = $5,
-         archived_at = $6, folder_id = $7, updated_at = now() WHERE id = $1 RETURNING *`,
-      [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId],
+         archived_at = $6, folder_id = $7, version = version + 1, updated_at = now()
+       WHERE id = $1${expectedVersion !== undefined ? " AND version = $8" : ""} RETURNING *`,
+      params,
     )
+    if (!rows[0]) throw new ApiError(409, "konflikt-veraltet")
     res.json(await present(req, rows[0]))
   }))
 

@@ -233,10 +233,28 @@ export async function analyze({ db, project, corridorM }) {
  * Persistenz. Wirft bei Fehlern (Projekt bleibt dann unverändert, Run = error).
  */
 export async function runAnalysis({ db, project, corridorM = 20 }) {
-  const runRes = await db.query(
-    "INSERT INTO analysis_runs (project_id, status, engine_version) VALUES ($1, $2, $3) RETURNING id",
-    [project.id, "running", ENGINE_VERSION],
+  // T-467: verwaiste 'running'-Läufe (Prozess-Crash ohne finished_at) zuerst freigeben, sonst
+  // blockiert der Partial-Unique-Index dauerhaft. 15 Min > jede reale Analyse (statement_timeout 2 Min).
+  // WICHTIG: Der Reclaim MUSS zeit-prädikat-gebunden bleiben (nur Waisen >15 Min). Der
+  // Partial-Unique-Index analysis_runs_one_running — NICHT dieser UPDATE — ist die Mutual-Exclusion;
+  // ein Reclaim ohne Zeit-Prädikat ('alle running freigeben') öffnete ein Doppel-Run-Loch.
+  await db.query(
+    "UPDATE analysis_runs SET status = 'error', error = $2, finished_at = now() " +
+      "WHERE project_id = $1 AND status = 'running' AND started_at < now() - interval '15 minutes'",
+    [project.id, "stale (reclaimed)"],
   )
+  let runRes
+  try {
+    runRes = await db.query(
+      "INSERT INTO analysis_runs (project_id, status, engine_version) VALUES ($1, $2, $3) RETURNING id",
+      [project.id, "running", ENGINE_VERSION],
+    )
+  } catch (err) {
+    // analysis_runs_one_running (Partial-Unique-Index): es läuft bereits eine Auswertung für
+    // dieses Projekt (Doppelklick / zweiter Disponent / Kollision mit Nacht-Rerun) → 409.
+    if (err?.code === "23505") throw new ApiError(409, "Für dieses Projekt läuft bereits eine Auswertung")
+    throw err
+  }
   const runId = runRes.rows[0].id
 
   try {

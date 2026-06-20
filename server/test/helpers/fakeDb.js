@@ -418,6 +418,8 @@ export function createFakeDb() {
     if (sql.startsWith("UPDATE projects SET name = $2,")) {
       const row = state.projects.find((p) => p.id === params[0])
       if (!row) return ok([])
+      // T-466: optionale Version-Precondition (params[7] = erwartete Version) → 0 Rows bei Mismatch
+      if (params[7] !== undefined && (row.version ?? 0) !== params[7]) return ok([], 0)
       Object.assign(row, {
         name: params[1],
         routes: J(params[2]),
@@ -425,9 +427,10 @@ export function createFakeDb() {
         zeitraum: J(params[4]),
         archived_at: params[5],
         folder_id: params[6],
+        version: (row.version ?? 0) + 1,
         updated_at: now(),
       })
-      return ok([row])
+      return ok([row], 1)
     }
     if (sql.startsWith("UPDATE projects SET status = $2,")) {
       const row = state.projects.find((p) => p.id === params[0])
@@ -982,7 +985,25 @@ export function createFakeDb() {
     }
 
     // ── analysis_runs ─────────────────────────────────────────────────────────
+    // T-467: Stale-Reclaim VOR dem INSERT-Handler matchen (beide beginnen mit "UPDATE analysis_runs SET").
+    if (sql.startsWith("UPDATE analysis_runs SET status = 'error', error = $2, finished_at = now() WHERE project_id = $1")) {
+      const cutoff = Date.now() - 15 * 60 * 1000
+      let n = 0
+      for (const r of state.runs) {
+        if (r.project_id === params[0] && r.status === "running" && new Date(r.started_at).getTime() < cutoff) {
+          Object.assign(r, { status: "error", error: params[1], finished_at: now() })
+          n += 1
+        }
+      }
+      return ok([], n)
+    }
     if (sql.startsWith("INSERT INTO analysis_runs")) {
+      // T-467: Partial-Unique-Index analysis_runs_one_running simulieren — zweiter laufender INSERT → 23505.
+      if (params[1] === "running" && state.runs.some((r) => r.project_id === params[0] && r.status === "running")) {
+        const e = new Error("duplicate key value violates unique constraint analysis_runs_one_running")
+        e.code = "23505"
+        throw e
+      }
       const row = {
         id: randomUUID(),
         project_id: params[0],
