@@ -78,13 +78,15 @@ export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = n
     res.json({ version: DISCLAIMER_VERSION, accepted: rows.length > 0 })
   }))
 
-  /** Disclaimer akzeptieren — pro Person + Version (idempotent). */
+  /** Disclaimer akzeptieren — pro Person + Version (idempotent). T-416: Herkunft (IP, via
+   *  trust-proxy = echte Client-IP) + Mandantenkontext mitschreiben → belastbarer Nachweis. */
   r.post("/disclaimer", asyncHandler(async (req, res) => {
     const email = req.ctx?.email
     if (!email) throw new ApiError(401, "Nicht angemeldet")
     await db.query(
-      "INSERT INTO disclaimer_acceptances (email, version) VALUES ($1, $2) ON CONFLICT (email, version) DO NOTHING",
-      [email, DISCLAIMER_VERSION],
+      `INSERT INTO disclaimer_acceptances (email, version, ip, tenant_id) VALUES ($1, $2, $3, $4)
+       ON CONFLICT (email, version) DO NOTHING`,
+      [email, DISCLAIMER_VERSION, req.ip ?? null, req.ctx?.tenant?.id ?? null],
     )
     res.status(201).json({ ok: true, version: DISCLAIMER_VERSION })
   }))

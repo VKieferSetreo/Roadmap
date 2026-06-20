@@ -258,9 +258,13 @@ export function createFakeDb() {
       )
       return ok(hit ? [{ "?column?": 1 }] : [])
     }
-    if (sql.startsWith("INSERT INTO disclaimer_acceptances (email, version)")) {
+    if (sql.startsWith("INSERT INTO disclaimer_acceptances (email, version")) {
       if (!state.disclaimerAcceptances.some((d) => d.email === params[0] && d.version === params[1])) {
-        state.disclaimerAcceptances.push({ email: params[0], version: params[1], accepted_at: now() })
+        // T-416: ip + tenant_id mitführen, wenn die Spalten mitgeschickt werden.
+        state.disclaimerAcceptances.push({
+          email: params[0], version: params[1], accepted_at: now(),
+          ip: params[2] ?? null, tenant_id: params[3] ?? null,
+        })
       }
       return ok([], 1)
     }
