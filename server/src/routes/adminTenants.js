@@ -10,6 +10,7 @@ import { auditLog, rowToAudit } from "../auditLog.js"
 import { requireRole, requireTenantAdminParam } from "../auth.js"
 import { generateSeatCodes, listSeatCodes } from "../seatCodes.js"
 import { getTenantById, listTenants, rowToTenant, slugError, tenantMembers } from "../tenants.js"
+import { anonymizeTenant, exportTenant } from "../tenantErasure.js"
 import { ApiError, asyncHandler, isUuid } from "../util.js"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -329,12 +330,27 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     if (validUntil && !/^\d{4}-\d{2}-\d{2}$/.test(validUntil)) {
       throw new ApiError(400, "validUntil muss YYYY-MM-DD sein")
     }
+    // T-347: bei Laufzeit-Änderung die Reminder-Marke zurücksetzen → Ablauf-Erinnerung
+    // feuert im nächsten Zyklus für die neue valid_until wieder sauber.
     const { rows } = await db.query(
-      "UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1 RETURNING id, slug, name, plan, max_seats, valid_until",
+      "UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4, renewal_notified_for = NULL WHERE id = $1 RETURNING id, slug, name, plan, max_seats, valid_until",
       [req.params.id, plan, maxSeats, validUntil],
     )
     if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
     await auditLog(db, { tenantId: req.params.id, actorEmail: req.ctx?.email, action: "tenant.license", detail: `plan=${plan} seats=${maxSeats} bis=${validUntil ?? "-"}` })
+    res.json(rows[0])
+  }))
+
+  /** T-346: Mandant aussetzen/reaktivieren (administratives Stilllegen). Nur globaler Setreo-Admin. */
+  r.patch("/:id/suspended", adminOnly, asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const suspended = req.body?.suspended === true
+    const { rows } = await db.query(
+      "UPDATE tenants SET suspended_at = CASE WHEN $2 THEN now() ELSE NULL END WHERE id = $1 RETURNING id, slug, name, suspended_at",
+      [req.params.id, suspended],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    await auditLog(db, { tenantId: req.params.id, actorEmail: req.ctx?.email, action: "tenant.suspend", detail: suspended ? "ausgesetzt" : "reaktiviert" })
     res.json(rows[0])
   }))
 
@@ -374,6 +390,35 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       },
       codes: await listSeatCodes(db, req.params.id),
     })
+  }))
+
+  /** DSGVO Art.15/20: Voll-Export aller Mandanten-Daten als JSON (nur globaler Setreo-Admin). */
+  r.get("/:id/export", adminOnly, asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const { rows } = await db.query(
+      "SELECT id, slug, name, plan, max_seats, valid_until, created_at FROM tenants WHERE id = $1",
+      [req.params.id],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    const data = await exportTenant(db, rows[0])
+    await auditLog(db, { tenantId: rows[0].id, actorEmail: req.ctx?.email, action: "tenant.export", detail: rows[0].slug })
+    res.setHeader("Content-Disposition", `attachment; filename="export-${rows[0].slug}.json"`)
+    res.json(data)
+  }))
+
+  /** DSGVO Art.17: Mandant anonymisieren (PII raus, Struktur/Statistik anonym erhalten).
+   *  Irreversibel. Nur globaler Setreo-Admin. Externe Auth-Konten werden vorab gesperrt. */
+  r.post("/:id/anonymize", adminOnly, asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const tenant = await getTenantById(db, req.params.id)
+    if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
+    const deactivate =
+      authExtern?.url && authExtern?.secret
+        ? (email) => deactivateExtern({ authExtern, fetchImpl, email })
+        : null
+    const result = await anonymizeTenant(db, tenant, { deactivate })
+    await auditLog(db, { tenantId: tenant.id, actorEmail: req.ctx?.email, action: "tenant.anonymize", detail: `${result.anonymizedMembers} Mitglied(er)` })
+    res.json({ ok: true, ...result })
   }))
 
   /** Audit-Log eines Mandanten (wer hat wann was geändert). */

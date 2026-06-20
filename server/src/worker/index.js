@@ -14,6 +14,7 @@ import { rerunAffectedProjects } from "../engine/rerunAll.js"
 import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
+import { mailEnabled, sendMail } from "../mail/mailer.js"
 import { expireObstacles } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
@@ -31,6 +32,51 @@ async function beat() {
     await db.query("UPDATE worker_heartbeat SET last_beat = now() WHERE id = 1")
   } catch (err) {
     log(`Heartbeat-Write fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  }
+}
+
+// T-347: proaktive Lizenz-Ablauf-Erinnerung. Einmal je Ablaufzyklus (Marke renewal_notified_for)
+// an die Tenant-Admins, sobald valid_until in ≤30 Tagen liegt. Ausgesetzte Mandanten ausgenommen.
+// No-op ohne Mailjet (DB-neutral). ponytail: ein Reminder (30 Tage); Eskalation 14/7/1 bei Bedarf.
+async function runLicenseReminders() {
+  if (!mailEnabled(process.env)) return
+  const base = (process.env.PUBLIC_ROADMAP_URL || "https://setreo-cloud.com/roadmap").replace(/\/$/, "")
+  const { rows } = await db.query(
+    `SELECT id, slug, name, valid_until FROM tenants
+       WHERE valid_until IS NOT NULL AND suspended_at IS NULL
+         AND valid_until >= current_date
+         AND valid_until <= current_date + interval '30 days'
+         AND renewal_notified_for IS DISTINCT FROM valid_until`,
+  )
+  for (const t of rows) {
+    const admins = await db.query(
+      "SELECT email FROM tenant_members WHERE tenant_id = $1 AND role = 'admin'",
+      [t.id],
+    )
+    const recipients = admins.rows.map((a) => ({ email: a.email })).filter((r) => r.email)
+    if (recipients.length === 0) continue // kein Admin → später erneut versuchen, Marke NICHT setzen
+    const tage = Math.max(0, Math.ceil((new Date(t.valid_until).getTime() - Date.now()) / 86_400_000))
+    const datum = String(t.valid_until).slice(0, 10).split("-").reverse().join(".")
+    const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:520px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden">
+      <div style="background:#527121;padding:18px 22px;color:#fff;font-size:18px;font-weight:700">Setreo Roadmap — Lizenz läuft bald ab</div>
+      <div style="padding:20px 22px;color:#1f2937;font-size:14px;line-height:1.55">
+        <p>Ihre Setreo-Roadmap-Lizenz läuft in <strong>${tage} Tag${tage === 1 ? "" : "en"}</strong> ab (am ${datum}).</p>
+        <p>Damit Ihr Zugang und Ihre Auswertungen ohne Unterbrechung weiterlaufen, verlängern Sie bitte rechtzeitig — Ihr Setreo-Ansprechpartner hilft Ihnen dabei.</p>
+        <a href="${base}" style="display:inline-block;background:#527121;color:#fff;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:10px;margin-top:6px">Zur Plattform</a>
+      </div>
+      <div style="padding:14px 22px;border-top:1px solid #f3f4f6;color:#9ca3af;font-size:11px">Automatische Erinnerung von Setreo Roadmap — bitte nicht auf diese Adresse antworten.</div>
+    </div>`
+    const text = `Ihre Setreo-Roadmap-Lizenz läuft in ${tage} Tag(en) ab (am ${datum}). Bitte rechtzeitig verlängern — Ihr Setreo-Ansprechpartner hilft. Plattform: ${base}`
+    try {
+      await sendMail(
+        { recipients, subject: `Lizenz läuft in ${tage} Tag${tage === 1 ? "" : "en"} ab`, html, text },
+        { env: process.env, log },
+      )
+      await db.query("UPDATE tenants SET renewal_notified_for = $2 WHERE id = $1", [t.id, t.valid_until])
+    } catch (err) {
+      log(`Lizenz-Reminder für ${t.slug} fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+      captureException(err instanceof Error ? err : new Error(String(err)), { kind: "license-reminder", tenant: t.slug })
+    }
   }
 }
 
@@ -219,6 +265,8 @@ try {
   // Täglicher Hygiene-Cleanup (abgelaufene Hindernisse) + Re-Auswertung —
   // unabhängig davon, ob Importe liefen (gueltig_bis läuft auch ohne Feed ab).
   jobs.push(new Cron("30 3 * * *", CRON_OPTS, () => void runRerun("täglicher Cleanup")))
+  // T-347: tägliche Lizenz-Ablauf-Erinnerung (eigener Job, NICHT in den Rerun gemischt).
+  jobs.push(new Cron("0 7 * * *", CRON_OPTS, () => void runLicenseReminders()))
 
   // Heartbeat (T-469): hält den Event-Loop am Leben, macht den Worker im Log sichtbar UND
   // schreibt einen DB-Heartbeat, den /api/health auf Staleness prüft (Dead-Man's-Switch).

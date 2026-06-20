@@ -97,13 +97,14 @@ async function txRedeem(db, code, mail, codeHint) {
     // FOR UPDATE OF sc, t: serialisiert parallele Redeems DESSELBEN Codes (T-319/T-350) und
     // lockt die tenants-Zeile als gemeinsamen Seat-Limit-Serialisierungspunkt (T-352/T-418).
     const found = await q.query(
-      "SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats " +
+      "SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats, t.suspended_at " +
         "FROM seat_codes sc JOIN tenants t ON t.id = sc.tenant_id WHERE sc.code = $1 FOR UPDATE OF sc, t",
       [code],
     )
     const sc = found.rows[0]
     if (!sc) throw new ApiError(404, "Seat-Code unbekannt")
     if (sc.used_by_email) throw new ApiError(409, "Seat-Code wurde bereits eingeloest")
+    if (sc.suspended_at) throw new ApiError(403, "Dieser Mandant ist ausgesetzt") // T-346
     if (sc.valid_until && new Date(sc.valid_until) < startOfToday()) {
       throw new ApiError(403, "Die Lizenz dieses Mandanten ist abgelaufen")
     }

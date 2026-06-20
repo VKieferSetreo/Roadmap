@@ -227,4 +227,33 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     expect(res.status).toBe(403)
     expect(res.body).toEqual({ error: "lizenz-abgelaufen" })
   })
+
+  it("Ausgesetzter Mandant sperrt Produktzugriff → 403, Reaktivierung hebt auf (T-346)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "ausgesetzt", name: "Ausgesetzt" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1, validUntil: "2027-12-31" })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({})
+    await asExtern(request(app).post("/api/account/redeem-seat"), "m@ausgesetzt.de").send({ code: gen.body.codes[0].code })
+
+    // aussetzen → gesperrt
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/suspended`)).send({ suspended: true })
+    const gesperrt = await asExtern(request(app).get("/api/projects"), "m@ausgesetzt.de")
+    expect(gesperrt.status).toBe(403)
+    expect(gesperrt.body).toEqual({ error: "mandant-ausgesetzt" })
+
+    // reaktivieren → wieder Zugriff
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/suspended`)).send({ suspended: false })
+    const frei = await asExtern(request(app).get("/api/projects"), "m@ausgesetzt.de")
+    expect(frei.status).toBe(200)
+  })
+
+  it("Einlösen in einen ausgesetzten Mandanten → 403 (T-346)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "gesperrt", name: "Gesperrt" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 2, validUntil: "2027-12-31" })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({})
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/suspended`)).send({ suspended: true })
+    const res = await asExtern(request(app).post("/api/account/redeem-seat"), "neu@gesperrt.de").send({ code: gen.body.codes[0].code })
+    expect(res.status).toBe(403)
+  })
 })

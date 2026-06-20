@@ -184,6 +184,20 @@ export const api = {
   deleteTenant: (id: string) =>
     axiosClient<void>({ url: `/admin/tenants/${id}`, method: "DELETE" }),
 
+  /** DSGVO Art.15/20: Voll-Export der Mandanten-Daten als JSON. */
+  exportTenant: (id: string) =>
+    axiosClient<unknown>({ url: `/admin/tenants/${id}/export`, method: "GET", timeout: 60_000 }),
+
+  /** DSGVO Art.17: Mandant anonymisieren (PII raus, Struktur/Statistik anonym erhalten). Irreversibel. */
+  anonymizeTenant: (id: string) =>
+    axiosClient<{ ok: boolean; anonymizedMembers: number }>({ url: `/admin/tenants/${id}/anonymize`, method: "POST" }),
+
+  /** T-346: Mandant aussetzen/reaktivieren. */
+  suspendTenant: (id: string, suspended: boolean) =>
+    axiosClient<{ id: string; slug: string; name: string; suspended_at: string | null }>({
+      url: `/admin/tenants/${id}/suspended`, method: "PATCH", data: { suspended },
+    }),
+
   /** Einzelner Mandant inkl. Mitglieder — Lade-Endpoint der Tenant-Admin-Self-Service-Seite (T-147). */
   getTenant: (id: string) =>
     axiosClient<Tenant>({ url: `/admin/tenants/${id}`, method: "GET" }),

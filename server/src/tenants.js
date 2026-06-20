@@ -28,7 +28,7 @@ export async function getTenantById(db, id) {
 /** Tenant eines Nutzers über tenant_members (E-Mail lowercase). */
 export async function getTenantForEmail(db, email) {
   const { rows } = await db.query(
-    "SELECT t.id, t.slug, t.name, t.valid_until FROM tenants t JOIN tenant_members m ON m.tenant_id = t.id WHERE m.email = $1",
+    "SELECT t.id, t.slug, t.name, t.valid_until, t.suspended_at FROM tenants t JOIN tenant_members m ON m.tenant_id = t.id WHERE m.email = $1",
     [String(email).toLowerCase()],
   )
   return rows[0] ?? null
@@ -37,7 +37,7 @@ export async function getTenantForEmail(db, email) {
 /** Volle Tenant-Shape-Liste (mitglieder + projekte) — Admin-Liste + Tenant-Switcher. */
 export async function listTenants(db) {
   const tenants = await db.query(
-    `SELECT t.id, t.slug, t.name, t.created_at,
+    `SELECT t.id, t.slug, t.name, t.created_at, t.suspended_at,
        (SELECT count(*)::int FROM projects p WHERE p.tenant_id = t.id) AS projekte
      FROM tenants t ORDER BY t.created_at ASC`,
   )
@@ -81,5 +81,6 @@ export function rowToTenant(row, mitglieder = [], projekte = row.projekte ?? 0) 
     name: row.name,
     mitglieder,
     projekte: Number(projekte),
+    suspended: Boolean(row.suspended_at), // T-346
   }
 }

@@ -126,6 +126,9 @@ export function tenantContext({ db }) {
 export function requireTenant(req, res, next) {
   const t = req.ctx?.tenant
   if (!t) return res.status(403).json({ error: "kein-mandant" })
+  // T-346: administratives Stilllegen trifft ALLE Mitglieder (auch interne) — anders als die
+  // verkaufs-bezogene Lizenz-Sperre. Vor dem valid_until-Check.
+  if (t.suspended_at) return res.status(403).json({ error: "mandant-ausgesetzt" })
   // Nur externe Kunden sperren; interne SSO-Nutzer (gateway != extern, Setreo-Mandant)
   // sind ausgenommen — deren Mandant trägt kein verkaufs-relevantes valid_until.
   if (req.user?.gateway === "extern" && t.valid_until && new Date(t.valid_until) < _startOfToday()) {

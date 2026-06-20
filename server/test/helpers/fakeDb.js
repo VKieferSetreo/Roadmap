@@ -72,7 +72,7 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE id = $1")) {
       return ok(state.tenants.filter((t) => t.id === params[0]))
     }
-    if (sql.startsWith("SELECT t.id, t.slug, t.name, t.valid_until FROM tenants t JOIN tenant_members m")) {
+    if (sql.startsWith("SELECT t.id, t.slug, t.name, t.valid_until, t.suspended_at FROM tenants t JOIN tenant_members m")) {
       const member = state.members.find((m) => m.email === params[0])
       return ok(member ? state.tenants.filter((t) => t.id === member.tenant_id) : [])
     }
@@ -206,14 +206,14 @@ export function createFakeDb() {
           .map((s) => ({ code: s.code, used_by_email: s.used_by_email, used_at: s.used_at })),
       )
     }
-    if (sql.startsWith("SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats FROM seat_codes sc JOIN tenants t")) {
+    if (sql.startsWith("SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats, t.suspended_at FROM seat_codes sc JOIN tenants t")) {
       const sc = state.seatCodes.find((s) => s.code === params[0])
       if (!sc) return ok([])
       const t = state.tenants.find((x) => x.id === sc.tenant_id)
       return ok([{
         id: sc.id, tenant_id: sc.tenant_id, used_by_email: sc.used_by_email,
         slug: t?.slug ?? null, name: t?.name ?? null, valid_until: t?.valid_until ?? null,
-        max_seats: t?.max_seats ?? null,
+        max_seats: t?.max_seats ?? null, suspended_at: t?.suspended_at ?? null,
       }])
     }
     if (sql.startsWith("UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2")) {
@@ -236,16 +236,24 @@ export function createFakeDb() {
       }
       return ok([], n)
     }
-    if (sql.startsWith("UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1")) {
+    if (sql.startsWith("UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4")) {
       const row = state.tenants.find((t) => t.id === params[0])
       if (!row) return ok([])
       row.plan = params[1]
       row.max_seats = params[2]
       row.valid_until = params[3]
+      row.renewal_notified_for = null // T-347
       return ok([{
         id: row.id, slug: row.slug, name: row.name,
         plan: row.plan, max_seats: row.max_seats, valid_until: row.valid_until,
       }])
+    }
+    // T-346: Suspend-Toggle
+    if (sql.startsWith("UPDATE tenants SET suspended_at = CASE WHEN $2")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      if (!row) return ok([])
+      row.suspended_at = params[1] ? new Date().toISOString() : null
+      return ok([{ id: row.id, slug: row.slug, name: row.name, suspended_at: row.suspended_at }])
     }
     if (sql.startsWith("SELECT max_seats FROM tenants WHERE id = $1")) {
       const row = state.tenants.find((t) => t.id === params[0])

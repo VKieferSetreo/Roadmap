@@ -230,6 +230,8 @@ export interface Tenant {
   name: string
   mitglieder: TenantMember[]
   projekte: number
+  /** T-346: administrativ ausgesetzt (kein Produktzugriff für die Mitglieder). */
+  suspended?: boolean
 }
 
 /** Lizenz eines Mandanten (Plan, Seats, Laufzeit). Buchhaltung rechnet extern. */

@@ -12,12 +12,16 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
+  Download,
   FolderKanban,
   KeyRound,
+  Pause,
   Pencil,
+  Play,
   Plus,
   Save,
   Trash2,
+  UserX,
   X,
 } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
@@ -215,6 +219,63 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
     }
   }
 
+  // T-300: DSGVO-Voll-Export (Art.15/20) als JSON-Download.
+  const doExport = async () => {
+    setBusy(true)
+    try {
+      const data = await api.exportTenant(tenant.id)
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `export-${tenant.slug}.json`
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      toast.success("Export erstellt.")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Export fehlgeschlagen.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // T-346: aussetzen/reaktivieren.
+  const toggleSuspend = async () => {
+    const next = !tenant.suspended
+    if (next && !window.confirm(`Mandant „${tenant.name}" aussetzen? Alle Mitglieder verlieren bis zur Reaktivierung den Produktzugriff.`)) return
+    try {
+      await api.suspendTenant(tenant.id, next)
+      onChanged()
+      toast.success(next ? "Mandant ausgesetzt." : "Mandant reaktiviert.")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Status konnte nicht geändert werden.")
+    }
+  }
+
+  // T-300: DSGVO-Anonymisierung (Art.17) — irreversibel, Slug-Tippbestätigung.
+  const anonymize = async () => {
+    const typed = window.prompt(
+      `Mandant „${tenant.name}" anonymisieren — IRREVERSIBEL.\n` +
+        `Alle personenbezogenen Daten (Mails, Namen, eigene Einträge) werden entfernt; ` +
+        `Projekte/Statistik bleiben anonym erhalten.\n\nTippen Sie zur Bestätigung den Slug "${tenant.slug}":`,
+    )
+    if (typed == null) return
+    if (typed.trim() !== tenant.slug) {
+      toast.error("Slug stimmt nicht — abgebrochen.")
+      return
+    }
+    setBusy(true)
+    try {
+      const r = await api.anonymizeTenant(tenant.id)
+      onChanged()
+      toast.success(`Anonymisiert — ${r.anonymizedMembers} Mitglied(er) entfernt.`)
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Anonymisierung fehlgeschlagen.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -235,7 +296,14 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
               <Building2 className="h-4 w-4" />
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-neutral-900">{tenant.name}</span>
+              <span className="flex items-center gap-2 truncate text-sm font-semibold text-neutral-900">
+                {tenant.name}
+                {tenant.suspended ? (
+                  <span className="shrink-0 rounded-md bg-severity-warnung-bg px-2 py-0.5 text-[10px] font-semibold text-severity-warnung-text">
+                    Ausgesetzt
+                  </span>
+                ) : null}
+              </span>
               <span className="block truncate font-mono text-[11px] text-neutral-400">
                 {tenant.slug} · {tenant.mitglieder.length} Nutzer
               </span>
@@ -245,6 +313,41 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
             <FolderKanban className="h-3.5 w-3.5" />
             {tenant.projekte} {tenant.projekte === 1 ? "Projekt" : "Projekte"}
           </span>
+          {/* T-300: DSGVO-Export */}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void doExport()}
+            disabled={busy}
+            aria-label={`Mandant ${tenant.name} exportieren`}
+            title="DSGVO-Voll-Export (JSON)"
+            className="text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          {/* T-346: aussetzen/reaktivieren */}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void toggleSuspend()}
+            aria-label={tenant.suspended ? `Mandant ${tenant.name} reaktivieren` : `Mandant ${tenant.name} aussetzen`}
+            title={tenant.suspended ? "Reaktivieren" : "Aussetzen (Zugriff sperren)"}
+            className="text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700"
+          >
+            {tenant.suspended ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </Button>
+          {/* T-300: DSGVO-Anonymisierung (irreversibel) */}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void anonymize()}
+            disabled={busy}
+            aria-label={`Mandant ${tenant.name} anonymisieren`}
+            title="Anonymisieren (DSGVO Art.17, irreversibel)"
+            className="text-neutral-400 hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+          >
+            <UserX className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon-sm"
