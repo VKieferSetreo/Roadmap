@@ -12,6 +12,7 @@ import { DEFAULT_TRANSPORT, ROUTE_FARBEN } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
 import { api } from "@/api/roadmap"
+import { ApiError } from "@/api/client"
 import { isLive } from "./datasource"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
@@ -486,8 +487,14 @@ export const useProjectStore = create<ProjectStore>()(
           sync
             .then(() => api.runAnalysis(id))
             .then((updated) => finish(() => updated))
-            .catch(() =>
-              fail("Analyse fehlgeschlagen — Server nicht erreichbar oder Fehler in der Engine."),
+            .catch((e) =>
+              // T-467: 409 = für dieses Projekt läuft bereits eine Auswertung (Doppelklick /
+              // zweiter Disponent / Kollision mit Nacht-Rerun) → klare Meldung statt „Server-Fehler".
+              fail(
+                e instanceof ApiError && e.status === 409
+                  ? "Für dieses Projekt läuft bereits eine Auswertung — bitte kurz warten."
+                  : "Analyse fehlgeschlagen — Server nicht erreichbar oder Fehler in der Engine.",
+              ),
             )
         }
       },
