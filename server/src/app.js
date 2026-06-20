@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url"
 import express from "express"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
+import { requestId } from "./requestId.js"
 import { createNominatim } from "./external/nominatim.js"
 import { createOsrm } from "./external/osrm.js"
 import { adminImportRouter } from "./routes/adminImport.js"
@@ -92,6 +93,7 @@ export function createApp({
 
   const app = express()
   app.disable("x-powered-by")
+  app.use(requestId()) // T-468: Request-/Trace-ID-Korrelation, ganz früh (vor allem inkl. Health)
   app.use(express.json({ limit: "20mb" }))
 
   // IMMER ungated (Docker-HEALTHCHECK, Proxy-Probes)
@@ -103,7 +105,16 @@ export function createApp({
     } catch {
       // db down → ok:false, aber Endpoint antwortet
     }
-    res.status(dbOk ? 200 : 503).json({ ok: dbOk, db: dbOk, version: APP_VERSION })
+    // T-471: OSRM (eigene Coolify-App) mitprüfen, aber NUR als Info — Gesamtstatus bleibt an db
+    // gekoppelt. Sonst killt der Docker-HEALTHCHECK (exit 1 bei !=200) die API bei jedem OSRM-Blip.
+    const osrmOk = await osrm.ping().catch(() => false)
+    res.status(dbOk ? 200 : 503).json({
+      ok: dbOk,
+      db: dbOk,
+      osrm: osrmOk,
+      ...(dbOk && !osrmOk ? { degraded: true } : {}),
+      version: APP_VERSION,
+    })
   })
 
   // ── Public-Share (UNGATED — Proxy routet /_share ohne forward_auth) ─────────
@@ -192,8 +203,14 @@ export function createApp({
     if (err?.type === "entity.parse.failed") {
       return res.status(400).json({ error: "Ungültiges JSON" })
     }
-    console.error(err)
-    res.status(500).json({ error: "Interner Fehler" })
+    // T-389: Pool-Erschöpfung / DB-Verbindungsabriss als 503 + Retry-After surfacen statt
+    // generischem 500 — der Client darf dann sinnvoll erneut versuchen.
+    if (err?.message && /timeout exceeded when trying to connect|Connection terminated|too many clients/i.test(err.message)) {
+      res.set("Retry-After", "5")
+      return res.status(503).json({ error: "Dienst momentan ausgelastet, bitte erneut versuchen" })
+    }
+    console.error(`[api ${new Date().toISOString()}] ${req.method} ${req.path} [${req.requestId ?? "-"}]`, err)
+    res.status(500).json({ error: "Interner Fehler", requestId: req.requestId })
   })
 
   return app

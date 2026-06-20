@@ -3,6 +3,7 @@
 
 import request from "supertest"
 import { describe, expect, it } from "vitest"
+import { createApp } from "../src/app.js"
 import { totalKm } from "../src/engine/geometry.js"
 import { buildFachId, todayIso } from "../src/obstaclesRepo.js"
 import {
@@ -18,6 +19,41 @@ describe("health", () => {
     expect(res.status).toBe(200)
     expect(res.body).toMatchObject({ ok: true, db: true })
     expect(res.body.version).toBeTruthy()
+  })
+
+  it("prüft OSRM mit, Gesamtstatus bleibt an db (degraded, T-471)", async () => {
+    const { app } = makeApp({ requireAuth: true }) // offlineFetch → OSRM-Ping schlägt fehl
+    const res = await request(app).get("/api/health")
+    expect(res.status).toBe(200) // db ok → 200, trotz OSRM down
+    expect(res.body.osrm).toBe(false)
+    expect(res.body.degraded).toBe(true)
+  })
+
+  it("echot X-Request-Id als X-Trace-Id (T-468)", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    const res = await request(app).get("/api/health").set("X-Request-Id", "trace-abc-123")
+    expect(res.headers["x-trace-id"]).toBe("trace-abc-123")
+  })
+})
+
+describe("Pool-Erschöpfung → 503 (T-389)", () => {
+  it("DB-Connect-Timeout wird 503 + Retry-After statt 500", async () => {
+    const boom = () => {
+      throw new Error("timeout exceeded when trying to connect")
+    }
+    const throwingDb = { query: async () => boom(), tx: async (fn) => fn({ query: async () => boom() }) }
+    const app = createApp({
+      db: throwingDb,
+      requireAuth: false,
+      fetchImpl: async () => {
+        throw new Error("offline")
+      },
+      sessionSalt: "x",
+      shareBaseUrl: "https://setreo-cloud.com",
+    })
+    const res = await request(app).get("/api/context")
+    expect(res.status).toBe(503)
+    expect(res.headers["retry-after"]).toBe("5")
   })
 })
 

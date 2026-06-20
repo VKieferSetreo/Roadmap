@@ -27,5 +27,17 @@ export function createOsrm({
         dauerMin: route.duration / 60,
       }
     },
+
+    /** Leichter Erreichbarkeits-Ping für /api/health (T-471). Kurzer Timeout, wirft nie. */
+    async ping() {
+      // Stuttgart (lng,lat) — liegt sicher im DE-Graph. /nearest ist billiger als /route.
+      const url = `${baseUrl.replace(/\/$/, "")}/nearest/v1/driving/9.18,48.78?number=1`
+      const data = await fetchJson(url, {
+        timeoutMs: 2000,
+        fetchImpl,
+        headers: { "User-Agent": "setreo-roadmap/1.0" },
+      }).catch(() => null)
+      return data?.code === "Ok"
+    },
   }
 }

@@ -11,7 +11,7 @@ import pg from "pg"
 pg.types.setTypeParser(1082, (v) => v)
 
 export function createPool(connectionString = process.env.DATABASE_URL) {
-  return new pg.Pool({
+  const pool = new pg.Pool({
     connectionString,
     max: 10,
     // Verwaiste/hängende Queries (z.B. Rerun-Schwer-SELECTs über riesige Bounding-Boxes)
@@ -25,6 +25,14 @@ export function createPool(connectionString = process.env.DATABASE_URL) {
     // Pool erschöpft → nicht ewig auf eine freie Connection warten (sonst hängen Requests).
     connectionTimeoutMillis: 10000,
   })
+  // T-470: node-pg emittiert auf IDLE Clients ein 'error'-Event, wenn Postgres die Verbindung
+  // serverseitig schließt (DB-Restart, Coolify-Redeploy, TCP-Idle-Reset). Ohne Listener wird das
+  // zu einem uncaughtException → Prozess-Crash. Loggen statt sterben; node-pg verwirft den kaputten
+  // Client selbst, der Pool baut beim nächsten connect() neu auf.
+  pool.on("error", (err) =>
+    console.error(`[pg ${new Date().toISOString()}] idle-client-error (ignoriert):`, err?.message ?? err),
+  )
+  return pool
 }
 
 /** Wickelt einen pg-Pool in das injectable db-Interface. */
