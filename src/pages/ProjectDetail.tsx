@@ -3,8 +3,9 @@
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { ClipboardList, MapPin, MapPinned, type LucideIcon } from "lucide-react"
+import { Archive, ClipboardList, MapPin, MapPinned, RotateCcw, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
+import { Button } from "@/components/ui/Button"
 import { useProjectStore } from "@/store/projects"
 import { RouteTab } from "@/components/project/RouteTab"
 import { AnlageTab } from "@/components/project/AnlageTab"
@@ -24,6 +25,7 @@ export function ProjectDetail() {
   const project = useProjectStore((s) => (id ? (s.projects ?? []).find((p) => p.id === id) : undefined))
   const loading = useProjectStore((s) => s.loading)
   const seeded = useProjectStore((s) => s.seeded)
+  const archiveProject = useProjectStore((s) => s.archiveProject)
 
   // Deep-Link während des Initial-Loads: warten statt nach Home umleiten.
   if (!project && (loading || !seeded)) {
@@ -62,6 +64,20 @@ export function ProjectDetail() {
           </TabsList>
         </Tabs>
       </div>
+
+      {/* T-236: archiviertes Projekt sichtbar kennzeichnen (war per Deep-Link still editierbar) +
+          Ein-Klick-Wiederherstellen. Macht das Archivieren semantisch wieder belastbar. */}
+      {project.archiviertAm ? (
+        <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800 lg:px-6">
+          <Archive className="h-4 w-4 shrink-0" />
+          <span className="flex-1">
+            Dieses Projekt ist <strong>archiviert</strong> — Änderungen sind nicht vorgesehen. Zum Bearbeiten wiederherstellen.
+          </span>
+          <Button size="sm" variant="outline" onClick={() => archiveProject(project.id, false)}>
+            <RotateCcw className="h-3.5 w-3.5" /> Wiederherstellen
+          </Button>
+        </div>
+      ) : null}
 
       {/* Reiter-Inhalt */}
       <div className="min-h-0 flex-1">

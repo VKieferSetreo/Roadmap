@@ -42,6 +42,14 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
     })
   const pct = (idx: number) => (days === 0 ? 0 : (idx / days) * 100)
 
+  // T-243: ändert sich der Zeitraum (von/bis → days) ohne Remount, lagen a/b sonst außerhalb des
+  // neuen Tracks → das gemeldete Zeitfenster zeigte über das Ende hinaus und filterte Funde falsch.
+  // Bei jeder days-Änderung a/b in [0, days] klemmen.
+  useEffect(() => {
+    setA((p) => Math.min(Math.max(0, p), days))
+    setB((p) => Math.min(Math.max(0, p), days))
+  }, [days])
+
   useEffect(() => {
     if (dual) {
       const lo = Math.min(a, b)

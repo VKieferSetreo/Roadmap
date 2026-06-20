@@ -260,6 +260,7 @@ export function FindingMarker({
             aria-expanded={chatOpen}
             aria-controls={`finding-chat-${primary.id}`}
             aria-label={chatOpen ? "Baustellen-Chat schließen" : "Baustellen-Chat öffnen"}
+            title={chatOpen ? "Baustellen-Chat schließen" : "Baustellen-Chat öffnen"}
             onClick={() => {
               if (!chatOpen) markSeen()
               setChatOpen((o) => !o)

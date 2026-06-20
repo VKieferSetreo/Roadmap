@@ -171,6 +171,18 @@ export function ReportView({
           </div>
         </section>
 
+        {/* T-239: gar keine Funde = Positiv-Befund (Freigabe), nicht als Leere/Fehler lesen — gerade
+            im extern geteilten PDF entscheidend für das Vertrauen. */}
+        {sichtbar.length === 0 ? (
+          <section className="mt-6 rounded-lg border border-primary-300 bg-primary-50/60 px-5 py-6 text-center">
+            <p className="text-base font-bold text-primary-800">Keine Hindernisse gefunden</p>
+            <p className="mx-auto mt-1 max-w-lg text-sm text-primary-700">
+              Auf der ausgewerteten Strecke wurden im gewählten Zeitraum keine relevanten Restriktionen
+              gefunden — die Route ist nach aktueller Datenlage frei befahrbar.
+            </p>
+          </section>
+        ) : null}
+
         {/* Funde je Strecke */}
         {routen.map((r) => {
           const findings = sichtbar

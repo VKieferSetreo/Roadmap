@@ -373,6 +373,17 @@ export function KarteTab({
                 </button>
               )
             })}
+            {/* T-240: Alle-Reset für den Severity-Filter (Parität zum Kategorie-Panel). */}
+            {severityHidden.size > 0 ? (
+              <button
+                type="button"
+                onClick={() => setSeverityHidden(new Set())}
+                className="ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-600 transition-colors hover:text-primary-700"
+                title="Alle Schweregrade wieder einblenden"
+              >
+                Alle
+              </button>
+            ) : null}
           </div>
         </div>
 

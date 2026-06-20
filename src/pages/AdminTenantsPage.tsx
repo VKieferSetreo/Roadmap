@@ -160,7 +160,16 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
 
   const setRow = (i: number, patch: Partial<Draft>) =>
     setMembers((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
-  const removeRow = (i: number) => setMembers((rows) => rows.filter((_, idx) => idx !== i))
+  const removeRow = (i: number) =>
+    setMembers((rows) => {
+      // T-235: das Entfernen eines BESTEHENDEN Nutzers deaktiviert beim Speichern dessen Konto +
+      // Sessions (Self-Lockout-Risiko) → bestätigen. Neue (noch nicht gespeicherte) Zeilen direkt weg.
+      const row = rows[i]
+      if (row && !row.isNew && !window.confirm(`Nutzer „${row.email}" aus dem Mandanten entfernen? Der Zugang wird beim Speichern deaktiviert.`)) {
+        return rows
+      }
+      return rows.filter((_, idx) => idx !== i)
+    })
   const addRow = () => setMembers((rows) => [...rows, { email: "", role: "user", passwort: "", isNew: true }])
 
   const save = async () => {

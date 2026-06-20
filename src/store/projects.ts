@@ -233,6 +233,8 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       archiveProject: (id, archiviert) => {
+        // T-235: Snapshot vor der optimistischen Änderung → bei Fehler zurückrollen (war fire-and-forget).
+        const prevArchiviertAm = get().getProject(id)?.archiviertAm ?? null
         set((s) => ({
           projects: s.projects.map((p) =>
             p.id === id ? { ...p, archiviertAm: archiviert ? now() : null, updatedAt: now() } : p,
@@ -244,6 +246,9 @@ export const useProjectStore = create<ProjectStore>()(
             .then((updated) => adoptVersion(set, id, updated.version)) // T-501: Version mitführen
             .catch(() => {
               toast.error("Archiv-Status konnte nicht gespeichert werden.")
+              set((s) => ({
+                projects: s.projects.map((p) => (p.id === id ? { ...p, archiviertAm: prevArchiviertAm } : p)),
+              }))
             })
         }
       },

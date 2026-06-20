@@ -14,6 +14,7 @@ import {
   EyeOff,
   FileDown,
   FileSpreadsheet,
+  CheckCircle2,
   MapPin,
   Radio,
   RotateCcw,
@@ -325,7 +326,19 @@ export function DashboardTab({
       {/* Fund-Liste — standardmäßig 3 Funde; Rest als nach unten weichgezeichneter
           Teaser hinter „Mehr anzeigen", damit die Liste nicht überlädt. */}
       {filtered.length === 0 ? (
-        <EmptyState title="Keine Funde für diesen Filter" />
+        sichtbar.length === 0 ? (
+          // T-239: gar keine Funde = bestes Ergebnis → Positiv-Befund (grün) statt grauer Leere/Fehloptik.
+          <div className="rounded-xl border border-primary-200 bg-primary-50/60 px-6 py-10 text-center">
+            <CheckCircle2 className="mx-auto h-9 w-9 text-primary-600" />
+            <p className="mt-3 text-base font-semibold text-primary-800">Keine Hindernisse gefunden</p>
+            <p className="mx-auto mt-1 max-w-md text-sm text-primary-700/80">
+              Auf der ausgewerteten Strecke wurden keine relevanten Restriktionen gefunden — nach aktueller Datenlage frei.
+            </p>
+          </div>
+        ) : (
+          // Funde vorhanden, aber der Filter blendet alle aus → neutral (kein Positiv-Befund).
+          <EmptyState title="Keine Funde für diesen Filter" />
+        )
       ) : (
         <Card>
           <div ref={listRef}>

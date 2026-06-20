@@ -53,6 +53,8 @@ export function PublishCard({ project }: { project: Project }) {
   }
 
   const remove = async () => {
+    // T-235: Widerrufen tötet einen ggf. an Kunden/Behörden verteilten Link sofort → bestätigen.
+    if (!window.confirm("Freigabe wirklich löschen? Der bereits geteilte Link wird sofort unerreichbar.")) return
     setBusy(true)
     try {
       await revokeShare(project.id)
@@ -148,10 +150,21 @@ export function PublishCard({ project }: { project: Project }) {
           </div>
           <p className="text-xs leading-relaxed text-neutral-500">
             Karte und Auswertung extern teilen, ohne Anmeldung. Optional mit Passwort.
+            {/* T-236: Hinweis, dass erst eine abgeschlossene Auswertung teilbar ist (kein leerer Share). */}
+            {project.status !== "fertig" ? (
+              <span className="mt-1 block font-medium text-amber-700">
+                Erst nach abgeschlossener Auswertung verfügbar — sonst zeigt der Link eine leere Karte.
+              </span>
+            ) : null}
           </p>
           {/* Button unten rechts — spiegelt die Dauer-Marke der Zeitraum-Karte */}
           <div className="mt-auto flex justify-end pt-1">
-            <Button variant="outline" className="shrink-0" onClick={() => setDialogOpen(true)}>
+            <Button
+              variant="outline"
+              className="shrink-0"
+              disabled={project.status !== "fertig"}
+              onClick={() => setDialogOpen(true)}
+            >
               <Globe2 className="h-4 w-4" /> Veröffentlichen
             </Button>
           </div>

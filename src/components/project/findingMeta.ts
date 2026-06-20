@@ -201,7 +201,7 @@ export const SEVERITY_META: Record<
   warnung: {
     label: "Warnung",
     badge: "warnung",
-    marker: "#F59E0B",
+    marker: "#EA580C", // T-238: an Token severity-warnung.DEFAULT angeglichen (war #F59E0B)
     dot: "bg-severity-warnung",
     chip: "bg-severity-warnung text-white",
     soft: "bg-severity-warnung-bg border-severity-warnung-border text-severity-warnung-text",
@@ -211,7 +211,7 @@ export const SEVERITY_META: Record<
   hinweis: {
     label: "Hinweis",
     badge: "hinweis",
-    marker: "#EAB308",
+    marker: "#CA8A04", // T-238: an Token severity-hinweis.DEFAULT angeglichen (war #EAB308)
     dot: "bg-severity-hinweis",
     chip: "bg-severity-hinweis text-white",
     soft: "bg-severity-hinweis-bg border-severity-hinweis-border text-severity-hinweis-text",
