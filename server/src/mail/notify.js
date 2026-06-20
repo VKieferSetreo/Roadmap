@@ -42,7 +42,7 @@ async function membersWithPrefs(db, tenantId) {
   if (!tenantId) return []
   const { rows } = await db.query(
     `SELECT m.email,
-       COALESCE(p.enabled, true) AS enabled,
+       COALESCE(p.enabled, false) AS enabled,
        COALESCE(p.scope, 'eigene') AS scope,
        COALESCE(p.severities, '["kritisch","warnung","hinweis"]'::jsonb) AS severities
      FROM tenant_members m

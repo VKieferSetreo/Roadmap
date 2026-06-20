@@ -76,7 +76,8 @@ export function notificationsRouter({ db }) {
 
   // ── E-Mail-Benachrichtigungs-Präferenz je (Mandant, Adresse) ────────────────
   const ALL_SEV = ["kritisch", "warnung", "hinweis"]
-  const DEFAULT_PREF = { enabled: true, scope: "eigene", severities: ALL_SEV }
+  // T-485: proaktive Fund-Mails standardmäßig AUS (nur Glocke) — Opt-in über die Einstellungen.
+  const DEFAULT_PREF = { enabled: false, scope: "eigene", severities: ALL_SEV }
 
   /** Präferenz des angemeldeten Nutzers (Default, wenn keine Zeile). */
   r.get("/mail-pref", asyncHandler(async (req, res) => {
