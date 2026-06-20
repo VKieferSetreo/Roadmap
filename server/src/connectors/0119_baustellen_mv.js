@@ -11,12 +11,18 @@ const BASE = "https://www.geodaten-mv.de/dienste/wfs_baustellenmv?service=WFS&ve
 const OUT = "&outputFormat=" + encodeURIComponent("application/json; subtype=geojson")
 const PAGE = 1000, MAX_PAGES = 5
 
-function ersterPunktReproj(geom) {
-  if (!geom) return [null, null]
+// Konditionale Reprojektion (istUtm-Guard: UTM-Koords sind >1000, WGS84 nicht) — reprojiziert NUR
+// echte UTM33-Koords, lässt bereits-WGS84 unangetastet. Ganze Geometrie (T-431, Linien-geom).
+function reprojGeomMv(geom) {
+  if (!geom?.coordinates) return null
   const istUtm = (x) => Math.abs(x) > 1000
-  const mapCoords = (c) => (Array.isArray(c[0]) ? c.map(mapCoords) : (istUtm(c[0]) ? utmZuWgs84(c[0], c[1], 33) : c))
-  const coords = mapCoords(geom.coordinates)
-  let c = coords
+  const map = (c) => (Array.isArray(c[0]) ? c.map(map) : istUtm(c[0]) ? utmZuWgs84(c[0], c[1], 33) : c)
+  return { type: geom.type, coordinates: map(geom.coordinates) }
+}
+function ersterPunktReproj(geom) {
+  const g = reprojGeomMv(geom)
+  if (!g) return [null, null]
+  let c = g.coordinates
   while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
   return [c?.[0] ?? null, c?.[1] ?? null]
 }
@@ -50,6 +56,11 @@ export const baustellenMvConnector = {
         name: p.bsname || `Baustelle ${p.vonort ?? ""}`,
         beschreibung: text || null,
         lat, lng,
+        // T-431: meist Punkt, aber gelegentliche Linien (UTM33) als reprojizierte geom durchreichen.
+        geom:
+          f.geometry?.type === "LineString" || f.geometry?.type === "MultiLineString"
+            ? reprojGeomMv(f.geometry)
+            : null,
         strassenRef: refAus(`${p.bsname ?? ""} ${p.vonort ?? ""}`),
         attrs: {
           maxGewichtT: tonnage ?? undefined,

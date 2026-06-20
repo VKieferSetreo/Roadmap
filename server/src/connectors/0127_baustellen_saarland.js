@@ -12,6 +12,9 @@ const QUELLE_URL = "https://baustellen.saarland/"
 const BASE = "https://baustellen.saarland/data"
 const FEEDS = {
   rwPoint: `${BASE}/baustellen/roadworks_point_geojson.geojson`,
+  // T-431: Linien-Geometrie der Baustellen (gleiche Records wie rwPoint, je recordid). vmLine
+  // bietet die Quelle nicht mehr an (404) → nur roadworks hat eine Linien-Variante.
+  rwLine: `${BASE}/baustellen/roadworks_line_geojson.geojson`,
   vmPoint: `${BASE}/verkehrsmeldungen/traffic_messages_point_geojson.geojson`,
 }
 
@@ -34,8 +37,18 @@ export const baustellenSaarlandConnector = {
       const data = await getJson(url, { timeoutMs })
       return data?.features ?? []
     }
-    const [rwP, vmP] = await Promise.all([feats(FEEDS.rwPoint), feats(FEEDS.vmPoint)])
-    log(`${QUELLE}: roadworks=${rwP.length} · verkehrsmeldungen=${vmP.length}`)
+    const [rwP, rwL, vmP] = await Promise.all([
+      feats(FEEDS.rwPoint), feats(FEEDS.rwLine), feats(FEEDS.vmPoint),
+    ])
+    // T-431: Linien-geom je recordid indexieren → an die Punkt-Funde mergen (sonst Punkt statt Strecke).
+    const lineByRec = new Map()
+    for (const f of rwL) {
+      const rec = f.properties?.recordid
+      if (rec && (f.geometry?.type === "LineString" || f.geometry?.type === "MultiLineString")) {
+        lineByRec.set(rec, f.geometry)
+      }
+    }
+    log(`${QUELLE}: roadworks=${rwP.length} (${lineByRec.size} mit Linie) · verkehrsmeldungen=${vmP.length}`)
 
     const obstacles = [...rwP.map((f) => ["baustelle", f]), ...vmP.map((f) => ["meldung", f])].map(([herkunft, f]) => {
       const p = f.properties ?? {}
@@ -57,6 +70,7 @@ export const baustellenSaarlandConnector = {
         name: erstZeile(text) ?? p.roadname ?? (istSperrung ? "Sperrung" : "Baustelle"),
         beschreibung: text || null,
         lat, lng,
+        geom: lineByRec.get(p.recordid) ?? null, // T-431: Linie aus rwLine je recordid
         strassenRef: normRef(text) ?? normRef(p.roadname),
         attrs: {
           maxGewichtT: tonnage,

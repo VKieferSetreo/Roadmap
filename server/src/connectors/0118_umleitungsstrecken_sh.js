@@ -44,6 +44,12 @@ export const umleitungsstreckenShConnector = {
         name: `Umleitungsstrecke ${(p.STRECKENFÜHRUNG ?? "").slice(0, 60)}`.trim(),
         beschreibung: p.STRECKENFÜHRUNG || null,
         lat, lng,
+        // T-431: Umleitungskorridor ist eine (Multi)LineString in EPSG:4326 (nativ, keine
+        // Reprojektion) — als geom durchreichen, sonst kollabiert der Korridor zum Punkt.
+        geom:
+          f.geometry?.type === "LineString" || f.geometry?.type === "MultiLineString"
+            ? f.geometry
+            : null,
         attrs: {
           umleitung: true,
           mehrwegKm: num(p.Mehrweg_in_km) ?? undefined,

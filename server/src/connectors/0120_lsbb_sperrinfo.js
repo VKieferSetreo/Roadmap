@@ -65,6 +65,12 @@ export const lsbbSperrinfoConnector = {
         name: p.street || `Maßnahme ${p.location ?? ""}`,
         beschreibung: text || null,
         lat, lng,
+        // T-431: roadworks-Geometrie ist LineString in EPSG:4326 (nativ) — als geom durchreichen,
+        // sonst kollabiert die Sperrstrecke zum Punkt (Korridor-Clip/Gegenfahrbahn-Filter greifen nicht).
+        geom:
+          f.geometry?.type === "LineString" || f.geometry?.type === "MultiLineString"
+            ? f.geometry
+            : null,
         strassenRef: refAus(p),
         attrs: {
           maxGewichtT: tonnage ?? undefined,
