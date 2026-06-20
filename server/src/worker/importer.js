@@ -178,12 +178,19 @@ export async function runImport({
       // Reconcile: bei Vollbestand-Feeds Fehlende deaktivieren. Nur wenn wir
       // tatsächlich etwas Gültiges gesehen haben (sonst würde ein leerer/kaputter
       // Feed fälschlich den ganzen Bestand deaktivieren).
-      if (connector.vollbestand && seen.size > 0) {
+      if (connector.vollbestand && seen.size > 0 && result?.complete !== false) {
         const { rowCount } = await q.query(RECONCILE_SQL, [connector.quelleId, [...seen]])
         stats.deaktiviert = rowCount
         if (rowCount > 0) note(`Reconcile: ${rowCount} nicht mehr im Feed → deaktiviert`)
+      } else if (connector.vollbestand && result?.complete === false) {
+        // T-311/T-314: Teilbestand → NICHT reconcilen, sonst verschwinden real existierende
+        // Hindernisse und das Tool zeigt eine gesperrte Strecke faelschlich als frei.
+        note("Teilbestand (complete=false) — Reconcile übersprungen (Schutz gegen false-Deaktivieren)")
       }
     })
+    // T-314: Teilbestand ehrlich kennzeichnen (status='partial' statt 'ok'), damit Sync/Health
+    // den degradierten Lauf sichtbar machen können (nicht stiller Voll-Erfolg).
+    if (result?.complete === false && status === "ok") status = "partial"
   } catch (err) {
     status = "error"
     note(`Fehler: ${err?.message ?? err}`)

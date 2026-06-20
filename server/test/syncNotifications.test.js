@@ -39,6 +39,22 @@ describe("Vollbestand-Reconcile (Importer)", () => {
     expect(db.state.obstacles.find((o) => o.externe_id === "a").aktiv).toBe(true)
   })
 
+  it("Teilbestand (complete:false) überspringt Reconcile — kein false-Deaktivieren (T-311/T-314)", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: vollbestand([item("a"), item("b")]), log: quiet })
+    expect(db.state.obstacles.filter((o) => o.aktiv)).toHaveLength(2)
+
+    // Feed ohne 'b', aber als unvollstaendig markiert → 'b' darf NICHT deaktiviert werden.
+    const teilbestand = {
+      quelleId: "0009", name: "Teilbestand-Mock", vollbestand: true,
+      fetch: async () => ({ obstacles: [item("a")], complete: false }),
+    }
+    const run = await runImport({ db, connector: teilbestand, log: quiet })
+    expect(run.stats.deaktiviert).toBe(0)
+    expect(run.status).toBe("partial")
+    expect(db.state.obstacles.find((o) => o.externe_id === "b").aktiv).toBe(true)
+  })
+
   it("wiederkehrender Eintrag wird reaktiviert", async () => {
     const db = createFakeDb()
     await runImport({ db, connector: vollbestand([item("a"), item("b")]), log: quiet })

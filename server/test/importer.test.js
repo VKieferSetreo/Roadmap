@@ -285,7 +285,10 @@ describe("Admin-Endpoints (Import)", () => {
     if (u.includes("/services/roadworks")) {
       return u.includes("/A1/") ? jsonResponse({ roadworks: [ROADWORK] }) : jsonResponse({ roadworks: [] })
     }
-    throw new Error("offline") // closure etc. tolerant übersprungen
+    // closure leer, aber ERFOLGREICH (kein throw) → vollstaendiger Abruf, status='ok'.
+    // (Ein gescheiterter Abruf wuerde jetzt korrekt als Teilbestand 'partial' gelten, T-314.)
+    if (u.includes("/services/closure")) return jsonResponse({ closure: [] })
+    throw new Error("offline")
   }
 
   it("POST /api/admin/import/:quelleId triggert synchron → Run-Summary (camelCase)", async () => {

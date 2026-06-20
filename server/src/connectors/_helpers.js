@@ -388,6 +388,14 @@ export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000
     else if (mode === "wfs1") url = `${baseUrl}${sep}maxFeatures=${pageSize}`
     else url = `${baseUrl}${sep}limit=${pageSize}&offset=${page * pageSize}`
     const data = await getJson(url, { timeoutMs })
+    // T-311/T-314: ein fehlgeschlagener Seitenabruf (null) ist KEIN leerer/letzter Feed.
+    // Werfen → runImport setzt status='error', der Vollbestand-Reconcile läuft NICHT auf einem
+    // Teilbestand (sonst würde der ungeladene Rest fälschlich deaktiviert = "Strecke frei").
+    if (data == null) {
+      throw new Error(
+        `fetchAllFeatures: Seitenabruf fehlgeschlagen (startIndex ${page * pageSize}) — Teilbestand, Reconcile-Schutz`,
+      )
+    }
     const feats = data?.features ?? []
     if (matched == null && Number.isFinite(data?.numberMatched)) matched = data.numberMatched
     all.push(...feats)

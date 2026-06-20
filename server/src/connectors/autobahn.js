@@ -227,13 +227,15 @@ export const autobahnConnector = {
 
     const SERVICES = ["roadworks", "closure"]
     const obstacles = []
-    let baustellen = 0, sperrungen = 0
+    let baustellen = 0, sperrungen = 0, fehlgeschlagen = 0
     const perRoad = await mapPool(roads, 6, async (road) => {
       const found = []
       for (const service of SERVICES) {
         const url = serviceUrl(road, service)
         const json = await fetchJson(url, { fetchImpl, timeoutMs })
-        if (!json) continue
+        // T-311/T-314: gescheiterter Road/Service-Abruf = Teilbestand → complete:false, damit
+        // der Reconcile die (nur diesmal nicht geladenen) Funde nicht fälschlich deaktiviert.
+        if (!json) { fehlgeschlagen += 1; continue }
         const items = Array.isArray(json[service]) ? json[service] : []
         for (const it of items) {
           const norm = normalizeAutobahn(it, road, service, url)
@@ -250,7 +252,7 @@ export const autobahnConnector = {
 
     // Teil-Segmente eines Projekts+Richtung zu Strecken zusammenfassen (kein 3×-Duplikat, Linie statt Punkt).
     const strecken = gruppiereStrecken(obstacles)
-    log(`Autobahn gesamt: ${obstacles.length} Teil-Segmente → ${strecken.length} Strecken (${baustellen} Baustellen, ${sperrungen} Sperrungen) über ${roads.length} Roads`)
-    return { obstacles: strecken }
+    log(`Autobahn gesamt: ${obstacles.length} Teil-Segmente → ${strecken.length} Strecken (${baustellen} Baustellen, ${sperrungen} Sperrungen) über ${roads.length} Roads${fehlgeschlagen ? `, ${fehlgeschlagen} Abrufe gescheitert → Teilbestand` : ""}`)
+    return { obstacles: strecken, complete: fehlgeschlagen === 0 }
   },
 }
