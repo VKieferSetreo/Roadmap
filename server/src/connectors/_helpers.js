@@ -1,4 +1,6 @@
-// Geteilte Connector-Helfer (dependency-frei) — Port aus API/_lib/format.mjs.
+// Geteilte Connector-Helfer (dependency-frei) — die EINZIGE live genutzte Normalisierung.
+// Der frühere Ursprung API/_lib/format.mjs (von 37 alten cron.mjs importiert) ist totes Legacy:
+// nicht deployed, nicht von server/src importiert → kein reales Drift-Risiko (T-284, untersucht).
 // Connectoren ziehen den vollen Quell-Bestand und mappen via makeNormalized() in den
 // Importer-Vertrag (NormalizedObstacle). Koordinaten-Plausibilität + UTM-Reprojektion inklusive.
 

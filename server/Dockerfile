@@ -9,7 +9,8 @@ COPY . .
 
 ENV NODE_ENV=production \
     PORT=8095 \
-    REQUIRE_AUTH=true
+    REQUIRE_AUTH=true \
+    TZ=UTC
 
 EXPOSE 8095
 

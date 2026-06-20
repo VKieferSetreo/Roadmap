@@ -3,6 +3,13 @@
 
 import pg from "pg"
 
+// T-465: DATE-Spalten (oid 1082: gueltig_von/bis, realer_start) als rohen "YYYY-MM-DD"-String
+// liefern. Sonst parst node-pg sie zu einem Date auf LOKALER Mitternacht, und toIsoDate(date)
+// .toISOString() verschiebt bei nicht-UTC-Container-TZ um einen Tag → gültige Hindernisse fielen
+// aus Karte/PDF. Der String-Pfad in toIsoDate/dateOnly ist bereits TZ-sicher; kein Code rechnet
+// direkt mit dem Date-Objekt dieser Spalten.
+pg.types.setTypeParser(1082, (v) => v)
+
 export function createPool(connectionString = process.env.DATABASE_URL) {
   return new pg.Pool({
     connectionString,

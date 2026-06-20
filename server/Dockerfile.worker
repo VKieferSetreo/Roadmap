@@ -7,7 +7,8 @@ RUN npm ci --omit=dev
 
 COPY . .
 
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    TZ=UTC
 
 # KEINE Migration on-boot — die macht die API-App (Dockerfile).
 # Der Worker wartet selbst via Schema-Retry, bis migrations/003 (quellen) da ist.
