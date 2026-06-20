@@ -9,8 +9,11 @@ import {
   ChevronDown,
   ClipboardList,
   Clock,
+  Download,
   ExternalLink,
   EyeOff,
+  FileDown,
+  FileSpreadsheet,
   MapPin,
   Radio,
   RotateCcw,
@@ -29,6 +32,7 @@ import { AnimatedNumber } from "@/components/shared/AnimatedNumber"
 import { StreckenBand } from "@/components/charts/StreckenBand"
 import { ReportView } from "./ReportView"
 import { ExportDialog, type ExportConfig } from "./ExportDialog"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { safeHref } from "@/lib/safeHref"
@@ -60,13 +64,8 @@ function ChartSkeleton() {
 
 export function DashboardTab({
   project,
-  exportRequest,
-  onExportConsumed,
 }: {
   project: Project
-  /** Vom Projekt-Header angestoßener Export ("pdf"|"csv") — öffnet den Export-Dialog. */
-  exportRequest?: "pdf" | "csv" | null
-  onExportConsumed?: () => void
 }) {
   const navigate = useNavigate()
   const [sevFilter, setSevFilter] = useState<FindingSeverity | "alle">("alle")
@@ -82,15 +81,6 @@ export function DashboardTab({
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
-
-  // Export aus dem Projekt-Header: öffnet den bekannten Export-Dialog.
-  useEffect(() => {
-    if (exportRequest) {
-      setExportTarget(exportRequest)
-      onExportConsumed?.()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportRequest])
 
   // Ausgeblendete Funde fließen NIE in Aggregate/Liste/Charts — nur separat als "Ausgeblendet".
   const sichtbar = useMemo(() => visibleFindings(project.findings), [project.findings])
@@ -305,6 +295,27 @@ export function DashboardTab({
             </option>
           ))}
         </Select>
+        {/* Download (nur nach abgeschlossener Auswertung): PDF oder CSV → Export-Dialog. */}
+        {project.status === "fertig" ? (
+          <DropdownMenu
+            triggerLabel="Herunterladen — PDF oder CSV"
+            trigger={
+              <span
+                title="Herunterladen"
+                className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+              >
+                <Download className="h-4 w-4" /> Download
+              </span>
+            }
+          >
+            <DropdownItem onClick={() => setExportTarget("pdf")}>
+              <FileDown className="h-4 w-4 text-neutral-400" /> PDF-Bericht
+            </DropdownItem>
+            <DropdownItem onClick={() => setExportTarget("csv")}>
+              <FileSpreadsheet className="h-4 w-4 text-emerald-600" /> Excel (CSV)
+            </DropdownItem>
+          </DropdownMenu>
+        ) : null}
       </div>
 
       {/* Fund-Liste — standardmäßig 3 Funde; Rest als nach unten weichgezeichneter
