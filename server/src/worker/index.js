@@ -8,6 +8,7 @@
 
 import { Cron } from "croner"
 import { enabledConnectors } from "../connectors/index.js"
+import { createSemaphore } from "../concurrency.js"
 import { createDb, createPool } from "../db.js"
 import { rerunAffectedProjects } from "../engine/rerunAll.js"
 import { loadEnv } from "../env.js"
@@ -21,6 +22,35 @@ const log = (msg) => console.log(`[worker ${new Date().toISOString()}] ${msg}`)
 
 const pool = createPool()
 const db = createDb(pool)
+
+// Crash-Netz (T-305/T-323): ein ungefangener Background-Reject (z.B. pool.connect()
+// rejected bei Pool-Erschöpfung am 8/12/18-Tick, oder ein unlock-Query auf toter
+// Connection) darf den EINZIGEN Worker nicht killen — sonst Crash-Loop genau dann,
+// wenn Importe am wichtigsten sind. Loggen statt sterben.
+// ponytail: bewusster Weiterlauf auch bei uncaughtException — die realen Pfade sind
+// gewickelt, das hier ist nur das Sicherheitsnetz gegen einen künftigen Stray-Reject.
+process.on("unhandledRejection", (reason) =>
+  log(`unhandledRejection (ignoriert): ${reason?.stack ?? reason}`),
+)
+process.on("uncaughtException", (err) => log(`uncaughtException (ignoriert): ${err?.stack ?? err}`))
+
+// T-303: 45 Connectoren teilen sich den 8/12/18-Tick. Jeder Run hält 2 Pool-Connections
+// (Lock-Client + tx-Client) gegen pool max=10 → ohne Drossel sterben ~40 Runs am
+// connectionTimeout. Der Semaphore lässt nie mehr Runs gleichzeitig connecten als der Pool
+// fasst (4×2=8 ≤ 10); die übrigen warten FIFO, OHNE eine Connection zu belegen.
+const IMPORT_CONCURRENCY = Number(process.env.IMPORT_CONCURRENCY ?? 4)
+const runConnectorGated = createSemaphore(IMPORT_CONCURRENCY)
+
+// Croner-Optionen für ALLE Jobs:
+//  protect  — überlappende Trigger überspringen, BEVOR eine Connection geholt wird (T-364)
+//  timezone — "0 8,12,18" soll Berlin-Wandzeit sein, nicht UTC. Als Option statt Container-TZ,
+//             damit der app-weite TZ=UTC-Pin (T-465) nicht kollidiert (T-365)
+//  catch    — ein geworfener/rejecteter Lauf wird geloggt, nie unhandled (T-305)
+const CRON_OPTS = {
+  protect: true,
+  timezone: "Europe/Berlin",
+  catch: (err) => log(`Cron-Job-Fehler (gefangen): ${err?.stack ?? err}`),
+}
 
 /** Schema-Wait: API migriert on-boot — wir pollen bis die quellen-Tabelle existiert. */
 async function waitForSchema({ tries = 120, delayMs = 5000 } = {}) {
@@ -88,7 +118,15 @@ async function runRerun(grund) {
 const LOCK_NS = "roadmap_connector:"
 
 async function withConnectorLock(connector, fn) {
-  const client = await pool.connect()
+  // pool.connect() IN den try ziehen: rejectet er bei Pool-Erschöpfung/DB-down, wird der
+  // Lauf übersprungen statt der Reject aus execute() heraus zu propagieren (T-305).
+  let client
+  try {
+    client = await pool.connect()
+  } catch (err) {
+    log(`${connector.quelleId} (${connector.name}): keine DB-Connection — übersprungen: ${err?.message ?? err}`)
+    return
+  }
   const key = LOCK_NS + connector.quelleId
   try {
     const { rows } = await client.query("SELECT pg_try_advisory_lock(hashtext($1)) AS ok", [key])
@@ -99,25 +137,37 @@ async function withConnectorLock(connector, fn) {
     try {
       await fn()
     } finally {
-      await client.query("SELECT pg_advisory_unlock(hashtext($1))", [key])
+      // Unlock darf nie werfen: stirbt die Connection mitten im Run (DB-Restart/Netz-Blip,
+      // serverseitiger statement_timeout-Kill), fällt der Advisory-Lock ohnehin mit der
+      // Session weg — also nur loggen, nicht propagieren (T-323).
+      try {
+        await client.query("SELECT pg_advisory_unlock(hashtext($1))", [key])
+      } catch (err) {
+        log(`${connector.quelleId}: unlock fehlgeschlagen (Lock fällt mit Session) — ${err?.message ?? err}`)
+      }
     }
+  } catch (err) {
+    log(`${connector.quelleId}: Lock-/Lauf-Fehler — übersprungen: ${err?.message ?? err}`)
   } finally {
     client.release()
   }
 }
 
 async function execute(connector) {
-  await withConnectorLock(connector, async () => {
-    log(`${connector.quelleId} (${connector.name}): Run startet`)
-    try {
-      const run = await runImport({ db, connector, log: (m) => log(m) })
-      log(`${connector.quelleId}: Run ${run.status} — ${JSON.stringify(run.stats)}`)
-      if (run.status === "ok" && changed(run.stats)) scheduleRerun()
-    } catch (err) {
-      // runImport wirft eigentlich nie — letzte Verteidigungslinie, Worker läuft weiter
-      log(`${connector.quelleId}: unerwarteter Fehler — ${err?.message ?? err}`)
-    }
-  })
+  // Semaphore-gated: nie mehr gleichzeitige Runs als der Pool Connections fasst (T-303).
+  await runConnectorGated(() =>
+    withConnectorLock(connector, async () => {
+      log(`${connector.quelleId} (${connector.name}): Run startet`)
+      try {
+        const run = await runImport({ db, connector, log: (m) => log(m) })
+        log(`${connector.quelleId}: Run ${run.status} — ${JSON.stringify(run.stats)}`)
+        if (run.status === "ok" && changed(run.stats)) scheduleRerun()
+      } catch (err) {
+        // runImport wirft eigentlich nie — letzte Verteidigungslinie, Worker läuft weiter
+        log(`${connector.quelleId}: unerwarteter Fehler — ${err?.message ?? err}`)
+      }
+    }),
+  )
 }
 
 function shutdown(signal) {
@@ -135,16 +185,16 @@ try {
     log("CONNECTORS leer — keine Connectoren geplant, Worker läuft im Leerlauf (nur Heartbeat)")
   }
   for (const connector of connectors) {
-    jobs.push(new Cron(connector.schedule, () => execute(connector)))
+    jobs.push(new Cron(connector.schedule, CRON_OPTS, () => execute(connector)))
     log(`geplant: ${connector.quelleId} (${connector.name}) → "${connector.schedule}"`)
   }
 
   // Täglicher Hygiene-Cleanup (abgelaufene Hindernisse) + Re-Auswertung —
   // unabhängig davon, ob Importe liefen (gueltig_bis läuft auch ohne Feed ab).
-  jobs.push(new Cron("30 3 * * *", () => void runRerun("täglicher Cleanup")))
+  jobs.push(new Cron("30 3 * * *", CRON_OPTS, () => void runRerun("täglicher Cleanup")))
 
   // Heartbeat hält den Event-Loop am Leben und macht den Worker im Log sichtbar
-  jobs.push(new Cron("0 * * * *", () => log(`alive — ${jobs.length - 2} Connector-Job(s) geplant`)))
+  jobs.push(new Cron("0 * * * *", CRON_OPTS, () => log(`alive — ${jobs.length - 2} Connector-Job(s) geplant`)))
   log(`roadmap-worker bereit — ${connectors.length} Connector(en) aktiv`)
 
   process.on("SIGTERM", () => shutdown("SIGTERM"))
