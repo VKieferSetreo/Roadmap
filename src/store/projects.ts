@@ -104,6 +104,25 @@ function nextFarbe(routes: ProjectRoute[]): string {
   return ROUTE_FARBEN.find((f) => !used.has(f)) ?? ROUTE_FARBEN[routes.length % ROUTE_FARBEN.length]
 }
 
+// T-326: localStorage.setItem kann QuotaExceededError werfen (großer projects-Blob). Der würde
+// sonst synchron aus einer optimistischen Mutation (addRoute/updateRoute) crashen und In-Memory
+// von localStorage entkoppeln. Schlucken + einmalig warnen — der Server bleibt Source-of-Truth.
+let quotaWarned = false
+const safeStorage = {
+  getItem: (k: string) => localStorage.getItem(k),
+  setItem: (k: string, v: string) => {
+    try {
+      localStorage.setItem(k, v)
+    } catch {
+      if (!quotaWarned) {
+        quotaWarned = true
+        toast.warning("Lokaler Speicher voll — Ihre Daten bleiben für diese Sitzung erhalten.")
+      }
+    }
+  },
+  removeItem: (k: string) => localStorage.removeItem(k),
+}
+
 export const useProjectStore = create<ProjectStore>()(
   persist(
     (set, get) => ({
@@ -499,7 +518,7 @@ export const useProjectStore = create<ProjectStore>()(
     }),
     {
       name: "roadmap-projects",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => safeStorage),
       version: 2,
       // v1-Persists (route/routeGeometry-Modell) verwerfen — Demo-Seed baut neu auf
       migrate: (state, version) => (version < 2 ? undefined : (state as ProjectStore)),

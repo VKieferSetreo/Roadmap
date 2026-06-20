@@ -78,8 +78,10 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
 
       <div className="flex-1" />
 
-      {/* Globaler „Daten aktualisieren"-Sync — links neben der Mandanten-Auswahl */}
-      {mode === "live" ? <HeaderSync /> : null}
+      {/* Globaler „Daten aktualisieren"-Sync — links neben der Mandanten-Auswahl.
+          T-225: externe Kunden sehen den Trigger gar nicht erst (Backend blockt extern via T-309);
+          deckungsgleich mit dem Backend-Recht „jeder INTERNE darf syncen" (nicht nur Admin). */}
+      {mode === "live" && !extern ? <HeaderSync /> : null}
 
       {/* Mandanten-Switcher — nur Setreo-Admin im Live-Modus */}
       {isAdmin && tenants.length > 0 ? (
