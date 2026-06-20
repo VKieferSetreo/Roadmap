@@ -140,21 +140,26 @@ async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
  * mit ≥1 nutzbarer Strecke SEQUENZIELL (eine nach der anderen) neu und erzeugt
  * Benachrichtigungen aus dem Fund-Diff.
  *
- * Serialisiert prozessübergreifend über einen nicht-blockierenden Advisory-XACT-Lock:
+ * Serialisiert prozessübergreifend über einen nicht-blockierenden Session-Advisory-Lock:
  * API-Sync-Rerun (sync.js) und Worker-Auto-Rerun (worker/index.js) laufen in GETRENNTEN
  * Prozessen — ihre In-Memory-Locks greifen nur prozessintern. Ohne geteilte Sperre liefen
  * beide vollen Reruns (je Schwer-SELECTs + tx-Last) gleichzeitig auf derselben DB → sie
- * kippt. Bekommt ein Lauf den Lock nicht, überspringt er (der nächste Sync/Cron holt es
- * nach). Der Lock hält bis zum COMMIT dieser tx (= Rerun-Ende), kein manuelles unlock.
- * ponytail: die Lock-tx hält ihre Connection für die Rerun-Dauer idle-in-transaction —
- * unkritisch bei RERUN_CONCURRENCY=1 (sequenziell) und ohne idle_in_transaction_session_timeout.
+ * kippt. Bekommt ein Lauf den Lock nicht, überspringt er (der nächste Sync/Cron holt es nach).
+ *
+ * T-333/T-342: SESSION-Lock auf dedizierter Connection (db.session, KEINE Transaktion) statt
+ * XACT-Lock — der frühere xact-Lock band die Sperre an den COMMIT und hielt die Connection für
+ * die GESAMTE Rerun-Dauer "idle in transaction" (bei wachsender Projektzahl / Provider-Hang ein
+ * Pool-/Lock-Leak). Der Session-Lock hält dieselbe 1 Connection, aber NICHT als offene Tx → er
+ * blockiert keine DB-Schreiber. Explizites pg_advisory_unlock im finally (wirft nie); stirbt die
+ * Session, fällt der Lock automatisch (Muster wie withConnectorLock, T-323). Der eigentliche
+ * Abbruch eines hängenden Provider-fetch passiert am AbortController in mailer.js (T-339/T-340).
  *
  * @returns {Promise<{geprueft, neuAusgewertet, mitAenderung, benachrichtigungen, skipped?}>}
  */
 export async function rerunAffectedProjects(opts) {
   const { db, log = () => {} } = opts
-  return db.tx(async (q) => {
-    const got = await q.query("SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok", [RERUN_LOCK_KEY])
+  return db.session(async (lockq) => {
+    const got = await lockq.query("SELECT pg_try_advisory_lock(hashtext($1)) AS ok", [RERUN_LOCK_KEY])
     if (!got.rows[0]?.ok) {
       log("Rerun läuft bereits (anderer Prozess) — übersprungen")
       return {
@@ -162,7 +167,17 @@ export async function rerunAffectedProjects(opts) {
         mitAenderung: 0, benachrichtigungen: 0, skipped: true,
       }
     }
-    return runRerun(opts)
+    try {
+      return await runRerun(opts)
+    } finally {
+      // Session-Lock MUSS explizit fallen (anders als xact-Lock beim COMMIT). Wirft das unlock,
+      // fällt der Lock spätestens mit der Session — niemals den Rerun daran scheitern lassen.
+      try {
+        await lockq.query("SELECT pg_advisory_unlock(hashtext($1))", [RERUN_LOCK_KEY])
+      } catch (err) {
+        log(`Rerun-Unlock fehlgeschlagen (Lock fällt mit Session): ${err?.message ?? err}`)
+      }
+    }
   })
 }
 

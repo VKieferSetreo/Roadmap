@@ -54,6 +54,17 @@ export function createDb(pool) {
         client.release()
       }
     },
+    /** Dedizierte Session-Connection OHNE Transaktion (T-333/T-342) — für Session-Advisory-Locks,
+     *  die einen langen Vorgang serialisieren sollen, ohne eine Tx (und damit "idle in transaction")
+     *  über die gesamte Dauer offenzuhalten. Connection in jedem Pfad zurückgeben. */
+    async session(fn) {
+      const client = await pool.connect()
+      try {
+        return await fn({ query: (text, params) => client.query(text, params) })
+      } finally {
+        client.release()
+      }
+    },
   }
 }
 

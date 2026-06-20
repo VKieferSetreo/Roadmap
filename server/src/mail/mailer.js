@@ -15,6 +15,8 @@
 import { captureException } from "../sentry.js"
 
 const MAILJET_ENDPOINT = "https://api.mailjet.com/v3.1/send"
+// T-339/T-340: Abbruch-Timeout für den Mailjet-fetch (Provider-Hang darf den Rerun-Lock nicht halten).
+const MAIL_TIMEOUT_MS = Number(process.env.MAIL_TIMEOUT_MS ?? 15_000)
 
 export function mailConfig(env = process.env) {
   return {
@@ -62,11 +64,17 @@ export async function sendMail(
     })),
   }
 
+  // T-339/T-340: harter Abbruch bei Provider-Hang. withTimeout (util.js) bricht NICHTS ab —
+  // nur ein AbortController kappt den echten fetch. Sonst hängt der Versand (früher INNERHALB
+  // der lock-haltenden Rerun-Tx) und leckt Lock + Pool-Connection bis zum Server-Tod.
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), MAIL_TIMEOUT_MS)
   try {
     const res = await fetchImpl(MAILJET_ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Basic ${auth}` },
       body: JSON.stringify(body),
+      signal: ctrl.signal,
     })
     if (!res.ok) {
       const detail = await res.text().catch(() => "")
@@ -82,8 +90,11 @@ export async function sendMail(
     log(`mail: ${to.length} Mail(s) versendet ("${subject}")`)
     return { sent: to.length }
   } catch (err) {
-    log(`mail: Versand fehlgeschlagen — ${err?.message ?? err}`)
+    const reason = err?.name === "AbortError" ? `Timeout nach ${MAIL_TIMEOUT_MS} ms` : (err?.message ?? err)
+    log(`mail: Versand fehlgeschlagen — ${reason}`)
     captureException(err instanceof Error ? err : new Error(String(err)), { subject, recipients: to.length }) // T-486
-    return { sent: 0, error: String(err?.message ?? err) }
+    return { sent: 0, error: String(reason) }
+  } finally {
+    clearTimeout(timer)
   }
 }
