@@ -65,7 +65,10 @@ export function shareRouter({ db, sessionSalt }) {
   }))
 
   r.post("/api/:tenantSlug/:projectId/unlock", asyncHandler(async (req, res) => {
-    if (!allowUnlock(req.ip ?? "unknown")) {
+    // T-335: Key = (Client-IP, konkreter Share). Ohne trust-proxy ist req.ip die geteilte Caddy-IP;
+    // ein reiner IP-Key würde sonst bei Brute-Force EINES Shares ALLE Shares für alle sperren.
+    // Der (ip|slug/pid)-Composite betrifft nur den angegriffenen Share. Caddy-XFF verfeinert das später auf die echte IP.
+    if (!allowUnlock(`${req.ip ?? "unknown"}|${req.params.tenantSlug}/${req.params.projectId}`)) {
       throw new ApiError(429, "Zu viele Versuche — kurz warten")
     }
     const share = await loadActiveShare(db, req.params.tenantSlug, req.params.projectId)
