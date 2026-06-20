@@ -16,6 +16,7 @@ import { join } from "node:path"
 import { fileURLToPath } from "node:url"
 import express from "express"
 import compression from "compression"
+import { createRateLimiter } from "./shares.js"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { requestId } from "./requestId.js"
@@ -149,6 +150,16 @@ export function createApp({
   // ── Gated API ────────────────────────────────────────────────────────────────
   app.use("/api", authMiddleware({ requireAuth }))
   app.use("/api", tenantContext({ db }))
+
+  // T-337: globaler DoS-/Runaway-Backstop je Identität. req.ip ist auf den gated /api-Blöcken die
+  // geteilte Caddy-IP (Caddy stempelt dort kein XFF) → MUSS per Identität keyen, sonst ein Eimer
+  // für alle. Großzügig (1200/min ≈ 20/s): fängt Endlosschleife/Abuse, trifft nie legitime Nutzung.
+  const apiLimiter = createRateLimiter({ max: 1200, windowMs: 60_000 })
+  app.use("/api", (req, res, next) => {
+    const key = req.ctx?.email || req.user?.email || req.ip || "anon"
+    if (!apiLimiter(key)) throw new ApiError(429, "Zu viele Anfragen — bitte kurz warten")
+    next()
+  })
 
   // gated, aber ohne Tenant-Pflicht — speist Identität + Tenant-Switcher des FE
   app.get("/api/context", asyncHandler(async (req, res) => {
