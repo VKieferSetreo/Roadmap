@@ -56,7 +56,7 @@ export const autobahnLastbeschraenkteBrueckenConnector = {
       const bwName = String(p.Bauwerksname ?? "").trim()
       const bwNr = p.Bauwerksnummer != null ? String(p.Bauwerksnummer).trim() : null
 
-      const tonnage = tonnageAusText(beschr)
+      const tonnage = tonnageAusText(beschr, { requireKontext: false }) // p.Beschränkung IST das Lastlimit (T-253)
       const maxHoeheM = meterAusText(beschr, /durchfahrtsh[öo]he|h[öo]he/i)
       // JEDE Brücke auf der lastbeschränkte-Brücken-Liste IST beschränkt. Ohne numerisches
       // Gewichtslimit UND ohne Höhenangabe → konservativ als Vollsperre behandeln (kritisch),

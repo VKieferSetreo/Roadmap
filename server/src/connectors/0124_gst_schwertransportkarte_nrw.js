@@ -60,7 +60,7 @@ export const gstSchwertransportkarteNrwConnector = {
       const p = f.properties ?? {}
       const [lng, lat] = ersteKoordinate(f.geometry)
       const gewichtText = String(p.gewicht ?? "")
-      const tonnage = tonnageAusText(gewichtText) // "..., max 16 to" → 16
+      const tonnage = tonnageAusText(gewichtText, { requireKontext: false }) // dediziertes Gewichtsfeld → rohe Zahl (T-253)
       const komplettsperre = /keine schwertransporte/i.test(gewichtText)
       // EINDEUTIG pro echtem Einzel-Eintrag UND STABIL über Läufe (reconcile-stabil):
       // quellId (tbwnr/fid/f.id) + Diskriminator-Hash aus Geometrie + unterscheidenden

@@ -9,11 +9,29 @@ export function inDeBbox(lat, lng) {
   return lat != null && lng != null && lat >= 47.2 && lat <= 55.1 && lng >= 5.8 && lng <= 15.1
 }
 
-/** Erste Tonnage-Zahl aus Freitext (replaceAll — sonst bleibt bei mehreren Kommas das relevante stehen). */
-export function tonnageAusText(text) {
+/** Tonnage-Zahl aus Freitext — NUR wenn sie an einem Gewichts-Limit-Kontext hängt (T-253),
+ *  sonst wird "40-t-Kran" / "25 t Asphalt" fälschlich zum Fahrzeug-Gewichtslimit und führt zu
+ *  einer falschen Routen-Freigabe. Bei dedizierten Gewichts-Feldern (Brücken-/Lastfeeds) per
+ *  { requireKontext: false } die rohe erste Zahl nehmen. */
+export function tonnageAusText(text, { requireKontext = true } = {}) {
   if (!text) return null
-  const m = String(text).replaceAll(",", ".").match(/(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
-  return m ? Number(m[1]) : null
+  const s = String(text).replaceAll(",", ".")
+  if (!requireKontext) {
+    const m = s.match(/(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
+    return m ? Number(m[1]) : null
+  }
+  // Kontext-Wort höchstens ~25 Zeichen VOR der Zahl: "zul. Gesamtgewicht 7,5 t", "Tragfähigkeit
+  // 16 t", "max 16 to", "gesperrt … über 7,5 t", "lastbeschränkt auf 30 t". Adjazenz statt
+  // bloßer Anwesenheit → "40t-Kran, Tragfähigkeit 16 t" liefert korrekt 16, nicht 40.
+  const vor = s.match(
+    /(?:gesamtgewicht|zul[.\s]*ges|zgg|tragf[äa]hig\w*|tragkraft|tragl\w*|lastbe\w*|gewichtsbe\w*|gewichtsl\w*|zul[äa]ssig|\bmax\.?|gesperrt|[üu]ber|\bab\b|\bbis\b)[^.\d]{0,25}(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i,
+  )
+  if (vor) return Number(vor[1])
+  // Kontext NACH der Zahl: "7,5 t zul. Gesamtgewicht", "16 t zGG", "30 t Tragfähigkeit".
+  const nach = s.match(
+    /(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)[^.\d]{0,20}(?:zul|gesamtgewicht|zgg|gewichtsbe|tragf|lastbe)/i,
+  )
+  return nach ? Number(nach[1]) : null
 }
 
 /** Erste Höhen-/Breiten-Meterzahl aus Freitext. */

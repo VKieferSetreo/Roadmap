@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import {
-  dedupeObstacles, dupExterneId, extractStammdaten, makeNormalized, stripHtml,
+  dedupeObstacles, dupExterneId, extractStammdaten, makeNormalized, stripHtml, tonnageAusText,
 } from "../src/connectors/_helpers.js"
 import { enrichFromText } from "../src/enrich.js"
 
@@ -194,5 +194,25 @@ describe("stripHtml", () => {
     expect(stripHtml("Zeile1\nZeile2")).toBe("Zeile1\nZeile2")
     expect(stripHtml(null)).toBe(null)
     expect(stripHtml("   ")).toBe(null)
+  })
+})
+
+describe("tonnageAusText — Gewichts-Limit-Kontext (T-253)", () => {
+  it("incidentelle Tonnage OHNE Limit-Kontext → null (kein falsches Fahrzeuglimit)", () => {
+    expect(tonnageAusText("40t-Kran im Einsatz")).toBeNull()
+    expect(tonnageAusText("Abtrag von 25t Asphalt")).toBeNull()
+  })
+  it("mit Gewichts-Limit-Kontext → extrahiert das Limit", () => {
+    expect(tonnageAusText("zul. Gesamtgewicht 7,5 t")).toBe(7.5)
+    expect(tonnageAusText("Tragfähigkeit 16 t")).toBe(16)
+    expect(tonnageAusText("Gewichtsbeschränkung 3,5 t")).toBe(3.5)
+    expect(tonnageAusText("gesperrt für Fahrzeuge über 7,5 t")).toBe(7.5)
+  })
+  it("Adjazenz: Kran-Tonnage davor verfälscht das Limit nicht", () => {
+    expect(tonnageAusText("Einsatz 40t-Kran, Brücke Tragfähigkeit 16 t")).toBe(16)
+  })
+  it("requireKontext:false (dediziertes Feld) nimmt die rohe Zahl", () => {
+    expect(tonnageAusText("16 t", { requireKontext: false })).toBe(16)
+    expect(tonnageAusText("..., max 16 to", { requireKontext: false })).toBe(16)
   })
 })
