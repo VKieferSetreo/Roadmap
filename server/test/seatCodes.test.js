@@ -103,6 +103,15 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     expect(res.status).toBe(409)
   })
 
+  it("Seat-Limit: POST /:id/users über max_seats → 409 vor Provision (T-348)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "postlimit", name: "PostLimit", members: ["a@postlimit.de"] })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
+    const res = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/users`))
+      .send({ email: "b@postlimit.de", role: "user", password: "passwort-123" })
+    expect(res.status).toBe(409) // Limit erreicht → Vorab-Check, kein Provision-Call (sonst 502/503)
+  })
+
   it("GET /api/account/license: eigener Mandant sieht Plan/Laufzeit/Seats (T-171)", async () => {
     const { app, tenant } = makeApp({ requireAuth: true })
     await asAdmin(request(app).patch(`/api/admin/tenants/${tenant.id}/license`))

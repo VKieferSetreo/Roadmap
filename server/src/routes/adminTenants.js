@@ -139,15 +139,14 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       }
     }
 
-    // Seat-Limit (T-146): die Lizenz deckelt die Mitgliederzahl. max_seats > 0 = Limit aktiv,
-    // 0 = unbegrenzt (interner Mandant / vor Lizenzierung angelegt). PUT setzt die volle Liste,
-    // daher ist incoming.length die neue Gesamtzahl.
-    const { rows: licRows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
-    const maxSeats = Number(licRows[0]?.max_seats ?? 0)
-    if (maxSeats > 0 && incoming.length > maxSeats) {
+    // Seat-Limit (T-146) Vorab-Check VOR externer Provisionierung (fast-fail, spart Calls + klare
+    // Fehlermeldung). Die autoritative, race-feste Prüfung läuft unter Row-Lock in der Tx unten (T-349).
+    const { rows: licPre } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+    const maxSeatsPre = Number(licPre[0]?.max_seats ?? 0)
+    if (maxSeatsPre > 0 && incoming.length > maxSeatsPre) {
       throw new ApiError(
         409,
-        `Lizenz erlaubt höchstens ${maxSeats} Seats (${incoming.length} angefragt) — Seats erhöhen oder Nutzer entfernen.`,
+        `Lizenz erlaubt höchstens ${maxSeatsPre} Seats (${incoming.length} angefragt) — Seats erhöhen oder Nutzer entfernen.`,
       )
     }
 
@@ -169,6 +168,17 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     }
 
     await db.tx(async (q) => {
+      // Seat-Limit (T-146/T-349) unter tenants-Row-Lock prüfen — Check + DELETE/INSERT atomar,
+      // kein TOCTOU gegen paralleles License-PATCH oder Redeem. max_seats > 0 = Limit aktiv,
+      // 0 = unbegrenzt. PUT setzt die volle Liste, daher ist incoming.length die neue Gesamtzahl.
+      const { rows: licRows } = await q.query("SELECT max_seats FROM tenants WHERE id = $1 FOR UPDATE", [tenant.id])
+      const maxSeats = Number(licRows[0]?.max_seats ?? 0)
+      if (maxSeats > 0 && incoming.length > maxSeats) {
+        throw new ApiError(
+          409,
+          `Lizenz erlaubt höchstens ${maxSeats} Seats (${incoming.length} angefragt) — Seats erhöhen oder Nutzer entfernen.`,
+        )
+      }
       await q.query("DELETE FROM tenant_members WHERE tenant_id = $1", [tenant.id])
       for (const m of incoming) {
         await q.query(
@@ -203,16 +213,48 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       throw new ApiError(409, `${email} ist bereits einem anderen Mandanten zugeordnet`)
     }
 
-    // Seat-Limit (T-146): neue Zuordnung nur, wenn die Lizenz noch Platz hat (max_seats > 0).
-    const { rows: licRows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
-    const maxSeats = Number(licRows[0]?.max_seats ?? 0)
-    if (maxSeats > 0) {
-      const vorhanden = await db.query(
+    // Seat-Limit (T-146) Vorab-Check VOR Provisionierung (fast-fail). Autoritativ unter Row-Lock in der Tx (T-348).
+    const { rows: licPre } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+    const maxSeatsPre = Number(licPre[0]?.max_seats ?? 0)
+    if (maxSeatsPre > 0) {
+      const existsPre = await db.query(
         "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2",
         [email, tenant.id],
       )
-      if (!vorhanden.rows.length) {
-        const { rows: cnt } = await db.query(
+      if (!existsPre.rows.length) {
+        const { rows: cntPre } = await db.query(
+          "SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1",
+          [tenant.id],
+        )
+        if (Number(cntPre[0]?.n ?? 0) >= maxSeatsPre) {
+          throw new ApiError(409, `Lizenz erlaubt höchstens ${maxSeatsPre} Seats — Seats erhöhen.`)
+        }
+      }
+    }
+
+    const created = await provisionExtern({ authExtern, fetchImpl, email, password })
+
+    // Seat-Buchung in EINER Tx unter tenants-Row-Lock (T-341/T-348): Count + INSERT race-fest.
+    // Vorher lagen Count-Check und INSERT getrennt und ohne Tx → zwei parallele Requests
+    // unterliefen das max_seats-Limit. FOR UPDATE serialisiert sie pro Mandant.
+    // ponytail: provision läuft VOR der Tx (externer Seiteneffekt). Lehnt die Tx wegen Limit ab,
+    // bleibt ein Waisen-Extern-Konto (harmlos: kein tenant_members-Row = kein Zugang) — wie im Redeem-Pfad.
+    await db.tx(async (q) => {
+      const { rows: licRows } = await q.query("SELECT max_seats FROM tenants WHERE id = $1 FOR UPDATE", [tenant.id])
+      const maxSeats = Number(licRows[0]?.max_seats ?? 0)
+      const already = await q.query(
+        "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2",
+        [email, tenant.id],
+      )
+      if (already.rows.length) {
+        await q.query(
+          "UPDATE tenant_members SET role = $3 WHERE tenant_id = $1 AND email = $2",
+          [tenant.id, email, role],
+        )
+        return
+      }
+      if (maxSeats > 0) {
+        const { rows: cnt } = await q.query(
           "SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1",
           [tenant.id],
         )
@@ -220,25 +262,18 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
           throw new ApiError(409, `Lizenz erlaubt höchstens ${maxSeats} Seats — Seats erhöhen.`)
         }
       }
-    }
-
-    const created = await provisionExtern({ authExtern, fetchImpl, email, password })
-
-    const already = await db.query(
-      "SELECT email FROM tenant_members WHERE email = $1 AND tenant_id = $2",
-      [email, tenant.id],
-    )
-    if (already.rows.length) {
-      await db.query(
-        "UPDATE tenant_members SET role = $3 WHERE tenant_id = $1 AND email = $2",
-        [tenant.id, email, role],
-      )
-    } else {
-      await db.query(
-        "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
-        [tenant.id, email, role],
-      )
-    }
+      try {
+        await q.query(
+          "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
+          [tenant.id, email, role],
+        )
+      } catch (err) {
+        if (err?.code === "23505") {
+          throw new ApiError(409, `${email} ist bereits einem anderen Mandanten zugeordnet`)
+        }
+        throw err
+      }
+    })
     res.status(created ? 201 : 200).json({
       email,
       created,
