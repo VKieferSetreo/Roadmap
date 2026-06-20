@@ -98,6 +98,9 @@ export function setTenantHeader(slug: string | null) {
 
 axiosInstance.interceptors.request.use((config) => {
   config.headers.set("X-Request-Id", newRequestId())
+  // T-322: FE-Build-Version mitschicken (Deploy-Skew passiv diagnostizierbar in API-Logs/GlitchTip).
+  // Wert aus dem Build-Stempel VITE_BUILD_SHA; "dev" im lokalen Dev-Server.
+  config.headers.set("X-FE-Version", import.meta.env.VITE_BUILD_SHA || "dev")
   const traceId = getTraceId()
   if (traceId) {
     config.headers.set("X-Trace-Id", traceId)
