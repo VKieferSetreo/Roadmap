@@ -37,7 +37,9 @@ export function bugReportsRouter({ db }) {
     // Optionaler Seiten-Screenshot (data:image-JPEG, base64) — defensiv begrenzt.
     const rawShot = req.body?.screenshot
     const screenshot =
-      typeof rawShot === "string" && /^data:image\//.test(rawShot) && rawShot.length <= 6_000_000
+      typeof rawShot === "string" &&
+      /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(rawShot) &&
+      rawShot.length <= 6_000_000
         ? rawShot
         : null
 

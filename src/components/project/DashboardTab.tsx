@@ -31,6 +31,7 @@ import { ReportView } from "./ReportView"
 import { ExportDialog, type ExportConfig } from "./ExportDialog"
 import { HideReasonDialog } from "./HideReasonDialog"
 import { routeLengthKm } from "@/lib/parseRouteFile"
+import { safeHref } from "@/lib/safeHref"
 import {
   hiddenFindings as selectHidden,
   imExportZeitraum,
@@ -666,7 +667,7 @@ function FindingRow({
           {/* Quelle als prominenter Link-Block */}
           {finding.quelle ? (
             <a
-              href={finding.quelle.url}
+              href={safeHref(finding.quelle.url)}
               target="_blank"
               rel="noreferrer"
               className="group flex items-center justify-between gap-3 rounded-md border border-primary-200 bg-primary-50/40 px-3 py-2.5 transition-colors hover:border-primary-300 hover:bg-primary-50"

@@ -36,6 +36,26 @@ describe("Bug-Reports", () => {
     expect(res.status).toBe(400)
   })
 
+  it("POST: Screenshot raster-only — data:image/svg+xml verworfen, PNG bleibt (T-291)", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    const svg = await asUser(
+      request(app).post("/api/bug-reports").send({
+        beschreibung: "XSS-Versuch",
+        screenshot: "data:image/svg+xml;base64,PHN2Zz48c2NyaXB0PmFsZXJ0KDEpPC9zY3JpcHQ+PC9zdmc+",
+      }),
+    )
+    expect(svg.status).toBe(201)
+    expect(svg.body.screenshot).toBeNull()
+
+    const png = await asUser(
+      request(app).post("/api/bug-reports").send({
+        beschreibung: "echter Screenshot",
+        screenshot: "data:image/png;base64,iVBORw0KGgo=",
+      }),
+    )
+    expect(png.body.screenshot).toBe("data:image/png;base64,iVBORw0KGgo=")
+  })
+
   it("GET: nur Admin (User → 403), liefert Liste + Status-Zähler", async () => {
     const { app } = makeApp({ requireAuth: true })
     await asUser(request(app).post("/api/bug-reports").send({ beschreibung: "Bug 1" }))

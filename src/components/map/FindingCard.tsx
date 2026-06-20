@@ -15,6 +15,7 @@ import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { formatGueltigkeit, SEVERITY_META } from "@/components/project/findingMeta"
 import type { FindingKategorie, FindingSeverity } from "@/types/domain"
 import { cn } from "@/lib/cn"
+import { safeHref } from "@/lib/safeHref"
 
 function Spacer() {
   return <hr className="my-2.5 border-t border-neutral-200/70" />
@@ -163,7 +164,7 @@ export function FindingCard({
         {quelle?.name ? (
           quelle.url ? (
             <a
-              href={quelle.url}
+              href={safeHref(quelle.url)}
               target="_blank"
               rel="noreferrer"
               className="block flex-1 text-right text-xs font-medium text-neutral-500 transition-colors hover:text-neutral-800"

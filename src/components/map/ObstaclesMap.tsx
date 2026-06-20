@@ -25,6 +25,7 @@ import {
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
 import { MapFullscreen } from "./MapControls"
+import { safeHref } from "@/lib/safeHref"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { geomMidpoint, geomToLines } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
@@ -80,7 +81,7 @@ function obstaclePopupHtml(o: Obstacle): string {
   const quelleHtml = o.quelle?.name
     ? eigen || !o.quelle.url
       ? esc(o.quelle.name)
-      : `<a href="${esc(o.quelle.url)}" target="_blank" rel="noreferrer" class="text-primary-600 underline">${esc(o.quelle.name)}</a>`
+      : `<a href="${esc(safeHref(o.quelle.url))}" target="_blank" rel="noreferrer" class="text-primary-600 underline">${esc(o.quelle.name)}</a>`
     : ""
 
   return `<div class="min-w-[230px] max-w-[300px]">

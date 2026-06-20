@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/Input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { cn } from "@/lib/cn"
+import { safeHref } from "@/lib/safeHref"
 import { formatDateTimeDE, formatRelativeDE } from "@/lib/format"
 import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
@@ -263,7 +264,7 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
         {/* Seiten-Screenshot beim Melden (was der Nutzer sah) — Klick öffnet groß */}
         {report.screenshot ? (
           <a
-            href={report.screenshot}
+            href={safeHref(report.screenshot)}
             target="_blank"
             rel="noreferrer"
             title="Screenshot in neuem Tab öffnen"
@@ -619,7 +620,7 @@ function SourceRequestCard({ request, onChanged }: { request: SourceRequest; onC
         </div>
 
         <a
-          href={request.url}
+          href={safeHref(request.url)}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1.5 break-all text-sm font-medium text-primary-600 hover:underline"

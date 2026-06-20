@@ -816,6 +816,7 @@ export function createFakeDb() {
         id: randomUUID(),
         email: params[0], tenant_slug: params[1], is_admin: params[2],
         beschreibung: params[3], view_path: params[4], kontext: J(params[5]),
+        screenshot: params[6] ?? null,
         status: "offen", notiz: null, created_at: now(), resolved_at: null,
       }
       state.bugReports.push(row)
