@@ -4,10 +4,15 @@
 import { fetchJson } from "./http.js"
 
 export function createOsrm({
-  baseUrl = process.env.OSRM_URL || "https://router.project-osrm.org",
+  // T-338: KEINE stille Default-URL auf den öffentlichen OSRM-Demoserver (Routen-/Bewegungsdaten
+  // dürfen nicht ungewollt zu einem Dritt-Dienst gehen, und der Demoserver ist nicht produktiv).
+  // Ohne konfigurierte (self-hosted) OSRM_URL ist der Router deaktiviert (→ null); der Aufrufer
+  // nutzt dann den deterministischen Geometrie-Fallback.
+  baseUrl = process.env.OSRM_URL || "",
   timeoutMs = Number(process.env.EXTERNAL_TIMEOUT_MS ?? 4000),
   fetchImpl = globalThis.fetch,
 } = {}) {
+  if (!baseUrl) return null
   return {
     /** @returns {{geometry:{lat:number,lng:number}[],distanzKm:number,dauerMin:number}|null} */
     async route(waypoints) {

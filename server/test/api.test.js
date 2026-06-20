@@ -501,18 +501,27 @@ describe("geocode", () => {
   })
 
   it("Nominatim-Treffer wird gecacht (zweiter Aufruf: provider cache)", async () => {
-    const nominatimFetch = async (url) => {
-      if (String(url).includes("/search?")) {
-        return jsonResponse([{ lat: "53.55", lon: "9.99", display_name: "Hamburg, Deutschland" }])
+    // T-338: Nominatim ist nur mit konfigurierter (self-hosted) NOMINATIM_URL aktiv — für diesen
+    // Test explizit setzen, sonst greift der Städte-Fallback statt des Geocoders.
+    const prev = process.env.NOMINATIM_URL
+    process.env.NOMINATIM_URL = "http://nominatim.test"
+    try {
+      const nominatimFetch = async (url) => {
+        if (String(url).includes("/search?")) {
+          return jsonResponse([{ lat: "53.55", lon: "9.99", display_name: "Hamburg, Deutschland" }])
+        }
+        throw new Error("offline")
       }
-      throw new Error("offline")
-    }
-    const { app } = makeApp({ fetchImpl: nominatimFetch })
-    const first = await request(app).get("/api/geocode?q=Hamburg")
-    expect(first.body).toMatchObject({ provider: "nominatim", lat: 53.55, lng: 9.99 })
+      const { app } = makeApp({ fetchImpl: nominatimFetch })
+      const first = await request(app).get("/api/geocode?q=Hamburg")
+      expect(first.body).toMatchObject({ provider: "nominatim", lat: 53.55, lng: 9.99 })
 
-    const second = await request(app).get("/api/geocode?q=hamburg")
-    expect(second.body.provider).toBe("cache")
+      const second = await request(app).get("/api/geocode?q=hamburg")
+      expect(second.body.provider).toBe("cache")
+    } finally {
+      if (prev === undefined) delete process.env.NOMINATIM_URL
+      else process.env.NOMINATIM_URL = prev
+    }
   })
 })
 

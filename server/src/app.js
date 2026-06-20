@@ -116,7 +116,7 @@ export function createApp({
     }
     // T-471: OSRM (eigene Coolify-App) mitprüfen, aber NUR als Info — Gesamtstatus bleibt an db
     // gekoppelt. Sonst killt der Docker-HEALTHCHECK (exit 1 bei !=200) die API bei jedem OSRM-Blip.
-    const osrmOk = await osrm.ping().catch(() => false)
+    const osrmOk = osrm ? await osrm.ping().catch(() => false) : false // T-338: osrm kann null sein (nicht konfiguriert)
     // T-469: Worker-Dead-Man's-Switch — Heartbeat-Staleness als Info-Flag, ebenfalls NICHT am
     // Gesamtstatus (ein toter Worker darf die API nicht als down markieren). >2h ohne Beat = stale.
     let workerStale = false

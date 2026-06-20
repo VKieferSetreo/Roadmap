@@ -4,10 +4,15 @@
 import { fetchJson } from "./http.js"
 
 export function createNominatim({
-  baseUrl = process.env.NOMINATIM_URL || "https://nominatim.openstreetmap.org",
+  // T-338: KEINE stille Default-URL auf den öffentlichen OSM-Endpunkt — Ortsnamen/Adressen sind
+  // personenbeziehbar und dürfen nicht ungewollt an einen Dritt-Dienst lecken. Ohne explizit
+  // konfigurierte (self-hosted) NOMINATIM_URL ist der Geocoder deaktiviert (→ null); der Aufrufer
+  // fällt dann auf die eingebaute Städte-Tabelle zurück.
+  baseUrl = process.env.NOMINATIM_URL || "",
   timeoutMs = Number(process.env.EXTERNAL_TIMEOUT_MS ?? 4000),
   fetchImpl = globalThis.fetch,
 } = {}) {
+  if (!baseUrl) return null
   return {
     /** @returns {{lat:number,lng:number,displayName:string}|null} */
     async geocode(ort) {

@@ -91,6 +91,7 @@ describe("admin tenants API", () => {
       name: "Setreo",
       mitglieder: [{ email: "vki@setreo.de", role: "user" }],
       projekte: 1,
+      suspended: false, // T-346
     })
   })
 
