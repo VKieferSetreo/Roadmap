@@ -98,12 +98,19 @@ function sperrAttrsAusRecord(recordXml) {
   return out
 }
 
-/** Restriktionswerte (Höhe/Breite/Gewicht in m/t) aus dem Record ziehen, soweit DATEX sie führt. */
+/** Restriktionswerte (Höhe/Breite/Gewicht in m/t) aus dem Record ziehen, soweit DATEX sie führt.
+ *  T-429: DATEX kodiert Permanent-Limits NICHT nur als flache maximumHeight/Weight-Tags, sondern
+ *  verschachtelt in <forVehiclesWithCharacteristicsOf>: <grossWeightCharacteristic><grossVehicleWeight>,
+ *  <heightCharacteristic><vehicleHeight>, <widthCharacteristic><vehicleWidth>. An echtem 0147-Sample
+ *  (Bayern) verifiziert: 40× grossVehicleWeight, 4× vehicleHeight, ALLE comparisonOperator=greaterThan
+ *  (Fahrzeuge ÜBER dem Wert sind gesperrt → der Wert IST das Max-Limit). tag() matcht namespace-
+ *  tolerant überall im Record, daher genügt die erweiterte Tag-Liste. (lessThan-Mindestmaße kommen in
+ *  den Feeds nicht vor; käme eines, würde es als Max fehlinterpretiert — derzeit kein reales Vorkommen.) */
 function attrsAusRecord(recordXml) {
   const attrs = {}
-  const h = num(tag(recordXml, "maximumHeight") || tag(recordXml, "heightLimit"))
-  const b = num(tag(recordXml, "maximumWidth") || tag(recordXml, "widthLimit"))
-  const g = num(tag(recordXml, "maximumWeight") || tag(recordXml, "weightLimit") || tag(recordXml, "totalWeight"))
+  const h = num(tag(recordXml, "maximumHeight") || tag(recordXml, "heightLimit") || tag(recordXml, "vehicleHeight"))
+  const b = num(tag(recordXml, "maximumWidth") || tag(recordXml, "widthLimit") || tag(recordXml, "vehicleWidth"))
+  const g = num(tag(recordXml, "maximumWeight") || tag(recordXml, "weightLimit") || tag(recordXml, "totalWeight") || tag(recordXml, "grossVehicleWeight"))
   const a = num(tag(recordXml, "maximumWeightPerAxle") || tag(recordXml, "axleWeightLimit"))
   if (h != null) attrs.maxHoeheM = h
   if (b != null) attrs.maxBreiteM = b

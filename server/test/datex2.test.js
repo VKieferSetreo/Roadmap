@@ -101,6 +101,23 @@ describe("parseDatex2", () => {
     expect(o.geom.coordinates).toHaveLength(3)
   })
 
+  it("verschachtelte vehicleCharacteristics → maxGewichtT/maxHoeheM (T-429, echtes 0147-Schema)", () => {
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      <situationRecord id="BY-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <generalPublicComment>A8 lastbeschränkte Bruecke</generalPublicComment><roadNumber>A8</roadNumber>
+        <groupOfLocations xsi:type="Linear"><linearExtension><linearExtended><gmlLineString>
+          <srsName>WGS84 EPSG 4326</srsName><posList>48.1 11.5 48.11 11.51</posList>
+        </gmlLineString></linearExtended></linearExtension></groupOfLocations>
+        <forVehiclesWithCharacteristicsOf>
+          <grossWeightCharacteristic><comparisonOperator>greaterThan</comparisonOperator><grossVehicleWeight>30</grossVehicleWeight></grossWeightCharacteristic>
+          <heightCharacteristic><comparisonOperator>greaterThan</comparisonOperator><vehicleHeight>4</vehicleHeight></heightCharacteristic>
+        </forVehiclesWithCharacteristicsOf>
+      </situationRecord></situation></d2LogicalModel>`
+    const [o] = parseDatex2(xml, { quelleName: "Mobilithek BY" })
+    expect(o.attrs.maxGewichtT).toBe(30)
+    expect(o.attrs.maxHoeheM).toBe(4)
+  })
+
   it("ALERT-C/TMC ohne lat/lng → via resolveTmc geocodiert (Primary/Secondary-LCD)", () => {
     const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
       <situationRecord id="NI-1" xsi:type="MaintenanceWorks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
