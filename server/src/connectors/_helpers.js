@@ -407,13 +407,23 @@ export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000
     if (mode === "wfs2") url = `${baseUrl}${sep}count=${pageSize}&startIndex=${page * pageSize}`
     else if (mode === "wfs1") url = `${baseUrl}${sep}maxFeatures=${pageSize}`
     else url = `${baseUrl}${sep}limit=${pageSize}&offset=${page * pageSize}`
-    const data = await getJson(url, { timeoutMs })
-    // T-311/T-314: ein fehlgeschlagener Seitenabruf (null) ist KEIN leerer/letzter Feed.
+    // T-504: WFS-Server (z.B. Hamburg 0134) scheitern intermittent an einer Folgeseite. Pro Seite
+    // bis zu 3× mit Backoff versuchen, bevor wir abbrechen — ein transienter Hänger heilt sich so,
+    // statt einen sonst erfolgreichen Voll-Abruf in 'error' (Teilbestand) zu kippen.
+    let data = null
+    for (let attempt = 0; attempt < 3 && data == null; attempt++) {
+      if (attempt > 0) {
+        log(`fetchAllFeatures: Seite startIndex ${page * pageSize} fehlgeschlagen — Retry ${attempt}/2`)
+        await new Promise((r) => setTimeout(r, 1000 * attempt))
+      }
+      data = await getJson(url, { timeoutMs })
+    }
+    // T-311/T-314: ein (auch nach Retries) fehlgeschlagener Seitenabruf ist KEIN leerer/letzter Feed.
     // Werfen → runImport setzt status='error', der Vollbestand-Reconcile läuft NICHT auf einem
     // Teilbestand (sonst würde der ungeladene Rest fälschlich deaktiviert = "Strecke frei").
     if (data == null) {
       throw new Error(
-        `fetchAllFeatures: Seitenabruf fehlgeschlagen (startIndex ${page * pageSize}) — Teilbestand, Reconcile-Schutz`,
+        `fetchAllFeatures: Seitenabruf fehlgeschlagen (startIndex ${page * pageSize}) nach 3 Versuchen — Teilbestand, Reconcile-Schutz`,
       )
     }
     const feats = data?.features ?? []
