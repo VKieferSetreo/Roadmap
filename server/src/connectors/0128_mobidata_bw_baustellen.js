@@ -34,7 +34,34 @@ export const mobidataBwBaustellenConnector = {
     const feats = data?.features ?? []
     log(`${QUELLE}: ${feats.length} Features im Feed`)
 
-    const obstacles = feats.map((f) => {
+    // T-442: BEMaS gibt eine durchgehende Baustelle als mehrere Segment-Features mit IDs wie
+    // "…-sperrung.001/.002" zurück. Vor dem Normalisieren je Stamm-ID (ohne .NNN) zu EINEM
+    // Feature mit MultiLineString zusammenführen — sonst zersplittert eine Maßnahme in N Funde
+    // (dedupeObstacles greift über lange Korridore nicht; es gruppiert nur auf ~100 m).
+    const stamm = (f) => String(f.properties?.id ?? f.id ?? "").replace(/\.\d+$/, "")
+    const gruppen = new Map()
+    for (const f of feats) {
+      const key = stamm(f) || `__${gruppen.size}`
+      if (!gruppen.has(key)) gruppen.set(key, [])
+      gruppen.get(key).push(f)
+    }
+    const merged = [...gruppen.values()].map((group) => {
+      if (group.length === 1) return group[0]
+      const lines = []
+      for (const f of group) {
+        const t = f.geometry?.type
+        if (t === "LineString") lines.push(f.geometry.coordinates)
+        else if (t === "MultiLineString") lines.push(...f.geometry.coordinates)
+      }
+      const base = group[0]
+      return {
+        ...base,
+        geometry: lines.length ? { type: "MultiLineString", coordinates: lines } : base.geometry,
+        properties: { ...base.properties, id: stamm(base) || base.properties?.id },
+      }
+    })
+
+    const obstacles = merged.map((f) => {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunkt(f.geometry)
       // Strecke durchreichen statt auf einen Punkt zu kollabieren: nur Linien werden zu Strecken-
@@ -56,6 +83,10 @@ export const mobidataBwBaustellenConnector = {
           restbreiteM: meterAusText(text, /breite|einengung/i),
           maxGewichtT: tonnage,
           vollsperrung: istSperrung || undefined,
+          // T-441: direction-Enum (ONE_DIRECTION|BOTH_DIRECTIONS, 100% gesetzt) als boolean-attr
+          // durchreichen — NICHT in die richtung-Spalte (NOT-NULL-CHECK-Enum, vom INSERT nicht
+          // beschrieben). makeNormalized behält nur number|boolean, daher boolean statt String.
+          richtungEinseitig: String(p.direction ?? "").toUpperCase().includes("ONE") || undefined,
         },
         realerStart: dateOnly(p.starttime),
         gueltigVon: dateOnly(p.starttime),

@@ -31,4 +31,22 @@ describe("0128 BEMaS — Strecken-Geometrie", () => {
     expect(punkt.geom).toBeNull() // Punkt-Feature bleibt Punkt-Meldung
     expect(punkt.kategorie).toBe("sperrung")
   })
+
+  it("T-442: führt .NNN-Segmente derselben Baustelle zu EINEM MultiLineString-Fund zusammen", async () => {
+    const segmented = {
+      type: "FeatureCollection",
+      features: [
+        { type: "Feature", properties: { id: "B7-bau.001", type: "CONSTRUCTION", street: "B7", description: "Fahrbahnerneuerung", starttime: "2026-07-01T00:00:00Z", endtime: "2026-08-15T00:00:00Z" },
+          geometry: { type: "LineString", coordinates: [[9.10, 48.70], [9.11, 48.71]] } },
+        { type: "Feature", properties: { id: "B7-bau.002", type: "CONSTRUCTION", street: "B7", description: "Fahrbahnerneuerung", starttime: "2026-07-01T00:00:00Z", endtime: "2026-08-15T00:00:00Z" },
+          geometry: { type: "LineString", coordinates: [[9.11, 48.71], [9.13, 48.72]] } },
+      ],
+    }
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => segmented })
+    const { obstacles } = await conn.fetch({})
+    expect(obstacles).toHaveLength(1) // statt 2 zersplitterter Funde
+    expect(obstacles[0].externeId).toBe("B7-bau") // Stamm-ID ohne .NNN
+    expect(obstacles[0].geom.type).toBe("MultiLineString")
+    expect(obstacles[0].geom.coordinates).toHaveLength(2)
+  })
 })

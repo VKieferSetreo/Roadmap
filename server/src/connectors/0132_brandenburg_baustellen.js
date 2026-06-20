@@ -32,7 +32,12 @@ export const brandenburgBaustellenConnector = {
       const strasse = p["Straßenummner"] ?? p["Straßennummer"] ?? null
       const text = [p.Verkehrsinformation, p.Art, p.Ortsangabe].filter(Boolean).join(" ")
       const tonnage = tonnageAusText(text)
-      const vollsperrung = /vollsperr/i.test(text) || undefined
+      // T-444: strukturierte WFS-Felder verwerten statt nur Freitext zu raten (case-tolerant).
+      const statusFs = String(p.Status_Fahrstreifen ?? p.status_fahrstreifen ?? "")
+      const gesperrt = Number(p.Anzahl_Fahrstreifen_gesperrt ?? p.anzahl_fahrstreifen_gesperrt)
+      const laengeM = Number(p.Laenge_m ?? p.laenge_m)
+      // Vollsperrung: Freitext ODER strukturierter Status (konservativ — nur explizites 'vollsperr').
+      const vollsperrung = /vollsperr/i.test(text) || /vollsperr/i.test(statusFs) || undefined
       return makeNormalized({
         externeId: p.ID,
         kategorie: tonnage ? "gewicht" : vollsperrung ? "sperrung" : "baustelle",
@@ -40,7 +45,14 @@ export const brandenburgBaustellenConnector = {
         beschreibung: p.Verkehrsinformation || p.Ortsangabe || null,
         lat, lng,
         strassenRef: refAus(strasse) ?? (strasse || null),
-        attrs: { maxGewichtT: tonnage, restbreiteM: meterAusText(text, /breite|einengung/i), vollsperrung },
+        attrs: {
+          maxGewichtT: tonnage,
+          restbreiteM: meterAusText(text, /breite|einengung/i),
+          vollsperrung,
+          // Anzeige-attrs (T-459 rendert sie in Fund/PDF/CSV); treiben keine Severity.
+          spurenGesperrt: Number.isFinite(gesperrt) && gesperrt > 0 ? gesperrt : undefined,
+          sperrlaengeM: Number.isFinite(laengeM) && laengeM > 0 ? laengeM : undefined,
+        },
         gueltigVon: dateOnly(p.Baustellen_Beginn), gueltigBis: dateOnly(p.Baustellen_Ende), realerStart: dateOnly(p.Baustellen_Beginn),
         geom: istLinie ? geom : null,
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,

@@ -6,7 +6,12 @@ import { makeNormalized, getJson, ersterPunkt, tonnageAusText, meterAusText } fr
 
 const PORTAL = "https://offenedaten-koeln.de/dataset/verkehrsbeeinträchtigungen-stadt-köln"
 const QUELLE_NAME = "Köln — Verkehrsbeeinträchtigungen (ArcGIS Verkehrskalender)"
-const LAYER0 = "https://geoportal.stadt-koeln.de/arcgis/rest/services/verkehr/verkehrskalender/MapServer/0/query"
+const MAPSERVER = "https://geoportal.stadt-koeln.de/arcgis/rest/services/verkehr/verkehrskalender/MapServer"
+// T-450: Layer 0 (Standort/Punkt) UND Layer 2 (Bereich/Polygon) — beide tragen die Baustellen-
+// Felder (typ/datum_von/datum_bis/beschreibung), live gegen das MapServer-Schema verifiziert.
+// Layer 1 (Strecke) + 3 (Verkehrslage) sind LIVE-Verkehrsdaten (auslastung/tendenz, KEINE
+// Baustellenfelder) → bewusst ausgelassen (Planungs-Plattform, keine Live-Verkehrsdaten).
+const LAYERS = [0, 2]
 const PAGE = 1000
 
 function epochToDate(ms) {
@@ -25,14 +30,17 @@ export const koelnVerkehrsbeeintraechtigungenConnector = {
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
     const HEAD = { headers: { "user-agent": "Mozilla/5.0 (compatible; roadmap-connector/1.0)" }, timeoutMs }
     const feats = []
-    for (let offset = 0; ; offset += PAGE) {
-      const url = `${LAYER0}?where=1=1&outFields=*&outSR=4326&f=geojson&resultRecordCount=${PAGE}&resultOffset=${offset}`
-      const data = await getJson(url, HEAD)
-      const f = data?.features ?? []
-      feats.push(...f)
-      const mehr = data?.exceededTransferLimit || data?.properties?.exceededTransferLimit
-      if (!mehr || f.length === 0) break
-      if (offset > 100000) break // Sicherheits-Cap
+    for (const layer of LAYERS) {
+      for (let offset = 0; ; offset += PAGE) {
+        const url = `${MAPSERVER}/${layer}/query?where=1=1&outFields=*&outSR=4326&f=geojson&resultRecordCount=${PAGE}&resultOffset=${offset}`
+        const data = await getJson(url, HEAD)
+        const f = data?.features ?? []
+        for (const feat of f) feat.__layer = layer // Layer-Herkunft für eindeutige externeId
+        feats.push(...f)
+        const mehr = data?.exceededTransferLimit || data?.properties?.exceededTransferLimit
+        if (!mehr || f.length === 0) break
+        if (offset > 100000) break // Sicherheits-Cap
+      }
     }
 
     const obstacles = []
@@ -42,7 +50,9 @@ export const koelnVerkehrsbeeintraechtigungenConnector = {
       const text = String(p.beschreibung ?? "")
       const istSperrung = /gesperrt|sperrung|nicht möglich|keine einfahrt/i.test(text)
       obstacles.push(makeNormalized({
-        externeId: p.objectid ?? f.id,
+        // objectid ist nur je-Layer eindeutig → Layer 2 prefixen. Layer 0 bleibt bare objectid
+        // (kein Re-Keying des Bestands beim Upsert auf (quelle, externe_id)).
+        externeId: f.__layer ? `${f.__layer}-${p.objectid ?? f.id}` : (p.objectid ?? f.id),
         kategorie: istSperrung ? "sperrung" : "baustelle",
         name: p.name ?? "Verkehrsbeeinträchtigung Köln",
         beschreibung: text.trim() || null,

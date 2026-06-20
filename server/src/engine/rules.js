@@ -72,6 +72,26 @@ function overlapsZeitraum(obstacle, zeitraum) {
 
 const sev3 = (kritisch, warnung) => (kritisch ? "kritisch" : warnung ? "warnung" : "hinweis")
 
+// T-459/T-289: informative, NICHT severity-treibende Zahl-attrs zusätzlich ins detail spiegeln,
+// damit sie in Popup/PDF/CSV erscheinen (die ATTR_LABEL-Labels im FE waren bisher tot). Reine
+// Anzeige — verändert KEINE Severity. Nur Zahlen (makeNormalized droppt String-attrs ohnehin),
+// nur setzen wenn die Regel das Feld nicht schon unter einem eigenen Label zeigt.
+const INFO_ATTRS = [
+  ["maxAchslastT", "Zul. Achslast", (v) => `${fmtKomma(v, 1)} t`],
+  ["maxLaengeM", "Zul. Länge", (v) => `${fmtKomma(v, 1)} m`],
+  ["sperrlaengeM", "Länge der Maßnahme", (v) => `${fmtKomma(v, 0)} m`],
+  ["anzahlFahrstreifen", "Fahrstreifen (verbleibend)", (v) => String(v)],
+  ["spurenGesperrt", "Gesperrte Fahrstreifen", (v) => String(v)],
+]
+function withInfoAttrs(detail, attrs) {
+  const out = { ...(detail ?? {}) }
+  for (const [key, label, fmt] of INFO_ATTRS) {
+    const v = num(attrs?.[key])
+    if (v != null && !(label in out)) out[label] = fmt(v)
+  }
+  return out
+}
+
 // ── Kategorie-Regeln ──────────────────────────────────────────────────────────
 
 const SEV_ORDER = { hinweis: 1, warnung: 2, kritisch: 3 }
@@ -399,6 +419,7 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   }
   return {
     ...result,
+    detail: withInfoAttrs(result.detail, attrs), // T-459: tote ATTR_LABEL beleben (reine Anzeige)
     titel: obstacle.name || DEFAULT_TITEL[obstacle.kategorie],
   }
 }

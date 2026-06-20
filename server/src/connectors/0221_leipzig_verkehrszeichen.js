@@ -11,9 +11,14 @@ const QUELLE_NAME = "Leipzig — Verkehrszeichen-Kataster (GST-Beschränkungen)"
 // VZ-Nr → Kategorie + attrs-Key + Einheit. 264/265/266 = Meter, 262/263 = Tonnen.
 const GST_VZ = {
   "262": { kat: "gewicht", key: "maxGewichtT", einheit: "t" },
-  "263": { kat: "gewicht", key: "maxAchslastT", einheit: "t" },
+  // T-458: VZ263 (zul. Achslast) auf den von der Engine TATSÄCHLICH bewerteten Key maxGewichtT
+  // mappen (ruleGewicht liest nur maxGewichtT; eine Achslast-Regel gibt es nicht mehr). Fachlich
+  // konservativ: ein Achslast-Limit blockt den Transport eher als ein Gesamtgewichts-Limit.
+  "263": { kat: "gewicht", key: "maxGewichtT", einheit: "t" },
   "264": { kat: "engstelle", key: "maxBreiteM", einheit: "m" },
   "265": { kat: "bruecke", key: "maxHoeheM", einheit: "m" }, // Höhe meist Brücke/Unterführung
+  // VZ266 (zul. Länge): keine Längen-Regel in der Engine → bleibt maxLaengeM (seit T-459 als Info
+  // im Fund/PDF/CSV sichtbar, treibt aber keine Severity).
   "266": { kat: "engstelle", key: "maxLaengeM", einheit: "m" },
 }
 const VZ_LISTE = Object.keys(GST_VZ).map((n) => `'${n}'`).join(",")
