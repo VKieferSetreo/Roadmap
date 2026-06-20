@@ -35,6 +35,23 @@ async function provisionExtern({ authExtern, fetchImpl, email, password }) {
   return resp.status === 201 // created
 }
 
+/** Kunden-Konto in setreo-auth-extern deaktivieren + alle Sessions killen (Offboarding, T-320).
+ *  404 = extern kein Konto (z.B. interner Hub-Member) → kein Offboarding nötig. Wirft ApiError. */
+async function deactivateExtern({ authExtern, fetchImpl, email }) {
+  let resp
+  try {
+    resp = await fetchImpl(`${authExtern.url}/internal/users/${encodeURIComponent(email)}`, {
+      method: "DELETE",
+      headers: { "x-provision-secret": authExtern.secret },
+    })
+  } catch {
+    throw new ApiError(502, "Auth-Service (extern) nicht erreichbar")
+  }
+  if (resp.status === 404) return false // kein Extern-Konto → nichts zu sperren
+  if (!resp.ok) throw new ApiError(502, `Auth-Service-Fehler (${resp.status})`)
+  return true // 204 deaktiviert
+}
+
 export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExtern = null }) {
   const r = Router()
   // T-147: kommerzielles/globales (Mandant anlegen/umbenennen/löschen, Lizenz/Seat-Codes)
@@ -151,6 +168,8 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     }
 
     const currentByEmail = new Map((await tenantMembers(db, tenant.id)).map((m) => [m.email, m]))
+    const incomingEmails = new Set(incoming.map((m) => m.email))
+    const removed = [...currentByEmail.keys()].filter((e) => !incomingEmails.has(e))
 
     // Provisionierung (externe Calls) VOR der DB-Transaktion — schlägt eine fehl, wird nichts geschrieben.
     // Gesetztes Passwort → in setreo-auth-extern (re)provisionieren (Hash), NICHT hier speichern.
@@ -164,6 +183,15 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       } else if (!currentByEmail.has(m.email)) {
         // neuer Eintrag ohne Passwort → nicht erlaubt (nur-mit-Passwort)
         throw new ApiError(400, `Neuer Nutzer ${m.email} braucht ein Passwort`)
+      }
+    }
+
+    // Offboarding (T-320): entfernte Mitglieder im Extern-Auth deaktivieren (Konto sperren +
+    // Sessions killen) VOR der Tx — schlägt eine fehl, wird nichts geschrieben. Ohne konfigurierten
+    // authExtern (intern-only/Tests) übersprungen: dann gibt es kein Extern-Konto zu sperren.
+    if (authExtern?.url && authExtern?.secret) {
+      for (const email of removed) {
+        await deactivateExtern({ authExtern, fetchImpl, email })
       }
     }
 
@@ -184,6 +212,14 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
         await q.query(
           "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
           [tenant.id, m.email, m.role],
+        )
+      }
+      // Seat-Recycling (T-318/T-353): Seat-Codes entfernter Mitglieder freigeben, sonst läuft der
+      // bezahlte Seat-Pool durch Personalfluktuation unbemerkt voll (used_by_email blieb für immer gesetzt).
+      for (const email of removed) {
+        await q.query(
+          "UPDATE seat_codes SET used_by_email = NULL, used_at = NULL WHERE tenant_id = $1 AND used_by_email = $2",
+          [tenant.id, email],
         )
       }
     })

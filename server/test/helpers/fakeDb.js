@@ -221,6 +221,18 @@ export function createFakeDb() {
       sc.used_at = now()
       return ok([{ id: sc.id }], 1)
     }
+    if (sql.startsWith("UPDATE seat_codes SET used_by_email = NULL, used_at = NULL WHERE tenant_id = $1 AND used_by_email = $2")) {
+      // Seat-Recycling (T-318/T-353): Code eines entfernten Mitglieds wieder freigeben
+      let n = 0
+      for (const sc of state.seatCodes) {
+        if (sc.tenant_id === params[0] && sc.used_by_email === params[1]) {
+          sc.used_by_email = null
+          sc.used_at = null
+          n++
+        }
+      }
+      return ok([], n)
+    }
     if (sql.startsWith("UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1")) {
       const row = state.tenants.find((t) => t.id === params[0])
       if (!row) return ok([])

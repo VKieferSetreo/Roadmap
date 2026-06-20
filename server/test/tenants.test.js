@@ -134,7 +134,12 @@ describe("admin tenants API", () => {
     })
     expect(put.status).toBe(200)
     expect(put.body.mitglieder).toEqual([{ email: "neu@setreo.de", role: "admin" }])
-    expect(fetchImpl).toHaveBeenCalledTimes(1)
+    // 1× Provision (neu@) + 1× Offboarding-DELETE für den verdrängten Default-Member vki@ (T-320)
+    expect(fetchImpl).toHaveBeenCalledTimes(2)
+    expect(fetchImpl).toHaveBeenCalledWith(
+      expect.stringContaining("/internal/users/vki%40setreo.de"),
+      expect.objectContaining({ method: "DELETE" }),
+    )
 
     // Neuer Nutzer OHNE Passwort → 400 (nur-mit-Passwort)
     expect((await request(app).put(`/api/admin/tenants/${tenant.id}/members`)
