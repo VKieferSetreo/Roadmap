@@ -1,8 +1,10 @@
 // Bootstrap: .env laden, App bauen, lauschen.
 
 import { loadEnv } from "./env.js"
+import { initSentry } from "./sentry.js"
 
 loadEnv()
+initSentry("api") // T-468: GlitchTip-Error-Tracking (no-op ohne SENTRY_DSN), vor createApp
 
 // Crash-Netz (T-376/T-305): ein ungefangener Background-Reject darf den einzigen
 // API-Container nicht killen. Loggen statt sterben — Defense-in-Depth, kein Ersatz für

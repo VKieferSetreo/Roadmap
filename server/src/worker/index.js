@@ -13,10 +13,12 @@ import { createDb, createPool } from "../db.js"
 import { rerunAffectedProjects } from "../engine/rerunAll.js"
 import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
+import { initSentry, captureException } from "../sentry.js"
 import { expireObstacles } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
+initSentry("worker") // T-468/469: GlitchTip-Error-Tracking (no-op ohne SENTRY_DSN)
 
 const log = (msg) => console.log(`[worker ${new Date().toISOString()}] ${msg}`)
 
@@ -38,10 +40,14 @@ async function beat() {
 // wenn Importe am wichtigsten sind. Loggen statt sterben.
 // ponytail: bewusster Weiterlauf auch bei uncaughtException — die realen Pfade sind
 // gewickelt, das hier ist nur das Sicherheitsnetz gegen einen künftigen Stray-Reject.
-process.on("unhandledRejection", (reason) =>
-  log(`unhandledRejection (ignoriert): ${reason?.stack ?? reason}`),
-)
-process.on("uncaughtException", (err) => log(`uncaughtException (ignoriert): ${err?.stack ?? err}`))
+process.on("unhandledRejection", (reason) => {
+  log(`unhandledRejection (ignoriert): ${reason?.stack ?? reason}`)
+  captureException(reason instanceof Error ? reason : new Error(String(reason)), { kind: "unhandledRejection" })
+})
+process.on("uncaughtException", (err) => {
+  log(`uncaughtException (ignoriert): ${err?.stack ?? err}`)
+  captureException(err, { kind: "uncaughtException" })
+})
 
 // T-303: 45 Connectoren teilen sich den 8/12/18-Tick. Jeder Run hält 2 Pool-Connections
 // (Lock-Client + tx-Client) gegen pool max=10 → ohne Drossel sterben ~40 Runs am

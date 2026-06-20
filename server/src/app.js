@@ -20,6 +20,7 @@ import { createRateLimiter } from "./shares.js"
 import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { requestId } from "./requestId.js"
+import { captureException } from "./sentry.js"
 import { createNominatim } from "./external/nominatim.js"
 import { createOsrm } from "./external/osrm.js"
 import { adminImportRouter } from "./routes/adminImport.js"
@@ -241,6 +242,7 @@ export function createApp({
       return res.status(503).json({ error: "Dienst momentan ausgelastet, bitte erneut versuchen" })
     }
     console.error(`[api ${new Date().toISOString()}] ${req.method} ${req.path} [${req.requestId ?? "-"}]`, err)
+    captureException(err, { requestId: req.requestId, method: req.method, path: req.path }) // T-468: GlitchTip
     res.status(500).json({ error: "Interner Fehler", requestId: req.requestId })
   })
 

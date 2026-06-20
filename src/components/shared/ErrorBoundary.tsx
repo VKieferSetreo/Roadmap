@@ -2,6 +2,7 @@
 // Recovery-Oberfläche statt eines weißen Bildschirms.
 
 import { Component, type ErrorInfo, type ReactNode } from "react"
+import * as Sentry from "@sentry/react"
 import { RefreshCcw, TriangleAlert } from "lucide-react"
 
 interface Props {
@@ -21,6 +22,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[Roadmap] Unbehandelter Render-Fehler:", error, info.componentStack)
+    // T-468: an GlitchTip melden (no-op ohne DSN, Sentry.init lief in main.tsx).
+    Sentry.captureException(error, { extra: { componentStack: info.componentStack } })
   }
 
   render() {

@@ -16,6 +16,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@sentry/node": "^10.59.0",
     "compression": "^1.8.1",
     "croner": "^10.0.1",
     "express": "^4.21.2",
