@@ -62,6 +62,9 @@ export function createFakeDb() {
 
     if (sql === "SELECT 1") return ok([{ "?column?": 1 }])
 
+    // T-469: Worker-Heartbeat — Health liest das; frisch → nie „stale" im Test.
+    if (sql.startsWith("SELECT last_beat FROM worker_heartbeat")) return ok([{ last_beat: now() }])
+
     // ── tenants / tenant_members ──────────────────────────────────────────────
     if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE slug = $1")) {
       return ok(state.tenants.filter((t) => t.slug === params[0]))

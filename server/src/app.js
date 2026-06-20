@@ -108,10 +108,23 @@ export function createApp({
     // T-471: OSRM (eigene Coolify-App) mitprüfen, aber NUR als Info — Gesamtstatus bleibt an db
     // gekoppelt. Sonst killt der Docker-HEALTHCHECK (exit 1 bei !=200) die API bei jedem OSRM-Blip.
     const osrmOk = await osrm.ping().catch(() => false)
+    // T-469: Worker-Dead-Man's-Switch — Heartbeat-Staleness als Info-Flag, ebenfalls NICHT am
+    // Gesamtstatus (ein toter Worker darf die API nicht als down markieren). >2h ohne Beat = stale.
+    let workerStale = false
+    if (dbOk) {
+      try {
+        const { rows } = await db.query("SELECT last_beat FROM worker_heartbeat WHERE id = 1")
+        const last = rows[0]?.last_beat ? new Date(rows[0].last_beat).getTime() : 0
+        workerStale = !last || Date.now() - last > 2 * 60 * 60 * 1000
+      } catch {
+        // Tabelle fehlt (vor Migration 040) → kein Flag
+      }
+    }
     res.status(dbOk ? 200 : 503).json({
       ok: dbOk,
       db: dbOk,
       osrm: osrmOk,
+      ...(workerStale ? { worker: "stale" } : {}),
       ...(dbOk && !osrmOk ? { degraded: true } : {}),
       version: APP_VERSION,
     })

@@ -23,6 +23,15 @@ const log = (msg) => console.log(`[worker ${new Date().toISOString()}] ${msg}`)
 const pool = createPool()
 const db = createDb(pool)
 
+/** T-469: Worker-Heartbeat in die DB schreiben (fire-and-forget — ein DB-Blip darf nicht killen). */
+async function beat() {
+  try {
+    await db.query("UPDATE worker_heartbeat SET last_beat = now() WHERE id = 1")
+  } catch (err) {
+    log(`Heartbeat-Write fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  }
+}
+
 // Crash-Netz (T-305/T-323): ein ungefangener Background-Reject (z.B. pool.connect()
 // rejected bei Pool-Erschöpfung am 8/12/18-Tick, oder ein unlock-Query auf toter
 // Connection) darf den EINZIGEN Worker nicht killen — sonst Crash-Loop genau dann,
@@ -193,8 +202,15 @@ try {
   // unabhängig davon, ob Importe liefen (gueltig_bis läuft auch ohne Feed ab).
   jobs.push(new Cron("30 3 * * *", CRON_OPTS, () => void runRerun("täglicher Cleanup")))
 
-  // Heartbeat hält den Event-Loop am Leben und macht den Worker im Log sichtbar
-  jobs.push(new Cron("0 * * * *", CRON_OPTS, () => log(`alive — ${jobs.length - 2} Connector-Job(s) geplant`)))
+  // Heartbeat (T-469): hält den Event-Loop am Leben, macht den Worker im Log sichtbar UND
+  // schreibt einen DB-Heartbeat, den /api/health auf Staleness prüft (Dead-Man's-Switch).
+  // 5-Min-Takt, damit der >2h-Schwellwert sinnvoll greift. DB-Write fire-and-forget — ein
+  // DB-Blip darf den Worker nicht killen.
+  jobs.push(new Cron("*/5 * * * *", CRON_OPTS, () => {
+    log(`alive — ${jobs.length - 2} Connector-Job(s) geplant`)
+    void beat()
+  }))
+  await beat() // Boot-Beat sofort, damit der Status nicht 5 Min „stale" startet
   log(`roadmap-worker bereit — ${connectors.length} Connector(en) aktiv`)
 
   process.on("SIGTERM", () => shutdown("SIGTERM"))

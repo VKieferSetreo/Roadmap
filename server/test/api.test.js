@@ -34,6 +34,27 @@ describe("health", () => {
     const res = await request(app).get("/api/health").set("X-Request-Id", "trace-abc-123")
     expect(res.headers["x-trace-id"]).toBe("trace-abc-123")
   })
+
+  it("meldet worker:stale bei altem Heartbeat, bleibt aber 200 (T-469)", async () => {
+    const old = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() // 3h alt
+    const db = {
+      query: async (sql) =>
+        sql.includes("worker_heartbeat") ? { rows: [{ last_beat: old }] } : { rows: [{ "?column?": 1 }] },
+      tx: async (fn) => fn({ query: async () => ({ rows: [] }) }),
+    }
+    const app = createApp({
+      db,
+      requireAuth: false,
+      fetchImpl: async () => {
+        throw new Error("offline")
+      },
+      sessionSalt: "x",
+      shareBaseUrl: "https://setreo-cloud.com",
+    })
+    const res = await request(app).get("/api/health")
+    expect(res.status).toBe(200) // toter Worker markiert die API NICHT als down
+    expect(res.body.worker).toBe("stale")
+  })
 })
 
 describe("Pool-Erschöpfung → 503 (T-389)", () => {
