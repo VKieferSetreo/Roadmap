@@ -169,10 +169,11 @@ describe("obstacles v3 — Sichtbarkeit (GET)", () => {
     const kundeA = await asUser("a@kunde-a.de")(request(app).get("/api/obstacles"))
     expect(kundeA.body.obstacles.map((o) => o.name).sort()).toEqual(["Globale Ampel", "KundeA-Ampel"])
 
-    // Externer ohne Tenant: nur globale (intern würde Setreo-Mandant bekommen)
+    // Externer OHNE Tenant: 403 — der globale Datensatz ist das verkaufte Asset, kein
+    // No-Seat-Zugriff (T-304). (Ein interner SSO-Nutzer bekäme automatisch den Setreo-Mandant.)
     const ghost = await asUser("ghost@nirgendwo.de")(request(app).get("/api/obstacles"))
       .set("X-Auth-Gateway", "extern")
-    expect(ghost.body.obstacles.map((o) => o.name)).toEqual(["Globale Ampel"])
+    expect(ghost.status).toBe(403)
   })
 })
 

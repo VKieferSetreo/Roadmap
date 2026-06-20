@@ -144,19 +144,26 @@ export function createApp({
   app.use("/api/findings", requireTenant, findingsRouter({ db }))
   app.use("/api/stats", requireTenant, statsRouter({ db }))
   app.use("/api/notifications", requireTenant, notificationsRouter({ db }))
-  app.use("/api/obstacles", obstaclesRouter({ db }))
+  // T-304: daten-liefernde Routen sind tenant-pflichtig — sonst liest ein verifizierter
+  // No-Seat-Externer (req.ctx.tenant=null) über "tenant_id IS NULL" den kompletten globalen
+  // Hindernis-Datensatz (das verkaufte Asset). Interne SSO-Nutzer bekommen auto-"setreo" und
+  // sind nicht betroffen; account/analytics/bug-reports bleiben bewusst offen (Seat-Redeem,
+  // Heartbeat, Fehler-Melden brauchen No-Seat-Zugang).
+  app.use("/api/obstacles", requireTenant, obstaclesRouter({ db }))
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
   app.use("/api/analytics", analyticsRouter({ db }))
-  app.use("/api/geocode", geoRouter({ db, nominatim }))
+  app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
-  app.use("/api/route", routeRouter({ db, nominatim, osrm, fetchImpl }))
-  // Sync ("alle Quellen aktualisieren") — jeder eingeloggte Nutzer, kein Tenant-Zwang
+  app.use("/api/route", requireTenant, routeRouter({ db, nominatim, osrm, fetchImpl }))
+  // Sync ("alle Quellen aktualisieren") — Status für jeden Eingeloggten sichtbar; den
+  // globalen Voll-Pull-Trigger (POST /) dürfen NUR interne Nutzer auslösen (T-309, im Router).
   app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))
   // Bug-Reports — melden darf jeder Eingeloggte; Liste/Triage nur Admin (im Router gegated)
   app.use("/api/bug-reports", bugReportsRouter({ db }))
-  app.use("/api/source-requests", sourceRequestsRouter({ db }))
-  // News-Feed — Liste für jeden Eingeloggten, Anlegen/Löschen nur Admin (im Router gegated)
+  app.use("/api/source-requests", requireTenant, sourceRequestsRouter({ db }))
+  // News-Feed — bewusst für JEDEN Eingeloggten sichtbar (auch No-Seat/extern): Ankündigungen,
+  // nicht der verkaufte Datensatz (siehe news.test.js). Anlegen/Löschen nur Admin (im Router).
   app.use("/api/news", newsRouter({ db }))
   // Eigenes Konto: Passwortänderung (extern) + Seat-Code-Einlösung (ohne Tenant-Pflicht)
   app.use("/api/account", accountRouter({ db, fetchImpl, authExtern }))

@@ -224,4 +224,25 @@ describe("Sync-API", () => {
     expect(job.done).toBe(job.total)
     expect(job.rerun).toBeTruthy()
   })
+
+  it("POST-Trigger nur intern: externer Seat → 403, interner → 202 (T-309)", async () => {
+    const syncConnectors = [vollbestand([item("a")])]
+    const { app } = makeApp({ requireAuth: true, syncConnectors })
+    const extern = await request(app)
+      .post("/api/sync")
+      .set("X-Auth-Email", "k@firma.de")
+      .set("X-Auth-Gateway", "extern")
+    expect(extern.status).toBe(403)
+    const intern = await request(app)
+      .post("/api/sync")
+      .set("X-Auth-Email", "mxk@setreo.de")
+      .set("X-Auth-Roles", "admin")
+    expect(intern.status).toBe(202)
+    // Hintergrund-Job auslaufen lassen, sonst leckt er in parallele Test-Dateien.
+    for (let i = 0; i < 100; i += 1) {
+      const j = (await request(app).get(`/api/sync/${intern.body.id}`)).body
+      if (j.status !== "running") break
+      await new Promise((r) => setTimeout(r, 10))
+    }
+  })
 })

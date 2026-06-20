@@ -1,7 +1,8 @@
 // Sync-API für den "Alle Quellen aktualisieren"-Button (DB-Tab).
 //
-// Jeder eingeloggte Nutzer darf den Sync auslösen (Max 2026-06-13); der
-// Single-Run-Lock in sync.js verhindert parallele Mehrfachläufe. Connector-Logs
+// Jeder eingeloggte INTERNE Nutzer darf den Sync auslösen (Max 2026-06-13); externe
+// Seats NICHT (T-309 — untrusted DoS-/Kosten-Vektor auf den globalen All-Tenant-Rerun).
+// Der Single-Run-Lock in sync.js verhindert parallele Mehrfachläufe. Connector-Logs
 // (können interne URLs/Details enthalten) gehen nur an Admins — normale Nutzer
 // sehen Status + Zähler, nicht die Roh-Logs.
 
@@ -68,8 +69,13 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
     })
   }))
 
-  /** Sync starten (oder den laufenden Job zurückgeben). */
+  /** Sync starten (oder den laufenden Job zurückgeben) — Trigger nur intern (T-309). */
   r.post("/", asyncHandler(async (req, res) => {
+    // Externe Seats dürfen den globalen Voll-Pull + All-Tenant-Rerun NICHT auslösen.
+    // Interne Nutzer behalten den Sync (Max 2026-06-13); startSync() serialisiert via
+    // Single-Run-Lock. ponytail: globaler Cooldown wäre der Upgrade, falls auch interne
+    // Rapid-Fire-Ketten gebremst werden sollen.
+    if (req.user?.gateway === "extern") throw new ApiError(403, "Nur intern")
     const job = startSync({ db, fetchImpl, env, connectors })
     res.status(202).json(jobView(job, req.ctx?.isAdmin === true))
   }))
