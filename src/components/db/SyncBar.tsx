@@ -114,10 +114,22 @@ export function SyncBar() {
     } else if (initiator) {
       const neu = j.rerun?.benachrichtigungen ?? 0
       const importiert = j.runs.reduce((s, r) => s + (r.stats?.neu ?? 0), 0)
-      toast.success(
+      // T-472: fehlgeschlagene/unvollständige Quellen ehrlich benennen statt pauschalem Erfolg
+      // (sonst geht eine still scheiternde Quelle als Voll-Erfolg durch — siehe 0147-Fall).
+      const fehler = j.runs.filter((r) => r.status === "error").length
+      const teil = j.runs.filter((r) => r.status === "partial").length
+      const probleme = [
+        fehler > 0 && `${fehler} Quelle${fehler === 1 ? "" : "n"} nicht erreichbar`,
+        teil > 0 && `${teil} unvollständig`,
+      ]
+        .filter(Boolean)
+        .join(", ")
+      const text =
         `Aktualisiert · ${importiert} neue Einträge` +
-          (neu > 0 ? ` · ${neu} neue Benachrichtigung${neu === 1 ? "" : "en"}` : ""),
-      )
+        (neu > 0 ? ` · ${neu} neue Benachrichtigung${neu === 1 ? "" : "en"}` : "") +
+        (probleme ? ` · ${probleme}` : "")
+      if (probleme) toast.warning(text)
+      else toast.success(text)
     }
     void qc.invalidateQueries({ queryKey: ["sync-status"] })
     void qc.invalidateQueries({ queryKey: ["obstacles-alle"] })
