@@ -39,7 +39,10 @@ export const sachsenBaustellenConnector = {
       while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
       const [lng, lat] = Array.isArray(c) ? c : [null, null]
       const istLinie = g?.type === "LineString" || g?.type === "MultiLineString"
-      const vollsperrung = String(p.Sperrung_Art_Klartext ?? "").toLowerCase().includes("vollsperrung") || undefined
+      // T-443: Sperrung_Art_Klartext-Vokabular mappen — "Sperrung für LKW" / Richtungsfahrbahn
+      // sind für einen Schwertransport faktisch Vollsperrungen, nicht nur das Literal "Vollsperrung".
+      const sperrArt = String(p.Sperrung_Art_Klartext ?? "").toLowerCase()
+      const vollsperrung = /vollsperr|sperrung für lkw|richtungsfahrbahn/.test(sperrArt) || undefined
       const text = [p.Sperrung_Grund, p.Bemerkung].filter(Boolean).join(" ")
       const tonnage = tonnageAusText(text)
       return makeNormalized({

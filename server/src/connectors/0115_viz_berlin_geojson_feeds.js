@@ -78,7 +78,11 @@ export const vizBerlinGeojsonFeedsConnector = {
           attrs: {
             maxGewichtT: tonnage ?? undefined,
             restbreiteM: meterAusText(text, /breite/i) ?? undefined,
-            vollsperrung: /vollsperr|gesperrt/i.test(text) || undefined,
+            // T-432: bloßes "gesperrt" matcht "Fahrstreifen gesperrt" (Einzelspur) → nur echte
+            // Vollsperrung; Spur-/Fahrstreifen-Qualifizierung schließt die Einzelspur aus.
+            vollsperrung:
+              (/vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))) ||
+              undefined,
           },
           gueltigVon: von, gueltigBis: bis, realerStart: von,
           quelleName: QUELLE_NAME,

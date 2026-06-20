@@ -268,6 +268,25 @@ describe("Autobahn-Connector (Quelle 0001, fetch gemockt)", () => {
     expect(normalizeAutobahn({ identifier: "x", coordinate: { lat: "a", long: "b" } }, "A1", "roadworks", "u")).toBeNull()
   })
 
+  it("display_type WEIGHT_LIMIT_35 (closure-Service) → 'gewicht' + maxGewichtT 3,5, KEINE Vollsperrung (T-428)", () => {
+    const r = normalizeAutobahn(
+      { identifier: "wl", coordinate: { lat: 52, long: 9 }, display_type: "WEIGHT_LIMIT_35", isBlocked: "false" },
+      "A2", "closure", "u",
+    )
+    expect(r.kategorie).toBe("gewicht")
+    expect(r.attrs.maxGewichtT).toBe(3.5)
+    expect(r.attrs.vollsperrung).toBeUndefined()
+  })
+
+  it("echte Sperrung (closure, isBlocked) → 'sperrung' + vollsperrung (T-428)", () => {
+    const r = normalizeAutobahn(
+      { identifier: "cl", coordinate: { lat: 52, long: 9 }, isBlocked: "true" },
+      "A2", "closure", "u",
+    )
+    expect(r.kategorie).toBe("sperrung")
+    expect(r.attrs.vollsperrung).toBe(true)
+  })
+
   it("Registry: Autobahn registriert, enabledConnectors folgt env CONNECTORS", () => {
     expect(getConnector("0001")).toBe(autobahnConnector)
     expect(getConnector("0002")).toBeNull()

@@ -194,9 +194,10 @@ describe("baustelle", () => {
   })
 
   it("Restbreite ≥ Transportbreite → NICHT kritisch (3,05 reicht für 3,00, kein Puffer)", () => {
-    // Max 2026-06-14: passt = passt. Ohne Zeitraum bleibt es als hinweis sichtbar.
+    // Max 2026-06-14: passt = passt → nicht kritisch. Ohne Transport-Zeitraum gilt das
+    // Hindernis als relevant (T-267) → warnung (sichtbar zur Prüfung), nicht kritisch.
     const r = evaluate(ob("baustelle", { restbreiteM: 3.05 }), TR, {})
-    expect(r.severity).toBe("hinweis")
+    expect(r.severity).toBe("warnung")
   })
 
   it("ausreichende Restbreite + Überlappung mit Zeitraum → warnung", () => {
@@ -215,9 +216,20 @@ describe("baustelle", () => {
     expect(r).toBeNull()
   })
 
-  it("ohne geplanten Zeitraum → hinweis", () => {
+  it("ohne geplanten Zeitraum → warnung (gilt immer, nicht ausgeblendet) (T-267)", () => {
     const r = evaluate(ob("baustelle", { restbreiteM: 3.6 }), TR, {})
-    expect(r.severity).toBe("hinweis")
+    expect(r.severity).toBe("warnung")
+  })
+
+  it("baustelle mit Vollsperrung → kritisch, im Zeitraum UND ohne Zeitraum (T-265)", () => {
+    const imZeitraum = evaluate(
+      ob("baustelle", { vollsperrung: true }, { gueltigVon: "2026-06-01", gueltigBis: "2026-07-01" }),
+      TR, zeitraum,
+    )
+    expect(imZeitraum.severity).toBe("kritisch")
+    // ohne geplanten Transport-Zeitraum gilt es als relevant (T-267) → Vollsperrung bleibt kritisch
+    const ohneZeitraum = evaluate(ob("baustelle", { vollsperrung: true }), TR, {})
+    expect(ohneZeitraum.severity).toBe("kritisch")
   })
 })
 

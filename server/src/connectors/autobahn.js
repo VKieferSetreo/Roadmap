@@ -73,7 +73,14 @@ export function normalizeAutobahn(item, road, service, url) {
       !Number.isFinite(lat) || !Number.isFinite(lng)) {
     return null
   }
-  const istSperrung = service === "closure" || item.isBlocked === "true"
+  // T-428: ein Gewichtslimit-Schild (display_type WEIGHT_LIMIT_x, z.B. "für LKW über 3,5 t")
+  // kommt zwar über den closure-Service, ist aber KEINE Vollsperrung → eigene Kategorie 'gewicht'
+  // mit maxGewichtT. Vollsperrung nur bei echtem Closure/isBlocked. (35 → 3,5 t, /10.)
+  const displayType = String(item.display_type ?? "")
+  const gewichtsLimitM = displayType.match(/WEIGHT_LIMIT_(\d+)/i)
+  const maxGewichtLimit = gewichtsLimitM ? Number(gewichtsLimitM[1]) / 10 : null
+  const istGewichtsschild = maxGewichtLimit != null && maxGewichtLimit > 0
+  const istSperrung = !istGewichtsschild && (service === "closure" || item.isBlocked === "true")
   const descLines = Array.isArray(item.description) ? item.description : []
   const beschreibung = [item.subtitle, ...descLines]
     .filter((s) => typeof s === "string" && s.trim())
@@ -92,6 +99,7 @@ export function normalizeAutobahn(item, road, service, url) {
   }
   Object.assign(attrs, spurenAusSymbols(item?.impact?.symbols)) // native Spur-Belegung
   if (istSperrung) attrs.vollsperrung = true
+  if (istGewichtsschild && attrs.maxGewichtT == null) attrs.maxGewichtT = maxGewichtLimit
 
   const gueltigVon = start ?? ex.gueltigVon ?? null
   const gueltigBis = ende ?? ex.gueltigBis ?? null
@@ -105,10 +113,10 @@ export function normalizeAutobahn(item, road, service, url) {
 
   return {
     externeId: item.identifier,
-    kategorie: istSperrung ? "sperrung" : "baustelle",
+    kategorie: istSperrung ? "sperrung" : istGewichtsschild ? "gewicht" : "baustelle",
     name: typeof item.title === "string" && item.title.trim()
       ? item.title.trim()
-      : `${istSperrung ? "Sperrung" : "Baustelle"} ${road}`,
+      : `${istSperrung ? "Sperrung" : istGewichtsschild ? "Gewichtsbeschränkung" : "Baustelle"} ${road}`,
     beschreibung: beschFinal,
     lat,
     lng,

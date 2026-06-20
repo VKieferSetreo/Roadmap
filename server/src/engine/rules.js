@@ -61,7 +61,10 @@ const dateOnly = (v) => (v ? String(v).slice(0, 10) : null)
 function overlapsZeitraum(obstacle, zeitraum) {
   const zVon = dateOnly(zeitraum?.von)
   const zBis = dateOnly(zeitraum?.bis)
-  if (!zVon && !zBis) return false // kein Zeitraum geplant → keine Überlappung feststellbar
+  // T-267: kein Transport-Zeitraum geplant → "gilt immer". Ein Hindernis ohne erkennbares
+  // Transportfenster wird als potenziell relevant behandelt (nicht stumm ausgeblendet) —
+  // sonst bliebe selbst eine Vollsperrung unkritisch.
+  if (!zVon && !zBis) return true
   const oVon = dateOnly(obstacle.gueltigVon) ?? dateOnly(obstacle.realerStart) ?? "0000-01-01"
   const oBis = dateOnly(obstacle.gueltigBis) ?? "9999-12-31"
   return oVon <= (zBis ?? "9999-12-31") && (zVon ?? "0000-01-01") <= oBis
@@ -235,6 +238,7 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const detail = {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
     ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
+    ...(attrs.vollsperrung === true && { Sperrung: "Vollsperrung" }),
     Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
   }
 
@@ -243,17 +247,26 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   // NICHT kritisch sein). Gleichstand „passt exakt" gilt als ausreichend.
   const breiteVerletzt = rb != null && rb < transport.breite
   const hoeheVerletzt = mh != null && mh < transport.hoehe
+  // T-265: eine als 'baustelle' eingestufte Vollsperrung (0112/0210/0211/0214/0216/0302)
+  // muss im Transportzeitraum kritisch sein, nicht nur gelb.
+  const vollsperrung = attrs.vollsperrung === true
+  // T-266: strukturelle Blocker, die bisher nur FE-Label waren, heben mindestens auf Warnung.
+  const blocker = attrs.havarie === true || attrs.sackgasse === true ||
+    attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
 
   let severity
   let beschreibung
-  if (breiteVerletzt || hoeheVerletzt) {
+  if ((vollsperrung && overlap) || breiteVerletzt || hoeheVerletzt) {
     severity = "kritisch"
-    beschreibung = breiteVerletzt && hoeheVerletzt
-      ? "Baustelle verletzt Restbreite und Durchfahrtshöhe. Durchfahrt nicht möglich, bitte umfahren."
-      : breiteVerletzt
-        ? "Die Restbreite der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
-        : "Die Höhenbegrenzung der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
-  } else if (overlap) {
+    beschreibung =
+      vollsperrung && !breiteVerletzt && !hoeheVerletzt
+        ? "Baustelle mit Vollsperrung im Transportzeitraum. Durchfahrt nicht möglich, Umfahrung erforderlich."
+        : breiteVerletzt && hoeheVerletzt
+          ? "Baustelle verletzt Restbreite und Durchfahrtshöhe. Durchfahrt nicht möglich, bitte umfahren."
+          : breiteVerletzt
+            ? "Die Restbreite der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
+            : "Die Höhenbegrenzung der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
+  } else if (overlap || blocker) {
     // Auf der Strecke, im Zeitraum aktiv, aber keine hinterlegte Restriktion verletzt
     // (oder keine Maße bekannt) → anzeigen zur Prüfung, NICHT automatisch rot.
     severity = "warnung"
@@ -271,12 +284,15 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
   const overlap = overlapsZeitraum(obstacle, zeitraum)
   const rb = num(attrs.restbreiteM)
   const maxG = num(attrs.maxGewichtT)
+  // T-266: strukturelle Blocker (bisher nur FE-Label) heben mindestens auf Warnung.
+  const blocker = attrs.havarie === true || attrs.sackgasse === true ||
+    attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
   // Vollsperrung im Zeitraum = kritisch; sonst Gewichts-/Restbreite prüfen, sonst Hinweis.
   let severity = "hinweis"
   if (attrs.vollsperrung === true && overlap) severity = "kritisch"
   else if (rb != null && rb < transport.breite) severity = "kritisch"
   else if (maxG != null && maxG < transport.gesamtgewicht) severity = "kritisch"
-  else if (overlap) severity = "warnung"
+  else if (overlap || blocker) severity = "warnung"
   return {
     severity,
     beschreibung:
