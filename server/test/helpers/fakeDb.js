@@ -69,7 +69,7 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE id = $1")) {
       return ok(state.tenants.filter((t) => t.id === params[0]))
     }
-    if (sql.startsWith("SELECT t.id, t.slug, t.name FROM tenants t JOIN tenant_members m")) {
+    if (sql.startsWith("SELECT t.id, t.slug, t.name, t.valid_until FROM tenants t JOIN tenant_members m")) {
       const member = state.members.find((m) => m.email === params[0])
       return ok(member ? state.tenants.filter((t) => t.id === member.tenant_id) : [])
     }
@@ -140,6 +140,9 @@ export function createFakeDb() {
       state.members = state.members.filter((m) => m.tenant_id !== params[0])
       return ok([], before - state.members.length)
     }
+    if (sql.startsWith("SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1")) {
+      return ok([{ n: state.members.filter((m) => m.tenant_id === params[0]).length }])
+    }
     if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email, role)")) {
       state.members.push({
         tenant_id: params[0], email: params[1], role: params[2] ?? "user", created_at: now(),
@@ -200,21 +203,23 @@ export function createFakeDb() {
           .map((s) => ({ code: s.code, used_by_email: s.used_by_email, used_at: s.used_at })),
       )
     }
-    if (sql.startsWith("SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until FROM seat_codes sc JOIN tenants t")) {
+    if (sql.startsWith("SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats FROM seat_codes sc JOIN tenants t")) {
       const sc = state.seatCodes.find((s) => s.code === params[0])
       if (!sc) return ok([])
       const t = state.tenants.find((x) => x.id === sc.tenant_id)
       return ok([{
         id: sc.id, tenant_id: sc.tenant_id, used_by_email: sc.used_by_email,
         slug: t?.slug ?? null, name: t?.name ?? null, valid_until: t?.valid_until ?? null,
+        max_seats: t?.max_seats ?? null,
       }])
     }
     if (sql.startsWith("UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2")) {
+      // bedingter UPDATE (T-350): nur wenn der Code noch frei ist; RETURNING id → rowCount
       const sc = state.seatCodes.find((s) => s.id === params[1])
-      if (!sc) return ok([], 0)
+      if (!sc || sc.used_by_email) return ok([], 0)
       sc.used_by_email = params[0]
       sc.used_at = now()
-      return ok([], 1)
+      return ok([{ id: sc.id }], 1)
     }
     if (sql.startsWith("UPDATE tenants SET plan = $2, max_seats = $3, valid_until = $4 WHERE id = $1")) {
       const row = state.tenants.find((t) => t.id === params[0])

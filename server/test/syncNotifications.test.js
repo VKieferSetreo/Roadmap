@@ -233,6 +233,12 @@ describe("Sync-API", () => {
       .set("X-Auth-Email", "k@firma.de")
       .set("X-Auth-Gateway", "extern")
     expect(extern.status).toBe(403)
+    // Auch das Quellenregister (GET /status) ist intern-only (Review-Fund).
+    const externStatus = await request(app)
+      .get("/api/sync/status")
+      .set("X-Auth-Email", "k@firma.de")
+      .set("X-Auth-Gateway", "extern")
+    expect(externStatus.status).toBe(403)
     const intern = await request(app)
       .post("/api/sync")
       .set("X-Auth-Email", "mxk@setreo.de")

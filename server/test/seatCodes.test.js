@@ -114,4 +114,48 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
       plan: "pro", maxSeats: 2, validUntil: "2027-06-30", seatsTotal: 2, seatsUsed: 0,
     })
   })
+
+  it("Redeem über max_seats hinaus → 409 (T-352/T-418)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "voll", name: "Voll" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({ count: 2 })
+    expect(gen.body.codes).toHaveLength(2)
+    const [c1, c2] = gen.body.codes.map((c) => c.code)
+
+    const first = await asExtern(request(app).post("/api/account/redeem-seat"), "a@voll.de").send({ code: c1 })
+    expect(first.status).toBe(201)
+    const over = await asExtern(request(app).post("/api/account/redeem-seat"), "b@voll.de").send({ code: c2 })
+    expect(over.status).toBe(409) // Seat-Limit erreicht, obwohl der Code existiert
+  })
+
+  it("Erster Einlöser eines Mandanten wird Admin, weitere User (T-477)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "boot", name: "Boot" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 2 })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({ count: 2 })
+    const [c1, c2] = gen.body.codes.map((c) => c.code)
+
+    await asExtern(request(app).post("/api/account/redeem-seat"), "erst@boot.de").send({ code: c1 })
+    await asExtern(request(app).post("/api/account/redeem-seat"), "zweit@boot.de").send({ code: c2 })
+
+    const erst = await asExtern(request(app).get("/api/context"), "erst@boot.de")
+    const zweit = await asExtern(request(app).get("/api/context"), "zweit@boot.de")
+    expect(erst.body.isTenantAdmin).toBe(true)
+    expect(zweit.body.isTenantAdmin).toBe(false)
+  })
+
+  it("Abgelaufene Lizenz sperrt Produktzugriff zur Request-Zeit → 403 (T-317)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "abgelaufen", name: "Abgelaufen" })
+    // Erst gültig einlösen (Member existiert), dann Lizenz in die Vergangenheit setzen.
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1, validUntil: "2027-12-31" })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({})
+    await asExtern(request(app).post("/api/account/redeem-seat"), "m@abgelaufen.de").send({ code: gen.body.codes[0].code })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1, validUntil: "2020-01-01" })
+
+    const res = await asExtern(request(app).get("/api/projects"), "m@abgelaufen.de")
+    expect(res.status).toBe(403)
+    expect(res.body).toEqual({ error: "lizenz-abgelaufen" })
+  })
 })

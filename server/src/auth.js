@@ -121,8 +121,21 @@ export function tenantContext({ db }) {
   })
 }
 
-/** Tenant-pflichtige Routen: ohne Mandanten-Zuordnung → 403 "kein-mandant". */
+/** Tenant-pflichtige Routen: ohne Mandanten-Zuordnung → 403 "kein-mandant".
+ *  T-317: abgelaufene Lizenz sperrt den Produktzugriff zur Request-Zeit. */
 export function requireTenant(req, res, next) {
-  if (!req.ctx?.tenant) return res.status(403).json({ error: "kein-mandant" })
+  const t = req.ctx?.tenant
+  if (!t) return res.status(403).json({ error: "kein-mandant" })
+  // Nur externe Kunden sperren; interne SSO-Nutzer (gateway != extern, Setreo-Mandant)
+  // sind ausgenommen — deren Mandant trägt kein verkaufs-relevantes valid_until.
+  if (req.user?.gateway === "extern" && t.valid_until && new Date(t.valid_until) < _startOfToday()) {
+    return res.status(403).json({ error: "lizenz-abgelaufen" })
+  }
   next()
+}
+
+function _startOfToday() {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
 }

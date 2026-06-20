@@ -71,8 +71,11 @@ export async function redeemSeatCode(db, codeInput, email) {
   if (!mail) throw new ApiError(401, "Nicht angemeldet")
 
   return await db.tx(async (q) => {
+    // FOR UPDATE OF sc, t: serialisiert parallele Redeems DESSELBEN Codes (T-319/T-350) und
+    // lockt die tenants-Zeile als gemeinsamen Seat-Limit-Serialisierungspunkt (T-352/T-418).
     const found = await q.query(
-      "SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until FROM seat_codes sc JOIN tenants t ON t.id = sc.tenant_id WHERE sc.code = $1",
+      "SELECT sc.id, sc.tenant_id, sc.used_by_email, t.slug, t.name, t.valid_until, t.max_seats " +
+        "FROM seat_codes sc JOIN tenants t ON t.id = sc.tenant_id WHERE sc.code = $1 FOR UPDATE OF sc, t",
       [code],
     )
     const sc = found.rows[0]
@@ -86,11 +89,41 @@ export async function redeemSeatCode(db, codeInput, email) {
     const existing = await getTenantForEmail(q, mail)
     if (existing) throw new ApiError(409, "Diese E-Mail ist bereits einem Mandanten zugeordnet")
 
-    await q.query("UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2", [mail, sc.id])
-    await q.query(
-      "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
-      [sc.tenant_id, mail, "user"],
+    // Seat-Limit im Redeem-Pfad durchsetzen (T-352/T-418): unter dem tenants-Row-Lock
+    // gezaehlt, daher race-fest gegen parallele Redeems. NULL max_seats = unbegrenzt.
+    const { rows: cnt } = await q.query(
+      "SELECT count(*)::int AS n FROM tenant_members WHERE tenant_id = $1",
+      [sc.tenant_id],
     )
+    const memberCount = cnt[0].n
+    if (sc.max_seats != null && memberCount >= sc.max_seats) {
+      throw new ApiError(409, "Alle Seats dieser Lizenz sind belegt")
+    }
+
+    // Einmal-Nutzung in seat_codes SELBST erzwingen (T-350): bedingter UPDATE statt nur
+    // Read-Check oben. rowCount=0 → ein paralleler Redeem war schneller.
+    const upd = await q.query(
+      "UPDATE seat_codes SET used_by_email = $1, used_at = now() WHERE id = $2 AND used_by_email IS NULL RETURNING id",
+      [mail, sc.id],
+    )
+    if (upd.rowCount === 0) throw new ApiError(409, "Seat-Code wurde bereits eingeloest")
+
+    // Zero-Admin-Bootstrap (T-477): das ERSTE Mitglied eines Mandanten wird Admin, damit
+    // Self-Service-Onboarding Team/Seats ohne manuellen Setreo-Eingriff verwalten kann.
+    const role = memberCount === 0 ? "admin" : "user"
+    try {
+      await q.query(
+        "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
+        [sc.tenant_id, mail, role],
+      )
+    } catch (err) {
+      // Cross-Tenant-Race (gleiche Mail, zwei Mandanten, parallel): die tenant_members.email-
+      // UNIQUE-Constraint fängt es ab — als sauberes 409 melden statt unmapped 23505 → 500.
+      if (err?.code === "23505") {
+        throw new ApiError(409, "Diese E-Mail ist bereits einem Mandanten zugeordnet")
+      }
+      throw err
+    }
     return { tenant: { id: sc.tenant_id, slug: sc.slug, name: sc.name } }
   })
 }

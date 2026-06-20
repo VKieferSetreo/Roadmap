@@ -28,7 +28,7 @@ export async function getTenantById(db, id) {
 /** Tenant eines Nutzers über tenant_members (E-Mail lowercase). */
 export async function getTenantForEmail(db, email) {
   const { rows } = await db.query(
-    "SELECT t.id, t.slug, t.name FROM tenants t JOIN tenant_members m ON m.tenant_id = t.id WHERE m.email = $1",
+    "SELECT t.id, t.slug, t.name, t.valid_until FROM tenants t JOIN tenant_members m ON m.tenant_id = t.id WHERE m.email = $1",
     [String(email).toLowerCase()],
   )
   return rows[0] ?? null

@@ -40,6 +40,9 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
 
   /** Übersicht für die DB-Tab-Kopfzeile: Quellen-Status + zuletzt aktualisiert. */
   r.get("/status", asyncHandler(async (req, res) => {
+    // Quellenregister ist ein internes Feature — nicht an externe (auch abgelaufene) Kunden
+    // leaken (Adversarial-Review zu T-309/T-317).
+    if (req.user?.gateway === "extern") throw new ApiError(403, "Nur intern")
     const { rows } = await db.query("SELECT * FROM quellen ORDER BY id ASC")
     // Letzter Import-Lauf-Status je Quelle (3×/Tag automatisch) → Erreichbarkeits-Signal:
     // "error" = beim letzten Abruf nicht erreichbar/fehlgeschlagen → Warn-Indikator im FE.
@@ -97,6 +100,7 @@ export function syncRouter({ db, fetchImpl = globalThis.fetch, env = process.env
 
   /** Fortschritt eines Sync-Jobs pollen. */
   r.get("/:jobId", asyncHandler(async (req, res) => {
+    if (req.user?.gateway === "extern") throw new ApiError(403, "Nur intern")
     const job = getSyncJob(req.params.jobId)
     if (!job) throw new ApiError(404, "Sync-Job nicht gefunden (evtl. abgelaufen)")
     res.json(jobView(job, req.ctx?.isAdmin === true))
