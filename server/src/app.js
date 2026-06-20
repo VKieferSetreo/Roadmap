@@ -94,6 +94,9 @@ export function createApp({
 
   const app = express()
   app.disable("x-powered-by")
+  // T-335: ein Hop (Caddy) ist vertrauenswürdig → req.ip = die von Caddy gesetzte echte Client-IP
+  // (Cf-Connecting-Ip auf den _share-Blöcken). Kette: cloudflared → Caddy → roadmap-api.
+  app.set("trust proxy", 1)
   app.use(requestId()) // T-468: Request-/Trace-ID-Korrelation, ganz früh (vor allem inkl. Health)
   // T-312: gzip — die Hindernis-/Projekt-Responses sind groß (z.B. ~39k aktive Hindernisse,
   // ~15-20 MB JSON) → komprimiert ~2-3 MB auf der Leitung. Greift für alle Responses.
