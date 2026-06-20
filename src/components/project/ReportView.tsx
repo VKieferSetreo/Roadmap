@@ -15,7 +15,7 @@ import {
 } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { formatDateDE } from "@/lib/format"
-import type { FindingSeverity, Project } from "@/types/domain"
+import type { Finding, FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 export function ReportView({
@@ -65,6 +65,16 @@ export function ReportView({
   const routen = project.routes.filter(
     (r) => r.points.length >= 2 && (!routeSel || routeSel.has(r.id)),
   )
+  // T-226: Bei mehreren Strecken werden routeId-lose Funde (oder solche, deren Strecke nicht
+  // in der Auswahl ist) sonst still verschluckt. Eigene Sammel-Sektion, damit nichts fehlt.
+  // (Bei genau einer Strecke saugt deren Sektion die routeId-losen Funde — siehe unten.)
+  const zugeordnet = new Set(routen.map((r) => r.id))
+  const ohneStrecke =
+    routen.length > 1
+      ? sichtbar
+          .filter((f) => !f.routeId || !zugeordnet.has(f.routeId))
+          .sort((a, b) => a.km - b.km)
+      : []
 
   return (
     <div id="report-print-root" className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100">
@@ -182,83 +192,23 @@ export function ReportView({
               {findings.length === 0 ? (
                 <p className="mt-2 text-sm text-neutral-400">Keine Funde auf dieser Strecke.</p>
               ) : (
-                <table className="mt-2 w-full border-collapse text-[13px]">
-                  <thead>
-                    <tr className="border-b border-neutral-300 text-left text-[10px] uppercase tracking-wide text-neutral-400">
-                      <th className="w-[52px] py-1.5 pr-2 text-right font-medium">km</th>
-                      <th className="w-[110px] py-1.5 pr-2 font-medium">Kategorie</th>
-                      <th className="py-1.5 pr-2 font-medium">Fund / Grenzwerte</th>
-                      <th className="w-[86px] py-1.5 pr-2 font-medium">Schweregrad</th>
-                      <th className="w-[150px] py-1.5 font-medium">Zuständig</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {findings.map((f) => (
-                      <tr
-                        key={f.id}
-                        className="break-inside-avoid border-b border-neutral-100 align-top"
-                      >
-                        <td className="py-1.5 pr-2 text-right tabular-nums text-neutral-600">
-                          {f.km.toLocaleString("de-DE")}
-                        </td>
-                        <td className="py-1.5 pr-2 text-neutral-700">
-                          {katMeta(f.kategorie).label}
-                        </td>
-                        <td className="py-1.5 pr-2">
-                          <p className="font-medium text-neutral-900">
-                            {f.titel}
-                            {f.strassenRef ? (
-                              <span className="font-normal text-neutral-400">
-                                {" "}
-                                · {f.strassenRef}
-                              </span>
-                            ) : null}
-                          </p>
-                          {/* Beschreibung — nur wenn vorhanden und nicht reine Titel-Wiederholung. */}
-                          {f.beschreibung && f.beschreibung.trim() !== f.titel.trim() ? (
-                            <p className="text-xs leading-snug text-neutral-600">{f.beschreibung}</p>
-                          ) : null}
-                          {Object.keys(f.detail).length || f.gueltigBis ? (
-                            <p className="text-xs tabular-nums text-neutral-500">
-                              {Object.entries(f.detail)
-                                .map(([k, v]) => `${k}: ${v}`)
-                                .join(" · ")}
-                              {f.gueltigBis
-                                ? `${Object.keys(f.detail).length ? " · " : ""}gültig bis ${f.gueltigBis
-                                    .slice(0, 10)
-                                    .split("-")
-                                    .reverse()
-                                    .join(".")}`
-                                : ""}
-                            </p>
-                          ) : null}
-                          {/* Quelle + URL — Nachvollziehbarkeit der Datenherkunft im Bericht. */}
-                          {f.quelle?.name ? (
-                            <p className="text-[10px] text-neutral-400">
-                              Quelle: {f.quelle.name}
-                              {f.quelle.url ? <span className="font-mono"> · {f.quelle.url}</span> : null}
-                            </p>
-                          ) : null}
-                        </td>
-                        <td className="py-1.5 pr-2">
-                          <span
-                            className={cn(
-                              "inline-block rounded-md border px-1.5 py-0.5 text-[11px] font-semibold",
-                              SEVERITY_META[f.severity].soft,
-                            )}
-                          >
-                            {SEVERITY_META[f.severity].label}
-                          </span>
-                        </td>
-                        <td className="py-1.5 text-xs text-neutral-600">{f.zustaendig ?? "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <FundTabelle findings={findings} />
               )}
             </section>
           )
         })}
+
+        {/* T-226: routeId-lose / streckenfremde Funde bei mehreren Strecken — nichts verschlucken. */}
+        {ohneStrecke.length > 0 ? (
+          <section className="mt-6">
+            <h2 className="flex items-center gap-2 border-b border-neutral-200 pb-1.5 text-sm font-bold text-neutral-900">
+              <span className="h-2.5 w-2.5 rounded-full bg-neutral-400" aria-hidden />
+              Ohne eindeutige Streckenzuordnung
+              <span className="font-normal text-neutral-400">· {ohneStrecke.length} Funde</span>
+            </h2>
+            <FundTabelle findings={ohneStrecke} />
+          </section>
+        ) : null}
 
         <footer className="mt-8 flex items-center justify-between border-t border-neutral-200 pt-3 text-[10px] text-neutral-400">
           <span>Erstellt mit Setreo Roadmap — Routenanalyse für Schwertransporte</span>
@@ -266,5 +216,77 @@ export function ReportView({
         </footer>
       </div>
     </div>
+  )
+}
+
+/** Fund-Tabelle (km · Kategorie · Fund/Grenzwerte · Schweregrad · Zuständig) — geteilt von
+ *  Strecken-Sektion und der Sammel-Sektion „Ohne eindeutige Streckenzuordnung" (T-226). */
+function FundTabelle({ findings }: { findings: Finding[] }) {
+  return (
+    <table className="mt-2 w-full border-collapse text-[13px]">
+      <thead>
+        <tr className="border-b border-neutral-300 text-left text-[10px] uppercase tracking-wide text-neutral-400">
+          <th className="w-[52px] py-1.5 pr-2 text-right font-medium">km</th>
+          <th className="w-[110px] py-1.5 pr-2 font-medium">Kategorie</th>
+          <th className="py-1.5 pr-2 font-medium">Fund / Grenzwerte</th>
+          <th className="w-[86px] py-1.5 pr-2 font-medium">Schweregrad</th>
+          <th className="w-[150px] py-1.5 font-medium">Zuständig</th>
+        </tr>
+      </thead>
+      <tbody>
+        {findings.map((f) => (
+          <tr key={f.id} className="break-inside-avoid border-b border-neutral-100 align-top">
+            <td className="py-1.5 pr-2 text-right tabular-nums text-neutral-600">
+              {f.km.toLocaleString("de-DE")}
+            </td>
+            <td className="py-1.5 pr-2 text-neutral-700">{katMeta(f.kategorie).label}</td>
+            <td className="py-1.5 pr-2">
+              <p className="font-medium text-neutral-900">
+                {f.titel}
+                {f.strassenRef ? (
+                  <span className="font-normal text-neutral-400"> · {f.strassenRef}</span>
+                ) : null}
+              </p>
+              {/* Beschreibung — nur wenn vorhanden und nicht reine Titel-Wiederholung. */}
+              {f.beschreibung && f.beschreibung.trim() !== f.titel.trim() ? (
+                <p className="text-xs leading-snug text-neutral-600">{f.beschreibung}</p>
+              ) : null}
+              {Object.keys(f.detail).length || f.gueltigBis ? (
+                <p className="text-xs tabular-nums text-neutral-500">
+                  {Object.entries(f.detail)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(" · ")}
+                  {f.gueltigBis
+                    ? `${Object.keys(f.detail).length ? " · " : ""}gültig bis ${f.gueltigBis
+                        .slice(0, 10)
+                        .split("-")
+                        .reverse()
+                        .join(".")}`
+                    : ""}
+                </p>
+              ) : null}
+              {/* Quelle + URL — Nachvollziehbarkeit der Datenherkunft im Bericht. */}
+              {f.quelle?.name ? (
+                <p className="text-[10px] text-neutral-400">
+                  Quelle: {f.quelle.name}
+                  {f.quelle.url ? <span className="font-mono"> · {f.quelle.url}</span> : null}
+                </p>
+              ) : null}
+            </td>
+            <td className="py-1.5 pr-2">
+              <span
+                className={cn(
+                  "inline-block rounded-md border px-1.5 py-0.5 text-[11px] font-semibold",
+                  SEVERITY_META[f.severity].soft,
+                )}
+              >
+                {SEVERITY_META[f.severity].label}
+              </span>
+            </td>
+            <td className="py-1.5 text-xs text-neutral-600">{f.zustaendig ?? "—"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

@@ -17,6 +17,9 @@ export interface ProjectRoute {
   farbe: string
   /** Herkunft der Strecke — für die Zähler je Upload-Tab. Default „datei". */
   source?: RouteSource
+  /** Geometrie ist nur eine grobe Schätzung (OSRM nicht erreichbar → Luftlinie/Korridor statt
+   *  echtem Straßenweg). Karte zeichnet gestrichelt + Warnhinweis (T-480). */
+  grob?: boolean
 }
 
 /** Quelle, über die eine Strecke angelegt wurde (= die drei Upload-Tabs). */

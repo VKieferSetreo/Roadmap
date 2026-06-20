@@ -88,10 +88,11 @@ describe("public share API (/_share, UNGATED)", () => {
     expect(res.body.locked).toBe(false)
     const data = res.body.data
     expect(Object.keys(data).sort()).toEqual(
-      ["distanzKm", "fahrzeitMin", "findings", "name", "routes", "updatedAt"],
+      ["distanzKm", "fahrzeitMin", "findings", "name", "routes", "transport", "updatedAt"],
     )
     expect(data.name).toBe("Öffentlich")
-    expect(data.transport).toBeUndefined() // KEINE Stammdaten
+    // T-223: NUR die Abmessungen (L/B/H/Gewicht) — keine weiteren Stammdaten/Zeitraum/Admin-Felder.
+    expect(Object.keys(data.transport).sort()).toEqual(["breite", "gesamtgewicht", "hoehe", "laenge"])
     expect(Object.keys(data.routes[0]).sort()).toEqual(["farbe", "id", "name", "points"])
     expect(data.findings).toHaveLength(1)
     expect(data.findings[0]).toMatchObject({ routeId: "r-1", routeName: "Hinfahrt" })

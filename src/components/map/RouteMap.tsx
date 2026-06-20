@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Locate, Maximize2, Minimize2, Minus, Plus } from "lucide-react"
+import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
@@ -148,7 +148,8 @@ export function RouteMap({
             key={`line-${r.id}`}
             positions={r.positions}
             smoothFactor={0}
-            pathOptions={{ color: r.farbe, weight: 5, opacity: 1 }}
+            // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
+            pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
           />
         ))}
         {drawn.map((r) => (
@@ -318,6 +319,16 @@ export function RouteMap({
           </button>
         </div>
       </div>
+
+      {/* T-480: Hinweis, dass mindestens eine Strecke nur grob geschätzt ist (gestrichelt gezeichnet). */}
+      {drawn.some((r) => r.grob) ? (
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[500] -translate-x-1/2">
+          <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50/95 px-3 py-1.5 text-xs font-medium text-amber-800 shadow-sm backdrop-blur-sm">
+            <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
+            Gestrichelte Strecke = grobe Schätzung (Router war nicht erreichbar), kein exakter Straßenweg.
+          </span>
+        </div>
+      ) : null}
 
       {/* Caller-Overlays (Suche, Daten-Panels, Zeitstrahl) — im Wrapper, also auch im Vollbild sichtbar. */}
       {children}

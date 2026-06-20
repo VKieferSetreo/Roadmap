@@ -49,6 +49,8 @@ function normalizeRoutes(routes) {
       ...(typeof r.fileName === "string" && r.fileName ? { fileName: r.fileName } : {}),
       points: downsample(points),
       farbe: typeof r.farbe === "string" && r.farbe ? r.farbe : DEFAULT_ROUTE_FARBE,
+      ...(typeof r.source === "string" && r.source ? { source: r.source } : {}),
+      ...(r.grob === true ? { grob: true } : {}), // T-480: Luftlinie-Schätzung persistieren
     }
   })
 }

@@ -78,8 +78,10 @@ export function RouteTab({ project }: { project: Project }) {
   const [pendingName, setPendingName] = useState("")
 
   const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
-    addRoute(project.id, { name, points: res.points, source })
+    // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
+    // nicht nur als Einmal-Toast — sonst sieht die grobe Schätzung nach Reload wie ein echter Weg aus.
     const grob = res.provider.router === "fallback"
+    addRoute(project.id, { name, points: res.points, source, ...(grob ? { grob: true } : {}) })
     toast.success(
       `Strecke „${name}" angelegt: ${res.points.length.toLocaleString("de-DE")} Punkte · ca. ${res.distanzKm.toLocaleString("de-DE", { maximumFractionDigits: 0 })} km` +
         (grob ? " (grobe Schätzung — Router nicht erreichbar)." : "."),
@@ -274,7 +276,18 @@ export function RouteTab({ project }: { project: Project }) {
                     aria-hidden
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800">{r.name}</p>
+                    <p className="flex items-center gap-1.5 truncate text-sm font-medium text-neutral-800">
+                      {r.name}
+                      {/* T-480: grobe Schätzung kenntlich machen — kein echter Straßenweg. */}
+                      {r.grob ? (
+                        <span
+                          title="OSRM war beim Anlegen nicht erreichbar — Verlauf ist nur eine grobe Luftlinien-Schätzung."
+                          className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
+                        >
+                          grobe Schätzung
+                        </span>
+                      ) : null}
+                    </p>
                     <p className="truncate text-xs tabular-nums text-neutral-400">
                       {SOURCE_LABEL[r.source ?? "datei"]} · {r.fileName ? `${r.fileName} · ` : ""}
                       {r.points.length.toLocaleString("de-DE")} Punkte · ca.{" "}

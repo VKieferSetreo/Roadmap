@@ -455,6 +455,7 @@ function exportCsv(project: Project, findings: Finding[]) {
     return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
   const header = [
+    "Strecke",
     "Kategorie",
     "Schweregrad",
     "Titel",
@@ -474,6 +475,7 @@ function exportCsv(project: Project, findings: Finding[]) {
     .sort((a, b) => a.km - b.km)
     .map((f) =>
       [
+        f.routeName ?? "Ohne Zuordnung", // T-226: Strecken-Zuordnung sichtbar (auch routeId-lose Funde)
         katMeta(f.kategorie).label,
         SEVERITY_META[f.severity].label,
         f.titel,
