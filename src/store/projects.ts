@@ -519,11 +519,14 @@ export const useProjectStore = create<ProjectStore>()(
     {
       name: "roadmap-projects",
       storage: createJSONStorage(() => safeStorage),
-      version: 2,
-      // v1-Persists (route/routeGeometry-Modell) verwerfen — Demo-Seed baut neu auf
-      migrate: (state, version) => (version < 2 ? undefined : (state as ProjectStore)),
-      // analysis (laufende Timer-Fortschritte) + loading nicht persistieren
-      partialize: (s) => ({ projects: s.projects, seeded: s.seeded }),
+      version: 3,
+      // Alt-Persists (inkl. v2-Projekt-Blob) verwerfen — Live lädt frisch vom Server, Demo baut neu.
+      migrate: (state, version) => (version < 3 ? undefined : (state as ProjectStore)),
+      // T-308 (Max-Entscheid 2026-06-20: Server ist Source-of-Truth, Demo darf neu aufbauen):
+      // GAR NICHTS persistieren. Der projects-Array (findings/geom/1500-Punkt-Strecken) trieb
+      // localStorage-Quota + Heap (35-MB-Blob) und konnte stale Cross-Tenant-Daten halten.
+      // Live: loadProjects() füllt bei Boot/Mandantenwechsel; Demo: seedIfEmpty() baut bei seeded=false.
+      partialize: () => ({}),
       // Defensive: korrupte Persists (projects: undefined) heilen — projects MUSS ein Array
       // bleiben, sonst crasht s.projects.find/[...projects] beim ersten Render.
       merge: (persisted, current) => {
