@@ -152,6 +152,26 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     expect(calls.some((c) => c.method === "DELETE" && c.url.includes("bleibt%40offb.de"))).toBe(false)
   })
 
+  it("Rate-Limit auf Redeem: nach 8 Versuchen → 429 (T-351/T-422)", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    const bogus = generateCode() // gültiges Format, existiert nicht → 404, bis die Drossel greift
+    let last
+    for (let i = 0; i < 9; i++) {
+      last = await asExtern(request(app).post("/api/account/redeem-seat"), "spammer@x.de").send({ code: bogus })
+    }
+    expect(last.status).toBe(429)
+  })
+
+  it("Erfolgreiche Einlösung schreibt ein Audit (seat.redeem, T-351)", async () => {
+    const { app, db } = makeApp({ requireAuth: true })
+    const k = db.seedTenant({ slug: "auditseat", name: "AuditSeat" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
+    const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({})
+    await asExtern(request(app).post("/api/account/redeem-seat"), "neu@auditseat.de").send({ code: gen.body.codes[0].code })
+    const audit = await asAdmin(request(app).get(`/api/admin/tenants/${k.id}/audit`))
+    expect(audit.body.entries.some((e) => e.action === "seat.redeem")).toBe(true)
+  })
+
   it("GET /api/account/license: eigener Mandant sieht Plan/Laufzeit/Seats (T-171)", async () => {
     const { app, tenant } = makeApp({ requireAuth: true })
     await asAdmin(request(app).patch(`/api/admin/tenants/${tenant.id}/license`))

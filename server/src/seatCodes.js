@@ -6,8 +6,14 @@
 // tenant_members-Zuordnung an. Eine E-Mail gehoert genau EINEM Mandanten.
 
 import crypto from "node:crypto"
+import { auditLog } from "./auditLog.js"
+import { createRateLimiter } from "./shares.js"
 import { getTenantForEmail } from "./tenants.js"
 import { ApiError } from "./util.js"
+
+// Brute-Force-Drossel je E-Mail (T-351/T-422): Redeem ist ohnehin auth-/secret-gated; das hier ist
+// Defense-in-Depth gegen ein kompromittiertes Konto, das Codes durchprobiert. In-Memory pro Prozess.
+const redeemLimiter = createRateLimiter({ max: 8, windowMs: 60_000 })
 
 // Menschen-tippbar: 3 Gruppen a 4 Zeichen, ohne mehrdeutige Zeichen (kein 0/O/1/I/L).
 // ~59 Bit Entropie. Einmal-Nutzung + DB-Unique machen Raten praktisch aussichtslos.
@@ -69,7 +75,24 @@ export async function redeemSeatCode(db, codeInput, email) {
   if (!code) throw new ApiError(400, "Ungueltiges Seat-Code-Format")
   const mail = String(email ?? "").trim().toLowerCase()
   if (!mail) throw new ApiError(401, "Nicht angemeldet")
+  // T-351/T-422: Rate-Limit VOR jeder DB-Arbeit. Key = E-Mail (Redeem ist immer identitätsgebunden).
+  if (!redeemLimiter(mail)) throw new ApiError(429, "Zu viele Einlöse-Versuche — bitte später erneut versuchen.")
 
+  const codeHint = `…${code.slice(-4)}` // maskiert: nur das letzte Quartett landet im Audit-Log
+
+  try {
+    return await txRedeem(db, code, mail, codeHint)
+  } catch (e) {
+    // Forensik (T-351): abgelehnte Einlösungen sichtbar machen (belegt/abgelaufen/Limit). Unbekannter
+    // Code (404) wird NICHT geloggt → sonst unbegrenzte null-tenant-Rows durch bloßes Raten.
+    if (e instanceof ApiError && (e.status === 409 || e.status === 403)) {
+      await auditLog(db, { actorEmail: mail, action: "seat.redeem.abgelehnt", detail: `${codeHint} — ${e.message}` })
+    }
+    throw e
+  }
+}
+
+async function txRedeem(db, code, mail, codeHint) {
   return await db.tx(async (q) => {
     // FOR UPDATE OF sc, t: serialisiert parallele Redeems DESSELBEN Codes (T-319/T-350) und
     // lockt die tenants-Zeile als gemeinsamen Seat-Limit-Serialisierungspunkt (T-352/T-418).
@@ -124,6 +147,8 @@ export async function redeemSeatCode(db, codeInput, email) {
       }
       throw err
     }
+    // Forensik (T-351): erfolgreiche Einlösung im Audit-Log des Mandanten, atomar mit der Buchung.
+    await auditLog(q, { tenantId: sc.tenant_id, actorEmail: mail, action: "seat.redeem", detail: codeHint })
     return { tenant: { id: sc.tenant_id, slug: sc.slug, name: sc.name } }
   })
 }
