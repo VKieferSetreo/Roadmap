@@ -25,11 +25,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 interface Draft {
   email: string
   role: TenantRole
-  passwort: string // nur für neue Nutzer (Konto in setreo-auth-extern); leer = unverändert
+  passwort: string // neuer Nutzer: Pflicht; bestehender mit pwReset: neues Passwort; sonst leer = unverändert
   isNew: boolean
+  pwReset: boolean // bestehender Nutzer: Passwort-Reset-Feld eingeblendet (T-358)
 }
 
-const toDraft = (m: TenantMember): Draft => ({ email: m.email, role: m.role, passwort: "", isNew: false })
+const toDraft = (m: TenantMember): Draft => ({ email: m.email, role: m.role, passwort: "", isNew: false, pwReset: false })
 
 export function TenantUsersPage() {
   const ctxLoaded = useContextStore((s) => s.loaded)
@@ -78,7 +79,7 @@ export function TenantUsersPage() {
   const setRow = (i: number, patch: Partial<Draft>) =>
     setMembers((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
   const addRow = () =>
-    setMembers((rows) => [...rows, { email: "", role: "user", passwort: "", isNew: true }])
+    setMembers((rows) => [...rows, { email: "", role: "user", passwort: "", isNew: true, pwReset: false }])
   const removeRow = (i: number) => setMembers((rows) => rows.filter((_, idx) => idx !== i))
 
   const atSeatLimit = maxSeats > 0 && members.length >= maxSeats
@@ -93,6 +94,10 @@ export function TenantUsersPage() {
       seen.add(email)
       if (m.isNew && m.passwort.length < MIN_PW) {
         return toast.error(`Neuer Nutzer ${email} braucht ein Passwort (≥ ${MIN_PW} Zeichen).`)
+      }
+      // T-358: bestehender Nutzer mit (nicht-leerem) Reset-Passwort → Mindestlänge prüfen.
+      if (!m.isNew && m.passwort && m.passwort.length < MIN_PW) {
+        return toast.error(`Neues Passwort für ${email}: mindestens ${MIN_PW} Zeichen.`)
       }
     }
     if (!members.some((m) => m.role === "admin")) {
@@ -185,16 +190,32 @@ export function TenantUsersPage() {
                             </Select>
                           </td>
                           <td className="px-3 py-2">
-                            {m.isNew ? (
-                              <Input
-                                type="text"
-                                value={m.passwort}
-                                onChange={(e) => setRow(i, { passwort: e.target.value })}
-                                placeholder={`≥ ${MIN_PW} Zeichen`}
-                                className="h-8"
-                              />
+                            {m.isNew || m.pwReset ? (
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="text"
+                                  value={m.passwort}
+                                  onChange={(e) => setRow(i, { passwort: e.target.value })}
+                                  placeholder={`≥ ${MIN_PW} Zeichen`}
+                                  className="h-8"
+                                />
+                                {!m.isNew ? (
+                                  <button
+                                    onClick={() => setRow(i, { pwReset: false, passwort: "" })}
+                                    title="Reset abbrechen"
+                                    className="cursor-pointer text-xs text-neutral-400 hover:text-neutral-600"
+                                  >
+                                    abbrechen
+                                  </button>
+                                ) : null}
+                              </div>
                             ) : (
-                              <span className="text-xs text-neutral-400">unverändert</span>
+                              <button
+                                onClick={() => setRow(i, { pwReset: true })}
+                                className="cursor-pointer text-xs font-medium text-primary-600 hover:underline"
+                              >
+                                Passwort zurücksetzen
+                              </button>
                             )}
                           </td>
                           <td className="px-3 py-2 text-right">
@@ -228,8 +249,9 @@ export function TenantUsersPage() {
                 </Button>
               </div>
               <p className="text-xs text-neutral-400">
-                Neue Nutzer brauchen ein Passwort (Login über app.setreo-cloud.com). Rolle „Admin" darf
-                ebenfalls Nutzer verwalten. Lizenz/Seat-Anzahl ändert Setreo.
+                Neue Nutzer brauchen ein Passwort (Login über app.setreo-cloud.com). Bei bestehenden
+                Nutzern setzt „Passwort zurücksetzen" ein neues Passwort. Rolle „Admin" darf ebenfalls
+                Nutzer verwalten. Lizenz/Seat-Anzahl ändert Setreo.
               </p>
             </>
           )}
