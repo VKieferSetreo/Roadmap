@@ -72,6 +72,8 @@ export interface ProjectPatch {
   archiviert?: boolean
   /** Ordner-Zuordnung (T-177): Ordner-ID oder null (zurück auf Wurzelebene). */
   folderId?: string | null
+  /** Optimistic-Lock (T-466): bekannte Version; Server lehnt mit 409 ab, wenn veraltet. */
+  version?: number
 }
 
 /** Ergebnis einer Routen-Berechnung (Start/Ziel oder Google-Maps-Link). */

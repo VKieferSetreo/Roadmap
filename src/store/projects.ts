@@ -11,7 +11,7 @@ import type { Finding, HideReason, Project, ProjectRoute, TransportData, Transpo
 import { DEFAULT_TRANSPORT, ROUTE_FARBEN } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
-import { api } from "@/api/roadmap"
+import { api, type ProjectPatch } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import { isLive } from "./datasource"
 
@@ -79,23 +79,41 @@ const timers: Record<string, ReturnType<typeof setInterval>> = {}
 const syncTimers: Record<string, ReturnType<typeof setTimeout>> = {}
 
 /** Debounced Server-Sync: schickt den aktuellen Stand des Projekts als Merge-PATCH. */
-function scheduleSync(id: string, get: () => ProjectStore) {
+type SetState = (fn: (s: ProjectStore) => Partial<ProjectStore>) => void
+
+/** Lokale Projekt-Version aus einer PATCH-Antwort übernehmen — MUSS nach jedem erfolgreichen
+ *  PATCH passieren, sonst sendet der nächste PATCH eine veraltete Version und kollidiert mit
+ *  sich selbst (T-466/T-501). */
+function adoptVersion(set: SetState, id: string, version?: number) {
+  if (version == null) return
+  set((s) => ({ projects: s.projects.map((p) => (p.id === id ? { ...p, version } : p)) }))
+}
+
+/** Server-PATCH mit Optimistic-Lock (T-466/T-501): bekannte Version mitsenden, Server-Version
+ *  übernehmen, 409 (jemand anderes hat geändert) → Refetch + Hinweis statt stillem Verlust. */
+function applyPatch(id: string, patch: ProjectPatch, get: () => ProjectStore, set: SetState): Promise<void> {
+  const known = get().getProject(id)?.version
+  return api
+    .patchProject(id, { ...patch, version: known })
+    .then((updated) => adoptVersion(set, id, updated.version))
+    .catch((e) => {
+      if (e instanceof ApiError && e.status === 409) {
+        toast.error("Das Projekt wurde zwischenzeitlich von jemand anderem geändert — wird neu geladen.")
+        void get().loadProjects()
+      } else {
+        toast.error("Änderung konnte nicht gespeichert werden — Verbindung prüfen.")
+      }
+    })
+}
+
+function scheduleSync(id: string, get: () => ProjectStore, set: SetState) {
   if (!isLive()) return
   if (syncTimers[id]) clearTimeout(syncTimers[id])
   syncTimers[id] = setTimeout(() => {
     delete syncTimers[id]
     const p = get().getProject(id)
     if (!p) return
-    api
-      .patchProject(id, {
-        name: p.name,
-        routes: p.routes,
-        transport: p.transport,
-        zeitraum: p.zeitraum,
-      })
-      .catch(() => {
-        toast.error("Änderung konnte nicht gespeichert werden — Verbindung prüfen.")
-      })
+    void applyPatch(id, { name: p.name, routes: p.routes, transport: p.transport, zeitraum: p.zeitraum }, get, set)
   }, 600)
 }
 
@@ -204,7 +222,7 @@ export const useProjectStore = create<ProjectStore>()(
             p.id === id ? { ...p, name: name.trim(), updatedAt: now() } : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       archiveProject: (id, archiviert) => {
@@ -214,9 +232,12 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         }))
         if (isLive()) {
-          api.patchProject(id, { archiviert }).catch(() => {
-            toast.error("Archiv-Status konnte nicht gespeichert werden.")
-          })
+          api
+            .patchProject(id, { archiviert })
+            .then((updated) => adoptVersion(set, id, updated.version)) // T-501: Version mitführen
+            .catch(() => {
+              toast.error("Archiv-Status konnte nicht gespeichert werden.")
+            })
         }
       },
 
@@ -227,12 +248,15 @@ export const useProjectStore = create<ProjectStore>()(
           projects: s.projects.map((p) => (p.id === id ? { ...p, folderId } : p)),
         }))
         if (isLive()) {
-          api.patchProject(id, { folderId }).catch(() => {
-            toast.error("Verschieben konnte nicht gespeichert werden.")
-            set((s) => ({
-              projects: s.projects.map((p) => (p.id === id ? { ...p, folderId: prev } : p)),
-            }))
-          })
+          api
+            .patchProject(id, { folderId })
+            .then((updated) => adoptVersion(set, id, updated.version)) // T-501: Version mitführen
+            .catch(() => {
+              toast.error("Verschieben konnte nicht gespeichert werden.")
+              set((s) => ({
+                projects: s.projects.map((p) => (p.id === id ? { ...p, folderId: prev } : p)),
+              }))
+            })
         }
       },
 
@@ -330,7 +354,7 @@ export const useProjectStore = create<ProjectStore>()(
               : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       removeRoute: (id, routeId) => {
@@ -341,7 +365,7 @@ export const useProjectStore = create<ProjectStore>()(
               : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       renameRoute: (id, routeId, name) => {
@@ -356,7 +380,7 @@ export const useProjectStore = create<ProjectStore>()(
               : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       updateRoute: (id, routeId, patch) => {
@@ -371,7 +395,7 @@ export const useProjectStore = create<ProjectStore>()(
               : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       updateTransport: (id, patch) => {
@@ -380,7 +404,7 @@ export const useProjectStore = create<ProjectStore>()(
             p.id === id ? { ...p, transport: { ...p.transport, ...patch }, updatedAt: now() } : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       updateZeitraum: (id, patch) => {
@@ -389,7 +413,7 @@ export const useProjectStore = create<ProjectStore>()(
             p.id === id ? { ...p, zeitraum: { ...p.zeitraum, ...patch }, updatedAt: now() } : p,
           ),
         }))
-        scheduleSync(id, get)
+        scheduleSync(id, get, set)
       },
 
       runAnalysis: (id) => {
@@ -475,14 +499,19 @@ export const useProjectStore = create<ProjectStore>()(
             delete syncTimers[id]
           }
           const p = get().getProject(id)
+          // Blind flushen (KEINE version) — der Nutzer will genau seinen aktuellen Stand auswerten;
+          // ein version-409 hier wäre nicht von dem T-467-Analyse-409 unten zu unterscheiden. Die
+          // server-seitig erhöhte version übernehmen wir trotzdem (T-501, kein Self-Conflict danach).
           const sync = p
-            ? api.patchProject(id, {
-                name: p.name,
-                routes: p.routes,
-                transport: p.transport,
-                zeitraum: p.zeitraum,
-              })
-            : Promise.resolve(null)
+            ? api
+                .patchProject(id, {
+                  name: p.name,
+                  routes: p.routes,
+                  transport: p.transport,
+                  zeitraum: p.zeitraum,
+                })
+                .then((u) => adoptVersion(set, id, u.version))
+            : Promise.resolve()
 
           sync
             .then(() => api.runAnalysis(id))

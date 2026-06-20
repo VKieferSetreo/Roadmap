@@ -175,6 +175,8 @@ export interface Project {
   id: string
   name: string
   status: ProjectStatus
+  /** Optimistic-Lock-Token (T-466): wird bei jedem PATCH mitgesendet + serverseitig inkrementiert. */
+  version?: number
   /** ISO-Zeitstempel. */
   createdAt: string
   updatedAt: string
