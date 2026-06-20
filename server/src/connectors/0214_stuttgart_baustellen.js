@@ -2,7 +2,7 @@
 // Port aus stuttgart-geoportal-opendata.cron.mjs. Beide Layer "im_Bau" (aktuell) + "geplant"
 // (WFS 2.0 GeoJSON, Point, EPSG:25832), reprojiziert UTM32 → WGS84.
 
-import { makeNormalized, fetchAllFeatures, utmZuWgs84, tonnageAusText, meterAusText, dateOnly } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, utmZuWgs84, tonnageAusText, meterAusText, dateOnly, freitextMonatEnde } from "./_helpers.js"
 
 const PORTAL = "https://opendata.stuttgart.de/dataset/baustellen"
 const QUELLE_NAME = "Stuttgart — Baustellen (Open Data Stuttgart, geoserver.stuttgart.de)"
@@ -57,7 +57,9 @@ export const stuttgartBaustellenConnector = {
           },
           realerStart: dateOnly(p.ANFANG),
           gueltigVon: dateOnly(p.ANFANG),
-          gueltigBis: dateOnly(p.ENDE), // ENDE teils Freitext → dann null
+          // T-452: ENDE ist meist Freitext ("Ende Dez. 2029") → erst exaktes Datum, sonst
+          // Monat+Jahr-Fallback (letzter Tag des Monats), sonst null. Befristung geht nicht mehr verloren.
+          gueltigBis: dateOnly(p.ENDE) ?? freitextMonatEnde(p.ENDE),
           quelleName: QUELLE_NAME,
           quelleUrl: PORTAL,
         }))

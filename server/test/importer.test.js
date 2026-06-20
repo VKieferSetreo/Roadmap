@@ -188,8 +188,9 @@ describe("runImport (Mock-Connector)", () => {
       gefunden: 0, neu: 0, aktualisiert: 0, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0,
     })
     expect(db.state.obstacles).toHaveLength(0)
-    // auch Fehl-Runs aktualisieren letzter_abruf (Quelle wurde kontaktiert)
-    expect(db.state.quellen.find((q) => q.id === "0009").letzter_abruf).toBeTruthy()
+    // T-476: Fehl-Run aktualisiert letzter_abruf NICHT — sonst stempelt sich eine tote Quelle als
+    // „gerade frisch" und die Staleness-Anzeige (zuletztAktualisiert = max(letzter_abruf)) lügt.
+    expect(db.state.quellen.find((q) => q.id === "0009")?.letzter_abruf ?? null).toBeNull()
   })
 })
 

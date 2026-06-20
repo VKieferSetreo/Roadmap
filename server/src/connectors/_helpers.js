@@ -58,6 +58,24 @@ export function dateOnly(v) {
   return null
 }
 
+// T-452: deutscher Monatsname → 0-basierter Index (voll, 3-Buchstaben, mit/ohne Punkt, ä/ae).
+const MONATE = [
+  /jan/i, /feb/i, /m(?:ä|ae|a)r/i, /apr/i, /mai/i, /jun/i,
+  /jul/i, /aug/i, /sep/i, /okt/i, /nov/i, /dez/i,
+]
+/** Freitext-Enddatum wie "Ende Dez. 2029" / "Dezember 2029" → LETZTER Tag des Monats (YYYY-MM-DD).
+ *  Konservativ: nur wenn Monat UND 4-stelliges Jahr erkennbar; sonst null (kein Raten). */
+export function freitextMonatEnde(text) {
+  const s = String(text ?? "")
+  const jahr = s.match(/\b(20\d{2})\b/)
+  if (!jahr) return null
+  const monatIdx = MONATE.findIndex((re) => re.test(s))
+  if (monatIdx < 0) return null
+  // letzter Tag = Tag 0 des Folgemonats (UTC, damit kein TZ-Off-by-one, vgl. T-465)
+  const last = new Date(Date.UTC(Number(jahr[1]), monatIdx + 1, 0)).getUTCDate()
+  return `${jahr[1]}-${String(monatIdx + 1).padStart(2, "0")}-${String(last).padStart(2, "0")}`
+}
+
 const num = (v) => {
   if (v == null) return null
   const n = Number(String(v).replace(",", "."))

@@ -108,6 +108,9 @@ export const vizBerlinBaustellenConnector = {
           vollsperrung:
             (/vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))) ||
             undefined,
+          // T-433: strukturiertes direction-Feld ("Beidseitig"/"None", live verifiziert) als boolean-attr
+          // (NICHT richtung-Spalte = NOT-NULL-CHECK-Enum; makeNormalized behält nur number|boolean).
+          richtungBeidseitig: /beid/i.test(String(p.direction ?? "")) || undefined,
         },
         gueltigVon: von, gueltigBis: bis, realerStart: von,
         geom,

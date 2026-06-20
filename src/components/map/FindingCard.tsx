@@ -21,6 +21,12 @@ function Spacer() {
   return <hr className="my-2.5 border-t border-neutral-200/70" />
 }
 
+/** Daten-Stand formatieren: ISO-Zeitstempel → DD.MM.YYYY, relativer Text ("vor 12 min") unverändert. */
+function fmtStand(v: string): string {
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : v
+}
+
 /** Beschreibung: 4 Zeilen, dann „mehr lesen" (klappt den vollen Text auf). */
 function ReadMore({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -65,7 +71,7 @@ export interface FindingCardProps {
   gueltigBis?: string | null
   detail?: Record<string, string | number>
   signKey?: string
-  quelle?: { name?: string | null; url?: string | null } | null
+  quelle?: { name?: string | null; url?: string | null; aktualisiertAm?: string | null } | null
   /** Medien zwischen Kopf und Beschreibung (z.B. die Leaflet-Karte im DB-Dialog). */
   media?: ReactNode
   /** Zusatzinhalt nach den Stammdaten (z.B. Kontaktblock eigener Einträge). */
@@ -177,6 +183,10 @@ export function FindingCard({
           )
         ) : null}
       </div>
+      {/* T-481: Daten-Aktualität (Stand des letzten Abrufs) — ISO → DE-Datum, relativer Text as-is. */}
+      {quelle?.aktualisiertAm ? (
+        <p className="mt-1 text-right text-[11px] text-neutral-400">Stand: {fmtStand(quelle.aktualisiertAm)}</p>
+      ) : null}
     </div>
   )
 }

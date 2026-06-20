@@ -28,8 +28,13 @@ export const bonnBaustellenConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const sperrung = String(p.sperrung ?? "")
-      const vollsperrung = /vollsperrung/i.test(sperrung) || undefined
-      const istSperrung = /sperrung/i.test(sperrung)
+      const massnahme = String(p.massnahme ?? "")
+      // T-454 (live-kalibriert an echten Werten): nur eine ECHTE KFZ-Vollsperrung der Fahrbahn ist
+      // 'sperrung'. "Vollsperrung des Geh- und Radwegs" (nur Geh/Rad), "Teilsperrung …" und
+      // "keine Sperrung" (matchte fälschlich /sperrung/) bleiben 'baustelle' — KFZ kommt durch.
+      const istVollKfz = /vollsperr/i.test(sperrung) && !/geh|rad|teil|keine/i.test(sperrung)
+      const vollsperrung = istVollKfz || undefined
+      const istSperrung = istVollKfz
       const [lng, lat] = ersterPunkt(f.geometry)
       // externeId muss eindeutig pro echtem Einzel-Eintrag UND run-stabil sein: zwei Meldungen am
       // selben Ort (je Fahrtrichtung / Bauphase / Maßnahme) teilen sich oft dieselbe baustelle_id und
@@ -46,6 +51,10 @@ export const bonnBaustellenConnector = {
         strassenRef: refAusBezeichnung(p.bezeichnung),
         attrs: {
           vollsperrung,
+          // T-454: Maßnahmenart strukturiert kennzeichnen (Gleisbau/Brückensanierung live belegt).
+          // Kanalbau/Leitungsbau erkennt extractStammdaten.medium bereits über die Beschreibung.
+          bahnbaustelle: /gleis|bahn|tram|schiene/i.test(massnahme) || undefined,
+          brueckenbau: /br(?:ü|ue)cke/i.test(massnahme) || undefined,
         },
         realerStart: dateOnly(p.von),
         gueltigVon: dateOnly(p.von),

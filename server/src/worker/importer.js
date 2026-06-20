@@ -191,6 +191,12 @@ export async function runImport({
     // T-314: Teilbestand ehrlich kennzeichnen (status='partial' statt 'ok'), damit Sync/Health
     // den degradierten Lauf sichtbar machen können (nicht stiller Voll-Erfolg).
     if (result?.complete === false && status === "ok") status = "partial"
+    // T-476: ein Vollbestand-Feed mit 0 Einträgen ist KEIN gesunder Voll-Erfolg (kaputter/leerer
+    // Feed) → als 'warn' markieren, damit Staleness sichtbar wird statt grün durchzugehen.
+    if (connector.vollbestand && stats.gefunden === 0 && status === "ok") {
+      status = "warn"
+      note("Vollbestand-Feed lieferte 0 Einträge — als 'warn' markiert (kein stiller Voll-Erfolg)")
+    }
   } catch (err) {
     status = "error"
     note(`Fehler: ${err?.message ?? err}`)
@@ -201,6 +207,10 @@ export async function runImport({
      WHERE id = $1 RETURNING *`,
     [run.id, status, JSON.stringify(stats), logLines.length ? logLines.join("\n") : null],
   )
-  await db.query("UPDATE quellen SET letzter_abruf = now() WHERE id = $1", [connector.quelleId])
+  // T-476: letzter_abruf NUR bei Nicht-Fehler hochziehen — sonst stempelt ein toter Feed sich
+  // selbst als „gerade frisch" und die Staleness (zuletztAktualisiert = max(letzter_abruf)) lügt.
+  if (status !== "error") {
+    await db.query("UPDATE quellen SET letzter_abruf = now() WHERE id = $1", [connector.quelleId])
+  }
   return doneRows[0]
 }

@@ -32,7 +32,9 @@ export const muensterBaustellenConnector = {
       const typBez = String(p.typ_bez ?? "")
       const text = [p.bezeichnung, p.information].filter(Boolean).join(" ")
       const vollsperrung = /vollsperrung/i.test(typBez) || /vollsperr/i.test(text) || undefined
-      const istSperrung = /sperrung/i.test(typBez)
+      // T-453: "Teilsperrung" enthält den Substring "sperrung" → NICHT zu kategorie 'sperrung'
+      // hochstufen. Nur echte Voll-/Komplettsperrung (oder "Sperrung" ohne teil/halbseit/einseit).
+      const istSperrung = /sperrung/i.test(typBez) && !/teil|halbseit|einseit/i.test(typBez)
       const [lng, lat] = ersterPunkt(f.geometry)
       // Volle Linien-/Flächen-Geometrie als geom durchreichen (für Korridor-Clip, Linien-Render,
       // Gegenfahrbahn-Filter). Quelle liefert WGS84 lng/lat (CRS84, SRSNAME=EPSG:4326) → KEINE

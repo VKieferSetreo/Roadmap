@@ -265,11 +265,14 @@ function FundTabelle({ findings }: { findings: Finding[] }) {
                     : ""}
                 </p>
               ) : null}
-              {/* Quelle + URL — Nachvollziehbarkeit der Datenherkunft im Bericht. */}
+              {/* Quelle + URL + Stand — Nachvollziehbarkeit + Daten-Aktualität im Bericht (T-481). */}
               {f.quelle?.name ? (
                 <p className="text-[10px] text-neutral-400">
                   Quelle: {f.quelle.name}
                   {f.quelle.url ? <span className="font-mono"> · {f.quelle.url}</span> : null}
+                  {f.quelle.aktualisiertAm
+                    ? ` · Stand ${/^\d{4}-\d{2}-\d{2}/.test(f.quelle.aktualisiertAm) ? formatDateDE(f.quelle.aktualisiertAm.slice(0, 10)) : f.quelle.aktualisiertAm}`
+                    : null}
                 </p>
               ) : null}
             </td>
