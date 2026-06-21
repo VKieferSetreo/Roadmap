@@ -4,7 +4,7 @@
 // tippt sie genau so, wie sie ist. Beispiel: "W-5567" + "Hans Mustermann" → "W-5567_Hans_Mustermann".
 
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react"
-import { Dialog, DialogHeader } from "@/components/ui/Dialog"
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from "@/components/ui/Dialog"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
 
@@ -54,7 +54,7 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
         subtitle="Strecke und Transport legen Sie danach an."
         onClose={onClose}
       />
-      <div className="flex flex-col gap-4 px-6 py-5">
+      <DialogBody className="flex flex-col gap-4">
         <div>
           <Label htmlFor="project-nummer">Projektnummer</Label>
           <Input
@@ -84,15 +84,15 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
         <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
           Projektname: <span className="font-medium text-neutral-500">{nummerClean || "…"}_{nameClean || "…"}</span>
         </div>
-      </div>
-      <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">
+      </DialogBody>
+      <DialogFooter>
         <Button variant="ghost" onClick={onClose}>
           Abbrechen
         </Button>
         <Button onClick={submit} disabled={!valid}>
           Anlegen
         </Button>
-      </div>
+      </DialogFooter>
     </Dialog>
   )
 }

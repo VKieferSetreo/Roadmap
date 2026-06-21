@@ -97,3 +97,17 @@ export function DialogHeader({
     </div>
   )
 }
+
+/** Scrollbarer Dialog-Inhalt (analog SheetBody) — einheitliches Padding + Overflow. T-247. */
+export function DialogBody({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("px-6 py-5", className)}>{children}</div>
+}
+
+/** Dialog-Fußzeile mit rechtsbündigen Aktionen (analog SheetFooter). T-247. */
+export function DialogFooter({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn("flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4", className)}>
+      {children}
+    </div>
+  )
+}

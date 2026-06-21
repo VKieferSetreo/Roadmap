@@ -2,7 +2,7 @@
 // derselben Maßnahme) werden zu EINEM Marker zusammengefasst, der beim Öffnen Tabs
 // zeigt — so geht keiner verloren, die Karte bleibt aber aufgeräumt.
 
-import { useState } from "react"
+import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
 import { EyeOff, MessageCircle, Phone, Trash2, User } from "lucide-react"
 import type { Finding } from "@/types/domain"
@@ -118,7 +118,9 @@ function FindingDetail({
 }
 
 /** Ein Marker für eine Fund-Gruppe. >1 Fund (z.B. beide Richtungen) → Tabs zum Umschalten. */
-export function FindingMarker({
+// T-379: memoisiert — bei stabilen group/Callbacks (RouteMap memoisiert groupFindings) rendert
+// ein Marker nicht mehr bei jedem Karten-Render mit. Vergleich ist flach (props).
+function FindingMarkerImpl({
   group,
   selectedId,
   onSelect,
@@ -290,3 +292,5 @@ export function FindingMarker({
     </Marker>
   )
 }
+
+export const FindingMarker = memo(FindingMarkerImpl)
