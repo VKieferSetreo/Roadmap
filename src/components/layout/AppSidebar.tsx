@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from "react-router-dom"
 import {
   Database,
   FilePlus,
-  Folder,
   FolderPlus,
   Home,
   LogOut,

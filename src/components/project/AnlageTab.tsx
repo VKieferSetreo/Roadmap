@@ -12,7 +12,6 @@ import { TransportDataForm } from "./TransportDataForm"
 import { PublishCard } from "./PublishCard"
 import { visibleFindings } from "./findingMeta"
 import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
-import { useDataSourceStore } from "@/store/datasource"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 import { formatStampDE } from "@/lib/format"
@@ -23,7 +22,6 @@ export function AnlageTab({ project }: { project: Project }) {
   const updateZeitraum = useProjectStore((s) => s.updateZeitraum)
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
   const analysis = useProjectStore((s) => s.analysis[project.id])
-  const mode = useDataSourceStore((s) => s.mode)
 
   const running = analysis?.running ?? false
   const routeReady = project.routes.some((r) => r.points.length >= 2)

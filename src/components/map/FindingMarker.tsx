@@ -5,7 +5,7 @@
 import { useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
 import { EyeOff, MessageCircle, Phone, Trash2, User } from "lucide-react"
-import type { Finding, ProjectRoute } from "@/types/domain"
+import type { Finding } from "@/types/domain"
 import {
   EIGEN_BADGE,
   EIGEN_COLOR,
@@ -119,7 +119,6 @@ function FindingDetail({
 /** Ein Marker für eine Fund-Gruppe. >1 Fund (z.B. beide Richtungen) → Tabs zum Umschalten. */
 export function FindingMarker({
   group,
-  routes,
   selectedId,
   onSelect,
   onDeleteOwn,
@@ -127,7 +126,6 @@ export function FindingMarker({
   canChat = true,
 }: {
   group: Finding[]
-  routes: ProjectRoute[]
   selectedId?: string | null
   onSelect?: (id: string) => void
   onDeleteOwn?: (obstacleId: string) => void

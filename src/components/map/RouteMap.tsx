@@ -262,7 +262,6 @@ export function RouteMap({
           <FindingMarker
             key={group[0].id}
             group={group}
-            routes={routes}
             selectedId={selectedId}
             onSelect={onSelect}
             onDeleteOwn={onDeleteOwn}

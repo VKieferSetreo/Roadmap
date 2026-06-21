@@ -1,7 +1,7 @@
 // Tab 3 — Auswertungs-Dashboard: Kennzahlen + Charts + Streckenprofil +
 // filterbare Fund-Liste. Export: CSV (echt) + PDF via Druck-Stylesheet.
 
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, lazy, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Building2,
