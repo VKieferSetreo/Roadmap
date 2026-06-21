@@ -409,6 +409,20 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
     default:
       return null
   }
+  // T-445: Längen-Limit (z.B. Thüringen KFZ_LAENGE→maxLaengeM) kategorie-übergreifend gegen die
+  // Transportlänge prüfen. War bisher nur Anzeige-Attr → Überlängen-Transport blieb ungewarnt.
+  // Greift nur, wenn das Hindernis ein Längen-Limit trägt (sonst no-op).
+  const maxL = num(attrs.maxLaengeM)
+  const transportL = num(transport?.laenge)
+  if (maxL != null && transportL != null) {
+    const rest = round2(maxL - transportL)
+    result = {
+      ...result,
+      severity: schlimmer(result.severity, sev3(rest < 0, rest < 2)),
+      detail: { ...result.detail, "Zul. Länge": fmtM(maxL), Transportlänge: fmtM(transportL), "Längen-Reserve": fmtM(rest) },
+      beschreibung: rest < 0 ? `${result.beschreibung} Zulässige Fahrzeuglänge überschritten.` : result.beschreibung,
+    }
+  }
   // Infrastruktur (Brücke/Tunnel/Engstelle/Gewicht/Steigung/Kreisverkehr/Bahnübergang/
   // Ampel): nur ECHTE Abweichungen von der Norm zeigen. Reine "Hinweis"-Funde ohne
   // hinterlegten Grenzwert (z.B. „Brücke ohne hinterlegte Durchfahrtshöhe") sind

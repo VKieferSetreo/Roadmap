@@ -13,9 +13,18 @@ const BASE =
 
 function katAus(subtype) {
   const s = String(subtype ?? "").toLowerCase()
-  if (s.includes("baustelle")) return "baustelle"
+  if (s.includes("baustelle") || s.includes("bauarbeit")) return "baustelle"
   if (s.includes("sperrung")) return "sperrung"
-  return "sperrung"
+  // T-436: Gefahr/Störung/Veranstaltung etc. sind KEINE planbaren Hindernisse → 'sonstige'
+  // (Engine schließt 'sonstige' aus). Vorher pauschal 'sperrung' = Falsch-Sperrung (live: subtype
+  // "Störung" mit severity "keine Sperrung"). Sperr-Entscheid kommt aus severity (istVollsperrung).
+  return "sonstige"
+}
+// T-436: echtes severity-Feld als Sperr-Entscheid; Text-Heuristik (T-432) nur Fallback.
+function istVollsperrung(severity, text) {
+  const sev = String(severity ?? "").toLowerCase()
+  if (sev) return sev.includes("vollsperr") || sev.includes("fahrtrichtungssperr")
+  return /vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))
 }
 // Erste plausible [lng,lat]-Koordinate aus einer beliebig tief verschachtelten
 // Geometrie ziehen (Point/MultiPoint/LineString/MultiLineString/Polygon/MultiPolygon).
@@ -105,9 +114,7 @@ export const vizBerlinBaustellenConnector = {
           restbreiteM: meterAusText(text, /breite/i) ?? undefined,
           // T-432: bloßes "gesperrt" matcht "Fahrstreifen gesperrt" (Einzelspur) → nur echte
           // Vollsperrung; Spur-/Fahrstreifen-Qualifizierung schließt die Einzelspur aus.
-          vollsperrung:
-            (/vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))) ||
-            undefined,
+          vollsperrung: istVollsperrung(p.severity, text) || undefined,
           // T-433: strukturiertes direction-Feld ("Beidseitig"/"None", live verifiziert) als boolean-attr
           // (NICHT richtung-Spalte = NOT-NULL-CHECK-Enum; makeNormalized behält nur number|boolean).
           richtungBeidseitig: /beid/i.test(String(p.direction ?? "")) || undefined,

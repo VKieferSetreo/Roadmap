@@ -15,6 +15,23 @@ const ob = (kategorie, attrs = {}, extra = {}) => ({
   kategorie, name: "", attrs, ...extra,
 })
 
+describe("maxLaengeM — Längen-Limit kategorie-übergreifend (T-445)", () => {
+  it("Transport (24,5 m) länger als Limit (20 m) → kritisch + Detail", () => {
+    const r = evaluate(ob("baustelle", { maxLaengeM: 20 }), TR, {})
+    expect(r.severity).toBe("kritisch")
+    expect(r.detail["Zul. Länge"]).toBeDefined()
+    expect(r.beschreibung).toMatch(/Fahrzeuglänge überschritten/)
+  })
+  it("Limit knapp über Transportlänge (25 m, <2 m Reserve) → mind. warnung", () => {
+    const r = evaluate(ob("baustelle", { maxLaengeM: 25 }), TR, {})
+    expect(["warnung", "kritisch"]).toContain(r.severity)
+  })
+  it("ohne maxLaengeM kein Längen-Overlay", () => {
+    const r = evaluate(ob("baustelle", {}), TR, {})
+    expect(r.detail["Zul. Länge"]).toBeUndefined()
+  })
+})
+
 describe("Gültigkeit", () => {
   it("gueltigBis vor zeitraum.von → null (abgelaufen)", () => {
     const r = evaluate(

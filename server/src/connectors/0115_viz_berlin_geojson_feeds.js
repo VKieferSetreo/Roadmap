@@ -13,9 +13,19 @@ const FEEDS = [
 
 function katAus(subtype) {
   const s = String(subtype ?? "").toLowerCase()
-  if (s.includes("baustelle")) return "baustelle"
+  if (s.includes("baustelle") || s.includes("bauarbeit")) return "baustelle"
   if (s.includes("sperrung")) return "sperrung"
-  return "sperrung"
+  // T-436: Gefahr/Störung/Veranstaltung etc. sind KEINE planbaren Hindernisse → 'sonstige'
+  // (Engine schließt 'sonstige' aus). Vorher pauschal 'sperrung' = Falsch-Sperrung. Der echte
+  // Sperr-Entscheid kommt aus dem severity-Feld (istVollsperrung), nicht aus dem subtype.
+  return "sonstige"
+}
+// T-436: echtes severity-Feld ("Vollsperrung"/"Fahrtrichtungssperrung"/"keine Sperrung") als
+// Sperr-Entscheid; Text-Heuristik (T-432) nur Fallback, falls severity fehlt.
+function istVollsperrung(severity, text) {
+  const sev = String(severity ?? "").toLowerCase()
+  if (sev) return sev.includes("vollsperr") || sev.includes("fahrtrichtungssperr")
+  return /vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))
 }
 function geomPunkt(geometry) {
   if (!geometry) return [null, null]
@@ -38,6 +48,9 @@ function geomLinie(geometry) {
   for (const g of geoms) {
     if (g.type === "LineString") lines.push(g.coordinates)
     else if (g.type === "MultiLineString") lines.push(...g.coordinates)
+    // T-435: Flächenmeldungen behalten ihre Geometrie (vorher gingen Polygon/MultiPolygon verloren) — wie 0114.
+    else if (g.type === "Polygon") return { type: "Polygon", coordinates: g.coordinates }
+    else if (g.type === "MultiPolygon") return { type: "MultiPolygon", coordinates: g.coordinates }
   }
   if (!lines.length) return null
   return lines.length === 1 ? { type: "LineString", coordinates: lines[0] } : { type: "MultiLineString", coordinates: lines }
@@ -80,9 +93,7 @@ export const vizBerlinGeojsonFeedsConnector = {
             restbreiteM: meterAusText(text, /breite/i) ?? undefined,
             // T-432: bloßes "gesperrt" matcht "Fahrstreifen gesperrt" (Einzelspur) → nur echte
             // Vollsperrung; Spur-/Fahrstreifen-Qualifizierung schließt die Einzelspur aus.
-            vollsperrung:
-              (/vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))) ||
-              undefined,
+            vollsperrung: istVollsperrung(p.severity, text) || undefined,
           },
           gueltigVon: von, gueltigBis: bis, realerStart: von,
           quelleName: QUELLE_NAME,
