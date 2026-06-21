@@ -34,6 +34,7 @@ export function AppLayout() {
   const sidebarOpen = useUiStore((s) => s.sidebarOpen)
   const toggleSidebar = useUiStore((s) => s.toggleSidebar)
   const createProject = useProjectStore((s) => s.createProject)
+  const setProjectFolder = useProjectStore((s) => s.setProjectFolder)
   const initData = useProjectStore((s) => s.initData)
   const loadFolders = useFolderStore((s) => s.loadFolders)
   const loadNews = useNewsStore((s) => s.loadNews)
@@ -221,8 +222,11 @@ export function AppLayout() {
         open={newProjectOpen}
         onClose={closeNewProject}
         onCreate={(name) => {
+          // Explorer-Ansicht kann einen Zielordner vorgeben → neues Projekt dort einsortieren.
+          const targetFolder = useUiStore.getState().newProjectFolderId
           void createProject(name)
             .then((p) => {
+              if (targetFolder) setProjectFolder(p.id, targetFolder)
               closeNewProject()
               navigate(`/projekte/${p.id}/route`)
             })

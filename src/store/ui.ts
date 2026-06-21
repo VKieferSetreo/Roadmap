@@ -25,7 +25,9 @@ function persistSidebarOpen(v: boolean) {
 
 interface UiStore {
   newProjectOpen: boolean
-  openNewProject: () => void
+  /** Zielordner für das neue Projekt (Explorer-Ansicht legt im aktuellen Ordner an). null = Wurzel. */
+  newProjectFolderId: string | null
+  openNewProject: (folderId?: string | null) => void
   closeNewProject: () => void
   /** Zähler-Signal: erhöht sich, wenn „Ordner anlegen" aus dem +-Menü gewählt wird.
    *  Der Projektbaum öffnet darauf seine Inline-Eingabe für einen neuen Wurzelordner. */
@@ -39,7 +41,8 @@ interface UiStore {
 
 export const useUiStore = create<UiStore>((set) => ({
   newProjectOpen: false,
-  openNewProject: () => set({ newProjectOpen: true }),
+  newProjectFolderId: null,
+  openNewProject: (folderId = null) => set({ newProjectOpen: true, newProjectFolderId: folderId }),
   closeNewProject: () => set({ newProjectOpen: false }),
   newFolderTick: 0,
   requestNewFolder: () => set((s) => ({ newFolderTick: s.newFolderTick + 1 })),
