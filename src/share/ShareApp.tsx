@@ -9,6 +9,7 @@ import { ClipboardList, Loader2, Lock, MapPinned, SearchX } from "lucide-react"
 import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
+import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import type { Finding, Project, ProjectRoute, TransportData } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -272,10 +273,16 @@ function ShareTabs() {
 
 function Shell({ children, projektName }: { children: React.ReactNode; projektName?: string }) {
   const inRouter = projektName !== undefined
+  // T-#12: Haftungsausschluss als ansehbares Modal (gleicher vetted Text wie in der App), zusätzlich
+  // zu den rechtlichen Links — kein neuer Rechtstext, nur Wiederverwendung.
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-neutral-200/80 bg-white px-4 shadow-card lg:px-6">
-        <SetreoLogo height={26} />
+        {/* T-#12: Logo führt zur Setreo-Cloud-Startseite. */}
+        <a href="https://setreo-cloud.com" title="Zur Setreo-Cloud" className="shrink-0">
+          <SetreoLogo height={26} />
+        </a>
         <span className="text-neutral-300" aria-hidden>
           |
         </span>
@@ -285,9 +292,18 @@ function Shell({ children, projektName }: { children: React.ReactNode; projektNa
         {inRouter ? <ShareTabs /> : null}
       </header>
       <main className="min-h-0 flex-1 overflow-hidden">{children}</main>
-      <footer className="flex h-8 shrink-0 items-center justify-center border-t border-neutral-100 bg-white text-[11px] text-neutral-400">
-        Bereitgestellt über Setreo Roadmap — Routenanalyse für Schwertransporte
+      {/* T-#12: rechtlicher Footer wie auf den übrigen Setreo-Seiten + Haftungsausschluss. */}
+      <footer className="flex shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-neutral-100 bg-white px-4 py-2 text-[11px] text-neutral-400">
+        <a href="https://setreo.de/impressum/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Impressum</a>
+        <a href="https://setreo.de/datenschutz/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Datenschutz</a>
+        <a href="https://setreo.de/agb/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">AGB</a>
+        <button type="button" onClick={() => setShowDisclaimer(true)} className="transition-colors hover:text-neutral-600">
+          Haftungsausschluss
+        </button>
+        <span className="text-neutral-300" aria-hidden>·</span>
+        <span>Bereitgestellt über Setreo Roadmap</span>
       </footer>
+      {showDisclaimer ? <DisclaimerModal mode="view" onClose={() => setShowDisclaimer(false)} /> : null}
     </div>
   )
 }
