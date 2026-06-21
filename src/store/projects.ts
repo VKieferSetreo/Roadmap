@@ -78,6 +78,9 @@ interface ProjectStore {
 // Laufende Intervalle + Sync-Debounces außerhalb des States (nicht serialisierbar).
 const timers: Record<string, ReturnType<typeof setInterval>> = {}
 const syncTimers: Record<string, ReturnType<typeof setTimeout>> = {}
+// #21: Auto-Analyse-Debounce je Projekt — eine Strecke laden (auch ein GPKG-Batch mit N Strecken)
+// stößt EINE Auswertung an, nicht N.
+const autoTimers: Record<string, ReturnType<typeof setTimeout>> = {}
 
 /** Debounced Server-Sync: schickt den aktuellen Stand des Projekts als Merge-PATCH. */
 type SetState = (fn: (s: ProjectStore) => Partial<ProjectStore>) => void
@@ -281,6 +284,10 @@ export const useProjectStore = create<ProjectStore>()(
           clearTimeout(syncTimers[id])
           delete syncTimers[id]
         }
+        if (autoTimers[id]) {
+          clearTimeout(autoTimers[id])
+          delete autoTimers[id]
+        }
         set((s) => {
           const analysis = { ...s.analysis }
           delete analysis[id]
@@ -367,6 +374,20 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         }))
         scheduleSync(id, get, set)
+        // #21 (Max 2026-06-21): Strecke in ein Projekt geladen → Auswertung DIREKT mitlaufen lassen
+        // (bislang nur manuell, deshalb fehlten Funde der neuen Strecke). Debounced, damit ein
+        // GPKG-Mehrfach-Upload zu EINEM Lauf zusammenfällt; läuft schon eine, nicht erneut starten.
+        if (isLive()) {
+          if (autoTimers[id]) clearTimeout(autoTimers[id])
+          autoTimers[id] = setTimeout(() => {
+            delete autoTimers[id]
+            const p = get().getProject(id)
+            if (p && p.routes.some((r) => r.points.length >= 2) && !get().analysis[id]?.running) {
+              toast.info("Strecke geladen — Auswertung läuft …")
+              get().runAnalysis(id)
+            }
+          }, 900)
+        }
       },
 
       removeRoute: (id, routeId) => {

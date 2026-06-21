@@ -89,6 +89,32 @@ export function dedupeFindings(findings) {
   return dropCrossSourceDuplicates(same)
 }
 
+// #22 (Max 2026-06-21): Dieselbe reale Stelle (obstacleId) wird oft von VIELEN Strecken eines
+// Projekts passiert — bei z.B. 100 hochgeladenen Strecken über dieselbe Baustelle meldete die
+// Engine 100 separate Funde. Über das ganze Projekt auf EINEN Fund je Stelle zusammenfassen
+// (den schwersten behalten; bei Gleichstand den ersten = niedrigste km). Die km-/Routen-Zuordnung
+// des behaltenen Funds bleibt erhalten (eine Strecke ist Repräsentant). Funde ohne obstacleId
+// (sollte es nicht geben) bleiben unangetastet.
+export function dedupeByObstacle(findings) {
+  const byId = new Map()
+  const out = []
+  for (const f of findings) {
+    if (f.obstacleId == null) {
+      out.push(f)
+      continue
+    }
+    const prev = byId.get(f.obstacleId)
+    if (!prev) {
+      byId.set(f.obstacleId, f)
+      out.push(f)
+      continue
+    }
+    // schwereren Fund behalten (in-place, Referenz in out bleibt erhalten)
+    if ((SEV_RANK[f.severity] ?? 0) > (SEV_RANK[prev.severity] ?? 0)) Object.assign(prev, f)
+  }
+  return out
+}
+
 // Quellenübergreifende Dubletten: dieselbe Maßnahme aus ZWEI externen Quellen (z.B. Autobahn-Live
 // + BAB-AkD-Planung über Mobilithek) erscheint doppelt — gleiche Route+Kategorie, km ≤ DUP_KM,
 // aber unterschiedliche Quelle und meist unterschiedlicher Titel (greift der Titel-Dedup oben NICHT).
@@ -234,6 +260,7 @@ export async function analyze({ db, project, corridorM }) {
     }
   }
   findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
+  findings = dedupeByObstacle(findings) // #22: dieselbe Stelle über viele Strecken → EIN Fund
   findings.sort((a, b) => a.km - b.km)
 
   distanzKm = round1(distanzKm)

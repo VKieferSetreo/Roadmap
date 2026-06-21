@@ -18,18 +18,19 @@ import { routeLengthKm } from "@/lib/parseRouteFile"
 import { api } from "@/api/roadmap"
 import type { ProjectRoute, RoutePoint } from "@/types/domain"
 
-// Aus der Geometrie gleichmäßig verteilte Stützpunkte ableiten (Start + Ziel immer dabei).
-// Moderate Anfangsdichte; der Nutzer darf danach beliebig viele Punkte setzen (kein Limit).
+// Wegpunkte des Editors = NUR Start + Ziel. Zwischenpunkte fügt der Nutzer gezielt per Linien-
+// Greifen hinzu (jeder ist dann ein echter Wegpunkt). #20 (Max 2026-06-21): vorher wurden ~8 dichte
+// Stützpunkte aus der Altstrecke abgeleitet — die pinnten die alte Route, sodass ein gezogener Punkt
+// zwischen zwei eng benachbarten Altpunkten eine Spitze/Wende erzeugte (von links zu A, wenden,
+// zurück, dann zu B). Mit nur Start/Ziel routet OSRM jede Teilstrecke unabhängig als schnellsten
+// Weg → kein Backtracking, „einfach schnellste Route von A nach B".
 function deriveControlPoints(points: RoutePoint[]): RoutePoint[] {
   const pts = points.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
   if (pts.length <= 2) return pts.map((p) => ({ lat: p.lat, lng: p.lng }))
-  const want = Math.min(pts.length, Math.max(8, Math.round(pts.length / 20)))
-  const out: RoutePoint[] = []
-  for (let i = 0; i < want; i++) {
-    const idx = Math.round((i / (want - 1)) * (pts.length - 1))
-    out.push({ lat: pts[idx].lat, lng: pts[idx].lng })
-  }
-  return out
+  return [
+    { lat: pts[0].lat, lng: pts[0].lng },
+    { lat: pts[pts.length - 1].lat, lng: pts[pts.length - 1].lng },
+  ]
 }
 
 /** Einfügeindex im Segment, dessen Mittelpunkt dem Greifpunkt am nächsten liegt. */

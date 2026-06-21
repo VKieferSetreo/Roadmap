@@ -79,6 +79,8 @@ export function DashboardTab({
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
   const [showHidden, setShowHidden] = useState(false)
   const [showAllFindings, setShowAllFindings] = useState(false)
+  // #6 (Max 2026-06-21): Streckenprofil-Bänder progressiv — erst eines, „Mehr anzeigen" +10.
+  const [shownProfiles, setShownProfiles] = useState(1)
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
@@ -158,6 +160,17 @@ export function DashboardTab({
     }
   }
 
+  // #5 (Max 2026-06-21): bei vielen Strecken ist die AGGREGIERTE Gesamtstrecke/-zeit (Summe über
+  // alle z.B. 100 Strecken = 11.989 km / 239 h) sinnlos → Durchschnitt je Strecke zeigen. Bei
+  // genau einer Strecke bleibt es die Strecke selbst (server-gerechnetes distanzKm/fahrzeitMin).
+  const usableRoutes = project.routes.filter((r) => r.points.length >= 2)
+  const mehrereStrecken = usableRoutes.length > 1
+  const avgKm = usableRoutes.length
+    ? usableRoutes.reduce((a, r) => a + routeLengthKm(r.points), 0) / usableRoutes.length
+    : (project.distanzKm ?? 0)
+  const streckeKm = mehrereStrecken ? Math.round(avgKm * 10) / 10 : (project.distanzKm ?? 0)
+  const fahrzeitMin = mehrereStrecken ? Math.round((avgKm / 50) * 60) : (project.fahrzeitMin ?? 0)
+
   // Transport-Profil für die Eckdaten (keine Daten/Uhrzeiten).
   const t = project.transport
   const num = (v?: number) => (v ?? 0).toLocaleString("de-DE")
@@ -172,15 +185,15 @@ export function DashboardTab({
       {/* Kennzahlen — 4 weiße Eckdaten */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
-          label="Strecke"
-          value={project.distanzKm ?? 0}
+          label={mehrereStrecken ? "Ø Strecke" : "Strecke"}
+          value={streckeKm}
           suffix=" km"
           icon={<RouteIcon className="h-4 w-4" />}
           index={0}
         />
         <StatCard
-          label="Fahrzeit"
-          text={`${Math.floor((project.fahrzeitMin ?? 0) / 60)} h ${(project.fahrzeitMin ?? 0) % 60} min`}
+          label={mehrereStrecken ? "Ø Fahrzeit" : "Fahrzeit"}
+          text={`${Math.floor(fahrzeitMin / 60)} h ${fahrzeitMin % 60} min`}
           icon={<Clock className="h-4 w-4" />}
           index={1}
         />
@@ -231,32 +244,67 @@ export function DashboardTab({
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 pt-1">
-            {project.routes
-              .filter((r) => r.points.length >= 2)
-              .map((r) => {
-                const routeFindings = filtered.filter((f) => f.routeId === r.id)
-                if (routeFindings.length === 0) return null
-                return (
-                  <div key={r.id}>
-                    {project.routes.length > 1 ? (
-                      <p className="mb-0.5 flex items-center gap-1.5 text-xs font-medium text-neutral-600">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ background: r.farbe }}
-                          aria-hidden
-                        />
-                        {r.name}
-                      </p>
-                    ) : null}
-                    <StreckenBand
-                      findings={routeFindings}
-                      distanzKm={routeLengthKm(r.points)}
-                      selectedId={expanded}
-                      onSelect={focusFinding}
-                    />
-                  </div>
-                )
-              })}
+            {(() => {
+              // Nur Strecken mit (gefilterten) Funden zeigen. Bei vielen Strecken progressiv:
+              // erst `shownProfiles` Bänder, das nächste ausgegraut als Teaser, Rest hinter „Mehr anzeigen".
+              const mitFunden = project.routes
+                .filter((r) => r.points.length >= 2)
+                .map((r) => ({ r, rf: filtered.filter((f) => f.routeId === r.id) }))
+                .filter((x) => x.rf.length > 0)
+              const sichtbar = mitFunden.slice(0, shownProfiles)
+              const teaser = mitFunden[shownProfiles] // nächstes Band, ausgegraut
+              const rest = mitFunden.length - shownProfiles
+              const renderBand = ({ r, rf }: (typeof mitFunden)[number]) => (
+                <div key={r.id}>
+                  {project.routes.length > 1 ? (
+                    <p className="mb-0.5 flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+                      <span className="h-2 w-2 rounded-full" style={{ background: r.farbe }} aria-hidden />
+                      {r.name}
+                    </p>
+                  ) : null}
+                  <StreckenBand
+                    findings={rf}
+                    distanzKm={routeLengthKm(r.points)}
+                    selectedId={expanded}
+                    onSelect={focusFinding}
+                  />
+                </div>
+              )
+              return (
+                <>
+                  {sichtbar.map(renderBand)}
+                  {teaser ? (
+                    <div
+                      aria-hidden
+                      className="pointer-events-none select-none"
+                      style={{
+                        opacity: 0.5,
+                        filter: "blur(1px)",
+                        WebkitMaskImage: "linear-gradient(to bottom, #000, transparent)",
+                        maskImage: "linear-gradient(to bottom, #000, transparent)",
+                      }}
+                    >
+                      {renderBand(teaser)}
+                    </div>
+                  ) : null}
+                  {rest > 0 ? (
+                    <button
+                      onClick={() => setShownProfiles((n) => n + 10)}
+                      className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-md border border-neutral-100 px-4 py-2 text-sm font-semibold text-primary-700 transition-colors hover:bg-neutral-50"
+                    >
+                      Mehr anzeigen ({rest} weitere)
+                    </button>
+                  ) : shownProfiles > 1 ? (
+                    <button
+                      onClick={() => setShownProfiles(1)}
+                      className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-md border border-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-500 transition-colors hover:bg-neutral-50"
+                    >
+                      Weniger anzeigen
+                    </button>
+                  ) : null}
+                </>
+              )
+            })()}
           </CardContent>
         </Card>
       ) : null}

@@ -201,6 +201,14 @@ export function KarteTab({
     sev,
     n: sichtbareFindings.filter((f) => f.severity === sev).length,
   }))
+  // #5 (Max 2026-06-21): bei vielen Strecken Durchschnitt je Strecke statt sinnloser Gesamtsumme.
+  const usableRoutes = project.routes.filter((r) => r.points.length >= 2)
+  const mehrereStrecken = usableRoutes.length > 1
+  const avgKm = usableRoutes.length
+    ? usableRoutes.reduce((a, r) => a + routeLengthKm(r.points), 0) / usableRoutes.length
+    : (project.distanzKm ?? 0)
+  const streckeKm = mehrereStrecken ? Math.round(avgKm * 10) / 10 : (project.distanzKm ?? 0)
+  const fahrzeitMin = mehrereStrecken ? Math.round((avgKm / 50) * 60) : (project.fahrzeitMin ?? 0)
   // Unique Kategorien auf den sichtbaren Strecken — für die Legende.
   const kategoriesOnRoute = Array.from(new Set(sichtbareFindings.map((f) => f.kategorie))).sort(
     (a, b) => katMeta(a).label.localeCompare(katMeta(b).label),
@@ -326,17 +334,16 @@ export function KarteTab({
       <div className="pointer-events-none absolute right-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
         <div className="glass pointer-events-auto animate-rise-in p-3">
           <div className="flex items-center gap-4 text-sm">
-            <span className="flex items-center gap-1.5 text-neutral-700">
+            <span className="flex items-center gap-1.5 text-neutral-700" title={mehrereStrecken ? "Durchschnitt je Strecke" : undefined}>
               <RouteIcon className="h-4 w-4 text-primary-600" />
               <strong className="tabular-nums">
-                {project.distanzKm?.toLocaleString("de-DE")} km
+                {mehrereStrecken ? "Ø " : ""}{streckeKm.toLocaleString("de-DE")} km
               </strong>
             </span>
-            <span className="flex items-center gap-1.5 text-neutral-700">
+            <span className="flex items-center gap-1.5 text-neutral-700" title={mehrereStrecken ? "Durchschnitt je Strecke" : undefined}>
               <Clock className="h-4 w-4 text-primary-600" />
               <strong className="tabular-nums">
-                {Math.floor((project.fahrzeitMin ?? 0) / 60)} h {(project.fahrzeitMin ?? 0) % 60}{" "}
-                min
+                {mehrereStrecken ? "Ø " : ""}{Math.floor(fahrzeitMin / 60)} h {fahrzeitMin % 60} min
               </strong>
             </span>
           </div>

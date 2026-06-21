@@ -97,7 +97,7 @@ describe("bruecke/tunnel — Tragfähigkeit + GST-Sperre (ruleBauwerk)", () => {
   it.each([
     [60, "kritisch"], // 68 > 60 → überschritten
     [70, "warnung"], //  Reserve 2 t < 10 → knapp
-    [90, null], //       Reserve 22 t → ausreichend → ausgeblendet
+    [90, "hinweis"], //  Reserve 22 t → eingehalten, ABER #19: konkrete Lastgrenze IMMER zeigen
   ])("maxGewichtT %f → %s", (maxGewichtT, severity) => {
     const r = evaluate(ob("bruecke", { maxGewichtT }), TR, {})
     if (severity === null) expect(r).toBeNull()
@@ -155,7 +155,7 @@ describe("gewicht — nur Gesamtgewicht (Achslast entfernt)", () => {
     [67.9, "kritisch"], // Rest −0,1 t
     [68, "warnung"], //    Rest 0 t
     [77.9, "warnung"], //  Rest 9,9 t
-    [78, null], //         Rest 10 t — ausreichend → ausgeblendet
+    [78, "hinweis"], //    Rest 10 t — eingehalten, ABER #19: konkrete Lastgrenze IMMER zeigen
   ])("maxGewichtT %f → %s", (maxGewichtT, severity) => {
     const r = evaluate(ob("gewicht", { maxGewichtT }), TR, {})
     if (severity === null) expect(r).toBeNull()

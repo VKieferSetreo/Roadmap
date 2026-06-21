@@ -92,6 +92,19 @@ function withInfoAttrs(detail, attrs) {
   return out
 }
 
+// #19 (Max 2026-06-21): trägt das Hindernis eine KONKRETE Last-/Schwertransport-Beschränkung?
+// Solche Stellen (z.B. lastbeschränkte Brücke 100 t, Connector 0150) müssen IMMER angezeigt werden
+// — auch wenn der Transport sie einhält (severity "hinweis") — denn der Disponent muss die Auflage
+// kennen. Höhen-/Breiten-Daten „im Rahmen" bleiben unterdrückt, sonst flutet jede passierbare Brücke.
+// Achslast bewusst NICHT (wird nicht ausgewertet, Max 2026-06-16).
+function hatLastBeschraenkung(attrs) {
+  return (
+    num(attrs?.maxGewichtT) != null ||
+    attrs?.gesperrtKomplett === true ||
+    attrs?.grundsaetzlicheGstSperre === true
+  )
+}
+
 // ── Kategorie-Regeln ──────────────────────────────────────────────────────────
 
 const SEV_ORDER = { hinweis: 1, warnung: 2, kritisch: 3 }
@@ -447,7 +460,13 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   // hinterlegten Grenzwert (z.B. „Brücke ohne hinterlegte Durchfahrtshöhe") sind
   // normale Bauwerksdaten ohne Abweichung → ausblenden. Gemeldete Ereignisse
   // (Baustellen/Sperrungen) bleiben dagegen IMMER sichtbar (Max-Wunsch).
-  if (result.severity === "hinweis" && !EVENT_KATEGORIEN.has(obstacle.kategorie)) {
+  // #19: Stellen mit konkreter Last-/Schwertransport-Beschränkung ebenfalls IMMER zeigen,
+  // auch wenn der Transport sie einhält (lastbeschränkte Brücke 100 t etc.).
+  if (
+    result.severity === "hinweis" &&
+    !EVENT_KATEGORIEN.has(obstacle.kategorie) &&
+    !hatLastBeschraenkung(attrs)
+  ) {
     return null
   }
   return {
