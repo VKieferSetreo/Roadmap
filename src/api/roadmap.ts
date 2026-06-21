@@ -127,6 +127,15 @@ export const api = {
 
   abdeckung: () => axiosClient<AbdeckungResponse>({ url: "/abdeckung", method: "GET" }),
 
+  // #16: Orts-/Adress-Suche server-seitig (Nominatim-Proxy) — der direkte Browser-Fetch ist
+  // seit der CSP (connect-src 'self') geblockt.
+  geocodeSearch: (q: string) =>
+    axiosClient<{ results: { place_id: number; display_name: string; lat: string; lon: string }[] }>({
+      url: "/geocode/search",
+      method: "GET",
+      params: { q },
+    }),
+
   listProjects: () =>
     axiosClient<{ projects: Project[] }>({ url: "/projects", method: "GET" }).then(
       (r) => r?.projects ?? [],

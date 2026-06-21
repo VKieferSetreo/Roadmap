@@ -237,7 +237,7 @@ export function createApp({
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
   app.use("/api/analytics", analyticsRouter({ db }))
-  app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim }))
+  app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim, fetchImpl }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
   // T-393: eigener, strengerer Eimer (30/min je Identität) vor dem globalen Backstop, weil
   // jeder Request outbound OSRM/Nominatim trifft (teurer als reine DB-Reads).

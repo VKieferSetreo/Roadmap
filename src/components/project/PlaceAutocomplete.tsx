@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Loader2, MapPin } from "lucide-react"
 import { Input } from "@/components/ui/Input"
+import { api } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
 
 interface Hit {
@@ -52,26 +53,24 @@ export function PlaceAutocomplete({
       return
     }
     setLoading(true)
-    const ctrl = new AbortController()
+    let stale = false
     const id = setTimeout(async () => {
       try {
-        const url =
-          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=de&accept-language=de&q=" +
-          encodeURIComponent(term)
-        const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } })
-        const data = (await res.json()) as Hit[]
-        setHits(Array.isArray(data) ? data : [])
+        // #16: server-seitige Geocode-Suche (CSP blockt den direkten Nominatim-Fetch).
+        const { results } = await api.geocodeSearch(term)
+        if (stale) return
+        setHits(results as Hit[])
         setOpen(true)
         setHi(-1)
       } catch {
-        /* abgebrochen / offline → still */
+        /* offline / Fehler → still */
       } finally {
-        setLoading(false)
+        if (!stale) setLoading(false)
       }
     }, 400)
     return () => {
+      stale = true
       clearTimeout(id)
-      ctrl.abort()
     }
   }, [value])
 
