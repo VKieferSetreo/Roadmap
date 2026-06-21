@@ -18,21 +18,39 @@ function ortQuery(ortRaw) {
   let o = String(ortRaw ?? "").trim()
   if (!o) return null
   o = o.split("/")[0].trim() // "Rüdesheim am Rhein / Rüdesheim" → erste Variante
-  o = o.replace(/^bei\s+/i, "") // "bei Rüdesheim" → "Rüdesheim"
+  o = o.replace(/\s*\([^)]*\)\s*/g, " ") // "Altweilnau (Landsteiner Mühle)" → "Altweilnau"
+  o = o.replace(/^\d{4,5}\s+/, "") // "67547 Worms" → "Worms" (PLZ-Präfix raus)
+  o = o.replace(/^(?:in|bei)\s+/i, "") // "in Knickhagen" / "bei Rüdesheim" → Ortsname
   o = o.replace(/\bFfm\b\.?-?/gi, "Frankfurt am Main ") // "Ffm-Schwanheim" → "Frankfurt am Main Schwanheim"
   o = o.replace(/\s+/g, " ").trim()
-  return o ? `${o}, Hessen, Deutschland` : null
+  // Orte mit PLZ können außerhalb Hessens liegen (Rheinbrücke 67547 Worms = RLP) → ohne Bundesland-Zwang.
+  const hessen = /^\d{4,5}\s/.test(ortRaw) ? "" : ", Hessen"
+  return o ? `${o}${hessen}, Deutschland` : null
+}
+
+// T-271 (Max 2026-06-21): zu grobe Treffer rausnehmen. Nominatim liefert bei nicht eindeutig
+// auflösbarem Ort manchmal einen LANDKREIS/Bundesland-Zentroid statt der Stadt — der liegt km
+// daneben und ist als Karten-Lage unbrauchbar. place_rank < 16 = gröber als Stadt/Ort
+// (county≈12, state≈8) → verwerfen; ebenso explizit administrative Groß-Einheiten.
+const COARSE_TYPES = new Set(["county", "state", "state_district", "region", "province", "country", "continent"])
+function tooCoarse(hit) {
+  const rank = Number(hit.place_rank)
+  if (Number.isFinite(rank) && rank < 16) return true
+  return COARSE_TYPES.has(hit.addresstype)
 }
 
 async function geocode(query) {
-  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=de&q=" +
+  // jsonv2 → liefert addresstype + place_rank für den Präzisions-Check.
+  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=de&q=" +
     encodeURIComponent(query)
   try {
     const r = await fetch(url, { headers: { "user-agent": UA, accept: "application/json" } })
     if (!r.ok) return null
     const j = await r.json()
     if (!Array.isArray(j) || !j.length) return null
-    const lat = Number(j[0].lat), lng = Number(j[0].lon)
+    const hit = j[0]
+    if (tooCoarse(hit)) return { coarse: true } // zu grob → kein brauchbarer Punkt
+    const lat = Number(hit.lat), lng = Number(hit.lon)
     return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null
   } catch {
     return null
@@ -41,8 +59,8 @@ async function geocode(query) {
 
 const data = JSON.parse(readFileSync(DATA, "utf-8"))
 const bruecken = data.bruecken ?? []
-const cache = new Map() // query → {lat,lng}|null
-let hits = 0, miss = 0, idx = 0
+const cache = new Map() // query → {lat,lng}|{coarse}|null
+let hits = 0, miss = 0, grob = 0, idx = 0
 
 for (const b of bruecken) {
   idx++
@@ -54,16 +72,18 @@ for (const b of bruecken) {
     await sleep(1100) // Nominatim-Rate-Limit (1 req/s) einhalten
   }
   const res = cache.get(q)
-  if (res) {
+  if (res && res.lat != null) {
     b.lat = Math.round(res.lat * 1e6) / 1e6
     b.lng = Math.round(res.lng * 1e6) / 1e6
     hits++
   } else {
-    b.lat = null; b.lng = null; miss++
+    // T-271: zu grob (Landkreis/Bundesland) ODER nicht gefunden → kein Punkt (fällt aus der Analyse).
+    b.lat = null; b.lng = null
+    if (res && res.coarse) grob++; else miss++
   }
-  if (idx % 20 === 0) console.log(`  ${idx}/${bruecken.length} … (${hits} hits, ${miss} miss, ${cache.size} uniq)`)
+  if (idx % 20 === 0) console.log(`  ${idx}/${bruecken.length} … (${hits} hits, ${grob} grob-raus, ${miss} miss, ${cache.size} uniq)`)
 }
 
-data.geokodiert = { verfahren: "nominatim", genauigkeit: "ort-genau", stand: new Date().toISOString().slice(0, 10) }
+data.geokodiert = { verfahren: "nominatim", genauigkeit: "ort-genau, Kreis-/Land-Treffer verworfen (T-271)", stand: new Date().toISOString().slice(0, 10) }
 writeFileSync(DATA, JSON.stringify(data, null, 2) + "\n", "utf-8")
-console.log(`FERTIG: ${hits}/${bruecken.length} geokodiert · ${miss} ohne Koords · ${cache.size} eindeutige Orte`)
+console.log(`FERTIG: ${hits}/${bruecken.length} ort-genau · ${grob} zu grob (raus) · ${miss} nicht gefunden · ${cache.size} eindeutige Orte`)
