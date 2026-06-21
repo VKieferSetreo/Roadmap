@@ -366,6 +366,15 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       if (!Number.isInteger(count) || count < 1 || count > 1000) {
         throw new ApiError(400, "count muss eine ganze Zahl 1..1000 sein")
       }
+      // T-421: auch der explizite count darf max_seats nicht überschreiten (max_seats 0/NULL = unbegrenzt).
+      const { rows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
+      const maxSeats = Number(rows[0]?.max_seats ?? 0)
+      if (maxSeats > 0 && existing.length + count > maxSeats) {
+        throw new ApiError(
+          409,
+          `Seat-Limit überschritten: ${existing.length} vorhanden + ${count} neu > ${maxSeats} Lizenzen`,
+        )
+      }
     } else {
       const { rows } = await db.query("SELECT max_seats FROM tenants WHERE id = $1", [tenant.id])
       count = Math.max(0, Number(rows[0]?.max_seats ?? 0) - existing.length)

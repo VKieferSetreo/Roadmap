@@ -17,19 +17,39 @@ const UA = "roadmap-route-resolver/1.0 (+https://setreo-cloud.com)"
  *  JS-Interstitial (HTTP 200) ausliefert → der Link bleibt unaufgelöst. Ohne den Cookie
  *  kommt das saubere 302 auf google.de/maps/dir/…. Landet man doch auf consent.google.com,
  *  steckt die echte Ziel-URL im continue-Param (Fallback unten). */
+// T-301 (SSRF-Härtung): Der Resolver folgt einem User-gelieferten Kurz-Link. 'redirect: follow'
+// würde JEDEM Redirect folgen (auch auf interne IPs / Cloud-Metadata). Da Google-Kurz-Links nur je
+// auf Google-Domains zeigen, erzwingen wir auf JEDEM Hop eine Google-Host-Allowlist (blockt IP-
+// Literale und alles Nicht-Google) + Hop-Cap. So ist auch das zurückgegebene resolvedUrl immer ein
+// Google-Host (kein Reflektieren interner Ziele).
+const ALLOW_HOST = /(^|\.)(google\.[a-z.]+|goo\.gl|g\.co)$/i
+function hostErlaubt(u) {
+  const h = safeHost(u)
+  if (!h) return false
+  if (h.includes(":")) return false // IPv6-Literal (auch ::1) nie erlauben
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return false // IPv4-Literal (RFC1918/loopback/metadata) nie
+  return ALLOW_HOST.test(h)
+}
+
 async function resolveShort(url, fetchImpl) {
+  let current = url
   try {
-    const res = await fetchImpl(url, {
-      redirect: "follow",
-      headers: { "User-Agent": UA, "Accept-Language": "de" },
-      signal: AbortSignal.timeout(8000),
-    })
-    let final = res?.url || url
-    if (/(^|\.)consent\.google\./i.test(safeHost(final))) {
-      const cont = safeParam(final, "continue")
-      if (cont) final = cont
+    for (let hop = 0; hop < 5; hop += 1) {
+      if (!hostErlaubt(current)) return url // SSRF-Guard: nur Google-Hosts folgen
+      const res = await fetchImpl(current, {
+        redirect: "manual", // selbst folgen, jeden Hop prüfen
+        headers: { "User-Agent": UA, "Accept-Language": "de" },
+        signal: AbortSignal.timeout(8000),
+      })
+      const loc = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null
+      if (!loc) return hostErlaubt(current) ? current : url // kein Redirect → finale URL
+      current = new URL(loc, current).toString() // relativ → absolut auflösen
+      if (/(^|\.)consent\.google\./i.test(safeHost(current))) {
+        const cont = safeParam(current, "continue")
+        if (cont) current = cont
+      }
     }
-    return final
+    return url // zu viele Hops → Original versuchen
   } catch {
     return url // nicht auflösbar → Original versuchen
   }

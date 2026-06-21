@@ -187,10 +187,14 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
   it("Redeem über max_seats hinaus → 409 (T-352/T-418)", async () => {
     const { app, db } = makeApp({ requireAuth: true })
     const k = db.seedTenant({ slug: "voll", name: "Voll" })
-    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
+    // Erst 2 Seats erlauben + 2 Codes generieren, DANN das Limit auf 1 senken — so existieren mehr
+    // Codes als Seats (die Über-Provisionierung via POST ist seit T-421 geblockt) und wir prüfen
+    // sauber die REDEEM-seitige Durchsetzung (T-352/T-418).
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 2 })
     const gen = await asAdmin(request(app).post(`/api/admin/tenants/${k.id}/seat-codes`)).send({ count: 2 })
     expect(gen.body.codes).toHaveLength(2)
     const [c1, c2] = gen.body.codes.map((c) => c.code)
+    await asAdmin(request(app).patch(`/api/admin/tenants/${k.id}/license`)).send({ maxSeats: 1 })
 
     const first = await asExtern(request(app).post("/api/account/redeem-seat"), "a@voll.de").send({ code: c1 })
     expect(first.status).toBe(201)

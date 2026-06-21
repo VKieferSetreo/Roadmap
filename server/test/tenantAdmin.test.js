@@ -68,6 +68,16 @@ describe("Tenant-Admin Self-Service (T-147)", () => {
     expect(codes.status).toBe(403)
   })
 
+  it("T-421: Seat-Codes über max_seats hinaus → 409 (auch mit explizitem count)", async () => {
+    const { app, a } = await setup()
+    const lic = await asAdmin(request(app).patch(`/api/admin/tenants/${a.id}/license`)).send({ plan: "pro", maxSeats: 3 })
+    expect(lic.status).toBe(200)
+    const over = await asAdmin(request(app).post(`/api/admin/tenants/${a.id}/seat-codes`)).send({ count: 5 })
+    expect(over.status).toBe(409)
+    const ok = await asAdmin(request(app).post(`/api/admin/tenants/${a.id}/seat-codes`)).send({ count: 3 })
+    expect(ok.status).toBe(201)
+  })
+
   it("Tenant-Admin darf keinen Mandanten anlegen (403)", async () => {
     const { app } = await setup()
     const res = await asUser("admin-a@kunde-a.de")(request(app).post("/api/admin/tenants"))
