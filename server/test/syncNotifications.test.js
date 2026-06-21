@@ -4,7 +4,7 @@
 import { randomUUID } from "node:crypto"
 import request from "supertest"
 import { describe, expect, it } from "vitest"
-import { diffFindings, rerunAffectedProjects } from "../src/engine/rerunAll.js"
+import { diffFindings, indexByIdentity, rerunAffectedProjects } from "../src/engine/rerunAll.js"
 import { expireObstacles } from "../src/worker/hygiene.js"
 import { runImport } from "../src/worker/importer.js"
 import { createFakeDb } from "./helpers/fakeDb.js"
@@ -117,6 +117,16 @@ describe("Fund-Diff (diffFindings)", () => {
     expect(byTyp("weggefallen")[0].severity).toBe("info")
     expect(byTyp("geaendert")).toHaveLength(1)
     expect(events).toHaveLength(3) // o-same erzeugt nichts
+  })
+
+  it("Bug 2026-06-21: gleicher Fund mit NEUER obstacle_id + km-Wackler (0,8↔0,9) → KEIN weggefallen+neu", () => {
+    // Re-Import hat die obstacle_id gewechselt und km leicht verschoben — über die Inhalts-
+    // Identität (km auf 1-km-Raster) ist es derselbe Fund → keine widersprüchliche Doppel-Meldung.
+    const base = { severity: "warnung", titel: "Absicherung seitlicher Ausbau", kategorie: "baustelle", route_name: "W-00042_Burbach_2", strassen_ref: "" }
+    const before = indexByIdentity([{ ...base, obstacle_id: "alt-id", km: 0.8 }])
+    const after = indexByIdentity([{ ...base, obstacle_id: "neu-id", km: 0.9 }])
+    const events = diffFindings(before, after)
+    expect(events).toHaveLength(0)
   })
 })
 

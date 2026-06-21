@@ -10,8 +10,11 @@
 //   weggefallen — Fund ist verschwunden (Baustelle vorbei/abgesagt) → "Entspannung"
 //   geaendert   — Severity oder Gültigkeitszeitraum eines bestehenden Funds geändert
 //
-// Diff-Schlüssel = obstacle_id. Matcht ein Hindernis mehrere Strecken, zählt der
-// schwerste Fund (eine Nachricht je Hindernis, kein Strecken-Spam).
+// Diff-Schlüssel = INHALTS-Identität (Kategorie|Strecke|Bezeichnung|Straße|km-Raster), NICHT
+// die obstacle_id. Grund (Bug 2026-06-21): die obstacle_id ist NICHT stabil über Re-Imports —
+// liefert ein Connector keine stabile externe_id oder wird die DB voll neu geladen, bekommt
+// dasselbe reale Hindernis eine neue id. Auf obstacle_id gekeyt galt derselbe Fund dann als
+// „weggefallen" (alte id) UND „neu" (neue id) im selben Lauf. Die Inhalts-Identität überlebt das.
 
 import { rowToProject } from "../map.js"
 import { sendProjectNotificationMail } from "../mail/notify.js"
@@ -19,6 +22,22 @@ import { ENGINE_VERSION, runAnalysis, usableRoutes } from "./index.js"
 
 const SEVERITY_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
 const rank = (s) => SEVERITY_RANK[s] ?? 0
+const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
+
+/** Stabile Fund-Identität für den Diff — überlebt obstacle_id-Wechsel (Re-Import ohne stabile
+ *  externe_id / Voll-Reload). km auf 1-km-Raster gerundet: toleriert die ~100-m-Wackler zwischen
+ *  Läufen (0,8 ↔ 0,9), hält aber weit auseinander liegende gleichnamige Funde (generische Titel
+ *  wie „Absicherung seitlicher Ausbau") getrennt. ponytail: Rest-Risiko = Wackeln exakt über eine
+ *  0,5-km-Grenze; bei erneutem Auftreten auf km-Fuzzy-Match heben. */
+function findingIdentity(f) {
+  return [
+    f.kategorie,
+    normName(f.route_name),
+    normName(f.titel),
+    normName(f.strassen_ref),
+    Math.round(Number(f.km ?? 0)),
+  ].join("|")
+}
 
 const FINDINGS_SQL = `SELECT obstacle_id, severity, titel, kategorie, km, route_name,
     strassen_ref, gueltig_von, gueltig_bis
@@ -29,13 +48,14 @@ const NOTIFY_SQL = `INSERT INTO notifications
      titel, beschreibung, km, route_name, strassen_ref, gueltig_von, gueltig_bis)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-/** Findings-Rows → Map(obstacle_id → schwerster Fund). obstacle_id-lose ignoriert. */
-function indexByObstacle(rows) {
+/** Findings-Rows → Map(Inhalts-Identität → schwerster Fund) — eine Nachricht je Stelle,
+ *  kein Strecken-Spam, stabil über Re-Imports (siehe findingIdentity). */
+export function indexByIdentity(rows) {
   const map = new Map()
   for (const f of rows) {
-    if (!f.obstacle_id) continue
-    const prev = map.get(f.obstacle_id)
-    if (!prev || rank(f.severity) > rank(prev.severity)) map.set(f.obstacle_id, f)
+    const key = findingIdentity(f)
+    const prev = map.get(key)
+    if (!prev || rank(f.severity) > rank(prev.severity)) map.set(key, f)
   }
   return map
 }
@@ -113,7 +133,7 @@ const RERUN_LOCK_KEY = "roadmap_rerun_global"
 async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
   const project = rowToProject(row, [], null)
   const before = await db.query(FINDINGS_SQL, [row.id])
-  const beforeMap = indexByObstacle(before.rows)
+  const beforeMap = indexByIdentity(before.rows)
 
   try {
     await runAnalysis({ db, project, corridorM })
@@ -123,7 +143,7 @@ async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
   }
 
   const after = await db.query(FINDINGS_SQL, [row.id])
-  const events = diffFindings(beforeMap, indexByObstacle(after.rows))
+  const events = diffFindings(beforeMap, indexByIdentity(after.rows))
   if (events.length > 0) {
     await persistEvents(db, project, events)
     log(`${project.name}: ${events.length} Änderung(en) → Benachrichtigungen`)
