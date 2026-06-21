@@ -26,24 +26,28 @@ describe("extractMapsStops", () => {
   })
 
   it("Kurz-Link wird server-seitig aufgelöst (fetchImpl-Redirect)", async () => {
-    // T-301: neuer manual-redirect-Kontrakt (status + Location-Header statt res.url).
-    const fetchImpl = async (u) =>
-      u.includes("goo.gl")
-        ? { status: 302, headers: { get: (k) => (k === "location" ? "https://www.google.com/maps/dir/48.5,8.0/49.0,8.4/" : null) } }
-        : { status: 200, headers: { get: () => null } }
+    // follow-Kontrakt: undici folgt bis zur finalen res.url (Google managt Consent/Cookie-Bounce).
+    const fetchImpl = async () => ({ url: "https://www.google.com/maps/dir/48.5,8.0/49.0,8.4/" })
     const { stops, resolvedUrl } = await extractMapsStops("https://maps.app.goo.gl/abc123", { fetchImpl })
     expect(resolvedUrl).toContain("/maps/dir/")
     expect(stops).toEqual([{ lat: 48.5, lng: 8.0 }, { lat: 49.0, lng: 8.4 }])
   })
 
-  it("T-301 SSRF: Redirect auf interne/Nicht-Google-Host wird NICHT gefolgt", async () => {
-    const fetchImpl = async (u) =>
-      u.includes("goo.gl")
-        ? { status: 302, headers: { get: (k) => (k === "location" ? "http://169.254.169.254/latest/meta-data/" : null) } }
-        : { status: 200, headers: { get: () => null } }
+  it("T-301 SSRF: finale Nicht-Google/interne URL wird NICHT zurückgegeben", async () => {
+    // Selbst wenn die Auflösung wider Erwarten auf einer internen IP landet → Original behalten.
+    const fetchImpl = async () => ({ url: "http://169.254.169.254/latest/meta-data/" })
     const { stops, resolvedUrl } = await extractMapsStops("https://maps.app.goo.gl/evil", { fetchImpl })
-    expect(resolvedUrl).not.toContain("169.254") // interne IP nie reflektieren/folgen
+    expect(resolvedUrl).not.toContain("169.254") // interne IP nie reflektieren
     expect(stops).toEqual([]) // Original-Kurzlink hat keine Stopps
+  })
+
+  it("Regression (Bug 2026-06-21): /dir/-URL mit zwei Koordinaten → 2 Wegpunkte", async () => {
+    // Genau die Struktur des gemeldeten Links (maps.app.goo.gl → google.de/maps/dir/lat,lng/lat,lng/@center/data=…).
+    const final =
+      "https://www.google.de/maps/dir/51.6889035,7.9320421/51.7142651,7.9791429/@51.7130116,7.9071838,8492m/data=!3m1!1e3"
+    const fetchImpl = async () => ({ url: final })
+    const { stops } = await extractMapsStops("https://maps.app.goo.gl/9gU5F7q6GmBkVgj67", { fetchImpl })
+    expect(stops).toEqual([{ lat: 51.6889035, lng: 7.9320421 }, { lat: 51.7142651, lng: 7.9791429 }])
   })
 
   it("Einzel-Ort/Murks → keine 2 Wegpunkte", async () => {
@@ -54,10 +58,8 @@ describe("extractMapsStops", () => {
   it("Consent-Gate: continue-Param wird gefolgt", async () => {
     const target = "https://www.google.com/maps/dir/48.5,8.0/49.0,8.4/"
     // Kurz-Link → 302 auf consent.google.com (continue=Ziel); danach kein Redirect mehr.
-    const fetchImpl = async (u) =>
-      u.includes("goo.gl")
-        ? { status: 302, headers: { get: (k) => (k === "location" ? `https://consent.google.com/m?continue=${encodeURIComponent(target)}&gl=DE` : null) } }
-        : { status: 200, headers: { get: () => null } }
+    // follow endet auf consent.google.com?continue=Ziel → continue-Param wird ausgepackt.
+    const fetchImpl = async () => ({ url: `https://consent.google.com/m?continue=${encodeURIComponent(target)}&gl=DE` })
     const { stops } = await extractMapsStops("https://maps.app.goo.gl/x", { fetchImpl })
     expect(stops).toEqual([{ lat: 48.5, lng: 8.0 }, { lat: 49.0, lng: 8.4 }])
   })
