@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { api } from "@/api/roadmap"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { cn } from "@/lib/cn"
 
 interface Pos {
   lat: number
@@ -77,6 +78,7 @@ export function MapPointPicker({
   const [flyTo, setFlyTo] = useState<Pos | null>(null)
   const [query, setQuery] = useState("")
   const [hits, setHits] = useState<Hit[]>([])
+  const [hi, setHi] = useState(-1) // markierter Treffer (Pfeiltasten)
   const [loading, setLoading] = useState(false)
   const skipNext = useRef(false)
 
@@ -108,7 +110,10 @@ export function MapPointPicker({
       try {
         // #16: server-seitige Geocode-Suche (CSP blockt den direkten Nominatim-Fetch im Browser).
         const { results } = await api.geocodeSearch(term)
-        if (!stale) setHits(results as Hit[])
+        if (!stale) {
+          setHits(results as Hit[])
+          setHi(-1)
+        }
       } catch {
         /* offline / Fehler → still */
       } finally {
@@ -131,6 +136,24 @@ export function MapPointPicker({
     setFlyTo({ ...p }) // neues Objekt → FlyTo feuert auch bei gleicher Position erneut
     setQuery(shortLabel(h.display_name))
     setHits([])
+    setHi(-1)
+  }
+
+  // #18: Enter im Suchfeld → markierten Treffer wählen (oder den ersten); sind noch keine Treffer
+  // da (Tippen schneller als der Debounce), sofort einmal geokodieren und das erste Ergebnis nehmen.
+  const submitSearch = async () => {
+    if (hits.length > 0) {
+      pickHit(hits[hi >= 0 ? hi : 0])
+      return
+    }
+    const term = query.trim()
+    if (term.length < 3) return
+    try {
+      const { results } = await api.geocodeSearch(term)
+      if (results.length) pickHit(results[0] as Hit)
+    } catch {
+      /* still */
+    }
   }
 
   const setPin = (p: Pos) => {
@@ -164,6 +187,20 @@ export function MapPointPicker({
             value={query}
             autoComplete="off"
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowDown") {
+                e.preventDefault()
+                setHi((i) => Math.min(i + 1, hits.length - 1))
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault()
+                setHi((i) => Math.max(i - 1, 0))
+              } else if (e.key === "Enter") {
+                e.preventDefault()
+                void submitSearch()
+              } else if (e.key === "Escape") {
+                setHits([])
+              }
+            }}
             placeholder="Ort oder Adresse suchen …"
             className="pl-9"
           />
@@ -173,14 +210,17 @@ export function MapPointPicker({
         </div>
         {hits.length > 0 ? (
           <ul className="absolute left-4 right-4 z-[2200] mt-1 max-h-64 overflow-auto rounded-lg border border-neutral-200 bg-white py-1 shadow-lg">
-            {hits.map((h) => {
+            {hits.map((h, i) => {
               const [head, ...rest] = h.display_name.split(",")
               return (
                 <li key={h.place_id}>
                   <button
                     type="button"
                     onClick={() => pickHit(h)}
-                    className="flex w-full items-start gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-neutral-100"
+                    className={cn(
+                      "flex w-full items-start gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-neutral-100",
+                      i === hi && "bg-neutral-100",
+                    )}
                   >
                     <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
                     <span className="min-w-0">
