@@ -45,6 +45,12 @@ export async function logAnalyticsEvent(db, { email, tenantSlug = null, typ, met
 export function analyticsRouter({ db }) {
   const r = Router()
 
+  // T-484: /overview fährt ~7 Aggregat-Queries über analytics_sessions/-events. Bei jedem Admin-
+  // Aufruf (Auto-Refresh/Reload) erneut = teuer. 60s-In-Memory-Cache (admin-übergreifend, Daten
+  // sind nicht sekundengenau nötig). Reset bei Prozess-Neustart — kein Persistenz-Bedarf.
+  let overviewCache = null
+  let overviewCacheAt = 0
+
   // Heartbeat — jeder eingeloggte Nutzer. Kein Body, keine Rolle nötig.
   r.put("/heartbeat", asyncHandler(async (req, res) => {
     const email = req.ctx?.email
@@ -73,6 +79,7 @@ export function analyticsRouter({ db }) {
 
   // Übersicht — nur Admin. Online-Status + Totals + Nutzung je Nutzer + letzte Sessions.
   r.get("/overview", requireRole("admin"), asyncHandler(async (_req, res) => {
+    if (overviewCache && Date.now() - overviewCacheAt < 60_000) return res.json(overviewCache)
     const EXCL = excludeSql() // interne/Test-Accounts überall konsistent ausblenden
     const EXCL_S = excludeSql("s.email")
     const [online, proNutzer, events, letzte, totals, proTagRows, analysenProTag] = await Promise.all([
@@ -139,7 +146,7 @@ export function analyticsRouter({ db }) {
       auswertungen: analysenTag.get(t.tag) ?? 0,
     }))
 
-    res.json({
+    const payload = {
       onlineJetzt: online.rows.length,
       online: online.rows.map((o) => ({ email: o.email, lastSeen: o.last_seen })),
       totals: {
@@ -158,7 +165,10 @@ export function analyticsRouter({ db }) {
         hits: Number(s.hits),
         dauerMin: Number(s.dauer_min ?? 0),
       })),
-    })
+    }
+    overviewCache = payload
+    overviewCacheAt = Date.now()
+    res.json(payload)
   }))
 
   return r

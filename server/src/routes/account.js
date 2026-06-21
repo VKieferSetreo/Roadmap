@@ -46,6 +46,8 @@ export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = n
         },
         // email aus req.ctx (nicht aus dem Body) → nur das eigene Konto änderbar.
         body: JSON.stringify({ email, password: neu }),
+        // T-396: harte Obergrenze — ein hängender Auth-Service darf den Request nicht offen halten.
+        signal: AbortSignal.timeout(8000),
       })
     } catch {
       throw new ApiError(502, "Auth-Service (extern) nicht erreichbar")

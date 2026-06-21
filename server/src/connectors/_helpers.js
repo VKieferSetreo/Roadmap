@@ -411,13 +411,19 @@ export function makeNormalized({
   }
 }
 
+// T-287: Fetch-Fehler nicht mehr STILL schlucken — Host + Fehlerklasse/Status nach console.warn
+// (landet in den Container-Logs/Sentry). Rückgabe bleibt null (fehlertolerant), aber diagnostizierbar.
+const hostOf = (url) => { try { return new URL(url).host } catch { return String(url).slice(0, 60) } }
+const warnFetch = (url, what) => console.warn(`[connector-fetch] ${hostOf(url)} ${what}`)
+
 /** GET → JSON (Timeout, Fehler → null). */
 export async function getJson(url, { timeoutMs = 30000, headers = {} } = {}) {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) return null
+    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
     return await r.json()
-  } catch {
+  } catch (err) {
+    warnFetch(url, err?.name ?? "fetch-fail")
     return null
   }
 }
@@ -426,9 +432,10 @@ export async function getJson(url, { timeoutMs = 30000, headers = {} } = {}) {
 export async function getText(url, { timeoutMs = 30000, headers = {} } = {}) {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) return null
+    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
     return await r.text()
-  } catch {
+  } catch (err) {
+    warnFetch(url, err?.name ?? "fetch-fail")
     return null
   }
 }
@@ -524,9 +531,10 @@ export function reprojGeom(geom, zone) {
 export async function getBuffer(url, { timeoutMs = 45000, headers = {} } = {}) {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) return null
+    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
     return Buffer.from(await r.arrayBuffer())
-  } catch {
+  } catch (err) {
+    warnFetch(url, err?.name ?? "fetch-fail")
     return null
   }
 }

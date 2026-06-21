@@ -105,8 +105,10 @@ export async function routeWaypoints(db, waypoints, { osrm } = {}, meta = {}) {
   const geocoderFallback = meta.geocoderFallback ?? false
 
   const key = routeKey(wp)
+  // T-369: Stale-Guard — Cache-Einträge älter als 30 Tage gelten als Miss und werden neu geholt
+  // (das route_cache hat kein TTL/Eviction; sonst lebt eine veraltete Geometrie unbegrenzt weiter).
   const cached = await db.query(
-    "SELECT geometry, distanz_km, dauer_min FROM route_cache WHERE key = $1",
+    "SELECT geometry, distanz_km, dauer_min FROM route_cache WHERE key = $1 AND fetched_at > now() - interval '30 days'",
     [key],
   )
   if (cached.rows[0]) {
