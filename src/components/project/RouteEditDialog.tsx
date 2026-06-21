@@ -49,6 +49,31 @@ function bestInsertIndex(cps: RoutePoint[], lat: number, lng: number): number {
   return bestIdx
 }
 
+// Äquirektangulär gewichteter Abstand (lng um cos(lat) gestaucht) — bei reinem Grad-Quadrat würde
+// die Längengrad-Verzerrung in DE die Reihenfolge leicht verfälschen. Reicht fürs Sortieren.
+function dist(a: RoutePoint, b: RoutePoint): number {
+  const k = Math.cos((((a.lat + b.lat) / 2) * Math.PI) / 180)
+  const dx = (a.lat - b.lat)
+  const dy = (a.lng - b.lng) * k
+  return Math.hypot(dx, dy)
+}
+
+// T-#10: Optimale Einfüge-Position für Punkt p zwischen den fixen Endpunkten (Start cps[0] / Ziel
+// cps[last]) — die, die die geringste ZUSATZ-Strecke verursacht (Cheapest-Insertion). So entsteht
+// A-D-B-C statt A-B-D-B-C, egal an welcher Stelle der Nutzer den Punkt greift/hinzieht.
+function cheapestInsertIndex(cps: RoutePoint[], p: RoutePoint): number {
+  let bestIdx = 1
+  let bestCost = Infinity
+  for (let i = 0; i < cps.length - 1; i++) {
+    const cost = dist(cps[i], p) + dist(p, cps[i + 1]) - dist(cps[i], cps[i + 1])
+    if (cost < bestCost) {
+      bestCost = cost
+      bestIdx = i + 1
+    }
+  }
+  return bestIdx
+}
+
 const cpIcon = (kind: "start" | "end" | "via") => {
   if (kind === "via") {
     return L.divIcon({
@@ -160,6 +185,22 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     toast.success("Wegpunkt entfernt.")
   }
 
+  // T-#10: Nach dem Loslassen den (gezogenen/neu eingefügten) Zwischenpunkt an seine optimale
+  // Stelle in der Reihenfolge setzen — Start/Ziel bleiben fix. Verhindert ungewollte Hin-/Rückfahrten
+  // (A-B-D-B-C), egal wo der Punkt gegriffen wurde → die neue Strecke ist A-D-B-C.
+  const reorderCp = (i: number) => {
+    setCps((prev) => {
+      if (i <= 0 || i >= prev.length - 1) return prev // Start/Ziel nie umsortieren
+      const p = prev[i]
+      const rest = prev.filter((_, k) => k !== i)
+      const target = cheapestInsertIndex(rest, p)
+      if (target === i) return prev // schon optimal → keine Änderung
+      const next = [...rest]
+      next.splice(target, 0, p)
+      return next
+    })
+  }
+
   // Drag-Mechanik: Karten-Pan aus, Bewegung verfolgen, am Ende aufräumen.
   const startDrag = (onMove: (ev: L.LeafletMouseEvent) => void, onEnd?: () => void) => {
     const map = mapRef.current
@@ -192,6 +233,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       },
       () => {
         if (!moved) removeCp(i) // Klick ohne Ziehen → entfernen
+        else reorderCp(i) // gezogen → optimale Reihenfolge (kein Backtracking)
       },
     )
   }
@@ -209,10 +251,13 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       return next
     })
     setTouched(true)
-    startDrag((ev) => {
-      if (dragIdxRef.current == null) return
-      moveCp(dragIdxRef.current, ev.latlng.lat, ev.latlng.lng)
-    })
+    startDrag(
+      (ev) => {
+        if (dragIdxRef.current == null) return
+        moveCp(dragIdxRef.current, ev.latlng.lat, ev.latlng.lng)
+      },
+      () => reorderCp(idx), // nach dem Ziehen an die optimale Stelle setzen
+    )
   }
 
   const reset = () => {
