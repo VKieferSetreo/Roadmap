@@ -328,7 +328,7 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
               className="text-left text-xs text-neutral-500 hover:text-neutral-800"
             >
               {report.notiz ? (
-                <span className="whitespace-pre-wrap">📝 {report.notiz}</span>
+                <span className="whitespace-pre-wrap">{report.notiz}</span>
               ) : (
                 <span className="italic text-neutral-400">+ Interne Notiz hinzufügen</span>
               )}
@@ -658,7 +658,7 @@ function SourceRequestCard({ request, onChanged }: { request: SourceRequest; onC
               className="text-left text-xs text-neutral-500 hover:text-neutral-800"
             >
               {request.notiz ? (
-                <span className="whitespace-pre-wrap">📝 {request.notiz}</span>
+                <span className="whitespace-pre-wrap">{request.notiz}</span>
               ) : (
                 <span className="italic text-neutral-400">+ Interne Notiz hinzufügen</span>
               )}

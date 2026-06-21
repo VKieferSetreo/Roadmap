@@ -33,7 +33,7 @@ export function SourceRequestDialog({ open, onClose }: { open: boolean; onClose:
     setBusy(true)
     try {
       await api.sourceRequests.create({ url: url.trim(), beschreibung: beschreibung.trim() })
-      toast.success("Danke! Dein Quellen-Vorschlag ist bei uns angekommen.")
+      toast.success("Danke! Ihr Quellen-Vorschlag ist bei uns angekommen.")
       onClose()
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Senden fehlgeschlagen.")
@@ -46,7 +46,7 @@ export function SourceRequestDialog({ open, onClose }: { open: boolean; onClose:
     <Dialog open={open} onClose={onClose} size="default">
       <DialogHeader
         title="Quelle anfragen"
-        subtitle="Kennst du eine Datenquelle, die wir aufnehmen sollten? Schick uns URL + kurze Beschreibung."
+        subtitle="Kennen Sie eine Datenquelle, die wir aufnehmen sollten? Schicken Sie uns URL + kurze Beschreibung."
         onClose={onClose}
       />
       <div className="flex flex-col gap-4 px-6 py-4">

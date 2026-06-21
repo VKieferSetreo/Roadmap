@@ -55,7 +55,7 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
     <Dialog open={open} onClose={onClose} size="sm">
       <DialogHeader
         title="Neues Projekt"
-        subtitle="Strecke und Transport legst du danach an."
+        subtitle="Strecke und Transport legen Sie danach an."
         onClose={onClose}
       />
       <div className="flex flex-col gap-4 px-6 py-5">

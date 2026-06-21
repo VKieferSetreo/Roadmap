@@ -64,7 +64,8 @@ function buildSubject(project, events) {
   const neu = events.filter((e) => e.typ === "neu").length
   if (neu > 0) {
     const krit = events.some((e) => e.typ === "neu" && e.severity === "kritisch")
-    return `${krit ? "🚨" : "🚧"} ${neu} neue${neu === 1 ? "r" : ""} Fund${neu === 1 ? "" : "e"} auf „${project.name}“`
+    // T-237: kein Emoji im Betreff (sachlicher Register) — kritisch als Text-Präfix.
+    return `${krit ? "Wichtig: " : ""}${neu} neue${neu === 1 ? "r" : ""} Fund${neu === 1 ? "" : "e"} auf „${project.name}“`
   }
   return `Aktualisierung: ${events.length} Änderung${events.length === 1 ? "" : "en"} auf „${project.name}“`
 }

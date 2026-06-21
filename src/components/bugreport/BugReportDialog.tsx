@@ -41,7 +41,7 @@ export function BugReportDialog({
         kontext: snapshot?.kontext,
         screenshot: screenshot ?? null,
       })
-      toast.success("Danke! Dein Bug-Report ist bei uns angekommen.")
+      toast.success("Danke! Ihr Bug-Report ist bei uns angekommen.")
       setBeschreibung("")
       setShowKontext(false)
       onClose()

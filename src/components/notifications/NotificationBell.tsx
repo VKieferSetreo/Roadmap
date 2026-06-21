@@ -160,7 +160,7 @@ export function NotificationBell() {
             <div>
               <p className="text-sm font-semibold text-neutral-900">Nachrichten</p>
               <p className="text-xs text-neutral-500">
-                Änderungen an deinen Auswertungen
+                Änderungen an Ihren Auswertungen
               </p>
             </div>
             <div className="flex items-center gap-1">
@@ -205,7 +205,7 @@ export function NotificationBell() {
                 <Bell className="h-7 w-7 text-neutral-300" />
                 <p className="text-sm font-medium text-neutral-600">Keine Nachrichten</p>
                 <p className="max-w-[260px] text-xs text-neutral-500">
-                  Sobald sich nach einer Datenaktualisierung Funde auf deinen Strecken ändern,
+                  Sobald sich nach einer Datenaktualisierung Funde auf Ihren Strecken ändern,
                   erscheint hier eine Meldung.
                 </p>
               </div>
