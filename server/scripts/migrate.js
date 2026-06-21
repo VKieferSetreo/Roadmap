@@ -18,7 +18,9 @@ loadEnv()
 
 const migrationsDir = fileURLToPath(new URL("../migrations", import.meta.url))
 const MIGRATE_LOCK_KEY = 4711423001 // fester bigint, getrennt vom RERUN_LOCK_KEY-hashtext-Raum
-const pool = createPool()
+// T-382: Migrations-Pool mit großzügigem statement_timeout (10 min) — großes CREATE INDEX o.ä.
+// darf nicht am 120-s-Default des Request-Pools sterben und den Boot bricken.
+const pool = createPool(undefined, { statementTimeoutMs: 600000 })
 
 // Dedizierte Session-Connection für den Advisory-Lock (über die gesamte Schleife = mehrere Tx).
 const lockClient = await pool.connect()

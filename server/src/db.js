@@ -10,7 +10,7 @@ import pg from "pg"
 // direkt mit dem Date-Objekt dieser Spalten.
 pg.types.setTypeParser(1082, (v) => v)
 
-export function createPool(connectionString = process.env.DATABASE_URL) {
+export function createPool(connectionString = process.env.DATABASE_URL, { statementTimeoutMs = 120000 } = {}) {
   const pool = new pg.Pool({
     connectionString,
     // T-388: Pool-Decke per Env übersteuerbar (Default 10) — Tuning ohne Code-Deploy.
@@ -21,8 +21,10 @@ export function createPool(connectionString = process.env.DATABASE_URL) {
     // statement_timeout = serverseitig pro Statement, query_timeout = clientseitig (node-pg).
     // KEIN idle_in_transaction_session_timeout: der Vollbestand-Import wickelt tausende
     // Items in EINE tx — Event-Loop-Pausen dazwischen würden ihn sonst fälschlich abbrechen.
-    statement_timeout: 120000,
-    query_timeout: 120000,
+    // T-382: Migrationen brauchen länger als 120 s (großes CREATE INDEX) → eigener Pool mit
+    // großzügigem Cap (migrate.js übergibt 600 s), statt mitten in der DDL abzubrechen.
+    statement_timeout: statementTimeoutMs,
+    query_timeout: statementTimeoutMs,
     // Pool erschöpft → nicht ewig auf eine freie Connection warten (sonst hängen Requests).
     connectionTimeoutMillis: 10000,
   })
@@ -47,12 +49,18 @@ export function createDb(pool) {
         await client.query("BEGIN")
         const result = await fn({ query: (text, params) => client.query(text, params) })
         await client.query("COMMIT")
+        client.release()
         return result
       } catch (err) {
-        await client.query("ROLLBACK")
+        // T-411: ROLLBACK kann selbst werfen (kaputte Connection) → Original-err NICHT überschreiben
+        // und den beschädigten Client per release(true) aus dem Pool verwerfen statt wiederzuverwenden.
+        try {
+          await client.query("ROLLBACK")
+          client.release()
+        } catch {
+          client.release(true)
+        }
         throw err
-      } finally {
-        client.release()
       }
     },
     /** Dedizierte Session-Connection OHNE Transaktion (T-333/T-342) — für Session-Advisory-Locks,

@@ -114,9 +114,13 @@ const CRON_OPTS = {
 }
 
 /** Schema-Wait: API migriert on-boot — wir pollen bis die quellen-Tabelle existiert. */
-async function waitForSchema({ tries = 120, delayMs = 5000 } = {}) {
+async function waitForSchema({ tries = Number(process.env.WORKER_SCHEMA_WAIT_TRIES) || 120, delayMs = 5000 } = {}) {
   for (let i = 1; i <= tries; i += 1) {
     try {
+      // T-383: nicht nur quellen-Existenz prüfen, sondern die spätesten importer-relevanten
+      // obstacles-Spalten (ki_aufbereitet, geom) — sonst startet der Importer bevor die Migration
+      // durch ist und schreibt gegen ein halb-migriertes Schema.
+      await db.query("SELECT ki_aufbereitet, geom FROM obstacles LIMIT 0")
       await db.query("SELECT id FROM quellen LIMIT 1")
       return
     } catch (err) {
@@ -252,6 +256,16 @@ try {
     )
     .then((r) => r.rowCount > 0 && log(`Orphan-Sweep: ${r.rowCount} verwaiste Analyse-Läufe freigegeben`))
     .catch((err) => log(`Orphan-Sweep fehlgeschlagen (ignoriert): ${err?.message ?? err}`))
+
+  // T-408: gleicher Boot-Sweep für import_runs — ein harter Crash hinterlässt 'running'-Waisen, die
+  // sonst dauerhaft als "Import läuft" erscheinen (Health/Staleness verfälscht).
+  await db
+    .query(
+      "UPDATE import_runs SET status = 'error', finished_at = now() " +
+        "WHERE status = 'running' AND started_at < now() - interval '15 minutes'",
+    )
+    .then((r) => r.rowCount > 0 && log(`Orphan-Sweep: ${r.rowCount} verwaiste Import-Läufe freigegeben`))
+    .catch((err) => log(`Import-Orphan-Sweep fehlgeschlagen (ignoriert): ${err?.message ?? err}`))
 
   const connectors = enabledConnectors(process.env)
   if (connectors.length === 0) {

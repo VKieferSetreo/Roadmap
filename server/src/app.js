@@ -96,6 +96,15 @@ export function createApp({
   // den deterministischen Geometrie-Fallback zurück.
   const osrm = createOsrm({ fetchImpl, timeoutMs: 20000 })
 
+  // T-425: in Prod (requireAuth) NICHT mit dem Dev-Default-Salt laufen — Share-Tokens wären sonst
+  // vorhersehbar ableitbar. Laut warnen (nicht fail-fast, um den Boot nicht zu bricken).
+  if (requireAuth && sessionSalt === "roadmap-dev-salt") {
+    console.error(
+      "[BOOT] WARNUNG: SESSION_SALT nicht gesetzt — Share-Tokens nutzen den Dev-Default. " +
+        "In Prod SESSION_SALT setzen (openssl rand -hex 32).",
+    )
+  }
+
   const app = express()
   app.disable("x-powered-by")
   // T-335: ein Hop (Caddy) ist vertrauenswürdig → req.ip = die von Caddy gesetzte echte Client-IP
