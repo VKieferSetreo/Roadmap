@@ -47,6 +47,16 @@ function ClickToSet({ onSet }: { onSet: (p: Pos) => void }) {
   return null
 }
 
+/** Leaflet im (erst beim Öffnen sichtbaren) Modal korrekt einmessen. */
+function Resizer() {
+  const map = useMap()
+  useEffect(() => {
+    const t = setTimeout(() => map.invalidateSize(), 150)
+    return () => clearTimeout(t)
+  }, [map])
+  return null
+}
+
 export function MapPointPicker({
   open,
   title,
@@ -138,7 +148,9 @@ export function MapPointPicker({
   }
 
   return (
-    <div className="fixed inset-0 z-[2100] flex flex-col bg-white">
+    <div className="fixed inset-0 z-[2100] flex items-center justify-center p-4 sm:p-6">
+      <div className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="relative flex h-[82vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-overlay">
       <header className="flex shrink-0 items-center gap-3 border-b border-neutral-200 px-4 py-3">
         <MapPin className="h-5 w-5 text-primary-600" />
         <h2 className="flex-1 text-sm font-semibold text-neutral-900">{title}</h2>
@@ -147,7 +159,7 @@ export function MapPointPicker({
         </button>
       </header>
 
-      <div className="relative shrink-0 border-b border-neutral-100 px-4 py-2">
+      <div className="relative z-[1100] shrink-0 border-b border-neutral-100 px-4 py-2">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <Input
@@ -188,6 +200,7 @@ export function MapPointPicker({
       <div className="relative min-h-0 flex-1">
         <MapContainer center={[(pos ?? DE_CENTER).lat, (pos ?? DE_CENTER).lng]} zoom={pos ? 14 : 6} className="h-full w-full" zoomControl>
           <TileLayer url={tiles.url} attribution={tiles.attribution} />
+          <Resizer />
           <FlyTo pos={flyTo} zoom={14} />
           <ClickToSet onSet={setPin} />
           {pos ? (
@@ -215,6 +228,7 @@ export function MapPointPicker({
           <Button onClick={confirm} disabled={!pos}>Übernehmen</Button>
         </div>
       </footer>
+      </div>
     </div>
   )
 }

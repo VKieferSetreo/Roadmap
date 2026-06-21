@@ -18,6 +18,8 @@ import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
 import { useProjectStore } from "@/store/projects"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
+import { parseGpkg, type GpkgRoute } from "@/lib/parseGpkg"
+import { GpkgRouteSelectDialog } from "./GpkgRouteSelectDialog"
 import { api, type RouteResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import type { Project, ProjectRoute, RoutePoint, RouteSource } from "@/types/domain"
@@ -86,6 +88,9 @@ export function RouteTab({ project }: { project: Project }) {
   // Datei geparst, wartet auf Namensvergabe (kleine Maske) vor dem Anlegen.
   const [pendingFile, setPendingFile] = useState<{ points: RoutePoint[]; fileName: string; suggest: string } | null>(null)
   const [pendingName, setPendingName] = useState("")
+  // #15: GeoPackage mit mehreren Strecken → Auswahl-Maske.
+  const [gpkg, setGpkg] = useState<{ fileName: string; routes: GpkgRoute[] } | null>(null)
+  const [gpkgBusy, setGpkgBusy] = useState(false)
 
   const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
     // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
@@ -99,15 +104,45 @@ export function RouteTab({ project }: { project: Project }) {
   }
 
   const onRouteFile = async (file: File) => {
+    const name = file.name.toLowerCase()
+    // #15: NUR KML (eine Strecke) + GPKG (mehrere → Auswahl-Maske). Andere Formate ablehnen.
+    if (name.endsWith(".gpkg")) {
+      try {
+        const routes = await parseGpkg(file)
+        if (routes.length === 0) {
+          toast.error("Keine Strecken im GeoPackage gefunden.")
+          return
+        }
+        setGpkg({ fileName: file.name, routes })
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "GeoPackage konnte nicht gelesen werden.")
+      }
+      return
+    }
+    if (!name.endsWith(".kml")) {
+      toast.error("Nur KML- oder GeoPackage-Dateien (.kml, .gpkg).")
+      return
+    }
     try {
       const parsed = await parseRouteFile(file)
       // Nicht sofort anlegen: erst Namen vergeben lassen (keine Datei-Namen als Strecken-Namen).
-      const suggest = file.name.replace(/\.(gpx|kml|geojson|json|zip|shp)$/i, "")
+      const suggest = file.name.replace(/\.kml$/i, "")
       setPendingFile({ points: parsed.points, fileName: file.name, suggest })
       setPendingName(suggest)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
     }
+  }
+
+  // #15: gewählte GeoPackage-Strecken als einzelne Strecken anlegen.
+  const loadGpkgRoutes = (selected: GpkgRoute[]) => {
+    setGpkgBusy(true)
+    for (const r of selected) {
+      addRoute(project.id, { name: r.name, fileName: gpkg?.fileName, points: r.points, source: "datei" })
+    }
+    toast.success(`${selected.length} Strecke${selected.length === 1 ? "" : "n"} aus GeoPackage angelegt.`)
+    setGpkgBusy(false)
+    setGpkg(null)
   }
 
   const confirmPending = () => {
@@ -212,8 +247,8 @@ export function RouteTab({ project }: { project: Project }) {
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
                   : "Streckendatei hochladen"
               }
-              hint="GPX, KML, GeoJSON oder Shapefile (.zip mit .prj)"
-              accept=".gpx,.kml,.geojson,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/geo+json,application/zip"
+              hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
+              accept=".kml,.gpkg,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3"
               onFile={(file) => void onRouteFile(file)}
             />
           ) : tab === "link" ? (
@@ -441,7 +476,17 @@ export function RouteTab({ project }: { project: Project }) {
         onClose={() => setEditRoute(null)}
       />
 
-      {/* #9: Vollbild-Karten-Picker für den gerade gewählten Punkt. */}
+      {/* #15: GeoPackage-Streckenauswahl. */}
+      <GpkgRouteSelectDialog
+        open={!!gpkg}
+        fileName={gpkg?.fileName ?? ""}
+        routes={gpkg?.routes ?? []}
+        busy={gpkgBusy}
+        onClose={() => setGpkg(null)}
+        onConfirm={loadGpkgRoutes}
+      />
+
+      {/* #9: Karten-Picker für den gerade gewählten Punkt. */}
       <MapPointPicker
         open={pickerIdx !== null}
         title={
