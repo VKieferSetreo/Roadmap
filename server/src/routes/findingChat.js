@@ -153,34 +153,24 @@ export function findingChatRouter({ db }) {
       if (body.length > MAX_BODY) throw new ApiError(400, `body max ${MAX_BODY} Zeichen`)
     }
 
-    // 1) Einfügen — created_at kommt aus dem DB-Default (now()), nie vom Client.
-    const { rows } = await db.query(
-      `INSERT INTO finding_chat_messages
-         (finding_key, scope, tenant_id, author_email, organisation, body, kind, contact)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [
-        findingKey.trim(),
-        scope,
-        req.ctx.tenant.id,
-        req.ctx.email,
-        req.ctx.tenant.name,
-        body,
-        kind,
-        contact,
-      ],
-    )
-    const row = rows[0]
-
-    // 2) content_hash über die unveränderlichen Felder (inkl. DB-created_at) berechnen
-    //    und einmalig nachschreiben — dies ist der einzige erlaubte UPDATE und rührt
-    //    body/created_at/kind/contact NICHT an.
-    const contentHash = computeContentHash(row)
-    await db.query(
-      "UPDATE finding_chat_messages SET content_hash = $2 WHERE id = $1",
-      [row.id, contentHash],
-    )
-    row.content_hash = contentHash
+    // T-399: INSERT + content_hash-Nachtrag ATOMAR — sonst kann (Fehler/Crash zwischen den beiden
+    // Queries) eine gerichtsfeste Nachricht OHNE content_hash zurückbleiben. created_at kommt aus
+    // dem DB-Default (now()), nie vom Client; der UPDATE ist der einzige erlaubte und rührt
+    // body/created_at/kind/contact NICHT an.
+    const row = await db.tx(async (q) => {
+      const { rows } = await q.query(
+        `INSERT INTO finding_chat_messages
+           (finding_key, scope, tenant_id, author_email, organisation, body, kind, contact)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [findingKey.trim(), scope, req.ctx.tenant.id, req.ctx.email, req.ctx.tenant.name, body, kind, contact],
+      )
+      const r = rows[0]
+      const contentHash = computeContentHash(r)
+      await q.query("UPDATE finding_chat_messages SET content_hash = $2 WHERE id = $1", [r.id, contentHash])
+      r.content_hash = contentHash
+      return r
+    })
 
     res.status(201).json(rowToMessage(row, req.ctx.email))
   }))

@@ -7,6 +7,10 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
   test: {
     fileParallelism: false,
+    // T-500: einige Tests fahren eine echte Analyse über lange Strecken (Hamburg→München) — die
+    // dauert unter Last gelegentlich >5s und kippte dann mit dem 5s-Default-Timeout (mal dieser,
+    // mal jener Test rot, isoliert immer grün). Großzügiges Timeout macht das Gate verlässlich.
+    testTimeout: 20000,
   },
   // Server-Tests verarbeiten kein CSS. Inline-leeres PostCSS verhindert, dass Vite die Root-
   // postcss.config.js (tailwindcss) hochsucht — die ist im isolierten server/-CI-Job (npm ci nur

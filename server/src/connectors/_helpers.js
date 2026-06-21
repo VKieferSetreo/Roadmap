@@ -416,28 +416,36 @@ export function makeNormalized({
 const hostOf = (url) => { try { return new URL(url).host } catch { return String(url).slice(0, 60) } }
 const warnFetch = (url, what) => console.warn(`[connector-fetch] ${hostOf(url)} ${what}`)
 
+// T-344: EIN Netzwerk-/Timeout-Retry (transiente Aussetzer externer Feeds → null = Reconcile löscht
+// stillschweigend echten Bestand). Nur bei GEWORFENEM Fehler (Netz/Timeout) retryen, NICHT bei
+// HTTP-Status (4xx/5xx sind keine Transienten). Fester 2s-Backoff, null nach dem zweiten Versuch.
+const RETRY_BACKOFF_MS = process.env.VITEST ? 0 : 2000 // im Test kein echtes Warten (Fehlerpfad-Tests)
+async function fetchRetry(url, { timeoutMs, headers }) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
+    } catch (err) {
+      if (attempt === 1) { warnFetch(url, `${err?.name ?? "fetch-fail"} (nach Retry)`); return null }
+      await new Promise((r) => setTimeout(r, RETRY_BACKOFF_MS))
+    }
+  }
+  return null
+}
+
 /** GET → JSON (Timeout, Fehler → null). */
 export async function getJson(url, { timeoutMs = 30000, headers = {} } = {}) {
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
-    return await r.json()
-  } catch (err) {
-    warnFetch(url, err?.name ?? "fetch-fail")
-    return null
-  }
+  const r = await fetchRetry(url, { timeoutMs, headers })
+  if (!r) return null
+  if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
+  try { return await r.json() } catch (err) { warnFetch(url, err?.name ?? "json-parse-fail"); return null }
 }
 
 /** GET → Text. */
 export async function getText(url, { timeoutMs = 30000, headers = {} } = {}) {
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
-    return await r.text()
-  } catch (err) {
-    warnFetch(url, err?.name ?? "fetch-fail")
-    return null
-  }
+  const r = await fetchRetry(url, { timeoutMs, headers })
+  if (!r) return null
+  if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
+  try { return await r.text() } catch (err) { warnFetch(url, err?.name ?? "text-fail"); return null }
 }
 
 /** Paginierter WFS/OGC-API-Voll-Abruf → GeoJSON-Features. Läuft bis der Bestand vollständig ist
@@ -529,14 +537,10 @@ export function reprojGeom(geom, zone) {
 
 /** Binär-Abruf (für ZIP/Downloads). Buffer oder null bei Fehler. */
 export async function getBuffer(url, { timeoutMs = 45000, headers = {} } = {}) {
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { "user-agent": "roadmap-connector/1.0", ...headers } })
-    if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
-    return Buffer.from(await r.arrayBuffer())
-  } catch (err) {
-    warnFetch(url, err?.name ?? "fetch-fail")
-    return null
-  }
+  const r = await fetchRetry(url, { timeoutMs, headers })
+  if (!r) return null
+  if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
+  try { return Buffer.from(await r.arrayBuffer()) } catch (err) { warnFetch(url, err?.name ?? "buffer-fail"); return null }
 }
 
 /** Eine Datei aus einem ZIP-Buffer entpacken (dependency-frei, stored + deflate über zlib).
