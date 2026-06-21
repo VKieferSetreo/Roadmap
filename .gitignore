@@ -52,3 +52,4 @@ LCL22_deutsch/
 
 # Playwright MCP snapshot artifacts
 .playwright-mcp/
+*.gpkg
