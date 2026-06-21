@@ -78,7 +78,7 @@ export function AbdeckungBoard() {
         </span>
         <span className="text-neutral-500">Ist/Max je Zelle im Tooltip</span>
         <span className="ml-auto text-neutral-400">
-          Stand {fmtStand(stand)} · {connectoren} aktive Connectoren
+          Stand {fmtStand(stand)} · {connectoren} angebundene Connectoren
         </span>
       </div>
 

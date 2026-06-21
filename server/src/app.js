@@ -23,7 +23,7 @@ import { requestId } from "./requestId.js"
 import { captureException } from "./sentry.js"
 import { createNominatim } from "./external/nominatim.js"
 import { createOsrm } from "./external/osrm.js"
-import { enabledConnectors } from "./connectors/index.js"
+import { allConnectors } from "./connectors/index.js"
 import { ABDECKUNG_DATA, ABDECKUNG_HINWEIS, ABDECKUNG_KATS, ABDECKUNG_STAND } from "./abdeckung.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
@@ -158,7 +158,9 @@ export function createApp({
       kats: ABDECKUNG_KATS,
       data: ABDECKUNG_DATA,
       stand: ABDECKUNG_STAND,
-      connectoren: enabledConnectors().length,
+      // allConnectors (nicht enabledConnectors): die api hat keine CONNECTORS-Env (nur der Worker
+      // schedulet) → enabled wäre 0. allConnectors = alle angebundenen Quellen (statisch + Mobilithek).
+      connectoren: allConnectors().length,
       hinweis: ABDECKUNG_HINWEIS,
     })
   })

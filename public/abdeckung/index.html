@@ -121,7 +121,7 @@ function render(payload){
     `<b>Redaktionelle Einschätzung · Stand ${fmtStand(payload.stand)} · kein Echtzeit-Status.</b> `
     + "Pro Zelle die erreichte Abdeckung in % (Ist ÷ Max mit heute öffentlich/frei verfügbaren Daten) — Ist/Max im Tooltip"
   document.getElementById("grundlage").innerHTML =
-    `Grundlage: ${payload.connectoren} aktive Connectoren (Autobahn GmbH, Landesbetriebe, GDI der Länder, Kommunen, WSV). `
+    `Grundlage: ${payload.connectoren} angebundene Connectoren (Autobahn GmbH, Landesbetriebe, GDI der Länder, Kommunen, WSV). `
     + esc(payload.hinweis || "Bewertet wird die Quellen-Abdeckung, nicht die tagesaktuelle Meldungszahl.")
 
   document.querySelectorAll(".cell[data-q]").forEach(el=>{
