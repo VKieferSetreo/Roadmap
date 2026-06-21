@@ -45,7 +45,7 @@ describe("Bug-Reports", () => {
       }),
     )
     expect(svg.status).toBe(201)
-    expect(svg.body.screenshot).toBeNull()
+    expect(svg.body.hasScreenshot).toBe(false) // SVG abgelehnt → kein Screenshot (T-373: Flag statt Blob)
 
     const png = await asUser(
       request(app).post("/api/bug-reports").send({
@@ -53,7 +53,7 @@ describe("Bug-Reports", () => {
         screenshot: "data:image/png;base64,iVBORw0KGgo=",
       }),
     )
-    expect(png.body.screenshot).toBe("data:image/png;base64,iVBORw0KGgo=")
+    expect(png.body.hasScreenshot).toBe(true) // PNG akzeptiert (T-373: Bild lazy über /:id/screenshot)
   })
 
   it("GET: nur Admin (User → 403), liefert Liste + Status-Zähler", async () => {

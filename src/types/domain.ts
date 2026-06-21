@@ -505,8 +505,9 @@ export interface BugReport {
   kontext: BugReportKontext
   status: BugReportStatus
   notiz?: string | null
-  /** Optionaler Seiten-Screenshot (data:image-JPEG, base64). */
-  screenshot?: string | null
+  /** T-373: ob ein Seiten-Screenshot existiert. Das Bild selbst lädt das FE lazy
+   *  (api.bugReports.screenshot), nicht mehr in der Liste mit. */
+  hasScreenshot?: boolean
   createdAt: string
   resolvedAt?: string | null
 }

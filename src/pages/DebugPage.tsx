@@ -179,6 +179,20 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
   const [editNotiz, setEditNotiz] = useState(false)
   const [notizDraft, setNotizDraft] = useState(report.notiz ?? "")
   const [busy, setBusy] = useState(false)
+  // T-373: Screenshot lazy nachladen (nicht mehr in der Liste mit).
+  const [shot, setShot] = useState<string | null>(null)
+  const [shotLoading, setShotLoading] = useState(false)
+  const loadShot = async () => {
+    setShotLoading(true)
+    try {
+      const { screenshot } = await api.bugReports.screenshot(report.id)
+      setShot(screenshot)
+    } catch {
+      /* still */
+    } finally {
+      setShotLoading(false)
+    }
+  }
   const meta = STATUS_META[report.status]
 
   const setStatus = async (status: BugReportStatus) => {
@@ -261,21 +275,32 @@ function ReportCard({ report, onChanged }: { report: BugReport; onChanged: () =>
           </p>
         ) : null}
 
-        {/* Seiten-Screenshot beim Melden (was der Nutzer sah) — Klick öffnet groß */}
-        {report.screenshot ? (
-          <a
-            href={safeHref(report.screenshot)}
-            target="_blank"
-            rel="noreferrer"
-            title="Screenshot in neuem Tab öffnen"
-            className="block w-fit"
-          >
-            <img
-              src={report.screenshot}
-              alt="Seiten-Screenshot beim Melden"
-              className="max-h-56 rounded-md border border-neutral-200 object-contain"
-            />
-          </a>
+        {/* Seiten-Screenshot beim Melden (was der Nutzer sah) — T-373: lazy nachgeladen. */}
+        {report.hasScreenshot ? (
+          shot ? (
+            <a
+              href={safeHref(shot)}
+              target="_blank"
+              rel="noreferrer"
+              title="Screenshot in neuem Tab öffnen"
+              className="block w-fit"
+            >
+              <img
+                src={shot}
+                alt="Seiten-Screenshot beim Melden"
+                className="max-h-56 rounded-md border border-neutral-200 object-contain"
+              />
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void loadShot()}
+              disabled={shotLoading}
+              className="inline-flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
+            >
+              {shotLoading ? "Lädt …" : "Screenshot anzeigen"}
+            </button>
+          )
         ) : null}
 
         {/* Kontext-Snapshot — einklappbar */}

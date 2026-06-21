@@ -928,15 +928,23 @@ export function createFakeDb() {
       state.bugReports.push(row)
       return ok([row])
     }
-    if (sql.startsWith("SELECT * FROM bug_reports WHERE status = $1 ORDER BY created_at DESC")) {
+    // T-373: matcht alte (SELECT *) wie neue (explizite Spalten + has_screenshot) Listen-Query.
+    const isBugList = sql.includes("FROM bug_reports") && sql.includes("ORDER BY created_at DESC")
+    const withFlag = (b) => ({ ...b, has_screenshot: b.screenshot != null })
+    if (isBugList && sql.includes("WHERE status = $1")) {
       return ok(
         state.bugReports
           .filter((b) => b.status === params[0])
-          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1)),
+          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+          .map(withFlag),
       )
     }
-    if (sql.startsWith("SELECT * FROM bug_reports ORDER BY created_at DESC")) {
-      return ok([...state.bugReports].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)))
+    if (isBugList) {
+      return ok([...state.bugReports].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).map(withFlag))
+    }
+    if (sql.startsWith("SELECT screenshot FROM bug_reports WHERE id = $1")) {
+      const b = state.bugReports.find((x) => x.id === params[0])
+      return ok(b ? [{ screenshot: b.screenshot ?? null }] : [])
     }
     if (sql.startsWith("SELECT status, count(*)::int AS n FROM bug_reports GROUP BY status")) {
       const by = {}

@@ -386,6 +386,9 @@ export const api = {
     /** Löschen (nur Admin). */
     remove: (id: string) =>
       axiosClient<void>({ url: `/bug-reports/${id}`, method: "DELETE" }),
+    /** T-373: Screenshot eines Reports lazy nachladen (nur Admin). */
+    screenshot: (id: string) =>
+      axiosClient<{ screenshot: string | null }>({ url: `/bug-reports/${id}/screenshot`, method: "GET" }),
   },
 
   // ── Quellen-Vorschläge ───────────────────────────────────────────────────────

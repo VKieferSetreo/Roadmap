@@ -180,7 +180,9 @@ export function rowToBugReport(row) {
     kontext: row.kontext ?? {},
     status: row.status,
     notiz: row.notiz ?? null,
-    screenshot: row.screenshot ?? null,
+    // T-373: NICHT mehr der base64-Screenshot-Blob (≤6 MB × 500 = riesige Liste). Nur ein Flag;
+    // das Bild lädt das FE bei Bedarf über GET /api/bug-reports/:id/screenshot nach.
+    hasScreenshot: Boolean(row.has_screenshot ?? row.screenshot),
     createdAt: toIso(row.created_at),
     resolvedAt: toIso(row.resolved_at) ?? null,
   }

@@ -57,8 +57,12 @@ export function bugReportsRouter({ db }) {
     const filter = req.query.status
     const where = STATUS.has(filter) ? "WHERE status = $1" : ""
     const params = STATUS.has(filter) ? [filter] : []
+    // T-373: explizite Spalten OHNE den screenshot-Blob (nur has_screenshot-Flag) — sonst zog die
+    // Liste bis zu 500 × ≤6 MB base64-Bilder mit. Das Bild lädt das FE lazy je Report nach.
     const { rows } = await db.query(
-      `SELECT * FROM bug_reports ${where} ORDER BY created_at DESC LIMIT 500`,
+      `SELECT id, email, tenant_slug, is_admin, beschreibung, view_path, kontext, status, notiz,
+         created_at, resolved_at, (screenshot IS NOT NULL) AS has_screenshot
+       FROM bug_reports ${where} ORDER BY created_at DESC LIMIT 500`,
       params,
     )
     const { rows: counts } = await db.query(
@@ -67,6 +71,14 @@ export function bugReportsRouter({ db }) {
     const zaehler = { offen: 0, in_arbeit: 0, erledigt: 0, verworfen: 0 }
     for (const c of counts) if (c.status in zaehler) zaehler[c.status] = c.n
     res.json({ reports: rows.map(rowToBugReport), zaehler })
+  }))
+
+  /** T-373: einzelnen Screenshot (base64-Data-URL) lazy nachladen — nur Admin. */
+  r.get("/:id/screenshot", requireRole("admin"), asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Bug-Report nicht gefunden")
+    const { rows } = await db.query("SELECT screenshot FROM bug_reports WHERE id = $1", [req.params.id])
+    if (rows.length === 0) throw new ApiError(404, "Bug-Report nicht gefunden")
+    res.json({ screenshot: rows[0].screenshot ?? null })
   }))
 
   /** Status/Notiz pflegen — nur Admin. Statisches SQL: status (oder NULL = unverändert)
