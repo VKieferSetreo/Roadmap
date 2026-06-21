@@ -485,6 +485,8 @@ export const api = {
       axiosClient<{ ok: true; version: string }>({ url: "/account/disclaimer", method: "POST" }),
     /** Eigene Mandanten-Lizenz (Plan, Laufzeit, Seat-Belegung). */
     license: () => axiosClient<AccountLicense>({ url: "/account/license", method: "GET" }),
+    /** T-414: DSGVO-Self-Service-Datenexport des eigenen Mandanten (nur Tenant-Admin). */
+    exportData: () => axiosClient<unknown>({ url: "/account/export", method: "GET", timeout: 60_000 }),
   },
 }
 

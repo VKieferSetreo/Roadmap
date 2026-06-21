@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
 import { toast } from "sonner"
-import { Plus, Save, Trash2, Users } from "lucide-react"
+import { Download, Plus, Save, Trash2, Users } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
@@ -57,6 +57,7 @@ export function TenantUsersPage() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null) // T-491: Lade-Fehler vs. leer trennen
   const [saving, setSaving] = useState(false)
+  const [exporting, setExporting] = useState(false) // T-414
 
   const tenantId = tenant?.id
 
@@ -100,6 +101,26 @@ export function TenantUsersPage() {
   const removeRow = (i: number) => setMembers((rows) => rows.filter((_, idx) => idx !== i))
 
   const atSeatLimit = maxSeats > 0 && members.length >= maxSeats
+
+  // T-414: DSGVO-Self-Service-Datenexport des eigenen Mandanten (JSON-Download).
+  const onExport = async () => {
+    setExporting(true)
+    try {
+      const data = await api.account.exportData()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `setreo-export-${tenant?.slug ?? "mandant"}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success("Datenexport heruntergeladen.")
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Export fehlgeschlagen.")
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const save = async () => {
     // Client-Validierung (Server prüft erneut + härter)
@@ -153,9 +174,14 @@ export function TenantUsersPage() {
           : "Nutzer Ihres Mandanten verwalten."
       }
       actions={
-        <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-neutral-600">
-          {members.length}{maxSeats > 0 ? ` / ${maxSeats}` : ""} Seats
-        </span>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => void onExport()} disabled={exporting} title="Alle Daten Ihres Mandanten als JSON exportieren (DSGVO)">
+            <Download className="h-4 w-4" /> {exporting ? "Export …" : "Daten-Export"}
+          </Button>
+          <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-neutral-600">
+            {members.length}{maxSeats > 0 ? ` / ${maxSeats}` : ""} Seats
+          </span>
+        </div>
       }
     >
       <Card>

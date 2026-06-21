@@ -9,6 +9,7 @@
 
 import { Router } from "express"
 import { redeemSeatCode } from "../seatCodes.js"
+import { exportTenant } from "../tenantErasure.js"
 import { ApiError, asyncHandler } from "../util.js"
 
 const MIN_PASSWORD_LEN = 10 // identisch zu adminTenants (setreo-auth-extern-Mindestlänge)
@@ -113,6 +114,18 @@ export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = n
       seatsTotal: s[0]?.total ?? 0,
       seatsUsed: s[0]?.used ?? 0,
     })
+  }))
+
+  /** T-414: DSGVO-Self-Service-Datenexport des EIGENEN Mandanten (JSON-Download). Nur Mandanten-
+   *  Admin (req.ctx.isTenantAdmin, vom Proxy/ctx gestempelt) — nicht jedes Mitglied darf den
+   *  gesamten Mandanten-Bestand ziehen. Nutzt denselben exportTenant() wie der Admin-Export. */
+  r.get("/export", asyncHandler(async (req, res) => {
+    const tenant = req.ctx?.tenant
+    if (!tenant) throw new ApiError(403, "kein-mandant")
+    if (!req.ctx?.isTenantAdmin) throw new ApiError(403, "Nur Mandanten-Admins dürfen den Datenexport ziehen")
+    const data = await exportTenant(db, tenant)
+    res.setHeader("Content-Disposition", `attachment; filename="setreo-export-${tenant.slug}.json"`)
+    res.json(data)
   }))
 
   return r
