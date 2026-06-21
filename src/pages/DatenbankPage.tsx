@@ -21,6 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { useSourceHealth } from "@/lib/sourceHealth"
+import { useDebounce } from "@/hooks/useDebounce"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 
@@ -125,13 +126,16 @@ function ObstacleKarte({ live }: { live: boolean }) {
   )
 
   const [suche, setSuche] = useState("")
+  // T-307: nach dem debounced Wert filtern — sonst baut ObstaclesMap den markercluster (zehntausende
+  // Pins) bei JEDEM Tastendruck neu. Das Eingabefeld bleibt sofort responsiv (zeigt `suche`).
+  const sucheDebounced = useDebounce(suche, 250)
   const [flyTo, setFlyTo] = useState<OrtTreffer | undefined>()
   const alle = useMemo(() => obstacles.data ?? [], [obstacles.data])
   // Inhaltssuche über alle geladenen (aktiven) Hindernisse — Text + Maße (attrs).
   // Komma→Punkt, damit "4,5" die als 4.5 gespeicherte Höhe findet; attrEntries liefert
   // zusätzlich die formatierte Form ("4,5 m") + Labels ("Durchfahrtshöhe").
   const gefiltert = useMemo(() => {
-    const s = suche.trim().toLowerCase().replace(/,/g, ".")
+    const s = sucheDebounced.trim().toLowerCase().replace(/,/g, ".")
     if (!s) return alle
     return alle.filter((o) => {
       const hay = [
@@ -144,7 +148,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
         .replace(/,/g, ".")
       return hay.includes(s)
     })
-  }, [alle, suche])
+  }, [alle, sucheDebounced])
 
   if (!live) {
     return (

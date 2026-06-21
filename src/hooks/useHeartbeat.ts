@@ -1,4 +1,4 @@
-// App-weiter Heartbeat: pingt im Live-Modus alle 30 s, solange der Tab sichtbar ist
+// App-weiter Heartbeat: pingt im Live-Modus alle 60 s, solange der Tab sichtbar ist
 // und ein Nutzer eingeloggt ist. Speist die Plattform-Analytics (Online-Zeit/Sessions).
 // Fehler werden geschluckt — der Heartbeat darf nie die App stören.
 
@@ -7,7 +7,9 @@ import { api } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 
-const INTERVALL_MS = 30_000
+// T-483/T-394: 60s statt 30s — halbiert die analytics_sessions-Schreiblast (UPDATE je Ping über alle
+// Nutzer). Bleibt unter SESSION_LUECKE (5 min) und ONLINE_FENSTER (3 min) → Online-Status unverändert.
+const INTERVALL_MS = 60_000
 
 export function useHeartbeat() {
   const live = useDataSourceStore((s) => s.mode) === "live"

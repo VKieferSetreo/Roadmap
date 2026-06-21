@@ -104,6 +104,8 @@ export function RouteMap({
     [routes],
   )
   const allPoints = useMemo(() => drawn.flatMap((r) => r.points), [drawn])
+  // T-377: Gruppierung (O(n²)) nur bei Funde-Änderung, nicht bei jedem Pan/Zoom-Render.
+  const findingGroups = useMemo(() => groupFindings(findings), [findings])
   const mapRef = useRef<L.Map | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [isFs, setIsFs] = useState(false)
@@ -272,7 +274,7 @@ export function RouteMap({
 
         {/* Fund-Marker, gruppiert: mehrere Funde am selben Ort (z.B. beide Fahrtrichtungen
             derselben Maßnahme) werden EIN Marker mit Tabs zum Aufsplitten — keiner geht verloren. */}
-        {groupFindings(findings).map((group) => (
+        {findingGroups.map((group) => (
           <FindingMarker
             key={group[0].id}
             group={group}

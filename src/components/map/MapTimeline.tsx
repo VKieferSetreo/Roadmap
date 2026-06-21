@@ -84,8 +84,20 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
   const onHandleDown = (which: "a" | "b") => (e: React.PointerEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const move = (ev: PointerEvent) => setWhich(which, valueFromClientX(ev.clientX))
+    // T-325: pro pointermove löste ein setState die volle Funde-Neuberechnung im Parent aus. Auf
+    // EIN Update je Frame drosseln (rAF, letzte Position gewinnt) — flüssig, ohne pro Pixel zu rechnen.
+    let raf = 0
+    let lastX = 0
+    const move = (ev: PointerEvent) => {
+      lastX = ev.clientX
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        setWhich(which, valueFromClientX(lastX))
+      })
+    }
     const up = () => {
+      if (raf) cancelAnimationFrame(raf)
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerup", up)
     }

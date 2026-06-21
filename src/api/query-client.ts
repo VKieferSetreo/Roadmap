@@ -15,7 +15,10 @@ export const queryClient = new QueryClient({
         }
         return failureCount < 1
       },
-      refetchOnWindowFocus: true,
+      // T-375: Default AUS — sonst refetchen auch schwere Listen (obstacles 39k, findings) bei jedem
+      // Fenster-Fokus und hämmern die API. Queries, die echt fokus-frisch sein müssen (Glocke,
+      // Sync-Status, Header-Sync), setzen refetchOnWindowFocus: true explizit und behalten es.
+      refetchOnWindowFocus: false,
       refetchOnReconnect: true,
     },
     mutations: {
