@@ -9,7 +9,7 @@ import { runAnalysis } from "../engine/index.js"
 import { logAnalyticsEvent } from "./analytics.js"
 import { downsample } from "../engine/fallback.js"
 import { rowToFinding, rowToProject } from "../map.js"
-import { hashPassword, rowToShareInfo } from "../shares.js"
+import { createRateLimiter, hashPassword, rowToShareInfo } from "../shares.js"
 import { ApiError, asyncHandler, isFiniteNumber, isPlainObject, isUuid } from "../util.js"
 
 // Begrenzte Parallelität für manuelle Auswertungen (In-Process, eine API-Instanz): viele
@@ -19,6 +19,13 @@ import { ApiError, asyncHandler, isFiniteNumber, isPlainObject, isUuid } from ".
 // ANALYSIS_CONCURRENCY übersteuerbar.
 const ANALYSIS_CONCURRENCY = Number(process.env.ANALYSIS_CONCURRENCY ?? 4)
 const runAnalysisGated = createSemaphore(ANALYSIS_CONCURRENCY)
+// T-310: Pro-Nutzer-Eimer VOR dem globalen Semaphore — sonst belegt ein einzelner Nutzer mit
+// Analyse-Spam alle Slots und stellt die Warteschlange für alle anderen zu. Default 5/min,
+// per ANALYSIS_RATE_MAX tunebar. Im Test aus (die Suite fährt viele Analysen je Identität in
+// <60s; createRateLimiter ist separat getestet).
+const ANALYSIS_RATE_MAX = Number(process.env.ANALYSIS_RATE_MAX ?? 5)
+const ANALYSIS_RATE_OFF = !!process.env.VITEST || process.env.NODE_ENV === "test"
+const analysisLimiter = createRateLimiter({ max: ANALYSIS_RATE_MAX, windowMs: 60_000 })
 
 // DEFAULT_TRANSPORT v2 (Contract: TransportData ohne fahrzeugTyp/ladung/achslast).
 export const DEFAULT_TRANSPORT = {
@@ -259,6 +266,11 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   }))
 
   r.post("/:id/analysis", asyncHandler(async (req, res) => {
+    // T-310: Pro-Nutzer-Drossel vor der teuren Auswertung (je Lauf ein Schwer-SELECT).
+    const limitKey = req.ctx?.email || req.ip || "anon"
+    if (!ANALYSIS_RATE_OFF && !analysisLimiter(limitKey)) {
+      throw new ApiError(429, "Zu viele Analysen — bitte kurz warten")
+    }
     const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
 

@@ -13,7 +13,8 @@ pg.types.setTypeParser(1082, (v) => v)
 export function createPool(connectionString = process.env.DATABASE_URL) {
   const pool = new pg.Pool({
     connectionString,
-    max: 10,
+    // T-388: Pool-Decke per Env übersteuerbar (Default 10) — Tuning ohne Code-Deploy.
+    max: Number(process.env.DB_POOL_MAX) || 10,
     // Verwaiste/hängende Queries (z.B. Rerun-Schwer-SELECTs über riesige Bounding-Boxes)
     // killt Postgres nach 2 min selbst — withTimeout() lehnt nur die JS-Promise ab, die
     // SQL liefe sonst im Hintergrund weiter und stapelt sich bei jedem Sync, bis die DB kippt.

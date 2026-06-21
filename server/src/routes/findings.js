@@ -13,7 +13,8 @@ const SEARCH_SQL = `SELECT f.*, p.name AS projekt_name FROM findings f
     AND ($3::text IS NULL OR f.titel ILIKE $3 OR f.beschreibung ILIKE $3
          OR f.strassen_ref ILIKE $3 OR p.name ILIKE $3)
     AND p.tenant_id = $4
-  ORDER BY f.km ASC`
+  ORDER BY f.km ASC
+  LIMIT 500` // T-405: harte Obergrenze gegen unbounded Response (Suche, kein Karten-Render)
 
 export function findingsRouter({ db }) {
   const r = Router()

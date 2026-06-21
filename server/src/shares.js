@@ -61,14 +61,18 @@ export function rowToShareInfo(row, baseUrl, tenantSlug) {
  */
 export function createRateLimiter({ max = 10, windowMs = 60_000 } = {}) {
   const hits = new Map() // key → { count, windowStart }
+  // T-391: Cleanup periodisch + entkoppelt vom Hot-Path (vorher nur im Neu-Key-Zweig → der
+  // Counter-Zweig räumte nie auf, und der Inline-Scan lief im Request-Pfad). unref(), damit
+  // der Timer weder den Prozess noch die Tests am Beenden hindert.
+  const sweep = setInterval(() => {
+    const now = Date.now()
+    for (const [k, v] of hits) if (now - v.windowStart >= windowMs) hits.delete(k)
+  }, windowMs)
+  sweep.unref?.()
   return function allow(key, now = Date.now()) {
     const entry = hits.get(key)
     if (!entry || now - entry.windowStart >= windowMs) {
       hits.set(key, { count: 1, windowStart: now })
-      // Gelegenheits-Cleanup, damit die Map nicht unbegrenzt wächst
-      if (hits.size > 10_000) {
-        for (const [k, v] of hits) if (now - v.windowStart >= windowMs) hits.delete(k)
-      }
       return true
     }
     entry.count += 1

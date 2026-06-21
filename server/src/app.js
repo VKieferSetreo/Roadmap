@@ -215,6 +215,14 @@ export function createApp({
   app.use("/api/analytics", analyticsRouter({ db }))
   app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
+  // T-393: eigener, strengerer Eimer (30/min je Identität) vor dem globalen Backstop, weil
+  // jeder Request outbound OSRM/Nominatim trifft (teurer als reine DB-Reads).
+  const routeLimiter = createRateLimiter({ max: 30, windowMs: 60_000 })
+  app.use("/api/route", (req, res, next) => {
+    const key = req.ctx?.email || req.user?.email || req.ip || "anon"
+    if (!routeLimiter(key)) throw new ApiError(429, "Zu viele Routen-Anfragen — bitte kurz warten")
+    next()
+  })
   app.use("/api/route", requireTenant, routeRouter({ db, nominatim, osrm, fetchImpl }))
   // Sync ("alle Quellen aktualisieren") — Status für jeden Eingeloggten sichtbar; den
   // globalen Voll-Pull-Trigger (POST /) dürfen NUR interne Nutzer auslösen (T-309, im Router).
