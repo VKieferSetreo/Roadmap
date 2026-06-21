@@ -29,6 +29,9 @@ dist-ssr/
 .env
 .env.local
 .env.*.local
+# T-278: auch benannte .env in Unterordnern (z.B. API/.../mobilithek.env) — die enthielten echte
+# Secrets und waren getrackt. *.env matcht NICHT *.env.example (anderes Suffix).
+*.env
 
 # Logs
 logs
