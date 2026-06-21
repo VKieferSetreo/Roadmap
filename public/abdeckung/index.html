@@ -18,11 +18,6 @@
   header p.meta{color:#94a3b8;font-size:12px;margin:2px 0 0}
   .legend{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin:18px 0 6px;font-size:13px;color:#334155}
   .legend .item{display:flex;align-items:center;gap:7px}
-  .swatch{display:inline-flex;gap:4px}
-  .pl{min-width:30px;text-align:center;padding:3px 7px;border-radius:7px;font-size:12px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;line-height:1.15}
-  .pl.r{background:var(--rot)} .pl.y{background:var(--gelb)} .pl.g{background:var(--gruen)} .pl.na{background:#cbd5e1}
-  .pl.o{background:transparent;border:1.6px solid}
-  .pl.o.r{color:var(--rot);border-color:var(--rot)} .pl.o.y{color:var(--gelb);border-color:var(--gelb)} .pl.o.g{color:var(--gruen);border-color:var(--gruen)} .pl.o.na{color:#94a3b8;border-color:#cbd5e1}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
   .scroll{overflow-x:auto}
   table{border-collapse:collapse;width:100%;min-width:720px}
@@ -33,8 +28,6 @@
   tbody td{border-bottom:1px solid var(--line);border-left:1px solid #f1f5f9;height:52px;vertical-align:middle}
   tbody tr:hover{background:#fcfdff}
   .cell{display:inline-flex;gap:5px;align-items:center;cursor:default}
-  .qpct{font-weight:700;font-size:12px;font-variant-numeric:tabular-nums}
-  .qpct.g{color:var(--gruen)} .qpct.y{color:var(--gelb)} .qpct.r{color:var(--rot)} .qpct.na{color:#94a3b8}
   tbody th.land .lavg{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:1px}
   .sumrow td,.sumrow th{background:#f8fafc;border-top:2px solid #cbd5e1}
   .sumrow th.land{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#475569}
@@ -42,6 +35,7 @@
   .note h2{font-size:15px;margin:0 0 8px}
   .note p,.note li{font-size:13px;color:#475569;margin:6px 0}
   .pill{display:inline-block;background:#fffbeb;color:var(--gelb);border:1px solid #fde68a;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:600;margin-left:4px}
+  .state{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
   footer{margin-top:26px;color:#94a3b8;font-size:11.5px;text-align:center}
   .tip{position:fixed;z-index:50;background:#0f172a;color:#fff;font-size:12px;line-height:1.45;padding:9px 11px;border-radius:8px;max-width:300px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 </style>
@@ -51,7 +45,7 @@
   <header>
     <h1>Datenabdeckung Deutschland</h1>
     <p class="sub">Roadmap — Schwertransport-Planung · Abdeckung je Bundesland und Datentyp</p>
-    <p class="meta">Stand: 16.06.2026 · pro Zelle die <b>erreichte Abdeckung in %</b> (Ist ÷ Max mit heute öffentlich/frei verfügbaren Daten) — Ist/Max im Tooltip</p>
+    <p class="meta" id="meta">pro Zelle die <b>erreichte Abdeckung in %</b> (Ist ÷ Max mit heute öffentlich/frei verfügbaren Daten) — Ist/Max im Tooltip</p>
   </header>
 
   <div class="legend">
@@ -64,6 +58,7 @@
 
   <div class="card scroll">
     <table id="board"></table>
+    <div class="state" id="state">Lade Abdeckung …</div>
   </div>
 
   <div class="note">
@@ -74,7 +69,7 @@
       <li><b>Ist = Maximum, beide grün</b> → öffentliches Optimum bereits erreicht (z. B. RLP/Sachsen/Thüringen/Brandenburg/BW/SH/MV-Baustellen, Autobahn bundesweit).</li>
       <li><b>Auch das Maximum niedrig</b> → die Daten sind öffentlich gar nicht verfügbar. Gilt v. a. für <b>Brücken/Tunnel/Gewicht außerhalb von NRW, Bayern, Berlin, Hamburg, Hessen</b>: Durchfahrtshöhen/Traglasten liegen nur bei BASt/Ländern hinter Datenvereinbarung (nicht offen) — frei abrufbar sind nur Brücken über Bundeswasserstraßen (WSV).</li>
     </ul>
-    <p>Grundlage: 44 angebundene Connectoren (Autobahn GmbH, Landesbetriebe, GDI der Länder, Kommunen, WSV). Bewertet wird die Quellen-Abdeckung, nicht die tagesaktuelle Meldungszahl.</p>
+    <p id="grundlage">Bewertet wird die Quellen-Abdeckung, nicht die tagesaktuelle Meldungszahl.</p>
   </div>
 
   <footer>© 2026 Setreo · Roadmap Datenabdeckung · interne/halböffentliche Übersicht</footer>
@@ -82,31 +77,15 @@
 <div class="tip" id="tip"></div>
 
 <script>
-const KATS = ["Autobahn","Baustellen","Sperrungen","Brücken","Tunnel","Gewicht/GST"]
-// je Bundesland, je Kategorie: [ist, max, quelle]   (Reihenfolge = KATS)
-const DATA = {
-  "Baden-Württemberg":      [[95,95,"Autobahn GmbH (0001)"],[95,95,"MobiData BW / BEMaS (0128) — öffentliches Optimum"],[90,92,"BEMaS-Sperrungen (0128)"],[35,50,"nur WSV-Brücken (0303); Land-Kataster nicht offen"],[30,45,"nur WSV; öffentlich begrenzt"],[40,52,"keine offene GST-Quelle"]],
-  "Bayern":                 [[95,95,"Autobahn GmbH (0001)"],[35,85,"nur Städte (0210/0224); BayernInfo (Registrierung, frei) wäre landesweit"],[35,85,"BayernInfo erreichbar"],[80,85,"BAYSIS Bauwerke (0123)"],[70,80,"BAYSIS (0123)"],[35,50,"keine offene GST-Quelle"]],
-  "Berlin":                 [[95,95,"Autobahn GmbH (0001)"],[95,95,"VIZ Berlin (0114/0115)"],[95,95,"VIZ Berlin"],[88,90,"Detailnetz Ingenieurbauwerke (0116)"],[80,85,"Detailnetz (0116)"],[50,62,"indirekt über VIZ"]],
-  "Brandenburg":            [[95,95,"Autobahn GmbH (0001)"],[92,92,"GDI-BB Baustellen-WFS (0132)"],[90,92,"GDI-BB (0132)"],[30,50,"nur WSV-Brücken (0303)"],[25,40,"nur WSV"],[35,50,"keine offene GST-Quelle"]],
-  "Bremen":                 [[95,95,"Autobahn GmbH (0001)"],[82,85,"VMZ Bremen Mobilithek (0142) angebunden, Open Data"],[82,85,"VMZ Bremen Mobilithek (0142)"],[25,45,"nur WSV-Brücken (0303)"],[20,35,"nur WSV"],[20,40,"keine offene"]],
-  "Hamburg":                [[95,95,"Autobahn GmbH (0001)"],[95,95,"Baustellen HH (0112/0113)"],[92,95,"HH (0112/0113)"],[88,90,"Brücken/Ingenieurbauwerke HH (0111)"],[75,82,"LSBG (0111)"],[90,92,"GST-Routen HH (0110)"]],
-  "Hessen":                 [[95,95,"Autobahn GmbH (0001)"],[85,88,"Hessen Mobil Mobilithek (0141) angebunden"],[85,88,"Hessen Mobil Mobilithek (0141)"],[80,85,"Hessen Mobil lastbeschränkte Brücken (0126)"],[55,65,"Hessen Mobil (0126)"],[70,78,"Hessen Mobil GST (0126)"]],
-  "Mecklenburg-Vorpommern": [[95,95,"Autobahn GmbH (0001)"],[90,92,"LS M-V (0119) + Rostock (0222)"],[88,92,"LS M-V (0119)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[60,68,"Rostock GST (0223)"]],
-  "Niedersachsen":          [[95,95,"Autobahn GmbH (0001)"],[80,92,"NLStBV Mobilithek (0140) via LCL/TMC angebunden"],[78,90,"NLStBV Mobilithek (0140)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[30,45,"keine offene"]],
-  "Nordrhein-Westfalen":    [[95,95,"Autobahn GmbH (0001)"],[70,92,"Städte+RVR (0302); LVZ.NRW Arbeitsstellen (Mobilithek) wäre nachgeordnetes Netz landesweit"],[70,92,"+ LVZ.NRW erreichbar"],[90,92,"Straßen.NRW Bauwerke (0125) + GST-Karte (0124)"],[80,85,"Straßen.NRW (0125)"],[88,90,"GST-Schwertransportkarte NRW (0124)"]],
-  "Rheinland-Pfalz":        [[95,95,"Autobahn GmbH (0001)"],[95,95,"Mobilitätsatlas RLP — bis Gemeinde (0129)"],[92,95,"Mobilitätsatlas RLP (0129)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[35,48,"keine offene"]],
-  "Saarland":               [[95,95,"Autobahn GmbH (0001)"],[90,92,"baustellen.saarland (0127)"],[88,92,"LfS Saarland (0127)"],[28,45,"nur WSV-Brücken (0303)"],[22,35,"nur WSV"],[30,45,"keine offene"]],
-  "Sachsen":                [[95,95,"Autobahn GmbH (0001)"],[95,95,"Baustelleninfo Sachsen LASuV (0130)"],[92,95,"LASuV (0130)"],[65,72,"GST-Negativkarten gesperrte Brücken (0121)"],[40,55,"teilweise (0121)"],[75,80,"Leipzig Verkehrszeichen (0221) + GST-Negativ (0121)"]],
-  "Sachsen-Anhalt":         [[95,95,"Autobahn GmbH (0001)"],[65,82,"LSBB Sperrinfo (0120) — Schwerpunkt Sperrungen; mehr Baustellen begrenzt offen"],[90,92,"LSBB Sperrinfo (0120)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[35,48,"keine offene"]],
-  "Schleswig-Holstein":     [[95,95,"Autobahn GmbH (0001)"],[92,92,"LBV.SH (0117/0118)"],[90,92,"LBV.SH (0117/0118)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[35,48,"keine offene"]],
-  "Thüringen":              [[95,95,"Autobahn GmbH (0001)"],[95,95,"TLBV BIS — A/B/L/K/G (0131)"],[92,95,"TLBV BIS (0131)"],[30,48,"nur WSV-Brücken (0303)"],[25,38,"nur WSV"],[40,52,"teilweise über TLBV"]],
-}
+// T-482: Daten kommen aus GET <base>/api/abdeckung — DIESELBE Quelle wie das interne Board (keine
+// Divergenz, keine eingefrorenen Zahlen). API-Basis aus dem eigenen Pfad ableiten:
+// prod /roadmap/abdeckung → /roadmap/api ; dev /abdeckung → /api.
+const API = location.pathname.replace(/\/abdeckung\/?$/, "") + "/api/abdeckung"
 
-const cls = (s) => s == null ? "na" : s >= 85 ? "g" : s >= 60 ? "y" : "r"
 const avg = (a) => Math.round(a.reduce((x,y)=>x+y,0)/a.length)
 const quote = (ist,max) => max > 0 ? Math.round(ist/max*100) : 0
 const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")
+const fmtStand = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso||""); return m ? `${m[3]}.${m[2]}.${m[1]}` : (iso||"") }
 
 const tip = document.getElementById("tip")
 const moveTip = (e)=>{const x=Math.min(e.clientX+14,window.innerWidth-318);tip.style.left=x+"px";tip.style.top=(e.clientY+14)+"px"}
@@ -117,30 +96,45 @@ const cellColor = (p)=>`hsl(${Math.round(Math.max(0,Math.min(100,p))*1.3)} 60% 2
 const cell = (ist,max,q,land,kat)=>{const p=quote(ist,max);return `<td style="background:${cellColor(p)}"><div class="cell" data-q="<b>${esc(land)} · ${esc(kat)}</b><br>${p}% erreicht &nbsp;(Ist ${ist} / Max ${max})<br><span style='color:#cbd5e1'>${esc(q)}</span>">`
   +`<span style="color:#fff;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums">${p}%</span></div></td>`}
 
-const t = document.getElementById("board")
-let html = "<thead><tr><th class='land'>Bundesland</th>"
-for (const k of KATS) html += `<th>${k}</th>`
-html += "<th>Ø</th></tr></thead><tbody>"
+function render(payload){
+  const KATS = payload.kats, DATA = payload.data
+  const t = document.getElementById("board")
+  let html = "<thead><tr><th class='land'>Bundesland</th>"
+  for (const k of KATS) html += `<th>${esc(k)}</th>`
+  html += "<th>Ø</th></tr></thead><tbody>"
+  const colIst = KATS.map(()=>[]), colMax = KATS.map(()=>[])
+  for (const [land, cells] of Object.entries(DATA)) {
+    const ist = cells.map(c=>c[0]), max = cells.map(c=>c[1])
+    html += `<tr><th class='land'>${esc(land)}<span class='lavg'>Ø ${quote(avg(ist),avg(max))}%</span></th>`
+    cells.forEach((c,i)=>{ colIst[i].push(c[0]); colMax[i].push(c[1]); html += cell(c[0],c[1],c[2],land,KATS[i]) })
+    html += cell(avg(ist),avg(max),"Durchschnitt über alle Datentypen",land,"Ø")
+    html += "</tr>"
+  }
+  html += "<tr class='sumrow'><th class='land'>Ø je Datentyp</th>"
+  for (let i=0;i<KATS.length;i++) html += cell(avg(colIst[i]),avg(colMax[i]),"Durchschnitt über alle Länder",KATS[i],"Ø")
+  html += cell(avg(colIst.flat()),avg(colMax.flat()),"Gesamt","Gesamt","Ø")
+  html += "</tr></tbody>"
+  t.innerHTML = html
+  document.getElementById("state").style.display = "none"
 
-const colIst = KATS.map(()=>[]), colMax = KATS.map(()=>[])
-for (const [land, cells] of Object.entries(DATA)) {
-  const ist = cells.map(c=>c[0]), max = cells.map(c=>c[1])
-  html += `<tr><th class='land'>${land}<span class='lavg'>Ø ${quote(avg(ist),avg(max))}%</span></th>`
-  cells.forEach((c,i)=>{ colIst[i].push(c[0]); colMax[i].push(c[1]); html += cell(c[0],c[1],c[2],land,KATS[i]) })
-  html += cell(avg(ist),avg(max),"Durchschnitt über alle Datentypen",land,"Ø")
-  html += "</tr>"
+  document.getElementById("meta").innerHTML =
+    `<b>Redaktionelle Einschätzung · Stand ${fmtStand(payload.stand)} · kein Echtzeit-Status.</b> `
+    + "Pro Zelle die erreichte Abdeckung in % (Ist ÷ Max mit heute öffentlich/frei verfügbaren Daten) — Ist/Max im Tooltip"
+  document.getElementById("grundlage").innerHTML =
+    `Grundlage: ${payload.connectoren} aktive Connectoren (Autobahn GmbH, Landesbetriebe, GDI der Länder, Kommunen, WSV). `
+    + esc(payload.hinweis || "Bewertet wird die Quellen-Abdeckung, nicht die tagesaktuelle Meldungszahl.")
+
+  document.querySelectorAll(".cell[data-q]").forEach(el=>{
+    el.addEventListener("mouseenter", e=>showTip(e, el.getAttribute("data-q")))
+    el.addEventListener("mousemove", moveTip)
+    el.addEventListener("mouseleave", hideTip)
+  })
 }
-html += "<tr class='sumrow'><th class='land'>Ø je Datentyp</th>"
-for (let i=0;i<KATS.length;i++) html += cell(avg(colIst[i]),avg(colMax[i]),"Durchschnitt über alle Länder",KATS[i],"Ø")
-html += cell(avg(colIst.flat()),avg(colMax.flat()),"Gesamt",  "Gesamt","Ø")
-html += "</tr></tbody>"
-t.innerHTML = html
 
-document.querySelectorAll(".cell[data-q]").forEach(el=>{
-  el.addEventListener("mouseenter", e=>showTip(e, el.getAttribute("data-q")))
-  el.addEventListener("mousemove", moveTip)
-  el.addEventListener("mouseleave", hideTip)
-})
+fetch(API, { headers: { accept: "application/json" } })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json() })
+  .then(render)
+  .catch(() => { document.getElementById("state").textContent = "Abdeckung derzeit nicht abrufbar." })
 </script>
 </body>
 </html>

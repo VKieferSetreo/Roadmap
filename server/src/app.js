@@ -23,6 +23,8 @@ import { requestId } from "./requestId.js"
 import { captureException } from "./sentry.js"
 import { createNominatim } from "./external/nominatim.js"
 import { createOsrm } from "./external/osrm.js"
+import { enabledConnectors } from "./connectors/index.js"
+import { ABDECKUNG_DATA, ABDECKUNG_HINWEIS, ABDECKUNG_KATS, ABDECKUNG_STAND } from "./abdeckung.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
@@ -147,6 +149,19 @@ export function createApp({
   // Service-zu-Service (auth-extern → roadmap-api): VOR der Gateway-Auth, da der Aufruf
   // KEINE X-Auth-Header trägt (Docker-Netz, direkt). Eigener Secret-Gate im Router.
   app.use("/api/internal", internalRouter({ db, provisionSecret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "" }))
+
+  // Datenabdeckung (T-482): EINE Quelle für das interne Board UND die öffentliche /roadmap/abdeckung-
+  // Seite. UNGATED — die öffentliche Seite trägt keine Auth; gibt NUR die redaktionelle Matrix +
+  // echte Connector-Zahl + Stand zurück, KEINE Mandanten-/Bestandsdaten (Leak-Check: unbedenklich).
+  app.get("/api/abdeckung", (req, res) => {
+    res.json({
+      kats: ABDECKUNG_KATS,
+      data: ABDECKUNG_DATA,
+      stand: ABDECKUNG_STAND,
+      connectoren: enabledConnectors().length,
+      hinweis: ABDECKUNG_HINWEIS,
+    })
+  })
 
   // ── Gated API ────────────────────────────────────────────────────────────────
   app.use("/api", authMiddleware({ requireAuth }))

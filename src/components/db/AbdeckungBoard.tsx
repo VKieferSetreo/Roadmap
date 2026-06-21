@@ -1,39 +1,28 @@
 // Datenabdeckungs-Scoreboard (in-app, Datenbank-Reiter): Bundesländer × Datentypen.
 // Pro Zelle die erreichte Quote Ist ÷ Max in % als Heatmap (dunkelrot 0 % → dunkelgrün 100 %),
-// weißer Text. Ist/Max + Quelle je Zelle im Tooltip. Bewertet die Verfügbarkeit amtlicher
-// Quellen (nicht die tagesaktuelle Meldungszahl).
+// weißer Text. Ist/Max + Quelle je Zelle im Tooltip. Bewertet die Verfügbarkeit amtlicher Quellen.
+//
+// T-482: Daten kommen jetzt aus GET /api/abdeckung — DIESELBE Quelle wie die öffentliche Seite
+// /roadmap/abdeckung (kein zweites hartkodiertes Literal mehr, keine Divergenz). %-Werte sind eine
+// redaktionelle Einschätzung, kein Echtzeit-Status; Stand + echte Connector-Zahl aus der Antwort.
 
-const KATS = ["Autobahn", "Baustellen", "Sperrungen", "Brücken", "Tunnel", "Gewicht/GST"] as const
-
-// je Bundesland, je Kategorie [ist, max, quelle] — Reihenfolge = KATS
-const DATA: Record<string, [number, number, string][]> = {
-  "Baden-Württemberg": [[95, 95, "Autobahn GmbH (0001)"], [95, 95, "MobiData BW / BEMaS (0128) + Städte"], [90, 92, "BEMaS-Sperrungen"], [35, 50, "nur WSV-Brücken (0303)"], [30, 45, "nur WSV"], [40, 52, "keine offene GST-Quelle"]],
-  "Bayern": [[95, 95, "Autobahn GmbH (0001)"], [35, 85, "nur Städte; BayernInfo (Registrierung) wäre landesweit"], [35, 85, "BayernInfo erreichbar"], [80, 85, "BAYSIS Bauwerke (0123)"], [70, 80, "BAYSIS"], [35, 50, "keine offene GST-Quelle"]],
-  "Berlin": [[95, 95, "Autobahn GmbH"], [95, 95, "VIZ Berlin (0114/0115)"], [95, 95, "VIZ Berlin"], [88, 90, "Detailnetz (0116)"], [80, 85, "Detailnetz"], [50, 62, "indirekt über VIZ"]],
-  "Brandenburg": [[95, 95, "Autobahn GmbH"], [92, 92, "GDI-BB Baustellen-WFS (0132)"], [90, 92, "GDI-BB"], [30, 50, "nur WSV (0303)"], [25, 40, "nur WSV"], [35, 50, "keine offene"]],
-  "Bremen": [[95, 95, "Autobahn GmbH"], [82, 85, "VMZ Bremen Mobilithek (0142) angebunden, Open Data"], [82, 85, "VMZ Bremen Mobilithek (0142)"], [25, 45, "nur WSV"], [20, 35, "nur WSV"], [20, 40, "keine offene"]],
-  "Hamburg": [[95, 95, "Autobahn GmbH"], [95, 95, "Baustellen HH (0112/0113)"], [92, 95, "HH"], [88, 90, "Brücken HH (0111)"], [75, 82, "LSBG"], [90, 92, "GST-Routen HH (0110)"]],
-  "Hessen": [[95, 95, "Autobahn GmbH"], [85, 88, "Hessen Mobil Mobilithek (0141) angebunden"], [85, 88, "Hessen Mobil Mobilithek (0141)"], [80, 85, "Hessen Mobil Brücken (0126)"], [55, 65, "Hessen Mobil"], [70, 78, "Hessen Mobil GST"]],
-  "Mecklenburg-Vorpommern": [[95, 95, "Autobahn GmbH"], [90, 92, "LS M-V (0119) + Rostock"], [88, 92, "LS M-V"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [60, 68, "Rostock GST (0223)"]],
-  "Niedersachsen": [[95, 95, "Autobahn GmbH"], [80, 92, "NLStBV Mobilithek (0140) via LCL/TMC angebunden"], [78, 90, "NLStBV Mobilithek (0140)"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [30, 45, "keine offene"]],
-  "Nordrhein-Westfalen": [[95, 95, "Autobahn GmbH"], [70, 92, "Städte+RVR (0302); LVZ.NRW (Mobilithek) landesweit"], [70, 92, "+ LVZ.NRW"], [90, 92, "Straßen.NRW Bauwerke (0125) + GST (0124)"], [80, 85, "Straßen.NRW"], [88, 90, "GST-Karte NRW (0124)"]],
-  "Rheinland-Pfalz": [[95, 95, "Autobahn GmbH"], [95, 95, "Mobilitätsatlas RLP bis Gemeinde (0129)"], [92, 95, "Mobilitätsatlas RLP"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [35, 48, "keine offene"]],
-  "Saarland": [[95, 95, "Autobahn GmbH"], [90, 92, "baustellen.saarland (0127)"], [88, 92, "LfS Saarland"], [28, 45, "nur WSV"], [22, 35, "nur WSV"], [30, 45, "keine offene"]],
-  "Sachsen": [[95, 95, "Autobahn GmbH"], [95, 95, "Baustelleninfo Sachsen LASuV (0130)"], [92, 95, "LASuV"], [65, 72, "GST-Negativkarten (0121)"], [40, 55, "teilweise"], [75, 80, "Leipzig (0221) + GST-Negativ (0121)"]],
-  "Sachsen-Anhalt": [[95, 95, "Autobahn GmbH"], [65, 82, "LSBB Sperrinfo (0120), Schwerpunkt Sperrungen"], [90, 92, "LSBB Sperrinfo"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [35, 48, "keine offene"]],
-  "Schleswig-Holstein": [[95, 95, "Autobahn GmbH"], [92, 92, "LBV.SH (0117/0118)"], [90, 92, "LBV.SH"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [35, 48, "keine offene"]],
-  "Thüringen": [[95, 95, "Autobahn GmbH"], [95, 95, "TLBV BIS A/B/L/K/G (0131)"], [92, 95, "TLBV BIS"], [30, 48, "nur WSV"], [25, 38, "nur WSV"], [40, 52, "teilweise über TLBV"]],
-}
+import { useQuery } from "@tanstack/react-query"
+import { Database } from "lucide-react"
+import { EmptyState } from "@/components/shared/EmptyState"
+import { api } from "@/api/roadmap"
+import { useDataSourceStore } from "@/store/datasource"
 
 const avg = (a: number[]) => Math.round(a.reduce((x, y) => x + y, 0) / a.length)
-
 // Erreichte Quote = Ist ÷ Max in % ("wieviel vom öffentlich Möglichen haben wir schon").
 const quote = (ist: number, max: number) => (max > 0 ? Math.round((ist / max) * 100) : 0)
-
-// Heatmap: dunkelrot (0 %) → dunkelgrün (100 %). FESTE dunkle Helligkeit (28 %) → weißer
-// Zell-Text bleibt über das ganze Spektrum AA-lesbar (auch im hellen gelben Mittelband). Hue 0..130.
+// Heatmap: dunkelrot (0 %) → dunkelgrün (100 %). FESTE dunkle Helligkeit (28 %) → weißer Zell-Text AA-lesbar.
 const cellColor = (pct: number) => `hsl(${Math.round(Math.max(0, Math.min(100, pct)) * 1.3)} 60% 28%)`
 const GRADIENT = "linear-gradient(to right, hsl(0 60% 28%), hsl(39 60% 28%), hsl(65 60% 28%), hsl(98 60% 28%), hsl(130 60% 28%))"
+
+function fmtStand(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso)
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso
+}
 
 function Cell({ ist, max, quelle, land, kat }: { ist: number; max: number; quelle: string; land: string; kat: string }) {
   const pct = quote(ist, max)
@@ -49,6 +38,31 @@ function Cell({ ist, max, quelle, land, kat }: { ist: number; max: number; quell
 }
 
 export function AbdeckungBoard() {
+  const live = useDataSourceStore((s) => s.mode) === "live"
+  const q = useQuery({
+    queryKey: ["abdeckung"],
+    queryFn: () => api.abdeckung(),
+    enabled: live,
+    staleTime: 60 * 60_000, // redaktionell, ändert sich selten
+  })
+
+  if (!live) {
+    return (
+      <EmptyState
+        icon={Database}
+        title="Abdeckung nicht verbunden"
+        description="Die Abdeckungs-Übersicht lebt im Backend. Im Demo-Modus (ohne Server) nicht verfügbar."
+      />
+    )
+  }
+  if (q.isLoading) return <div className="skeleton h-64 w-full rounded-xl" />
+  if (q.isError || !q.data) {
+    return (
+      <EmptyState icon={Database} title="Abdeckung nicht ladbar" description="Bitte später erneut versuchen." />
+    )
+  }
+
+  const { kats: KATS, data: DATA, stand, connectoren, hinweis } = q.data
   const laender = Object.entries(DATA)
   const colIst = KATS.map((_, i) => laender.map(([, cells]) => cells[i][0]))
   const colMax = KATS.map((_, i) => laender.map(([, cells]) => cells[i][1]))
@@ -63,6 +77,9 @@ export function AbdeckungBoard() {
           <span className="tabular-nums">100 %</span>
         </span>
         <span className="text-neutral-500">Ist/Max je Zelle im Tooltip</span>
+        <span className="ml-auto text-neutral-400">
+          Stand {fmtStand(stand)} · {connectoren} aktive Connectoren
+        </span>
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
@@ -105,11 +122,10 @@ export function AbdeckungBoard() {
       </div>
 
       <p className="text-xs leading-relaxed text-neutral-500">
-        Die Heatmap bewertet, ob für Bundesland × Datentyp eine flächendeckende <b>amtliche Quelle</b> angebunden ist
-        (nicht die tagesaktuelle Meldungszahl). Die <b>%-Zahl</b> = Ist ÷ Max, also der Anteil des öffentlich Möglichen,
-        den wir schon haben. <b>Ist niedrig, Max hoch</b> = frei verfügbare Daten existieren, müssen nur angebunden
-        werden (aktuell nur noch <b>Bayern</b> via BayernInfo; NI/Hessen/Bremen frisch über Mobilithek angebunden).
-        <b>Auch Max niedrig</b> = öffentlich nicht verfügbar (Brücken/Tunnel/Gewicht außerhalb NRW/Bayern/Berlin/Hamburg/Hessen — nur WSV-Brücken frei).
+        {hinweis} Die <b>%-Zahl</b> = Ist ÷ Max, der Anteil des öffentlich Möglichen, den wir schon haben.
+        <b> Ist niedrig, Max hoch</b> = frei verfügbare Daten existieren, müssen nur angebunden werden
+        (aktuell v. a. <b>Bayern</b> via BayernInfo). <b>Auch Max niedrig</b> = öffentlich nicht verfügbar
+        (Brücken/Tunnel/Gewicht außerhalb NRW/Bayern/Berlin/Hamburg/Hessen — nur WSV-Brücken frei).
         Öffentliche Version: <code className="rounded bg-neutral-100 px-1">setreo-cloud.com/roadmap/abdeckung</code>
       </p>
     </div>
