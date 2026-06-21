@@ -79,43 +79,67 @@ export function findingPinIcon(
   return icon
 }
 
-// ── Start-Pin: Lokations-Marke in der Strecken-Farbe ─────────────────────────
-export function startPinIcon(farbe: string): L.DivIcon {
-  const inner = renderToStaticMarkup(
-    <MapPinIcon size={14} strokeWidth={2.6} color="white" fill={farbe} />,
-  )
-  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+// Pin-Tropfen in Strecken-Farbe + weißer Rand + weißer Kopf-Kreis — gemeinsame Hülle für
+// Start (Play-Dreieck) und Ziel (Zielflagge). `glyph` = SVG-Inhalt im weißen Kreis (Center 17,16).
+function routePinSvg(farbe: string, glyph: string): string {
+  return `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
     <ellipse cx="17" cy="40" rx="5" ry="1.7" fill="#00000026"/>
     <path d="M17 1.5C8.72 1.5 2 8.22 2 16.5c0 10.4 13 23.1 14.05 24.13a1.36 1.36 0 0 0 1.9 0C19 39.6 32 26.9 32 16.5 32 8.22 25.28 1.5 17 1.5Z"
           fill="${farbe}" stroke="#fff" stroke-width="2.5"/>
     <circle cx="17" cy="16" r="9" fill="#fff"/>
-    <g transform="translate(10 9)">${inner}</g>
+    ${glyph}
   </svg>`
+}
+
+// ── Start-Pin: Play-Dreieck in der Strecken-Farbe (Max-Wunsch) ───────────────
+export function startPinIcon(farbe: string): L.DivIcon {
+  const glyph = `<path d="M14.3 11.4 L22 16 L14.3 20.6 Z" fill="${farbe}"/>`
   return L.divIcon({
     className: "rm-start-pin",
-    html,
+    html: routePinSvg(farbe, glyph),
     iconSize: [34, 42],
     iconAnchor: [17, 42],
     popupAnchor: [0, -38],
   })
 }
 
-// ── Ziel-Pin: Bullseye (konzentrische Kreise) ────────────────────────────────
-export function endPinIcon(): L.DivIcon {
-  const html = `<svg width="34" height="42" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
-    <ellipse cx="17" cy="40" rx="5" ry="1.7" fill="#00000026"/>
-    <path d="M17 1.5C8.72 1.5 2 8.22 2 16.5c0 10.4 13 23.1 14.05 24.13a1.36 1.36 0 0 0 1.9 0C19 39.6 32 26.9 32 16.5 32 8.22 25.28 1.5 17 1.5Z"
-          fill="#DC2626" stroke="#fff" stroke-width="2.5"/>
-    <circle cx="17" cy="16" r="9" fill="#fff"/>
-    <circle cx="17" cy="16" r="6.5" fill="#DC2626"/>
-    <circle cx="17" cy="16" r="4" fill="#fff"/>
-    <circle cx="17" cy="16" r="1.8" fill="#DC2626"/>
-  </svg>`
+// ── Ziel-Pin: Zielflagge (kariert) in der Strecken-Farbe ─────────────────────
+export function endPinIcon(farbe: string): L.DivIcon {
+  // 3×2-Schachbrett, zentriert auf den weißen Kopf-Kreis (17,16); weiß = Kreisgrund.
+  const sq = 3
+  const x0 = 12.5
+  const y0 = 13
+  let checks = ""
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 3; c++) {
+      if ((r + c) % 2 === 0) {
+        checks += `<rect x="${x0 + c * sq}" y="${y0 + r * sq}" width="${sq}" height="${sq}" fill="${farbe}"/>`
+      }
+    }
+  }
   return L.divIcon({
     className: "rm-end-pin",
-    html,
+    html: routePinSvg(farbe, checks),
     iconSize: [34, 42],
     iconAnchor: [17, 42],
     popupAnchor: [0, -38],
   })
+}
+
+// ── Fahrtrichtungs-Pfeil: kleiner weißer Chevron, in Segment-Richtung gedreht ─
+// Dezent (subtiler Schatten zum Lesen auf hellen Kacheln). Nach Winkel (5°-Raster) gecacht.
+const arrowCache = new Map<number, L.DivIcon>()
+export function directionArrowIcon(angle: number): L.DivIcon {
+  const a = Math.round(angle / 5) * 5
+  const cached = arrowCache.get(a)
+  if (cached) return cached
+  const html = `<div style="width:14px;height:14px;transform:rotate(${a}deg)">
+    <svg width="14" height="14" viewBox="0 0 14 14" style="overflow:visible">
+      <path d="M4.5 2.5 L10 7 L4.5 11.5" fill="none" stroke="#ffffff" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round"
+            style="filter:drop-shadow(0 0 1px rgba(0,0,0,.6))"/>
+    </svg></div>`
+  const icon = L.divIcon({ className: "rm-dir-arrow", html, iconSize: [14, 14], iconAnchor: [7, 7] })
+  arrowCache.set(a, icon)
+  return icon
 }

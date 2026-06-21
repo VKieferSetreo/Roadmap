@@ -10,13 +10,34 @@ import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
 import { MapResize } from "./MapResize"
-import { endPinIcon, startPinIcon } from "./pins"
+import { directionArrowIcon, endPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { groupFindings } from "@/lib/findingGroups"
 import { geomToLines, sliceRouteByKm } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
+
+/** Bildschirm-Winkel (°) eines Segments a→b: 0° = nach rechts (Osten), −90° = nach oben (Norden).
+ *  lng um cos(lat) gestaucht (DE-Verzerrung), Bildschirm-y zeigt nach unten → −dLat. */
+function segmentAngle(a: [number, number], b: [number, number]): number {
+  const k = Math.cos((((a[0] + b[0]) / 2) * Math.PI) / 180)
+  return (Math.atan2(-(b[0] - a[0]), (b[1] - a[1]) * k) * 180) / Math.PI
+}
+
+/** Dezente Fahrtrichtungs-Pfeile gleichmäßig entlang der Strecke (Index-basiert, nie an Start/Ziel).
+ *  Anzahl skaliert mit der Punktdichte (3…14) — stilvoll sparsam, nicht jede Kurve markiert. */
+function routeArrows(positions: [number, number][]): { pos: [number, number]; angle: number }[] {
+  const len = positions.length
+  if (len < 2) return []
+  const n = Math.min(14, Math.max(3, Math.round(len / 50)))
+  const out: { pos: [number, number]; angle: number }[] = []
+  for (let k = 1; k <= n; k++) {
+    const i = Math.min(len - 2, Math.max(0, Math.round((k / (n + 1)) * (len - 1))))
+    out.push({ pos: positions[i], angle: segmentAngle(positions[i], positions[i + 1]) })
+  }
+  return out
+}
 
 /** Passt den Kartenausschnitt an die Strecke an, sobald sie sich ändert. */
 function FitBounds({ points, enabled }: { points: RoutePoint[]; enabled: boolean }) {
@@ -152,21 +173,22 @@ export function RouteMap({
             pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
           />
         ))}
-        {drawn.map((r) => (
-          <Polyline
-            key={`flow-${r.id}`}
-            positions={r.positions}
-            smoothFactor={0}
-            pathOptions={{
-              color: "#ffffff",
-              weight: 2,
-              opacity: 0.85,
-              dashArray: "1 12",
-              lineCap: "round",
-              className: "route-flow",
-            }}
-          />
-        ))}
+        {/* Fahrtrichtung: dezente weiße Pfeile entlang der Strecke (Marker im markerPane, nicht
+            klickbar). Ab >25 Strecken weggelassen — bei so vielen Linien wäre es nur noch Geflimmer
+            (ponytail: Pfeil-Obergrenze, statt tausende Marker zu rendern). */}
+        {drawn.length <= 25
+          ? drawn.flatMap((r) =>
+              routeArrows(r.positions).map((ar, idx) => (
+                <Marker
+                  key={`dir-${r.id}-${idx}`}
+                  position={ar.pos}
+                  icon={directionArrowIcon(ar.angle)}
+                  interactive={false}
+                  keyboard={false}
+                />
+              )),
+            )
+          : null}
         {/* Unsichtbare, breite Klick-Spur: Klick auf die Strecke → Eintrag-Maske.
             Liegt im overlayPane UNTER den Markern (markerPane) → Fund-Pins fangen
             ihre Klicks selbst ab, nur „freie" Strecken-Klicks lösen onRouteClick aus. */}
@@ -202,7 +224,7 @@ export function RouteMap({
           <Marker
             key={`end-${r.id}`}
             position={r.positions[r.positions.length - 1]}
-            icon={endPinIcon()}
+            icon={endPinIcon(r.farbe)}
           >
             <Popup>Ziel — {r.name}</Popup>
           </Marker>
