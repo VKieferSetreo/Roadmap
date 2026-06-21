@@ -71,6 +71,16 @@ describe("extractStammdaten", () => {
     expect(extractStammdaten("gültig ab 15.03.2024").gueltigVon).toBe("2024-03-15")
   })
 
+  it("T-257: 'Stand'-Datum NEBEN Gültigkeitsdaten verfälscht gueltigVon nicht", () => {
+    // Stand 01.01.2026 ist das kleinste Datum, ist aber Daten-Stand, KEIN Gültigkeitsbeginn.
+    const ex = extractStammdaten("Vollsperrung gültig vom 15.03.2026 bis 30.06.2026. Stand: 01.01.2026")
+    expect(ex.gueltigVon).toBe("2026-03-15")
+    expect(ex.gueltigBis).toBe("2026-06-30")
+    // Auch „Datenstand vom" / „letzte Aktualisierung" werden als Stand erkannt.
+    const ex2 = extractStammdaten("Sperrung 10.04.2026 bis 12.04.2026, Datenstand vom 02.02.2026")
+    expect(ex2.gueltigVon).toBe("2026-04-10")
+  })
+
   it("GST-Signale: Fahrbahn verengt, Fahrstreifen-Anzahl, Umleitung (mit keine-Guard), Einbahn/Sackgasse", () => {
     expect(extractStammdaten("Fahrbahn wird verengt").fahrbahnVerengt).toBe(true)
     expect(extractStammdaten("auf zwei Fahrstreifen verengt").anzahlFahrstreifen).toBe(2)

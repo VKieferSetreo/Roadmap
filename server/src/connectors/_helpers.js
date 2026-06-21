@@ -109,6 +109,18 @@ function alleDaten(text) {
   return [...out].filter((d) => d >= "2000-01-01" && d <= "2100-12-31").sort()
 }
 
+// T-257 (DA-05): Daten, die im Text als DATEN-/PLANUNGS-STAND gelabelt sind ("Stand: 01.01.2026",
+// "Datenstand vom …", "letzte Aktualisierung …"). Das ist die Aktualität der Quelle, KEIN
+// Gültigkeitsbeginn — solche Daten werden aus der Gültigkeits-Heuristik ausgeschlossen, sonst wird
+// das (oft kleinste) Stand-Datum fälschlich als gueltigVon übernommen. NUR explizit gelabelte Daten;
+// ohne Stand-Label ändert sich nichts.
+function standDaten(text) {
+  const out = new Set()
+  const re = /\b(?:(?:planungs|daten|bearbeitungs|redaktions|erfassungs)?stand(?:\s+der\s+daten)?|letzte\s+aktualisierung|aktualisiert\s+am)\s*:?\s*(?:vom\s+)?(\d{1,2}\.\d{1,2}\.\d{2,4}|\d{4}-\d{2}-\d{2})/gi
+  for (const m of String(text).matchAll(re)) for (const d of alleDaten(m[1])) out.add(d)
+  return out
+}
+
 /** Erstes Straßen-Kennzeichen (A/B/L/K + Nummer) aus Freitext → "B252", sonst null. */
 function strassenRefAus(text) {
   const m = String(text).match(/\b(A|B|L|K)[\s-]?(\d{1,4})\b/)
@@ -200,7 +212,9 @@ export function extractStammdaten(text) {
   if (medium) out.medium = medium[1] // Bauanlass (Versorgungsleitung)
 
   // Datums-Heuristik: kleinstes = Start, größtes = Ende. Einzeldatum nur mit Gültigkeits-Kontext.
-  const daten = alleDaten(s)
+  // T-257: als „Stand"/„Datenstand" gelabelte Daten vorher rausfiltern (= Quell-Aktualität, kein Beginn).
+  const standSet = standDaten(s)
+  const daten = alleDaten(s).filter((d) => !standSet.has(d))
   const hatKontext = /\b(g(?:ü|ue)ltig|gilt|zeitraum|vom|bis|ab\s|baubeginn|bauende|dauer|gesperrt|sperrung|wirksam)\b/i.test(s)
   if (daten.length >= 2) {
     out.gueltigVon = daten[0]
