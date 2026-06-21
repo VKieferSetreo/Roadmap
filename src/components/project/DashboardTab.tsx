@@ -479,6 +479,7 @@ function exportCsv(project: Project, findings: Finding[]) {
     "Länge (lng)",
     "Gültig von",
     "Gültig bis",
+    "Grenzwerte",
     "Zuständig",
     "Quelle",
     "Quelle-URL",
@@ -499,6 +500,10 @@ function exportCsv(project: Project, findings: Finding[]) {
         String(f.lng).replace(".", ","),
         f.gueltigVon,
         f.gueltigBis,
+        // T-461: Grenzwerte-Spalte analog zur PDF-Serialisierung (ReportView) — vorher fehlte f.detail im CSV.
+        Object.entries(f.detail ?? {})
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(" · "),
         f.zustaendig,
         f.quelle?.name,
         f.quelle?.url,

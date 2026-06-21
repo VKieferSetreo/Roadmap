@@ -320,7 +320,23 @@ const NULL_BEI_NULL = new Set([
 ])
 
 // extractStammdaten-Felder, die KEINE attrs sind (eigene Spalten / Top-Level) — Rest wandert in attrs.
-const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef", "richtung"])
+// T-255: 'richtung' wandert jetzt als Freitext-attr in attrs (NICHT in die CHECK-Spalte 'richtung' aus
+// Migration 006) — es ist ein Ortskontext-Wort ("Nord"/"Ri. Hamburg"), kein kontrolliertes Enum.
+const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef"])
+
+// T-256/T-460: attrs sind Grenzwerte (number/boolean) PLUS wenige belegte Freitext-Felder. Vorher
+// liess der Initial-Filter nur number|boolean durch, der Extraktions-Merge schrieb aber Strings
+// ungeprüft zurück → inkonsistent (Connector-Strings still weg, Extraktions-Strings überlebten).
+// Eine Regel für BEIDE Stellen: number/boolean immer (0-Sentinel bei Maßen droppen), Strings nur
+// aus dieser Whitelist (sonst gehört der Text in die Beschreibung, nicht in die Grenzwert-attrs).
+const STRING_ATTRS = new Set(["zeitfenster", "medium", "richtung"])
+function attrErlaubt(k, v) {
+  if (v == null || v === "") return false
+  if (typeof v === "number") return !(v === 0 && NULL_BEI_NULL.has(k))
+  if (typeof v === "boolean") return true
+  if (typeof v === "string") return STRING_ATTRS.has(k) && v.trim() !== ""
+  return false
+}
 
 /** Freitext säubern: HTML-Tags raus, Entities dekodieren, Mehrfach-Spaces zusammenziehen, trimmen.
  *  Zeilenumbrüche bleiben erhalten (sinnvolle Struktur, z.B. Autobahn-Meldungen). null-sicher. */
@@ -346,11 +362,7 @@ export function makeNormalized({
     nlng = null
   }
   const cleanAttrs = Object.fromEntries(
-    Object.entries(attrs || {}).filter(([k, v]) =>
-      v != null && (typeof v === "number" || typeof v === "boolean") &&
-      // 0-Sentinel bei Maß-Attributen droppen ("0 m"/"0 t" ist keine echte Angabe).
-      !(typeof v === "number" && v === 0 && NULL_BEI_NULL.has(k)),
-    ),
+    Object.entries(attrs || {}).filter(([k, v]) => attrErlaubt(k, v)),
   )
   beschreibung = stripHtml(beschreibung)
 
@@ -361,7 +373,8 @@ export function makeNormalized({
   // Alle extrahierten attrs generisch übernehmen (außer den Nicht-attr-Feldern) — nur Lücken füllen.
   for (const [k, v] of Object.entries(ex)) {
     if (EX_NICHT_ATTR.has(k)) continue
-    if (cleanAttrs[k] == null && v != null && v !== false && v !== "") { cleanAttrs[k] = v; extrahiert = true }
+    // T-460: gleicher Filter wie initial — kein ungeprüftes String-Zurückschreiben mehr.
+    if (cleanAttrs[k] == null && attrErlaubt(k, v)) { cleanAttrs[k] = v; extrahiert = true }
   }
   let vonFinal = gueltigVon, bisFinal = gueltigBis
   if (vonFinal == null && ex.gueltigVon) { vonFinal = ex.gueltigVon; extrahiert = true }

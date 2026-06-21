@@ -34,15 +34,18 @@ export const aachenBaustellenConnector = {
     for (const f of feats) {
       const p = f.properties ?? {}
       const [lng, lat] = ersterPunktUtm32(f.geometry)
-      const text = [p.beschreibu, p.einschraen, p.name].filter(Boolean).join(" ")
+      // T-455: strukturierte Orts-Felder (strassen/bereich) als Ortskontext nutzen statt zu verwerfen.
+      const ort = [p.strassen, p.bereich].filter(Boolean).join(", ")
+      const text = [p.beschreibu, p.einschraen, p.name, p.strassen, p.bereich].filter(Boolean).join(" ")
       const vollsperrung = /vollsperr/i.test(text) || undefined
+      const refM = String(p.strassen ?? "").match(/\b([ABL])\s?-?\s?(\d{1,4})\b/i)
       obstacles.push(makeNormalized({
         externeId: p.gid ?? p.sdatenid ?? f.id,
         kategorie: "baustelle",
-        name: p.name ?? p.art ?? "Baustelle Aachen",
-        beschreibung: [p.beschreibu, p.einschraen].filter(Boolean).join(" — ").trim() || null,
+        name: p.name ?? p.strassen ?? p.art ?? "Baustelle Aachen",
+        beschreibung: [p.beschreibu, p.einschraen, ort].filter(Boolean).join(" — ").trim() || null,
         lat, lng,
-        strassenRef: null,
+        strassenRef: refM ? `${refM[1].toUpperCase()}${refM[2]}` : null,
         attrs: {
           vollsperrung,
           restbreiteM: meterAusText(text, /breite/i),

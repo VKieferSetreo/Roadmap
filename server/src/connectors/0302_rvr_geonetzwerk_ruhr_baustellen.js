@@ -80,7 +80,8 @@ export const rvrGeonetzwerkRuhrBaustellenConnector = {
         // strasse z.B. "Forellstr. A 43" — Straßenref (A/B/L/K) heuristisch extrahieren
         const refMatch = String(p.strasse ?? "").match(/\b([ABLK])\s?-?\s?(\d+)\b/i)
         const strassenRef = refMatch ? `${refMatch[1].toUpperCase()}${refMatch[2]}` : null
-        const text = [p.massnahme, p.einschr, p.bemerkung].filter(Boolean).join(" · ")
+        // T-457: Auftraggeber (Zuständigkeit) wie in 0229 in die Beschreibung aufnehmen.
+        const text = [p.massnahme, p.einschr, p.bemerkung, p.auftraggeber ? `Auftraggeber: ${p.auftraggeber}` : null].filter(Boolean).join(" · ")
 
         // Eindeutige & reconcile-stabile externeId: (lat,lng) allein kollabiert Meldungen am
         // selben Ort (je Fahrtrichtung/Teilstück/Phase). Diskriminator nimmt unterscheidende

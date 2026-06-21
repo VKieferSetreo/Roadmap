@@ -35,11 +35,14 @@ export const leipzigVerkehrsraumeinschraenkungenConnector = {
       const sparte = String(p.sparte ?? "")
       const sperrart = String(p.sperrart ?? "")
       const text = [sparte, sperrart, p.meldung].filter(Boolean).join(" ")
-      const vollsperrung = /vollsperrung|voll gesperrt/i.test(text) || undefined
+      // T-456: sperrart explizit (kontrolliertes Vokabular) statt nur Text-Heuristik; sparte verfeinert
+      // die Kategorie (Sondernutzung ist keine Baustelle → 'sonstige', Engine schließt sie aus).
+      const vollsperrung = sperrart.toLowerCase() === "vollsperrung" || /vollsperrung|voll gesperrt/i.test(text) || undefined
       const istSperrung = /sperrung/i.test(sperrart)
+      const istSondernutzung = /sondernutzung/i.test(sparte)
       obstacles.push(makeNormalized({
         externeId: p.objectid ?? f.id,
-        kategorie: istSperrung ? "sperrung" : "baustelle",
+        kategorie: istSperrung ? "sperrung" : istSondernutzung ? "sonstige" : "baustelle",
         name: (p.adresse ?? "").trim() || sparte || "Verkehrsraumeinschränkung Leipzig",
         beschreibung: [sparte, sperrart, p.meldung].filter((x) => x && x !== "keine Meldung").join(" — ").trim() || null,
         lat, lng,

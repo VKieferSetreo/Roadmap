@@ -3,7 +3,7 @@
 // Zwei statische GeoJSON-Feeds (1 GET je Feed, EPSG:4326, keine Pagination). Geometrie = Point
 // ODER GeometryCollection (Point + LineString). validity = Objekt { from, to } (dd.mm.yyyy [HH:MM]).
 
-import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText } from "./_helpers.js"
+import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
 
 const QUELLE_NAME = "Berlin VIZ — GeoJSON-Feeds (Verkehrsredaktion + TIC3)"
 const FEEDS = [
@@ -82,7 +82,10 @@ export const vizBerlinGeojsonFeedsConnector = {
         const kat = katAus(p.subtype)
         const tonnage = tonnageAusText(text)
         obstacles.push(makeNormalized({
-          externeId: p.id ?? f.id,
+          // T-434: stabile Hash-externeId (wie 0114) statt roher Quell-id — beide Feeds
+          // (Verkehrsredaktion+TIC3) teilen den id-Raum, daher Feed-Herkunft mit in den Hash,
+          // sonst kollidieren gleiche ids feed-übergreifend beim Upsert auf (quelle, externe_id).
+          externeId: `${(p.id ?? f.id) ?? "x"}#${stabilHash(point[1], point[0], p.subtype, p.section, von, bis, p.street, herkunft)}`,
           kategorie: tonnage ? "gewicht" : kat,
           name: p.street || p.section || `${p.subtype ?? "Meldung"} Berlin`,
           beschreibung: text || null,

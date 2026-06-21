@@ -52,7 +52,8 @@ export const gstRoutenHamburgConnector = {
         externeId: f.id,
         kategorie: "sperrung",
         name: p.strassenname ?? `GST-Route ${p.wegenummer ?? f.id}`,
-        beschreibung: p.wegeart ? `${p.wegeart}${p.geschwindigkeit ? ` · ${p.geschwindigkeit}` : ""}` : null,
+        // T-437: Richtung als Ortskontext mitführen (Positiv-Korridor, keine Severity).
+        beschreibung: [p.wegeart, p.geschwindigkeit, p.richtung ? `Richtung ${p.richtung}` : null].filter(Boolean).join(" · ") || null,
         lat, lng,
         strassenRef: refAus(p),
         attrs: {

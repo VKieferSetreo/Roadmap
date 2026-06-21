@@ -19,7 +19,10 @@ const TYPEN = [
   { ft: "de.hh.up:strassenbruecken", kat: "bruecke" },
   { ft: "de.hh.up:fussgaengerbruecken", kat: "bruecke" },
   { ft: "de.hh.up:tunnel", kat: "tunnel" },
-  { ft: "de.hh.up:verkehrszeichenbruecken", kat: "ampel" }, // Schilderbrücke = Höhenrestriktion
+  // T-438: Schilderbrücke ist real eine Höhenrestriktion, dieser Feed liefert aber KEINEN Höhenwert
+  // (attrs nur baujahr). Ohne Grenzwert ist sie nicht auswertbar → ehrlich 'sonstige' (Engine schließt
+  // 'sonstige' aus), statt als 'ampel' wertlos in die Auswertung zu gehen.
+  { ft: "de.hh.up:verkehrszeichenbruecken", kat: "sonstige" },
   { ft: "de.hh.up:stuetzbauwerke", kat: "sonstige" }, // Stützmauern
   { ft: "de.hh.up:laermschutzbauwerke", kat: "sonstige" },
   { ft: "de.hh.up:sonstige_bauwerke", kat: "sonstige" },

@@ -86,6 +86,9 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   spurenFrei: { label: "Fahrstreifen frei" },
   spurenGesperrt: { label: "Fahrstreifen gesperrt" },
   anmeldungErforderlich: { label: "Anmeldung erforderlich" },
+  richtung: { label: "Richtung" }, // T-255: Freitext-Richtung als Ortskontext
+  grundsaetzlicheGstSperre: { label: "Grundsätzliche GST-Sperre" }, // T-463
+  gesperrtKomplett: { label: "Für Schwertransport gesperrt" }, // T-463
 }
 
 export function attrLabel(key: string): string {

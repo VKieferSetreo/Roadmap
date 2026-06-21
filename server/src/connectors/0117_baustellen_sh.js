@@ -44,7 +44,8 @@ export const baustellenShConnector = {
       const geom = gt && gt !== "Point" && gt !== "MultiPoint" ? f.geometry : null
       const { von, bis } = dauer(p.Dauer_der_Bauphase)
       const gewicht = num(p.Gewichtsbeschränkung_in_t)
-      const text = [p.Verkehrseinschränkung, p.Art_der_Maßnahme, p.Hinweise_zur_Verkehrsführung].filter(Boolean).join(" — ")
+      // T-439: betroffene Fahrtrichtung in den Freitext (Ortskontext) aufnehmen.
+      const text = [p.Verkehrseinschränkung, p.Art_der_Maßnahme, p.Betroffene_Fahrtrichtung, p.Hinweise_zur_Verkehrsführung].filter(Boolean).join(" — ")
       obstacles.push(makeNormalized({
         externeId: p.OBJECTID ?? f.id,
         kategorie: gewicht ? "gewicht" : "baustelle",
