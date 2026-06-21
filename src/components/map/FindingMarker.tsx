@@ -15,6 +15,7 @@ import {
 } from "@/components/project/findingMeta"
 import { FindingCard } from "./FindingCard"
 import { FindingChatPanel } from "./chat/FindingChatPanel"
+import { ShareChatReadonly } from "./chat/ShareChatReadonly"
 import { useFindingChatPresence } from "@/hooks/useFindingChat"
 import { findingPinIcon } from "./pins"
 import { geomMidpoint } from "@/lib/geom"
@@ -148,6 +149,10 @@ export function FindingMarker({
   // Roter Punkt am Chat-Button nur bei UNGELESENEN Nachrichten; markSeen() beim Öffnen löscht
   // ihn. Query nur für den aktiven (geöffneten) Marker — sonst feuert sie für jeden Marker.
   const { hasUnread, markSeen } = useFindingChatPresence(current.key ?? current.id, active && canChat)
+  // #14: extern (Share) reist der ÖFFENTLICHE Chat mit dem Fund mit → read-only anzeigen, KEINE
+  // gegatete API/kein Posten. App-Pfad (canChat) bleibt unverändert.
+  const shareChat = current.publicChat
+  const showChat = canChat || shareChat !== undefined
 
   return (
     <Marker
@@ -183,7 +188,7 @@ export function FindingMarker({
           {/* Geister-Karte als Collapsed-Hinweis: schaut rechts minimal hervor (origin-right +
               scale-90 hält die rechte Kante und schiebt sie 8px raus → man sieht, dass dahinter
               etwas ist). Nur an/aus, kein Fade. */}
-          {canChat && !chatOpen ? (
+          {showChat && !chatOpen ? (
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 origin-right translate-x-2 scale-90 rounded-xl border border-neutral-200 bg-white shadow-md"
@@ -195,7 +200,7 @@ export function FindingMarker({
               wird — so bleibt es eine reine Schiebe-Animation ohne Transparenz. */}
           {/* pointer-events-none am Container → die (unsichtbare) Fläche über der Karte fängt
               die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
-          {canChat ? (
+          {showChat ? (
           <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
             {/* Pop-out-Panel: 40% breiter (w-420), reine translate-Animation (kein opacity/scale).
                 Überlappt links 20px hinter der Hauptkarte — Inhalt per pl-5 nach rechts gedrückt. */}
@@ -216,7 +221,11 @@ export function FindingMarker({
                 chatOpen ? "pointer-events-auto translate-x-0" : "pointer-events-none -translate-x-full",
               )}
             >
-              <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
+              {shareChat ? (
+                <ShareChatReadonly messages={shareChat} />
+              ) : (
+                <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
+              )}
             </div>
           </div>
           ) : null}
@@ -252,7 +261,7 @@ export function FindingMarker({
 
           {/* Chat-Button auf der rechten Kante (Sibling des Wrappers, NICHT im Scroll-Div) —
               öffnet/schließt das Chat-Panel. Rote Markierung bei Einträgen. */}
-          {canChat ? (
+          {showChat ? (
           <button
             type="button"
             aria-expanded={chatOpen}

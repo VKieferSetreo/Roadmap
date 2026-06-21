@@ -975,6 +975,11 @@ export function createFakeDb() {
       return ok([], before - state.news.length)
     }
 
+    // ── finding_chat_messages: öffentlicher Chat für den Share (#14) — keine Chat-Fixtures → leer.
+    if (sql.startsWith("SELECT * FROM finding_chat_messages WHERE scope = 'public' AND finding_key = ANY")) {
+      return ok([])
+    }
+
     // ── hidden_findings (ausgeblendete Funde, pro Projekt) ────────────────────
     if (sql.startsWith("SELECT finding_key, grund, grund_text FROM hidden_findings WHERE project_id = $1")) {
       return ok(

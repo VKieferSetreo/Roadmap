@@ -6,7 +6,7 @@ import { Router } from "express"
 import { rowToFinding, rowToShareData } from "../map.js"
 import { createRateLimiter, shareToken, verifyPassword, verifyShareToken } from "../shares.js"
 import { SLUG_RE } from "../tenants.js"
-import { ApiError, asyncHandler, isUuid } from "../util.js"
+import { ApiError, asyncHandler, isUuid, toIso } from "../util.js"
 
 /** Aktiver Share inkl. Projekt-Name, strikt über tenantSlug + projectId. */
 async function loadActiveShare(db, tenantSlug, projectId) {
@@ -43,7 +43,32 @@ async function loadShareData(db, projectId, tenantId) {
   )
   const hiddenKeys = new Set(hidden.rows.map((h) => h.finding_key))
   const sichtbar = findings.rows.map(rowToFinding).filter((f) => !hiddenKeys.has(f.key))
-  return rowToShareData(project.rows[0], sichtbar)
+  // #14: öffentlichen Chat je sichtbarem Fund mitliefern (extern read-only). NUR scope='public'
+  // (DB-weit sichtbar) und KEINE Author-E-Mail nach außen — nur die Organisation des Autors.
+  const keys = sichtbar.map((f) => f.key).filter(Boolean)
+  const chat = keys.length
+    ? await db.query(
+        "SELECT * FROM finding_chat_messages WHERE scope = 'public' AND finding_key = ANY($1::text[]) ORDER BY created_at ASC",
+        [keys],
+      )
+    : { rows: [] }
+  const byKey = new Map()
+  for (const m of chat.rows) {
+    const list = byKey.get(m.finding_key) ?? []
+    list.push({
+      id: m.id,
+      findingKey: m.finding_key,
+      scope: "public",
+      organisation: m.organisation ?? null,
+      body: m.body,
+      kind: m.kind ?? "text",
+      contact: m.contact ?? null,
+      createdAt: toIso(m.created_at),
+    })
+    byKey.set(m.finding_key, list)
+  }
+  const mitChat = sichtbar.map((f) => ({ ...f, publicChat: byKey.get(f.key) ?? [] }))
+  return rowToShareData(project.rows[0], mitChat)
 }
 
 export function shareRouter({ db, sessionSalt }) {

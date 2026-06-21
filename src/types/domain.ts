@@ -146,6 +146,8 @@ export interface Finding {
   zustaendig?: string
   /** GeoJSON-Geometrie (LineString/MultiLineString = Strecke) für Linien-Darstellung statt nur Punkt. */
   geom?: GeoJSONGeometry | null
+  /** #14: vorab geladener ÖFFENTLICHER Chat (nur im externen Share gesetzt) → read-only anzeigen. */
+  publicChat?: FindingChatMessage[]
 }
 
 /** Minimale GeoJSON-Geometrie (Punkt/Linie/Strecke) — für Karten-Rendering. */
