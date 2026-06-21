@@ -3,6 +3,7 @@
 // Beim Drucken ist NUR der Bericht sichtbar (body.printing-report, globals.css).
 
 import { useEffect } from "react"
+import { createPortal } from "react-dom"
 import { Printer, X } from "lucide-react"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { Button } from "@/components/ui/Button"
@@ -85,7 +86,10 @@ export function ReportView({
           .sort((a, b) => a.km - b.km)
       : []
 
-  return (
+  // Per Portal an document.body (NICHT in #root) — sonst versteckt die Druck-Regel
+  // `body.printing-report #root { display:none }` auch den Bericht (er wäre ein Kind von #root)
+  // → leeres/verhauenes PDF. Als Body-Geschwister von #root bleibt er im Druck sichtbar.
+  return createPortal(
     <div id="report-print-root" className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100">
       {/* Toolbar (nicht im Druck) */}
       <div className="print-hidden sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 shadow-card">
@@ -243,7 +247,8 @@ export function ReportView({
           <span>{formatDateDE(new Date())}</span>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

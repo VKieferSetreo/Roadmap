@@ -175,19 +175,26 @@
   margin: 12mm;
 }
 @media print {
-  header,
-  aside,
-  footer,
+  body {
+    background: white;
+  }
+  /* Bedien-Toolbars nie drucken (auch der Bericht hat eine). */
   .print-hidden {
+    display: none !important;
+  }
+  /* App-Chrome nur außerhalb des Bericht-Modus ausblenden — im Bericht-Modus blendet #root
+     unten ohnehin die ganze App aus, und der Bericht hat EIGENE <header>/<footer>, die NICHT
+     getroffen werden dürfen (sonst druckt der Bericht ohne Kopf/Fuß = „verhauen"). */
+  body:not(.printing-report) header,
+  body:not(.printing-report) aside,
+  body:not(.printing-report) footer {
     display: none !important;
   }
   main {
     overflow: visible !important;
   }
-  body {
-    background: white;
-  }
-  /* Report-Modus: NUR der Bericht ist sichtbar */
+  /* Bericht-Modus: die App (#root) komplett ausblenden — NUR der an document.body portierte
+     Bericht bleibt sichtbar. */
   body.printing-report #root {
     display: none !important;
   }
