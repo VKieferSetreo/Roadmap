@@ -6,7 +6,12 @@ import { asyncHandler } from "../util.js"
 
 // Statisches SQL mit nullable Filtern — bewusst kein dynamischer Query-Builder.
 // v2: strikt auf den Request-Tenant gescoped ($4).
-const SEARCH_SQL = `SELECT f.*, p.name AS projekt_name FROM findings f
+// T-343: NICHT f.* — der geom-jsonb-Blob (Strecken-Geometrie) ist in der Such-LISTE ungenutzt
+// (kein Karten-Render) und blähte die Antwort auf. Explizite Spalten ohne geom.
+const SEARCH_SQL = `SELECT f.id, f.project_id, f.obstacle_id, f.kategorie, f.severity, f.titel,
+    f.beschreibung, f.lat, f.lng, f.km, f.detail, f.strassen_ref, f.gueltig_von, f.gueltig_bis,
+    f.quelle, f.zustaendig, f.route_id, f.route_name, p.name AS projekt_name
+  FROM findings f
   JOIN projects p ON p.id = f.project_id
   WHERE ($1::text IS NULL OR f.kategorie = $1)
     AND ($2::text IS NULL OR f.severity = $2)

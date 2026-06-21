@@ -503,7 +503,8 @@ export function createFakeDb() {
           })),
       )
     }
-    if (sql.startsWith("SELECT f.*, p.name AS projekt_name FROM findings f")) {
+    // T-343: matcht alt (f.*) wie neu (explizite Spalten ohne geom) — beide haben projekt_name.
+    if (sql.includes("AS projekt_name") && sql.includes("FROM findings f")) {
       const [kategorie, severity, q, tenantId] = params
       const rows = state.findings
         .map((f) => {
