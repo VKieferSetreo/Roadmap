@@ -1,7 +1,7 @@
-// Sanft hochzählende Kennzahl (framer-motion spring). Respektiert reduced-motion.
+// Sanft hochzählende Kennzahl (RAF, easeOutCubic). Respektiert reduced-motion.
+// T-359: ohne framer-motion (war ~30 KB gz eager im Main-Chunk für genau diese eine Zahl).
 
-import { useEffect, useRef } from "react"
-import { useReducedMotion, useSpring, useTransform, motion } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
 
 interface AnimatedNumberProps {
   value: number
@@ -10,26 +10,39 @@ interface AnimatedNumberProps {
   className?: string
 }
 
+const DURATION = 700 // ms
+
 export function AnimatedNumber({ value, format, className }: AnimatedNumberProps) {
-  const reduced = useReducedMotion()
-  const spring = useSpring(reduced ? value : 0, { stiffness: 90, damping: 20 })
-  const display = useTransform(spring, (v) =>
-    (format ?? ((n: number) => Math.round(n).toLocaleString("de-DE")))(v),
-  )
-  const mounted = useRef(false)
+  const fmt = format ?? ((n: number) => Math.round(n).toLocaleString("de-DE"))
+  const [display, setDisplay] = useState(0)
+  const displayRef = useRef(0) // aktueller Wert → bei value-Wechsel mitten in der Animation sauber weiteranimieren
+  const rafRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
-    if (reduced) {
-      spring.jump(value)
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    const from = displayRef.current
+    if (reduced || from === value) {
+      displayRef.current = value
+      setDisplay(value)
       return
     }
-    if (!mounted.current) {
-      mounted.current = true
-      spring.set(value)
-      return
+    let start: number | null = null
+    const tick = (t: number) => {
+      if (start === null) start = t
+      const p = Math.min(1, (t - start) / DURATION)
+      const eased = 1 - (1 - p) ** 3 // easeOutCubic
+      const cur = from + (value - from) * eased
+      displayRef.current = cur
+      setDisplay(cur)
+      if (p < 1) rafRef.current = requestAnimationFrame(tick)
     }
-    spring.set(value)
-  }, [value, spring, reduced])
+    rafRef.current = requestAnimationFrame(tick)
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [value])
 
-  return <motion.span className={className}>{display}</motion.span>
+  return <span className={className}>{fmt(display)}</span>
 }
