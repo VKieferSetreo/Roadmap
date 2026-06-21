@@ -10,7 +10,7 @@ import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
-import type { Finding, Project, ProjectRoute, TransportData } from "@/types/domain"
+import type { Finding, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Daten-Payload des Public-Share-Endpoints (gestripped — nur Abmessungen als Stammdaten, T-223). */
@@ -20,6 +20,7 @@ interface ShareData {
   fahrzeitMin?: number
   updatedAt: string
   transport?: TransportData
+  zeitraum?: TransportZeitraum // #12b: Transport-Zeitfenster für den Karten-Zeitstrahl extern
   routes: ProjectRoute[]
   findings: Finding[]
 }
@@ -199,6 +200,8 @@ export function ShareApp() {
 // ── Viewer (entsperrt) ────────────────────────────────────────────────────────
 
 function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }) {
+  // #12a: Haftungsausschluss als Pop-up beim Öffnen (wie in der App), nicht in der Footer-Bar.
+  const [showDisclaimer, setShowDisclaimer] = useState(true)
   // synthetisches Project-Objekt für die wiederverwendeten Tabs (read-only Felder)
   const project: Project = useMemo(
     () => ({
@@ -209,7 +212,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       updatedAt: data.updatedAt,
       routes: data.routes,
       transport: data.transport ?? { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0 },
-      zeitraum: {},
+      zeitraum: data.zeitraum ?? {}, // #12b: aus der Share-Payload → Zeitstrahl aktiv
       findings: data.findings,
       distanzKm: data.distanzKm,
       fahrzeitMin: data.fahrzeitMin,
@@ -218,22 +221,25 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
   )
 
   return (
-    <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
-      <Shell projektName={data.name}>
-        <Routes>
-          <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} />} />
-          <Route
-            path="/projekte/:id/dashboard"
-            element={
-              <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
-                <DashboardTab project={project} />
-              </div>
-            }
-          />
-          <Route path="*" element={<Navigate to={`/projekte/${projectId}/karte`} replace />} />
-        </Routes>
-      </Shell>
-    </MemoryRouter>
+    <>
+      {showDisclaimer ? <DisclaimerModal mode="view" onClose={() => setShowDisclaimer(false)} /> : null}
+      <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
+        <Shell projektName={data.name}>
+          <Routes>
+            <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} />} />
+            <Route
+              path="/projekte/:id/dashboard"
+              element={
+                <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
+                  <DashboardTab project={project} />
+                </div>
+              }
+            />
+            <Route path="*" element={<Navigate to={`/projekte/${projectId}/karte`} replace />} />
+          </Routes>
+        </Shell>
+      </MemoryRouter>
+    </>
   )
 }
 
@@ -273,9 +279,6 @@ function ShareTabs() {
 
 function Shell({ children, projektName }: { children: React.ReactNode; projektName?: string }) {
   const inRouter = projektName !== undefined
-  // T-#12: Haftungsausschluss als ansehbares Modal (gleicher vetted Text wie in der App), zusätzlich
-  // zu den rechtlichen Links — kein neuer Rechtstext, nur Wiederverwendung.
-  const [showDisclaimer, setShowDisclaimer] = useState(false)
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-neutral-200/80 bg-white px-4 shadow-card lg:px-6">
@@ -297,13 +300,9 @@ function Shell({ children, projektName }: { children: React.ReactNode; projektNa
         <a href="https://setreo.de/impressum/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Impressum</a>
         <a href="https://setreo.de/datenschutz/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Datenschutz</a>
         <a href="https://setreo.de/agb/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">AGB</a>
-        <button type="button" onClick={() => setShowDisclaimer(true)} className="transition-colors hover:text-neutral-600">
-          Haftungsausschluss
-        </button>
         <span className="text-neutral-300" aria-hidden>·</span>
         <span>Bereitgestellt über Setreo Roadmap</span>
       </footer>
-      {showDisclaimer ? <DisclaimerModal mode="view" onClose={() => setShowDisclaimer(false)} /> : null}
     </div>
   )
 }

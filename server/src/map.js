@@ -156,6 +156,9 @@ export function rowToShareData(row, findings = []) {
       hoehe: Number(t.hoehe) || 0,
       gesamtgewicht: Number(t.gesamtgewicht) || 0,
     },
+    // #12b: Transport-Zeitfenster mitliefern → externer Karten-Zeitstrahl (nicht sensibel: das
+    // eigene Planungs-Datumsfenster, keine Mandanten-/Bestandsdaten).
+    zeitraum: row.zeitraum ?? {},
     routes: (row.routes ?? []).map((r) => ({
       id: r.id,
       name: r.name,
