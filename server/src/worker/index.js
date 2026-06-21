@@ -134,8 +134,12 @@ async function waitForSchema({ tries = Number(process.env.WORKER_SCHEMA_WAIT_TRI
 const jobs = []
 let rerunTimer = null
 let rerunning = false
+let rerunDeadline = 0 // T-366: Obergrenze, ab der ein gebündelter Rerun spätestens losläuft
 
 const RERUN_DEBOUNCE_MS = 60_000
+// T-366: laufen Importe ununterbrochen, re-armt der Debounce den Rerun immer wieder neu — er
+// liefe nie. Ab dem ERSTEN Trigger gilt diese Obergrenze, dann startet der Rerun garantiert.
+const RERUN_MAX_WAIT_MS = 5 * 60_000
 // Sicherheitsventil: hängt der Rerun (DB-Deadlock o.ä.), wird der Lock nach
 // dieser Zeit freigegeben, statt den Worker dauerhaft zu verklemmen.
 const RERUN_TIMEOUT_MS = 5 * 60_000
@@ -147,10 +151,13 @@ function changed(stats) {
     (stats.deaktiviert ?? 0) + (stats.reaktiviert ?? 0)) > 0
 }
 
-/** Mehrere Import-Änderungen kurz hintereinander zu EINEM Rerun bündeln. */
+/** Mehrere Import-Änderungen kurz hintereinander zu EINEM Rerun bündeln (mit Wartezeit-Cap T-366). */
 function scheduleRerun() {
   if (rerunTimer) clearTimeout(rerunTimer)
-  rerunTimer = setTimeout(() => void runRerun("Import-Änderungen"), RERUN_DEBOUNCE_MS)
+  const now = Date.now()
+  if (!rerunDeadline) rerunDeadline = now + RERUN_MAX_WAIT_MS // erster Trigger setzt die Obergrenze
+  const delay = Math.max(0, Math.min(RERUN_DEBOUNCE_MS, rerunDeadline - now))
+  rerunTimer = setTimeout(() => void runRerun("Import-Änderungen"), delay)
 }
 
 /** Abgelaufene deaktivieren + alle Projekte neu auswerten + Benachrichtigungen. */
@@ -161,6 +168,7 @@ async function runRerun(grund) {
   }
   rerunning = true
   rerunTimer = null
+  rerunDeadline = 0 // T-366: Batch startet → Obergrenze für den nächsten Batch zurücksetzen
   try {
     const expired = await expireObstacles(db)
     if (expired.length) log(`Hygiene: ${expired.length} abgelaufene Hindernisse deaktiviert`)

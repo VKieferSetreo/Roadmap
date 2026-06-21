@@ -7,6 +7,7 @@
 
 import { Router } from "express"
 import { auditLog, rowToAudit } from "../auditLog.js"
+import { placeholders } from "../dbBatch.js"
 import { requireRole, requireTenantAdminParam } from "../auth.js"
 import { generateSeatCodes, listSeatCodes } from "../seatCodes.js"
 import { getTenantById, listTenants, rowToTenant, slugError, tenantMembers } from "../tenants.js"
@@ -27,6 +28,7 @@ async function provisionExtern({ authExtern, fetchImpl, email, password }) {
       method: "PUT",
       headers: { "content-type": "application/json", "x-provision-secret": authExtern.secret },
       body: JSON.stringify({ email, password }),
+      signal: AbortSignal.timeout(8000), // T-403: hängender Auth-Service darf nicht offen halten
     })
   } catch {
     throw new ApiError(502, "Auth-Service (extern) nicht erreichbar")
@@ -44,6 +46,7 @@ async function deactivateExtern({ authExtern, fetchImpl, email }) {
     resp = await fetchImpl(`${authExtern.url}/internal/users/${encodeURIComponent(email)}`, {
       method: "DELETE",
       headers: { "x-provision-secret": authExtern.secret },
+      signal: AbortSignal.timeout(8000), // T-403
     })
   } catch {
     throw new ApiError(502, "Auth-Service (extern) nicht erreichbar")
@@ -175,12 +178,23 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
     // Provisionierung (externe Calls) VOR der DB-Transaktion — schlägt eine fehl, wird nichts geschrieben.
     // Gesetztes Passwort → in setreo-auth-extern (re)provisionieren (Hash), NICHT hier speichern.
     // Leeres Passwort = unverändert (bestehende Mitglieder behalten ihren Login).
+    const provisioniert = []
     for (const m of incoming) {
       if (m.password) {
         if (m.password.length < MIN_PASSWORD_LEN) {
           throw new ApiError(400, `Passwort für ${m.email}: mindestens ${MIN_PASSWORD_LEN} Zeichen`)
         }
-        await provisionExtern({ authExtern, fetchImpl, email: m.email, password: m.password })
+        try {
+          await provisionExtern({ authExtern, fetchImpl, email: m.email, password: m.password })
+          provisioniert.push(m.email)
+        } catch (err) {
+          // T-403: Provisionierung läuft pro Mitglied; bricht sie mittendrin ab, sind die vorherigen
+          // schon im Extern-Auth (idempotenter Upsert → erneutes Speichern ist sicher). Den Teil-Stand
+          // transparent melden statt eines nackten 502, damit der Admin weiß, dass ein Retry genügt.
+          const status = err instanceof ApiError ? err.status : 502
+          const teil = provisioniert.length ? ` Bereits provisioniert: ${provisioniert.join(", ")}.` : ""
+          throw new ApiError(status, `Nutzer ${m.email} konnte nicht provisioniert werden.${teil} Bitte erneut speichern.`)
+        }
       } else if (!currentByEmail.has(m.email)) {
         // neuer Eintrag ohne Passwort → nicht erlaubt (nur-mit-Passwort)
         throw new ApiError(400, `Neuer Nutzer ${m.email} braucht ein Passwort`)
@@ -209,10 +223,11 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
         )
       }
       await q.query("DELETE FROM tenant_members WHERE tenant_id = $1", [tenant.id])
-      for (const m of incoming) {
+      // T-387: alle Mitglieder in EINEM Multi-Row-INSERT statt einer Query je Mitglied.
+      if (incoming.length > 0) {
         await q.query(
-          "INSERT INTO tenant_members (tenant_id, email, role) VALUES ($1, $2, $3)",
-          [tenant.id, m.email, m.role],
+          `INSERT INTO tenant_members (tenant_id, email, role) VALUES ${placeholders(incoming.length, 3)}`,
+          incoming.flatMap((m) => [tenant.id, m.email, m.role]),
         )
       }
       // Seat-Recycling (T-318/T-353): Seat-Codes entfernter Mitglieder freigeben, sonst läuft der
