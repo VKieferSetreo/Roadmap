@@ -28,5 +28,19 @@ export default defineConfig(({ command }) => ({
     outDir: "dist",
     sourcemap: false,
     target: "es2022",
+    rollupOptions: {
+      output: {
+        // T-362: stabile Vendor-Chunks für die großen eager-Libs, damit ein App-Code-Change
+        // nicht den ganzen react/query/leaflet-Code neu-hasht (Browser-Cache bleibt warm).
+        // Nur gezielt splitten; alles andere (inkl. lazy recharts/html2canvas) bleibt bei Rollups
+        // Default-Chunking → die bestehenden dynamic-import-Chunks bleiben unangetastet.
+        manualChunks: (id) => {
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) return "react"
+          if (/[\\/]node_modules[\\/]@tanstack[\\/]/.test(id)) return "query"
+          if (/[\\/]node_modules[\\/](leaflet|react-leaflet)/.test(id)) return "leaflet"
+          return undefined
+        },
+      },
+    },
   },
 }))

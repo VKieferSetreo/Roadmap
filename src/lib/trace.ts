@@ -1,9 +1,8 @@
 // Auto-UUID pro Request, Trace-Id propagation falls von Backend gesetzt.
 
-import { v4 as uuidv4 } from "uuid"
-
 export function newRequestId(): string {
-  return uuidv4()
+  // T-363: nativer crypto.randomUUID() (es2022, secure context) statt der uuid-Lib für einen Aufruf.
+  return crypto.randomUUID()
 }
 
 let currentTraceId: string | null = null
