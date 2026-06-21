@@ -85,8 +85,12 @@ export function RouteTab({ project }: { project: Project }) {
   const [szPoints, setSzPoints] = useState<SzPoint[]>(() => [makeSzPoint(), makeSzPoint()])
   const [pickerIdx, setPickerIdx] = useState<number | null>(null)
   const [szBusy, setSzBusy] = useState(false)
-  // Datei geparst, wartet auf Namensvergabe (kleine Maske) vor dem Anlegen.
-  const [pendingFile, setPendingFile] = useState<{ points: RoutePoint[]; fileName: string; suggest: string } | null>(null)
+  // Geparste/geladene Strecke, wartet auf Namensvergabe (kleine Maske) vor dem Anlegen.
+  // Gilt für KML-Datei UND Google-Link (Max-Wunsch: bei beiden Namen vergeben; nur GeoPackage
+  // bringt native Tabellennamen mit und überspringt die Maske).
+  const [pendingFile, setPendingFile] = useState<
+    { points: RoutePoint[]; fileName?: string; suggest: string; source: RouteSource; grob?: boolean } | null
+  >(null)
   const [pendingName, setPendingName] = useState("")
   // #15: GeoPackage mit mehreren Strecken → Auswahl-Maske.
   const [gpkg, setGpkg] = useState<{ fileName: string; routes: GpkgRoute[] } | null>(null)
@@ -127,7 +131,7 @@ export function RouteTab({ project }: { project: Project }) {
       const parsed = await parseRouteFile(file)
       // Nicht sofort anlegen: erst Namen vergeben lassen (keine Datei-Namen als Strecken-Namen).
       const suggest = file.name.replace(/\.kml$/i, "")
-      setPendingFile({ points: parsed.points, fileName: file.name, suggest })
+      setPendingFile({ points: parsed.points, fileName: file.name, suggest, source: "datei" })
       setPendingName(suggest)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Datei konnte nicht gelesen werden.")
@@ -149,9 +153,17 @@ export function RouteTab({ project }: { project: Project }) {
     if (!pendingFile) return
     const name = pendingName.trim()
     if (name.length < 2) return
-    addRoute(project.id, { name, fileName: pendingFile.fileName, points: pendingFile.points, source: "datei" })
+    const grob = pendingFile.grob === true
+    addRoute(project.id, {
+      name,
+      fileName: pendingFile.fileName,
+      points: pendingFile.points,
+      source: pendingFile.source,
+      ...(grob ? { grob: true } : {}),
+    })
     toast.success(
-      `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km.`,
+      `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km` +
+        (grob ? " (grobe Schätzung — Router nicht erreichbar)." : "."),
     )
     setPendingFile(null)
     setPendingName("")
@@ -166,7 +178,14 @@ export function RouteTab({ project }: { project: Project }) {
     setLinkBusy(true)
     try {
       const res = await api.route.maps(url)
-      addRouteFromResult(res, "Google-Maps-Route", "link")
+      // Wie KML: erst Namen vergeben lassen (Maske), dann anlegen — kein stiller „Google-Maps-Route".
+      setPendingFile({
+        points: res.points,
+        suggest: "Google-Maps-Route",
+        source: "link",
+        grob: res.provider.router === "fallback",
+      })
+      setPendingName("Google-Maps-Route")
       setLinkUrl("")
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Link konnte nicht verarbeitet werden.")
@@ -439,7 +458,7 @@ export function RouteTab({ project }: { project: Project }) {
         <Dialog open onClose={() => setPendingFile(null)} size="sm">
           <DialogHeader
             title="Strecke benennen"
-            subtitle={`${pendingFile.fileName} · ${pendingFile.points.length.toLocaleString("de-DE")} Punkte`}
+            subtitle={`${pendingFile.fileName ?? SOURCE_LABEL[pendingFile.source]} · ${pendingFile.points.length.toLocaleString("de-DE")} Punkte`}
             onClose={() => setPendingFile(null)}
           />
           <div className="px-6 py-5">

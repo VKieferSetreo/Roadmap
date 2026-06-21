@@ -119,7 +119,7 @@ export function MapPointPicker({
       } finally {
         if (!stale) setLoading(false)
       }
-    }, 400)
+    }, 220) // kurzer Debounce → Vorschläge erscheinen schon bei kurzer Tipp-Pause (Max-Feedback)
     return () => {
       stale = true
       clearTimeout(id)
