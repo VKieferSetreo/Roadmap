@@ -21,6 +21,12 @@ export function DropdownMenu({ trigger, children, align = "end", className, trig
   const menuRef = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState<{ top: number; left?: number; right?: number } | null>(null)
 
+  // T-241: schließen + Fokus an den Trigger zurückgeben (für Tastatur-/Escape-Wege).
+  const close = () => {
+    setOpen(false)
+    triggerRef.current?.focus()
+  }
+
   useEffect(() => {
     if (!open) return
     const place = () => {
@@ -36,10 +42,10 @@ export function DropdownMenu({ trigger, children, align = "end", className, trig
     const onClick = (e: MouseEvent) => {
       const t = e.target as Node
       if (triggerRef.current?.contains(t) || menuRef.current?.contains(t)) return
-      setOpen(false)
+      setOpen(false) // Klick außerhalb → KEIN Fokus-Steal (der Nutzer hat woanders hingeklickt)
     }
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false)
+      if (e.key === "Escape") close()
     }
     window.addEventListener("mousedown", onClick)
     window.addEventListener("keydown", onEsc)
@@ -52,6 +58,24 @@ export function DropdownMenu({ trigger, children, align = "end", className, trig
       window.removeEventListener("scroll", place, true)
     }
   }, [open, align])
+
+  // T-241: beim Öffnen den Fokus auf das erste Menüelement legen (Tastatur-Bedienung).
+  useEffect(() => {
+    if (open && pos) {
+      menuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus()
+    }
+  }, [open, pos])
+
+  // T-241: Pfeiltasten-Roving zwischen den Menüelementen + Home/End.
+  const onMenuKey = (e: React.KeyboardEvent) => {
+    const items = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [])
+    if (!items.length) return
+    const i = items.indexOf(document.activeElement as HTMLButtonElement)
+    if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus() }
+    else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus() }
+    else if (e.key === "Home") { e.preventDefault(); items[0].focus() }
+    else if (e.key === "End") { e.preventDefault(); items[items.length - 1].focus() }
+  }
 
   return (
     <div className="relative inline-block">
@@ -75,7 +99,8 @@ export function DropdownMenu({ trigger, children, align = "end", className, trig
               "z-[1700] min-w-[180px] animate-fade-in rounded-md border border-neutral-200 bg-white py-1 shadow-lg",
               className,
             )}
-            onClick={() => setOpen(false)}
+            onKeyDown={onMenuKey}
+            onClick={close}
           >
             {children}
           </div>,
