@@ -543,14 +543,17 @@ export const DEFAULT_TRANSPORT: TransportData = {
   gesamtgewicht: 68,
 }
 
-/** Farb-Palette für Projekt-Strecken (Reihenfolge = Vergabe-Reihenfolge). */
+// Farb-Palette für Projekt-Strecken (Reihenfolge = Vergabe-Reihenfolge). Bewusst NUR kühle Töne
+// (Blau/Violett/Magenta/Cyan) — KEIN Grün/Gelb/Rot/Orange (Max 2026-06-21): diese kollidieren mit
+// den Severity-Farben der Fund-Marker (rot=kritisch, gelb=warnung, grün=frei) und sehen mit den
+// Start/Ziel-Pins in Streckenfarbe komisch aus.
 export const ROUTE_FARBEN = [
-  "#527121", // Setreo-Dunkelgrün
   "#2563EB", // Blau
-  "#9333EA", // Violett
-  "#0D9488", // Petrol
-  "#C2410C", // Terracotta
+  "#7C3AED", // Violett
   "#DB2777", // Magenta
-  "#4D7C0F", // Oliv
-  "#7C3AED", // Indigo
+  "#0EA5E9", // Himmelblau
+  "#C026D3", // Fuchsia
+  "#4F46E5", // Indigo
+  "#0891B2", // Cyan
+  "#1E40AF", // Dunkelblau
 ] as const

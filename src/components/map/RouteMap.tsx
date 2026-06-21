@@ -26,11 +26,11 @@ function segmentAngle(a: [number, number], b: [number, number]): number {
 }
 
 /** Dezente Fahrtrichtungs-Pfeile gleichmäßig entlang der Strecke (Index-basiert, nie an Start/Ziel).
- *  Anzahl skaliert mit der Punktdichte (3…14) — stilvoll sparsam, nicht jede Kurve markiert. */
+ *  Anzahl skaliert mit der Punktdichte (6…24) — dichter als zuvor (Max 2026-06-21: „mehr"). */
 function routeArrows(positions: [number, number][]): { pos: [number, number]; angle: number }[] {
   const len = positions.length
   if (len < 2) return []
-  const n = Math.min(14, Math.max(3, Math.round(len / 50)))
+  const n = Math.min(24, Math.max(6, Math.round(len / 25)))
   const out: { pos: [number, number]; angle: number }[] = []
   for (let k = 1; k <= n; k++) {
     const i = Math.min(len - 2, Math.max(0, Math.round((k / (n + 1)) * (len - 1))))
@@ -155,15 +155,7 @@ export function RouteMap({
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
         <MapResize />
 
-        {drawn.map((r) => (
-          /* je Strecke: weißer Schatten + Strecken-Farbe + Fahrtrichtungs-Fluss */
-          <Polyline
-            key={`bg-${r.id}`}
-            positions={r.positions}
-            smoothFactor={0}
-            pathOptions={{ color: "#ffffff", weight: 9, opacity: 0.9 }}
-          />
-        ))}
+        {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21). */}
         {drawn.map((r) => (
           <Polyline
             key={`line-${r.id}`}
@@ -174,9 +166,9 @@ export function RouteMap({
           />
         ))}
         {/* Fahrtrichtung: dezente weiße Pfeile entlang der Strecke (Marker im markerPane, nicht
-            klickbar). Ab >25 Strecken weggelassen — bei so vielen Linien wäre es nur noch Geflimmer
-            (ponytail: Pfeil-Obergrenze, statt tausende Marker zu rendern). */}
-        {drawn.length <= 25
+            klickbar). Ab >15 Strecken weggelassen — bei so vielen Linien wäre es nur noch Geflimmer
+            (ponytail: Pfeil-Obergrenze ~24/Strecke, statt tausende Marker zu rendern). */}
+        {drawn.length <= 15
           ? drawn.flatMap((r) =>
               routeArrows(r.positions).map((ar, idx) => (
                 <Marker

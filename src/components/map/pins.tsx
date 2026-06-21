@@ -5,9 +5,10 @@
 // echtes StVO-Schild (von Max geliefert, signAssets.ts) mittig. Genutzt von RouteMap
 // (via FindingMarker), FindingMapDialog und ObstaclesMap.
 
+import { type ReactElement } from "react"
 import L from "leaflet"
 import { renderToStaticMarkup } from "react-dom/server"
-import { MapPin as MapPinIcon } from "lucide-react"
+import { Flag as FlagIcon, MapPin as MapPinIcon, Play as PlayIcon } from "lucide-react"
 import type { FindingKategorie } from "@/types/domain"
 import { signUri } from "./signAssets"
 
@@ -91,9 +92,15 @@ function routePinSvg(farbe: string, glyph: string): string {
   </svg>`
 }
 
-// ── Start-Pin: Play-Dreieck in der Strecken-Farbe (Max-Wunsch) ───────────────
+// Lucide-Glyph (echtes Icon) zentriert auf den weißen Kopf-Kreis (17,16). size 13 → translate so,
+// dass die 13×13-Box mittig sitzt.
+function centeredGlyph(node: ReactElement): string {
+  return `<g transform="translate(10.5 9.5)">${renderToStaticMarkup(node)}</g>`
+}
+
+// ── Start-Pin: echtes Play-Icon in der Strecken-Farbe (Max-Wunsch: echte Icons) ─
 export function startPinIcon(farbe: string): L.DivIcon {
-  const glyph = `<path d="M14.3 11.4 L22 16 L14.3 20.6 Z" fill="${farbe}"/>`
+  const glyph = centeredGlyph(<PlayIcon size={13} fill={farbe} color={farbe} strokeWidth={1.5} />)
   return L.divIcon({
     className: "rm-start-pin",
     html: routePinSvg(farbe, glyph),
@@ -103,23 +110,12 @@ export function startPinIcon(farbe: string): L.DivIcon {
   })
 }
 
-// ── Ziel-Pin: Zielflagge (kariert) in der Strecken-Farbe ─────────────────────
+// ── Ziel-Pin: echtes Flaggen-Icon in der Strecken-Farbe ──────────────────────
 export function endPinIcon(farbe: string): L.DivIcon {
-  // 3×2-Schachbrett, zentriert auf den weißen Kopf-Kreis (17,16); weiß = Kreisgrund.
-  const sq = 3
-  const x0 = 12.5
-  const y0 = 13
-  let checks = ""
-  for (let r = 0; r < 2; r++) {
-    for (let c = 0; c < 3; c++) {
-      if ((r + c) % 2 === 0) {
-        checks += `<rect x="${x0 + c * sq}" y="${y0 + r * sq}" width="${sq}" height="${sq}" fill="${farbe}"/>`
-      }
-    }
-  }
+  const glyph = centeredGlyph(<FlagIcon size={13} fill={farbe} color={farbe} strokeWidth={1.5} />)
   return L.divIcon({
     className: "rm-end-pin",
-    html: routePinSvg(farbe, checks),
+    html: routePinSvg(farbe, glyph),
     iconSize: [34, 42],
     iconAnchor: [17, 42],
     popupAnchor: [0, -38],
@@ -133,13 +129,13 @@ export function directionArrowIcon(angle: number): L.DivIcon {
   const a = Math.round(angle / 5) * 5
   const cached = arrowCache.get(a)
   if (cached) return cached
-  const html = `<div style="width:14px;height:14px;transform:rotate(${a}deg)">
-    <svg width="14" height="14" viewBox="0 0 14 14" style="overflow:visible">
-      <path d="M4.5 2.5 L10 7 L4.5 11.5" fill="none" stroke="#ffffff" stroke-width="2.4"
+  const html = `<div style="width:10px;height:10px;transform:rotate(${a}deg)">
+    <svg width="10" height="10" viewBox="0 0 10 10" style="overflow:visible">
+      <path d="M3.4 1.8 L7 5 L3.4 8.2" fill="none" stroke="#ffffff" stroke-width="1.7"
             stroke-linecap="round" stroke-linejoin="round"
-            style="filter:drop-shadow(0 0 1px rgba(0,0,0,.6))"/>
+            style="filter:drop-shadow(0 0 0.8px rgba(0,0,0,.65))"/>
     </svg></div>`
-  const icon = L.divIcon({ className: "rm-dir-arrow", html, iconSize: [14, 14], iconAnchor: [7, 7] })
+  const icon = L.divIcon({ className: "rm-dir-arrow", html, iconSize: [10, 10], iconAnchor: [5, 5] })
   arrowCache.set(a, icon)
   return icon
 }
