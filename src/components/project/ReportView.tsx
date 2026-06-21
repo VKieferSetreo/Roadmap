@@ -61,6 +61,15 @@ export function ReportView({
     sev,
     n: sichtbar.filter((f) => f.severity === sev).length,
   }))
+  // T-492: echter Daten-Stand = jüngstes Quell-Aktualisierungsdatum der enthaltenen Funde. NICHT
+  // project.updatedAt (das jeder Sync-Rerun/Umbenennung auf "heute" zieht und Tagesaktualität
+  // vortäuscht). Nur ISO-parsebare Werte; ohne datierte Quelle bleibt der Daten-Stand-Zusatz aus.
+  const datenStand = sichtbar
+    .map((f) => f.quelle?.aktualisiertAm)
+    .filter((d): d is string => typeof d === "string" && /^\d{4}-\d{2}-\d{2}/.test(d))
+    .map((d) => d.slice(0, 10))
+    .sort()
+    .at(-1)
   const t = project.transport
   const routen = project.routes.filter(
     (r) => r.points.length >= 2 && (!routeSel || routeSel.has(r.id)),
@@ -103,11 +112,18 @@ export function ReportView({
               {project.name}
             </h1>
             <p className="mt-1 text-xs text-neutral-500">
-              Stand {formatDateDE(project.updatedAt)} · {routen.length}{" "}
+              Berichtsdatum {formatDateDE(project.updatedAt)} · {routen.length}{" "}
               {routen.length === 1 ? "Strecke" : "Strecken"} ·{" "}
               {project.distanzKm?.toLocaleString("de-DE")} km gesamt ·{" "}
               {Math.floor((project.fahrzeitMin ?? 0) / 60)} h {(project.fahrzeitMin ?? 0) % 60} min
             </p>
+            {/* T-492: Daten-Stand getrennt vom Berichtsdatum — der echte Aktualitäts-Anker der Funde. */}
+            {datenStand ? (
+              <p className="mt-0.5 text-xs text-neutral-500">
+                Daten-Stand {formatDateDE(datenStand)}{" "}
+                <span className="text-neutral-400">(jüngste enthaltene Quelle)</span>
+              </p>
+            ) : null}
             {exportVon || exportBis ? (
               <p className="mt-1 inline-flex rounded border border-primary-200 bg-primary-50/60 px-2 py-0.5 text-[11px] font-medium text-primary-700">
                 Export-Zeitraum: {exportVon ? formatDateDE(exportVon) : "Beginn"} –{" "}
