@@ -169,9 +169,14 @@ export function validateObstacle(input, { strict = false } = {}) {
   }
 }
 
-export const INSERT_SQL = `INSERT INTO obstacles (kategorie, name, beschreibung, lat, lng, strassen_ref,
+// Insert-Spalten an EINER Stelle — Single-Row-INSERT_SQL und der Importer-Batch (dbBatch)
+// teilen sie sich, damit Spaltenreihenfolge und insertParams() nie auseinanderdriften.
+export const OBSTACLE_INSERT_COLS = `kategorie, name, beschreibung, lat, lng, strassen_ref,
     zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start,
-    aktiv, demo, tenant_id, externe_id, ki_aufbereitet, geom)
+    aktiv, demo, tenant_id, externe_id, ki_aufbereitet, geom`
+export const OBSTACLE_INSERT_COL_COUNT = 20
+
+export const INSERT_SQL = `INSERT INTO obstacles (${OBSTACLE_INSERT_COLS})
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *`
 
 export const insertParams = (o) => [
@@ -195,6 +200,23 @@ export const sachfeldParams = (id, o) => [
   o.gueltigVon, o.gueltigBis, o.kiAufbereitet === true,
   o.geom != null ? JSON.stringify(o.geom) : null,
 ]
+export const SACHFELD_COL_COUNT = 14 // sachfeldParams: id + 13 Sachfelder
+
+/** Batch-Sachfeld-Update (T-329): N Updates als EIN `UPDATE … FROM (VALUES …)`-Join statt N Round-Trips.
+ *  `valuesSql` = Platzhalter-Tupel aus dbBatch.placeholders(rows, SACHFELD_COL_COUNT), Params = flache
+ *  sachfeldParams(id, value)-Liste. Casts, weil VALUES-Spalten sonst als text inferiert werden. fach_id/
+ *  realer_start/aktiv/tenant bleiben — wie beim Single-Row-UPDATE — unberührt; ki_aufbereitet ist sticky. */
+export const sachfeldBatchSql = (valuesSql) => `UPDATE obstacles AS o SET
+    kategorie = v.kategorie, name = v.name, beschreibung = v.beschreibung,
+    lat = v.lat::double precision, lng = v.lng::double precision,
+    strassen_ref = v.strassen_ref, zustaendig = v.zustaendig,
+    quelle = v.quelle::jsonb, attrs = v.attrs::jsonb,
+    gueltig_von = v.gueltig_von::date, gueltig_bis = v.gueltig_bis::date,
+    ki_aufbereitet = (o.ki_aufbereitet OR v.ki_aufbereitet::boolean),
+    geom = v.geom::jsonb, updated_at = now()
+  FROM (VALUES ${valuesSql}) AS v(id, kategorie, name, beschreibung, lat, lng, strassen_ref,
+    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom)
+  WHERE o.id = v.id::uuid`
 
 const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index
   FROM obstacles WHERE quellen_id = $1 AND fach_id ~ '^[0-9]{4}'`

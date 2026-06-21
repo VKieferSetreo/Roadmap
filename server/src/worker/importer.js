@@ -11,9 +11,11 @@
 // (der Worker und der Admin-Trigger laufen immer weiter).
 
 import { dedupeObstacles } from "../connectors/_helpers.js"
+import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import {
-  buildFachId, insertObstacle, istLiveVerkehrsmeldung, istReineInfrastruktur, OBSTACLE_COLS,
-  sachfeldParams, todayIso, UPDATE_SACHFELDER_SQL, validateObstacle,
+  buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
+  OBSTACLE_COLS, OBSTACLE_INSERT_COLS, OBSTACLE_INSERT_COL_COUNT,
+  sachfeldBatchSql, sachfeldParams, SACHFELD_COL_COUNT, todayIso, validateObstacle,
 } from "../obstaclesRepo.js"
 
 // Bulk-Import-Speed (T-042): EINMAL je Lauf den Quellen-Bestand laden statt per-Zeile zu
@@ -33,8 +35,6 @@ const FUZZY_LAT = 0.003
 const FUZZY_LNG = 0.0045
 const normName = (name) => String(name ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 const dist2 = (a, b) => (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2
-
-const REACTIVATE_SQL = "UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = $1"
 
 // Fehlende Einträge der Quelle deaktivieren (nur Vollbestand-Feeds, nur was nicht
 // mehr gesehen wurde). Manuelle Quelle 0100 ist nie betroffen (eigene quellen_id).
@@ -107,6 +107,12 @@ export async function runImport({
       const maxRes = await q.query(MAX_INDEX_SQL, [connector.quelleId])
       let nextIndex = Number(maxRes.rows[0]?.max_index ?? 0) + 1
 
+      // T-329: pro Zeile NICHT mehr einzeln schreiben — Entscheidungen sammeln, danach als
+      // wenige Multi-Row-Statements flushen (statt bis zu ~19k Round-Trips pro Vollbestand-Lauf).
+      const pendingUpdates = new Map() // obstacle-id → value (Sachfeld-Update, last-write-wins)
+      const pendingReactivate = new Set() // obstacle-ids
+      const pendingInserts = new Map() // externeId → value (fachId/realerStart bereits vergeben)
+
       for (const [index, item] of items.entries()) {
         const externeId =
           typeof item?.externeId === "string" && item.externeId.trim() ? item.externeId.trim() : null
@@ -155,24 +161,50 @@ export async function runImport({
         }
         if (target) {
           // Sachfeld-Update — fachId/realerStart bleiben stabil
-          await q.query(UPDATE_SACHFELDER_SQL, sachfeldParams(target.id, value))
+          pendingUpdates.set(target.id, value) // gleiche id mehrfach → letzter Wert gewinnt (wie zuvor)
           stats.aktualisiert += 1
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
           // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.
           if (connector.vollbestand && target.aktiv === false) {
-            await q.query(REACTIVATE_SQL, [target.id])
+            pendingReactivate.add(target.id)
             stats.reaktiviert += 1
           }
+        } else if (pendingInserts.has(externeId)) {
+          // Zweites Item mit GLEICHER externe_id im selben Feed → kein zweiter INSERT (sonst
+          // duplicate key obstacles_quelle_extern_ux). fachId des ersten behalten, Wert gewinnt
+          // (bildet das frühere „UPDATE der gerade eingefügten Zeile"-Verhalten nach).
+          const prev = pendingInserts.get(externeId)
+          value.fachId = prev.fachId
+          value.realerStart = prev.realerStart
+          pendingInserts.set(externeId, value)
+          stats.aktualisiert += 1
         } else {
           value.realerStart = value.realerStart ?? todayIso()
           value.fachId = buildFachId(nextIndex++, connector.quelleId, value.realerStart)
-          const inserted = await insertObstacle(q, value)
-          // In-Run-Insert in die Map → ein weiteres Item mit GLEICHER externe_id im selben Feed
-          // findet diese Zeile (UPDATE) statt erneut zu INSERTen — sonst duplicate key
-          // (obstacles_quelle_extern_ux). Bildet das frühere per-Zeile-SELECT-Verhalten nach.
-          if (inserted) byExterneId.set(externeId, inserted)
+          pendingInserts.set(externeId, value)
           stats.neu += 1
         }
+      }
+
+      // Gesammelte Writes als wenige Multi-Row-Statements absetzen (T-329). Reihenfolge zwischen
+      // Insert/Update/Reactivate ist beliebig (disjunkte bzw. idempotente Effekte auf je eine Zeile).
+      for (const part of chunk([...pendingInserts.values()], BATCH_ROWS)) {
+        await q.query(
+          `INSERT INTO obstacles (${OBSTACLE_INSERT_COLS}) VALUES ${placeholders(part.length, OBSTACLE_INSERT_COL_COUNT)}`,
+          part.flatMap(insertParams),
+        )
+      }
+      for (const part of chunk([...pendingUpdates], BATCH_ROWS)) {
+        await q.query(
+          sachfeldBatchSql(placeholders(part.length, SACHFELD_COL_COUNT)),
+          part.flatMap(([id, value]) => sachfeldParams(id, value)),
+        )
+      }
+      if (pendingReactivate.size) {
+        await q.query(
+          "UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = ANY($1::uuid[])",
+          [[...pendingReactivate]],
+        )
       }
 
       // Reconcile: bei Vollbestand-Feeds Fehlende deaktivieren. Nur wenn wir

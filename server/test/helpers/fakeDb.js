@@ -529,29 +529,36 @@ export function createFakeDb() {
       return ok([], before - state.findings.length)
     }
     if (sql.startsWith("INSERT INTO findings (project_id,")) {
-      const row = {
-        id: randomUUID(),
-        project_id: params[0],
-        obstacle_id: params[1],
-        kategorie: params[2],
-        severity: params[3],
-        titel: params[4],
-        beschreibung: params[5],
-        lat: params[6],
-        lng: params[7],
-        km: params[8],
-        detail: J(params[9]),
-        strassen_ref: params[10],
-        gueltig_von: params[11],
-        gueltig_bis: params[12],
-        quelle: params[13] != null ? J(params[13]) : null,
-        zustaendig: params[14],
-        route_id: params[15],
-        route_name: params[16],
-        created_at: now(),
+      // T-330: Multi-Row-Batch — Params in 18er-Tupeln (kann auch 1 Zeile sein).
+      const COLS = 18
+      const inserted = []
+      for (let b = 0; b < params.length; b += COLS) {
+        const row = {
+          id: randomUUID(),
+          project_id: params[b + 0],
+          obstacle_id: params[b + 1],
+          kategorie: params[b + 2],
+          severity: params[b + 3],
+          titel: params[b + 4],
+          beschreibung: params[b + 5],
+          lat: params[b + 6],
+          lng: params[b + 7],
+          km: params[b + 8],
+          detail: J(params[b + 9]),
+          strassen_ref: params[b + 10],
+          gueltig_von: params[b + 11],
+          gueltig_bis: params[b + 12],
+          quelle: params[b + 13] != null ? J(params[b + 13]) : null,
+          zustaendig: params[b + 14],
+          route_id: params[b + 15],
+          route_name: params[b + 16],
+          geom: params[b + 17] != null ? J(params[b + 17]) : null,
+          created_at: now(),
+        }
+        state.findings.push(row)
+        inserted.push(row)
       }
-      state.findings.push(row)
-      return ok([row])
+      return ok(inserted)
     }
 
     // ── obstacles ─────────────────────────────────────────────────────────────
@@ -572,12 +579,18 @@ export function createFakeDb() {
       return ok(rows)
     }
     if (sql.includes("FROM obstacles WHERE aktiv = true AND (tenant_id IS NULL OR tenant_id = $1")) {
-      const [tenantId, minLat, maxLat, minLng, maxLng] = params
+      // T-330: $1 = tenant, danach 4er-Gruppen je Routen-Bbox (OR), letzter Param = ausgeschlossene Kategorien.
+      const tenantId = params[0]
+      const excl = params[params.length - 1] ?? []
+      const boxes = []
+      for (let i = 1; i < params.length - 1; i += 4) boxes.push(params.slice(i, i + 4))
       return ok(
         state.obstacles.filter(
           (o) =>
             o.aktiv && (o.tenant_id == null || o.tenant_id === tenantId) &&
-            o.lat >= minLat && o.lat <= maxLat && o.lng >= minLng && o.lng <= maxLng,
+            !excl.includes(o.kategorie) &&
+            boxes.some(([minLat, maxLat, minLng, maxLng]) =>
+              o.lat >= minLat && o.lat <= maxLat && o.lng >= minLng && o.lng <= maxLng),
         ),
       )
     }
@@ -632,38 +645,74 @@ export function createFakeDb() {
       return ok([{ max_index: indexes.length ? Math.max(...indexes) : 0 }])
     }
     if (sql.startsWith("INSERT INTO obstacles (kategorie,")) {
-      const row = {
-        id: randomUUID(),
-        kategorie: params[0],
-        name: params[1],
-        beschreibung: params[2],
-        lat: params[3],
-        lng: params[4],
-        strassen_ref: params[5],
-        zustaendig: params[6],
-        quelle: params[7] != null ? J(params[7]) : null,
-        attrs: J(params[8]),
-        gueltig_von: params[9],
-        gueltig_bis: params[10],
-        fach_id: params[11],
-        quellen_id: params[12],
-        realer_start: params[13],
-        aktiv: params[14],
-        demo: params[15],
-        tenant_id: params[16] ?? null,
-        externe_id: params[17] ?? null,
-        created_at: now(),
-        updated_at: now(),
+      // Single-Row (RETURNING *, manueller Pfad) UND Importer-Multi-Row-Batch (T-329) — Params in 20er-Tupeln.
+      const COLS = 20
+      const inserted = []
+      for (let b = 0; b < params.length; b += COLS) {
+        const row = {
+          id: randomUUID(),
+          kategorie: params[b + 0],
+          name: params[b + 1],
+          beschreibung: params[b + 2],
+          lat: params[b + 3],
+          lng: params[b + 4],
+          strassen_ref: params[b + 5],
+          zustaendig: params[b + 6],
+          quelle: params[b + 7] != null ? J(params[b + 7]) : null,
+          attrs: J(params[b + 8]),
+          gueltig_von: params[b + 9],
+          gueltig_bis: params[b + 10],
+          fach_id: params[b + 11],
+          quellen_id: params[b + 12],
+          realer_start: params[b + 13],
+          aktiv: params[b + 14],
+          demo: params[b + 15],
+          tenant_id: params[b + 16] ?? null,
+          externe_id: params[b + 17] ?? null,
+          ki_aufbereitet: params[b + 18] === true,
+          geom: params[b + 19] != null ? J(params[b + 19]) : null,
+          created_at: now(),
+          updated_at: now(),
+        }
+        // UNIQUE obstacles_quelle_extern_ux (quellen_id, externe_id) WHERE externe_id IS NOT NULL
+        if (
+          row.externe_id != null &&
+          state.obstacles.some((o) => o.quellen_id === row.quellen_id && o.externe_id === row.externe_id)
+        ) {
+          throw new Error("fakeDb: unique violation obstacles_quelle_extern_ux")
+        }
+        state.obstacles.push(row)
+        inserted.push(row)
       }
-      // UNIQUE obstacles_quelle_extern_ux (quellen_id, externe_id) WHERE externe_id IS NOT NULL
-      if (
-        row.externe_id != null &&
-        state.obstacles.some((o) => o.quellen_id === row.quellen_id && o.externe_id === row.externe_id)
-      ) {
-        throw new Error("fakeDb: unique violation obstacles_quelle_extern_ux")
+      return ok(inserted)
+    }
+    // Importer-Sachfeld-Batch (T-329): UPDATE … FROM (VALUES …) — Params in 14er-Tupeln,
+    // fach_id/realer_start/aktiv/tenant bleiben unberührt, ki_aufbereitet sticky.
+    if (sql.startsWith("UPDATE obstacles AS o SET kategorie = v.kategorie")) {
+      const COLS = 14
+      let n = 0
+      for (let b = 0; b < params.length; b += COLS) {
+        const row = state.obstacles.find((o) => o.id === params[b + 0])
+        if (!row) continue
+        Object.assign(row, {
+          kategorie: params[b + 1],
+          name: params[b + 2],
+          beschreibung: params[b + 3],
+          lat: params[b + 4],
+          lng: params[b + 5],
+          strassen_ref: params[b + 6],
+          zustaendig: params[b + 7],
+          quelle: params[b + 8] != null ? J(params[b + 8]) : null,
+          attrs: J(params[b + 9]),
+          gueltig_von: params[b + 10],
+          gueltig_bis: params[b + 11],
+          ki_aufbereitet: row.ki_aufbereitet || params[b + 12] === true,
+          geom: params[b + 13] != null ? J(params[b + 13]) : null,
+          updated_at: now(),
+        })
+        n += 1
       }
-      state.obstacles.push(row)
-      return ok([row])
+      return ok([], n)
     }
     if (sql.startsWith("UPDATE obstacles SET kategorie = $2,") && sql.includes("fach_id = $13")) {
       const row = state.obstacles.find((o) => o.id === params[0])
@@ -714,7 +763,16 @@ export function createFakeDb() {
       state.obstacles = state.obstacles.filter((o) => o.id !== params[0])
       return ok([], before - state.obstacles.length)
     }
-    // Vollbestand-Reconcile: Wiederkehrer reaktivieren
+    // Vollbestand-Reconcile: Wiederkehrer reaktivieren — Batch (T-329, id = ANY) …
+    if (sql.startsWith("UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = ANY")) {
+      const ids = params[0] ?? []
+      let n = 0
+      for (const o of state.obstacles) {
+        if (ids.includes(o.id)) { o.aktiv = true; o.updated_at = now(); n += 1 }
+      }
+      return ok([], n)
+    }
+    // … und Einzel-Variante (Altpfad)
     if (sql.startsWith("UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = $1")) {
       const row = state.obstacles.find((o) => o.id === params[0])
       if (!row) return ok([], 0)

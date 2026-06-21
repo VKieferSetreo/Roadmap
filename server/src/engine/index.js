@@ -7,6 +7,7 @@
 // im Code, wird vom FE aber nicht mehr erzeugt — Routen kommen als Punktlisten.
 
 import { rowToObstacle } from "../map.js"
+import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
@@ -16,6 +17,19 @@ import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 export const ENGINE_VERSION = "2.0.0"
+
+// Findings-Persistenz (T-330): Spalten an einer Stelle für den Multi-Row-INSERT-Batch.
+const FINDING_COLS = `project_id, obstacle_id, kategorie, severity, titel, beschreibung,
+  lat, lng, km, detail, strassen_ref, gueltig_von, gueltig_bis, quelle, zustaendig,
+  route_id, route_name, geom`
+const FINDING_COL_COUNT = 18
+const findingParams = (projectId, f) => [
+  projectId, f.obstacleId, f.kategorie, f.severity, f.titel, f.beschreibung,
+  f.lat, f.lng, f.km, JSON.stringify(f.detail ?? {}), f.strassenRef ?? null,
+  f.gueltigVon ?? null, f.gueltigBis ?? null,
+  f.quelle != null ? JSON.stringify(f.quelle) : null, f.zustaendig ?? null,
+  f.routeId ?? null, f.routeName ?? null, f.geom != null ? JSON.stringify(f.geom) : null,
+]
 
 const round1 = (n) => Math.round(n * 10) / 10
 const sanePoint = (p) => p && isFiniteNumber(p.lat) && isFiniteNumber(p.lng)
@@ -119,27 +133,45 @@ export async function analyze({ db, project, corridorM }) {
     throw new ApiError(422, "Keine Strecke mit Punkten vorhanden — Strecke hochladen")
   }
 
-  let findings = []
-  let distanzKm = 0
-
-  for (const route of routes) {
+  // T-330: Geometrie/Korridor je Route einmal vorbereiten, dann EIN SELECT über die OR-Verknüpfung
+  // aller Routen-Bboxen statt R einzelner Queries — jedes Hindernis (inkl. geom-Blob) wird so nur
+  // einmal aus der DB gezogen, auch wenn es im Korridor mehrerer Teilstrecken liegt. Bewusst die
+  // OR-Verknüpfung der kleinen Boxen, NICHT die umschließende Gesamt-Bbox: bei weit auseinander
+  // liegenden Teilstrecken (mehrere Bundesländer) würde die Hüll-Box halb Deutschland in den Heap ziehen.
+  const routeCtx = routes.map((route) => {
     const geometry = downsample(route.points.map((p) => ({ lat: p.lat, lng: p.lng })))
-    const cum = cumulativeKm(geometry)
-    distanzKm += totalKm(geometry)
+    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM) }
+  })
 
-    // Bbox-Vorfilter in SQL, exaktes Korridor-Matching danach in JS.
-    // v3: globale Hindernisse + Kunden-Einträge des Projekt-Tenants.
-    const bbox = bboxWithBuffer(geometry, corridorM)
-    const { rows } = await db.query(
-      `SELECT ${OBSTACLE_COLS}, geom FROM obstacles WHERE aktiv = true
-         AND (tenant_id IS NULL OR tenant_id = $1::uuid)
-         AND lat BETWEEN $2 AND $3 AND lng BETWEEN $4 AND $5
-         AND kategorie <> ALL($6::text[])`, // Bauwerke raus — macht das Strecken-Engineering
-      [project.tenantId ?? null, bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng, AUSWERTUNG_AUSGESCHLOSSEN],
-    )
+  let findings = []
+  let distanzKm = routeCtx.reduce((sum, c) => sum + totalKm(c.geometry), 0)
 
-    for (const row of rows) {
-      const obstacle = rowToObstacle(row)
+  // v3: globale Hindernisse + Kunden-Einträge des Projekt-Tenants. Bbox-Vorfilter in SQL, exaktes
+  // Korridor-Matching danach in JS — pro Route gegen ihre eigene Bbox (gleiche Funde wie zuvor).
+  const params = [project.tenantId ?? null]
+  const boxSql = routeCtx
+    .map((c) => {
+      const i = params.push(c.bbox.minLat, c.bbox.maxLat, c.bbox.minLng, c.bbox.maxLng) - 4
+      return `(lat BETWEEN $${i + 1} AND $${i + 2} AND lng BETWEEN $${i + 3} AND $${i + 4})`
+    })
+    .join(" OR ")
+  const exclIdx = params.push(AUSWERTUNG_AUSGESCHLOSSEN)
+  const { rows } = await db.query(
+    `SELECT ${OBSTACLE_COLS}, geom FROM obstacles WHERE aktiv = true
+       AND (tenant_id IS NULL OR tenant_id = $1::uuid)
+       AND (${boxSql})
+       AND kategorie <> ALL($${exclIdx}::text[])`, // Bauwerke raus — macht das Strecken-Engineering
+    params,
+  )
+  const obstacles = rows.map(rowToObstacle)
+
+  for (const { route, geometry, cum, bbox } of routeCtx) {
+    for (const obstacle of obstacles) {
+      // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
+      if (
+        obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
+        obstacle.lng < bbox.minLng || obstacle.lng > bbox.maxLng
+      ) continue
       const obstaclePts = geomPoints(obstacle.geom)
       // Punkt-Hindernis: Abstand des Punkts zur Route. Strecken-Hindernis (geom = Linie):
       // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
@@ -263,19 +295,11 @@ export async function runAnalysis({ db, project, corridorM = 20 }) {
     // Alte Findings ersetzen + Projekt aktualisieren — atomar
     await db.tx(async (q) => {
       await q.query("DELETE FROM findings WHERE project_id = $1", [project.id])
-      for (const f of result.findings) {
+      // T-330: Findings als wenige Multi-Row-INSERTs statt eines INSERT-Round-Trips pro Fund.
+      for (const part of chunk(result.findings, BATCH_ROWS)) {
         await q.query(
-          `INSERT INTO findings (project_id, obstacle_id, kategorie, severity, titel, beschreibung,
-             lat, lng, km, detail, strassen_ref, gueltig_von, gueltig_bis, quelle, zustaendig,
-             route_id, route_name, geom)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
-          [
-            project.id, f.obstacleId, f.kategorie, f.severity, f.titel, f.beschreibung,
-            f.lat, f.lng, f.km, JSON.stringify(f.detail ?? {}), f.strassenRef ?? null,
-            f.gueltigVon ?? null, f.gueltigBis ?? null,
-            f.quelle != null ? JSON.stringify(f.quelle) : null, f.zustaendig ?? null,
-            f.routeId ?? null, f.routeName ?? null, f.geom != null ? JSON.stringify(f.geom) : null,
-          ],
+          `INSERT INTO findings (${FINDING_COLS}) VALUES ${placeholders(part.length, FINDING_COL_COUNT)}`,
+          part.flatMap((f) => findingParams(project.id, f)),
         )
       }
       // updated_at NICHT anfassen: die Analyse (v.a. der nächtliche Auto-Rerun über ALLE
