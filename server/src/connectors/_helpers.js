@@ -143,7 +143,15 @@ export function extractStammdaten(text) {
   // Maße müssen > 0 sein (0 m / 0 t ist keine echte Angabe, sondern "fehlt").
   const breite = masszahlNachWort(s, "durchfahrtsbreite|durchfahrbreite|fahrbahnbreite|restbreite|breite")
   if (breite > 0) out.restbreiteM = breite
-  const hoehe = masszahlNachWort(s, "durchfahrtsh(?:ö|oe)he|lichte\\s+h(?:ö|oe)he|h(?:ö|oe)he")
+  // T-254: bloßes "höhe" matchte das FAHRZEUG-Maß (Aufbau-/Gesamt-/Transport-/Lade-/Nutzhöhe) und
+  // las es fälschlich als Durchfahrtshöhe → falsches Höhenlimit. Jetzt Clearance-Begriffe explizit
+  // (Durchfahrts-/lichte Höhe, Höhenbeschränkung/-begrenzung) + bare "höhe" nur mit Negativ-Lookbehind
+  // gegen die Fahrzeug-Komposita.
+  const hoehe = masszahlNachWort(
+    s,
+    "durchfahrtsh(?:ö|oe)he|lichte\\s+h(?:ö|oe)he|h(?:ö|oe)henbeschr(?:ä|ae)nkung|h(?:ö|oe)henbegrenzung|" +
+      "(?<!aufbau)(?<!gesamt)(?<!transport)(?<!lade)(?<!fahrzeug)(?<!nutz)(?<!bau)(?<!ist)h(?:ö|oe)he",
+  )
   if (hoehe > 0) out.maxHoeheM = hoehe
   const gewicht = tonnageAusText(s)
   if (gewicht > 0) out.maxGewichtT = gewicht

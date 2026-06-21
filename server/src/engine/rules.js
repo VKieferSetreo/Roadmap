@@ -107,11 +107,15 @@ const schlimmer = (a, b) => (SEV_ORDER[a] >= SEV_ORDER[b] ? a : b)
 function ruleBauwerk(art, attrs, transport) {
   const maxH = num(attrs.maxHoeheM)
   const maxG = num(attrs.maxGewichtT)
+  // T-268: Brücken/Tunnel können auch breitenbeschränkt sein (Tunnelröhre/Engstelle am Bauwerk).
+  // Wird nur ausgewertet, wenn die Quelle maxBreiteM liefert — sonst keine Verschlimmbesserung.
+  // (RID-Tunnelkategorie bleibt offen, solange keine Quelle Tunnelklassen liefert.)
+  const maxB = num(attrs.maxBreiteM)
   const gstSperre = attrs.grundsaetzlicheGstSperre === true
   // Harte Vollsperre für (genehmigungspflichtigen) Schwerverkehr → Schwertransport darf NIE drüber.
   const komplett = attrs.gesperrtKomplett === true
 
-  if (maxH == null && maxG == null && !gstSperre && !komplett) {
+  if (maxH == null && maxB == null && maxG == null && !gstSperre && !komplett) {
     return {
       severity: "hinweis",
       beschreibung: `${art} ohne hinterlegte Durchfahrtshöhe oder Tragfähigkeit. Vor Ort prüfen.`,
@@ -131,6 +135,17 @@ function ruleBauwerk(art, attrs, transport) {
     severity = schlimmer(severity, sev3(spielraum < 0.1, spielraum < 0.5))
     if (spielraum < 0.1) gruende.push("Durchfahrtshöhe reicht nicht aus")
     else if (spielraum < 0.5) gruende.push("Durchfahrtshöhe knapp")
+  }
+
+  if (maxB != null) {
+    // T-268: gleiche gestufte Marge wie Höhe/Engstelle (<0,1 m kritisch, <0,5 m knapp).
+    const spielraumB = round2(maxB - transport.breite)
+    detail["Durchfahrtsbreite"] = fmtM(maxB)
+    detail["Transportbreite"] = fmtM(transport.breite)
+    detail["Spielraum (Breite)"] = fmtM(spielraumB)
+    severity = schlimmer(severity, sev3(spielraumB < 0.1, spielraumB < 0.5))
+    if (spielraumB < 0.1) gruende.push("Durchfahrtsbreite reicht nicht aus")
+    else if (spielraumB < 0.5) gruende.push("Durchfahrtsbreite knapp")
   }
 
   if (maxG != null) {
@@ -221,6 +236,8 @@ function ruleSteigung(attrs, transport) {
     }
   }
   let severity = "hinweis"
+  // T-270: Schwellen (8 %/5 %, 60 t/100 t) = Heuristik (Anfahrvermögen schwerer Züge), NICHT
+  // aus einer Norm abgeleitet. Bei Bedarf nach Max-Freigabe gegen RAS/Schleppkurven kalibrieren.
   if (pct >= 8) severity = gewicht > 60 ? "kritisch" : "warnung"
   else if (pct >= 5) severity = gewicht > 100 ? "warnung" : "hinweis"
   return {
@@ -240,6 +257,8 @@ function ruleKreisverkehr(attrs, transport) {
     }
   }
   return {
+    // T-270: Faktoren 2,2/1,6 × Außenradius = Schleppkurven-Faustregel (Heuristik), nicht aus Norm
+    // abgeleitet; nach Max-Freigabe ggf. kalibrieren.
     severity: sev3(transport.laenge > 2.2 * r, transport.laenge > 1.6 * r),
     beschreibung: "Schleppkurve im Kreisverkehr. Befahrbarkeit für die Fahrzeuglänge prüfen.",
     detail: { Außenradius: `${fmtKomma(r, 0)} m`, Fahrzeuglänge: fmtM(transport.laenge) },

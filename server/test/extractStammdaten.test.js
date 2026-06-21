@@ -42,6 +42,17 @@ describe("extractStammdaten", () => {
     expect(ex.maxGewichtT).toBe(7.5)
   })
 
+  it("T-254: Clearance-Begriffe als maxHoeheM, Fahrzeug-Höhen NICHT", () => {
+    expect(extractStammdaten("lichte Höhe 4.0 m").maxHoeheM).toBe(4.0)
+    expect(extractStammdaten("Höhenbeschränkung 3,5 m").maxHoeheM).toBe(3.5)
+    expect(extractStammdaten("Höhe: 3,8 m").maxHoeheM).toBe(3.8)
+    // Fahrzeug-/Transport-Maße dürfen NICHT als Durchfahrtshöhe gelesen werden (falsches Limit).
+    expect(extractStammdaten("Aufbauhöhe 4,0 m").maxHoeheM).toBeUndefined()
+    expect(extractStammdaten("Transporthöhe 4,2 m").maxHoeheM).toBeUndefined()
+    expect(extractStammdaten("Gesamthöhe 4,5 m").maxHoeheM).toBeUndefined()
+    expect(extractStammdaten("Ladehöhe 3,9 m").maxHoeheM).toBeUndefined()
+  })
+
   it("leerer/fehlender Text → {}", () => {
     expect(extractStammdaten(null)).toEqual({})
     expect(extractStammdaten("")).toEqual({})

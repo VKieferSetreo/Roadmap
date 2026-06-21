@@ -113,6 +113,11 @@ export function validateObstacle(input, { strict = false } = {}) {
   if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) {
     return { ok: false, reason: "lat/lng fehlen oder sind keine Zahlen" }
   }
+  // T-263: Geo-Bounds gehören in BEIDE Pfade (Trust-Boundary), nicht nur strict — sonst kommen
+  // Müll-Koordinaten (0/0, vertauschte lat/lng, Projektionsfehler) aus Connector-Feeds durch.
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return { ok: false, reason: "lat/lng außerhalb gültiger Bounds" }
+  }
   if (input.attrs !== undefined && !isPlainObject(input.attrs)) {
     return { ok: false, reason: "attrs muss ein Objekt sein" }
   }
@@ -120,9 +125,6 @@ export function validateObstacle(input, { strict = false } = {}) {
   if (strict) {
     if (typeof input.name !== "string" || input.name.trim().length < 3) {
       return { ok: false, reason: "name erforderlich (mindestens 3 Zeichen)" }
-    }
-    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      return { ok: false, reason: "lat/lng außerhalb gültiger Bounds" }
     }
     for (const [key, v] of Object.entries(input.attrs ?? {})) {
       if (!isFiniteNumber(v) && typeof v !== "boolean") {
