@@ -16,6 +16,18 @@ import { asyncHandler } from "../util.js"
 const ONLINE_FENSTER = "3 minutes" // last_seen jünger ⇒ "jetzt online"
 const SESSION_LUECKE = "5 minutes" // größere Pause ⇒ neue Session
 
+// Aus der Analytik ausgeblendete Accounts (Max-Wunsch 2026-06-21): der eigene Dev-/Admin-Account
+// und die Wegwerf-/Test-„Viewer" verzerren die Nutzungsstatistik — sie sind keine echten
+// Mandanten-Nutzer. Statische Allowlist (KEINE Nutzereingabe → Inline-Literal injektionssicher).
+const ANALYTICS_EXCLUDE_EMAILS = ["mxk@setreo.de"]
+const ANALYTICS_EXCLUDE_LIKE = ["rmtest-%", "csp-test-%", "%wegwerf%", "%@setreo-cloud.test"]
+/** SQL-Prädikat „Spalte ist KEIN interner/Test-Account". col = Spaltenname (z.B. "email", "s.email"). */
+function excludeSql(col = "email") {
+  const inList = ANALYTICS_EXCLUDE_EMAILS.map((e) => `'${e.replace(/'/g, "''")}'`).join(", ")
+  const likes = ANALYTICS_EXCLUDE_LIKE.map((p) => `${col} NOT LIKE '${p.replace(/'/g, "''")}'`).join(" AND ")
+  return `${col} NOT IN (${inList}) AND ${likes}`
+}
+
 /** Diskretes Analytics-Event protokollieren. Fire-and-forget: wirft NIE — Analytics
  *  darf den eigentlichen Request (z.B. die Auswertung) niemals brechen. */
 export async function logAnalyticsEvent(db, { email, tenantSlug = null, typ, meta = null }) {
@@ -61,44 +73,47 @@ export function analyticsRouter({ db }) {
 
   // Übersicht — nur Admin. Online-Status + Totals + Nutzung je Nutzer + letzte Sessions.
   r.get("/overview", requireRole("admin"), asyncHandler(async (_req, res) => {
+    const EXCL = excludeSql() // interne/Test-Accounts überall konsistent ausblenden
+    const EXCL_S = excludeSql("s.email")
     const [online, proNutzer, events, letzte, totals, proTagRows, analysenProTag] = await Promise.all([
       db.query(
         `SELECT email, max(last_seen) AS last_seen FROM analytics_sessions
-          WHERE last_seen > now() - interval '${ONLINE_FENSTER}'
+          WHERE last_seen > now() - interval '${ONLINE_FENSTER}' AND ${EXCL}
           GROUP BY email ORDER BY max(last_seen) DESC`,
       ),
       db.query(
         `SELECT email, count(*) AS sessions, sum(hits) AS hits,
            round(sum(extract(epoch FROM (last_seen - started_at))) / 60.0) AS aktiv_min,
            min(started_at) AS erster, max(last_seen) AS letzter
-         FROM analytics_sessions GROUP BY email`,
+         FROM analytics_sessions WHERE ${EXCL} GROUP BY email`,
       ),
       db.query(
-        "SELECT email, count(*) AS n FROM analytics_events WHERE typ = 'manual_analysis' GROUP BY email",
+        `SELECT email, count(*) AS n FROM analytics_events
+         WHERE typ = 'manual_analysis' AND ${EXCL} GROUP BY email`,
       ),
       db.query(
         `SELECT email, tenant_slug, started_at, last_seen, hits,
            round(extract(epoch FROM (last_seen - started_at)) / 60.0) AS dauer_min
-         FROM analytics_sessions ORDER BY last_seen DESC LIMIT 50`,
+         FROM analytics_sessions WHERE ${EXCL} ORDER BY last_seen DESC LIMIT 50`,
       ),
       db.query(
         `SELECT
-           (SELECT count(*) FROM analytics_sessions) AS sessions,
-           (SELECT count(DISTINCT email) FROM analytics_sessions) AS nutzer,
-           (SELECT count(*) FROM analytics_events WHERE typ = 'manual_analysis') AS manuelle`,
+           (SELECT count(*) FROM analytics_sessions WHERE ${EXCL}) AS sessions,
+           (SELECT count(DISTINCT email) FROM analytics_sessions WHERE ${EXCL}) AS nutzer,
+           (SELECT count(*) FROM analytics_events WHERE typ = 'manual_analysis' AND ${EXCL}) AS manuelle`,
       ),
       // Zeitreihe der letzten 14 Tage, lückenlos (generate_series füllt nutzungsfreie Tage mit 0).
       db.query(
         `SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
            count(DISTINCT s.email) AS nutzer, count(s.id) AS sessions
          FROM generate_series(current_date - interval '13 days', current_date, interval '1 day') d
-         LEFT JOIN analytics_sessions s ON date_trunc('day', s.last_seen)::date = d::date
+         LEFT JOIN analytics_sessions s ON date_trunc('day', s.last_seen)::date = d::date AND ${EXCL_S}
          GROUP BY d ORDER BY d`,
       ),
       db.query(
         `SELECT to_char(date_trunc('day', created_at), 'YYYY-MM-DD') AS tag, count(*) AS n
          FROM analytics_events
-         WHERE typ = 'manual_analysis' AND created_at >= current_date - interval '13 days'
+         WHERE typ = 'manual_analysis' AND created_at >= current_date - interval '13 days' AND ${EXCL}
          GROUP BY 1`,
       ),
     ])
