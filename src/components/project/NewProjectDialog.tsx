@@ -1,13 +1,12 @@
 // Dialog zum Anlegen eines neuen Projekts. Strukturierter Name aus zwei Pflichtfeldern:
-// <Präfix>-Nummer (Projektnummer) + Name → "<Präfix>-<nummer>_<Name_mit_Unterstrichen>".
-// Präfix mandantenabhängig: Setreo = "W" (Werknummer), alle anderen Mandanten = "P" (Projekt).
-// Beispiel (extern): 12332 + "Hans Mustermann" → "P-12332_Hans_Mustermann".
+// Projektnummer (frei) + Name → "<Projektnummer>_<Name_mit_Unterstrichen>".
+// KEIN vorgegebenes Präfix (W/P o.ä.) — die Projektnummer ist ein freies Textfeld, der Nutzer
+// tippt sie genau so, wie sie ist. Beispiel: "W-5567" + "Hans Mustermann" → "W-5567_Hans_Mustermann".
 
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
-import { useContextStore } from "@/store/context"
 
 interface NewProjectDialogProps {
   open: boolean
@@ -18,9 +17,6 @@ interface NewProjectDialogProps {
 export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogProps) {
   const [nummer, setNummer] = useState("")
   const [name, setName] = useState("")
-  // Setreo behält "W", alle anderen Mandanten bekommen "P".
-  const tenantSlug = useContextStore((s) => s.tenant?.slug)
-  const prefix = tenantSlug && tenantSlug !== "setreo" ? "P" : "W"
 
   useEffect(() => {
     if (open) {
@@ -29,11 +25,11 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
     }
   }, [open])
 
-  // Nummer: Leerzeichen raus, ein versehentlich getipptes führendes "W-"/"P-" entfernen
-  // (sonst doppelter Präfix). Name: Leerzeichen-Folgen → ein Unterstrich.
-  const nummerClean = nummer.trim().replace(/\s+/g, "").replace(/^[wp]-/i, "")
+  // Projektnummer: frei (kein Präfix vorgegeben) — nur Leerzeichen-Folgen zusammenziehen, damit der
+  // zusammengesetzte Name dateifreundlich bleibt. Name: Leerzeichen-Folgen → ein Unterstrich.
+  const nummerClean = nummer.trim().replace(/\s+/g, "_")
   const nameClean = name.trim().replace(/\s+/g, "_")
-  const finalName = `${prefix}-${nummerClean}_${nameClean}`
+  const finalName = `${nummerClean}_${nameClean}`
   const valid = useMemo(
     () => nummerClean.length >= 1 && nameClean.length >= 1 && finalName.length <= 80,
     [nummerClean, nameClean, finalName],
@@ -61,22 +57,15 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
       <div className="flex flex-col gap-4 px-6 py-5">
         <div>
           <Label htmlFor="project-nummer">Projektnummer</Label>
-          <div className="relative">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-500">
-              {prefix}-
-            </span>
-            <Input
-              id="project-nummer"
-              autoFocus
-              value={nummer}
-              onChange={(e) => setNummer(e.target.value)}
-              onKeyDown={onEnter}
-              placeholder="12332"
-              className="pl-8"
-              maxLength={40}
-              inputMode="numeric"
-            />
-          </div>
+          <Input
+            id="project-nummer"
+            autoFocus
+            value={nummer}
+            onChange={(e) => setNummer(e.target.value)}
+            onKeyDown={onEnter}
+            placeholder="z. B. W-5567 oder P-12332"
+            maxLength={40}
+          />
         </div>
         <div>
           <Label htmlFor="project-name">Name</Label>
@@ -89,9 +78,9 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
             maxLength={70}
           />
         </div>
-        {/* Statische Vorschau (kein Eingabefeld) — aktualisiert sich live, schon ab der W-Nummer. */}
+        {/* Statische Vorschau (kein Eingabefeld) — aktualisiert sich live. */}
         <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-400">
-          Projektname: <span className="font-medium text-neutral-500">{prefix}-{nummerClean || "…"}_{nameClean || "…"}</span>
+          Projektname: <span className="font-medium text-neutral-500">{nummerClean || "…"}_{nameClean || "…"}</span>
         </div>
       </div>
       <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">

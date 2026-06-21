@@ -153,7 +153,7 @@ export function PublishCard({ project }: { project: Project }) {
             {/* T-236: Hinweis, dass erst eine abgeschlossene Auswertung teilbar ist (kein leerer Share). */}
             {project.status !== "fertig" ? (
               <span className="mt-1 block font-medium text-amber-700">
-                Erst nach abgeschlossener Auswertung verfügbar — sonst zeigt der Link eine leere Karte.
+                Erst nach abgeschlossener Auswertung verfügbar.
               </span>
             ) : null}
           </p>
