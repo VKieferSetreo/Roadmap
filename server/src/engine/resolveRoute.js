@@ -10,6 +10,16 @@ import { ApiError, isFiniteNumber } from "../util.js"
 /** Geocoding eines Ortsnamens: geocode_cache → Nominatim → Städte-Tabelle. */
 export async function geocodeOrt(db, nominatim, ort) {
   const key = String(ort).trim().toLowerCase()
+  // #9: vom Karten-Picker gesetzte "lat,lng"-Koordinate direkt übernehmen (präzise Pin-Position),
+  // NICHT geokodieren. Nur ein reines Koordinatenpaar in gültigen Bounds matcht.
+  const coord = key.match(/^(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)$/)
+  if (coord) {
+    const lat = Number(coord[1])
+    const lng = Number(coord[2])
+    if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      return { lat, lng, displayName: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, provider: "coord" }
+    }
+  }
   const cached = await db.query(
     "SELECT lat, lng, display_name FROM geocode_cache WHERE query = $1",
     [key],

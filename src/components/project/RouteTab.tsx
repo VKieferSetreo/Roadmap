@@ -4,13 +4,14 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, Navigation, Pencil, Route, Upload, X } from "lucide-react"
+import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Plus, Route, Upload, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { DropZone } from "@/components/upload/DropZone"
 import { PlaceAutocomplete } from "./PlaceAutocomplete"
+import { MapPointPicker } from "./MapPointPicker"
 import { RoutePreview } from "./RoutePreview"
 import { RouteEditDialog } from "./RouteEditDialog"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
@@ -21,6 +22,12 @@ import { api, type RouteResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import type { Project, ProjectRoute, RoutePoint, RouteSource } from "@/types/domain"
 import { cn } from "@/lib/cn"
+
+// #9: Ein Start/Ziel/Zwischenpunkt. label = Anzeige + Geocoding-Text; lat/lng = exakte Pin-Position.
+type SzPoint = { id: string; label: string; lat: number | null; lng: number | null }
+const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: null, lng: null })
+// Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
+const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
 
 /** Die drei Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
@@ -70,8 +77,11 @@ export function RouteTab({ project }: { project: Project }) {
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
   const [linkUrl, setLinkUrl] = useState("")
   const [linkBusy, setLinkBusy] = useState(false)
-  const [szStart, setSzStart] = useState("")
-  const [szZiel, setSzZiel] = useState("")
+  // #9: Start/Ziel + optionale Zwischenpunkte (untereinander, je Punkt Ortssuche ODER Karten-Pin).
+  // lat/lng gesetzt = exakte Pin-Position (geht als "lat,lng" durch, Backend geokodiert NICHT neu);
+  // sonst geokodiert das Backend den Label-Text.
+  const [szPoints, setSzPoints] = useState<SzPoint[]>(() => [makeSzPoint(), makeSzPoint()])
+  const [pickerIdx, setPickerIdx] = useState<number | null>(null)
   const [szBusy, setSzBusy] = useState(false)
   // Datei geparst, wartet auf Namensvergabe (kleine Maske) vor dem Anlegen.
   const [pendingFile, setPendingFile] = useState<{ points: RoutePoint[]; fileName: string; suggest: string } | null>(null)
@@ -130,19 +140,28 @@ export function RouteTab({ project }: { project: Project }) {
     }
   }
 
+  // #9 Punkt-Handler. Tippen → Label setzen + Pin-Koordinate verwerfen (re-geocoden). Picker → Label+Koord.
+  const setPointLabel = (i: number, label: string) =>
+    setSzPoints((ps) => ps.map((p, idx) => (idx === i ? { ...p, label, lat: null, lng: null } : p)))
+  const setPointFromPicker = (i: number, r: { lat: number; lng: number; label: string }) =>
+    setSzPoints((ps) => ps.map((p, idx) => (idx === i ? { ...p, label: r.label, lat: r.lat, lng: r.lng } : p)))
+  const addViaAfter = (i: number) => setSzPoints((ps) => [...ps.slice(0, i + 1), makeSzPoint(), ...ps.slice(i + 1)])
+  const removeVia = (i: number) => setSzPoints((ps) => (ps.length <= 2 ? ps : ps.filter((_, idx) => idx !== i)))
+
   const onStartZiel = async () => {
-    const start = szStart.trim()
-    const ziel = szZiel.trim()
-    if (!start || !ziel) {
+    const startVal = szValue(szPoints[0])
+    const zielVal = szValue(szPoints[szPoints.length - 1])
+    if (!startVal || !zielVal) {
       toast.error("Bitte Start und Ziel angeben.")
       return
     }
+    const vias = szPoints.slice(1, -1).map(szValue).filter(Boolean)
     setSzBusy(true)
     try {
-      const res = await api.route.startziel(start, ziel, [])
-      addRouteFromResult(res, `${start} → ${ziel}`, "startziel")
-      setSzStart("")
-      setSzZiel("")
+      const res = await api.route.startziel(startVal, zielVal, vias)
+      const nameOf = (p: SzPoint) => p.label.trim() || szValue(p)
+      addRouteFromResult(res, `${nameOf(szPoints[0])} → ${nameOf(szPoints[szPoints.length - 1])}`, "startziel")
+      setSzPoints([makeSzPoint(), makeSzPoint()])
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Route konnte nicht berechnet werden.")
     } finally {
@@ -221,24 +240,79 @@ export function RouteTab({ project }: { project: Project }) {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-2.5">
-              {/* Start + Ziel nebeneinander (kompakt) */}
-              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                <PlaceAutocomplete
-                  value={szStart}
-                  onChange={setSzStart}
-                  placeholder="Start (Ort oder Adresse)"
-                  disabled={szBusy}
-                />
-                <PlaceAutocomplete
-                  value={szZiel}
-                  onChange={setSzZiel}
-                  placeholder="Ziel (Ort oder Adresse)"
-                  disabled={szBusy}
-                />
-              </div>
-              <div className="flex justify-end">
-                <Button onClick={() => void onStartZiel()} disabled={szBusy || !szStart.trim() || !szZiel.trim()}>
+            <div className="flex flex-col gap-1">
+              {/* #9: Start/Ziel untereinander; Plus je Lücke fügt einen Zwischenpunkt ein. Pro Punkt
+                  Ortssuche ODER Karten-Pin (genaue Position). */}
+              {szPoints.map((p, i) => {
+                const isStart = i === 0
+                const isZiel = i === szPoints.length - 1
+                const ph = isStart
+                  ? "Start (Ort oder Adresse)"
+                  : isZiel
+                    ? "Ziel (Ort oder Adresse)"
+                    : "Zwischenpunkt (Ort oder Adresse)"
+                return (
+                  <div key={p.id}>
+                    <div className="flex items-center gap-2">
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "h-2.5 w-2.5 shrink-0 rounded-full",
+                          isStart ? "bg-emerald-500" : isZiel ? "bg-red-500" : "bg-amber-400",
+                        )}
+                      />
+                      <PlaceAutocomplete
+                        className="flex-1"
+                        value={p.label}
+                        onChange={(v) => setPointLabel(i, v)}
+                        placeholder={ph}
+                        disabled={szBusy}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPickerIdx(i)}
+                        disabled={szBusy}
+                        title="Auf der Karte setzen"
+                        className={cn(
+                          "rounded-lg border px-2 py-2 transition hover:bg-neutral-50",
+                          p.lat != null ? "border-primary-300 text-primary-600" : "border-neutral-200 text-neutral-500",
+                        )}
+                      >
+                        <MapPinned className="h-4 w-4" />
+                      </button>
+                      {!isStart && !isZiel ? (
+                        <button
+                          type="button"
+                          onClick={() => removeVia(i)}
+                          disabled={szBusy}
+                          title="Zwischenpunkt entfernen"
+                          className="rounded-lg border border-neutral-200 px-2 py-2 text-neutral-400 transition hover:bg-red-50 hover:text-red-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      ) : null}
+                    </div>
+                    {!isZiel ? (
+                      <div className="flex justify-center py-0.5">
+                        <button
+                          type="button"
+                          onClick={() => addViaAfter(i)}
+                          disabled={szBusy}
+                          title="Zwischenpunkt einfügen"
+                          className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-400 transition hover:border-primary-400 hover:text-primary-600"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
+              <div className="flex justify-end pt-1">
+                <Button
+                  onClick={() => void onStartZiel()}
+                  disabled={szBusy || !szValue(szPoints[0]) || !szValue(szPoints[szPoints.length - 1])}
+                >
                   {szBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
                   Route berechnen
                 </Button>
@@ -365,6 +439,27 @@ export function RouteTab({ project }: { project: Project }) {
         route={editRoute}
         projectId={project.id}
         onClose={() => setEditRoute(null)}
+      />
+
+      {/* #9: Vollbild-Karten-Picker für den gerade gewählten Punkt. */}
+      <MapPointPicker
+        open={pickerIdx !== null}
+        title={
+          pickerIdx === 0
+            ? "Start auf der Karte setzen"
+            : pickerIdx === szPoints.length - 1
+              ? "Ziel auf der Karte setzen"
+              : "Zwischenpunkt auf der Karte setzen"
+        }
+        initial={
+          pickerIdx !== null && szPoints[pickerIdx]?.lat != null
+            ? { lat: szPoints[pickerIdx].lat as number, lng: szPoints[pickerIdx].lng as number, label: szPoints[pickerIdx].label }
+            : null
+        }
+        onConfirm={(r) => {
+          if (pickerIdx !== null) setPointFromPicker(pickerIdx, r)
+        }}
+        onClose={() => setPickerIdx(null)}
       />
     </div>
   )

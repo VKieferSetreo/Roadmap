@@ -300,8 +300,6 @@ function Shell({ children, projektName }: { children: React.ReactNode; projektNa
         <a href="https://setreo.de/impressum/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Impressum</a>
         <a href="https://setreo.de/datenschutz/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">Datenschutz</a>
         <a href="https://setreo.de/agb/" target="_blank" rel="noopener" className="transition-colors hover:text-neutral-600">AGB</a>
-        <span className="text-neutral-300" aria-hidden>·</span>
-        <span>Bereitgestellt über Setreo Roadmap</span>
       </footer>
     </div>
   )
