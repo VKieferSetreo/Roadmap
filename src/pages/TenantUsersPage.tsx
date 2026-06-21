@@ -28,9 +28,22 @@ interface Draft {
   passwort: string // neuer Nutzer: Pflicht; bestehender mit pwReset: neues Passwort; sonst leer = unverändert
   isNew: boolean
   pwReset: boolean // bestehender Nutzer: Passwort-Reset-Feld eingeblendet (T-358)
+  lastSeen?: string | null // T-426: letzter Login (read-only)
 }
 
-const toDraft = (m: TenantMember): Draft => ({ email: m.email, role: m.role, passwort: "", isNew: false, pwReset: false })
+const toDraft = (m: TenantMember): Draft => ({ email: m.email, role: m.role, passwort: "", isNew: false, pwReset: false, lastSeen: m.lastSeen })
+
+/** Letzter Login menschenlesbar: „heute", „gestern", „vor N Tagen" bzw. Datum; null = „noch nie". */
+function lastSeenLabel(iso?: string | null): string {
+  if (!iso) return "noch nie"
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return "—"
+  const tage = Math.floor((Date.now() - d.getTime()) / 86_400_000)
+  if (tage <= 0) return "heute"
+  if (tage === 1) return "gestern"
+  if (tage < 7) return `vor ${tage} Tagen`
+  return d.toLocaleDateString("de-DE")
+}
 
 export function TenantUsersPage() {
   const ctxLoaded = useContextStore((s) => s.loaded)
@@ -157,6 +170,7 @@ export function TenantUsersPage() {
                     <tr>
                       <th className="px-3 py-2 font-medium">E-Mail</th>
                       <th className="w-32 px-3 py-2 font-medium">Rolle</th>
+                      <th className="w-32 px-3 py-2 font-medium">Letzter Login</th>
                       <th className="w-48 px-3 py-2 font-medium">Passwort</th>
                       <th className="w-12 px-3 py-2" />
                     </tr>
@@ -164,7 +178,7 @@ export function TenantUsersPage() {
                   <tbody className="divide-y divide-neutral-100">
                     {loadError ? (
                       <tr>
-                        <td colSpan={4} className="px-3 py-6 text-center">
+                        <td colSpan={5} className="px-3 py-6 text-center">
                           <p className="text-sm text-red-600">{loadError}</p>
                           <button
                             type="button"
@@ -177,7 +191,7 @@ export function TenantUsersPage() {
                       </tr>
                     ) : members.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="px-3 py-6 text-center text-neutral-400">
+                        <td colSpan={5} className="px-3 py-6 text-center text-neutral-400">
                           Noch keine Nutzer — unten hinzufügen.
                         </td>
                       </tr>
@@ -205,6 +219,9 @@ export function TenantUsersPage() {
                               <option value="user">Nutzer</option>
                               <option value="admin">Admin</option>
                             </Select>
+                          </td>
+                          <td className="px-3 py-2 text-xs tabular-nums text-neutral-500" title="Letzter erfasster Login">
+                            {m.isNew ? "—" : lastSeenLabel(m.lastSeen)}
                           </td>
                           <td className="px-3 py-2">
                             {m.isNew || m.pwReset ? (

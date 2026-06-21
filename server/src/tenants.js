@@ -47,8 +47,13 @@ export async function listTenants(db) {
 
 /** Map tenant_id → [{email, role, passwort}] (alle Mandanten). */
 export async function membersByTenant(db) {
+  // T-426: letzten Login je Mitglied mitliefern (LEFT JOIN auf das jüngste analytics_sessions.last_seen).
   const { rows } = await db.query(
-    "SELECT tenant_id, email, role FROM tenant_members ORDER BY email ASC",
+    `SELECT m.tenant_id, m.email, m.role, ls.last_seen
+       FROM tenant_members m
+       LEFT JOIN (SELECT email, MAX(last_seen) AS last_seen FROM analytics_sessions GROUP BY email) ls
+         ON ls.email = m.email
+      ORDER BY m.email ASC`,
   )
   const map = new Map()
   for (const m of rows) {
@@ -69,6 +74,7 @@ export function rowToMember(row) {
   return {
     email: row.email,
     role: row.role === "admin" ? "admin" : "user",
+    lastSeen: row.last_seen ? new Date(row.last_seen).toISOString() : null, // T-426: letzter Login
   }
 }
 

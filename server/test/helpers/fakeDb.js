@@ -90,11 +90,16 @@ export function createFakeDb() {
         }))
       return ok(rows)
     }
-    if (sql.startsWith("SELECT tenant_id, email, role FROM tenant_members")) {
+    // T-426: matcht die alte (tenant_id, email, role) wie die neue (… LEFT JOIN analytics_sessions
+    // last_seen) Member-Query. last_seen im Fake = null (kein Sessions-Bestand im Test nötig).
+    if (
+      sql.startsWith("SELECT tenant_id, email, role FROM tenant_members") ||
+      (sql.includes("FROM tenant_members m") && sql.includes("ls.last_seen"))
+    ) {
       return ok(
         [...state.members]
           .sort((a, b) => (a.email < b.email ? -1 : 1))
-          .map((m) => ({ tenant_id: m.tenant_id, email: m.email, role: m.role ?? "user" })),
+          .map((m) => ({ tenant_id: m.tenant_id, email: m.email, role: m.role ?? "user", last_seen: null })),
       )
     }
     if (sql.startsWith("INSERT INTO tenants (slug, name)")) {

@@ -223,6 +223,8 @@ export type TenantRole = "admin" | "user"
 export interface TenantMember {
   email: string
   role: TenantRole
+  /** Letzter Login (jüngstes analytics_sessions.last_seen), ISO oder null = nie gesehen. T-426. */
+  lastSeen?: string | null
 }
 
 /** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Nutzer. */

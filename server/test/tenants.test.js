@@ -89,7 +89,7 @@ describe("admin tenants API", () => {
       id: expect.any(String),
       slug: "setreo",
       name: "Setreo",
-      mitglieder: [{ email: "vki@setreo.de", role: "user" }],
+      mitglieder: [{ email: "vki@setreo.de", role: "user", lastSeen: null }], // T-426
       projekte: 1,
       suspended: false, // T-346
     })
@@ -134,7 +134,7 @@ describe("admin tenants API", () => {
       members: [{ email: "Neu@Setreo.DE", role: "admin", password: "geheim1234" }],
     })
     expect(put.status).toBe(200)
-    expect(put.body.mitglieder).toEqual([{ email: "neu@setreo.de", role: "admin" }])
+    expect(put.body.mitglieder).toEqual([{ email: "neu@setreo.de", role: "admin", lastSeen: null }]) // T-426
     // 1× Provision (neu@) + 1× Offboarding-DELETE für den verdrängten Default-Member vki@ (T-320)
     expect(fetchImpl).toHaveBeenCalledTimes(2)
     expect(fetchImpl).toHaveBeenCalledWith(
