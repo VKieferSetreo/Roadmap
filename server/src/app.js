@@ -175,6 +175,21 @@ export function createApp({
   })
 
   // ── Gated API ────────────────────────────────────────────────────────────────
+  // T-357: Defense-in-Depth — gated /api/* nimmt X-Auth-* nur an, wenn der Request über den
+  // Gateway (Caddy) kam. Caddy stempelt X-Gateway-Secret (header_up); ein Direktzugriff am Proxy
+  // vorbei (Docker-Netz-Lateral / künftige Ingress-Fehlkonfiguration) trägt es nicht → 401. Greift
+  // NUR bei gesetztem GATEWAY_SECRET (sonst no-op: Dev/Tests + vor dem staged Rollout kein Lockout).
+  // Steht NACH health/internal/abdeckung (Z.120/160/165) → diese Direkt-Pfade bleiben exempt
+  // (Coolify-Healthcheck auf 127.0.0.1, auth-extern-Service-Call, öffentliche Abdeckung).
+  const gatewaySecret = process.env.GATEWAY_SECRET ?? ""
+  if (gatewaySecret) {
+    app.use("/api", (req, res, next) => {
+      if (req.get("x-gateway-secret") !== gatewaySecret) {
+        return res.status(401).json({ error: "Nicht angemeldet" })
+      }
+      next()
+    })
+  }
   app.use("/api", authMiddleware({ requireAuth }))
   app.use("/api", tenantContext({ db }))
 
