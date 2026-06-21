@@ -2,6 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary"
 import { ShareApp } from "./ShareApp"
+import "@/fonts.css" // T-413: self-hosted Fonts auch im externen Share-Viewer (kein Google-IP-Leak für Empfänger)
 import "@/styles/globals.css"
 
 const rootEl = document.getElementById("root")

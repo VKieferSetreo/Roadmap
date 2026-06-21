@@ -10,6 +10,7 @@ import { queryClient } from "@/api/query-client"
 import { router } from "@/routes"
 import { loadPersistedTraceId } from "@/lib/trace"
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary"
+import "@/fonts.css" // T-413: self-hosted Inter/JetBrains Mono (kein Google-Fonts-IP-Leak)
 import "@/styles/globals.css"
 
 // T-468: GlitchTip-Error-Tracking (Sentry-kompatibel). No-op ohne VITE_SENTRY_DSN (Build ohne env).
