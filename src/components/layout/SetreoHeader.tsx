@@ -2,8 +2,8 @@
 // Logo → immer zum Hub; rechts echte Anmelde-Identität (SSO) + Abmelden; mobil Menü-Button.
 // Setreo-Admins sehen zusätzlich den Mandanten-Switcher (X-Tenant-Kontext).
 
-import { Link } from "react-router-dom"
-import { Building2, LogOut, Menu } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Building2, Bug, LogOut, Menu } from "lucide-react"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { BugReportButton } from "@/components/bugreport/BugReportButton"
@@ -18,6 +18,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { avatarBg, handleLogout, initialsFromEmail } from "@/lib/auth"
 
 export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
+  const navigate = useNavigate()
   const profile = useSettingsStore((s) => s.profile)
   const identity = useAuthStore((s) => s.identity)
   const isAdmin = useContextStore((s) => s.isAdmin)
@@ -125,6 +126,18 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
           <p className="text-xs text-neutral-400">Angemeldet als</p>
           <p className="truncate text-sm font-medium text-neutral-800">{email}</p>
         </div>
+        {/* T-232: Setreo-Admin-Verwaltung — /mandanten und /debugging waren bisher nur per direkter
+            URL erreichbar (nicht im Sidebar-Nav). Hier ein In-App-Einstieg. */}
+        {isAdmin ? (
+          <div className="border-b border-neutral-100 py-1">
+            <DropdownItem onClick={() => navigate("/mandanten")}>
+              <Building2 className="h-4 w-4 text-neutral-400" /> Mandanten verwalten
+            </DropdownItem>
+            <DropdownItem onClick={() => navigate("/debugging")}>
+              <Bug className="h-4 w-4 text-neutral-400" /> Debug &amp; Bug-Reports
+            </DropdownItem>
+          </div>
+        ) : null}
         <DropdownItem onClick={handleLogout}>
           <LogOut className="h-4 w-4 text-neutral-400" /> Abmelden
         </DropdownItem>

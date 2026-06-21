@@ -22,6 +22,8 @@ import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { api } from "@/api/roadmap"
 import { AUTH_FAILURE_EVENT } from "@/api/client"
 import { Button } from "@/components/ui/Button"
+import { handleLogout } from "@/lib/auth"
+import { useStaleBuildCheck } from "@/hooks/useStaleBuildCheck"
 import { BUILD_BASE, slugFromPath, withSlug } from "@/lib/tenantUrl"
 import { Building2, RefreshCcw, WifiOff } from "lucide-react"
 
@@ -132,10 +134,22 @@ export function AppLayout() {
   const backendDownForUser = mode === "demo" && backendDown && !!identity
   // T-231: bewusster Demo-Modus (keine Live-DB, kein eingeloggter Nutzer in einer Backend-Panne)
   const showDemoBanner = mode === "demo" && !backendDownForUser
+  const staleBuild = useStaleBuildCheck() // T-507: FE/Deploy-Skew → Reload-Banner
 
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
       <SetreoHeader onMenuClick={() => setMobileNavOpen(true)} />
+
+      {/* T-507: neuer Build ausgerollt, Tab läuft noch auf altem Bundle → Reload anbieten. */}
+      {staleBuild ? (
+        <div className="flex shrink-0 flex-wrap items-center justify-center gap-2 bg-primary-600 px-4 py-1.5 text-center text-xs font-medium text-white">
+          <RefreshCcw className="h-3.5 w-3.5 shrink-0" />
+          Eine neue Version ist verfügbar.
+          <button onClick={() => window.location.reload()} className="rounded bg-white/20 px-2 py-0.5 font-semibold underline-offset-2 hover:bg-white/30">
+            Jetzt neu laden
+          </button>
+        </div>
+      ) : null}
 
       {/* T-231: Demo-Modus app-weit als persistentes Banner — Beispieldaten, keine Live-DB. */}
       {showDemoBanner ? (
@@ -203,9 +217,18 @@ export function AppLayout() {
                     </div>
                     <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
                     <p className="mt-2 text-sm text-neutral-500">
-                      Ihr Konto ist noch keinem Mandanten zugewiesen. Bitte wenden Sie sich an Setreo.
+                      Ihr Konto ({email}) ist noch keinem Mandanten zugewiesen. Bitte wenden Sie sich an Setreo.
                       Sobald die Zuordnung steht, erscheinen hier die Projekte Ihres Teams.
                     </p>
+                    {/* T-478: Sackgasse aufbrechen — konkreter nächster Schritt statt nur „wenden Sie sich an Setreo". */}
+                    <div className="mt-5 flex flex-col items-center gap-2">
+                      <Button variant="outline" onClick={() => handleLogout()}>
+                        Abmelden / anderes Konto
+                      </Button>
+                      <a href="https://setreo.de/kontakt/" target="_blank" rel="noopener" className="text-xs text-primary-700 hover:underline">
+                        Setreo kontaktieren
+                      </a>
+                    </div>
                   </div>
                 </div>
               )
