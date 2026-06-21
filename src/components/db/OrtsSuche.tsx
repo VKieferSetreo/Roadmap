@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Loader2, MapPin, X } from "lucide-react"
 import { Input } from "@/components/ui/Input"
+import { api } from "@/api/roadmap"
 
 interface NominatimHit {
   place_id: number
@@ -36,25 +37,24 @@ export function OrtsSuche({ onSelect }: { onSelect: (t: OrtTreffer) => void }) {
       return
     }
     setLoading(true)
-    const ctrl = new AbortController()
+    let stale = false
     const id = setTimeout(async () => {
       try {
-        const url =
-          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=de&accept-language=de&q=" +
-          encodeURIComponent(term)
-        const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } })
-        const data = (await res.json()) as NominatimHit[]
-        setHits(Array.isArray(data) ? data : [])
+        // #16: server-seitiger Geocode-Proxy (CSP `connect-src 'self'` blockt den direkten
+        // Nominatim-Fetch im Browser — sonst lieferte die Ortssuche still keine Treffer).
+        const { results } = await api.geocodeSearch(term)
+        if (stale) return
+        setHits(results as NominatimHit[])
         setOpen(true)
       } catch {
         /* abgebrochen / offline → still */
       } finally {
-        setLoading(false)
+        if (!stale) setLoading(false)
       }
     }, 400)
     return () => {
+      stale = true
       clearTimeout(id)
-      ctrl.abort()
     }
   }, [q])
 

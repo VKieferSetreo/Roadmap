@@ -130,7 +130,15 @@ export const api = {
   // #16: Orts-/Adress-Suche server-seitig (Nominatim-Proxy) — der direkte Browser-Fetch ist
   // seit der CSP (connect-src 'self') geblockt.
   geocodeSearch: (q: string) =>
-    axiosClient<{ results: { place_id: number; display_name: string; lat: string; lon: string }[] }>({
+    axiosClient<{
+      results: {
+        place_id: number
+        display_name: string
+        lat: string
+        lon: string
+        boundingbox?: [string, string, string, string]
+      }[]
+    }>({
       url: "/geocode/search",
       method: "GET",
       params: { q },

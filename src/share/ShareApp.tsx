@@ -5,11 +5,14 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { MemoryRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom"
-import { ClipboardList, Loader2, Lock, MapPinned, SearchX } from "lucide-react"
+import { ClipboardList, Download, ExternalLink, FileDown, Loader2, Lock, MapPinned, Route as RouteIcon, SearchX, X } from "lucide-react"
 import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
+import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
+import { routeLengthKm } from "@/lib/parseRouteFile"
 import type { Finding, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -224,7 +227,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
     <>
       {showDisclaimer ? <DisclaimerModal mode="view" onClose={() => setShowDisclaimer(false)} /> : null}
       <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
-        <Shell projektName={data.name}>
+        <Shell projektName={data.name} routes={data.routes}>
           <Routes>
             <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} />} />
             <Route
@@ -275,9 +278,84 @@ function ShareTabs() {
   )
 }
 
+/** Download-Button im Share-Header → Maske mit allen Strecken; je Strecke KML/Google-Maps-Export. */
+function ShareDownload({ routes }: { routes: ProjectRoute[] }) {
+  const [open, setOpen] = useState(false)
+  const usable = routes.filter((r) => r.points.length >= 2)
+  if (usable.length === 0) return null
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        title="Strecken herunterladen"
+        className="flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+      >
+        <Download className="h-4 w-4" /> <span className="hidden sm:inline">Download</span>
+      </button>
+
+      {open ? (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
+          <div className="relative flex max-h-[80vh] w-full max-w-md flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-overlay">
+            <header className="flex shrink-0 items-center gap-3 border-b border-neutral-200 px-4 py-3">
+              <Download className="h-5 w-5 text-primary-600" />
+              <h2 className="flex-1 text-sm font-semibold text-neutral-900">Strecke herunterladen</h2>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Schließen" className="rounded-md p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700">
+                <X className="h-5 w-5" />
+              </button>
+            </header>
+            <ul className="min-h-0 flex-1 divide-y divide-neutral-100 overflow-auto">
+              {usable.map((r) => (
+                <li key={r.id} className="flex items-center gap-3 px-4 py-2.5">
+                  <span className="h-3 w-3 shrink-0 rounded-full ring-2 ring-white" style={{ background: r.farbe }} aria-hidden />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-neutral-800">{r.name}</p>
+                    <p className="truncate text-xs tabular-nums text-neutral-400">
+                      {r.points.length.toLocaleString("de-DE")} Punkte · ca. {routeLengthKm(r.points).toLocaleString("de-DE")} km
+                    </p>
+                  </div>
+                  <DropdownMenu
+                    triggerLabel={`Strecke ${r.name} herunterladen oder öffnen`}
+                    trigger={
+                      <span title="Herunterladen / in Google Maps öffnen" className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-50 hover:text-neutral-800">
+                        <Download className="h-4 w-4" />
+                      </span>
+                    }
+                  >
+                    <DropdownItem onClick={() => openInGoogleMaps(r)}>
+                      <ExternalLink className="h-4 w-4 text-neutral-400" /> In Google Maps öffnen
+                    </DropdownItem>
+                    <DropdownItem onClick={() => downloadKml(r)}>
+                      <FileDown className="h-4 w-4 text-neutral-400" /> Als KML herunterladen
+                    </DropdownItem>
+                  </DropdownMenu>
+                </li>
+              ))}
+            </ul>
+            <p className="shrink-0 border-t border-neutral-100 px-4 py-2 text-[11px] text-neutral-400">
+              <RouteIcon className="mr-1 inline h-3 w-3" />
+              {usable.length} {usable.length === 1 ? "Strecke" : "Strecken"} in dieser Analyse.
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </>
+  )
+}
+
 // ── Layout-Hülle (schlanker Chrome ohne Navigation/Verwaltung) ────────────────
 
-function Shell({ children, projektName }: { children: React.ReactNode; projektName?: string }) {
+function Shell({
+  children,
+  projektName,
+  routes,
+}: {
+  children: React.ReactNode
+  projektName?: string
+  routes?: ProjectRoute[]
+}) {
   const inRouter = projektName !== undefined
   return (
     <div className="flex h-screen flex-col bg-neutral-50">
@@ -292,7 +370,12 @@ function Shell({ children, projektName }: { children: React.ReactNode; projektNa
         <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-700">
           {projektName ?? "Routenanalyse"}
         </span>
-        {inRouter ? <ShareTabs /> : null}
+        {inRouter ? (
+          <div className="flex items-center gap-2">
+            <ShareTabs />
+            {routes && routes.length ? <ShareDownload routes={routes} /> : null}
+          </div>
+        ) : null}
       </header>
       <main className="min-h-0 flex-1 overflow-hidden">{children}</main>
       {/* T-#12: rechtlicher Footer wie auf den übrigen Setreo-Seiten + Haftungsausschluss. */}

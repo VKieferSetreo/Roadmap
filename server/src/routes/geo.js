@@ -30,7 +30,13 @@ export function geoRouter({ db, nominatim, fetchImpl = globalThis.fetch }) {
       })
       const data = await r2.json()
       const results = Array.isArray(data)
-        ? data.map((h) => ({ place_id: h.place_id, display_name: h.display_name, lat: h.lat, lon: h.lon }))
+        ? data.map((h) => ({
+            place_id: h.place_id,
+            display_name: h.display_name,
+            lat: h.lat,
+            lon: h.lon,
+            boundingbox: h.boundingbox, // [south, north, west, east] — für fitBounds (Ortssuche)
+          }))
         : []
       res.json({ results })
     } catch {

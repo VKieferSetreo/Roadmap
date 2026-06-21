@@ -8,7 +8,7 @@
 // bei jedem Reconcile neu. Imperativ wird das Cluster NUR bei Daten-Änderung gebaut;
 // Zoom/Pan fasst die Marker nie an → Punkte bleiben persistent.
 
-import { useEffect } from "react"
+import { useEffect, type ReactNode } from "react"
 import L from "leaflet"
 import { MapContainer, TileLayer, useMap, ZoomControl } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
@@ -279,10 +279,15 @@ export function ObstaclesMap({
   obstacles,
   onDelete,
   flyTo,
+  children,
 }: {
   obstacles: Obstacle[]
   onDelete?: DeleteFn
   flyTo?: OrtTreffer
+  /** Overlays IM Karten-Wrapper (z.B. Suchleisten) — bleiben im Vollbild sichtbar, da
+   *  MapFullscreen den Wrapper (parentElement der MapContainer) ins Vollbild nimmt. Als
+   *  Geschwister der MapContainer liegen sie zudem außerhalb der Leaflet-Eventfläche. */
+  children?: ReactNode
 }) {
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
@@ -297,6 +302,7 @@ export function ObstaclesMap({
         <FlyTo target={flyTo} />
         <ObstacleLayers obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>
+      {children}
       <span className="pointer-events-none absolute bottom-2 left-3 z-[500] rounded-md bg-white/85 px-2 py-1 text-[11px] tabular-nums text-neutral-600 backdrop-blur">
         {obstacles.length.toLocaleString("de-DE")} Hindernisse
       </span>

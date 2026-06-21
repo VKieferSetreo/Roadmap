@@ -185,33 +185,37 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Zwei gleich breite Suchfelder nebeneinander: links Ort (schwenkt die Karte),
-          rechts Inhalt (filtert die Einträge). */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <OrtsSuche onSelect={setFlyTo} />
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-          <Input
-            value={suche}
-            onChange={(e) => setSuche(e.target.value)}
-            placeholder="In Einträgen suchen …"
-            className="pl-9"
-            aria-label="Hindernis-Datenbank nach Inhalten durchsuchen"
-          />
-          {suche ? (
-            <button
-              onClick={() => setSuche("")}
-              aria-label="Suche leeren"
-              title="Suche leeren"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-neutral-400 hover:text-neutral-700"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          ) : null}
-        </div>
-      </div>
-      <div className="h-[calc(100vh-420px)] min-h-[420px]">
-        <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo} />
+      <div className="h-[calc(100vh-360px)] min-h-[440px]">
+        <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo}>
+          {/* Suchleisten IN der Karte (links Ort = schwenkt, rechts Inhalt = filtert). Liegen im
+              Karten-Wrapper → bleiben auch im Vollbild sichtbar; rechts bleibt Platz für den
+              Vollbild-Button. Auf kleinen Schirmen untereinander. */}
+          <div className="absolute left-3 top-3 z-[1200] flex w-[min(42rem,calc(100%-4.75rem))] flex-col gap-2 sm:flex-row">
+            <div className="rounded-md shadow-lg sm:flex-1">
+              <OrtsSuche onSelect={setFlyTo} />
+            </div>
+            <div className="relative rounded-md bg-white shadow-lg sm:flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <Input
+                value={suche}
+                onChange={(e) => setSuche(e.target.value)}
+                placeholder="In Einträgen suchen …"
+                className="bg-white pl-9"
+                aria-label="Hindernis-Datenbank nach Inhalten durchsuchen"
+              />
+              {suche ? (
+                <button
+                  onClick={() => setSuche("")}
+                  aria-label="Suche leeren"
+                  title="Suche leeren"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-neutral-400 hover:text-neutral-700"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </ObstaclesMap>
       </div>
     </div>
   )
