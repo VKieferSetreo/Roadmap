@@ -42,6 +42,7 @@ export function TenantUsersPage() {
   const [members, setMembers] = useState<Draft[]>([])
   const [maxSeats, setMaxSeats] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null) // T-491: Lade-Fehler vs. leer trennen
   const [saving, setSaving] = useState(false)
 
   const tenantId = tenant?.id
@@ -49,6 +50,7 @@ export function TenantUsersPage() {
   const reload = useCallback(async () => {
     if (!tenantId) return
     setLoading(true)
+    setLoadError(null)
     try {
       const t = await api.getTenant(tenantId)
       setMembers(t.mitglieder.map(toDraft))
@@ -59,7 +61,9 @@ export function TenantUsersPage() {
         setMaxSeats(0) // Lizenz nicht lesbar → unbegrenzt anzeigen
       }
     } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Nutzer konnten nicht geladen werden.")
+      const msg = e instanceof ApiError ? e.message : "Nutzer konnten nicht geladen werden."
+      setLoadError(msg) // T-491: Inline-Fehler statt 'Noch keine Nutzer' (Fehler ≠ leer)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -158,7 +162,20 @@ export function TenantUsersPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
-                    {members.length === 0 ? (
+                    {loadError ? (
+                      <tr>
+                        <td colSpan={4} className="px-3 py-6 text-center">
+                          <p className="text-sm text-red-600">{loadError}</p>
+                          <button
+                            type="button"
+                            onClick={() => void reload()}
+                            className="mt-2 text-sm font-medium text-blue-600 hover:underline"
+                          >
+                            Erneut versuchen
+                          </button>
+                        </td>
+                      </tr>
+                    ) : members.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="px-3 py-6 text-center text-neutral-400">
                           Noch keine Nutzer — unten hinzufügen.

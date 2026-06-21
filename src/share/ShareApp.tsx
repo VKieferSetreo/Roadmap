@@ -26,6 +26,8 @@ interface ShareData {
 type ShareState =
   | { status: "laden" }
   | { status: "nicht-gefunden" }
+  | { status: "ungueltig" } // T-250: Pfad unverständlich → kein gültiger Link (≠ zurückgezogen)
+  | { status: "rate-limit" } // T-250: 429 → zu viele Versuche, nicht "nicht gefunden"
   | { status: "gesperrt"; name?: string; fehler?: string }
   | { status: "offen"; data: ShareData }
 
@@ -46,11 +48,12 @@ export function ShareApp() {
 
   useEffect(() => {
     if (!ref) {
-      setState({ status: "nicht-gefunden" })
+      setState({ status: "ungueltig" })
       return
     }
     fetch(apiBase)
       .then(async (res) => {
+        if (res.status === 429) return setState({ status: "rate-limit" })
         if (!res.ok) return setState({ status: "nicht-gefunden" })
         const body = (await res.json()) as { locked: boolean; name?: string; data?: ShareData }
         if (body.locked) setState({ status: "gesperrt", name: body.name })
@@ -73,6 +76,15 @@ export function ShareApp() {
         setState((s) =>
           s.status === "gesperrt"
             ? { ...s, fehler: "Passwort falsch — bitte erneut versuchen." }
+            : s,
+        )
+        return
+      }
+      if (res.status === 429) {
+        // T-250: Rate-Limit beim Entsperren → Eingabe behalten, Hinweis statt Voll-Screen.
+        setState((s) =>
+          s.status === "gesperrt"
+            ? { ...s, fehler: "Zu viele Versuche — bitte einen Moment warten." }
             : s,
         )
         return
@@ -112,6 +124,30 @@ export function ShareApp() {
           icon={<SearchX className="h-6 w-6 text-neutral-400" />}
           title="Link nicht verfügbar"
           text="Diese Freigabe existiert nicht oder wurde vom Ersteller zurückgezogen."
+        />
+      </Shell>
+    )
+  }
+
+  if (state.status === "ungueltig") {
+    return (
+      <Shell>
+        <CenterCard
+          icon={<SearchX className="h-6 w-6 text-neutral-400" />}
+          title="Ungültiger Link"
+          text="Diese Adresse ist kein gültiger Freigabe-Link. Bitte prüfen Sie den vollständigen Link."
+        />
+      </Shell>
+    )
+  }
+
+  if (state.status === "rate-limit") {
+    return (
+      <Shell>
+        <CenterCard
+          icon={<SearchX className="h-6 w-6 text-neutral-400" />}
+          title="Zu viele Versuche"
+          text="Bitte einen Moment warten und die Seite neu laden."
         />
       </Shell>
     )

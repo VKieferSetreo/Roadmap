@@ -15,6 +15,7 @@ const AdminTenantsPage = lazy(() => import("@/pages/AdminTenantsPage").then((m) 
 const TenantUsersPage = lazy(() => import("@/pages/TenantUsersPage").then((m) => ({ default: m.TenantUsersPage })))
 const DebugPage = lazy(() => import("@/pages/DebugPage").then((m) => ({ default: m.DebugPage })))
 const NewsPage = lazy(() => import("@/pages/NewsPage").then((m) => ({ default: m.NewsPage })))
+const NotFound = lazy(() => import("@/pages/NotFound").then((m) => ({ default: m.NotFound })))
 
 // Router-Basename inkl. optionalem Mandanten-Slug (/roadmap/<slug>). Dev (Base /) → "/".
 const basename = routerBasename()
@@ -47,7 +48,7 @@ export const router = createBrowserRouter(
         { path: "/nutzer", element: page(<TenantUsersPage />) },
         { path: "/news", element: page(<NewsPage />) },
         { path: "/einstellungen", element: page(<SettingsPage />) },
-        { path: "*", element: <Navigate to="/" replace /> },
+        { path: "*", element: page(<NotFound />) }, // T-489: 404 statt stummem Redirect
       ],
     },
     // GLOBALE Admin-Screens — eigenes, losgelöstes Layout (kein Projekt-Sidebar). Nur intern + admin.
