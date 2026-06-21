@@ -6,12 +6,13 @@
 // sonst remounten sie bei jedem Tastendruck und das Eingabefeld verliert den Fokus.
 
 import { useEffect, useRef, useState } from "react"
-import { ChevronRight, Folder, FolderOpen, FolderPlus, Pencil, Trash2 } from "lucide-react"
+import { ChevronRight, FilePlus2, Folder, FolderOpen, FolderPlus, Pencil, Trash2 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
 import { useFolderStore } from "@/store/folders"
 import { useUiStore } from "@/store/ui"
 import { ProjectMenu } from "@/components/project/ProjectMenu"
 import { CreatorAvatar } from "@/components/project/CreatorAvatar"
+import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { cn } from "@/lib/cn"
 import type { Folder as FolderT, Project } from "@/types/domain"
 
@@ -50,8 +51,10 @@ interface TreeCtx {
   commitRename: (id: string) => void
   cancelRename: () => void
   removeFolder: (id: string) => void
+  /** Neues Projekt im angegebenen Ordner anlegen (öffnet den Dialog; AppLayout sortiert ein). */
+  openNewProject: (folderId: string) => void
   creatingIn: string | null | undefined
-  startCreate: (parentId: string | null) => void
+  startCreate: (parentId: string | null, openPath?: string[]) => void
   newName: string
   setNewName: (v: string) => void
   commitCreate: () => void
@@ -229,15 +232,26 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
         </button>
         {!isRenaming ? (
           <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/folder:opacity-100 max-lg:opacity-100">
-            {depth === 0 ? (
-              <button
-                onClick={() => ctx.startCreate(id)}
-                title="Unterordner anlegen"
-                className="rounded p-1 text-neutral-400 hover:bg-neutral-200 hover:text-primary-600"
-              >
-                <FolderPlus className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
+            {/* „+" im Ordner: Auswahl Neuer Ordner ODER Neues Projekt — beides IN diesem Ordner. */}
+            <DropdownMenu
+              align="start"
+              triggerLabel={`In „${f.name}" neu anlegen`}
+              trigger={
+                <span
+                  title="Neu anlegen: Ordner oder Projekt"
+                  className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-neutral-400 hover:bg-neutral-200 hover:text-primary-600"
+                >
+                  <FolderPlus className="h-3.5 w-3.5" />
+                </span>
+              }
+            >
+              <DropdownItem onClick={() => ctx.startCreate(id, depth === 0 || !parent ? [id] : [parent, id])}>
+                <FolderPlus className="h-4 w-4 text-primary-600" /> Neuer Ordner
+              </DropdownItem>
+              <DropdownItem onClick={() => ctx.openNewProject(id)}>
+                <FilePlus2 className="h-4 w-4 text-neutral-500" /> Neues Projekt
+              </DropdownItem>
+            </DropdownMenu>
             <button
               onClick={() => ctx.startRename(id, f.name)}
               title="Umbenennen"
@@ -299,6 +313,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const renameFolder = useFolderStore((s) => s.renameFolder)
   const moveFolder = useFolderStore((s) => s.moveFolder)
   const removeFolder = useFolderStore((s) => s.removeFolder)
+  const openNewProject = useUiStore((s) => s.openNewProject)
 
   const [openPath, setOpenPath] = useState<string[]>([])
   const [dragId, setDragId] = useState<string | null>(null)
@@ -416,11 +431,14 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     },
     cancelRename: () => setRenaming(null),
     removeFolder,
+    openNewProject,
     creatingIn,
-    startCreate: (parentId) => {
+    startCreate: (parentId, openPath) => {
       setCreatingIn(parentId)
       setNewName("")
-      if (parentId) setOpenPath([parentId]) // Elternordner offen halten
+      // Ordner sichtbar halten: bei Unterordnern den ganzen Pfad öffnen, sonst nur den Ordner.
+      if (openPath) setOpenPath(openPath)
+      else if (parentId) setOpenPath([parentId])
     },
     newName,
     setNewName,

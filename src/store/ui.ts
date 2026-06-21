@@ -42,7 +42,10 @@ interface UiStore {
 export const useUiStore = create<UiStore>((set) => ({
   newProjectOpen: false,
   newProjectFolderId: null,
-  openNewProject: (folderId = null) => set({ newProjectOpen: true, newProjectFolderId: folderId }),
+  // folderId nur übernehmen, wenn es WIRKLICH eine Ordner-Id ist — manche Aufrufer hängen
+  // openNewProject direkt an onClick (dann käme das Event als Argument); alles Nicht-String = Wurzel.
+  openNewProject: (folderId = null) =>
+    set({ newProjectOpen: true, newProjectFolderId: typeof folderId === "string" ? folderId : null }),
   closeNewProject: () => set({ newProjectOpen: false }),
   newFolderTick: 0,
   requestNewFolder: () => set((s) => ({ newFolderTick: s.newFolderTick + 1 })),
