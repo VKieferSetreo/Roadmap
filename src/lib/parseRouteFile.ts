@@ -147,14 +147,16 @@ export async function parseRouteFile(file: File): Promise<ParsedRoute> {
   } else if (name.endsWith(".kml")) {
     points = parseKml(await file.text())
     format = "kml"
-  } else if (name.endsWith(".geojson") || name.endsWith(".json")) {
+  } else if (name.endsWith(".geojson")) {
     points = parseGeoJson(await file.text())
     format = "geojson"
-  } else if (name.endsWith(".zip") || name.endsWith(".shp")) {
-    points = await parseShapefile(file, name.endsWith(".zip"))
+  } else if (name.endsWith(".zip")) {
+    // Nur das vollständige Shapefile-ZIP (mit .prj zum Reprojizieren) — KEIN nacktes .shp ohne
+    // Sidecars (Koordinaten unprüfbar) und kein mehrdeutiges .json. Verifizierbare Formate only.
+    points = await parseShapefile(file, true)
     format = "shp"
   } else {
-    throw new Error("Unbekanntes Format — bitte GPX, KML, GeoJSON oder Shapefile verwenden.")
+    throw new Error("Format nicht unterstützt — bitte GPX, KML, GeoJSON oder Shapefile (.zip) verwenden.")
   }
 
   const valid = points.filter(isValidPoint)

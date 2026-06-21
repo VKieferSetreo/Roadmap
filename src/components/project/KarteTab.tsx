@@ -8,7 +8,6 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  EyeOff,
   Filter,
   Layers,
   MapPinned,
@@ -111,7 +110,6 @@ export function KarteTab({
     () => project.findings.filter((f) => !f.hidden && (!f.routeId || !hidden.has(f.routeId))),
     [project.findings, hidden],
   )
-  const ausgeblendetN = useMemo(() => project.findings.filter((f) => f.hidden).length, [project.findings])
   // Kategorie-Filter (oben rechts) angewandt → nur das landet auf der Karte + in der Suche.
   // kategoriesOnRoute (Filter-Liste) bleibt aus sichtbareFindings → alle Kategorien immer wählbar.
   /** Zeitfenster aus dem Karten-Zeitstrahl (ms) — null = kein Zeitfilter. */
@@ -516,13 +514,6 @@ export function KarteTab({
                     </li>
                   )
                 })}
-                {ausgeblendetN > 0 ? (
-                  <li className="mt-0.5 flex items-center gap-2 border-t border-neutral-100 px-1.5 pt-1.5 text-xs text-neutral-400">
-                    <EyeOff className="h-4 w-4 shrink-0" />
-                    <span className="flex-1">Ausgeblendet</span>
-                    <span className="tabular-nums">{ausgeblendetN}</span>
-                  </li>
-                ) : null}
               </ul>
             ) : null}
           </div>

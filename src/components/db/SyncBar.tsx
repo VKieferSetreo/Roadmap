@@ -172,7 +172,7 @@ export function SyncBar() {
             disabled={running}
           >
             <RefreshCw className={cn("h-4 w-4", running && "animate-spin")} />
-            {running ? "Aktualisiere …" : "Aktualisieren"}
+            {running ? "Aktualisiere Daten …" : "Daten aktualisieren"}
           </Button>
         </div>
       </div>

@@ -60,6 +60,7 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
           <Input
             id="project-nummer"
             autoFocus
+            autoComplete="off"
             value={nummer}
             onChange={(e) => setNummer(e.target.value)}
             onKeyDown={onEnter}
@@ -68,13 +69,14 @@ export function NewProjectDialog({ open, onClose, onCreate }: NewProjectDialogPr
           />
         </div>
         <div>
-          <Label htmlFor="project-name">Name</Label>
+          <Label htmlFor="project-name">Projektname</Label>
           <Input
             id="project-name"
+            autoComplete="off"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={onEnter}
-            placeholder="Hans Mustermann"
+            placeholder="z. B. Trafo-Transport Werk Nord"
             maxLength={70}
           />
         </div>

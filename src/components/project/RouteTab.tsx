@@ -193,8 +193,8 @@ export function RouteTab({ project }: { project: Project }) {
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
                   : "Streckendatei hochladen"
               }
-              hint="GPX, KML, GeoJSON oder Shapefile (.zip mit .prj / .shp)"
-              accept=".gpx,.kml,.geojson,.json,.shp,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/zip,application/x-esri-shape"
+              hint="GPX, KML, GeoJSON oder Shapefile (.zip mit .prj)"
+              accept=".gpx,.kml,.geojson,.zip,application/gpx+xml,application/vnd.google-earth.kml+xml,application/geo+json,application/zip"
               onFile={(file) => void onRouteFile(file)}
             />
           ) : tab === "link" ? (
