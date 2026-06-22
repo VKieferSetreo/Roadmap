@@ -68,7 +68,9 @@ export async function runImport({
 
   try {
     const timeoutMs = Number(env.EXTERNAL_TIMEOUT_MS ?? 4000)
-    const result = await connector.fetch({ fetchImpl, env, timeoutMs, log: note })
+    // db wird durchgereicht für Connectoren, die gegen den Live-Bestand dedupen (0152 BAB-AlD
+    // gegen 0001/0145). Bestehende Connectoren ignorieren den extra Parameter.
+    const result = await connector.fetch({ fetchImpl, env, timeoutMs, log: note, db })
     const rawItems = Array.isArray(result?.obstacles) ? result.obstacles : []
     // Kaputte/leere Connector-Antwort sichtbar machen (sonst sieht ein „ok, 0 gefunden"
     // wie ein legitim leerer Feed aus). Reconcile bleibt durch seen.size>0 geschützt.

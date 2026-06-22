@@ -212,6 +212,11 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       const rec = m[2]
       const externeId = attrOf(openTag, "id") || attrOf(openTag, "version") || null
       if (!externeId) continue
+      // validityStatus=suspended: Situation ist DEFINIERT, aber NICHT in Kraft (z.B. eine SH-Brücke,
+      // die windbedingt gesperrt werden KANN, aktuell aber frei ist). Ohne diesen Filter würde sie als
+      // aktive Vollsperrung importiert → Fehlalarm. Nur 'suspended' raus; active/definedByValidityTimeSpec
+      // (die echten geplanten Sperrungen mit Zeitfenster) bleiben.
+      if (String(tag(rec, "validityStatus") || "").trim().toLowerCase() === "suspended") continue
 
       const kategorie = kategorieAusTyp(openTag, rec)
       const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))

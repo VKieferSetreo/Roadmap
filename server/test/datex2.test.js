@@ -177,6 +177,19 @@ describe("parseDatex2", () => {
       .toBe("A5 Markierungsarbeiten - 2026-016892 - RF KA")
   })
 
+  it("validityStatus=suspended → Record raus (keine Fehlalarm-Sperrung), active bleibt", () => {
+    const rec = (id, status) => `<situationRecord id="${id}" xsi:type="RoadOrCarriagewayOrLaneManagement" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <validity><validityStatus>${status}</validityStatus></validity>
+        <generalPublicComment><values><value>${id} Brückensperrung</value></values></generalPublicComment>
+        <groupOfLocations xsi:type="Point"><pointByCoordinates><pointCoordinates><latitude>54.0</latitude><longitude>9.3</longitude></pointCoordinates></pointByCoordinates></groupOfLocations>
+        <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+      </situationRecord>`
+    const xml = `<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0"><situation id="S">
+      ${rec("frei", "suspended")}${rec("aktiv", "active")}</situation></d2LogicalModel>`
+    const obs = parseDatex2(xml, { quelleName: "SH" })
+    expect(obs.map((o) => o.externeId)).toEqual(["aktiv"]) // suspended verworfen, active bleibt
+  })
+
   it("leeres/kaputtes XML → leere Liste (kein Wurf)", () => {
     expect(parseDatex2("")).toEqual([])
     expect(parseDatex2("<html>kein datex</html>")).toEqual([])
