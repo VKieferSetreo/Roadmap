@@ -225,7 +225,21 @@ export function createApp({
   app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
   app.use("/api/folders", requireTenant, foldersRouter({ db }))
   app.use("/api/finding-chat", requireTenant, findingChatRouter({ db }))
-  app.use("/api/findings", requireTenant, findingsRouter({ db }))
+  // T-392: die ILIKE-Volltextsuche (?q=) ist ein nicht-indizierter Seq-Scan über alle Tenant-Funde
+  // bzw. -Hindernisse. Der globale 1200/min-Backstop fängt Runaway, aber die Suche ist teurer als
+  // ein normaler Read → eigener, strafferer Eimer NUR auf dem Such-Pfad (q gesetzt). pg_trgm/GIN
+  // wäre bei aktueller Tenant-Größe (wenige Tausend Zeilen) Over-Engineering — der Limiter schließt
+  // den Spam-Vektor, der Seq-Scan selbst bleibt schnell.
+  const searchLimiter = createRateLimiter({ max: 90, windowMs: 60_000 })
+  const guardSearch = (req, _res, next) => {
+    if (req.query?.q) {
+      const key = req.ctx?.email || req.user?.email || req.ip || "anon"
+      if (!searchLimiter(key)) throw new ApiError(429, "Zu viele Suchanfragen — bitte kurz warten")
+    }
+    next()
+  }
+
+  app.use("/api/findings", requireTenant, guardSearch, findingsRouter({ db }))
   app.use("/api/stats", requireTenant, statsRouter({ db }))
   app.use("/api/notifications", requireTenant, notificationsRouter({ db }))
   // T-304: daten-liefernde Routen sind tenant-pflichtig — sonst liest ein verifizierter
@@ -233,7 +247,7 @@ export function createApp({
   // Hindernis-Datensatz (das verkaufte Asset). Interne SSO-Nutzer bekommen auto-"setreo" und
   // sind nicht betroffen; account/analytics/bug-reports bleiben bewusst offen (Seat-Redeem,
   // Heartbeat, Fehler-Melden brauchen No-Seat-Zugang).
-  app.use("/api/obstacles", requireTenant, obstaclesRouter({ db }))
+  app.use("/api/obstacles", requireTenant, guardSearch, obstaclesRouter({ db }))
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
   app.use("/api/analytics", analyticsRouter({ db }))

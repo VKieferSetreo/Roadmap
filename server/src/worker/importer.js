@@ -67,7 +67,11 @@ export async function runImport({
   let status = "ok"
 
   try {
-    const timeoutMs = Number(env.EXTERNAL_TIMEOUT_MS ?? 4000)
+    // T-275: Default 4000ms war für paginierte WFS zu knapp (4s/Seite → Timeout → Abbruch →
+    // stiller Teilbestand). fetchAllFeatures wirft bei Seiten-Timeout HART (kein Silent-Empty →
+    // Reconcile-Schutz greift), 20s/Seite ist großzügig genug für träge Landes-WFS. Der Worker
+    // setzt env zusätzlich (40000); dieser Default deckt den api-getriggerten Sync ab.
+    const timeoutMs = Number(env.EXTERNAL_TIMEOUT_MS ?? 20000)
     // db wird durchgereicht für Connectoren, die gegen den Live-Bestand dedupen (0152 BAB-AlD
     // gegen 0001/0145). Bestehende Connectoren ignorieren den extra Parameter.
     const result = await connector.fetch({ fetchImpl, env, timeoutMs, log: note, db })
