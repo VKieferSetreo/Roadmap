@@ -113,7 +113,7 @@ export function DashboardTab({
   // bei vorhandenen Funden (z.B. server-seitig status='analyse' ohne Client-Timer) Inhalt behalten.
   if (project.status !== "fertig" && !running && project.findings.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-10">
+      <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
         <EmptyState
           icon={ClipboardList}
           title="Noch keine Auswertung"
