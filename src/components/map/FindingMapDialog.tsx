@@ -11,6 +11,7 @@ import { FindingCard } from "./FindingCard"
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { MapLayers } from "./MapControls"
 import type { DbFinding } from "@/api/roadmap"
 
 interface FindingMapDialogProps {
@@ -59,8 +60,9 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
                 scrollWheelZoom
                 className="h-full w-full"
               >
-                <TileLayer attribution={tiles.attribution} url={tiles.url} />
+                <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
                 <MapResize />
+                <MapLayers />
                 <Marker
                   position={[finding.lat, finding.lng]}
                   icon={findingPinIcon(finding.kategorie, sev.marker, true)}

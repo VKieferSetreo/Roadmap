@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { api } from "@/api/roadmap"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { MapLayers } from "@/components/map/MapControls"
 import { cn } from "@/lib/cn"
 
 interface Pos {
@@ -237,7 +238,8 @@ export function MapPointPicker({
 
       <div className="relative min-h-0 flex-1">
         <MapContainer center={[(pos ?? DE_CENTER).lat, (pos ?? DE_CENTER).lng]} zoom={pos ? 14 : 6} className="h-full w-full" zoomControl>
-          <TileLayer url={tiles.url} attribution={tiles.attribution} />
+          <TileLayer key={tiles.url} url={tiles.url} attribution={tiles.attribution} />
+          <MapLayers />
           <Resizer />
           <FlyTo pos={flyTo} zoom={14} />
           <ClickToSet onSet={setPin} />

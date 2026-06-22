@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { MapLayers } from "@/components/map/MapControls"
 import { useProjectStore } from "@/store/projects"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { api } from "@/api/roadmap"
@@ -325,6 +326,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
         <div className="relative flex-1">
           <MapContainer ref={mapRef} className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
             <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+            <MapLayers />
             <FitOnce points={initialPoints.current} />
             {geometry.length >= 2 ? (
               <>

@@ -9,6 +9,7 @@ import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide
 import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
+import { LayerSwitcher } from "./MapControls"
 import { MapResize } from "./MapResize"
 import { directionArrowIcon, endPinIcon, startPinIcon } from "./pins"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
@@ -287,8 +288,16 @@ export function RouteMap({
         ))}
       </MapContainer>
 
-      {/* Map-Controls unten links: Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}
+      {/* Map-Controls unten links: Ebene + Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}
       <div className="pointer-events-none absolute bottom-3 left-3 z-[500] flex flex-col items-start gap-2">
+        {/* Kartenebene (Satellit/Straßenkarte) — Popover öffnet nach oben, kein overflow-clip. */}
+        <div className="pointer-events-auto rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
+          <LayerSwitcher
+            openTo="up"
+            align="left"
+            buttonClassName="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+          />
+        </div>
         <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
           <button
             type="button"
