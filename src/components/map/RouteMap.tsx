@@ -290,13 +290,9 @@ export function RouteMap({
 
       {/* Map-Controls unten links: Ebene + Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}
       <div className="pointer-events-none absolute bottom-3 left-3 z-[500] flex flex-col items-start gap-2">
-        {/* Kartenebene (Satellit/Straßenkarte) — Popover öffnet nach oben, kein overflow-clip. */}
-        <div className="pointer-events-auto rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
-          <LayerSwitcher
-            openTo="up"
-            align="left"
-            buttonClassName="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
-          />
+        {/* Kartenebene: Ein-Klick-Toggle Satellit/Straßenkarte (Icon zeigt das Ziel). */}
+        <div className="pointer-events-auto overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
+          <LayerSwitcher buttonClassName="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900" />
         </div>
         <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
           <button

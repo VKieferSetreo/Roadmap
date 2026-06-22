@@ -7,9 +7,9 @@
 import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
 import { useMap } from "react-leaflet"
-import { Check, Layers, Loader2, Maximize2, Minimize2, Search, X } from "lucide-react"
+import { Loader2, Map, Maximize2, Minimize2, Satellite, Search, X } from "lucide-react"
 import { cn } from "@/lib/cn"
-import { TILE_LAYERS, useSettingsStore, type TileStyle } from "@/store/settings"
+import { useSettingsStore } from "@/store/settings"
 
 /** Map-Events am Control-Root abklemmen (Leaflet greift sonst Klicks/Scroll ab). */
 function useStopMapEvents<T extends HTMLElement>() {
@@ -189,88 +189,27 @@ export function MapFullscreen() {
   )
 }
 
-// ── Kartenebene (Satellit / Straßenkarte) ────────────────────────────────────
-const TILE_ORDER: TileStyle[] = ["standard", "satellit", "hell"]
-
-/** Layer-Umschalter (Button + Popover). Liest/schreibt den globalen tileStyle.
- *  Präsentationskomponente — funktioniert sowohl als MapContainer-Kind (via MapLayers)
- *  als auch frei im Karten-Wrapper (z.B. RouteMap-Control-Stack). */
-export function LayerSwitcher({
-  openTo = "down",
-  align = "right",
-  buttonClassName,
-}: {
-  openTo?: "up" | "down"
-  align?: "left" | "right"
-  /** Trigger-Button-Styling; Default = freistehender Icon-Button (wie Vollbild). */
-  buttonClassName?: string
-}) {
+// ── Kartenebene: Toggle Satellit ↔ Straßenkarte ──────────────────────────────
+/** Ein-Klick-Umschalter zwischen Straßenkarte und Satellit. Das Icon zeigt das ZIEL
+ *  (Satellit-Icon = „auf Satellit umschalten", Karten-Icon = „zurück zur Straßenkarte").
+ *  Präsentationskomponente — frei im Wrapper (RouteMap) oder via MapLayers als Karten-Kind. */
+export function LayerSwitcher({ buttonClassName }: { buttonClassName?: string }) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const setTileStyle = useSettingsStore((s) => s.setTileStyle)
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false)
-    document.addEventListener("mousedown", onDown)
-    document.addEventListener("keydown", onKey)
-    return () => {
-      document.removeEventListener("mousedown", onDown)
-      document.removeEventListener("keydown", onKey)
-    }
-  }, [open])
-
+  const isSat = tileStyle === "satellit"
   return (
-    <div ref={ref} className="relative">
-      {open ? (
-        <div
-          role="listbox"
-          aria-label="Kartenebene"
-          className={cn(
-            "absolute z-[1300] w-44 overflow-hidden rounded-lg border border-neutral-200 bg-white py-1 shadow-lg",
-            openTo === "up" ? "bottom-full mb-2" : "top-full mt-2",
-            align === "right" ? "right-0" : "left-0",
-          )}
-        >
-          {TILE_ORDER.map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="option"
-              aria-selected={tileStyle === key}
-              onClick={() => {
-                setTileStyle(key)
-                setOpen(false)
-              }}
-              className={cn(
-                "flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-neutral-100",
-                tileStyle === key ? "font-medium text-primary-700" : "text-neutral-700",
-              )}
-            >
-              {TILE_LAYERS[key].short}
-              {tileStyle === key ? <Check className="h-3.5 w-3.5 shrink-0" /> : null}
-            </button>
-          ))}
-        </div>
-      ) : null}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Kartenebene wählen"
-        aria-expanded={open}
-        title="Kartenebene (Satellit / Straßenkarte)"
-        className={
-          buttonClassName ??
-          "flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white/95 text-neutral-600 shadow-md backdrop-blur-sm transition-colors hover:text-primary-600"
-        }
-      >
-        <Layers className="h-4 w-4" />
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={() => setTileStyle(isSat ? "standard" : "satellit")}
+      aria-label={isSat ? "Zur Straßenkarte wechseln" : "Zur Satellitenansicht wechseln"}
+      title={isSat ? "Straßenkarte" : "Satellit"}
+      className={
+        buttonClassName ??
+        "flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white/95 text-neutral-600 shadow-md backdrop-blur-sm transition-colors hover:text-primary-600"
+      }
+    >
+      {isSat ? <Map className="h-4 w-4" /> : <Satellite className="h-4 w-4" />}
+    </button>
   )
 }
 
@@ -280,7 +219,7 @@ export function MapLayers({ className }: { className?: string }) {
   const rootRef = useStopMapEvents<HTMLDivElement>()
   return (
     <div ref={rootRef} className={cn("absolute z-[1200]", className ?? "right-3 top-3")}>
-      <LayerSwitcher openTo="down" align="right" />
+      <LayerSwitcher />
     </div>
   )
 }
