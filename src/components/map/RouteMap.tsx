@@ -1,7 +1,7 @@
 // Leaflet-Karte mit Route-Polyline + Form+Farb-codierten Fund-Markern.
 // Form = Kategorie-Gruppe (Bauwerk, Physik, Baustelle, Verkehr), Farbe = Severity.
 
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
@@ -16,9 +16,6 @@ import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { groupFindings } from "@/lib/findingGroups"
 import { geomToLines, hasImplausibleJump, sliceRouteByKm } from "@/lib/geom"
 import { cn } from "@/lib/cn"
-
-// MapLibre + maplibre-gl.css nur laden, wenn die 3D-Ansicht wirklich geöffnet wird.
-const Route3D = lazy(() => import("./Route3D"))
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
 
@@ -97,7 +94,6 @@ export function RouteMap({
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const autoFit = useSettingsStore((s) => s.autoFit)
   const tiles = TILE_LAYERS[tileStyle]
-  const is3d = tileStyle === "3d"
   const drawn = useMemo(
     () =>
       routes
@@ -150,17 +146,6 @@ export function RouteMap({
       ref={wrapperRef}
       className={cn("relative h-full w-full bg-neutral-100", className)}
     >
-      {is3d ? (
-        <Suspense
-          fallback={
-            <div className="grid h-full w-full place-items-center text-sm text-neutral-500">
-              3D-Ansicht lädt …
-            </div>
-          }
-        >
-          <Route3D routes={drawn} findings={findings} onSelect={onSelect} />
-        </Suspense>
-      ) : (
       <MapContainer
         ref={mapRef}
         center={GERMANY}
@@ -307,19 +292,13 @@ export function RouteMap({
           />
         ))}
       </MapContainer>
-      )}
 
       {/* Map-Controls unten links: Ebene + Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}
       <div className="pointer-events-none absolute bottom-3 left-3 z-[500] flex flex-col items-start gap-2">
-        {/* Kartenebene: Ein-Klick-Zyklus Straßenkarte → Satellit → 3D (Icon zeigt die aktuelle Ansicht). */}
+        {/* Kartenebene: Ein-Klick-Toggle Satellit/Straßenkarte (Icon zeigt die aktuelle Ansicht). */}
         <div className="pointer-events-auto overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
-          <LayerSwitcher
-            modes={["standard", "satellit", "3d"]}
-            buttonClassName="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
-          />
+          <LayerSwitcher buttonClassName="flex h-8 w-8 items-center justify-center text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900" />
         </div>
-        {!is3d ? (
-          <>
         <div className="pointer-events-auto flex flex-col overflow-hidden rounded-md border border-neutral-200 bg-white/95 shadow-sm backdrop-blur-sm">
           <button
             type="button"
@@ -364,12 +343,10 @@ export function RouteMap({
             <Minus className="h-4 w-4" />
           </button>
         </div>
-          </>
-        ) : null}
       </div>
 
       {/* T-480: Hinweis, dass mindestens eine Strecke nur grob geschätzt ist (gestrichelt gezeichnet). */}
-      {!is3d && drawn.some((r) => r.grob) ? (
+      {drawn.some((r) => r.grob) ? (
         <div className="pointer-events-none absolute bottom-3 left-1/2 z-[500] -translate-x-1/2">
           <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50/95 px-3 py-1.5 text-xs font-medium text-amber-800 shadow-sm backdrop-blur-sm">
             <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
@@ -378,9 +355,8 @@ export function RouteMap({
         </div>
       ) : null}
 
-      {/* Caller-Overlays (Suche, Daten-Panels, Zeitstrahl) — im Wrapper, also auch im Vollbild sichtbar.
-          Im 3D-Modus ausgeblendet (Leaflet-gekoppelt); zurück zu 2D über den Ebenen-Button. */}
-      {!is3d && children}
+      {/* Caller-Overlays (Suche, Daten-Panels, Zeitstrahl) — im Wrapper, also auch im Vollbild sichtbar. */}
+      {children}
     </div>
   )
 }

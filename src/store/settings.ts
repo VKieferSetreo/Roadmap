@@ -4,9 +4,7 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 
-// "3d" = MapLibre-Gelände-Hybrid (nur Projekt-Karte rendert das wirklich; 2D-Karten zeigen
-// für "3d" das normale Satellitenbild — siehe TILE_LAYERS["3d"]).
-export type TileStyle = "standard" | "satellit" | "3d"
+export type TileStyle = "standard" | "satellit"
 /** Darstellung des Projekt-Grids auf der Startseite. */
 export type ProjektAnsicht = "karten" | "liste"
 
@@ -59,18 +57,6 @@ export const TILE_LAYERS: Record<
     attribution:
       '&copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics',
   },
-  // 2D-Fallback für den "3d"-Zustand: identisch zum Satellitenbild. Die Projekt-Karte
-  // fängt "3d" vorher ab und rendert MapLibre; alle anderen Karten zeigen so Satellit.
-  "3d": {
-    label: "3D",
-    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    overlays: [
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
-    ],
-    attribution:
-      '&copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics',
-  },
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -94,8 +80,7 @@ export const useSettingsStore = create<SettingsStore>()(
       // Alt-Werte (z.B. abgeschafftes "hell") auf einen gültigen TileStyle klemmen.
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsStore>
-        const valid = p.tileStyle === "satellit" || p.tileStyle === "3d" ? p.tileStyle : "standard"
-        return { ...current, ...p, tileStyle: valid }
+        return { ...current, ...p, tileStyle: p.tileStyle === "satellit" ? "satellit" : "standard" }
       },
     },
   ),

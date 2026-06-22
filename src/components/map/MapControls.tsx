@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
 import { useMap } from "react-leaflet"
-import { Loader2, Map, Maximize2, Minimize2, Mountain, Satellite, Search, X } from "lucide-react"
+import { Loader2, Map, Maximize2, Minimize2, Satellite, Search, X } from "lucide-react"
 import { cn } from "@/lib/cn"
 import { useSettingsStore, type TileStyle } from "@/store/settings"
 
@@ -193,7 +193,6 @@ export function MapFullscreen() {
 const MODE_META: Record<TileStyle, { icon: typeof Map; label: string }> = {
   standard: { icon: Map, label: "Straßenkarte" },
   satellit: { icon: Satellite, label: "Satellit" },
-  "3d": { icon: Mountain, label: "3D-Gelände" },
 }
 
 /** Ein-Klick-Umschalter, der durch `modes` zyklt (Default: Straßenkarte ↔ Satellit; die
