@@ -295,6 +295,9 @@ export function ObstaclesMap({
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom zoomControl={false} className="h-full w-full">
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+        {tiles.overlays?.map((u) => (
+          <TileLayer key={u} url={u} zIndex={2} />
+        ))}
         <DeSpotlight />
         <ZoomControl position="bottomright" />
         <MapResize />

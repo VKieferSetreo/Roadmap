@@ -156,6 +156,9 @@ export function RouteMap({
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+        {tiles.overlays?.map((u) => (
+          <TileLayer key={u} url={u} zIndex={2} />
+        ))}
         <MapResize />
 
         {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21). */}

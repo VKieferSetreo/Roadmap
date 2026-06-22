@@ -32,7 +32,10 @@ export const SIDEBAR_MIN = 240
 export const SIDEBAR_MAX = 560
 export const SIDEBAR_DEFAULT = 288 // = bisheriges w-72
 
-export const TILE_LAYERS: Record<TileStyle, { url: string; attribution: string; label: string }> = {
+export const TILE_LAYERS: Record<
+  TileStyle,
+  { url: string; attribution: string; label: string; overlays?: string[] }
+> = {
   standard: {
     // openstreetmap.de liefert OSM-Tiles mit deutschsprachigen Beschriftungen
     // (Nordsee, Ostsee, Bodensee usw. statt „North Sea", „Baltic Sea").
@@ -42,10 +45,15 @@ export const TILE_LAYERS: Record<TileStyle, { url: string; attribution: string; 
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Tiles: openstreetmap.de',
   },
   satellit: {
-    // Esri World Imagery: frei nutzbare Satelliten-/Luftbild-Kacheln ohne API-Key.
-    // URL-Schema {z}/{y}/{x} (kein {s}-Subdomain).
+    // Esri World Imagery (Luftbild, kein API-Key, Schema {z}/{y}/{x}). Das Luftbild allein
+    // ist beschriftungslos → transparente Esri-Referenz-Overlays für Straßen + Orts-/Grenz-
+    // Labels darüberlegen (Hybrid-Ansicht). Alle auf server.arcgisonline.com → CSP-gedeckt.
     label: "Satellit",
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    overlays: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+    ],
     attribution:
       '&copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics',
   },

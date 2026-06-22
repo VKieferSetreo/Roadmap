@@ -326,6 +326,9 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
         <div className="relative flex-1">
           <MapContainer ref={mapRef} className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
             <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+            {tiles.overlays?.map((u) => (
+              <TileLayer key={u} url={u} zIndex={2} />
+            ))}
             <MapLayers />
             <FitOnce points={initialPoints.current} />
             {geometry.length >= 2 ? (

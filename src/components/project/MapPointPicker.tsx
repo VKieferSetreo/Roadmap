@@ -239,6 +239,9 @@ export function MapPointPicker({
       <div className="relative min-h-0 flex-1">
         <MapContainer center={[(pos ?? DE_CENTER).lat, (pos ?? DE_CENTER).lng]} zoom={pos ? 14 : 6} className="h-full w-full" zoomControl>
           <TileLayer key={tiles.url} url={tiles.url} attribution={tiles.attribution} />
+          {tiles.overlays?.map((u) => (
+            <TileLayer key={u} url={u} zIndex={2} />
+          ))}
           <MapLayers />
           <Resizer />
           <FlyTo pos={flyTo} zoom={14} />

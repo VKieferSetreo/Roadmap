@@ -61,6 +61,9 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
                 className="h-full w-full"
               >
                 <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
+                {tiles.overlays?.map((u) => (
+                  <TileLayer key={u} url={u} zIndex={2} />
+                ))}
                 <MapResize />
                 <MapLayers />
                 <Marker
