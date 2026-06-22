@@ -49,3 +49,65 @@ export async function purgeStaleInactive(db, { days = 30 } = {}) {
   const { rows } = await db.query(PURGE_SQL, [days])
   return rows
 }
+
+// fach_id-Dedup/Renumber (T-262). Root-Cause war ein Index-Überlauf >9999: MAX_INDEX_SQL las nur die
+// ersten 4 Stellen der fachId → bei >9999 Einträgen/Quelle (5-stelliger Index, 15-stellige fachId)
+// hing der Zähler bei 9999 → Folge-Importe vergaben Index 10000+ ERNEUT → Dubletten. Der
+// Präventions-Fix (substring … length-10 in importer.js + obstaclesRepo.js) stoppt NEUE Fälle; diese
+// Funktion heilt den Bestand und ist die laufende Sicherung:
+//   - pro betroffener Quelle die überzähligen Zeilen je fachId neu nummerieren. Die KANONISCHE Zeile
+//     (aktivste, dann älteste) behält ihre fachId; nur die Extras bekommen frische Indizes oberhalb
+//     des KORREKT berechneten MAX. QUELLE+DDMMYY (letzte 10 Zeichen) bleiben erhalten — nur das
+//     Index-Feld wechselt.
+//   - idempotent: findet sie keine Dubletten, ändert sie nichts.
+//   - läuft im Worker-Hygiene-Zyklus → tritt je wieder eine Dublette auf (= Prävention-Lücke),
+//     gibt es eine WARNUNG im Log und sofortige Selbstheilung.
+// updated_at wird BEWUSST nicht angefasst (Maintenance-Korrektur, kein Inhalts-Update; hält die
+// purgeStaleInactive-Uhr für inaktive Zeilen stabil).
+const DUP_GROUPS_SQL = `SELECT quellen_id, fach_id,
+     array_agg(id ORDER BY aktiv DESC, created_at ASC, id ASC) AS ids
+   FROM obstacles
+   WHERE fach_id IS NOT NULL AND quellen_id IS NOT NULL
+   GROUP BY quellen_id, fach_id
+   HAVING count(*) > 1`
+
+const CORRECT_MAX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR (length(fach_id) - 10))::int), 0) AS m
+   FROM obstacles WHERE quellen_id = $1 AND fach_id ~ '^[0-9]{4}'`
+
+/**
+ * Findet fachId-Dubletten und nummeriert die überzähligen Zeilen je Quelle neu durch.
+ * @returns {Promise<{groups:number, renumbered:number}>}
+ */
+export async function reconcileFachIdDupes(db, { log = () => {} } = {}) {
+  const { rows: groups } = await db.query(DUP_GROUPS_SQL)
+  if (groups.length === 0) return { groups: 0, renumbered: 0 }
+
+  const byQuelle = new Map()
+  for (const g of groups) {
+    const arr = byQuelle.get(g.quellen_id) ?? []
+    arr.push(g)
+    byQuelle.set(g.quellen_id, arr)
+  }
+
+  let renumbered = 0
+  for (const [quelle, gs] of byQuelle) {
+    // Advisory-Lock je Quelle (wie die Import-fachId-Vergabe) → kein Race mit laufendem Import.
+    await db.tx(async (q) => {
+      await q.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`roadmap_fachid_${quelle}`])
+      const { rows: mx } = await q.query(CORRECT_MAX_SQL, [quelle])
+      let nextIndex = Number(mx.rows[0]?.m ?? 0) + 1
+      for (const g of gs) {
+        const suffix = String(g.fach_id).slice(-10) // QUELLE(4)+DDMMYY(6) bleibt erhalten
+        for (const id of g.ids.slice(1)) { // ids[0] = kanonisch (behält fachId)
+          const neu = String(nextIndex++).padStart(4, "0") + suffix
+          await q.query("UPDATE obstacles SET fach_id = $1 WHERE id = $2", [neu, id])
+          renumbered++
+        }
+      }
+    })
+  }
+  // WARN: nach dem Präventions-Fix sollte das NIE wieder anschlagen — Auftreten ist ein Signal.
+  log(`WARN fach_id-Dedup: ${groups.length} Dubletten-Gruppen, ${renumbered} Zeilen neu nummeriert. ` +
+      `Sollte nach dem Präventions-Fix (T-262) nicht erneut auftreten — bitte Ursache prüfen.`)
+  return { groups: groups.length, renumbered }
+}

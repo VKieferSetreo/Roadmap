@@ -21,7 +21,11 @@ import {
 // Bulk-Import-Speed (T-042): EINMAL je Lauf den Quellen-Bestand laden statt per-Zeile zu
 // SELECTen — Upsert/Drift-Match/fachId laufen dann in-memory (kein N+1, kein per-Zeile-Lock).
 const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles WHERE quellen_id = $1`
-const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index
+// T-262: Index = ALLES vor QUELLE(4)+DDMMYY(6), also fach_id ohne die letzten 10 Zeichen — NICHT
+// fix die ersten 4. Sonst bricht der Zähler bei >9999 Einträgen/Quelle (5-stelliger Index, fach_id
+// 15-stellig): substring(…,1,4) las nur "1000…", MAX blieb bei 9999 → Folge-Importe vergaben Index
+// 10000+ erneut → Dubletten. length-10 liest 4- UND 5-stellige Indizes korrekt (14-stellig identisch).
+const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR (length(fach_id) - 10))::int), 0) AS max_index
   FROM obstacles WHERE quellen_id = $1 AND fach_id ~ '^[0-9]{4}'`
 
 // Drift-Schutz (T-078): findet ein bestehendes AKTIVES Hindernis derselben Quelle mit

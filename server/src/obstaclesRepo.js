@@ -29,7 +29,9 @@ export const OBSTACLE_COLS = `id, kategorie, name, beschreibung, lat, lng, stras
   aktiv, demo, tenant_id, externe_id, created_at, updated_at`
 
 const QUELLEN_ID_RE = /^\d{4}$/
-const FACH_ID_RE = /^\d{14}$/
+// T-262: ≥14 statt exakt 14 — Quellen mit >9999 Einträgen erzeugen 5-stellige Indizes (15-stellige
+// fachId). Format bleibt IIII…+QUELLE(4)+DDMMYY(6); nur das Index-Feld wächst.
+const FACH_ID_RE = /^\d{14,}$/
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
 /** Strenge ISO-Datums-Prüfung (YYYY-MM-DD, real existierendes Datum). */
@@ -140,7 +142,7 @@ export function validateObstacle(input, { strict = false } = {}) {
       return { ok: false, reason: "quellenId muss 4-stellig sein" }
     }
     if (input.fachId != null && !FACH_ID_RE.test(input.fachId)) {
-      return { ok: false, reason: "fachId muss 14-stellig sein (IIIIQQQQDDMMYY)" }
+      return { ok: false, reason: "fachId muss mindestens 14-stellig sein (IIII…QQQQDDMMYY)" }
     }
   }
 
@@ -220,7 +222,9 @@ export const sachfeldBatchSql = (valuesSql) => `UPDATE obstacles AS o SET
     zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom)
   WHERE o.id = v.id::uuid`
 
-const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index
+// T-262: siehe importer.js — Index = fach_id ohne die letzten 10 Zeichen (QUELLE+DDMMYY), damit
+// 5-stellige Indizes (>9999/Quelle) korrekt gelesen werden und der Zähler nicht auf 9999 hängt.
+const MAX_INDEX_SQL = `SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR (length(fach_id) - 10))::int), 0) AS max_index
   FROM obstacles WHERE quellen_id = $1 AND fach_id ~ '^[0-9]{4}'`
 
 /**

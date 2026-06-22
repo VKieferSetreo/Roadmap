@@ -644,10 +644,11 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT pg_advisory_unlock")) {
       return ok([{ pg_advisory_unlock: true }])
     }
-    if (sql.startsWith("SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR 4)::int), 0) AS max_index")) {
+    if (sql.startsWith("SELECT COALESCE(MAX(substring(fach_id FROM 1 FOR (length(fach_id) - 10))::int), 0) AS max_index")) {
+      // T-262: Index = fachId ohne die letzten 10 Zeichen (QUELLE+DDMMYY) — spiegelt substring(…,1,length-10).
       const indexes = state.obstacles
         .filter((o) => o.quellen_id === params[0] && /^\d{4}/.test(o.fach_id ?? ""))
-        .map((o) => Number(o.fach_id.slice(0, 4)))
+        .map((o) => Number(o.fach_id.slice(0, -10)))
       return ok([{ max_index: indexes.length ? Math.max(...indexes) : 0 }])
     }
     if (sql.startsWith("INSERT INTO obstacles (kategorie,")) {

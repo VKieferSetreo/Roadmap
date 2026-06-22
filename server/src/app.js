@@ -96,12 +96,14 @@ export function createApp({
   // den deterministischen Geometrie-Fallback zurück.
   const osrm = createOsrm({ fetchImpl, timeoutMs: 20000 })
 
-  // T-425: in Prod (requireAuth) NICHT mit dem Dev-Default-Salt laufen — Share-Tokens wären sonst
-  // vorhersehbar ableitbar. Laut warnen (nicht fail-fast, um den Boot nicht zu bricken).
+  // T-425/T-301#12: in Prod (requireAuth) NICHT mit dem Dev-Default-Salt laufen — Share-/Session-
+  // Tokens wären sonst vorhersehbar ableitbar (Forgery). Jetzt FAIL-FAST statt nur Warnung: lieber
+  // ein lauter Boot-Abbruch als eine still mit Dev-Salt laufende Prod-Instanz. requireAuth ist das
+  // Prod-Signal (Tests/Dev laufen mit requireAuth=false → Dev-Salt bleibt dort erlaubt).
   if (requireAuth && sessionSalt === "roadmap-dev-salt") {
-    console.error(
-      "[BOOT] WARNUNG: SESSION_SALT nicht gesetzt — Share-Tokens nutzen den Dev-Default. " +
-        "In Prod SESSION_SALT setzen (openssl rand -hex 32).",
+    throw new Error(
+      "[BOOT] SESSION_SALT fehlt in Produktion (Dev-Default aktiv) — Boot abgebrochen. " +
+        "SESSION_SALT setzen (openssl rand -hex 32).",
     )
   }
 
