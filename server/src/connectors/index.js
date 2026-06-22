@@ -64,6 +64,7 @@ import { hamburgVerkehrszeichenConnector } from "./0134_hamburg_verkehrszeichen.
 import { babAldVorschauConnector } from "./0152_bab_ald_vorschau.js"
 import { bastBrueckenConnector } from "./0153_bast_bruecken.js"
 import { lsbbStFahrauflagenConnector } from "./0154_lsbb_st_fahrauflagen.js"
+import { rostockVerkehrszeichenConnector } from "./0155_rostock_verkehrszeichen.js"
 
 export const CONNECTORS = [
   autobahnConnector,
@@ -115,6 +116,7 @@ export const CONNECTORS = [
   babAldVorschauConnector,
   bastBrueckenConnector,
   lsbbStFahrauflagenConnector,
+  rostockVerkehrszeichenConnector,
 ]
 
 // Vollständiger Pool = statische + env-getriebene (Mobilithek aus MOBILITHEK_FEEDS, leer bis Account).
