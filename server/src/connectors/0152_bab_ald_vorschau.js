@@ -61,7 +61,7 @@ export const babAldVorschauConnector = {
     let neu = future
     if (db && future.length) {
       const { rows } = await db.query(
-        "SELECT lat, lng, strassen_ref FROM obstacles WHERE quellen_id = ANY($1) AND aktiv = true AND lat IS NOT NULL",
+        "SELECT lat, lng, strassen_ref, gueltig_von, gueltig_bis FROM obstacles WHERE quellen_id = ANY($1) AND aktiv = true AND lat IS NOT NULL",
         [DEDUP_QUELLEN],
       )
       const byRoad = new Map()
@@ -70,9 +70,19 @@ export const babAldVorschauConnector = {
         const arr = byRoad.get(k)
         if (arr) arr.push(r); else byRoad.set(k, [r])
       }
+      const iso = (d) => (d ? new Date(d).toISOString().slice(0, 10) : null)
       neu = future.filter((o) => {
         const cands = byRoad.get(roadKey(o)) || []
-        return !cands.some((r) => distM(o.lat, o.lng, Number(r.lat), Number(r.lng)) <= DEDUP_RADIUS_M)
+        const aVon = o.gueltigVon, aBis = o.gueltigBis || "9999-12-31"
+        // Dublette nur, wenn gleiche Autobahn UND ≤300 m UND Zeitfenster ÜBERLAPPT. Ohne den
+        // Zeit-Check wäre der Dedup zeitblind: eine künftige Sperrung würde verworfen, nur weil am
+        // selben km eine ANDERE, jetzt laufende Baustelle liegt, die vor unserem Start endet — an
+        // echten Daten gemessen ~40 % der Verwürfe (2026-06-22).
+        return !cands.some((r) => {
+          if (distM(o.lat, o.lng, Number(r.lat), Number(r.lng)) > DEDUP_RADIUS_M) return false
+          const nVon = iso(r.gueltig_von), nBis = iso(r.gueltig_bis)
+          return (nVon == null || nVon <= aBis) && (nBis == null || nBis >= aVon)
+        })
       })
     }
     log(`0152: ${all.length} AlD-Records → ${future.length} künftig startend → ${neu.length} NEU (nach 0001/0145-Dedup)`)
