@@ -47,7 +47,11 @@ export const berlinDurchfahrtshoehenConnector = {
       const lng = Array.isArray(c) ? Number(c[0]) : null
       const lat = Array.isArray(c) ? Number(c[1]) : null
       const hoehe = num(f?.properties?.hoehe)
-      if (!(hoehe > 0) || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+      // Untergrenze 2,0 m: die Straßenbefahrung misst vereinzelt Bord-/Bodenpunkte (0,1–0,7 m).
+      // Solche Artefakte sind keine befahrbaren Durchfahrten — als maxHoeheM würde eine 0,1-m-Höhe
+      // JEDEN realen Transport fälschlich als „zu niedrig/kritisch" flaggen (Audit 2026-06-22, FIX-1).
+      // Echte niedrige Limits (z.B. 1,8 m) liefert das VZ-Kataster 0134, nicht diese Befahrung.
+      if (!(hoehe >= 2.0) || !Number.isFinite(lat) || !Number.isFinite(lng)) {
         ohneHoehe++
         continue
       }

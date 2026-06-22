@@ -25,3 +25,27 @@ export async function expireObstacles(db, { graceDays = 7 } = {}) {
   const { rows } = await db.query(EXPIRE_SQL, [graceDays])
   return rows
 }
+
+// Hard-Purge lang-inaktiver IMPORTIERTER Hindernisse (Audit 2026-06-22, FIX-4).
+// Reconcile/Hygiene setzt nicht mehr im Feed vorhandene bzw. abgelaufene Importe auf aktiv=false
+// (Soft-Delete). Bleiben sie ewig liegen, sammelt sich toter Ballast (z.B. 9.606 Zeilen aus einer
+// revertierten 0123-BAYSIS-Connector-Version) — irreführend in Roh-Counts, unnötige Last bei den
+// Vollbestand-Loads (EXISTING_ALL_SQL je Lauf). Nach `days` Tagen ohne Reaktivierung sind sie
+// definitiv stale → hart löschen. FK-sicher: obstacle_id ist bewusst OHNE FK (Snapshots in
+// findings/notifications/hidden_findings überleben). Scope strikt: NUR globale Importe
+// (tenant_id IS NULL AND quellen_id IS NOT NULL) — Kunden-/Mandanten-Einträge bleiben unangetastet.
+const PURGE_SQL = `DELETE FROM obstacles
+   WHERE aktiv = false
+     AND tenant_id IS NULL
+     AND quellen_id IS NOT NULL
+     AND updated_at < (now() - ($1::int * INTERVAL '1 day'))
+   RETURNING id, quellen_id`
+
+/**
+ * Löscht importierte Hindernisse, die seit `days` Tagen inaktiv sind, endgültig.
+ * @returns {Promise<Array>} die gelöschten Rows (für Logging/Statistik)
+ */
+export async function purgeStaleInactive(db, { days = 30 } = {}) {
+  const { rows } = await db.query(PURGE_SQL, [days])
+  return rows
+}

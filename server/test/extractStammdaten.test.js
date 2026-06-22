@@ -101,6 +101,15 @@ describe("extractStammdaten", () => {
     expect(extractStammdaten("Vollsperrung der Fahrbahn").vollsperrung).toBe(true)
     expect(extractStammdaten("in beide Fahrtrichtungen wechselseitig eingeengt").richtung).toBe("beide Richtungen")
   })
+  it("'einseitig' nur im Sperr-/Fahrbahn-Kontext → kein FP aus Bauteil 'Kragträger' (FIX-3)", () => {
+    // Bauteil-Beschreibung einer Schilderbrücke darf NICHT als halbseitige Sperrung gelten
+    expect(extractStammdaten("Verkehrszeichenbrücke, einseitiger Kragträger").halbseitig).toBeUndefined()
+    expect(extractStammdaten("Brücke mit einseitigem Kragarm über die A40").halbseitig).toBeUndefined()
+    // echte halbseitige Sperrungen weiterhin erkannt
+    expect(extractStammdaten("Fahrbahn einseitig gesperrt").halbseitig).toBe(true)
+    expect(extractStammdaten("einseitige Sperrung der Fahrbahn").halbseitig).toBe(true)
+    expect(extractStammdaten("halbseitige Sperrung").halbseitig).toBe(true)
+  })
 })
 
 describe("enrichFromText (Bestands-Anreicherung)", () => {

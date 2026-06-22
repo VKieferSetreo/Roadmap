@@ -15,7 +15,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles } from "./hygiene.js"
+import { expireObstacles, purgeStaleInactive } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -172,6 +172,8 @@ async function runRerun(grund) {
   try {
     const expired = await expireObstacles(db)
     if (expired.length) log(`Hygiene: ${expired.length} abgelaufene Hindernisse deaktiviert`)
+    const purged = await purgeStaleInactive(db) // FIX-4: toten Ballast (lang-inaktive Importe) hart entfernen
+    if (purged.length) log(`Hygiene: ${purged.length} lang-inaktive Importe endgültig gelöscht`)
     const res = await withTimeout(
       rerunAffectedProjects({ db, log: (m) => log(m) }), RERUN_TIMEOUT_MS, "Auto-Rerun",
     )

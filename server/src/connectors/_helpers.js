@@ -188,7 +188,9 @@ export function extractStammdaten(text) {
   // Sperrart (kontrolliertes Vokabular): Voll- vor Halbsperrung prüfen ("halbseitige Sperrung"
   // enthält "Sperrung", ist aber KEINE Vollsperrung).
   if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s)) out.vollsperrung = true
-  else if (/halbseitig|einseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen/i.test(s)) out.halbseitig = true
+  // "einseitig" NUR im Sperr-/Fahrbahn-Kontext werten, nicht bloß-anwesend — sonst feuert das
+  // Bauteil-Wort "einseitiger Kragträger" (Schilderbrücke) als halbseitige Sperrung (Audit FIX-3).
+  else if (/halbseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen|einseitig\w*\s+(?:gesperrt|sperrung|fahrbahn|fahrstreifen|verkehr)|(?:fahrbahn|fahrstreifen)\b[^.;]{0,15}\beinseitig/i.test(s)) out.halbseitig = true
 
   // Zusätzliche GST-Signale (Workflow-entdeckt + adversarial verifiziert, FP-arm). Booleans nur true.
   // Fahrbahn-Verengung = wichtigstes Restbreiten-Surrogat, wenn keine cm-Angabe da ist.
