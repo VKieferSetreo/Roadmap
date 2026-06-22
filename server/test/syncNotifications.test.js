@@ -209,7 +209,7 @@ describe("Sync-API", () => {
     const { app } = makeApp()
     const res = await request(app).get("/api/sync/status")
     expect(res.status).toBe(200)
-    expect(res.body.connectorAnzahl).toBe(48) // +0303 +0129/0130 +0224-0228 +0131/0132 +0229 +0150 (Autobahn lastbeschr. Brücken) +0133 (Berlin Durchfahrtshöhen) +0134 (Hamburg Verkehrszeichen) +0152 (BAB AlD Zukunftsdelta) +0153 (BASt schwerverkehrsgesperrte Brücken); OSM (0301)/LMS-BW (0122)/Düsseldorf (0217)/Bedarfsumleitungen-HH (0113) entfernt
+    expect(res.body.connectorAnzahl).toBe(49) // +0303 +0129/0130 +0224-0228 +0131/0132 +0229 +0150 (Autobahn lastbeschr. Brücken) +0133 (Berlin Durchfahrtshöhen) +0134 (Hamburg Verkehrszeichen) +0152 (BAB AlD Zukunftsdelta) +0153 (BASt) +0154 (LSBB ST Fahrauflagen); OSM (0301)/LMS-BW (0122)/Düsseldorf (0217)/Bedarfsumleitungen-HH (0113) entfernt
     const autobahn = res.body.quellen.find((q) => q.id === "0001")
     expect(autobahn.connector).toBe(true)
     expect(autobahn.vollbestand).toBe(true)
