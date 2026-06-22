@@ -271,7 +271,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     const finalGeom = geometry.length >= 2 ? geometry : cps.map((c) => ({ lat: c.lat, lng: c.lng }))
     updateRoute(projectId, route.id, { name: name.trim() || route.name, points: finalGeom })
     runAnalysis(projectId)
-    toast.success("Strecke gespeichert — Auswertung läuft neu.")
+    toast.success("Strecke gespeichert. Auswertung läuft neu.")
     onClose()
   }
 
@@ -316,7 +316,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
         <div className="flex items-center gap-3 border-b border-neutral-200 bg-neutral-50/60 px-4 py-1.5 text-[11px] text-neutral-500">
           <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#2563eb]" /> Punkt ziehen verschiebt</span>
           <span className="text-neutral-300">·</span>
-          <span>Klick auf einen Punkt entfernt ihn</span>
+          <span>Ein Klick auf einen Punkt entfernt ihn</span>
           <span className="text-neutral-300">·</span>
           <span>Linie greifen setzt einen neuen Punkt</span>
         </div>

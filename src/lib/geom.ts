@@ -11,7 +11,9 @@ function toLine(line: unknown): LatLng[] {
   if (!Array.isArray(line)) return []
   const out: LatLng[] = []
   for (const p of line) {
-    if (Array.isArray(p) && typeof p[0] === "number" && typeof p[1] === "number") {
+    // Number.isFinite filtert auch NaN/Infinity raus — ein NaN-Punkt vergiftet sonst
+    // geomMidpoint und Leaflets Zoom-Recalc (Marker/Linien flackern beim Zoomen).
+    if (Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])) {
       out.push([p[1], p[0]]) // [lng,lat] → [lat,lng]
     }
   }

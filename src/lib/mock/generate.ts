@@ -122,15 +122,15 @@ function buildSourcePool(kategorie: FindingKategorie, ctx: SourceCtx): FindingSo
 }
 
 const ZUSTAENDIG_POOL: Partial<Record<FindingKategorie, string[]>> = {
-  bruecke: ["Autobahn GmbH Nordost", "Autobahn GmbH Südwest", "RP Karlsruhe — Bauwerksbehörde"],
+  bruecke: ["Autobahn GmbH Nordost", "Autobahn GmbH Südwest", "RP Karlsruhe, Bauwerksbehörde"],
   tunnel: ["Autobahn GmbH Nordost · Tunnelleitstelle", "Autobahn GmbH West · Tunnelbetrieb"],
   engstelle: ["Autobahn GmbH · Baustellenkoordination", "Landesbetrieb Mobilität"],
-  gewicht: ["RP Karlsruhe — Genehmigungsbehörde (VEMAGS)", "Landratsamt — Straßenverkehrsbehörde"],
-  kreisverkehr: ["Kommune — Straßenverkehrsbehörde"],
+  gewicht: ["RP Karlsruhe, Genehmigungsbehörde (VEMAGS)", "Landratsamt, Straßenverkehrsbehörde"],
+  kreisverkehr: ["Kommune, Straßenverkehrsbehörde"],
   baustelle: ["Autobahn GmbH · Niederlassung", "Landesbetrieb Mobilität"],
   bahnuebergang: ["DB Netz AG · Regionalbereich"],
   steigung: [],
-  ampel: ["Kommune — Verkehrsleitstelle"],
+  ampel: ["Kommune, Verkehrsleitstelle"],
 }
 
 function pickSource(kategorie: FindingKategorie, ctx: SourceCtx): FindingSource {
@@ -243,7 +243,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     build: (tr) => {
       const hoehe = 3.8 + Math.random() * 0.9
       return {
-        beschreibung: "Tunnelprofil — Höhe und Breite einhalten.",
+        beschreibung: "Tunnelprofil. Höhe und Breite einhalten.",
         detail: {
           Tunnelhöhe: m(hoehe),
           Tunnellänge: `${(0.3 + Math.random() * 2).toFixed(1).replace(".", ",")} km`,
@@ -259,7 +259,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     build: (tr) => {
       const breite = 2.7 + Math.random() * 1.1 // 2,70–3,80 m
       return {
-        beschreibung: "Fahrbahn verengt sich — Restbreite gegen Transportbreite prüfen.",
+        beschreibung: "Fahrbahn verengt sich. Restbreite gegen Transportbreite prüfen.",
         detail: { Fahrbahnbreite: m(breite), Transportbreite: m(tr.breite) },
         severity: sev(breite < tr.breite + 0.1, breite < tr.breite + 0.5),
       }
@@ -288,7 +288,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     build: (tr) => {
       const radius = 12 + Math.random() * 16
       return {
-        beschreibung: "Schleppkurve im Kreisverkehr — Befahrbarkeit für die Fahrzeuglänge prüfen.",
+        beschreibung: "Schleppkurve im Kreisverkehr. Befahrbarkeit für die Fahrzeuglänge prüfen.",
         detail: { Außenradius: `${radius.toFixed(0)} m`, Fahrzeuglänge: m(tr.laenge) },
         severity: sev(radius < 15 && tr.laenge > 20, radius < 20),
       }
@@ -299,7 +299,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     titel: "Baustelle",
     weight: 2,
     build: () => ({
-      beschreibung: "Aktive Baustelle mit Spurverengung — Durchfahrt zeitlich abstimmen.",
+      beschreibung: "Aktive Baustelle mit Spurverengung. Durchfahrt zeitlich abstimmen.",
       detail: { Restbreite: m(2.8 + Math.random() * 0.6), Zeitraum: "befristet" },
       severity: Math.random() > 0.6 ? "warnung" : "hinweis",
     }),
@@ -309,7 +309,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     titel: "Bahnübergang",
     weight: 1,
     build: (tr) => ({
-      beschreibung: "Höhengleicher Bahnübergang — Bodenfreiheit und Wartezeit beachten.",
+      beschreibung: "Höhengleicher Bahnübergang. Bodenfreiheit und Wartezeit beachten.",
       detail: {
         Sicherung: Math.random() > 0.5 ? "Schranke" : "Lichtzeichen",
         Fahrzeuglänge: m(tr.laenge),
@@ -324,7 +324,7 @@ const KATEGORIEN: FindKategorieDef[] = [
     build: () => {
       const grad = 6 + Math.random() * 6
       return {
-        beschreibung: "Längsneigung — Anfahrvermögen und Bremsweg berücksichtigen.",
+        beschreibung: "Längsneigung. Anfahrvermögen und Bremsweg berücksichtigen.",
         detail: { Längsneigung: `${grad.toFixed(1).replace(".", ",")} %` },
         severity: grad > 10 ? "warnung" : "hinweis",
       }

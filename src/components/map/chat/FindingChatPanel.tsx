@@ -55,7 +55,7 @@ export function FindingChatPanel({
       {/* T-448: bei „Öffentlich" deutlich machen, dass dies DB-weit (alle Mandanten) sichtbar ist. */}
       {scope === "public" ? (
         <p className="mx-2 mb-1 rounded bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-700">
-          Öffentlich — sichtbar für alle Mandanten, inkl. Ihrer Organisation. Intern bleibt nur in Ihrem Mandanten.
+          Öffentlich: sichtbar für alle Mandanten, inkl. Ihrer Organisation. Intern bleibt nur in Ihrem Mandanten.
         </p>
       ) : null}
 

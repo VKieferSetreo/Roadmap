@@ -224,7 +224,7 @@ function DbPingButton() {
     <div className="flex shrink-0 flex-col items-end gap-1">
       <Button variant="outline" size="sm" onClick={() => void ping()} disabled={state?.loading}>
         <Signal className={cn("h-3.5 w-3.5", state?.loading && "animate-pulse")} />
-        {state?.loading ? "Prüfe …" : "Datenbank anpingen"}
+        {state?.loading ? "Wird geprüft …" : "Datenbank anpingen"}
       </Button>
       {state && !state.loading ? (
         <span className={cn("text-xs tabular-nums", state.ok ? "text-severity-hinweis-strong" : "text-severity-kritisch")}>
@@ -340,7 +340,7 @@ export function SettingsPage() {
                   <div>
                     <p className="text-sm font-medium text-neutral-900">Demo-Modus (lokal)</p>
                     <p className="mt-0.5 text-xs text-neutral-500">
-                      Kein Backend erreichbar — Projekte werden lokal gespeichert, Auswertungen
+                      Kein Backend erreichbar. Projekte werden lokal gespeichert, Auswertungen
                       simuliert. Sobald das Backend verfügbar ist, verbindet sich die App beim
                       nächsten Laden automatisch.
                     </p>

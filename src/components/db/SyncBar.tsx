@@ -182,7 +182,7 @@ export function SyncBar() {
       {status.isError ? (
         <p className="flex items-start gap-1.5 text-xs font-medium text-severity-kritisch">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span>Quellen-Status nicht abrufbar — angezeigte Stände können veraltet sein.</span>
+          <span>Quellen-Status nicht abrufbar. Angezeigte Stände können veraltet sein.</span>
         </p>
       ) : null}
 
@@ -192,7 +192,7 @@ export function SyncBar() {
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>
             Letzter automatischer Abruf: {autoFehler.length} Quelle{autoFehler.length === 1 ? "" : "n"} mit
-            Fehler — <span className="font-normal">{autoFehler.map((q) => q.name).join(", ")}</span>
+            Fehler: <span className="font-normal">{autoFehler.map((q) => q.name).join(", ")}</span>
           </span>
         </p>
       ) : null}
@@ -204,7 +204,7 @@ export function SyncBar() {
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-neutral-700">
               {job.data.status === "running" && job.data.phase === "import"
-                ? `Datenquellen werden geladen — ${job.data.done} / ${job.data.total}`
+                ? `Datenquellen werden geladen: ${job.data.done} / ${job.data.total}`
                 : phaseLabel || `${job.data.done} / ${job.data.total} Quellen geladen`}
             </span>
             <span className="tabular-nums text-neutral-400">{pct}%</span>

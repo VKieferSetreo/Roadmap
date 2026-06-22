@@ -56,7 +56,7 @@ export function BugReportDialog({
     <Dialog open={open} onClose={onClose} size="default">
       <DialogHeader
         title="Problem melden"
-        subtitle="Beschreibe, was gerade nicht passt — wir hängen den technischen Kontext automatisch an."
+        subtitle="Beschreiben Sie, was gerade nicht passt. Wir hängen den technischen Kontext automatisch an."
         onClose={onClose}
       />
       <div className="flex flex-col gap-4 overflow-y-auto px-6 py-4">
@@ -76,7 +76,7 @@ export function BugReportDialog({
         {/* Automatisch erfasster Seiten-Screenshot (wird mitgesendet) */}
         {screenshot ? (
           <div className="rounded-md border border-neutral-200 bg-neutral-50/60 p-2">
-            <p className="mb-1.5 text-xs font-medium text-neutral-600">Screenshot der Seite — wird mitgesendet</p>
+            <p className="mb-1.5 text-xs font-medium text-neutral-600">Screenshot der Seite (wird mitgesendet)</p>
             <img
               src={screenshot}
               alt="Seiten-Screenshot"

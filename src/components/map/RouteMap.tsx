@@ -211,7 +211,7 @@ export function RouteMap({
 
         {drawn.map((r) => (
           <Marker key={`start-${r.id}`} position={r.positions[0]} icon={startPinIcon(r.farbe)}>
-            <Popup>Start — {r.name}</Popup>
+            <Popup>Start: {r.name}</Popup>
           </Marker>
         ))}
         {drawn.map((r) => (
@@ -220,7 +220,7 @@ export function RouteMap({
             position={r.positions[r.positions.length - 1]}
             icon={endPinIcon(r.farbe)}
           >
-            <Popup>Ziel — {r.name}</Popup>
+            <Popup>Ziel: {r.name}</Popup>
           </Marker>
         ))}
         {allPoints.length >= 2 ? <FitBounds points={allPoints} enabled={autoFit} /> : null}
@@ -266,7 +266,7 @@ export function RouteMap({
               {/* Tag der markierten Strecke: WAS ist hier — Kategorie + Severity + Bezeichnung */}
               <Tooltip sticky direction="top">
                 <span className="font-semibold">{katMeta(f.kategorie).label}</span> · {meta.label}
-                {f.titel ? ` — ${f.titel}` : ""}
+                {f.titel ? ` · ${f.titel}` : ""}
               </Tooltip>
             </Polyline>,
           ]

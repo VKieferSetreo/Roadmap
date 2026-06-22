@@ -80,7 +80,7 @@ export function ShareApp() {
       if (res.status === 401) {
         setState((s) =>
           s.status === "gesperrt"
-            ? { ...s, fehler: "Passwort falsch — bitte erneut versuchen." }
+            ? { ...s, fehler: "Passwort falsch. Bitte erneut versuchen." }
             : s,
         )
         return
@@ -89,7 +89,7 @@ export function ShareApp() {
         // T-250: Rate-Limit beim Entsperren → Eingabe behalten, Hinweis statt Voll-Screen.
         setState((s) =>
           s.status === "gesperrt"
-            ? { ...s, fehler: "Zu viele Versuche — bitte einen Moment warten." }
+            ? { ...s, fehler: "Zu viele Versuche. Bitte einen Moment warten." }
             : s,
         )
         return
@@ -104,7 +104,7 @@ export function ShareApp() {
       // T-490: Netzwerkfehler beim Entsperren nicht still schlucken — Eingabe-Feld behalten.
       setState((s) =>
         s.status === "gesperrt"
-          ? { ...s, fehler: "Verbindung fehlgeschlagen — bitte erneut versuchen." }
+          ? { ...s, fehler: "Verbindung fehlgeschlagen. Bitte erneut versuchen." }
           : s,
       )
     } finally {
@@ -116,7 +116,7 @@ export function ShareApp() {
     return (
       <Shell>
         <div className="flex h-full items-center justify-center text-neutral-400">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Lade Routenanalyse …
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Routenanalyse wird geladen …
         </div>
       </Shell>
     )
@@ -189,7 +189,7 @@ export function ShareApp() {
               disabled={busy || !password.trim()}
               className="h-10 cursor-pointer rounded-md bg-primary-600 text-sm font-medium text-white transition-colors hover:bg-primary-700 disabled:pointer-events-none disabled:opacity-50"
             >
-              {busy ? "Prüfe …" : "Öffnen"}
+              {busy ? "Wird geprüft …" : "Öffnen"}
             </button>
           </div>
         </CenterCard>

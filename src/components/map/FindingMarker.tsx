@@ -156,6 +156,10 @@ function FindingMarkerImpl({
   const shareChat = current.publicChat
   const showChat = canChat || shareChat !== undefined
 
+  // Ohne endliche Koordinaten keinen Marker setzen: ein [NaN,NaN]-Marker bricht Leaflets
+  // Zoom-Animation und lässt andere Marker beim Zoomen verschwinden (spawnen/despawnen).
+  if (!Number.isFinite(pos[0]) || !Number.isFinite(pos[1])) return null
+
   return (
     <Marker
       position={pos}

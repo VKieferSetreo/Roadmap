@@ -100,7 +100,7 @@ export function NewsPage() {
           <EmptyState
             icon={Newspaper}
             title="Nur mit Live-Datenbank"
-            description="Der News-Feed braucht das Backend — im Demo-Modus nicht verfügbar."
+            description="Der News-Feed braucht das Backend. Im Demo-Modus nicht verfügbar."
           />
         </PageContainer>
       </div>

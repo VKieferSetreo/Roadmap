@@ -28,7 +28,10 @@ export function MapTimeline({ von, bis, onWindowChange }: MapTimelineProps) {
     () => Math.max(1, Math.round((dayStart(Date.parse(bis)) - start0) / DAY)),
     [bis, start0],
   )
-  const [dual, setDual] = useState(false)
+  // Default = Zeitspanne (erster bis letzter Tag) → initial sind ALLE Funde sichtbar; der
+  // Nutzer engt nur bei Bedarf ein. dual ist lokaler UI-State (kein Persist) → gilt automatisch
+  // auch für bestehende Projekte.
+  const [dual, setDual] = useState(true)
   const [a, setA] = useState(0)
   const [b, setB] = useState(days)
   const [trackW, setTrackW] = useState(0)

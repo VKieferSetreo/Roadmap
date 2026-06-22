@@ -67,7 +67,7 @@ function ensureDemoSeed(findingKey: string, scope: "public" | "internal"): Findi
             scope,
             authorEmail: "disponent@huber-schwertransporte.de",
             organisation: "Huber Schwertransporte GmbH",
-            body: "Wir hatten hier letzte Woche eine Genehmigung — Umfahrung über die L121 hat gut funktioniert.",
+            body: "Wir hatten hier letzte Woche eine Genehmigung. Umfahrung über die L121 hat gut funktioniert.",
             kind: "text",
             contact: null,
             createdAt: "2026-06-10T08:42:00.000Z",
@@ -103,7 +103,7 @@ function ensureDemoSeed(findingKey: string, scope: "public" | "internal"): Findi
             findingKey,
             scope,
             authorEmail: "kollege@setreo.de",
-            body: "Zuständige Behörde — Rückruf am Dienstag vereinbart.",
+            body: "Zuständige Behörde. Rückruf am Dienstag vereinbart.",
             kind: "contact",
             contact: {
               name: "Straßenbauamt Lüneburg, Hr. Meyer",
@@ -200,7 +200,7 @@ export function useFindingChat(
       void qc.invalidateQueries({ queryKey: ["finding-chat-presence", findingKey] })
     },
     // T-234: Senden darf nicht still scheitern — Nachricht behalten (Composer leert nicht).
-    onError: () => toast.error("Nachricht konnte nicht gesendet werden — bitte erneut versuchen."),
+    onError: () => toast.error("Nachricht konnte nicht gesendet werden. Bitte erneut versuchen."),
   })
 
   // — DEMO —

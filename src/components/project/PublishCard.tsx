@@ -58,7 +58,7 @@ export function PublishCard({ project }: { project: Project }) {
     setBusy(true)
     try {
       await revokeShare(project.id)
-      toast.success("Freigabe gelöscht — der Link ist nicht mehr erreichbar.")
+      toast.success("Freigabe gelöscht. Der Link ist nicht mehr erreichbar.")
     } catch {
       toast.error("Freigabe konnte nicht gelöscht werden.")
     } finally {
@@ -187,7 +187,7 @@ export function PublishCard({ project }: { project: Project }) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder={
               share?.hatPasswort
-                ? "Neues Passwort — leer = ohne Passwort"
+                ? "Neues Passwort (leer = ohne Passwort)"
                 : "Leer lassen für Link ohne Passwort"
             }
           />

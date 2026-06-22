@@ -62,7 +62,7 @@ export function AnalyticsBoard() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-neutral-500">Plattform-Nutzung — wer ist online, wie viel wird genutzt.</p>
+        <p className="text-sm text-neutral-500">Plattform-Nutzung: wer ist online, wie viel wird genutzt.</p>
         <Button variant="outline" size="sm" onClick={() => void q.refetch()} disabled={q.isFetching}>
           <RefreshCw className={cn("h-3.5 w-3.5", q.isFetching && "animate-spin")} /> Aktualisieren
         </Button>

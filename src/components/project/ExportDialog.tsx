@@ -68,7 +68,7 @@ export function ExportDialog({
     <Dialog open onClose={onClose} size="default">
       <DialogHeader
         title={titel}
-        subtitle="Zeitraum und Strecken wählen — exportiert werden nur Funde, die hineinfallen."
+        subtitle="Zeitraum und Strecken wählen. Exportiert werden nur Funde, die hineinfallen."
         onClose={onClose}
       />
       <div className="flex flex-col gap-5 px-6 py-5">
@@ -118,7 +118,7 @@ export function ExportDialog({
             )}
           </div>
           <p className="mt-1.5 text-xs text-neutral-400">
-            Dauerhafte Hindernisse (Brücken, Höhen-/Gewichtslimits) sind immer dabei — gefiltert
+            Dauerhafte Hindernisse (Brücken, Höhen-/Gewichtslimits) sind immer dabei, gefiltert
             werden nur zeitlich begrenzte Funde (Baustellen, Sperrungen).
           </p>
         </div>

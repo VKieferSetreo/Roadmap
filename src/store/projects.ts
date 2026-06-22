@@ -102,10 +102,10 @@ function applyPatch(id: string, patch: ProjectPatch, get: () => ProjectStore, se
     .then((updated) => adoptVersion(set, id, updated.version))
     .catch((e) => {
       if (e instanceof ApiError && e.status === 409) {
-        toast.error("Das Projekt wurde zwischenzeitlich von jemand anderem geändert — wird neu geladen.")
+        toast.error("Das Projekt wurde zwischenzeitlich von jemand anderem geändert. Es wird neu geladen.")
         void get().loadProjects()
       } else {
-        toast.error("Änderung konnte nicht gespeichert werden — Verbindung prüfen.")
+        toast.error("Änderung konnte nicht gespeichert werden. Verbindung prüfen.")
       }
     })
 }
@@ -139,7 +139,7 @@ const safeStorage = {
     } catch {
       if (!quotaWarned) {
         quotaWarned = true
-        toast.warning("Lokaler Speicher voll — Ihre Daten bleiben für diese Sitzung erhalten.")
+        toast.warning("Lokaler Speicher voll. Ihre Daten bleiben für diese Sitzung erhalten.")
       }
     }
   },
@@ -216,7 +216,7 @@ export const useProjectStore = create<ProjectStore>()(
           } catch (e) {
             // T-230: im Live-Modus KEIN Phantom-Projekt mit lokaler uid() anlegen — das löste über
             // scheduleSync Dauer-404-PATCHes aus. Fehler melden + werfen (Aufrufer fängt ab).
-            toast.error("Projekt konnte nicht angelegt werden — bitte erneut versuchen.")
+            toast.error("Projekt konnte nicht angelegt werden. Bitte erneut versuchen.")
             throw e instanceof Error ? e : new Error("createProject fehlgeschlagen")
           }
         }
@@ -383,7 +383,7 @@ export const useProjectStore = create<ProjectStore>()(
             delete autoTimers[id]
             const p = get().getProject(id)
             if (p && p.routes.some((r) => r.points.length >= 2) && !get().analysis[id]?.running) {
-              toast.info("Strecke geladen — Auswertung läuft …")
+              toast.info("Strecke geladen. Auswertung läuft …")
               get().runAnalysis(id)
             }
           }, 900)
@@ -561,8 +561,8 @@ export const useProjectStore = create<ProjectStore>()(
               // zweiter Disponent / Kollision mit Nacht-Rerun) → klare Meldung statt „Server-Fehler".
               fail(
                 e instanceof ApiError && e.status === 409
-                  ? "Für dieses Projekt läuft bereits eine Auswertung — bitte kurz warten."
-                  : "Analyse fehlgeschlagen — Server nicht erreichbar oder Fehler in der Engine.",
+                  ? "Für dieses Projekt läuft bereits eine Auswertung. Bitte kurz warten."
+                  : "Analyse fehlgeschlagen. Server nicht erreichbar oder Fehler in der Engine.",
               ),
             )
         }

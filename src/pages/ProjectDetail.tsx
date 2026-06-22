@@ -71,7 +71,7 @@ export function ProjectDetail() {
         <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800 lg:px-6">
           <Archive className="h-4 w-4 shrink-0" />
           <span className="flex-1">
-            Dieses Projekt ist <strong>archiviert</strong> — Änderungen sind nicht vorgesehen. Zum Bearbeiten wiederherstellen.
+            Dieses Projekt ist <strong>archiviert</strong>. Änderungen sind nicht vorgesehen. Zum Bearbeiten wiederherstellen.
           </span>
           <Button size="sm" variant="outline" onClick={() => archiveProject(project.id, false)}>
             <RotateCcw className="h-3.5 w-3.5" /> Wiederherstellen

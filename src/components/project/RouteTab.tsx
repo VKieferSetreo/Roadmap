@@ -103,7 +103,7 @@ export function RouteTab({ project }: { project: Project }) {
     addRoute(project.id, { name, points: res.points, source, ...(grob ? { grob: true } : {}) })
     toast.success(
       `Strecke „${name}" angelegt: ${res.points.length.toLocaleString("de-DE")} Punkte · ca. ${res.distanzKm.toLocaleString("de-DE", { maximumFractionDigits: 0 })} km` +
-        (grob ? " (grobe Schätzung — Router nicht erreichbar)." : "."),
+        (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),
     )
   }
 
@@ -163,7 +163,7 @@ export function RouteTab({ project }: { project: Project }) {
     })
     toast.success(
       `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km` +
-        (grob ? " (grobe Schätzung — Router nicht erreichbar)." : "."),
+        (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),
     )
     setPendingFile(null)
     setPendingName("")
@@ -409,7 +409,7 @@ export function RouteTab({ project }: { project: Project }) {
                       {/* T-480: grobe Schätzung kenntlich machen — kein echter Straßenweg. */}
                       {r.grob ? (
                         <span
-                          title="OSRM war beim Anlegen nicht erreichbar — Verlauf ist nur eine grobe Luftlinien-Schätzung."
+                          title="OSRM war beim Anlegen nicht erreichbar. Der Verlauf ist nur eine grobe Luftlinien-Schätzung."
                           className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
                         >
                           grobe Schätzung
@@ -474,7 +474,7 @@ export function RouteTab({ project }: { project: Project }) {
               placeholder="z.B. Hinfahrt Werk → Baustelle"
               maxLength={80}
             />
-            <p className="mt-1.5 text-xs text-neutral-400">Sprechender Name statt Dateiname — 2–80 Zeichen.</p>
+            <p className="mt-1.5 text-xs text-neutral-400">Sprechender Name statt Dateiname, 2–80 Zeichen.</p>
           </div>
           <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">
             <Button variant="ghost" onClick={() => setPendingFile(null)}>

@@ -170,7 +170,7 @@ export function TenantUsersPage() {
       title="Nutzer verwalten"
       description={
         tenant?.name
-          ? `Nutzer von ${tenant.name} verwalten — hinzufügen, entfernen, Admin-Rechte vergeben.`
+          ? `Nutzer von ${tenant.name} verwalten: hinzufügen, entfernen, Admin-Rechte vergeben.`
           : "Nutzer Ihres Mandanten verwalten."
       }
       actions={
@@ -218,7 +218,7 @@ export function TenantUsersPage() {
                     ) : members.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="px-3 py-6 text-center text-neutral-400">
-                          Noch keine Nutzer — unten hinzufügen.
+                          Noch keine Nutzer. Unten hinzufügen.
                         </td>
                       </tr>
                     ) : (
@@ -301,7 +301,7 @@ export function TenantUsersPage() {
                 </Button>
                 {atSeatLimit ? (
                   <span className="text-xs text-neutral-400">
-                    Seat-Limit erreicht — Nutzer entfernen oder bei Setreo mehr Seats anfragen.
+                    Seat-Limit erreicht. Nutzer entfernen oder bei Setreo mehr Seats anfragen.
                   </span>
                 ) : null}
                 <Button onClick={save} disabled={saving}>

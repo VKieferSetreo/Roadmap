@@ -240,7 +240,7 @@ export function DashboardTab({
         <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              Streckenprofil — Funde entlang der {project.routes.length > 1 ? "Strecken" : "Route"}
+              Streckenprofil: Funde entlang der {project.routes.length > 1 ? "Strecken" : "Route"}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 pt-1">
@@ -351,7 +351,7 @@ export function DashboardTab({
         {/* Download (nur nach abgeschlossener Auswertung): PDF oder CSV → Export-Dialog. */}
         {project.status === "fertig" ? (
           <DropdownMenu
-            triggerLabel="Herunterladen — PDF oder CSV"
+            triggerLabel="Herunterladen: PDF oder CSV"
             trigger={
               <span
                 title="Herunterladen"
@@ -565,7 +565,7 @@ function exportCsv(project: Project, findings: Finding[]) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `${project.name.replace(/[^\wäöüÄÖÜß -]+/g, "")} — Funde.csv`
+  a.download = `${project.name.replace(/[^\wäöüÄÖÜß -]+/g, "")} - Funde.csv`
   a.click()
   URL.revokeObjectURL(url)
 }

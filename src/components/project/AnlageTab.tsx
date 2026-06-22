@@ -39,7 +39,7 @@ export function AnlageTab({ project }: { project: Project }) {
     }
     runAnalysis(project.id)
     if (fehltMass) {
-      toast.warning("Auswertung gestartet — ohne Höhe/Gewicht bleiben Brücken-/Traglastgrenzen ungeprüft.")
+      toast.warning("Auswertung gestartet. Ohne Höhe/Gewicht bleiben Brücken-/Traglastgrenzen ungeprüft.")
     } else {
       toast.info("Auswertung gestartet …")
     }
@@ -284,8 +284,8 @@ export function AnlageTab({ project }: { project: Project }) {
                       ? "Höhe und Gesamtgewicht fehlen"
                       : fehltHoehe
                         ? "Höhe fehlt"
-                        : "Gesamtgewicht fehlt"}{" "}
-                    — ohne diese Angaben prüft die Auswertung keine Durchfahrtshöhen bzw. Traglastgrenzen.
+                        : "Gesamtgewicht fehlt"}{". "}
+                    Ohne diese Angaben prüft die Auswertung keine Durchfahrtshöhen bzw. Traglastgrenzen.
                   </span>
                 </div>
               ) : null}

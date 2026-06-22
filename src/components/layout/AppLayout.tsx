@@ -67,7 +67,7 @@ export function AppLayout() {
     const onAuthFail = () => {
       if (authHandled.current) return
       authHandled.current = true
-      toast.error("Ihre Sitzung ist abgelaufen — Sie werden neu angemeldet.")
+      toast.error("Ihre Sitzung ist abgelaufen. Sie werden neu angemeldet.")
       if (import.meta.env.PROD) {
         setTimeout(() => {
           window.location.href = "/auth/login"
@@ -155,7 +155,7 @@ export function AppLayout() {
       {showDemoBanner ? (
         <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-100 px-4 py-1.5 text-center text-xs font-medium text-amber-800">
           <Building2 className="h-3.5 w-3.5 shrink-0" />
-          Demo-Modus — Sie sehen Beispieldaten. Es ist keine Live-Datenbank verbunden.
+          Demo-Modus. Sie sehen Beispieldaten. Es ist keine Live-Datenbank verbunden.
         </div>
       ) : null}
 

@@ -252,7 +252,7 @@ export function KarteTab({
     try {
       await api.deleteObstacle(obstacleId)
       setSelectedId(null)
-      toast.success("Eigener Eintrag verworfen — Auswertung wird aufgefrischt.")
+      toast.success("Eigener Eintrag verworfen. Auswertung wird aufgefrischt.")
       await runAnalysis(project.id)
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Verwerfen fehlgeschlagen.")
@@ -546,7 +546,7 @@ export function KarteTab({
         onClose={() => setAddPosition(null)}
         onCreated={() => {
           setAddPosition(null)
-          toast.success("Eintrag gespeichert — er fließt in künftige Auswertungen ein.", {
+          toast.success("Eintrag gespeichert. Er fließt in künftige Auswertungen ein.", {
             action: { label: "Jetzt neu auswerten", onClick: () => runAnalysis(project.id) },
             duration: 8000,
           })

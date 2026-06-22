@@ -83,7 +83,7 @@ export function DebugPage() {
           <EmptyState
             icon={Bug}
             title="Nur mit Live-Datenbank"
-            description="Die Bug-Report-Triage braucht das Backend — im Demo-Modus nicht verfügbar."
+            description="Die Bug-Report-Triage braucht das Backend. Im Demo-Modus nicht verfügbar."
           />
         </PageContainer>
       </div>
@@ -97,7 +97,7 @@ export function DebugPage() {
     <div className="h-full overflow-y-auto">
       <PageContainer
         title="Roadmap-Debugging"
-        description="Von Nutzern gemeldete Probleme + manuell ausgeblendete Funde — einsehen und auswerten."
+        description="Von Nutzern gemeldete Probleme + manuell ausgeblendete Funde: einsehen und auswerten."
       >
         <Tabs value={view} onValueChange={(v) => setView(v as "bugs" | "hidden" | "quellen")} className="mb-4">
           <TabsList>

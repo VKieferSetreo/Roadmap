@@ -128,7 +128,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         title="Eintrag auf der Strecke erstellen"
         subtitle={
           <>
-            Position {position.lat.toFixed(5)}° N · {position.lng.toFixed(5)}° E — gilt für alle
+            Position {position.lat.toFixed(5)}° N · {position.lng.toFixed(5)}° E, gilt für alle
             Projekte Ihres Mandanten und fließt in künftige Auswertungen ein.
           </>
         }
@@ -169,7 +169,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         {/* Grenzwerte passend zur Kategorie */}
         {felder.length > 0 ? (
           <div>
-            <Label>Grenzwerte (optional — steuern die Bewertung)</Label>
+            <Label>Grenzwerte (optional, steuern die Bewertung)</Label>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {felder.map((f) => (
                 <div key={f.key}>
@@ -252,7 +252,7 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
           </div>
         ) : (
           <p className="rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-500">
-            <span className="font-medium text-neutral-600">Offen</span> — bleibt dauerhaft in der
+            <span className="font-medium text-neutral-600">Offen</span>: bleibt dauerhaft in der
             Datenbank, bis der Eintrag manuell entfernt wird.
           </p>
         )}

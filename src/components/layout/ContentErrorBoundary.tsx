@@ -65,7 +65,7 @@ export class ContentErrorBoundary extends Component<Props, State> {
           </div>
           <h1 className="text-lg font-bold text-neutral-900">Diese Ansicht konnte nicht geladen werden</h1>
           <p className="mt-2 text-sm text-neutral-500">
-            Navigation und Mandantenwechsel funktionieren weiter — wähle links eine andere Ansicht
+            Navigation und Mandantenwechsel funktionieren weiter. Wählen Sie links eine andere Ansicht
             oder versuche es erneut.
           </p>
           <button

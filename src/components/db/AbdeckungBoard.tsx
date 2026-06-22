@@ -30,7 +30,7 @@ function Cell({ ist, max, quelle, land, kat }: { ist: number; max: number; quell
     <td
       className="border-l border-white/15 px-2 py-2 text-center"
       style={{ background: cellColor(pct) }}
-      title={`${land} · ${kat} — ${pct}% (Ist ${ist} / Max ${max}): ${quelle}`}
+      title={`${land} · ${kat} · ${pct}% (Ist ${ist} / Max ${max}): ${quelle}`}
     >
       <span className="tabular-nums text-sm font-bold text-white">{pct}%</span>
     </td>
@@ -125,7 +125,7 @@ export function AbdeckungBoard() {
         {hinweis} Die <b>%-Zahl</b> = Ist ÷ Max, der Anteil des öffentlich Möglichen, den wir schon haben.
         <b> Ist niedrig, Max hoch</b> = frei verfügbare Daten existieren, müssen nur angebunden werden
         (aktuell v. a. <b>Bayern</b> via BayernInfo). <b>Auch Max niedrig</b> = öffentlich nicht verfügbar
-        (Brücken/Tunnel/Gewicht außerhalb NRW/Bayern/Berlin/Hamburg/Hessen — nur WSV-Brücken frei).
+        (Brücken/Tunnel/Gewicht außerhalb NRW/Bayern/Berlin/Hamburg/Hessen, nur WSV-Brücken frei).
         Öffentliche Version: <code className="rounded bg-neutral-100 px-1">setreo-cloud.com/roadmap/abdeckung</code>
       </p>
     </div>

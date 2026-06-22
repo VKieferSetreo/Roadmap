@@ -126,11 +126,11 @@ async function parseShapefile(file: File, isZip: boolean): Promise<RoutePoint[]>
       for (const geom of shp.parseShp(buffer) as GeoJsonGeometry[]) collectGeoJson(geom, out)
     }
   } catch {
-    throw new Error("Shapefile konnte nicht gelesen werden — ist die Datei vollständig?")
+    throw new Error("Shapefile konnte nicht gelesen werden. Ist die Datei vollständig?")
   }
   if (out.length >= 2 && out.filter(isValidPoint).length < 2) {
     throw new Error(
-      "Shapefile-Koordinaten liegen nicht in WGS84 — bitte als ZIP inkl. .prj-Datei hochladen.",
+      "Shapefile-Koordinaten liegen nicht in WGS84. Bitte als ZIP inkl. .prj-Datei hochladen.",
     )
   }
   return out
@@ -156,7 +156,7 @@ export async function parseRouteFile(file: File): Promise<ParsedRoute> {
     points = await parseShapefile(file, true)
     format = "shp"
   } else {
-    throw new Error("Format nicht unterstützt — bitte GPX, KML, GeoJSON oder Shapefile (.zip) verwenden.")
+    throw new Error("Format nicht unterstützt. Bitte GPX, KML, GeoJSON oder Shapefile (.zip) verwenden.")
   }
 
   const valid = points.filter(isValidPoint)

@@ -71,7 +71,7 @@ export function AdminTenantsPage() {
           <EmptyState
             icon={Building2}
             title="Nur mit Live-Datenbank"
-            description="Die Mandanten-Verwaltung braucht das Backend — im Demo-Modus nicht verfügbar."
+            description="Die Mandanten-Verwaltung braucht das Backend. Im Demo-Modus nicht verfügbar."
           />
         </PageContainer>
       </div>
@@ -215,7 +215,7 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
 
   const remove = async () => {
     if (tenant.projekte > 0) {
-      toast.error("Mandant hat noch Projekte — erst Projekte löschen/verschieben.")
+      toast.error("Mandant hat noch Projekte. Erst Projekte löschen/verschieben.")
       return
     }
     if (!window.confirm(`Mandant „${tenant.name}" wirklich löschen?`)) return
@@ -264,20 +264,20 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
   // T-300: DSGVO-Anonymisierung (Art.17) — irreversibel, Slug-Tippbestätigung.
   const anonymize = async () => {
     const typed = window.prompt(
-      `Mandant „${tenant.name}" anonymisieren — IRREVERSIBEL.\n` +
-        `Alle personenbezogenen Daten (Mails, Namen, eigene Einträge) werden entfernt; ` +
+      `Mandant „${tenant.name}" anonymisieren. IRREVERSIBEL.\n` +
+        `Alle personenbezogenen Daten (Mails, Namen, eigene Einträge) werden entfernt, ` +
         `Projekte/Statistik bleiben anonym erhalten.\n\nTippen Sie zur Bestätigung den Slug "${tenant.slug}":`,
     )
     if (typed == null) return
     if (typed.trim() !== tenant.slug) {
-      toast.error("Slug stimmt nicht — abgebrochen.")
+      toast.error("Slug stimmt nicht. Abgebrochen.")
       return
     }
     setBusy(true)
     try {
       const r = await api.anonymizeTenant(tenant.id)
       onChanged()
-      toast.success(`Anonymisiert — ${r.anonymizedMembers} Mitglied(er) entfernt.`)
+      toast.success(`Anonymisiert: ${r.anonymizedMembers} Mitglied(er) entfernt.`)
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Anonymisierung fehlgeschlagen.")
     } finally {
@@ -423,7 +423,7 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
                   {members.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-3 py-4 text-center text-xs text-neutral-400">
-                        Noch keine Nutzer — unten hinzufügen.
+                        Noch keine Nutzer. Unten hinzufügen.
                       </td>
                     </tr>
                   ) : (

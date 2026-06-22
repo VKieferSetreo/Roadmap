@@ -93,7 +93,7 @@ export function ReportView({
     <div id="report-print-root" className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100">
       {/* Toolbar (nicht im Druck) */}
       <div className="print-hidden sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 shadow-card">
-        <p className="text-sm font-semibold text-neutral-800">Bericht — Vorschau</p>
+        <p className="text-sm font-semibold text-neutral-800">Bericht: Vorschau</p>
         <div className="flex items-center gap-2">
           <Button onClick={() => window.print()}>
             <Printer className="h-4 w-4" /> Drucken / Als PDF speichern
@@ -198,7 +198,7 @@ export function ReportView({
             <p className="text-base font-bold text-primary-800">Keine Hindernisse gefunden</p>
             <p className="mx-auto mt-1 max-w-lg text-sm text-primary-700">
               Auf der ausgewerteten Strecke wurden im gewählten Zeitraum keine relevanten Restriktionen
-              gefunden — die Route ist nach aktueller Datenlage frei befahrbar.
+              gefunden. Die Route ist nach aktueller Datenlage frei befahrbar.
             </p>
           </section>
         ) : null}
@@ -243,7 +243,7 @@ export function ReportView({
         ) : null}
 
         <footer className="mt-8 flex items-center justify-between border-t border-neutral-200 pt-3 text-[10px] text-neutral-400">
-          <span>Erstellt mit Setreo Roadmap — Routenanalyse für Schwertransporte</span>
+          <span>Erstellt mit Setreo Roadmap. Routenanalyse für Schwertransporte</span>
           <span>{formatDateDE(new Date())}</span>
         </footer>
       </div>

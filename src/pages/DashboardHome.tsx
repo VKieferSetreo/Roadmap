@@ -190,7 +190,7 @@ export function DashboardHome() {
           <div className="mt-6">
             <EmptyState
               icon={FolderPlus}
-              title="Los geht's — Ihr erstes Projekt"
+              title="Los geht's: Ihr erstes Projekt"
               description="Legen Sie ein Projekt an, um eine Strecke zu analysieren."
               cta={<Button onClick={() => openNewProject()}>Neues Projekt anlegen</Button>}
             />
