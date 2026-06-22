@@ -8,8 +8,9 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { Loader2, Route, RotateCcw, Save, X } from "lucide-react"
+import { AlertTriangle, Loader2, Route, RotateCcw, Save, X } from "lucide-react"
 import { toast } from "sonner"
+import { cn } from "@/lib/cn"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
@@ -129,10 +130,12 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   const [cps, setCps] = useState<RoutePoint[]>([])
   const [geometry, setGeometry] = useState<RoutePoint[]>([])
   const [routing, setRouting] = useState(false)
+  const [routingFailed, setRoutingFailed] = useState(false)
   const [touched, setTouched] = useState(false)
   const initialPoints = useRef<RoutePoint[]>([])
   const mapRef = useRef<L.Map | null>(null)
   const dragIdxRef = useRef<number | null>(null)
+  const failToastRef = useRef(false) // Toast nur beim Übergang ok→fehlgeschlagen, nicht pro Debounce.
 
   useEffect(() => {
     if (!open || !route) return
@@ -140,6 +143,8 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     setCps(deriveControlPoints(route.points))
     setGeometry(route.points)
     setTouched(false)
+    setRoutingFailed(false)
+    failToastRef.current = false
     initialPoints.current = route.points
   }, [open, route])
 
@@ -154,9 +159,22 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       setRouting(true)
       try {
         const res = await api.route.waypoints(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
-        if (!cancelled) setGeometry(res.points)
+        if (!cancelled) {
+          setGeometry(res.points)
+          setRoutingFailed(false)
+          failToastRef.current = false
+        }
       } catch {
-        if (!cancelled) setGeometry(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
+        // Routing-Ausfall: Luftlinie als Platzhalter zeigen, ABER markieren — Speichern wird
+        // blockiert, damit keine Pseudo-Route + Re-Analyse stillschweigend persistiert wird.
+        if (!cancelled) {
+          setGeometry(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
+          setRoutingFailed(true)
+          if (!failToastRef.current) {
+            failToastRef.current = true
+            toast.error("Routing nicht verfügbar — die Linie ist nur eine Luftlinie. Speichern ist blockiert, bis das Routing wieder antwortet.")
+          }
+        }
       } finally {
         if (!cancelled) setRouting(false)
       }
@@ -203,22 +221,40 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     })
   }
 
-  // Drag-Mechanik: Karten-Pan aus, Bewegung verfolgen, am Ende aufräumen.
-  const startDrag = (onMove: (ev: L.LeafletMouseEvent) => void, onEnd?: () => void) => {
+  // Drag-Mechanik: Karten-Pan aus, Bewegung via Pointer Events verfolgen (Maus + Touch/Pen),
+  // mit setPointerCapture, damit der Finger die Linie verlassen darf. Native Pointer-Koordinaten
+  // werden über Leaflet zu latlng konvertiert. (T-229: vorher nur Leaflet-mouse* → auf Touch tot.)
+  const startDrag = (
+    origin: MouseEvent,
+    onMove: (lat: number, lng: number) => void,
+    onEnd?: () => void,
+  ) => {
     const map = mapRef.current
     if (!map) return
     map.dragging.disable()
+    const container = map.getContainer()
+    const pid = "pointerId" in origin ? (origin as PointerEvent).pointerId : null
+    if (pid != null) {
+      try { container.setPointerCapture(pid) } catch { /* nicht kritisch */ }
+    }
+    const move = (ev: PointerEvent) => {
+      const ll = map.mouseEventToLatLng(ev)
+      onMove(ll.lat, ll.lng)
+    }
     const up = () => {
-      map.off("mousemove", onMove)
-      map.off("mouseup", up)
-      window.removeEventListener("mouseup", up)
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+      window.removeEventListener("pointercancel", up)
+      if (pid != null) {
+        try { container.releasePointerCapture(pid) } catch { /* */ }
+      }
       map.dragging.enable()
       dragIdxRef.current = null
       onEnd?.()
     }
-    map.on("mousemove", onMove)
-    map.on("mouseup", up)
-    window.addEventListener("mouseup", up)
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+    window.addEventListener("pointercancel", up)
   }
 
   // Bestehenden Punkt anfassen: ziehen (Bewegung) ODER bei reinem Klick löschen.
@@ -229,12 +265,13 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     const start = map.latLngToContainerPoint(e.latlng)
     let moved = false
     startDrag(
-      (ev) => {
-        if (!moved && map.latLngToContainerPoint(ev.latlng).distanceTo(start) > 4) moved = true
-        if (moved) moveCp(i, ev.latlng.lat, ev.latlng.lng)
+      e.originalEvent,
+      (lat, lng) => {
+        if (!moved && map.latLngToContainerPoint(L.latLng(lat, lng)).distanceTo(start) > 4) moved = true
+        if (moved) moveCp(i, lat, lng)
       },
       () => {
-        if (!moved) removeCp(i) // Klick ohne Ziehen → entfernen
+        if (!moved) removeCp(i) // Klick/Tipp ohne Ziehen → entfernen
         else reorderCp(i) // gezogen → optimale Reihenfolge (kein Backtracking)
       },
     )
@@ -254,9 +291,10 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     })
     setTouched(true)
     startDrag(
-      (ev) => {
+      e.originalEvent,
+      (lat, lng) => {
         if (dragIdxRef.current == null) return
-        moveCp(dragIdxRef.current, ev.latlng.lat, ev.latlng.lng)
+        moveCp(dragIdxRef.current, lat, lng)
       },
       () => reorderCp(idx), // nach dem Ziehen an die optimale Stelle setzen
     )
@@ -266,9 +304,21 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     setCps(deriveControlPoints(initialPoints.current))
     setGeometry(initialPoints.current)
     setTouched(false)
+    setRoutingFailed(false)
+    failToastRef.current = false
   }
 
   const save = () => {
+    // Kein Speichern einer Luftlinie-Pseudo-Route: bei laufendem oder fehlgeschlagenem Routing
+    // blockieren, sonst würden falsche Distanz/Geometrie + Re-Analyse persistiert (T-229).
+    if (routing) {
+      toast.error("Routing läuft noch — bitte einen Moment warten.")
+      return
+    }
+    if (routingFailed) {
+      toast.error("Speichern blockiert: Das Routing ist nicht verfügbar (nur Luftlinie). Bitte später erneut versuchen.")
+      return
+    }
     const finalGeom = geometry.length >= 2 ? geometry : cps.map((c) => ({ lat: c.lat, lng: c.lng }))
     updateRoute(projectId, route.id, { name: name.trim() || route.name, points: finalGeom })
     runAnalysis(projectId)
@@ -294,13 +344,21 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
               placeholder={route.name}
             />
           </div>
-          <span className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-neutral-600">
+          <span
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums",
+              routingFailed ? "bg-severity-kritisch/10 text-severity-kritisch" : "bg-neutral-100 text-neutral-600",
+            )}
+            title={routingFailed ? "Routing nicht verfügbar — angezeigte Linie ist nur eine Luftlinie" : undefined}
+          >
             {routing ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-600" />
+            ) : routingFailed ? (
+              <AlertTriangle className="h-3.5 w-3.5" />
             ) : (
               <Route className="h-3.5 w-3.5 text-neutral-400" />
             )}
-            {distanzKm.toLocaleString("de-DE")} km
+            {routingFailed ? "Luftlinie" : `${distanzKm.toLocaleString("de-DE")} km`}
           </span>
           <Button variant="ghost" onClick={reset} title="Ursprünglichen Verlauf wiederherstellen">
             <RotateCcw className="mr-1 h-4 w-4" /> Original
@@ -308,7 +366,12 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
           <Button variant="ghost" onClick={onClose}>
             <X className="mr-1 h-4 w-4" /> Abbrechen
           </Button>
-          <Button onClick={save}>
+          <Button
+            onClick={save}
+            loading={routing}
+            disabled={routingFailed}
+            title={routingFailed ? "Speichern blockiert: Routing nicht verfügbar" : undefined}
+          >
             <Save className="mr-1 h-4 w-4" /> Speichern
           </Button>
         </div>

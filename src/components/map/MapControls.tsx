@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
 import { useMap } from "react-leaflet"
 import { Loader2, Map, Maximize2, Minimize2, Satellite, Search, X } from "lucide-react"
+import { api } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
 import { useSettingsStore, type TileStyle } from "@/store/settings"
 
@@ -40,7 +41,7 @@ export function MapSearch() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // Debounced Nominatim-Abfrage (Policy: ≤1 Req/s → 400ms Debounce, DE-beschränkt).
+  // Debounced Orts-Abfrage (Policy: ≤1 Req/s → 400ms Debounce, DE-beschränkt).
   useEffect(() => {
     const term = q.trim()
     if (term.length < 3) {
@@ -49,25 +50,24 @@ export function MapSearch() {
       return
     }
     setLoading(true)
-    const ctrl = new AbortController()
+    let stale = false
     const id = setTimeout(async () => {
       try {
-        const url =
-          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=de&accept-language=de&q=" +
-          encodeURIComponent(term)
-        const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } })
-        const data = (await res.json()) as NominatimHit[]
-        setHits(Array.isArray(data) ? data : [])
+        // Server-seitiger Geocode-Proxy: die CSP (connect-src 'self') blockt den direkten
+        // Nominatim-Fetch im Browser — sonst lieferte die Kartensuche still keine Treffer.
+        const { results } = await api.geocodeSearch(term)
+        if (stale) return
+        setHits(Array.isArray(results) ? (results as NominatimHit[]) : [])
         setOpen(true)
       } catch {
         /* abgebrochen / offline → still */
       } finally {
-        setLoading(false)
+        if (!stale) setLoading(false)
       }
     }, 400)
     return () => {
+      stale = true
       clearTimeout(id)
-      ctrl.abort()
     }
   }, [q])
 

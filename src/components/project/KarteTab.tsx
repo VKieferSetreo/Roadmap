@@ -350,21 +350,19 @@ export function KarteTab({
           <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
             {counts.filter(({ n }) => n > 0).map(({ sev, n }) => {
               const aus = severityHidden.has(sev)
-              // Nur "leuchtende" Stufen (n>0) sind klickbar: Klick blendet diese Funde
-              // auf der Karte aus und dimmt die Marke grau. n=0 = inert (eh nichts da).
-              const aktiv = n > 0 && !aus
+              // counts ist auf n>0 gefiltert → jede gerenderte Stufe ist klickbar.
+              // Klick blendet diese Funde auf der Karte aus und dimmt die Marke grau.
+              const aktiv = !aus
               return (
                 <button
                   key={sev}
                   type="button"
-                  onClick={n > 0 ? () => toggleSeverity(sev) : undefined}
-                  disabled={n === 0}
-                  aria-pressed={n > 0 ? !aus : undefined}
-                  title={n > 0 ? (aus ? `${SEVERITY_META[sev].label} einblenden` : `${SEVERITY_META[sev].label} ausblenden`) : undefined}
+                  onClick={() => toggleSeverity(sev)}
+                  aria-pressed={!aus}
+                  title={aus ? `${SEVERITY_META[sev].label} einblenden` : `${SEVERITY_META[sev].label} ausblenden`}
                   className={cn(
-                    "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition",
+                    "inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition hover:opacity-80",
                     aktiv ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
-                    n > 0 && "cursor-pointer hover:opacity-80",
                     aus && "line-through",
                   )}
                 >
