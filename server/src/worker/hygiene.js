@@ -95,7 +95,7 @@ export async function reconcileFachIdDupes(db, { log = () => {} } = {}) {
     await db.tx(async (q) => {
       await q.query("SELECT pg_advisory_xact_lock(hashtext($1))", [`roadmap_fachid_${quelle}`])
       const { rows: mx } = await q.query(CORRECT_MAX_SQL, [quelle])
-      let nextIndex = Number(mx.rows[0]?.m ?? 0) + 1
+      let nextIndex = Number(mx[0]?.m ?? 0) + 1
       for (const g of gs) {
         const suffix = String(g.fach_id).slice(-10) // QUELLE(4)+DDMMYY(6) bleibt erhalten
         for (const id of g.ids.slice(1)) { // ids[0] = kanonisch (behält fachId)
