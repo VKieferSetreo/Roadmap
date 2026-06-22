@@ -188,7 +188,7 @@ export function KarteTab({
         <EmptyState
           icon={MapPinned}
           title="Noch keine Auswertung"
-          description="Lade die Strecke(n) hoch und starte die Auswertung — die Funde erscheinen dann hier auf der Karte."
+          description="Laden Sie die Strecke(n) hoch und starten Sie die Auswertung. Die Funde erscheinen dann hier auf der Karte."
           cta={
             <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
           }
