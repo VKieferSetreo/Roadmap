@@ -27,7 +27,7 @@ import { MapResize } from "./MapResize"
 import { MapFullscreen, MapLayers } from "./MapControls"
 import { safeHref } from "@/lib/safeHref"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
-import { geomMidpoint, geomToLines } from "@/lib/geom"
+import { geomMidpoint, geomToLines, hasImplausibleJump } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
 import type { OrtTreffer } from "@/components/db/OrtsSuche"
 import germanyRings from "@/assets/germanyRings.json"
@@ -165,8 +165,12 @@ function ObstacleLayers({ obstacles, onDelete }: { obstacles: Obstacle[]; onDele
     // Strecken-Hindernisse mit (endlichem) Mittelpunkt für den Sichtfeld-Test.
     const geomObs = platzierbar
       .map((o) => ({ o, mid: geomMidpoint(o.geom) }))
-      .filter((g): g is { o: Obstacle; mid: [number, number] } =>
-        Array.isArray(g.mid) && Number.isFinite(g.mid[0]) && Number.isFinite(g.mid[1]) && geomToLines(g.o.geom).length > 0)
+      .filter((g): g is { o: Obstacle; mid: [number, number] } => {
+        if (!Array.isArray(g.mid) || !Number.isFinite(g.mid[0]) || !Number.isFinite(g.mid[1])) return false
+        const ls = geomToLines(g.o.geom)
+        // Kaputte Sprung-Geometrie nicht als Linie zeichnen → nur der Cluster-Pin bleibt (T-559).
+        return ls.length > 0 && !hasImplausibleJump(ls)
+      })
 
     const renderer = L.canvas({ padding: 0.5 }) // Linien auf Canvas (SVG skaliert nicht auf Tausende)
     const lineGroup = L.layerGroup().addTo(map)

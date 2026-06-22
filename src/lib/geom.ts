@@ -90,3 +90,20 @@ export function geomMidpoint(geom?: GeoJSONGeometry | null): LatLng | null {
   for (const l of lines) if (l.length > longest.length) longest = l
   return longest[Math.floor(longest.length / 2)] ?? null
 }
+
+// Max plausible Länge eines GERADEN Liniensegments (km). Echte Straßen-/Bauwerksgeometrie
+// folgt der Straße in kurzen Stützpunkt-Abständen; ein einzelner Sprung über mehrere km ist
+// kaputte Daten (z.B. 2-Punkt-Linie quer durchs Land) → Linie nicht zeichnen, nur den Punkt.
+// ponytail: simpler Max-Segment-Check; Schwelle bewusst großzügig (3 km), damit legitime
+// lange Geraden (Autobahn) bleiben und nur eindeutig kaputte Geometrie (10–40 km) rausfällt.
+const MAX_SEGMENT_KM = 3
+
+/** true, wenn die Geometrie einen unplausibel langen geraden Sprung enthält (kaputte Daten). */
+export function hasImplausibleJump(lines: LatLng[][]): boolean {
+  for (const line of lines) {
+    for (let i = 1; i < line.length; i++) {
+      if (havKm(line[i - 1], line[i]) > MAX_SEGMENT_KM) return true
+    }
+  }
+  return false
+}

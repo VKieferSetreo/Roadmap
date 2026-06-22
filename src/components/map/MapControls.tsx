@@ -7,9 +7,9 @@
 import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
 import { useMap } from "react-leaflet"
-import { Loader2, Map, Maximize2, Minimize2, Satellite, Search, X } from "lucide-react"
+import { Loader2, Map, Maximize2, Minimize2, Mountain, Satellite, Search, X } from "lucide-react"
 import { cn } from "@/lib/cn"
-import { useSettingsStore } from "@/store/settings"
+import { useSettingsStore, type TileStyle } from "@/store/settings"
 
 /** Map-Events am Control-Root abklemmen (Leaflet greift sonst Klicks/Scroll ab). */
 function useStopMapEvents<T extends HTMLElement>() {
@@ -189,26 +189,41 @@ export function MapFullscreen() {
   )
 }
 
-// ── Kartenebene: Toggle Satellit ↔ Straßenkarte ──────────────────────────────
-/** Ein-Klick-Umschalter zwischen Straßenkarte und Satellit. Das Icon zeigt das ZIEL
- *  (Satellit-Icon = „auf Satellit umschalten", Karten-Icon = „zurück zur Straßenkarte").
+// ── Kartenebene: Ein-Klick-Zyklus durch die Ansichten ────────────────────────
+const MODE_META: Record<TileStyle, { icon: typeof Map; label: string }> = {
+  standard: { icon: Map, label: "Straßenkarte" },
+  satellit: { icon: Satellite, label: "Satellit" },
+  "3d": { icon: Mountain, label: "3D-Gelände" },
+}
+
+/** Ein-Klick-Umschalter, der durch `modes` zyklt (Default: Straßenkarte ↔ Satellit; die
+ *  Projekt-Karte reicht zusätzlich "3d" durch). Das Icon zeigt die AKTUELLE Ansicht.
  *  Präsentationskomponente — frei im Wrapper (RouteMap) oder via MapLayers als Karten-Kind. */
-export function LayerSwitcher({ buttonClassName }: { buttonClassName?: string }) {
+export function LayerSwitcher({
+  buttonClassName,
+  modes = ["standard", "satellit"],
+}: {
+  buttonClassName?: string
+  modes?: TileStyle[]
+}) {
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const setTileStyle = useSettingsStore((s) => s.setTileStyle)
-  const isSat = tileStyle === "satellit"
+  const idx = modes.indexOf(tileStyle)
+  const next = modes[(idx + 1) % modes.length] // idx === -1 → modes[0]
+  const cur = MODE_META[tileStyle] ?? MODE_META.standard
+  const Icon = cur.icon
   return (
     <button
       type="button"
-      onClick={() => setTileStyle(isSat ? "standard" : "satellit")}
-      aria-label={isSat ? "Zur Straßenkarte wechseln" : "Zur Satellitenansicht wechseln"}
-      title={isSat ? "Straßenkarte" : "Satellit"}
+      onClick={() => setTileStyle(next)}
+      aria-label={`Kartenansicht wechseln (aktuell: ${cur.label})`}
+      title={`Ansicht: ${cur.label} (klicken: ${MODE_META[next].label})`}
       className={
         buttonClassName ??
         "flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white/95 text-neutral-600 shadow-md backdrop-blur-sm transition-colors hover:text-primary-600"
       }
     >
-      {isSat ? <Map className="h-4 w-4" /> : <Satellite className="h-4 w-4" />}
+      <Icon className="h-4 w-4" />
     </button>
   )
 }
