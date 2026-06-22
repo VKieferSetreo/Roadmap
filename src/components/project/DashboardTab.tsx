@@ -380,7 +380,7 @@ export function DashboardTab({
             <CheckCircle2 className="mx-auto h-9 w-9 text-primary-600" />
             <p className="mt-3 text-base font-semibold text-primary-800">Keine Hindernisse gefunden</p>
             <p className="mx-auto mt-1 max-w-md text-sm text-primary-700/80">
-              Auf der ausgewerteten Strecke wurden keine relevanten Restriktionen gefunden — nach aktueller Datenlage frei.
+              Auf der ausgewerteten Strecke wurden keine relevanten Restriktionen gefunden.
             </p>
           </div>
         ) : (
