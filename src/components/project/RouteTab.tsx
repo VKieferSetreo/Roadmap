@@ -20,7 +20,8 @@ import { useProjectStore } from "@/store/projects"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import { parseGpkg, type GpkgRoute } from "@/lib/parseGpkg"
 import { GpkgRouteSelectDialog } from "./GpkgRouteSelectDialog"
-import { api, type RouteResult } from "@/api/roadmap"
+import { VemagsRouteSelectDialog } from "./VemagsRouteSelectDialog"
+import { api, type RouteResult, type VemagsResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import type { Project, ProjectRoute, RoutePoint, RouteSource } from "@/types/domain"
 import { cn } from "@/lib/cn"
@@ -110,6 +111,8 @@ export function RouteTab({ project }: { project: Project }) {
   const [gpkgBusy, setGpkgBusy] = useState(false)
   // T-567: VEMAGS-Bescheid wird hochgeladen + serverseitig geparst (PDF nie gespeichert).
   const [vemagsBusy, setVemagsBusy] = useState(false)
+  // Geparstes VEMAGS-Ergebnis → Auswahl-Maske (welche Fahrtwegteile laden), analog zu GeoPackage.
+  const [vemags, setVemags] = useState<{ fileName: string; result: VemagsResult } | null>(null)
 
   const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
     // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
@@ -258,35 +261,12 @@ export function RouteTab({ project }: { project: Project }) {
     setVemagsBusy(true)
     try {
       const res = await api.route.vemags(await fileToBase64(file))
-      const ok = res.strecken.filter((s) => s.points.length >= 2)
-      if (ok.length === 0) {
+      if (res.strecken.filter((s) => s.points.length >= 2).length === 0) {
         toast.error("Aus dem Bescheid konnte keine Strecke rekonstruiert werden.")
         return
       }
-      // Maße aus dem Bescheid in die Fahrzeug-Spec übernehmen (nur extrahierte Felder).
-      const { laengeM, breiteM, hoeheM, masseT } = res.spec
-      const specPatch = {
-        ...(laengeM != null && { laenge: laengeM }),
-        ...(breiteM != null && { breite: breiteM }),
-        ...(hoeheM != null && { hoehe: hoeheM }),
-        ...(masseT != null && { gesamtgewicht: masseT }),
-      }
-      if (Object.keys(specPatch).length > 0) updateTransport(project.id, specPatch)
-      for (const s of ok) {
-        addRoute(project.id, { name: s.name, points: s.points, source: "vemags", ...(s.grob ? { grob: true } : {}) })
-      }
-      const massText = Object.keys(specPatch).length
-        ? ` · Maße übernommen (${[laengeM && `L ${laengeM} m`, breiteM && `B ${breiteM} m`, hoeheM && `H ${hoeheM} m`, masseT && `${masseT} t`].filter(Boolean).join(" · ")})`
-        : ""
-      const nUngeloest = ok.reduce((n, s) => n + (s.ungeloest?.length ?? 0), 0)
-      toast.success(
-        `${ok.length} Strecke${ok.length === 1 ? "" : "n"} aus VEMAGS-Bescheid rekonstruiert${massText}. Vor der Fahrt prüfen.`,
-      )
-      if (nUngeloest > 0) {
-        toast.warning(
-          `${nUngeloest} Wegpunkt${nUngeloest === 1 ? "" : "e"} konnten nicht eindeutig verortet werden und wurden übersprungen — die Strecke ist an diesen Stellen gröber.`,
-        )
-      }
+      // Nicht sofort laden: Auswahl-Maske öffnen (welche Fahrtwegteile), analog GeoPackage.
+      setVemags({ fileName: file.name, result: res })
     } catch (err) {
       toast.error(
         err instanceof ApiError
@@ -298,6 +278,37 @@ export function RouteTab({ project }: { project: Project }) {
     } finally {
       setVemagsBusy(false)
     }
+  }
+
+  // Gewählte VEMAGS-Fahrtwegteile als Strecken anlegen + Maße aus dem Bescheid übernehmen.
+  const loadVemagsRoutes = (selected: VemagsResult["strecken"]) => {
+    if (!vemags) return
+    const ok = selected.filter((s) => s.points.length >= 2)
+    if (ok.length === 0) return
+    const { laengeM, breiteM, hoeheM, masseT } = vemags.result.spec
+    const specPatch = {
+      ...(laengeM != null && { laenge: laengeM }),
+      ...(breiteM != null && { breite: breiteM }),
+      ...(hoeheM != null && { hoehe: hoeheM }),
+      ...(masseT != null && { gesamtgewicht: masseT }),
+    }
+    if (Object.keys(specPatch).length > 0) updateTransport(project.id, specPatch)
+    for (const s of ok) {
+      addRoute(project.id, { name: s.name, points: s.points, source: "vemags", ...(s.grob ? { grob: true } : {}) })
+    }
+    const massText = Object.keys(specPatch).length
+      ? ` · Maße übernommen (${[laengeM && `L ${laengeM} m`, breiteM && `B ${breiteM} m`, hoeheM && `H ${hoeheM} m`, masseT && `${masseT} t`].filter(Boolean).join(" · ")})`
+      : ""
+    toast.success(
+      `${ok.length} Strecke${ok.length === 1 ? "" : "n"} aus VEMAGS-Bescheid rekonstruiert${massText}. Vor der Fahrt prüfen.`,
+    )
+    const nUngeloest = ok.reduce((n, s) => n + (s.ungeloest?.length ?? 0), 0)
+    if (nUngeloest > 0) {
+      toast.warning(
+        `${nUngeloest} Wegpunkt${nUngeloest === 1 ? "" : "e"} konnten nicht eindeutig verortet werden und wurden übersprungen — die Strecke ist an diesen Stellen gröber.`,
+      )
+    }
+    setVemags(null)
   }
 
 
@@ -603,6 +614,17 @@ export function RouteTab({ project }: { project: Project }) {
         onClose={() => setGpkg(null)}
         onConfirm={loadGpkgRoutes}
       />
+
+      {/* T-567: VEMAGS-Fahrtwegteil-Auswahl. Bedingt gemountet → frischer State (Vorauswahl) je Upload. */}
+      {vemags ? (
+        <VemagsRouteSelectDialog
+          open
+          fileName={vemags.fileName}
+          result={vemags.result}
+          onClose={() => setVemags(null)}
+          onConfirm={loadVemagsRoutes}
+        />
+      ) : null}
 
       {/* #9: Karten-Picker für den gerade gewählten Punkt. */}
       <MapPointPicker
