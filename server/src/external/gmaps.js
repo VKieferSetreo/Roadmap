@@ -112,16 +112,24 @@ function parseStops(finalUrl) {
       const s = toStop(seg)
       if (s) nameStops.push(s)
     }
+    // (A) ECHTE Google-Share-Links kodieren die VOLLSTÄNDIGE geordnete Wegpunktliste (Start +
+    //     ZWISCHENstopps + Ziel) STRUKTURIERT im data=-Blob: jeder Stopp als !2m2!1d<lng>!2d<lat>
+    //     (Start/Ziel) bzw. !1m2!1d<lng>!2d<lat> (Zwischenstopps). Die Pfad-Namen nennen oft NUR
+    //     Start+Ziel — die per Hand gezogenen Zwischenpunkte stehen AUSSCHLIESSLICH hier. Diese
+    //     strukturierten Koordinaten sind autoritativ (präzise + komplett inkl. Vias) → bevorzugen.
+    //     (Bug 2026-06-23: vorher wurden bei 2 Pfad-Namen + N data-Koordinaten ALLE Vias verworfen
+    //     und nur Start/Ziel-Namen geokodiert → OSRM rechnete eine komplett andere A→B-Route.)
+    const structured = [...finalUrl.matchAll(/!(?:1m2|2m2)!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
+      .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
+      .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
+    if (structured.length >= 2) return structured
+    // (B) Fallback für einfachere Links OHNE strukturierten Blob: bare !1d!2d. Der data=-Blob kann
+    //     hier ZUSÄTZLICHE !1d!2d (Karten-Mitte/Viewport/POI) tragen → mehr Koordinaten als echte
+    //     Wegpunkte. Darum bare-Koordinaten NUR bei exakter Anzahl-Übereinstimmung mit den
+    //     Pfad-Namen (sauberer Blob), sonst die kompletten Pfad-Namen — so geht kein Stopp verloren.
     const dataCoords = [...finalUrl.matchAll(/!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
       .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
       .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
-    // Der Pfad (/dir/A/B/C/) listet ALLE Stopps in Reihenfolge — autoritativ und VOLLSTÄNDIG
-    // (inkl. Ziel). Der data=-Blob enthält oft ZUSÄTZLICHE !1d!2d (Karten-Mitte, Viewport-Ecken,
-    // POI-Thumbnails) → mehr Koordinaten als echte Wegpunkte. Die frühere Regel (dataCoords.length
-    // >= nameStops.length → dataCoords) übernahm diese Müll-Koordinaten und verdrängte das echte
-    // Ziel → "letztes Stück fehlt". Jetzt: exakte data-Koordinaten NUR bei exakter Anzahl-
-    // Übereinstimmung (sauberer Blob), sonst die kompletten Pfad-Namen — so geht kein Stopp
-    // (insb. das Ziel) verloren, 100% der Strecke wird geladen.
     if (nameStops.length >= 2) {
       return dataCoords.length === nameStops.length ? dataCoords : nameStops
     }

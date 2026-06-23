@@ -86,4 +86,27 @@ describe("extractMapsStops", () => {
     const { stops } = await extractMapsStops(url)
     expect(stops).toEqual([{ lat: 48.5, lng: 8.0 }, { lat: 49.0, lng: 8.4 }])
   })
+
+  it("echter Share-Link: Pfad nennt nur Start+Ziel, Vias stehen STRUKTURIERT im data-Blob", async () => {
+    // Reproduziert den gemeldeten Bug (maps.app.goo.gl/cLEDp3u…): /dir/<Start>/<Ziel> + 5 per Hand
+    // gezogene Zwischenstopps NUR im data-Blob als !2m2!1d!2d (Start/Ziel) bzw. !1m2!1d!2d (Vias).
+    // Früher: 2 Pfad-Namen + 7 Koordinaten → Anzahl ≠ → nur Namen geokodiert → komplett andere Route.
+    // Jetzt: die 7 strukturierten Wegpunkte in Reihenfolge (1d=lng, 2d=lat).
+    const url =
+      "https://www.google.com/maps/dir/Bad+Salzuflen/Erndtebr%C3%BCck/@51.24,8.26,10z/data=!3m1!5s0x0:0x0" +
+      "!4m38!1m30!1m1!1s0x0:0x0!2m2!1d8.6640951!2d52.0718414" +
+      "!3m4!1m2!1d7.9711021!2d51.6964951!3s0x0:0x0!3m4!1m2!1d8.1273778!2d51.5931863!3s0x0:0x0" +
+      "!3m4!1m2!1d8.5693191!2d51.4400746!3s0x0:0x0!3m4!1m2!1d8.7336351!2d51.4218003!3s0x0:0x0" +
+      "!3m4!1m2!1d9.0147485!2d51.4905143!3s0x0:0x0!1m5!1m1!1s0x0:0x0!2m2!1d8.3114803!2d50.9944656!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([
+      { lat: 52.0718414, lng: 8.6640951 },
+      { lat: 51.6964951, lng: 7.9711021 },
+      { lat: 51.5931863, lng: 8.1273778 },
+      { lat: 51.4400746, lng: 8.5693191 },
+      { lat: 51.4218003, lng: 8.7336351 },
+      { lat: 51.4905143, lng: 9.0147485 },
+      { lat: 50.9944656, lng: 8.3114803 },
+    ])
+  })
 })
