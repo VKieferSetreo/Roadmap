@@ -366,22 +366,6 @@
 - **url:** `https://geomis.geoportal-th.de/geonetwork/srv/api/records/468059de-07f6-4510-8920-aedb9feb319e`
 - **prio:** P1
 - **sonstiges:** ASB-Netz als Anker für Stationierung/Matching (analog BASt-BISStra). KEINE GST-Restriktionen.
-
-### 6.3 Geoproxy Thüringen — INSPIRE Verkehrsnetze (Straße) WFS — **P2, verifiziert**
-- **quelle:** INSPIRE TH Verkehrsnetze ATKIS Basis-DLM — Straße (`INSPIREtn-ro_wfs`)
-- **betreiber:** Thüringer Landesamt für Bodenmanagement und Geoinformation (TLBG)
-- **datentyp:** INSPIRE-TN-RO Straßennetz (Road, RoadLink, ERoad, FunctionalRoadClass, NumberOfLanes …)
-- **format:** WFS 2.0 (INSPIRE tn-ro/4.0 GML)
-- **apiEndpunkt (verifiziert, HTTP 200):**
-  - `https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?service=WFS&request=GetCapabilities`
-  - **Layer (live bestätigt):** `tn-ro:Road`, `tn-ro:RoadLink`, `tn-ro:ERoad`, `tn-ro:FunctionalRoadClass`, `tn-ro:NumberOfLanes`, `tn-ro:FormOfWay`, `tn-ro:RoadArea`, `tn-ro:RoadServiceArea` (+ weitere TN-WFS für Schiene/Wasser/Luft/Seilbahn)
-- **update:** halbjährlich · **auth:** keine · **kosten:** kostenlos
-- **lizenz:** **dl-de/by-2.0**
-- **abdeckung:** Thüringen
-- **zugang:** offen
-- **verifiziert:** ja (GetCapabilities live 200, INSPIRE-Layer bestätigt)
-- **url:** `https://geomis.geoportal-th.de/geonetwork/inspire/api/records/e98cb550-e246-4b9b-8a29-49029a51f5cc`
-- **prio:** P2
 ---
 
 ## Querschnitt: Lücken & wichtigste Erkenntnisse

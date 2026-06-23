@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 58,
+  "anzahl": 57,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -68,17 +68,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS",
       "test": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS/test.sh"
-    },
-    {
-      "name": "INSPIRE TH Verkehrsnetze ATKIS Basis-DLM — Straße (INSPIREtn-ro_wfs)",
-      "ebene": "Thüringen",
-      "datentyp": "INSPIRE-TN-RO Straßennetz (Road, RoadLink, ERoad, FunctionalRoadClass, NumberOfLanes …)",
-      "format": "WFS 2.0 (INSPIRE tn-ro/4.0 GML)",
-      "endpunkt": "https://www.geoproxy.geoportal-th.de/geoproxy/services/INSPIREtn-ro_wfs?service=WFS&request=GetCapabilities",
-      "lizenz": "dl-de/by-2.0",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS",
-      "test": "Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS/test.sh"
     },
     {
       "name": "Klassifiziertes Straßennetz Thüringen (STRNETZ_wfs)",
