@@ -182,9 +182,12 @@ export const api = {
 
   deleteProject: (id: string) => axiosClient<void>({ url: `/projects/${id}`, method: "DELETE" }),
 
-  /** Analyse synchron auf dem Server fahren — liefert das aktualisierte Projekt. */
+  /** Analyse synchron auf dem Server fahren — liefert das aktualisierte Projekt.
+   *  Timeout großzügig (150s): lange Mehr-Strecken-Projekte (z.B. VEMAGS, 3 Fahrtwegteile à ~870 km
+   *  = 6000 Punkte) brauchen ~70s; mit 60s brach das FE ab und zeigte fälschlich „keine Auswertung",
+   *  obwohl der Server fertig wurde. (Proxy-Decke ~100s — sehr große Bescheide bräuchten Async.) */
   runAnalysis: (id: string) =>
-    axiosClient<Project>({ url: `/projects/${id}/analysis`, method: "POST", timeout: 60_000 }),
+    axiosClient<Project>({ url: `/projects/${id}/analysis`, method: "POST", timeout: 150_000 }),
 
   // ── Veröffentlichen (Share-Links für Externe) ──────────────────────────────
   publishProject: (id: string, password?: string) =>
