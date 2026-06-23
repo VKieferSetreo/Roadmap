@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, clipGeomToCorridor, cumulativeKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -49,23 +49,16 @@ function geomPoints(geom) {
   return out
 }
 
-// Quell-Geometrie eines Hindernisses für den (rein DARSTELLENDEN) Korridor-Clip ausdünnen: clip ist
-// O(Stützpunkte × Routenpunkte); sehr lange Quell-Linien (~1700 Punkte) blockierten ~2 s synchron.
-// ≤300 Punkte ist auf Karten-Zoom optisch identisch und betrifft KEINE Bewertung/severity — nur die
-// gerenderte Fund-Linie. (Das Matching selbst nutzt obstaclePts/geom unverändert.)
-const CLIP_MAX_PTS = 300
-function obstacleGeomForClip(geom) {
-  if (!geom || typeof geom !== "object") return geom
-  if (geom.type === "LineString" && Array.isArray(geom.coordinates) && geom.coordinates.length > CLIP_MAX_PTS) {
-    return { type: "LineString", coordinates: downsample(geom.coordinates, CLIP_MAX_PTS) }
-  }
-  if (geom.type === "MultiLineString" && Array.isArray(geom.coordinates)) {
-    return {
-      type: "MultiLineString",
-      coordinates: geom.coordinates.map((l) => (Array.isArray(l) && l.length > CLIP_MAX_PTS ? downsample(l, CLIP_MAX_PTS) : l)),
-    }
-  }
-  return geom
+// Schrittweite für den (rein DARSTELLENDEN) Korridor-Clip an die Linienlänge koppeln: clip
+// densifiziert alle stepM Meter einen Punkt und prüft je Punkt nearestOnRoute (O(Routenpunkte)) →
+// Kost ≈ (Länge / stepM) × Routenpunkte. Bei festem stepM=15 blockierte eine ~50-km-Linie ~2 s.
+// stepM so wählen, dass ~max. CLIP_SAMPLES Dense-Punkte entstehen → gedeckelte Kost; auf Karten-
+// Zoom optisch unverändert und OHNE Einfluss auf Bewertung/severity (clip = nur gerenderte Linie).
+const CLIP_SAMPLES = 300
+function clipStepM(obstaclePts) {
+  let lenM = 0
+  for (let i = 1; i < obstaclePts.length; i++) lenM += haversineKm(obstaclePts[i - 1], obstaclePts[i]) * 1000
+  return Math.max(15, Math.round(lenM / CLIP_SAMPLES))
 }
 
 // Nur ECHT redundante Punkt-Dubletten zusammenfassen: gleiche Route + Kategorie + (normalisierte)
@@ -275,9 +268,8 @@ export async function analyze({ db, project, corridorM }) {
       // Spike. Da der Clip NUR die gerenderte Linie bestimmt (keine Bewertung/severity), die Quelle
       // vorher auf ≤300 Punkte ausdünnen — auf Karten-Zoom optisch identisch. Yield direkt davor.
       await maybeYield()
-      const clipInput = obstacleGeomForClip(obstacle.geom)
-      const geomFuerFund = clipInput
-        ? (clipGeomToCorridor(clipInput, geometry, cum, Math.max(corridorM * 3, 60)) ?? obstacle.geom)
+      const geomFuerFund = obstacle.geom
+        ? (clipGeomToCorridor(obstacle.geom, geometry, cum, Math.max(corridorM * 3, 60), { stepM: clipStepM(obstaclePts) }) ?? obstacle.geom)
         : null
       findings.push({
         obstacleId: obstacle.id,
