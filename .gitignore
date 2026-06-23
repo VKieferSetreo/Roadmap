@@ -56,3 +56,7 @@ LCL22_deutsch/
 # Playwright MCP snapshot artifacts
 .playwright-mcp/
 *.gpkg
+
+# VEMAGS-Bescheide = sensible Kundendaten, NIE committen (T-567)
+VEMAGS.pdf
+*.vemags.pdf

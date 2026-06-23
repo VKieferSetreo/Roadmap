@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Download, ExternalLink, FileDown, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Plus, Route, Upload, X } from "lucide-react"
+import { Download, ExternalLink, FileDown, FileText, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Plus, Route, Upload, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
@@ -31,17 +31,29 @@ const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: n
 // Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
 const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
 
-/** Die drei Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel. */
+/** Die Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel · VEMAGS-Bescheid. */
 const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
   { id: "link", label: "Google-Link", icon: Link2 },
   { id: "startziel", label: "Start / Ziel", icon: Navigation },
+  { id: "vemags", label: "VEMAGS-Bescheid", icon: FileText },
 ] as const
 
 const SOURCE_LABEL: Record<RouteSource, string> = {
   datei: "Datei",
   link: "Google-Link",
   startziel: "Start/Ziel",
+  vemags: "VEMAGS-Bescheid",
+}
+
+/** PDF → base64 (ohne data:-Präfix) für den serverseitigen In-memory-Parse. */
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).replace(/^data:[^,]*,/, ""))
+    reader.onerror = () => reject(reader.error ?? new Error("Datei konnte nicht gelesen werden."))
+    reader.readAsDataURL(file)
+  })
 }
 
 /** Download/Öffnen je Strecke: Google-Maps-Route (neuer Tab) oder KML (Datei).
@@ -72,6 +84,7 @@ function RouteDownloadMenu({ route }: { route: ProjectRoute }) {
 export function RouteTab({ project }: { project: Project }) {
   const addRoute = useProjectStore((s) => s.addRoute)
   const removeRoute = useProjectStore((s) => s.removeRoute)
+  const updateTransport = useProjectStore((s) => s.updateTransport)
   const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
 
   const [tab, setTab] = useState<RouteSource>("datei")
@@ -95,6 +108,8 @@ export function RouteTab({ project }: { project: Project }) {
   // #15: GeoPackage mit mehreren Strecken → Auswahl-Maske.
   const [gpkg, setGpkg] = useState<{ fileName: string; routes: GpkgRoute[] } | null>(null)
   const [gpkgBusy, setGpkgBusy] = useState(false)
+  // T-567: VEMAGS-Bescheid wird hochgeladen + serverseitig geparst (PDF nie gespeichert).
+  const [vemagsBusy, setVemagsBusy] = useState(false)
 
   const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
     // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
@@ -223,6 +238,56 @@ export function RouteTab({ project }: { project: Project }) {
     }
   }
 
+  // T-567: VEMAGS-Bescheid (PDF) → Server extrahiert Fahrtweg (Punkt 9) + Maße. Pro Fahrtwegteil
+  // eine Strecke anlegen, Maße in die Fahrzeug-Spec übernehmen. PDF wird nie gespeichert.
+  const onVemagsFile = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      toast.error("Bitte einen VEMAGS-Bescheid als PDF hochladen.")
+      return
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      toast.error("PDF zu groß (max. 12 MB).")
+      return
+    }
+    setVemagsBusy(true)
+    try {
+      const res = await api.route.vemags(await fileToBase64(file))
+      const ok = res.strecken.filter((s) => s.points.length >= 2)
+      if (ok.length === 0) {
+        toast.error("Aus dem Bescheid konnte keine Strecke rekonstruiert werden.")
+        return
+      }
+      // Maße aus dem Bescheid in die Fahrzeug-Spec übernehmen (nur extrahierte Felder).
+      const { laengeM, breiteM, hoeheM, masseT } = res.spec
+      const specPatch = {
+        ...(laengeM != null && { laenge: laengeM }),
+        ...(breiteM != null && { breite: breiteM }),
+        ...(hoeheM != null && { hoehe: hoeheM }),
+        ...(masseT != null && { gesamtgewicht: masseT }),
+      }
+      if (Object.keys(specPatch).length > 0) updateTransport(project.id, specPatch)
+      for (const s of ok) {
+        addRoute(project.id, { name: s.name, points: s.points, source: "vemags", ...(s.grob ? { grob: true } : {}) })
+      }
+      const massText = Object.keys(specPatch).length
+        ? ` · Maße übernommen (${[laengeM && `L ${laengeM} m`, breiteM && `B ${breiteM} m`, hoeheM && `H ${hoeheM} m`, masseT && `${masseT} t`].filter(Boolean).join(" · ")})`
+        : ""
+      toast.success(
+        `${ok.length} Strecke${ok.length === 1 ? "" : "n"} aus VEMAGS-Bescheid rekonstruiert${massText}. Vor der Fahrt prüfen.`,
+      )
+    } catch (err) {
+      toast.error(
+        err instanceof ApiError
+          ? err.status === 404
+            ? "Der VEMAGS-Upload ist derzeit deaktiviert."
+            : err.message
+          : "Bescheid konnte nicht verarbeitet werden.",
+      )
+    } finally {
+      setVemagsBusy(false)
+    }
+  }
+
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
@@ -292,6 +357,28 @@ export function RouteTab({ project }: { project: Project }) {
                   Laden
                 </Button>
               </div>
+            </div>
+          ) : tab === "vemags" ? (
+            <div className="flex flex-col gap-2.5">
+              <p className="text-xs text-neutral-500">
+                VEMAGS-Genehmigungsbescheid (PDF) hochladen. Der vorgeschriebene Fahrtweg (Punkt 9)
+                und die Transport-Maße werden ausgelesen, je Fahrtwegteil eine Strecke rekonstruiert
+                (über OSM nachempfunden) und die Maße in die Stammdaten übernommen. Das PDF wird nur
+                ausgewertet und nicht gespeichert.
+              </p>
+              {vemagsBusy ? (
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Bescheid wird ausgewertet …
+                </div>
+              ) : (
+                <DropZone
+                  compact
+                  label="VEMAGS-Bescheid hochladen (PDF)"
+                  hint="Der Fahrtweg wird so gut wie möglich rekonstruiert — vor der Fahrt prüfen."
+                  accept=".pdf,application/pdf"
+                  onFile={(file) => void onVemagsFile(file)}
+                />
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-1">

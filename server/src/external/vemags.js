@@ -54,7 +54,8 @@ function parseSpec(text) {
 function parseMeta(text) {
   const g = (re) => { const m = text.match(re); return m ? m[1].trim() : null }
   return {
-    bescheidVersion: g(/Bescheidversion\s+([0-9A-Za-z_]+)/),
+    // Strukturierte Bescheid-ID (z.B. 20260017547_B_03) — NICHT das lose "Bescheidversion zu …".
+    bescheidVersion: g(/Bescheidversion\s+(\d{8,}_[A-Z]_\d+)/),
     antragsteller: g(/Firma\s*:\s*(.+?)(?:\s{2,}|\n)/),
     behoerde: g(/Behörde\s*:\s*(.+?)(?:\s{2,}|\n)/),
   }

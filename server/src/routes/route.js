@@ -6,7 +6,29 @@
 import { Router } from "express"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
 import { extractMapsStops } from "../external/gmaps.js"
+import { extractPdfText } from "../external/pdfText.js"
+import { parseVemagsText } from "../external/vemags.js"
+import { resolveKnoten } from "../external/abKnoten.js"
 import { ApiError, asyncHandler } from "../util.js"
+
+// VEMAGS (T-567): ein Wegpunkt-Token → {lat,lng}. AB-Knoten zuerst über den Gazetteer (km-genau),
+// sonst Präfix strippen + Ortsteil geokodieren. Start/Ziel/Orte: PLZ+Ort (Landmark in {…} und
+// Adress-Detail nach dem Komma weglassen — verschlechtern den Geocode). geocodeOrt fällt intern
+// notfalls auf die Städte-Tabelle zurück, liefert also immer eine Koordinate (Route bleibt
+// zusammenhängend, ggf. gröber).
+const cleanOrt = (s) => String(s ?? "").replace(/\{[^}]*\}/g, "").split(",")[0].trim()
+
+async function resolvePunkt(p, { db, nominatim }) {
+  if (p.typ === "junction") {
+    const k = resolveKnoten(p.raw)
+    if (k && Number.isFinite(k.lat) && Number.isFinite(k.lng)) return { lat: k.lat, lng: k.lng, quelle: "knoten" }
+    const ort = p.raw.replace(/^(AS|AK|AD|Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\s+/i, "")
+    const g = await geocodeOrt(db, nominatim, ort)
+    return { lat: g.lat, lng: g.lng, quelle: g.provider }
+  }
+  const g = await geocodeOrt(db, nominatim, cleanOrt(p.raw))
+  return { lat: g.lat, lng: g.lng, quelle: g.provider }
+}
 
 export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch }) {
   const r = Router()
@@ -76,6 +98,67 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
       stops: stops.length,
       resolvedUrl,
     })
+  }))
+
+  /** VEMAGS-Bescheid (PDF, base64) → Fahrtweg-Strecken (1 je Fahrtwegteil) + Transport-Maße (T-567).
+   *  Der PDF-Buffer wird NUR in-memory geparst und sofort verworfen (Auflage: nie speichern).
+   *  Rückbau: FEATURE_VEMAGS=off → 404 (FE blendet den Tab dann ebenfalls aus). */
+  r.post("/vemags", asyncHandler(async (req, res) => {
+    if (process.env.FEATURE_VEMAGS === "off") throw new ApiError(404, "Nicht gefunden")
+    const b64 = typeof req.body?.pdfBase64 === "string" ? req.body.pdfBase64.replace(/^data:[^,]*,/, "") : ""
+    if (!b64) throw new ApiError(400, "pdfBase64 erforderlich")
+    let buffer = Buffer.from(b64, "base64")
+    if (buffer.length < 100 || buffer.subarray(0, 5).toString("latin1") !== "%PDF-") {
+      buffer = null
+      throw new ApiError(422, "Die hochgeladene Datei ist kein lesbares PDF.")
+    }
+
+    let text
+    try {
+      text = await extractPdfText(buffer)
+    } finally {
+      buffer = null // PDF sofort verwerfen — kein Disk/DB/Log (sensible Kundendaten).
+    }
+    const { meta, spec, strecken } = parseVemagsText(text)
+    text = null
+    if (!strecken.length) {
+      throw new ApiError(
+        422,
+        "Kein Fahrtweg (Punkt 9) im Bescheid erkannt. Ist es ein VEMAGS-Genehmigungsbescheid?",
+      )
+    }
+
+    // Je Fahrtwegteil: Wegpunkte auflösen → OSRM-Route. Geocode-Cache wärmt über die Teile hinweg.
+    const out = []
+    for (const s of strecken) {
+      const wps = []
+      const ungeloest = []
+      let grobGeocode = false
+      for (const p of s.punkte) {
+        const c = await resolvePunkt(p, { db, nominatim })
+        if (c && Number.isFinite(c.lat) && Number.isFinite(c.lng)) {
+          wps.push({ lat: c.lat, lng: c.lng })
+          if (c.quelle === "cities") grobGeocode = true // Städte-Tabelle = nur grobe Ortsschätzung
+        } else ungeloest.push(p.raw)
+      }
+      if (wps.length < 2) {
+        out.push({ name: s.name, art: s.art, istLastfahrt: s.istLastfahrt, points: [], distanzKm: 0, fehler: "Zu wenige Wegpunkte aufgelöst.", ungeloest })
+        continue
+      }
+      const route = await routeWaypoints(db, wps, { osrm }, { geocoder: "mixed", geocoderFallback: grobGeocode })
+      out.push({
+        name: s.name,
+        art: s.art,
+        istLastfahrt: s.istLastfahrt,
+        points: route.geometry,
+        distanzKm: route.distanzKm,
+        grob: route.provider.router === "fallback" || grobGeocode,
+        wegpunkte: wps.length,
+        ungeloest,
+      })
+    }
+
+    res.json({ meta, spec, strecken: out })
   }))
 
   return r

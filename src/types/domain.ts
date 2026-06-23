@@ -22,8 +22,8 @@ export interface ProjectRoute {
   grob?: boolean
 }
 
-/** Quelle, über die eine Strecke angelegt wurde (= die drei Upload-Tabs). */
-export type RouteSource = "datei" | "link" | "startziel"
+/** Quelle, über die eine Strecke angelegt wurde (= die Upload-Tabs). */
+export type RouteSource = "datei" | "link" | "startziel" | "vemags"
 
 /** Stammdaten des Transports — bestimmen, was auf der Strecke zum Problem wird. */
 export interface TransportData {

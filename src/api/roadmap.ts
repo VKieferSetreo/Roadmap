@@ -86,6 +86,31 @@ export interface RouteResult {
   resolvedUrl?: string
 }
 
+/** Ergebnis eines VEMAGS-Bescheid-Uploads (POST /api/route/vemags). */
+export interface VemagsResult {
+  meta: { bescheidVersion: string | null; antragsteller: string | null; behoerde: string | null }
+  /** Transport-Maße aus dem Bescheid (Felder null, wenn nicht extrahierbar). */
+  spec: {
+    laengeM: number | null
+    breiteM: number | null
+    hoeheM: number | null
+    masseT: number | null
+    achslastenT: number[]
+  }
+  /** Eine Strecke je Fahrtwegteil (Leer-/Lastfahrt). */
+  strecken: {
+    name: string
+    art: string
+    istLastfahrt: boolean
+    points: RoutePoint[]
+    distanzKm: number
+    grob?: boolean
+    wegpunkte?: number
+    ungeloest?: string[]
+    fehler?: string
+  }[]
+}
+
 /** Plattform-Analytics-Übersicht (GET /api/analytics/overview, nur Admin). */
 export interface AnalyticsOverview {
   onlineJetzt: number
@@ -341,6 +366,10 @@ export const api = {
     /** Wegpunkt-Koordinaten → gesnappte Strecke (Strecken-Editor, Live-Routing beim Ziehen). */
     waypoints: (points: RoutePoint[]) =>
       axiosClient<RouteResult>({ url: "/route/waypoints", method: "POST", data: { points } }),
+    /** VEMAGS-Bescheid (PDF, base64) → Fahrtweg-Strecken + Transport-Maße. PDF wird serverseitig
+     *  nur in-memory geparst und sofort verworfen (nie gespeichert). */
+    vemags: (pdfBase64: string) =>
+      axiosClient<VemagsResult>({ url: "/route/vemags", method: "POST", data: { pdfBase64 }, timeout: 60_000 }),
   },
 
   // ── Nachrichtenzentrum / Glocke ────────────────────────────────────────────
