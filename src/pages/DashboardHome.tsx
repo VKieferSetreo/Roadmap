@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn"
 export function DashboardHome() {
   const projects = useProjectStore((s) => s.projects ?? [])
   const loading = useProjectStore((s) => s.loading)
+  const seeded = useProjectStore((s) => s.seeded) // erst nach dem ersten erfolgreichen Load true
   const placeholderCount = useProjectStore((s) => s.placeholderCount)
   const loadError = useProjectStore((s) => s.loadError) // T-228
   const loadProjects = useProjectStore((s) => s.loadProjects)
@@ -196,6 +197,10 @@ export function DashboardHome() {
               }
             />
           </div>
+        ) : !seeded ? (
+          // Vor dem ersten erfolgreichen Load → nichts zeigen, damit der „Erstes Projekt"-EmptyState
+          // NICHT kurz aufblitzt, bevor das Laden überhaupt begonnen hat.
+          null
         ) : sorted.length === 0 ? (
           <div className="mt-6">
             <EmptyState

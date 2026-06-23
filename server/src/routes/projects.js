@@ -177,12 +177,20 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   // richtige Zahl Lade-Kacheln, bevor die schwere volle Liste da ist. MUSS vor "/:id" stehen.
   r.get("/count", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
-      `SELECT count(*) FILTER (WHERE archived_at IS NULL)::int AS aktiv,
-              count(*) FILTER (WHERE archived_at IS NOT NULL)::int AS archiviert
-       FROM projects WHERE tenant_id = $1`,
+      `SELECT
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL)::int AS aktiv,
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NOT NULL)::int AS archiviert,
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND folder_id IS NULL)::int AS wurzel_projekte,
+         (SELECT count(*) FROM folders WHERE tenant_id = $1 AND parent_id IS NULL)::int AS wurzel_ordner`,
       [req.ctx.tenant.id],
     )
-    res.json({ aktiv: rows[0]?.aktiv ?? 0, archiviert: rows[0]?.archiviert ?? 0 })
+    const r0 = rows[0] ?? {}
+    res.json({
+      aktiv: r0.aktiv ?? 0,
+      archiviert: r0.archiviert ?? 0,
+      // Sidebar-Baum (eingeklappt) zeigt Wurzelordner + Wurzelprojekte → genau so viele Lade-Dummies.
+      topLevel: (r0.wurzel_ordner ?? 0) + (r0.wurzel_projekte ?? 0),
+    })
   }))
 
   r.post("/", asyncHandler(async (req, res) => {

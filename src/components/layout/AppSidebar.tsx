@@ -78,6 +78,8 @@ function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle, badge }: 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const loading = useProjectStore((s) => s.loading)
+  const topLevelCount = useProjectStore((s) => s.topLevelCount)
   const openNewProject = useUiStore((s) => s.openNewProject)
   const requestNewFolder = useUiStore((s) => s.requestNewFolder)
   // Ungelesene News (reaktiv über news + seenAt) → roter Zähler am News-Nav.
@@ -155,9 +157,22 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </DropdownMenu>
         </div>
 
-        {/* Ordner kommen aus dem (schlanken, schnellen) Folder-Store → echte Ordnerstruktur sofort
-            korrekt; Projekt-Zeilen erscheinen, sobald die volle Liste da ist. */}
-        <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
+        {loading ? (
+          // YouTube-Stil: ein Lade-Dummy pro Top-Level-Eintrag (Wurzelordner + Wurzelprojekte),
+          // Vorab-Zähler vom Server → Anzahl stimmt mit dem späteren eingeklappten Baum überein.
+          topLevelCount > 0 ? (
+            <div className="flex flex-col gap-1 px-2">
+              {Array.from({ length: Math.min(topLevelCount, 16) }).map((_, i) => (
+                <div key={i} className="flex items-center gap-2 px-1 py-1.5">
+                  <div className="skeleton h-4 w-4 shrink-0 rounded" />
+                  <div className="skeleton h-3.5 flex-1 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : null
+        ) : (
+          <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
+        )}
       </nav>
 
       <div className="border-t border-neutral-100 p-3">
