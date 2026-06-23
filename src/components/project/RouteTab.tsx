@@ -124,6 +124,12 @@ export function RouteTab({ project }: { project: Project }) {
 
   const onRouteFile = async (file: File) => {
     const name = file.name.toLowerCase()
+    // T-567: PDF im Datei-Upload = VEMAGS-Bescheid → direkt in den VEMAGS-Flow (Max: „läuft unter
+    // dem File-Upload"). Der eigene VEMAGS-Tab bleibt als expliziter Weg bestehen.
+    if (name.endsWith(".pdf")) {
+      void onVemagsFile(file)
+      return
+    }
     // #15: NUR KML (eine Strecke) + GPKG (mehrere → Auswahl-Maske). Andere Formate ablehnen.
     if (name.endsWith(".gpkg")) {
       try {
@@ -139,7 +145,7 @@ export function RouteTab({ project }: { project: Project }) {
       return
     }
     if (!name.endsWith(".kml")) {
-      toast.error("Nur KML- oder GeoPackage-Dateien (.kml, .gpkg).")
+      toast.error("Nur KML-/GeoPackage-Strecken (.kml, .gpkg) oder VEMAGS-Bescheide (.pdf).")
       return
     }
     try {
@@ -337,8 +343,8 @@ export function RouteTab({ project }: { project: Project }) {
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
                   : "Streckendatei hochladen"
               }
-              hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
-              accept=".kml,.gpkg,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3"
+              hint="KML (eine Strecke), GeoPackage (.gpkg, mehrere) oder VEMAGS-Bescheid (.pdf → Fahrtweg + Maße)"
+              accept=".kml,.gpkg,.pdf,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3,application/pdf"
               onFile={(file) => void onRouteFile(file)}
             />
           ) : tab === "link" ? (
