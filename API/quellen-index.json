@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 53,
+  "anzahl": 52,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -233,17 +233,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen",
       "test": "Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen/test.sh"
-    },
-    {
-      "name": "Klassifiziertes Straßennetz Land M-V (verkehrsnetz_lsbv_wfs)",
-      "ebene": "Mecklenburg-Vorpommern",
-      "datentyp": "klassifiziertes Straßennetz (A/B/L) ASB-bezogen — KEINE GST-Restriktionen",
-      "format": "WFS / WMS",
-      "endpunkt": "https://www.geodaten-mv.de/dienste/verkehrsnetz_lsbv_wfs?service=WFS&request=GetCapabilities",
-      "lizenz": "AccessConstraints = \"Urheberrecht\" (Nutzungsbedingungen LS M-V für kommerziell prüfen)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS",
-      "test": "Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS/test.sh"
     },
     {
       "name": "Straßenbaustellen MV (WFS) — wfs_baustellenmv",

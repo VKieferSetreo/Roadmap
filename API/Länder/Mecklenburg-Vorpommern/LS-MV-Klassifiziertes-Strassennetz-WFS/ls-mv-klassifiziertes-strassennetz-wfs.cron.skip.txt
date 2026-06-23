@@ -1,1 +1,0 @@
-Klassifiziertes Straßennetz MV (Netzdaten, Knoten-Kanten + Stationierung) — KEIN Hindernis-Producer. Baustellen kommen über LS-MV-Strassenbaustellen-WFS (0119). Netzbezug nur DB-seitig zum Matching.

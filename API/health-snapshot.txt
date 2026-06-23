@@ -31,7 +31,6 @@ OK   Länder/Hamburg/WFS-Bedarfsumleitungen-Hamburg             2531 B
 OK   Länder/Hamburg/WFS-Brueckenbauwerke-Hamburg-LSBG          2304 B
 LEER Länder/Hessen/hessen-mobil-lastbeschraenkte-bruecken      (Endpunkt prüfen)
 LEER Länder/Hessen/hessen-mobil-positivkarten                  (Endpunkt prüfen)
-OK   Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS 3024 B
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS 2808 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen 4045 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-gst-routen 4021 B
@@ -74,4 +73,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 102 getestet · OK 73 · LEER 20 · 🔑 9 übersprungen
+Σ 101 getestet · OK 72 · LEER 20 · 🔑 9 übersprungen
