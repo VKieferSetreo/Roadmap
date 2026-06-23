@@ -127,13 +127,8 @@ export function RouteTab({ project }: { project: Project }) {
 
   const onRouteFile = async (file: File) => {
     const name = file.name.toLowerCase()
-    // T-567: PDF im Datei-Upload = VEMAGS-Bescheid → direkt in den VEMAGS-Flow (Max: „läuft unter
-    // dem File-Upload"). Der eigene VEMAGS-Tab bleibt als expliziter Weg bestehen.
-    if (name.endsWith(".pdf")) {
-      void onVemagsFile(file)
-      return
-    }
-    // #15: NUR KML (eine Strecke) + GPKG (mehrere → Auswahl-Maske). Andere Formate ablehnen.
+    // #15: NUR KML (eine Strecke) + GPKG (mehrere → Auswahl-Maske). VEMAGS-Bescheide (PDF) laufen
+    // bewusst NUR über den eigenen Tab „VEMAGS-Bescheid" (Max 2026-06-23), nicht hier.
     if (name.endsWith(".gpkg")) {
       try {
         const routes = await parseGpkg(file)
@@ -148,7 +143,7 @@ export function RouteTab({ project }: { project: Project }) {
       return
     }
     if (!name.endsWith(".kml")) {
-      toast.error("Nur KML-/GeoPackage-Strecken (.kml, .gpkg) oder VEMAGS-Bescheide (.pdf).")
+      toast.error("Nur KML- oder GeoPackage-Dateien (.kml, .gpkg).")
       return
     }
     try {
@@ -348,8 +343,8 @@ export function RouteTab({ project }: { project: Project }) {
                   ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
                   : "Streckendatei hochladen"
               }
-              hint="KML (eine Strecke), GeoPackage (.gpkg, mehrere) oder VEMAGS-Bescheid (.pdf → Fahrtweg + Maße)"
-              accept=".kml,.gpkg,.pdf,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3,application/pdf"
+              hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
+              accept=".kml,.gpkg,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3"
               onFile={(file) => void onRouteFile(file)}
             />
           ) : tab === "link" ? (
@@ -378,10 +373,11 @@ export function RouteTab({ project }: { project: Project }) {
           ) : tab === "vemags" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                VEMAGS-Genehmigungsbescheid (PDF) hochladen. Der vorgeschriebene Fahrtweg (Punkt 9)
-                und die Transport-Maße werden ausgelesen, je Fahrtwegteil eine Strecke rekonstruiert
-                (über OSM nachempfunden) und die Maße in die Stammdaten übernommen. Das PDF wird nur
-                ausgewertet und nicht gespeichert.
+                VEMAGS-Genehmigungsbescheid (PDF) hochladen. Der vorgeschriebene Fahrtweg und die
+                Transport-Maße werden ausgelesen, je Fahrtwegteil eine Strecke näherungsweise
+                rekonstruiert und die Maße in die Stammdaten übernommen. Das PDF wird nur ausgewertet
+                und nicht gespeichert. Je nach Dokumentenqualität kann es zu Abweichungen von der
+                Originalstrecke kommen.
               </p>
               {vemagsBusy ? (
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
@@ -399,6 +395,10 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
+              <p className="mb-1.5 text-xs text-neutral-500">
+                Start und Ziel als Ort oder Adresse eingeben — der optimale Straßenweg wird berechnet.
+                Zwischen zwei Feldern lässt sich per Plus ein Zwischenpunkt einfügen.
+              </p>
               {/* #9: Start/Ziel untereinander; Plus je Lücke fügt einen Zwischenpunkt ein. Pro Punkt
                   Ortssuche ODER Karten-Pin (genaue Position). */}
               {szPoints.map((p, i) => {
@@ -451,13 +451,14 @@ export function RouteTab({ project }: { project: Project }) {
                       ) : null}
                     </div>
                     {!isZiel ? (
-                      <div className="flex justify-center py-0.5">
+                      // Plus erscheint nur beim Hovern der Lücke zwischen zwei Punkten (bzw. Tastatur-Fokus).
+                      <div className="group flex justify-center py-1">
                         <button
                           type="button"
                           onClick={() => addViaAfter(i)}
                           disabled={szBusy}
                           title="Zwischenpunkt einfügen"
-                          className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-400 transition hover:border-primary-400 hover:text-primary-600"
+                          className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-400 opacity-0 transition hover:border-primary-400 hover:text-primary-600 focus-visible:opacity-100 group-hover:opacity-100"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
