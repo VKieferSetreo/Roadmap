@@ -49,6 +49,25 @@ function geomPoints(geom) {
   return out
 }
 
+// Quell-Geometrie eines Hindernisses für den (rein DARSTELLENDEN) Korridor-Clip ausdünnen: clip ist
+// O(Stützpunkte × Routenpunkte); sehr lange Quell-Linien (~1700 Punkte) blockierten ~2 s synchron.
+// ≤300 Punkte ist auf Karten-Zoom optisch identisch und betrifft KEINE Bewertung/severity — nur die
+// gerenderte Fund-Linie. (Das Matching selbst nutzt obstaclePts/geom unverändert.)
+const CLIP_MAX_PTS = 300
+function obstacleGeomForClip(geom) {
+  if (!geom || typeof geom !== "object") return geom
+  if (geom.type === "LineString" && Array.isArray(geom.coordinates) && geom.coordinates.length > CLIP_MAX_PTS) {
+    return { type: "LineString", coordinates: downsample(geom.coordinates, CLIP_MAX_PTS) }
+  }
+  if (geom.type === "MultiLineString" && Array.isArray(geom.coordinates)) {
+    return {
+      type: "MultiLineString",
+      coordinates: geom.coordinates.map((l) => (Array.isArray(l) && l.length > CLIP_MAX_PTS ? downsample(l, CLIP_MAX_PTS) : l)),
+    }
+  }
+  return geom
+}
+
 // Nur ECHT redundante Punkt-Dubletten zusammenfassen: gleiche Route + Kategorie + (normalisierte)
 // Bezeichnung + ko-lokalisiert (Δkm ≤ DUP_KM) = dasselbe reale Hindernis doppelt gemeldet.
 // WICHTIG: Einträge mit eigener Linien-Geometrie (geom) werden NIE zusammengefasst — das sind
@@ -251,8 +270,14 @@ export async function analyze({ db, project, corridorM }) {
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
       // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle
       // Linie, falls der Clip leer ausfällt — nie die Info ganz verlieren.
-      const geomFuerFund = obstacle.geom
-        ? (clipGeomToCorridor(obstacle.geom, geometry, cum, Math.max(corridorM * 3, 60)) ?? obstacle.geom)
+      // Perf/Stabilität: clipGeomToCorridor kostet ~ (Quell-Stützpunkte × Routenpunkte) und lief bei
+      // sehr langen Linien-Hindernissen (~1700 Punkte) ~2 s synchron = der verbliebene Event-Loop-
+      // Spike. Da der Clip NUR die gerenderte Linie bestimmt (keine Bewertung/severity), die Quelle
+      // vorher auf ≤300 Punkte ausdünnen — auf Karten-Zoom optisch identisch. Yield direkt davor.
+      await maybeYield()
+      const clipInput = obstacleGeomForClip(obstacle.geom)
+      const geomFuerFund = clipInput
+        ? (clipGeomToCorridor(clipInput, geometry, cum, Math.max(corridorM * 3, 60)) ?? obstacle.geom)
         : null
       findings.push({
         obstacleId: obstacle.id,
