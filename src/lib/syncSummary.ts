@@ -6,7 +6,6 @@
 import type { SyncJob } from "@/types/domain"
 
 export function summarizeRuns(j: SyncJob): { text: string; hasProblem: boolean } {
-  const neu = j.rerun?.benachrichtigungen ?? 0
   const importiert = j.runs.reduce((s, r) => s + (r.stats?.neu ?? 0), 0)
   const fehler = j.runs.filter((r) => r.status === "error").length
   const teil = j.runs.filter((r) => r.status === "partial").length
@@ -16,6 +15,13 @@ export function summarizeRuns(j: SyncJob): { text: string; hasProblem: boolean }
   ]
     .filter(Boolean)
     .join(", ")
+  // T-367: die Re-Analyse bekam den globalen Lock nicht (läuft schon im Hintergrund) → es gibt noch
+  // KEINE Fund-/Benachrichtigungs-Bilanz. Ehrlich sagen statt pauschalen Erfolg, aber kein Fehler.
+  if (j.rerun?.skipped) {
+    const base = `Aktualisiert · ${importiert} neue Einträge · Auswertung läuft noch im Hintergrund`
+    return { text: probleme ? `${base} · ${probleme}` : base, hasProblem: Boolean(probleme) }
+  }
+  const neu = j.rerun?.benachrichtigungen ?? 0
   const text =
     `Aktualisiert · ${importiert} neue Einträge` +
     (neu > 0 ? ` · ${neu} neue Benachrichtigung${neu === 1 ? "" : "en"}` : "") +

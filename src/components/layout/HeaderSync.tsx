@@ -130,7 +130,7 @@ export function HeaderSync() {
           onClick={() => !running && start.mutate()}
           disabled={running}
           title={running ? "Aktualisierung läuft …" : "Alle Datenquellen neu ziehen + Auswertungen aktualisieren"}
-          className="flex h-8 min-w-[190px] items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 disabled:cursor-default disabled:opacity-80"
+          className="flex h-8 items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 disabled:cursor-default disabled:opacity-80 sm:min-w-[190px]"
         >
           <RefreshCw className={cn("h-4 w-4 text-neutral-400", running && "animate-spin")} />
           <span className="hidden sm:inline">{running ? "Aktualisiere …" : "Daten aktualisieren"}</span>

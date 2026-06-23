@@ -451,6 +451,8 @@ export interface SyncJob {
     neuAusgewertet: number
     mitAenderung: number
     benachrichtigungen: number
+    /** true, wenn die Re-Analyse den globalen Lock nicht bekam (läuft schon) → Bilanz folgt asynchron (T-367). */
+    skipped?: boolean
   } | null
   runs: SyncImportRun[]
   startedAt: string

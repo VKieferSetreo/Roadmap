@@ -331,7 +331,9 @@ export function KarteTab({
       </div>
 
       {/* Rechts oben: Routen-Kennzahlen + Ebenen-Panel + Kategorien */}
-      <div className="pointer-events-none absolute right-3 top-3 z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2">
+      {/* T-244: unter lg liegt oben links die Suchleiste — den Eckdaten-/Severity-Stack darunter
+          schieben (top-[4.5rem]) statt daneben (Kollision auf dem Phone). Ab lg wieder oben rechts. */}
+      <div className="pointer-events-none absolute right-3 top-[4.5rem] z-[500] flex w-[280px] max-w-[calc(100%-1.5rem)] flex-col gap-2 lg:top-3">
         <div className="glass pointer-events-auto animate-rise-in p-3">
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1.5 text-neutral-700" title={mehrereStrecken ? "Durchschnitt je Strecke" : undefined}>
