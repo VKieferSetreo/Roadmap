@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 56,
+  "anzahl": 55,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -57,17 +57,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Sachsen/LASuV-GST-Negativkarte-PDF",
       "test": "Länder/Sachsen/LASuV-GST-Negativkarte-PDF/test.sh"
-    },
-    {
-      "name": "GeoSN INSPIRE/ATKIS Basis-DLM — Verkehrsnetze (TN)",
-      "ebene": "Sachsen",
-      "datentyp": "Verkehrsnetz-Topologie (INSPIRE TN, ATKIS Basis-DLM) — KEINE Restriktionen",
-      "format": "WFS 2.0",
-      "endpunkt": "https://geodienste.sachsen.de/aaa/public_inspire/atkis-bdlm/tn/dls/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
-      "lizenz": "dl-de/by-2.0 — Quelle \"Geodaten Sachsen\"",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS",
-      "test": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS/test.sh"
     },
     {
       "name": "Hessen Mobil — Lastbeschränkte Brücken (B/L/K) + SIB-Hessen-Online-Karte",

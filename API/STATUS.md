@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **84 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **83 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (55) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (6)
+**Legende:** 🟢 live getestet (54) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (6)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -70,7 +70,6 @@
 | 🟢 | Saarland | baustellen.saarland (LfS) — Baustellen, Sperru | Baustellen (Punkt + Linie), Ve | GeoJSON (Leaflet-Feeds | offen |
 | 🟢 | Sachsen | Baustelleninformationen Sachsen (SPERRINFOSYS) | tagesaktuelle Baustellen-Maßna | WMS 1.3.0 (GetMap/GetF | offen |
 | 🔑 | Sachsen | GDI-SBV — Geodaten der Sächs. Straßenbauverwal | Straßenbauverwaltungs-Fachdate | WFS 2.0/1.1.0 | eingeschränkt |
-| 🟢 | Sachsen | GeoSN INSPIRE/ATKIS Basis-DLM — Verkehrsnetze  | Verkehrsnetz-Topologie (INSPIR | WFS 2.0 | offen |
 | 🟢 | Sachsen | Großraum- und Schwertransporte — gesperrte Brü | Brücken mit begrenzter Tragfäh | PDF je Landkreis (8 LK | offen |
 | 🟢 | Sachsen / Dresden | Dresden — Verkehrseinschränkungen / Straßenbau | aktuelle + zukünftige Verkehrs | OGC API Features (WFS3 | offen |
 | 🟢 | Sachsen / Leipzig | Leipzig — Verkehrsraumeinschränkungen (Punkte  | aktuelle Verkehrsraumeinschrän | WFS / GeoJSON / CSV | offen |
