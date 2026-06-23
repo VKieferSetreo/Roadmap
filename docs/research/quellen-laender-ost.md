@@ -382,14 +382,6 @@
 - **verifiziert:** ja (GetCapabilities live 200, INSPIRE-Layer bestätigt)
 - **url:** `https://geomis.geoportal-th.de/geonetwork/inspire/api/records/e98cb550-e246-4b9b-8a29-49029a51f5cc`
 - **prio:** P2
-
-### 6.4 Geoproxy Thüringen / Open Data — WMS Geobasis (ALKIS/ATKIS/DOP/DGM) — **P2/P3, verifiziert (Portal)**
-- **quelle:** Geoproxy Thüringen — freie WMS/WFS opendata Geobasisdaten (TLBG)
-- **format:** WMS/WFS (z.B. DGM-WMS `…/services/DGM`) · **apiEndpunkt:** null (je Thema im Geoproxy)
-- **auth:** keine (opendata-Dienste) · **kosten:** kostenfrei · **lizenz:** dl-de/by-2.0
-- **zugang:** offen — `https://www.geoportal-th.de/de-de/Geoproxy` · Viewer `https://geoportal.thueringen.de/geoproxy`
-- **verifiziert:** ja (Geoproxy-Dienstgruppe) · **prio:** P2/P3
-- **sonstiges:** ATKIS-Bauwerke ggf. hier; nur Geometrie, KEINE Traglast.
 ---
 
 ## Querschnitt: Lücken & wichtigste Erkenntnisse

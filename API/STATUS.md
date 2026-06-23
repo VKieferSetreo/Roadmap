@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **87 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **86 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (57) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (7)
+**Legende:** 🟢 live getestet (57) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (6)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -82,7 +82,6 @@
 | 🟢 | Schleswig-Holstein | Open-Data SH — Straßenbaustellen (WFS Baustell | Straßenbaustellen (Linien + Pu | WFS 2.0.0 (GML); DATEX | offen |
 | 🟢 | Schleswig-Holstein | Umleitungsstrecken Schleswig-Holstein (WFS Bau | Umleitungsstrecken (Diversion  | WFS 2.0.0 (GML) | offen |
 | 🟡 | Thüringen | Baustelleninformationssystem Thüringen (TLBV) | aktuelle Baustellen auf Thürin | Web-App (GWT) | eingeschränkt |
-| ⚪ | Thüringen | Geoproxy Thüringen — freie WMS/WFS opendata Ge | Geobasisdaten (ALKIS/ATKIS/DOP | WMS/WFS (z.B. DGM-WMS  | offen |
 | 🟢 | Thüringen | INSPIRE TH Verkehrsnetze ATKIS Basis-DLM — Str | INSPIRE-TN-RO Straßennetz (Roa | WFS 2.0 (INSPIRE tn-ro | offen |
 | 🟢 | Thüringen | Klassifiziertes Straßennetz Thüringen (STRNETZ | klassifiziertes Straßennetz na | WFS 2.0 | offen |
 | 🟢 | Sonstige | Geofabrik Deutschland-Extrakte (.osm.pbf Bulk) | Komplettes OSM-Datenset fuer D | .osm.pbf (primaer, ~4, | offen |
