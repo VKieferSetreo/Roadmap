@@ -162,23 +162,26 @@ export function DashboardHome() {
         ) : null}
 
         {loading ? (
-          // YouTube-Stil: genau so viele Lade-Kacheln wie es echte Projekte gibt (Vorab-Zähler),
-          // Shimmer-Platzhalter; die echten Karten kommen mit der vollen Liste auf einen Schlag rein.
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: Math.min(placeholderCount || 3, 24) }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[256px] overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-card"
-              >
-                <div className="skeleton h-28 w-full rounded-t-xl" />
-                <div className="flex flex-col gap-3 p-4">
-                  <div className="skeleton h-4 w-3/4 rounded" />
-                  <div className="skeleton h-3 w-1/2 rounded" />
-                  <div className="skeleton mt-4 h-3 w-2/3 rounded" />
+          // YouTube-Stil: genau so viele Lade-Kacheln wie es echte Projekte gibt (Vorab-Zähler).
+          // NUR wenn die echte Zahl schon da UND > 0 ist — sonst nichts (kein Flackern, und der
+          // „Erstes Projekt"-EmptyState erscheint erst nach dem Laden bei wirklich 0 Projekten).
+          placeholderCount > 0 ? (
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: Math.min(placeholderCount, 24) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[256px] overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-card"
+                >
+                  <div className="skeleton h-28 w-full rounded-t-xl" />
+                  <div className="flex flex-col gap-3 p-4">
+                    <div className="skeleton h-4 w-3/4 rounded" />
+                    <div className="skeleton h-3 w-1/2 rounded" />
+                    <div className="skeleton mt-4 h-3 w-2/3 rounded" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : null
         ) : loadError && sorted.length === 0 ? (
           // T-228: Backend-Fehler NICHT als „erstes Projekt"-Onboarding tarnen (zahlender Bestandskunde).
           <div className="mt-6">

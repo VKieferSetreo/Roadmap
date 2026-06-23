@@ -78,9 +78,6 @@ function NavRow({ icon: Icon, label, active, onClick, warn, warnTitle, badge }: 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const projects = useProjectStore((s) => s.projects ?? [])
-  const loading = useProjectStore((s) => s.loading)
-  const placeholderCount = useProjectStore((s) => s.placeholderCount)
   const openNewProject = useUiStore((s) => s.openNewProject)
   const requestNewFolder = useUiStore((s) => s.requestNewFolder)
   // Ungelesene News (reaktiv über news + seenAt) → roter Zähler am News-Nav.
@@ -108,7 +105,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   const [suche, setSuche] = useState("")
-  const aktive = projects.filter((p) => !p.archiviertAm)
 
   return (
     <div className="flex h-full flex-col">
@@ -159,34 +155,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </DropdownMenu>
         </div>
 
-        {loading && projects.length === 0 ? (
-          // YouTube-Stil: so viele Lade-Zeilen wie es echte Projekte gibt (Vorab-Zähler).
-          <div className="flex flex-col gap-1 px-2">
-            {Array.from({ length: Math.min(placeholderCount || 4, 14) }).map((_, i) => (
-              <div key={i} className="flex items-center gap-2 px-1 py-1.5">
-                <div className="skeleton h-4 w-4 shrink-0 rounded" />
-                <div className="skeleton h-3.5 flex-1 rounded" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
-        )}
+        {/* Ordner kommen aus dem (schlanken, schnellen) Folder-Store → echte Ordnerstruktur sofort
+            korrekt; Projekt-Zeilen erscheinen, sobald die volle Liste da ist. */}
+        <ProjectTree query={suche} activeId={activeId} activeTab={activeTab} go={go} />
       </nav>
 
       <div className="border-t border-neutral-100 p-3">
-        {/* Bei leerer Projektliste: „Neues Projekt" hier unten (über Datenbank) statt oben. */}
-        {aktive.length === 0 ? (
-          <button
-            onClick={() => {
-              openNewProject()
-              onNavigate?.()
-            }}
-            className="mb-2 w-full rounded-lg bg-primary-600 py-2.5 text-sm font-bold text-white transition hover:bg-primary-700"
-          >
-            + Neues Projekt
-          </button>
-        ) : null}
         <NavRow
           icon={Database}
           label="Datenbank"
