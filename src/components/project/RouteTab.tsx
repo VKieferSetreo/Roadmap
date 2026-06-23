@@ -37,7 +37,7 @@ const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
   { id: "link", label: "Google-Link", icon: Link2 },
   { id: "startziel", label: "Start / Ziel", icon: Navigation },
-  { id: "vemags", label: "VEMAGS-Bescheid", icon: FileText },
+  { id: "vemags", label: "VEMAGS", icon: FileText },
 ] as const
 
 const SOURCE_LABEL: Record<RouteSource, string> = {
