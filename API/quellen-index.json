@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 57,
+  "anzahl": 56,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -68,17 +68,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS",
       "test": "Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS/test.sh"
-    },
-    {
-      "name": "Klassifiziertes Straßennetz Thüringen (STRNETZ_wfs)",
-      "ebene": "Thüringen",
-      "datentyp": "klassifiziertes Straßennetz nach ASB (A/B/L), Netzknoten, Nullpunkte, Euronetz — KEINE GST-Restriktionen",
-      "format": "WFS 2.0",
-      "endpunkt": "https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?service=WFS&request=GetCapabilities",
-      "lizenz": "dl-de/by-2.0 — Quelle \"© GDI-Th\"",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Thüringen/Geoproxy-TH-Klassif-Strassennetz-WFS",
-      "test": "Länder/Thüringen/Geoproxy-TH-Klassif-Strassennetz-WFS/test.sh"
     },
     {
       "name": "Hessen Mobil — Lastbeschränkte Brücken (B/L/K) + SIB-Hessen-Online-Karte",

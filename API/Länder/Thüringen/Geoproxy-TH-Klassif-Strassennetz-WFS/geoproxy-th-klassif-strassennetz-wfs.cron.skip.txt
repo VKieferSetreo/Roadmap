@@ -1,1 +1,0 @@
-Geoproxy TH Klassifiziertes Straßennetz — Netzdaten (Knoten-Kanten), kein Hindernis-Producer.

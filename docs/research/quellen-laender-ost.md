@@ -347,25 +347,6 @@
 - **verifiziert:** zu-bestätigen (App existiert, CAPTCHA blockiert API)
 - **url:** `https://baustelleninfo.thueringen.de/` · `https://bau-verkehr.thueringen.de/verkehr/strassenverkehr/baustellen`
 - **prio:** P2
-
-### 6.2 TLBV / Geoproxy — Klassifiziertes Straßennetz (WFS) — **P1, verifiziert**
-- **quelle:** Klassifiziertes Straßennetz Thüringen (`STRNETZ_wfs`)
-- **betreiber:** TLBV (Daten); GDI-Th / Thür. Ministerium für Digitales und Infrastruktur (Dienst)
-- **datentyp:** klassifiziertes Straßennetz nach ASB (A/B/L), Netzknoten, Nullpunkte, Euronetz
-- **strassentyp:** A/B/L (ASB-Netz)
-- **format:** WFS 2.0
-- **apiEndpunkt (verifiziert, HTTP 200):**
-  - `https://www.geoproxy.geoportal-th.de/geoproxy/services/STRNETZ_wfs?service=WFS&request=GetCapabilities`
-  - **Layer (live bestätigt):** `tlbv:Klassifiz_StrNetz`, `tlbv:Euronetz_StrNetz`, `tlbv:Netzknoten_StrNetz`, `tlbv:Nullpunkte_StrNetz`
-- **update:** n/a (lt. Metadaten unspezifiziert)
-- **auth:** keine · **kosten:** kostenlos
-- **lizenz:** **dl-de/by-2.0** — Quelle „© GDI-Th"
-- **abdeckung:** Freistaat Thüringen
-- **zugang:** offen
-- **verifiziert:** ja (GetCapabilities live 200, Layer bestätigt)
-- **url:** `https://geomis.geoportal-th.de/geonetwork/srv/api/records/468059de-07f6-4510-8920-aedb9feb319e`
-- **prio:** P1
-- **sonstiges:** ASB-Netz als Anker für Stationierung/Matching (analog BASt-BISStra). KEINE GST-Restriktionen.
 ---
 
 ## Querschnitt: Lücken & wichtigste Erkenntnisse
