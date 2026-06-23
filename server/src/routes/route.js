@@ -18,15 +18,48 @@ import { ApiError, asyncHandler } from "../util.js"
 // zusammenhängend, ggf. gröber).
 const cleanOrt = (s) => String(s ?? "").replace(/\{[^}]*\}/g, "").split(",")[0].trim()
 
-async function resolvePunkt(p, { db, nominatim }) {
+// VEMAGS-Geocoder: in Prod ist der reguläre `nominatim` (NOMINATIM_URL) absichtlich aus (T-338,
+// Personenbezug bei freien Routen). VEMAGS-Wegpunkte sind aber Straßen-/Ortsnamen aus einem
+// amtlichen Bescheid (Behördenquelle → OSM-OK, Max 2026-06-23) und brauchen präzise Koordinaten.
+// Daher derselbe öffentliche, DE-beschränkte Nominatim-Pfad wie der /api/geocode/search-Proxy —
+// gedrosselt auf ~1 Req/s (OSM-Nutzungsrichtlinie) und über geocodeOrt im geocode_cache gepuffert.
+function makePublicGeocoder(fetchImpl) {
+  let lastCall = 0
+  return {
+    async geocode(ort) {
+      const wait = 1100 - (Date.now() - lastCall)
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait))
+      lastCall = Date.now()
+      try {
+        const url =
+          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=de&accept-language=de&q=" +
+          encodeURIComponent(ort)
+        const res = await fetchImpl(url, {
+          headers: { "User-Agent": "roadmap-geocode/1.0 (+https://setreo-cloud.com)", Accept: "application/json" },
+          signal: AbortSignal.timeout(8000),
+        })
+        const data = await res.json()
+        const hit = Array.isArray(data) ? data[0] : null
+        if (!hit) return null
+        const lat = Number(hit.lat)
+        const lng = Number(hit.lon)
+        return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng, displayName: hit.display_name ?? ort } : null
+      } catch {
+        return null
+      }
+    },
+  }
+}
+
+async function resolvePunkt(p, { db, geo }) {
   if (p.typ === "junction") {
     const k = resolveKnoten(p.raw)
     if (k && Number.isFinite(k.lat) && Number.isFinite(k.lng)) return { lat: k.lat, lng: k.lng, quelle: "knoten" }
     const ort = p.raw.replace(/^(AS|AK|AD|Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\s+/i, "")
-    const g = await geocodeOrt(db, nominatim, ort)
+    const g = await geocodeOrt(db, geo, ort)
     return { lat: g.lat, lng: g.lng, quelle: g.provider }
   }
-  const g = await geocodeOrt(db, nominatim, cleanOrt(p.raw))
+  const g = await geocodeOrt(db, geo, cleanOrt(p.raw))
   return { lat: g.lat, lng: g.lng, quelle: g.provider }
 }
 
@@ -128,6 +161,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
       )
     }
 
+    // Self-hosted Nominatim bevorzugen (falls je gesetzt), sonst öffentliches DE-Nominatim.
+    const geo = nominatim ?? makePublicGeocoder(fetchImpl)
+
     // Je Fahrtwegteil: Wegpunkte auflösen → OSRM-Route. Geocode-Cache wärmt über die Teile hinweg.
     const out = []
     for (const s of strecken) {
@@ -135,7 +171,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
       const ungeloest = []
       let grobGeocode = false
       for (const p of s.punkte) {
-        const c = await resolvePunkt(p, { db, nominatim })
+        const c = await resolvePunkt(p, { db, geo })
         if (c && Number.isFinite(c.lat) && Number.isFinite(c.lng)) {
           wps.push({ lat: c.lat, lng: c.lng })
           if (c.quelle === "cities") grobGeocode = true // Städte-Tabelle = nur grobe Ortsschätzung
