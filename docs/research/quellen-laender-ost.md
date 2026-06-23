@@ -178,11 +178,6 @@
 - **url:** `https://www.geoportal-mv.de/portal/Geowebdienste/Fachthemen/Verkehr` · Metadaten: `…/Details/Stra%C3%9Fenbaustellen%20MV%20(WFS)/097ce665-0ec2-41d8-abb5-bda4f59deaeb`
 - **prio:** P1
 - **sonstiges:** **Technisch beste MV-Direktquelle** für Baustellen. „Urheberrecht" = Lizenz für kommerziell vor Nutzung klären (LS M-V: lsmv@sbv.mv-regierung.de).
-### 3.4 Open Data MV (MetaVer) / Verkehrsinformationen LS M-V — **P3, verifiziert (Portal)**
-- **quelle:** „Verkehrsinformationen LS M-V" (Themenkarte) + Open-Data MV via MetaVer
-- **format:** Portal/Themenkarte + OGC-Dienste · **apiEndpunkt:** null
-- **zugang:** offen — `https://metaver.de/` · Themenkarte `…/Themenkarten/Details?id=4`
-- **verifiziert:** ja (Portal) · **prio:** P3
 ---
 
 # 4. SACHSEN
