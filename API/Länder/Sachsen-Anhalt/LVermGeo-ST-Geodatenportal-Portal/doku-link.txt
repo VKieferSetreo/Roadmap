@@ -1,4 +1,0 @@
-Portal-Quelle — exakte WFS/ATOM-URL je Dienst in OpenData-Rubrik auflösen:
-GDP Open Data LVermGeo ST: https://www.lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html
-Geodatenportal ST: https://geodatenportal.sachsen-anhalt.de/
-Nutzungsbedingungen: https://www.lvermgeo.sachsen-anhalt.de/de/nutzungsbedingungen.html

@@ -1,1 +1,0 @@
-LVermGeo ST Geodatenportal — Geobasis-/Katalogportal, kein Producer. ST-Sperrungen/Baustellen kommen offen über LSBB-Sperrinfo (0120).

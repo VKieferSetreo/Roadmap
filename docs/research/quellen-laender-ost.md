@@ -298,16 +298,6 @@
 - **verifiziert:** ja (GetCapabilities live 200)
 - **url:** `https://www.lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html`
 - **prio:** P2 · **sonstiges:** Netzgeometrie; Bauwerke (ATKIS, seit 05/2024 LoD2/CityGML) separat über GDP. KEINE Traglast.
-
-### 5.3 LVermGeo ST — Geodatenportal / Open Data (Bauwerke, Basis-DLM, ATOM) — **P2, verifiziert (Portal)**
-- **quelle:** Geodatenportal Sachsen-Anhalt (LVermGeo) — Open-Data-Rubrik
-- **datentyp:** ATKIS-Bauwerke (Brücken-Geometrie), Basis-DLM, weitere Geobasis
-- **format:** WFS 2.0 / ATOM-Download / WMS · **apiEndpunkt:** null (je Dienst in OpenData-Rubrik wählen; viele Nicht-OpenData-Dienste sind 403)
-- **auth:** keine (OpenData) · **kosten:** kostenfrei (OpenData) · **lizenz:** dl-de/by-2.0 („© GeoBasis-DE/LVermGeo LSA")
-- **zugang:** offen (OpenData-Rubrik) — `https://www.lvermgeo.sachsen-anhalt.de/de/gdp-open-data.html`
-- **verifiziert:** zu-bestätigen (Portal ja; exakte Bauwerks-WFS-URL auflösen) · **prio:** P2
-- **sonstiges:** Bauwerks-WFS = nur Geometrie/Identität, KEINE Traglast/Brückenklasse.
-
 ### 5.4 Mobilithek / DATEX-II + Open Data ST (MetaVer) — **P1 Feed / P3 Portal, verifiziert**
 - **quelle:** Mobilithek (DATEX-II ST-Baustellen, RSA-21-Meldepflicht seit 01.01.2026) + Open-Data ST via MetaVer
 - **format:** DATEX II (SOAP/Pull) bzw. Portal · **apiEndpunkt:** null (Registrierung + Zertifikat)

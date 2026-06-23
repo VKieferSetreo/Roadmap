@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 55,
+  "anzahl": 54,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -288,17 +288,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Sachsen-Anhalt/LVermGeo-ST-INSPIRE-Verkehrsnetze-WFS",
       "test": "Länder/Sachsen-Anhalt/LVermGeo-ST-INSPIRE-Verkehrsnetze-WFS/test.sh"
-    },
-    {
-      "name": "Geodatenportal Sachsen-Anhalt (LVermGeo) — Open-Data-Rubrik",
-      "ebene": "Sachsen-Anhalt",
-      "datentyp": "ATKIS-Bauwerke (Brücken-Geometrie), Basis-DLM, weitere Geobasis — KEINE Traglast",
-      "format": "WFS 2.0 / ATOM-Download / WMS",
-      "endpunkt": "https://geodatenportal.sachsen-anhalt.de/ows_INSPIRE_LVermGeo_ATKIS_TN_WFS?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=tn-ro:RoadLink&COUNT=1   (INSPIRE-WFS ST Verkehrsnetze ATKIS Basis-DLM; GML 3.2.1)",
-      "lizenz": "dl-de/by-2.0 (\"© GeoBasis-DE/LVermGeo LSA\")",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal",
-      "test": "Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal/test.sh"
     },
     {
       "name": "Detailnetz Berlin — Ingenieurbauwerke (Brücken, Tunnel)",

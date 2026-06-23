@@ -56,7 +56,6 @@ OK   Länder/Rheinland-Pfalz/lbm-rlp-bruecken-gst               4000 B
 OK   Länder/Rheinland-Pfalz/mobilitaetsatlas-rlp-baustellen    3994 B
 OK   Länder/Saarland/baustellen-saarland-lfs                   4000 B
 OK   Länder/Sachsen-Anhalt/LSBB-Sperrinfo-WFS                  1035 B
-OK   Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal   2368 B
 OK   Länder/Sachsen-Anhalt/LVermGeo-ST-INSPIRE-Verkehrsnetze-WFS 3274 B
 OK   Länder/Sachsen/LASuV-Baustellen-WMS                       3980 B
 LEER Länder/Sachsen/LASuV-GST-Negativkarte-PDF                 (Endpunkt prüfen)
@@ -76,4 +75,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 104 getestet · OK 75 · LEER 20 · 🔑 9 übersprungen
+Σ 103 getestet · OK 74 · LEER 20 · 🔑 9 übersprungen
