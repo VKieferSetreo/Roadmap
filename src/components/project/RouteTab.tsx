@@ -32,12 +32,12 @@ const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: n
 // Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
 const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
 
-/** Die Strecken-Quellen (= Tabs). Reihenfolge: Datei · Google-Link · Start/Ziel · VEMAGS-Bescheid. */
+/** Die Strecken-Quellen (= Tabs). Reihenfolge (Max): Datei · VEMAGS · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
+  { id: "vemags", label: "VEMAGS", icon: FileText },
   { id: "link", label: "Google-Link", icon: Link2 },
   { id: "startziel", label: "Start / Ziel", icon: Navigation },
-  { id: "vemags", label: "VEMAGS", icon: FileText },
 ] as const
 
 const SOURCE_LABEL: Record<RouteSource, string> = {
@@ -338,15 +338,14 @@ export function RouteTab({ project }: { project: Project }) {
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                Streckendatei hochladen. Unterstützt werden KML (eine Strecke) und GeoPackage (.gpkg,
-                mehrere zur Auswahl). Die enthaltene Strecke wird 1:1 übernommen und dabei nicht
-                optimiert oder verändert.
+                Streckendatei hochladen. KML enthält eine Strecke, GeoPackage (.gpkg) mehrere zur
+                Auswahl. Die geladene Strecke wird 1:1 übernommen und nicht optimiert oder verändert.
               </p>
               <DropZone
                 compact
                 label={
                   project.routes.length > 0
-                    ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
+                    ? "Weitere Strecke hochladen"
                     : "Streckendatei hochladen"
                 }
                 hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
@@ -381,11 +380,9 @@ export function RouteTab({ project }: { project: Project }) {
           ) : tab === "vemags" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                VEMAGS-Genehmigungsbescheid (PDF) hochladen. Der vorgeschriebene Fahrtweg und die
-                Transport-Maße werden ausgelesen, je Fahrtwegteil eine Strecke näherungsweise
-                rekonstruiert und die Maße in die Stammdaten übernommen. Das PDF wird nur ausgewertet
-                und nicht gespeichert. Je nach Dokumentenqualität kann es zu Abweichungen von der
-                Originalstrecke kommen.
+                VEMAGS-Genehmigungsbescheid hochladen. Fahrtweg und Maße werden ausgelesen und je
+                Fahrtwegteil als Strecke rekonstruiert; das PDF wird nicht gespeichert. Je nach
+                Dokumentenqualität sind Abweichungen von der Originalstrecke möglich.
               </p>
               {vemagsBusy ? (
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
@@ -394,7 +391,7 @@ export function RouteTab({ project }: { project: Project }) {
               ) : (
                 <DropZone
                   compact
-                  label="VEMAGS-Bescheid hochladen (PDF)"
+                  label="VEMAGS-Bescheid hochladen"
                   hint="Der Fahrtweg wird basierend auf den Rohdaten rekonstruiert und kann Fehler aufweisen."
                   accept=".pdf,application/pdf"
                   onFile={(file) => void onVemagsFile(file)}
