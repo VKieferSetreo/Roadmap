@@ -302,12 +302,6 @@ export function RouteTab({ project }: { project: Project }) {
     toast.success(
       `${ok.length} Strecke${ok.length === 1 ? "" : "n"} aus VEMAGS-Bescheid rekonstruiert${massText}. Vor der Fahrt prüfen.`,
     )
-    const nUngeloest = ok.reduce((n, s) => n + (s.ungeloest?.length ?? 0), 0)
-    if (nUngeloest > 0) {
-      toast.warning(
-        `${nUngeloest} Wegpunkt${nUngeloest === 1 ? "" : "e"} konnten nicht eindeutig verortet werden und wurden übersprungen — die Strecke ist an diesen Stellen gröber.`,
-      )
-    }
     setVemags(null)
   }
 

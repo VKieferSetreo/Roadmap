@@ -76,7 +76,6 @@ export function VemagsRouteSelectDialog({
             {strecken.map((s, i) => {
               const ladefehler = s.points.length < 2
               const on = selected.has(i)
-              const nUngeloest = s.ungeloest?.length ?? 0
               return (
                 <li key={i}>
                   <button
@@ -119,7 +118,6 @@ export function VemagsRouteSelectDialog({
                         {ladefehler
                           ? (s.fehler ?? "Nicht rekonstruierbar.")
                           : `ca. ${Math.round(s.distanzKm)} km · ${s.wegpunkte ?? s.points.length} Wegpunkte` +
-                            (nUngeloest > 0 ? ` · ${nUngeloest} übersprungen` : "") +
                             (s.grob ? " · grobe Schätzung" : "")}
                       </span>
                     </span>
