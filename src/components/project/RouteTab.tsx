@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Download, ExternalLink, FileDown, FileText, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Plus, Route, Upload, X } from "lucide-react"
+import { Download, ExternalLink, FileDown, FileText, Flag, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Play, Plus, Route, Upload, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
@@ -336,22 +336,30 @@ export function RouteTab({ project }: { project: Project }) {
           {/* Quellen-Inhalt mit moderater Mindesthöhe → kein Springen beim Tab-Wechsel; oben ausgerichtet */}
           <div className="flex min-h-[116px] flex-col justify-start">
           {tab === "datei" ? (
-            <DropZone
-              compact
-              label={
-                project.routes.length > 0
-                  ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
-                  : "Streckendatei hochladen"
-              }
-              hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
-              accept=".kml,.gpkg,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3"
-              onFile={(file) => void onRouteFile(file)}
-            />
+            <div className="flex flex-col gap-2.5">
+              <p className="text-xs text-neutral-500">
+                Streckendatei hochladen — KML (eine Strecke) oder GeoPackage (.gpkg, mehrere zur
+                Auswahl). Die enthaltene Strecke wird 1:1 übernommen; es wird nichts optimiert oder
+                verändert.
+              </p>
+              <DropZone
+                compact
+                label={
+                  project.routes.length > 0
+                    ? "Weitere Strecke hochladen (z.B. Rückfahrt)"
+                    : "Streckendatei hochladen"
+                }
+                hint="KML (eine Strecke) oder GeoPackage (.gpkg, mehrere Strecken zur Auswahl)"
+                accept=".kml,.gpkg,application/vnd.google-earth.kml+xml,application/geopackage+sqlite3"
+                onFile={(file) => void onRouteFile(file)}
+              />
+            </div>
           ) : tab === "link" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                Google-Maps-Routenlink einfügen (Wegbeschreibung mit Start und Ziel). Der Link wird
-                aufgelöst und der optimale Straßenweg berechnet.
+                Google-Maps-Routenlink (Wegbeschreibung mit Start und Ziel) einfügen. Die im Link
+                hinterlegte Strecke wird 1:1 übernommen — inklusive aller gesetzten Zwischenstopps.
+                Es wird nichts optimiert oder verändert.
               </p>
               <div className="flex gap-2">
                 <Input
@@ -396,8 +404,9 @@ export function RouteTab({ project }: { project: Project }) {
           ) : (
             <div className="flex flex-col gap-1">
               <p className="mb-1.5 text-xs text-neutral-500">
-                Start und Ziel als Ort oder Adresse eingeben — der optimale Straßenweg wird berechnet.
-                Zwischen zwei Feldern lässt sich per Plus ein Zwischenpunkt einfügen.
+                Start und Ziel als Ort oder Adresse eingeben; die Route wird über das Straßennetz
+                berechnet und als Strecke angelegt. Zwischen zwei Feldern erscheint beim Überfahren
+                ein Plus, mit dem sich ein Zwischenpunkt einfügen lässt.
               </p>
               {/* #9: Start/Ziel untereinander; Plus je Lücke fügt einen Zwischenpunkt ein. Pro Punkt
                   Ortssuche ODER Karten-Pin (genaue Position). */}
@@ -412,13 +421,13 @@ export function RouteTab({ project }: { project: Project }) {
                 return (
                   <div key={p.id}>
                     <div className="flex items-center gap-2">
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "h-2.5 w-2.5 shrink-0 rounded-full",
-                          isStart ? "bg-emerald-500" : isZiel ? "bg-red-500" : "bg-amber-400",
-                        )}
-                      />
+                      {isStart ? (
+                        <Play aria-hidden className="h-3.5 w-3.5 shrink-0 fill-neutral-900 text-neutral-900" />
+                      ) : isZiel ? (
+                        <Flag aria-hidden className="h-3.5 w-3.5 shrink-0 fill-neutral-900 text-neutral-900" />
+                      ) : (
+                        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-neutral-400" />
+                      )}
                       <PlaceAutocomplete
                         className="flex-1"
                         value={p.label}
@@ -451,14 +460,19 @@ export function RouteTab({ project }: { project: Project }) {
                       ) : null}
                     </div>
                     {!isZiel ? (
-                      // Plus erscheint nur beim Hovern der Lücke zwischen zwei Punkten (bzw. Tastatur-Fokus).
-                      <div className="group flex justify-center py-1">
+                      // Lücke standardmäßig zusammengezogen; beim Überfahren öffnet sie sich, ein Trenner-
+                      // Strich erscheint und das Plus zum Einfügen eines Zwischenpunkts wird sichtbar.
+                      <div className="group relative flex h-2 items-center justify-center transition-all duration-150 hover:h-9">
+                        <span
+                          aria-hidden
+                          className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-neutral-200 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                        />
                         <button
                           type="button"
                           onClick={() => addViaAfter(i)}
                           disabled={szBusy}
                           title="Zwischenpunkt einfügen"
-                          className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-400 opacity-0 transition hover:border-primary-400 hover:text-primary-600 focus-visible:opacity-100 group-hover:opacity-100"
+                          className="relative z-10 flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-neutral-300 bg-white text-neutral-500 opacity-0 transition duration-150 hover:border-neutral-500 hover:text-neutral-800 focus-visible:opacity-100 group-hover:opacity-100"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
