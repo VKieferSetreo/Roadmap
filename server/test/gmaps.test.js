@@ -109,4 +109,51 @@ describe("extractMapsStops", () => {
       { lat: 50.9944656, lng: 8.3114803 },
     ])
   })
+
+  it("strukturiert NUR Start+Ziel (keine Vias) → 2 präzise Koordinaten statt Namen-Geocoding", async () => {
+    const url =
+      "https://www.google.de/maps/dir/Aachen/K%C3%B6ln/@50.8,6.5,10z/data=!4m14!4m13" +
+      "!1m5!1m1!1s0x0:0x0!2m2!1d6.0838868!2d50.7753455!1m5!1m1!1s0x0:0x0!2m2!1d6.9602786!2d50.937531!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([{ lat: 50.7753455, lng: 6.0838868 }, { lat: 50.937531, lng: 6.9602786 }])
+  })
+
+  it("gemischter Pfad (Name + Koordinate) + strukturierter Blob → strukturierte Wegpunkte gewinnen", async () => {
+    const url =
+      "https://www.google.com/maps/dir/Dortmund/51.5,7.5/Hamm/@51.5,7.6,10z/data=!4m20!4m19" +
+      "!1m5!1m1!1s0x0:0x0!2m2!1d7.4653!2d51.5136!1m2!1d7.55!2d51.52!1m5!1m1!1s0x0:0x0!2m2!1d7.815!2d51.6739!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([
+      { lat: 51.5136, lng: 7.4653 },
+      { lat: 51.52, lng: 7.55 },
+      { lat: 51.6739, lng: 7.815 },
+    ])
+  })
+
+  it("strukturierte Koordinaten WENIGER als Pfad-Namen → vollständige Pfad-Namen (kein Stopp-Verlust)", async () => {
+    // Defensiv: hätte der Blob nur Start+Ziel als Koord, aber der Pfad 3 benannte Stopps,
+    // würden wir mit den Strukturkoordinaten den mittleren Stopp verlieren → lieber Namen.
+    const url =
+      "https://www.google.com/maps/dir/Bonn/Siegburg/Köln/@50.8,7.1,11z/data=!4m14!4m13" +
+      "!1m5!1m1!1s0x0:0x0!2m2!1d7.0982!2d50.7374!1m5!1m1!1s0x0:0x0!2m2!1d6.9603!2d50.9375!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([{ name: "Bonn" }, { name: "Siegburg" }, { name: "Köln" }])
+  })
+
+  it("?api=1 mit Ortsnamen (statt Koordinaten) → Namen zum Geokodieren", async () => {
+    const url =
+      "https://www.google.com/maps/dir/?api=1&origin=Aachen&waypoints=D%C3%BCren%7CK%C3%B6ln&destination=Bonn"
+    const { stops } = await extractMapsStops(url)
+    expect(stops).toEqual([{ name: "Aachen" }, { name: "Düren" }, { name: "Köln" }, { name: "Bonn" }])
+  })
+
+  it("lat/lng-Reihenfolge: strukturiert !1d=lng !2d=lat (NICHT vertauscht)", async () => {
+    // Wäre 1d/2d vertauscht, läge der Punkt bei lat 6.96 (Golf von Guinea) statt in Köln.
+    const url =
+      "https://www.google.com/maps/dir/A/B/data=!4m14!4m13!1m5!1m1!1s0x0:0x0!2m2!1d6.96!2d50.94" +
+      "!1m5!1m1!1s0x0:0x0!2m2!1d8.68!2d50.11!3e0"
+    const { stops } = await extractMapsStops(url)
+    expect(stops[0]).toEqual({ lat: 50.94, lng: 6.96 })
+    expect(stops[1]).toEqual({ lat: 50.11, lng: 8.68 })
+  })
 })

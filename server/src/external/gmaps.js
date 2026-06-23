@@ -122,7 +122,10 @@ function parseStops(finalUrl) {
     const structured = [...finalUrl.matchAll(/!(?:1m2|2m2)!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
       .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
       .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
-    if (structured.length >= 2) return structured
+    // Strukturierte Koordinaten nur dann als autoritativ nehmen, wenn sie MINDESTENS so viele
+    // Stopps liefern wie die Pfad-Namen — sonst (z.B. ein Pfad-Stopp ohne aufgelöste Koordinate
+    // im Blob) lieber die vollständigen Pfad-Namen, um keinen Stopp zu verlieren.
+    if (structured.length >= 2 && structured.length >= nameStops.length) return structured
     // (B) Fallback für einfachere Links OHNE strukturierten Blob: bare !1d!2d. Der data=-Blob kann
     //     hier ZUSÄTZLICHE !1d!2d (Karten-Mitte/Viewport/POI) tragen → mehr Koordinaten als echte
     //     Wegpunkte. Darum bare-Koordinaten NUR bei exakter Anzahl-Übereinstimmung mit den
