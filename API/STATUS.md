@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **82 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **81 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (53) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (6)
+**Legende:** 🟢 live getestet (52) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (6)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -43,7 +43,6 @@
 | ⚪ | Hessen | Hessen Mobil — Positivkarten GST (Gewichts-/Hö | GST-befahrbare Strecken nach G | PDF-Karten (je Landkre | offen |
 | 🟡 | Hessen / Frankfurt | Frankfurt am Main — Straßenverkehrsamt / IGLZ | Baustellen, Verkehrsmeldungen, | WFS 1.1.0 (GeoServer p | offen |
 | ⚪ | Mecklenburg-Vorpommern | "Verkehrsinformationen LS M-V" (Themenkarte) + | Verkehrsinformationen (Themenk | Portal/Themenkarte + O | offen |
-| 🟢 | Mecklenburg-Vorpommern | INSPIRE-WFS MV Verkehrsnetze ATKIS Basis-DLM + | Verkehrsnetz-Topologie (INSPIR | WFS 2.0 (GML) | offen |
 | 🟢 | Mecklenburg-Vorpommern | Klassifiziertes Straßennetz Land M-V (verkehrs | klassifiziertes Straßennetz (A | WFS / WMS | offen |
 | 🟢 | Mecklenburg-Vorpommern | Straßenbaustellen MV (WFS) — wfs_baustellenmv | verkehrseinschränkende Baustel | WFS 1.0/1.1/2.0 | offen |
 | 🟢 | Mecklenburg-Vorpommern / Rostock | Rostock — Baustellen (OpenData.HRO) | Baustellen Stadtgebiet Rostock | GeoJSON / WFS / WMS /  | offen |

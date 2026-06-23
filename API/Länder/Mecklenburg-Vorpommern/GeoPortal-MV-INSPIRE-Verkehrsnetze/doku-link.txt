@@ -1,5 +1,0 @@
-Portal-Quelle — exakte WFS-Dienst-URL über GeoPortal.MV CapabilitiesViewer auflösen (Metadaten bestätigt, raw URL offen):
-CapabilitiesViewer: https://www.geoportal-mv.de/portal/Geowebdienste/CapabilitiesViewer
-Datenübersicht: https://www.geoportal-mv.de/portal/Geodatenviewer/Datenuebersicht
-Metadaten-ID INSPIRE TN: 495d1f90-4b52-438f-9a0a-7f8d9de548f3
-Kontakt: geodatenservice@laiv-mv.de

@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 54,
+  "anzahl": 53,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -244,17 +244,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS",
       "test": "Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS/test.sh"
-    },
-    {
-      "name": "INSPIRE-WFS MV Verkehrsnetze ATKIS Basis-DLM + WFS Basis-DLM NAS-konform",
-      "ebene": "Mecklenburg-Vorpommern",
-      "datentyp": "Verkehrsnetz-Topologie (INSPIRE TN), Basis-DLM (~70 Objektarten inkl. Straßen, Bahn, Wasser) — KEINE Traglast",
-      "format": "WFS 2.0 (GML)",
-      "endpunkt": "https://www.geodaten-mv.de/dienste/inspire_tn_atkis_bdlm_download?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=tn-ro:RoadLink&COUNT=1   (INSPIRE TN Download-WFS; FeatureType tn-ro:RoadLink; GML 3.2.1)",
-      "lizenz": "dl-de/by-2.0 (Geobasis MV)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Mecklenburg-Vorpommern/GeoPortal-MV-INSPIRE-Verkehrsnetze",
-      "test": "Länder/Mecklenburg-Vorpommern/GeoPortal-MV-INSPIRE-Verkehrsnetze/test.sh"
     },
     {
       "name": "Straßenbaustellen MV (WFS) — wfs_baustellenmv",
