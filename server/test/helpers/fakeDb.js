@@ -152,6 +152,14 @@ export function createFakeDb() {
       return ok([{ n: state.members.filter((m) => m.tenant_id === params[0]).length }])
     }
     if (sql.startsWith("INSERT INTO tenant_members (tenant_id, email, role)")) {
+      // T-420: tenant_members.email ist global UNIQUE (002_v2.sql:19) — fakeDb modelliert das jetzt
+      // (wie seat_codes.code unten), damit der 23505→409-Catch im Redeem-Pfad (seatCodes.js:143)
+      // überhaupt testbar ist. Vorher pushte fakeDb unbedingt → die Race-Branch war blind.
+      if (state.members.some((m) => m.email === params[1])) {
+        const e = new Error("fakeDb: unique violation tenant_members_email")
+        e.code = "23505"
+        throw e
+      }
       state.members.push({
         tenant_id: params[0], email: params[1], role: params[2] ?? "user", created_at: now(),
       })

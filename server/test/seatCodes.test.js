@@ -78,6 +78,23 @@ describe("seatCodes — Generierung + Einlösung end-to-end", () => {
     expect(second.status).toBe(409)
   })
 
+  it("Cross-Tenant-Race: 23505 beim Member-INSERT → 409 (Catch-Branch, T-420)", async () => {
+    // Deckt den bisher blinden Race-Pfad seatCodes.js:143-150 ab: zwei Redeems derselben Mail
+    // rasen parallel am Read-Check (getTenantForEmail) vorbei, dann kollidiert der zweite INSERT
+    // am globalen email-UNIQUE → 23505 → muss als 409 (nicht 500) gemeldet werden.
+    const { app, db } = makeApp({ requireAuth: true })
+    const b = db.seedTenant({ slug: "racecorp", name: "RaceCorp" })
+    await asAdmin(request(app).patch(`/api/admin/tenants/${b.id}/license`)).send({ maxSeats: 1 })
+    const gb = await asAdmin(request(app).post(`/api/admin/tenants/${b.id}/seat-codes`)).send({})
+    // Race deterministisch: ein tenant_members-Eintrag für die Mail existiert schon, aber zu einem
+    // Tenant, den getTenantForEmail (JOIN tenants) NICHT sieht (Waise) → der Read-Check verfehlt,
+    // der globale UNIQUE schlägt erst am INSERT zu → exakt der Catch-Branch.
+    db.state.members.push({ tenant_id: "ghost", email: "race@x.de", role: "user", created_at: new Date().toISOString() })
+    const res = await asExtern(request(app).post("/api/account/redeem-seat"), "race@x.de")
+      .send({ code: gb.body.codes[0].code })
+    expect(res.status).toBe(409)
+  })
+
   it("GET seat-codes liefert Lizenz + Codes (Backoffice-Lesepfad)", async () => {
     const { app, db } = makeApp({ requireAuth: true })
     const k = db.seedTenant({ slug: "enercon", name: "Enercon" })
