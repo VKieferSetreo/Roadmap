@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -178,7 +178,9 @@ export async function analyze({ db, project, corridorM }) {
   // liegenden Teilstrecken (mehrere Bundesländer) würde die Hüll-Box halb Deutschland in den Heap ziehen.
   const routeCtx = routes.map((route) => {
     const geometry = downsample(route.points.map((p) => ({ lat: p.lat, lng: p.lng })))
-    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM) }
+    // Gitter-Index je Route einmal bauen → nearestOnRoute/clip prüfen nur nahe Segmente statt aller
+    // ~2000 (Hauptkost bei langen Routen mit vielen Kandidaten-Hindernissen). Gleiche Treffer.
+    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM), grid: buildRouteGrid(geometry) }
   })
 
   let findings = []
@@ -220,7 +222,7 @@ export async function analyze({ db, project, corridorM }) {
       lastYield = Date.now()
     }
   }
-  for (const { route, geometry, cum, bbox } of routeCtx) {
+  for (const { route, geometry, cum, bbox, grid } of routeCtx) {
     for (const obstacle of obstacles) {
       await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
@@ -233,12 +235,12 @@ export async function analyze({ db, project, corridorM }) {
       // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
       // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
       // und ein Punkt 16 m neben der Route fällt sauber raus.
-      let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum)
+      let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum, grid)
       for (let pi = 0; pi < obstaclePts.length; pi++) {
         const p = obstaclePts[pi]
         if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
         if ((pi & 63) === 0) await maybeYield() // alle 64 Stützpunkte den Loop atmen lassen
-        const n = nearestOnRoute(p, geometry, cum)
+        const n = nearestOnRoute(p, geometry, cum, grid)
         if (n.distM < near.distM) near = n
       }
       if (near.distM > corridorM) continue
@@ -269,7 +271,7 @@ export async function analyze({ db, project, corridorM }) {
       // vorher auf ≤300 Punkte ausdünnen — auf Karten-Zoom optisch identisch. Yield direkt davor.
       await maybeYield()
       const geomFuerFund = obstacle.geom
-        ? (clipGeomToCorridor(obstacle.geom, geometry, cum, Math.max(corridorM * 3, 60), { stepM: clipStepM(obstaclePts) }) ?? obstacle.geom)
+        ? (clipGeomToCorridor(obstacle.geom, geometry, cum, Math.max(corridorM * 3, 60), { stepM: clipStepM(obstaclePts), grid }) ?? obstacle.geom)
         : null
       findings.push({
         obstacleId: obstacle.id,

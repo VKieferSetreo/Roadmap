@@ -34,11 +34,38 @@ export function totalKm(points) {
  * Kürzeste Distanz eines Punktes zur Polyline (Meter) + km-Position des
  * Lotfußpunkts entlang der Route. cum kann vorberechnet übergeben werden.
  */
-export function nearestOnRoute(point, geometry, cum = cumulativeKm(geometry)) {
+// Gitter-Index (T-Perf): Zelle "ix,iy" → Segment-Startindizes, deren Bbox die Zelle berührt.
+// nearestOnRoute mit Index prüft nur die Segmente der Zelle + 8 Nachbarn statt aller ~2000 →
+// gleiche Treffer/km, weil die Nachbar-Abdeckung ≥ ~95 m ist (> clipM 60 m > corridorM 20 m): ein
+// Segment im Korridor liegt sicher in der Nachbarschaft. Kandidaten werden in aufsteigender
+// i-Reihenfolge geprüft → identische Tie-Auflösung wie der lineare Scan (strikt `<`, erstes gewinnt).
+const GRID_DEG = 0.002
+const gridCellKey = (ix, iy) => ix + "," + iy
+export function buildRouteGrid(geometry) {
+  const grid = new Map()
+  for (let i = 0; i < geometry.length - 1; i++) {
+    const a = geometry[i]
+    const b = geometry[i + 1]
+    const ix0 = Math.floor(Math.min(a.lng, b.lng) / GRID_DEG)
+    const ix1 = Math.floor(Math.max(a.lng, b.lng) / GRID_DEG)
+    const iy0 = Math.floor(Math.min(a.lat, b.lat) / GRID_DEG)
+    const iy1 = Math.floor(Math.max(a.lat, b.lat) / GRID_DEG)
+    for (let ix = ix0; ix <= ix1; ix++) {
+      for (let iy = iy0; iy <= iy1; iy++) {
+        const k = gridCellKey(ix, iy)
+        const arr = grid.get(k)
+        if (arr) arr.push(i)
+        else grid.set(k, [i])
+      }
+    }
+  }
+  return grid
+}
+
+export function nearestOnRoute(point, geometry, cum = cumulativeKm(geometry), grid = null) {
   const mPerDegLng = M_PER_DEG_LAT * Math.cos(point.lat * DEG)
   let best = { distM: Infinity, km: 0 }
-
-  for (let i = 0; i < geometry.length - 1; i++) {
+  const consider = (i) => {
     const a = geometry[i]
     const b = geometry[i + 1]
     // lokale Meter-Koordinaten relativ zum Punkt
@@ -56,6 +83,21 @@ export function nearestOnRoute(point, geometry, cum = cumulativeKm(geometry)) {
     if (distM < best.distM) {
       best = { distM, km: cum[i] + t * (cum[i + 1] - cum[i]) }
     }
+  }
+
+  if (grid) {
+    const ix = Math.floor(point.lng / GRID_DEG)
+    const iy = Math.floor(point.lat / GRID_DEG)
+    const cand = new Set()
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const arr = grid.get(gridCellKey(ix + dx, iy + dy))
+        if (arr) for (const i of arr) cand.add(i)
+      }
+    }
+    for (const i of [...cand].sort((p, q) => p - q)) consider(i) // i-Reihenfolge = gleiche Tie-Auflösung
+  } else {
+    for (let i = 0; i < geometry.length - 1; i++) consider(i)
   }
   // km HIER deterministisch auf 0,02 km (20 m) runden, bevor es gespeichert/verglichen wird.
   // Feines Raster (max ~10 m Abweichung), aber grob genug, dass die Floating-Point-km über
@@ -178,7 +220,7 @@ export function obstacleRouteRelation(
  * überbrücken, damit der sichtbare Abschnitt nicht zerfasert. Rückgabe: GeoJSON LineString
  * (ein Lauf) / MultiLineString (mehrere) / null (nichts im Korridor → Aufrufer behält Fallback).
  */
-export function clipGeomToCorridor(geom, geometry, cum, clipM, { stepM = 15, bridgeM = 60 } = {}) {
+export function clipGeomToCorridor(geom, geometry, cum, clipM, { stepM = 15, bridgeM = 60, grid = null } = {}) {
   const lines = []
   if (geom?.type === "LineString") lines.push(geom.coordinates)
   else if (geom?.type === "MultiLineString" && Array.isArray(geom.coordinates)) lines.push(...geom.coordinates)
@@ -206,7 +248,7 @@ export function clipGeomToCorridor(geom, geometry, cum, clipM, { stepM = 15, bri
     if (dense.length < 2) continue
 
     // 2) In-Korridor markieren
-    const inCorr = dense.map((c) => nearestOnRoute({ lat: c[1], lng: c[0] }, geometry, cum).distM <= clipM)
+    const inCorr = dense.map((c) => nearestOnRoute({ lat: c[1], lng: c[0] }, geometry, cum, grid).distM <= clipM)
     // 3) kurze Aussetzer überbrücken (false-Inseln ≤ bridgeN zwischen true)
     for (let i = 0; i < inCorr.length; i++) {
       if (inCorr[i]) continue
