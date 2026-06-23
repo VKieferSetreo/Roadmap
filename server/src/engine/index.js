@@ -199,12 +199,18 @@ export async function analyze({ db, project, corridorM }) {
   // ponytail: kooperatives Yielding (eine CPU / ein Loop). Echte Parallelität vieler schwerer Analysen
   // bräuchte eine Job-Queue / Worker-Thread — erst bauen, wenn gleichzeitige Langläufe real auftreten.
   let lastYield = Date.now()
+  // Gibt den Event-Loop frei, wenn seit dem letzten Yield > ~40 ms CPU vergangen sind. Wird sowohl
+  // je Hindernis als auch im inneren Stützpunkt-Scan aufgerufen — ein einzelnes langes Linien-
+  // Hindernis (viele geom-Punkte) im großen Korridor-Bbox scannte sonst ~2 s am Stück (Lag-Spike).
+  const maybeYield = async () => {
+    if (Date.now() - lastYield > 40) {
+      await new Promise((r) => setImmediate(r))
+      lastYield = Date.now()
+    }
+  }
   for (const { route, geometry, cum, bbox } of routeCtx) {
     for (const obstacle of obstacles) {
-      if (Date.now() - lastYield > 40) {
-        await new Promise((r) => setImmediate(r))
-        lastYield = Date.now()
-      }
+      await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
       if (
         obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
@@ -216,8 +222,10 @@ export async function analyze({ db, project, corridorM }) {
       // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
       // und ein Punkt 16 m neben der Route fällt sauber raus.
       let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum)
-      for (const p of obstaclePts) {
+      for (let pi = 0; pi < obstaclePts.length; pi++) {
+        const p = obstaclePts[pi]
         if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
+        if ((pi & 63) === 0) await maybeYield() // alle 64 Stützpunkte den Loop atmen lassen
         const n = nearestOnRoute(p, geometry, cum)
         if (n.distM < near.distM) near = n
       }
