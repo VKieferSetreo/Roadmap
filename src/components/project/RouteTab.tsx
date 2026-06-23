@@ -35,7 +35,7 @@ const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.
 /** Die Strecken-Quellen (= Tabs). Reihenfolge (Max): Datei · VEMAGS · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
-  { id: "vemags", label: "VEMAGS", icon: FileText },
+  { id: "vemags", label: "Vemags", icon: FileText },
   { id: "link", label: "Google-Link", icon: Link2 },
   { id: "startziel", label: "Start / Ziel", icon: Navigation },
 ] as const
