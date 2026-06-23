@@ -5,83 +5,109 @@
 
 import { Router } from "express"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
-import { haversineKm } from "../engine/geometry.js"
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
 import { resolveKnoten } from "../external/abKnoten.js"
 import { ApiError, asyncHandler } from "../util.js"
 
-// VEMAGS (T-567): ein Wegpunkt-Token → {lat,lng}. AB-Knoten zuerst über den Gazetteer (km-genau),
-// sonst Präfix strippen + Ortsteil geokodieren. Start/Ziel/Orte: PLZ+Ort (Landmark in {…} und
-// Adress-Detail nach dem Komma weglassen — verschlechtern den Geocode). geocodeOrt fällt intern
-// notfalls auf die Städte-Tabelle zurück, liefert also immer eine Koordinate (Route bleibt
-// zusammenhängend, ggf. gröber).
+// VEMAGS (T-567): Wegpunkt-Auflösung. Grundsatz (Max 2026-06-23): KEINEN Bescheid-Wegpunkt
+// überspringen — jeder Punkt zwingt die Route auf den vorgeschriebenen Korridor (sonst free-routet
+// OSRM und fährt Umwege/zurück). Schlüssel ist daher präzises Geocoding statt Verwerfen:
+//  - AB-Knoten (AS/AK/AD): km-genau über den OSM-motorway_junction-Gazetteer.
+//  - Start/Ziel: „PLZ Ort" (Landmark in {…} + Adressdetail nach dem Komma weg) — eindeutig.
+//  - mehrdeutige Orts-/Straßennamen (z.B. „Borsigstraße" → ohne Kontext Berlin/Hamburg): mit einer
+//    ENGEN Viewbox um die direkten, bereits aufgelösten Nachbar-Anker geokodiert → lokaler Treffer.
+//  - nicht auflösbar (privates Landmark wie „GüG Eschau"): an den nächsten Anker heften statt grob
+//    raten — Punkt bleibt erhalten, ohne falschen Umweg.
 const cleanOrt = (s) => String(s ?? "").replace(/\{[^}]*\}/g, "").split(",")[0].trim()
+const stripKnoten = (s) => String(s ?? "").replace(/^(AS|AK|AD|Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\s+/i, "")
+// Nominatim-viewbox (lon1,lat1,lon2,lat2) um zwei Nachbar-Anker, mit Puffer (Grad).
+const neighborViewbox = (a, b, buf = 0.25) =>
+  `${Math.min(a.lng, b.lng) - buf},${Math.min(a.lat, b.lat) - buf},${Math.max(a.lng, b.lng) + buf},${Math.max(a.lat, b.lat) + buf}`
 
-// VEMAGS-Geocoder: in Prod ist der reguläre `nominatim` (NOMINATIM_URL) absichtlich aus (T-338,
-// Personenbezug bei freien Routen). VEMAGS-Wegpunkte sind aber Straßen-/Ortsnamen aus einem
-// amtlichen Bescheid (Behördenquelle → OSM-OK, Max 2026-06-23) und brauchen präzise Koordinaten.
-// Daher derselbe öffentliche, DE-beschränkte Nominatim-Pfad wie der /api/geocode/search-Proxy —
-// gedrosselt auf ~1 Req/s (OSM-Nutzungsrichtlinie) und über geocodeOrt im geocode_cache gepuffert.
-function makePublicGeocoder(fetchImpl) {
+// Öffentliches DE-Nominatim (NOMINATIM_URL ist in Prod absichtlich aus, T-338; Bescheid-Namen sind
+// Behördenquelle → OSM-OK). Drossel ~1 Req/s (OSM-Policy), Request-Memo gegen Doppel-Lookups,
+// persistenter geocode_cache NUR für unbiased (eindeutige) Anfragen — biased/viewbox nie cachen
+// (Name allein ist mehrdeutig). Liefert {lat,lng}|null (null → Aufrufer heftet an Nachbar).
+function makeVemagsGeocoder(db, fetchImpl) {
+  const memo = new Map()
   let lastCall = 0
-  return {
-    async geocode(ort) {
-      const wait = 1100 - (Date.now() - lastCall)
-      if (wait > 0) await new Promise((r) => setTimeout(r, wait))
-      lastCall = Date.now()
-      try {
-        const url =
-          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=de&accept-language=de&q=" +
-          encodeURIComponent(ort)
-        const res = await fetchImpl(url, {
-          headers: { "User-Agent": "roadmap-geocode/1.0 (+https://setreo-cloud.com)", Accept: "application/json" },
-          signal: AbortSignal.timeout(8000),
-        })
-        const data = await res.json()
-        const hit = Array.isArray(data) ? data[0] : null
-        if (!hit) return null
-        const lat = Number(hit.lat)
-        const lng = Number(hit.lon)
-        return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng, displayName: hit.display_name ?? ort } : null
-      } catch {
-        return null
+  return async function geocode(q, viewbox) {
+    const norm = String(q ?? "").trim()
+    if (!norm) return null
+    const key = viewbox ? `${norm.toLowerCase()}|${viewbox}` : norm.toLowerCase()
+    if (memo.has(key)) return memo.get(key)
+    if (!viewbox) {
+      const c = await db.query("SELECT lat, lng FROM geocode_cache WHERE query = $1", [norm.toLowerCase()])
+      if (c.rows[0]) {
+        const r = { lat: Number(c.rows[0].lat), lng: Number(c.rows[0].lng) }
+        memo.set(key, r)
+        return r
       }
-    },
+    }
+    const wait = 1100 - (Date.now() - lastCall)
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait))
+    lastCall = Date.now()
+    let hit = null
+    try {
+      let url =
+        "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=de&accept-language=de&q=" +
+        encodeURIComponent(norm)
+      if (viewbox) url += "&bounded=1&viewbox=" + viewbox
+      const res = await fetchImpl(url, {
+        headers: { "User-Agent": "roadmap-geocode/1.0 (+https://setreo-cloud.com)", Accept: "application/json" },
+        signal: AbortSignal.timeout(8000),
+      })
+      const data = await res.json()
+      const h = Array.isArray(data) ? data[0] : null
+      const lat = h ? Number(h.lat) : NaN
+      const lng = h ? Number(h.lon) : NaN
+      if (Number.isFinite(lat) && Number.isFinite(lng)) hit = { lat, lng, displayName: h.display_name ?? norm }
+    } catch {
+      hit = null
+    }
+    if (hit && !viewbox) {
+      await db.query(
+        `INSERT INTO geocode_cache (query, lat, lng, display_name) VALUES ($1, $2, $3, $4)
+         ON CONFLICT (query) DO UPDATE SET lat = EXCLUDED.lat, lng = EXCLUDED.lng,
+           display_name = EXCLUDED.display_name, fetched_at = now()`,
+        [norm.toLowerCase(), hit.lat, hit.lng, hit.displayName],
+      )
+    }
+    memo.set(key, hit)
+    return hit
   }
 }
 
-// Ausreißer-Filter: ein zwischengelagerter Wegpunkt, der einen unplausiblen Umweg erzwingt, ist
-// fast immer ein Fehl-Geocode mehrdeutiger Namen (z.B. "Borsigstraße" → Berlin statt Aurich, +1000 km).
-// Greedy von Start nach Ziel; verwirft einen Zwischenpunkt, dessen Umweg (geg. der Geraden zwischen
-// vorigem behaltenen Punkt und dem nächsten) > maxExtraKm ist. Start/Ziel bleiben unangetastet.
-export function dropDetours(pts, maxExtraKm = 120) {
-  if (pts.length <= 2) return { kept: pts, dropped: [] }
-  const kept = [pts[0]]
-  const dropped = []
-  for (let i = 1; i < pts.length - 1; i++) {
-    const prev = kept[kept.length - 1]
-    const cur = pts[i]
-    const next = pts[i + 1]
-    const extra = haversineKm(prev, cur) + haversineKm(cur, next) - haversineKm(prev, next)
-    if (extra > maxExtraKm) dropped.push(cur)
-    else kept.push(cur)
+// Zwei-Pass-Auflösung eines Fahrtwegteils → Punktliste in Reihenfolge (jeder mit c={lat,lng} oder null).
+// Pass 1: Anker (Knoten via Gazetteer, Start/Ziel via Nominatim). Pass 2: offene Tokens mit enger
+// Viewbox um die nächsten aufgelösten Anker; nicht auflösbare an den Nachbar-Anker heften.
+async function resolveVemagsPunkte(punkte, geocode) {
+  const pts = punkte.map((p) => ({ raw: p.raw, typ: p.typ, c: null }))
+  for (const p of pts) {
+    if (p.typ === "junction") {
+      const k = resolveKnoten(p.raw)
+      if (k && Number.isFinite(k.lat) && Number.isFinite(k.lng)) p.c = { lat: k.lat, lng: k.lng }
+    } else if (p.typ === "start" || p.typ === "ziel") {
+      const g = await geocode(cleanOrt(p.raw))
+      if (g) p.c = { lat: g.lat, lng: g.lng }
+    }
   }
-  kept.push(pts[pts.length - 1])
-  return { kept, dropped }
-}
-
-async function resolvePunkt(p, { db, geo }) {
-  if (p.typ === "junction") {
-    const k = resolveKnoten(p.raw)
-    if (k && Number.isFinite(k.lat) && Number.isFinite(k.lng)) return { lat: k.lat, lng: k.lng, quelle: "knoten" }
-    const ort = p.raw.replace(/^(AS|AK|AD|Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\s+/i, "")
-    const g = await geocodeOrt(db, geo, ort)
-    return { lat: g.lat, lng: g.lng, quelle: g.provider }
+  const isAnchor = (i) => i >= 0 && i < pts.length && pts[i].c != null
+  for (let i = 0; i < pts.length; i++) {
+    if (pts[i].c) continue
+    let lo = i - 1
+    while (lo >= 0 && !isAnchor(lo)) lo--
+    let hi = i + 1
+    while (hi < pts.length && !isAnchor(hi)) hi++
+    const a = lo >= 0 ? pts[lo].c : null
+    const b = hi < pts.length ? pts[hi].c : null
+    const q = pts[i].typ === "junction" ? stripKnoten(pts[i].raw) : cleanOrt(pts[i].raw)
+    const g = await geocode(q, a && b ? neighborViewbox(a, b) : null)
+    pts[i].c = g ? { lat: g.lat, lng: g.lng } : (a ?? b ?? null) // nicht überspringen: an Nachbar heften
   }
-  const g = await geocodeOrt(db, geo, cleanOrt(p.raw))
-  return { lat: g.lat, lng: g.lng, quelle: g.provider }
+  return pts
 }
 
 export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch }) {
@@ -182,29 +208,16 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
       )
     }
 
-    // Self-hosted Nominatim bevorzugen (falls je gesetzt), sonst öffentliches DE-Nominatim.
-    const geo = nominatim ?? makePublicGeocoder(fetchImpl)
+    const geocode = makeVemagsGeocoder(db, fetchImpl)
 
-    // Je Fahrtwegteil: Wegpunkte auflösen → OSRM-Route. Geocode-Cache wärmt über die Teile hinweg.
+    // Je Fahrtwegteil: ALLE Wegpunkte auflösen (kein Überspringen → der vorgeschriebene Korridor
+    // zwingt OSRM auf den Weg, kein Free-Routing/Zurückfahren) → OSRM-Route.
     const out = []
     for (const s of strecken) {
-      const cand = []
-      const ungeloest = []
-      for (const p of s.punkte) {
-        const c = await resolvePunkt(p, { db, geo })
-        // Nur präzise Punkte (Gazetteer/Nominatim/Cache/Pin). Ein "cities"-Treffer ist nur eine grobe
-        // Namensschätzung (Nominatim-Miss) und würde als falscher Wegpunkt einen Umweg erzwingen
-        // (z.B. privates Landmark "GüG Eschau") → überspringen (Konzept §4).
-        if (c && c.quelle !== "cities" && Number.isFinite(c.lat) && Number.isFinite(c.lng)) {
-          cand.push({ lat: c.lat, lng: c.lng, raw: p.raw })
-        } else ungeloest.push(p.raw)
-      }
-      // Fehl-Geocodes mehrdeutiger Namen (Umweg-Ausreißer) verwerfen — Route bleibt zusammenhängend.
-      const { kept, dropped } = dropDetours(cand)
-      for (const d of dropped) ungeloest.push(d.raw)
-      const wps = kept.map((k) => ({ lat: k.lat, lng: k.lng }))
+      const pts = await resolveVemagsPunkte(s.punkte, geocode)
+      const wps = pts.filter((p) => p.c).map((p) => ({ lat: p.c.lat, lng: p.c.lng }))
       if (wps.length < 2) {
-        out.push({ name: s.name, art: s.art, istLastfahrt: s.istLastfahrt, points: [], distanzKm: 0, fehler: "Zu wenige Wegpunkte aufgelöst.", ungeloest })
+        out.push({ name: s.name, art: s.art, istLastfahrt: s.istLastfahrt, points: [], distanzKm: 0, fehler: "Zu wenige Wegpunkte aufgelöst." })
         continue
       }
       const route = await routeWaypoints(db, wps, { osrm }, { geocoder: "mixed" })
@@ -216,7 +229,6 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
         distanzKm: route.distanzKm,
         grob: route.provider.router === "fallback",
         wegpunkte: wps.length,
-        ungeloest,
       })
     }
 

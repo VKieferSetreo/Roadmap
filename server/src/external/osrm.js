@@ -17,7 +17,11 @@ export function createOsrm({
     /** @returns {{geometry:{lat:number,lng:number}[],distanzKm:number,dauerMin:number}|null} */
     async route(waypoints) {
       const coords = waypoints.map((p) => `${p.lng},${p.lat}`).join(";")
-      const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=full&geometries=geojson`
+      // continue_straight=true: an Zwischen-Wegpunkten NICHT wenden (kein „hinfahren und zurück").
+      // Für unsere geordneten Korridor-Wegpunkte gewünscht — und ein langer Transport kann an einem
+      // Wegpunkt ohnehin keine enge Kehre fahren. (Ist beim Auto-Profil bereits Default; explizit
+      // gesetzt = robust gegen Profiländerungen.) Echte LKW-Kurvenradien bräuchten ein HGV-Profil.
+      const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=full&geometries=geojson&continue_straight=true`
       const data = await fetchJson(url, {
         timeoutMs,
         fetchImpl,
