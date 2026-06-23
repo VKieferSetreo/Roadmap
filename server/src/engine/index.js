@@ -191,8 +191,20 @@ export async function analyze({ db, project, corridorM }) {
   )
   const obstacles = rows.map(rowToObstacle)
 
+  // Event-Loop-Schonung: Das Matching ist reine CPU (nearestOnRoute über die ganze Geometrie je
+  // Hindernis, KEIN await im Loop) und lief bei langen Mehr-Strecken-Projekten ~70 s am Stück — das
+  // blockiert den single-threaded Node-Loop, die API antwortet währenddessen NIEMANDEM (Health/Seiten/
+  // andere Nutzer „gehen in die Knie"). Daher ~alle 40 ms den Loop freiwillig freigeben (setImmediate):
+  // andere Requests werden zwischen den Häppchen bedient, die Analyse wird nur minimal länger.
+  // ponytail: kooperatives Yielding (eine CPU / ein Loop). Echte Parallelität vieler schwerer Analysen
+  // bräuchte eine Job-Queue / Worker-Thread — erst bauen, wenn gleichzeitige Langläufe real auftreten.
+  let lastYield = Date.now()
   for (const { route, geometry, cum, bbox } of routeCtx) {
     for (const obstacle of obstacles) {
+      if (Date.now() - lastYield > 40) {
+        await new Promise((r) => setImmediate(r))
+        lastYield = Date.now()
+      }
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
       if (
         obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||

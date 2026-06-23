@@ -12,12 +12,13 @@ import { rowToFinding, rowToProject } from "../map.js"
 import { createRateLimiter, hashPassword, rowToShareInfo } from "../shares.js"
 import { ApiError, asyncHandler, isFiniteNumber, isPlainObject, isUuid } from "../util.js"
 
-// Begrenzte Parallelität für manuelle Auswertungen (In-Process, eine API-Instanz): viele
-// gleichzeitige runAnalysis (Schwer-SELECT je Lauf) würden sonst Event-Loop + Heap überlasten
-// (OOM-Risiko bei ~100 parallelen Auswertungen). Weitere Läufe warten FIFO auf einen Slot.
-// Echte horizontale Skalierung später via DB-Queue (T-173 Vollausbau, nach T-162). Per
-// ANALYSIS_CONCURRENCY übersteuerbar.
-const ANALYSIS_CONCURRENCY = Number(process.env.ANALYSIS_CONCURRENCY ?? 4)
+// Begrenzte Parallelität für manuelle Auswertungen (In-Process, eine API-Instanz, ein Event-Loop):
+// die Auswertung ist CPU-gebunden (Korridor-Matching). Mehrere gleichzeitig teilen sich denselben
+// Loop → jede wird entsprechend langsamer und reißt eher die Proxy-Decke (~100 s). Daher konservativ
+// 2 (statt 4): ein langer Lauf blockiert dank Yielding (engine) niemanden mehr, und 2 parallele bleiben
+// schnell genug. Weitere warten FIFO. Echte horizontale Skalierung via DB-Queue/Worker (T-173/T-162).
+// Per ANALYSIS_CONCURRENCY übersteuerbar.
+const ANALYSIS_CONCURRENCY = Number(process.env.ANALYSIS_CONCURRENCY ?? 2)
 const runAnalysisGated = createSemaphore(ANALYSIS_CONCURRENCY)
 // T-310: Pro-Nutzer-Eimer VOR dem globalen Semaphore — sonst belegt ein einzelner Nutzer mit
 // Analyse-Spam alle Slots und stellt die Warteschlange für alle anderen zu. Default 5/min,
