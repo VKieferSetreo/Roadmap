@@ -44,6 +44,20 @@ describe("Tenant-Admin Self-Service (T-147)", () => {
     expect(res.status).toBe(200)
   })
 
+  it("POST /:id/users: letzter Admin kann sich nicht selbst degradieren (T-302)", async () => {
+    // Provision mocken (läuft im Code VOR dem Guard); authExtern konfiguriert → kein 503.
+    const fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({}), text: async () => "" })
+    const { app, db } = makeApp({
+      requireAuth: true, fetchImpl, authExtern: { url: "http://auth.test", secret: "s" },
+    })
+    const solo = await tenantWithMembers(app, db, {
+      slug: "solo", name: "Solo", members: [{ email: "chef@solo.de", role: "admin" }],
+    })
+    const res = await asUser("chef@solo.de")(request(app).post(`/api/admin/tenants/${solo.id}/users`))
+      .send({ email: "chef@solo.de", role: "user", password: "passwort-123" })
+    expect(res.status).toBe(409)
+  })
+
   it("Tenant-Admin kann FREMDEN Mandanten NICHT verwalten (403)", async () => {
     const { app, b } = await setup()
     const res = await asUser("admin-a@kunde-a.de")(request(app).put(`/api/admin/tenants/${b.id}/members`))

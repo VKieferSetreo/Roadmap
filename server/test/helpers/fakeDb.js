@@ -143,6 +143,14 @@ export function createFakeDb() {
           .map((m) => ({ email: m.email })),
       )
     }
+    // T-302: Admins eines Mandanten (Last-Admin-Guard im POST /:id/users).
+    if (sql.startsWith("SELECT email FROM tenant_members WHERE tenant_id = $1 AND role = $2")) {
+      return ok(
+        state.members
+          .filter((m) => m.tenant_id === params[0] && (m.role ?? "user") === params[1])
+          .map((m) => ({ email: m.email })),
+      )
+    }
     if (sql.startsWith("DELETE FROM tenant_members WHERE tenant_id = $1")) {
       const before = state.members.length
       state.members = state.members.filter((m) => m.tenant_id !== params[0])

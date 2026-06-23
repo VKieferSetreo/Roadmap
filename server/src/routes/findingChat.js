@@ -55,19 +55,26 @@ function computeContentHash(row) {
   return createHash("sha256").update(parts.join("|")).digest("hex")
 }
 
-/** row → FindingChatMessage (camelCase). organisation nur bei public. */
-function rowToMessage(row, email) {
+/** row → FindingChatMessage (camelCase). organisation nur bei public. Exportiert für den Masking-Test. */
+export function rowToMessage(row, email) {
+  const mine = row.author_email === email
+  // T-301#9: der public-Chat ist DB-weit geteilt (GET filtert public NICHT auf den Tenant) →
+  // die persönliche Autor-Mail FREMDER Nachrichten nicht preisgeben (PII/Datenminimierung,
+  // Art.5c). Empfänger sehen dann nur die Organisation. Eigene Nachricht + internal-Scope
+  // (bereits tenant-gefiltert) behalten die Mail. author_email + content_hash bleiben in der DB
+  // unverändert (Gerichtsfestigkeit) — nur die Ausgabe wird minimiert.
+  const showEmail = row.scope !== "public" || mine
   return {
     id: row.id,
     findingKey: row.finding_key,
     scope: row.scope,
-    authorEmail: row.author_email,
+    authorEmail: showEmail ? row.author_email : null,
     organisation: row.scope === "public" ? (row.organisation ?? null) : null,
     body: row.body,
     kind: row.kind ?? "text",
     contact: row.contact ?? null,
     createdAt: toIso(row.created_at),
-    mine: row.author_email === email,
+    mine,
   }
 }
 

@@ -299,6 +299,18 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
         [email, tenant.id],
       )
       if (already.rows.length) {
+        // T-302: Selbst-Lockout verhindern — ein Tenant-Admin darf über diesen Pfad nicht den
+        // LETZTEN Admin zum Nutzer degradieren (Parität zum PUT /members-Guard T-147). Globaler
+        // Setreo-Admin darf (Notfall-Eingriff).
+        if (role !== "admin" && !req.ctx?.isAdmin) {
+          const { rows: admins } = await q.query(
+            "SELECT email FROM tenant_members WHERE tenant_id = $1 AND role = $2",
+            [tenant.id, "admin"],
+          )
+          if (admins.length === 1 && admins[0].email === email) {
+            throw new ApiError(409, "Der letzte Admin kann nicht zum Nutzer herabgestuft werden")
+          }
+        }
         await q.query(
           "UPDATE tenant_members SET role = $3 WHERE tenant_id = $1 AND email = $2",
           [tenant.id, email, role],

@@ -283,7 +283,8 @@ export interface FindingChatMessage {
   id: string
   findingKey: string
   scope: "public" | "internal"
-  authorEmail: string
+  /** Bei fremden public-Nachrichten maskiert (null) — Datenminimierung; nur Organisation sichtbar (T-301#9). */
+  authorEmail: string | null
   /** Organisation des Autors — nur bei scope 'public' gesetzt. */
   organisation?: string | null
   body: string

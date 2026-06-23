@@ -64,9 +64,9 @@ export function MessageList({
             <div className="group relative shrink-0">
               <div
                 className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: avatarBg(m.authorEmail) }}
+                style={{ background: avatarBg(m.authorEmail ?? m.organisation ?? "") }}
               >
-                {initialsFromEmail(m.authorEmail)}
+                {initialsFromEmail(m.authorEmail ?? m.organisation ?? "")}
               </div>
               <div
                 className={cn(
@@ -74,8 +74,10 @@ export function MessageList({
                   m.mine ? "right-0" : "left-0",
                 )}
               >
-                <p className="font-medium text-neutral-800 break-words">{m.authorEmail}</p>
-                {scope === "public" && m.organisation && (
+                <p className="font-medium text-neutral-800 break-words">
+                  {m.authorEmail ?? m.organisation ?? "Öffentlich"}
+                </p>
+                {scope === "public" && m.organisation && m.authorEmail && (
                   <p className="mt-0.5 text-neutral-500 break-words">{m.organisation}</p>
                 )}
               </div>
