@@ -173,6 +173,18 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     })
   }))
 
+  // Schneller Platzhalter-Zähler: NUR die Anzahl (ohne Funde/Geometrie) → das FE rendert sofort die
+  // richtige Zahl Lade-Kacheln, bevor die schwere volle Liste da ist. MUSS vor "/:id" stehen.
+  r.get("/count", asyncHandler(async (req, res) => {
+    const { rows } = await db.query(
+      `SELECT count(*) FILTER (WHERE archived_at IS NULL)::int AS aktiv,
+              count(*) FILTER (WHERE archived_at IS NOT NULL)::int AS archiviert
+       FROM projects WHERE tenant_id = $1`,
+      [req.ctx.tenant.id],
+    )
+    res.json({ aktiv: rows[0]?.aktiv ?? 0, archiviert: rows[0]?.archiviert ?? 0 })
+  }))
+
   r.post("/", asyncHandler(async (req, res) => {
     const name = req.body?.name
     if (typeof name !== "string" || !name.trim()) {

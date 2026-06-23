@@ -41,6 +41,9 @@ interface ProjectStore {
   loadError: boolean // T-228: letzter loadProjects ist mit Fehler gescheitert (≠ legitim leer)
   /** true während der initiale Live-Load läuft (Skeletons). */
   loading: boolean
+  /** Vorab vom Server geholte Anzahl aktiver Projekte → so viele Lade-Platzhalter rendern, bevor
+   *  die volle Liste (mit Funden/Geometrie) da ist. 0 = noch unbekannt. */
+  placeholderCount: number
 
   /** Initial-Load: live → Projekte vom Server, demo → Seed wenn leer. */
   initData: (mode: "live" | "demo") => Promise<void>
@@ -154,6 +157,7 @@ export const useProjectStore = create<ProjectStore>()(
       seeded: false,
       loading: false,
       loadError: false,
+      placeholderCount: 0,
 
       initData: async (mode) => {
         if (mode === "demo") {
@@ -165,6 +169,12 @@ export const useProjectStore = create<ProjectStore>()(
 
       loadProjects: async () => {
         set({ loading: true, loadError: false })
+        // Vorab nur die Anzahl holen (winziger, schneller Call) → das FE zeigt sofort die richtige
+        // Zahl Lade-Platzhalter; die echten Karten kommen mit der vollen Liste auf einen Schlag.
+        void api
+          .projectCount()
+          .then((c) => { if (get().loading) set({ placeholderCount: c.aktiv }) })
+          .catch(() => {})
         try {
           const projects = await api.listProjects()
           // projects IMMER als Array halten — sonst crasht jeder s.projects.find/[...projects]

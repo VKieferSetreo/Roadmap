@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn"
 export function DashboardHome() {
   const projects = useProjectStore((s) => s.projects ?? [])
   const loading = useProjectStore((s) => s.loading)
+  const placeholderCount = useProjectStore((s) => s.placeholderCount)
   const loadError = useProjectStore((s) => s.loadError) // T-228
   const loadProjects = useProjectStore((s) => s.loadProjects)
   const openNewProject = useUiStore((s) => s.openNewProject)
@@ -91,8 +92,12 @@ export function DashboardHome() {
           <div>
             <h2 className="text-lg font-semibold text-neutral-900">Ihre Projekte</h2>
             <p className="text-sm text-neutral-500">
-              {aktive.length} {aktive.length === 1 ? "Projekt" : "Projekte"}
-              {archivierte.length > 0 ? ` · ${archivierte.length} archiviert` : ""}
+              {/* Während des Ladens schon die echte Anzahl (Vorab-Zähler) zeigen. */}
+              {(() => {
+                const n = loading ? placeholderCount : aktive.length
+                return `${n} ${n === 1 ? "Projekt" : "Projekte"}`
+              })()}
+              {!loading && archivierte.length > 0 ? ` · ${archivierte.length} archiviert` : ""}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -157,11 +162,13 @@ export function DashboardHome() {
         ) : null}
 
         {loading ? (
+          // YouTube-Stil: genau so viele Lade-Kacheln wie es echte Projekte gibt (Vorab-Zähler),
+          // Shimmer-Platzhalter; die echten Karten kommen mit der vollen Liste auf einen Schlag rein.
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[0, 1, 2].map((i) => (
+            {Array.from({ length: Math.min(placeholderCount || 3, 24) }).map((_, i) => (
               <div
                 key={i}
-                className="h-[256px] rounded-xl border border-neutral-200/80 bg-white shadow-card"
+                className="h-[256px] overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-card"
               >
                 <div className="skeleton h-28 w-full rounded-t-xl" />
                 <div className="flex flex-col gap-3 p-4">

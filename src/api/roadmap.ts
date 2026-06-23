@@ -174,6 +174,11 @@ export const api = {
       (r) => r?.projects ?? [],
     ),
 
+  /** Nur die Projekt-Anzahl (winziger, schneller Vorab-Call) → das FE zeigt sofort die richtige
+   *  Zahl Lade-Platzhalter, bevor die volle Liste (mit Funden/Geometrie) geladen ist. */
+  projectCount: () =>
+    axiosClient<{ aktiv: number; archiviert: number }>({ url: "/projects/count", method: "GET", timeout: 6_000 }),
+
   createProject: (name: string) =>
     axiosClient<Project>({ url: "/projects", method: "POST", data: { name } }),
 
