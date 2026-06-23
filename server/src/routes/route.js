@@ -5,6 +5,7 @@
 
 import { Router } from "express"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
+import { haversineKm } from "../engine/geometry.js"
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
@@ -49,6 +50,26 @@ function makePublicGeocoder(fetchImpl) {
       }
     },
   }
+}
+
+// Ausreißer-Filter: ein zwischengelagerter Wegpunkt, der einen unplausiblen Umweg erzwingt, ist
+// fast immer ein Fehl-Geocode mehrdeutiger Namen (z.B. "Borsigstraße" → Berlin statt Aurich, +1000 km).
+// Greedy von Start nach Ziel; verwirft einen Zwischenpunkt, dessen Umweg (geg. der Geraden zwischen
+// vorigem behaltenen Punkt und dem nächsten) > maxExtraKm ist. Start/Ziel bleiben unangetastet.
+export function dropDetours(pts, maxExtraKm = 120) {
+  if (pts.length <= 2) return { kept: pts, dropped: [] }
+  const kept = [pts[0]]
+  const dropped = []
+  for (let i = 1; i < pts.length - 1; i++) {
+    const prev = kept[kept.length - 1]
+    const cur = pts[i]
+    const next = pts[i + 1]
+    const extra = haversineKm(prev, cur) + haversineKm(cur, next) - haversineKm(prev, next)
+    if (extra > maxExtraKm) dropped.push(cur)
+    else kept.push(cur)
+  }
+  kept.push(pts[pts.length - 1])
+  return { kept, dropped }
 }
 
 async function resolvePunkt(p, { db, geo }) {
@@ -167,28 +188,33 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
     // Je Fahrtwegteil: Wegpunkte auflösen → OSRM-Route. Geocode-Cache wärmt über die Teile hinweg.
     const out = []
     for (const s of strecken) {
-      const wps = []
+      const cand = []
       const ungeloest = []
-      let grobGeocode = false
       for (const p of s.punkte) {
         const c = await resolvePunkt(p, { db, geo })
-        if (c && Number.isFinite(c.lat) && Number.isFinite(c.lng)) {
-          wps.push({ lat: c.lat, lng: c.lng })
-          if (c.quelle === "cities") grobGeocode = true // Städte-Tabelle = nur grobe Ortsschätzung
+        // Nur präzise Punkte (Gazetteer/Nominatim/Cache/Pin). Ein "cities"-Treffer ist nur eine grobe
+        // Namensschätzung (Nominatim-Miss) und würde als falscher Wegpunkt einen Umweg erzwingen
+        // (z.B. privates Landmark "GüG Eschau") → überspringen (Konzept §4).
+        if (c && c.quelle !== "cities" && Number.isFinite(c.lat) && Number.isFinite(c.lng)) {
+          cand.push({ lat: c.lat, lng: c.lng, raw: p.raw })
         } else ungeloest.push(p.raw)
       }
+      // Fehl-Geocodes mehrdeutiger Namen (Umweg-Ausreißer) verwerfen — Route bleibt zusammenhängend.
+      const { kept, dropped } = dropDetours(cand)
+      for (const d of dropped) ungeloest.push(d.raw)
+      const wps = kept.map((k) => ({ lat: k.lat, lng: k.lng }))
       if (wps.length < 2) {
         out.push({ name: s.name, art: s.art, istLastfahrt: s.istLastfahrt, points: [], distanzKm: 0, fehler: "Zu wenige Wegpunkte aufgelöst.", ungeloest })
         continue
       }
-      const route = await routeWaypoints(db, wps, { osrm }, { geocoder: "mixed", geocoderFallback: grobGeocode })
+      const route = await routeWaypoints(db, wps, { osrm }, { geocoder: "mixed" })
       out.push({
         name: s.name,
         art: s.art,
         istLastfahrt: s.istLastfahrt,
         points: route.geometry,
         distanzKm: route.distanzKm,
-        grob: route.provider.router === "fallback" || grobGeocode,
+        grob: route.provider.router === "fallback",
         wegpunkte: wps.length,
         ungeloest,
       })

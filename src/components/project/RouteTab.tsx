@@ -272,9 +272,15 @@ export function RouteTab({ project }: { project: Project }) {
       const massText = Object.keys(specPatch).length
         ? ` · Maße übernommen (${[laengeM && `L ${laengeM} m`, breiteM && `B ${breiteM} m`, hoeheM && `H ${hoeheM} m`, masseT && `${masseT} t`].filter(Boolean).join(" · ")})`
         : ""
+      const nUngeloest = ok.reduce((n, s) => n + (s.ungeloest?.length ?? 0), 0)
       toast.success(
         `${ok.length} Strecke${ok.length === 1 ? "" : "n"} aus VEMAGS-Bescheid rekonstruiert${massText}. Vor der Fahrt prüfen.`,
       )
+      if (nUngeloest > 0) {
+        toast.warning(
+          `${nUngeloest} Wegpunkt${nUngeloest === 1 ? "" : "e"} konnten nicht eindeutig verortet werden und wurden übersprungen — die Strecke ist an diesen Stellen gröber.`,
+        )
+      }
     } catch (err) {
       toast.error(
         err instanceof ApiError
