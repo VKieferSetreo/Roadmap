@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 67,
+  "anzahl": 58,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -59,17 +59,6 @@
       "test": "Länder/Sachsen/LASuV-GST-Negativkarte-PDF/test.sh"
     },
     {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Sachsen",
-      "ebene": "Sachsen",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Sachsen/OSM-Overpass-Sachsen",
-      "test": "Länder/Sachsen/OSM-Overpass-Sachsen/test.sh"
-    },
-    {
       "name": "GeoSN INSPIRE/ATKIS Basis-DLM — Verkehrsnetze (TN)",
       "ebene": "Sachsen",
       "datentyp": "Verkehrsnetz-Topologie (INSPIRE TN, ATKIS Basis-DLM) — KEINE Restriktionen",
@@ -90,17 +79,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS",
       "test": "Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS/test.sh"
-    },
-    {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Thüringen",
-      "ebene": "Thüringen",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Thüringen/OSM-Overpass-Thueringen",
-      "test": "Länder/Thüringen/OSM-Overpass-Thueringen/test.sh"
     },
     {
       "name": "Klassifiziertes Straßennetz Thüringen (STRNETZ_wfs)",
@@ -200,17 +178,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Baden-Württemberg/Städte/Stuttgart/stuttgart-geoportal-opendata",
       "test": "Länder/Baden-Württemberg/Städte/Stuttgart/stuttgart-geoportal-opendata/test.sh"
-    },
-    {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Brandenburg",
-      "ebene": "Brandenburg",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Brandenburg/OSM-Overpass-Brandenburg",
-      "test": "Länder/Brandenburg/OSM-Overpass-Brandenburg/test.sh"
     },
     {
       "name": "INSPIRE-WFS Verkehrsnetze ATKIS Basis-DLM Brandenburg (tn_bdlm_wfs)",
@@ -334,17 +301,6 @@
       "test": "Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS/test.sh"
     },
     {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Mecklenburg-Vorpommern",
-      "ebene": "Mecklenburg-Vorpommern",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Mecklenburg-Vorpommern/OSM-Overpass-MV",
-      "test": "Länder/Mecklenburg-Vorpommern/OSM-Overpass-MV/test.sh"
-    },
-    {
       "name": "LSBB Sperrinfo (SPERRINFOSYS ST) — service.ifak.eu/sperrinfo",
       "ebene": "Sachsen-Anhalt",
       "datentyp": "Baustellen, Sperrungen, Umleitungen",
@@ -378,17 +334,6 @@
       "test": "Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal/test.sh"
     },
     {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Sachsen-Anhalt",
-      "ebene": "Sachsen-Anhalt",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Sachsen-Anhalt/OSM-Overpass-Sachsen-Anhalt",
-      "test": "Länder/Sachsen-Anhalt/OSM-Overpass-Sachsen-Anhalt/test.sh"
-    },
-    {
       "name": "Detailnetz Berlin — Ingenieurbauwerke (Brücken, Tunnel)",
       "ebene": "Berlin",
       "datentyp": "Brücken, Tunnel (Geometrie/Identität) + Straßenabschnitte + Verbindungspunkte — KEINE Traglast/Brückenklasse",
@@ -409,17 +354,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds",
       "test": "Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds/test.sh"
-    },
-    {
-      "name": "OpenStreetMap via Overpass / Geofabrik-Extrakt — GST-Restriktionen Berlin",
-      "ebene": "Berlin",
-      "datentyp": "GST-Restriktionen — maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload, bridge, tunnel",
-      "format": "OSM-JSON → GeoJSON",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL (Attribution \"© OpenStreetMap contributors\", Share-Alike beachten)",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Berlin/OSM-Overpass-Berlin",
-      "test": "Länder/Berlin/OSM-Overpass-Berlin/test.sh"
     },
     {
       "name": "Berlin VIZ — Baustellen, Sperrungen und sonstige Störungen (mdhwfs)",

@@ -1,1 +1,0 @@
-OSM/Overpass MV — crowdsourced Netz/Tags (T5), wird zentral/bundesweit über die OSM-Pipeline gezogen, nicht als Landes-Cron.

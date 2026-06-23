@@ -19,12 +19,10 @@ OK   Länder/Bayern/BAYSIS-Strassennetz-Strassenbestand-WFS     1659 B
 OK   Länder/Bayern/Städte/München/muenchen-baustellen        3028 B
 LEER Länder/Bayern/open-bydata-Portal                          (Endpunkt prüfen)
 OK   Länder/Berlin/Detailnetz-Berlin-Bauwerke-WFS              2443 B
-OK   Länder/Berlin/OSM-Overpass-Berlin                         1219 B
 OK   Länder/Berlin/VIZ-Berlin-Baustellen-WFS                   1027 B
 OK   Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds                    3987 B
 OK   Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS              3981 B
 OK   Länder/Brandenburg/INSPIRE-WFS-BB-Verkehrsnetze           3135 B
-OK   Länder/Brandenburg/OSM-Overpass-Brandenburg               1073 B
 LEER Länder/Bremen/ASV-Bremen-Bruecken-GST                     (Endpunkt prüfen)
 LEER Länder/Bremen/VMZ-Bremen                                  (Endpunkt prüfen)
 OK   Länder/Hamburg/GST-Routen-Hamburg                         2911 B
@@ -36,7 +34,6 @@ LEER Länder/Hessen/hessen-mobil-positivkarten                  (Endpunkt prüfe
 OK   Länder/Mecklenburg-Vorpommern/GeoPortal-MV-INSPIRE-Verkehrsnetze 2358 B
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Klassifiziertes-Strassennetz-WFS 3024 B
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS 2808 B
-OK   Länder/Mecklenburg-Vorpommern/OSM-Overpass-MV             864 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen 4045 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-gst-routen 4021 B
 LEER Länder/Niedersachsen/Geodatenportal-NI-CSW                (Endpunkt prüfen)
@@ -61,11 +58,9 @@ OK   Länder/Saarland/baustellen-saarland-lfs                   4000 B
 OK   Länder/Sachsen-Anhalt/LSBB-Sperrinfo-WFS                  1035 B
 OK   Länder/Sachsen-Anhalt/LVermGeo-ST-Geodatenportal-Portal   2368 B
 OK   Länder/Sachsen-Anhalt/LVermGeo-ST-INSPIRE-Verkehrsnetze-WFS 3274 B
-OK   Länder/Sachsen-Anhalt/OSM-Overpass-Sachsen-Anhalt         778 B
 OK   Länder/Sachsen/GeoSN-INSPIRE-Verkehrsnetze-WFS            2416 B
 OK   Länder/Sachsen/LASuV-Baustellen-WMS                       3980 B
 LEER Länder/Sachsen/LASuV-GST-Negativkarte-PDF                 (Endpunkt prüfen)
-OK   Länder/Sachsen/OSM-Overpass-Sachsen                       1186 B
 OK   Länder/Sachsen/Städte/Dresden/dresden-opendata-themenstadtplan 1936 B
 OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrsraumeinschraenkungen 822 B
 OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrszeichen    1673 B
@@ -73,7 +68,6 @@ OK   Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX 4037 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
 OK   Länder/Thüringen/Geoproxy-TH-INSPIRE-Verkehrsnetze-WFS   2929 B
 OK   Länder/Thüringen/Geoproxy-TH-Klassif-Strassennetz-WFS    2155 B
-OK   Länder/Thüringen/OSM-Overpass-Thueringen                 702 B
 LEER Sonstige/geofabrik-extrakte                                (Endpunkt prüfen)
 OK   Sonstige/govdata-ckan                                      4055 B
 🔑   Sonstige/graphhopper                                       Account/Key nötig
@@ -85,4 +79,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 113 getestet · OK 84 · LEER 20 · 🔑 9 übersprungen
+Σ 107 getestet · OK 78 · LEER 20 · 🔑 9 übersprungen

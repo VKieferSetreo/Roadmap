@@ -94,17 +94,6 @@
 - **verifiziert:** zu-bestätigen (Migration läuft; konkrete Dienst-URL je Datensatz prüfen)
 - **url:** `https://gdi.berlin.de/viewer/main/` · `https://www.berlin.de/sen/sbw/stadtdaten/geodaten-berlin/`
 - **prio:** P2
-
-### 1.5 OSM (Overpass) — GST-Restriktionen Berlin — **P1, verifiziert**
-- **quelle:** OpenStreetMap via Overpass / Geofabrik-Extrakt
-- **datentyp:** `maxheight, maxweight, maxweight:rating:hgv, maxwidth, maxaxleload`, `bridge`, `tunnel`
-- **format:** OSM-JSON → GeoJSON · **apiEndpunkt:** `https://overpass-api.de/api/interpreter`
-- **auth:** keine · **kosten:** kostenlos · **lizenz:** ODbL (Attribution „© OpenStreetMap contributors", Share-Alike beachten)
-- **abdeckung:** Berlin, nur soweit getaggt (lückenhaft)
-- **zugang:** offen; Produktion → Geofabrik `berlin-latest.osm.pbf` in eigene PostGIS
-- **verifiziert:** ja (etablierte API) · **prio:** P1
-- **sonstiges:** **DER GST-Restriktions-Layer**, den die VIZ/Detailnetz-Quellen nicht haben.
-
 ### 1.6 Mobilithek / DATEX-II — Berlin Baustellen — **P2, verifiziert (Registrierung)**
 - **quelle:** Mobilithek (BMDV) — Berlin-Publikation (DATEX II)
 - **format:** DATEX II · **apiEndpunkt:** null (SOAP/Pull, institutionelle Registrierung + X.509-Zertifikat)
@@ -166,11 +155,6 @@
 - **zugang:** offen — `https://geoportal.brandenburg.de/`
 - **verifiziert:** ja (Portal) · **prio:** P3
 - **sonstiges:** Open-Data-Geodaten BB auch in MetaVer (`https://metaver.de/`).
-
-### 2.5 OSM (Overpass) — GST-Restriktionen Brandenburg — **P1, verifiziert**
-- Wie Berlin 1.5; Extrakt `brandenburg-latest.osm.pbf` (Geofabrik). `apiEndpunkt:` `https://overpass-api.de/api/interpreter`. ODbL. **prio:** P1.
-- **sonstiges:** **GST-Restriktions-Layer für BB.** Brandenburgs GST-Genehmigung läuft über LS/VEMAGS; eine offene Negativkarte/Brücken-Datensatz ist **nicht** publiziert (GST-Seite hat nur Verfahrens-PDFs). → Lücke, siehe unten.
-
 ---
 
 # 3. MECKLENBURG-VORPOMMERN
@@ -225,10 +209,6 @@
 - **format:** Portal/Themenkarte + OGC-Dienste · **apiEndpunkt:** null
 - **zugang:** offen — `https://metaver.de/` · Themenkarte `…/Themenkarten/Details?id=4`
 - **verifiziert:** ja (Portal) · **prio:** P3
-
-### 3.5 OSM (Overpass) — GST-Restriktionen MV — **P1, verifiziert**
-- Wie Berlin 1.5; Extrakt `mecklenburg-vorpommern-latest.osm.pbf`. ODbL. **prio:** P1. **GST-Restriktions-Layer für MV.**
-
 ---
 
 # 4. SACHSEN
@@ -297,10 +277,6 @@
 - **verifiziert:** ja (Existenz/Restriktion bestätigt) · **url:** `https://www.list.smwa.sachsen.de/771.htm`
 - **prio:** P3
 - **sonstiges:** **Wäre die reichste Sachsen-Fachquelle (inkl. Bauwerke), aber netz-/lizenzgesperrt.** Nur über behördliche Kooperation/Freigabe nutzbar.
-
-### 4.5 OSM (Overpass) — GST-Restriktionen Sachsen — **P1, verifiziert**
-- Wie Berlin 1.5; Extrakt `sachsen-latest.osm.pbf`. ODbL. **prio:** P1.
-
 ---
 
 # 5. SACHSEN-ANHALT
@@ -355,10 +331,6 @@
 - **auth:** Registrierung + X.509 · **lizenz:** je Publikation prüfen
 - **zugang:** Registrierung — `https://mobilithek.info` · `https://metaver.de/`
 - **verifiziert:** ja (Portale) · **prio:** P1 (Feed-Backbone) / P3 (Portal)
-
-### 5.5 OSM (Overpass/Geofabrik) — GST-Restriktionen ST — **P1, verifiziert**
-- Wie Berlin 1.5; Produktion `sachsen-anhalt-latest.osm.pbf`. ODbL. **prio:** P1. **GST-Restriktions-Layer für ST.**
-
 ---
 
 # 6. THÜRINGEN
@@ -418,10 +390,6 @@
 - **zugang:** offen — `https://www.geoportal-th.de/de-de/Geoproxy` · Viewer `https://geoportal.thueringen.de/geoproxy`
 - **verifiziert:** ja (Geoproxy-Dienstgruppe) · **prio:** P2/P3
 - **sonstiges:** ATKIS-Bauwerke ggf. hier; nur Geometrie, KEINE Traglast.
-
-### 6.5 OSM (Overpass) — GST-Restriktionen Thüringen — **P1, verifiziert**
-- Wie Berlin 1.5; Extrakt `thueringen-latest.osm.pbf`. ODbL. **prio:** P1. **GST-Restriktions-Layer für TH.**
-
 ---
 
 ## Querschnitt: Lücken & wichtigste Erkenntnisse
