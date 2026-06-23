@@ -387,7 +387,7 @@ export function RouteTab({ project }: { project: Project }) {
                 <DropZone
                   compact
                   label="VEMAGS-Bescheid hochladen (PDF)"
-                  hint="Der Fahrtweg wird so gut wie möglich rekonstruiert — vor der Fahrt prüfen."
+                  hint="Der Fahrtweg wird basierend auf den Rohdaten rekonstruiert und kann Fehler aufweisen."
                   accept=".pdf,application/pdf"
                   onFile={(file) => void onVemagsFile(file)}
                 />
