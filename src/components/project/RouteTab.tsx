@@ -338,9 +338,9 @@ export function RouteTab({ project }: { project: Project }) {
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                Streckendatei hochladen — KML (eine Strecke) oder GeoPackage (.gpkg, mehrere zur
-                Auswahl). Die enthaltene Strecke wird 1:1 übernommen; es wird nichts optimiert oder
-                verändert.
+                Streckendatei hochladen. Unterstützt werden KML (eine Strecke) und GeoPackage (.gpkg,
+                mehrere zur Auswahl). Die enthaltene Strecke wird 1:1 übernommen und dabei nicht
+                optimiert oder verändert.
               </p>
               <DropZone
                 compact
@@ -358,8 +358,8 @@ export function RouteTab({ project }: { project: Project }) {
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
                 Google-Maps-Routenlink (Wegbeschreibung mit Start und Ziel) einfügen. Die im Link
-                hinterlegte Strecke wird 1:1 übernommen — inklusive aller gesetzten Zwischenstopps.
-                Es wird nichts optimiert oder verändert.
+                hinterlegte Strecke wird inklusive aller gesetzten Zwischenstopps 1:1 übernommen. Es
+                wird nichts optimiert oder verändert.
               </p>
               <div className="flex gap-2">
                 <Input
