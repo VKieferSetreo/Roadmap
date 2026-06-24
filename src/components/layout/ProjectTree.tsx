@@ -41,6 +41,12 @@ interface TreeCtx {
   canDropFolder: (draggedId: string, targetId: string | null) => boolean
   dragOver: string | null
   setDragOver: (v: string | null) => void
+  /** Über ein Drop-Ziel ziehen → sofort markieren (bricht einen anstehenden Schließen-Timer ab). */
+  enterOver: (key: string) => void
+  /** Ziel verlassen → erst nach kurzer Verzögerung schließen (kein Geflacker beim Bewegen). */
+  leaveOver: (key: string) => void
+  /** Drag-Ende (Drop ODER Abbruch): Drag-/Over-State + Timer komplett zurücksetzen. */
+  endDrag: () => void
   /** zonePrivate nur bei Wurzel-Drop (folderId null): true = Privat-Zone, false = Geteilt-Zone. */
   drop: (folderId: string | null, zonePrivate?: boolean) => void
   renaming: string | null
@@ -69,12 +75,14 @@ function ProjectRow({
   go,
   activeTab,
   setDragId,
+  onDragEnd,
 }: {
   project: Project
   active: boolean
   go: (path: string) => void
   activeTab: string
   setDragId: (id: string | null) => void
+  onDragEnd?: () => void
 }) {
   return (
     <div
@@ -84,7 +92,7 @@ function ProjectRow({
         e.dataTransfer.setData("text/plain", project.id)
         setDragId(project.id)
       }}
-      onDragEnd={() => setDragId(null)}
+      onDragEnd={() => (onDragEnd ? onDragEnd() : setDragId(null))}
       className={cn(
         "group relative flex items-center rounded-md transition-colors",
         active
@@ -178,17 +186,18 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
           e.stopPropagation()
           e.dataTransfer.effectAllowed = "move"
           e.dataTransfer.setData("text/plain", `folder:${id}`)
+          ctx.setDragOver(null) // frischer Start (kein Marker vom letzten Drag)
           ctx.setDragFolderId(id)
         }}
-        onDragEnd={() => ctx.setDragFolderId(null)}
+        onDragEnd={() => ctx.endDrag()}
         onDragOver={(e) => {
           if (!accepts) return
           e.preventDefault()
           e.stopPropagation()
-          ctx.setDragOver(id)
+          ctx.enterOver(id)
           if (!open) ctx.openTo(id, depth, parent) // Drüberziehen klappt den Zielordner auf
         }}
-        onDragLeave={() => ctx.setDragOver(ctx.dragOver === id ? null : ctx.dragOver)}
+        onDragLeave={() => ctx.leaveOver(id)}
         onDrop={(e) => {
           if (!accepts) return
           e.preventDefault()
@@ -286,11 +295,11 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
               ? (e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  ctx.setDragOver(`child:${id}`)
+                  ctx.enterOver(`child:${id}`)
                 }
               : undefined
           }
-          onDragLeave={() => ctx.setDragOver(ctx.dragOver === `child:${id}` ? null : ctx.dragOver)}
+          onDragLeave={() => ctx.leaveOver(`child:${id}`)}
           onDrop={
             accepts
               ? (e) => {
@@ -321,13 +330,14 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
                 go={ctx.go}
                 activeTab={ctx.activeTab}
                 setDragId={ctx.setDragId}
+                onDragEnd={ctx.endDrag}
               />
             </div>
           ))}
           {ctx.dragOver === `child:${id}` ? (
             <div
               style={{ marginLeft: (depth + 1) * 14 }}
-              className="flex h-8 items-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 px-2 text-[11px] font-medium text-primary-700 duration-150 animate-in fade-in slide-in-from-top-1"
+              className="flex h-8 items-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 px-2 text-[11px] font-medium text-primary-700 duration-300 animate-in fade-in slide-in-from-top-2"
             >
               {`In „${f.name}“ ablegen`}
             </div>
@@ -376,9 +386,9 @@ function ZoneSection({
         onDragOver={(e) => {
           if (!dragging) return
           e.preventDefault()
-          ctx.setDragOver(dropKey)
+          ctx.enterOver(dropKey)
         }}
-        onDragLeave={() => ctx.setDragOver(ctx.dragOver === dropKey ? null : ctx.dragOver)}
+        onDragLeave={() => ctx.leaveOver(dropKey)}
         onDrop={(e) => {
           e.preventDefault()
           ctx.drop(null, zonePrivate)
@@ -405,6 +415,7 @@ function ZoneSection({
             go={ctx.go}
             activeTab={ctx.activeTab}
             setDragId={ctx.setDragId}
+            onDragEnd={ctx.endDrag}
           />
         ))}
         {!folders.length && !rootProjects.length && !creatingHere && !dragging ? (
@@ -415,7 +426,7 @@ function ZoneSection({
         {/* Grüner Spacer „geht auf", sobald man über der Zonen-Fläche ist (nicht über einem Ordner)
             → ablegen = oberste Ebene dieser Zone. Erst bei over gemountet → kein dragStart-Sprung. */}
         {over ? (
-          <div className="flex h-9 items-center justify-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 text-[11px] font-medium text-primary-700 duration-150 animate-in fade-in slide-in-from-top-1">
+          <div className="flex h-9 items-center justify-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 text-[11px] font-medium text-primary-700 duration-300 animate-in fade-in slide-in-from-top-2">
             {`Auf „${label}“-Ebene ablegen`}
           </div>
         ) : null}
@@ -443,6 +454,9 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const [newName, setNewName] = useState("")
   const [renaming, setRenaming] = useState<string | null>(null)
   const [renameVal, setRenameVal] = useState("")
+  // Verzögertes Schließen der Drop-Marker (058): beim Verlassen eines Ziels noch kurz offen halten,
+  // damit das Hin-und-Her-Bewegen nicht flackert. Wechsel auf ein anderes Ziel bricht den Timer ab.
+  const overTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // „+ → Ordner" aus der Sidebar-Kopfzeile öffnet die Inline-Eingabe für einen Wurzelordner.
   // Tick-Signal statt Callback, weil der Auslöser in einer anderen Komponente sitzt.
@@ -533,12 +547,40 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     canDropFolder,
     dragOver,
     setDragOver,
+    enterOver: (key) => {
+      if (overTimer.current) {
+        clearTimeout(overTimer.current)
+        overTimer.current = null
+      }
+      setDragOver(key)
+    },
+    leaveOver: (key) => {
+      if (overTimer.current) clearTimeout(overTimer.current)
+      // ~350 ms offen halten; ein erneutes enterOver (anderes/dasselbe Ziel) bricht das ab.
+      overTimer.current = setTimeout(() => {
+        setDragOver((cur) => (cur === key ? null : cur))
+        overTimer.current = null
+      }, 350)
+    },
+    endDrag: () => {
+      if (overTimer.current) {
+        clearTimeout(overTimer.current)
+        overTimer.current = null
+      }
+      setDragId(null)
+      setDragFolderId(null)
+      setDragOver(null)
+    },
     drop: (folderId, zonePrivate) => {
       // In einen Ordner → Zone wird geerbt (kein Flag). Auf eine Zonen-Wurzel → Zone explizit setzen.
       if (dragFolderId && canDropFolder(dragFolderId, folderId)) {
         moveFolder(dragFolderId, folderId, folderId == null ? zonePrivate : undefined)
       } else if (dragId) {
         setProjectFolder(dragId, folderId, folderId == null ? { private: zonePrivate } : undefined)
+      }
+      if (overTimer.current) {
+        clearTimeout(overTimer.current)
+        overTimer.current = null
       }
       setDragId(null)
       setDragFolderId(null)
