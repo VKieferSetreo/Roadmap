@@ -18,7 +18,6 @@
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
 | **P2** | GovData.de (DCAT-AP.de) | Geodaten-Std | Bund-Open-Data-Katalog, CKAN-API | verifiziert |
 | **P3** | QLever (OSM-SPARQL) | OSM | analytische Geo-Queries (GeoSPARQL) auf ganz OSM | verifiziert (Doku) |
-| **P3** | Nominatim | OSM | Geocoding / Reverse / Lookup | verifiziert (Doku) |
 | **P3** | OSM planet.osm + diffs | OSM | Voll-Dump + minütliche/täglich Replikation | verifiziert |
 
 > **Hinweis mCLOUD:** Das früher relevante mCLOUD-Portal des BMDV wurde 2022 von der **Mobilithek** abgelöst (ebenso der MDM/Mobility Data Marketplace). mCLOUD ist nur noch historisch zu nennen.
@@ -124,23 +123,6 @@ OSM ist für Setreo die mit Abstand **breiteste, kostengünstigste und feinkörn
 - **Notizen:** Stark für **analytische** Cross-DE-Auswertungen („alle Brücken mit maxheight<4 m an B-Straßen"), die in Overpass timeouten würden. Lernkurve SPARQL. Nice-to-have, kein Muss.
 
 ---
-
-## 1.5 Nominatim (Geocoding)
-
-- **quelle:** Nominatim
-- **betreiber:** OSMF (offizielle Instanz) + self-host möglich
-- **datentyp:** Geocoding (Name→Koordinate), Reverse, Lookup nach OSM-ID
-- **format:** REST → JSON/XML/GeoJSON
-- **apiEndpunkt (verifiziert):** `https://nominatim.openstreetmap.org/search` · `/reverse` · `/lookup`
-- **update:** kontinuierlich (offizielle Instanz)
-- **auth:** keine, aber **strikte Nutzungsbedingungen** (max 1 req/s, kein Bulk) auf der offiziellen Instanz
-- **kosten:** keine (offiziell); für Volumen self-host
-- **lizenz:** Daten ODbL
-- **zugang:** offen (mit Usage Policy)
-- **verifiziert:** ja (Doku) · **prio:** P3
-- **url:** `https://nominatim.org/release-docs/latest/api/Overview/`
-- **Notizen:** Für Start-/Zieladressen-Auflösung im Routing. Bei Volumen self-host oder kommerziellen Geocoder.
-
 ---
 
 ## 1.6 OSM-Tag-Zuverlässigkeit in DE (Bewertung)

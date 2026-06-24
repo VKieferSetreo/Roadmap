@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 48,
+  "anzahl": 47,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -497,17 +497,6 @@
       "typ": "live-endpunkt",
       "ordner": "Sonstige/rvr-geonetzwerk-ruhr-baustellen",
       "test": "Sonstige/rvr-geonetzwerk-ruhr-baustellen/test.sh"
-    },
-    {
-      "name": "Nominatim (OSM Geocoding)",
-      "ebene": "Sonstige",
-      "datentyp": "Geocoding (Name->Koordinate), Reverse (Koordinate->Adresse), Lookup nach OSM-ID",
-      "format": "REST -> JSON / jsonv2 / XML / GeoJSON",
-      "endpunkt": "https://nominatim.openstreetmap.org/search  (+ /reverse  + /lookup)",
-      "lizenz": "ODbL 1.0 (OSM-Daten; Attribution Pflicht)",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/nominatim",
-      "test": "Sonstige/nominatim/test.sh"
     },
     {
       "name": "QLever (OSM als SPARQL / GeoSPARQL)",

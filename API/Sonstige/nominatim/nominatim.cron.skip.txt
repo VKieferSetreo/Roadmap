@@ -1,1 +1,0 @@
-SKIP: Geocoding-Dienst (Adresse ↔ Koordinate), kein Hindernis-Producer. Liefert keine Restriktionen/Baustellen.
