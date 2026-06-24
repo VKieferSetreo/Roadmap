@@ -1,4 +1,0 @@
-# GraphHopper Directions API — Doku (interaktives Portal, JS-gerendert)
-https://docs.graphhopper.com/openapi/routing
-# Route-Endpoint (POST): https://docs.graphhopper.com/openapi/routing/postroute
-# Custom Model / Encoded Values: https://docs.graphhopper.com/openapi/custom-model

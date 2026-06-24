@@ -14,7 +14,6 @@
 |------|--------|---------|----------|--------|
 | **P1** | OSM via Overpass API | OSM | maxheight/width/weight/axleload, hgv, bridge, tunnel, level_crossing, roundabout | verifiziert (live) |
 | **P2** | openrouteservice (driving-hgv) | Kommerziell/OSS | height/width/length/weight/axleload + hazmat | verifiziert (Doku) |
-| **P2** | GraphHopper Directions (truck/custom_model) | Kommerziell/OSS | max_height/width/weight, axle_load, hazmat | verifiziert (Doku) |
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
 | **P2** | GovData.de (DCAT-AP.de) | Geodaten-Std | Bund-Open-Data-Katalog, CKAN-API | verifiziert |
@@ -283,29 +282,6 @@ Hier nur **freie / Open-Source-Routing-Engines** mit LKW-/GST-Profil (self-hostb
 - **Abdeckungslücken/Notizen:** **Bester Weg, OSM-Restriktionen sofort routbar zu machen** ohne eigene Engine. Da OSM-basiert: gleiche Lücken (Achslast dünn) wie §1.6. Self-host = volle Kontrolle + kein Limit, ideal wenn Setreo OSM ohnehin als Basis nutzt. ORS-Restrictions decken GST-Dimensionen direkt ab.
 
 ---
-
-## 3.5 GraphHopper — Directions API (truck / custom_model)
-
-- **quelle:** GraphHopper Directions API
-- **betreiber:** GraphHopper GmbH (DE) — OSS-Engine + Hosted-Service
-- **datentyp:** Built-in-Profile `truck` + `small_truck`; **custom_model** mit Encoded Values `max_width`, `max_height`, `max_weight`, `max_length`, `axle_load`, `hazmat`, `surface`, `toll`. Eigene Truck-Profile mit Dimensionen/Speed konfigurierbar.
-- **strassentyp:** Alle (OSM-basiert)
-- **format:** REST-JSON
-- **apiEndpunkt (verifiziert):**
-  - Hosted: `https://graphhopper.com/api/1/route`
-  - Custom Profiles (Hosted): Profil mit Prefix `cp_` erstellbar
-  - Self-host: eigene Instanz (OSS, Apache-2.0)
-- **update:** Hosted repliziert OSM; Self-host nach eigenem Import
-- **auth:** **API-Key** (Hosted)
-- **kosten:** Hosted mit Free-Tier (Tageslimit) + Paid-Pläne; **Truck-Routing teils Premium-Add-on** → bei GraphHopper verifizieren. Self-host kostenlos.
-- **lizenz:** Engine Apache-2.0; Daten ODbL (OSM)
-- **abdeckung:** weltweit/DE = OSM
-- **zugang:** offen (Free-Tier) / kommerziell / Self-host
-- **verifiziert:** ja (Doku: truck-Profil + custom_model Encoded Values bestätigt)
-- **url:** `https://docs.graphhopper.com/openapi/routing` · `https://www.graphhopper.com/`
-- **prio:** P2
-- **Abdeckungslücken/Notizen:** Sehr flexibel (custom_model pro Request). OSM-basiert → gleiche Datenlücken. DE-Anbieter, gute Doku. Truck-Profil im Hosted-Tarif ggf. kostenpflichtig — Konditionen prüfen. Self-host für volle Kontrolle.
-
 ---
 
 ## 3.6 Spezial-/Heavy-Anbieter (Hinweis)

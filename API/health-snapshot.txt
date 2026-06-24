@@ -59,7 +59,6 @@ OK   Länder/Sachsen/Städte/Leipzig/leipzig-verkehrszeichen    1673 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX 4037 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
 OK   Sonstige/govdata-ckan                                      4055 B
-🔑   Sonstige/graphhopper                                       Account/Key nötig
 OK   Sonstige/inspire-transport-networks                        4045 B
 OK   Sonstige/nominatim                                         797 B
 🔑   Sonstige/openrouteservice                                  Account/Key nötig
@@ -68,4 +67,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 96 getestet · OK 70 · LEER 18 · 🔑 8 übersprungen
+Σ 95 getestet · OK 70 · LEER 18 · 🔑 7 übersprungen

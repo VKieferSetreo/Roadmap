@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **72 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **71 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (48) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
+**Legende:** 🟢 live getestet (48) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (6) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -72,7 +72,6 @@
 | 🟢 | Schleswig-Holstein | Umleitungsstrecken Schleswig-Holstein (WFS Bau | Umleitungsstrecken (Diversion  | WFS 2.0.0 (GML) | offen |
 | 🟡 | Thüringen | Baustelleninformationssystem Thüringen (TLBV) | aktuelle Baustellen auf Thürin | Web-App (GWT) | eingeschränkt |
 | 🟢 | Sonstige | GovData.de (Offene-Daten-Portal Deutschland, C | Metadaten-KATALOG ueber ALLE V | Metadaten nach DCAT-AP | offen |
-| 🔑 | Sonstige | GraphHopper — Directions API (truck / custom_m | Built-in-Profile truck + small | REST-JSON | account |
 | 🟢 | Sonstige | INSPIRE Transport Networks (TN) — BKG DLM250 W | Verkehrsnetz-Topologie (Road/R | WFS 2.0.0 (GML 3.2.1); | offen |
 | 🟢 | Sonstige | Nominatim (OSM Geocoding) | Geocoding (Name->Koordinate),  | REST -> JSON / jsonv2  | offen |
 | 🟢 | Sonstige | OSM Planet + Diffs (Voll-Dump / Replikation) | Kompletter weltweiter OSM-Date | .osm.pbf (~80 GB), .os | offen |
