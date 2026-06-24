@@ -16,7 +16,8 @@ const MIN_PASSWORD_LEN = 10 // identisch zu adminTenants (setreo-auth-extern-Min
 
 // Aktuelle Disclaimer-Version. Erhöhen, wenn der Haftungstext sich ändert → der Nutzer
 // muss dann erneut bestätigen (PK email+version in disclaimer_acceptances, Migration 031).
-const DISCLAIMER_VERSION = "1"
+// v2 (2026-06-24): Zustimmung umfasst jetzt zusätzlich AGB + Datenschutzerklärung (Erst-Login-Gate).
+const DISCLAIMER_VERSION = "2"
 
 export function accountRouter({ db, fetchImpl = globalThis.fetch, authExtern = null }) {
   const r = Router()
