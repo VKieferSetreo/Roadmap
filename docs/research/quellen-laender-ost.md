@@ -136,13 +136,6 @@
 - **url:** `https://geobroker.geobasis-bb.de/` (Produkt e48146bb-284b-4ac3-a946-9c96ffe8a341)
 - **prio:** P1
 - **sonstiges:** Netzgeometrie, KEINE GST-Restriktionen. Für Bauwerke/Brücken → ATKIS-Bauwerke-WFS der LGB (Geobroker, `bw_bdlm_wfs` o.ä. — zu-bestätigen).
-### 2.4 Geoportal Brandenburg / Open Data BB — **P3, verifiziert (Portal)**
-- **quelle:** Geoportal Brandenburg (GDI-BB) — >100 Anbieter, WMS/WFS/WCS + Metadaten
-- **betreiber:** GDI-BB · **format:** Portal/CSW + diverse OGC-Dienste
-- **apiEndpunkt:** null (Dienste je Thema im Portal auflösen)
-- **zugang:** offen — `https://geoportal.brandenburg.de/`
-- **verifiziert:** ja (Portal) · **prio:** P3
-- **sonstiges:** Open-Data-Geodaten BB auch in MetaVer (`https://metaver.de/`).
 ---
 
 # 3. MECKLENBURG-VORPOMMERN

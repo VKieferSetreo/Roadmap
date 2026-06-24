@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **74 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **73 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (49) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (5)
+**Legende:** 🟢 live getestet (49) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -29,7 +29,6 @@
 | 🟢 | Berlin | Berlin VIZ — Baustellen, Sperrungen und sonsti | Baustellen, Sperrungen, Störun | WFS 2.0 (GeoServer), D | offen |
 | 🟢 | Berlin | Detailnetz Berlin — Ingenieurbauwerke (Brücken | Brücken, Tunnel (Geometrie/Ide | WFS 2.0 (GML) | offen |
 | 🟢 | Berlin | VIZ Berlin — "Verkehrsredaktion" + "Landesmeld | Baustellen, Sperrungen (Featur | GeoJSON (statisch gene | offen |
-| ⚪ | Brandenburg | Geoportal Brandenburg (GDI-BB) — >100 Anbieter | Diverse Geodaten (Verkehr, Bau | Portal/CSW + diverse O | offen |
 | 🟢 | Brandenburg | INSPIRE-WFS Verkehrsnetze ATKIS Basis-DLM Bran | Verkehrsnetz-Topologie (Straße | WFS 2.0.0, GML 3.2.1;  | offen |
 | 🟡 | Brandenburg | Landesbetrieb Straßenwesen Brandenburg (LS) —  | Baustellen mit Sperrung >24h a | interaktive Web-Karte  | zu-bestätigen |
 | 🟡 | Bremen | ASV Bremen — Amt für Straßen und Verkehr (Brüc | 502 Brücken-Bauteile + Tunnel, | Web (Bauwerksportal br | eingeschränkt |
