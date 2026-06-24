@@ -183,9 +183,14 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
 
   /** VEMAGS-Bescheid (PDF, base64) → Fahrtweg-Strecken (1 je Fahrtwegteil) + Transport-Maße (T-567).
    *  Der PDF-Buffer wird NUR in-memory geparst und sofort verworfen (Auflage: nie speichern).
-   *  Rückbau: FEATURE_VEMAGS=off → 404 (FE blendet den Tab dann ebenfalls aus). */
+   *
+   *  ⚠️ DEAKTIVIERT (2026-06-24): Der VEMAGS-Streckenextraktor wird manuell NEU gebaut (Max liefert
+   *  das Modul). Bis dahin ist der Endpoint INERT — 404, AUSSER FEATURE_VEMAGS === "on" (Opt-in).
+   *  Off-by-default, damit ohne Env nichts läuft. Die Alt-Logik (external/vemags.js, abKnoten.js,
+   *  pdfText.js, data/ab_knoten_de.json) bleibt vorerst im Repo, wird aber durch das neue Modul
+   *  ERSETZT → hier nichts mehr dranbauen, bis das neue Modul steht (dann FE VEMAGS_AKTIV=true). */
   r.post("/vemags", asyncHandler(async (req, res) => {
-    if (process.env.FEATURE_VEMAGS === "off") throw new ApiError(404, "Nicht gefunden")
+    if (process.env.FEATURE_VEMAGS !== "on") throw new ApiError(404, "Nicht gefunden")
     const b64 = typeof req.body?.pdfBase64 === "string" ? req.body.pdfBase64.replace(/^data:[^,]*,/, "") : ""
     if (!b64) throw new ApiError(400, "pdfBase64 erforderlich")
     let buffer = Buffer.from(b64, "base64")

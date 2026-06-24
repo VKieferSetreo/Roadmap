@@ -32,6 +32,10 @@ const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: n
 // Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
 const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
 
+// VEMAGS-Upload aktuell deaktiviert: der Streckenextraktor wird manuell neu gebaut (Max liefert das
+// Modul). Tab bleibt sichtbar, aber ausgegraut + Hinweis. Auf true setzen, sobald das neue Modul steht.
+const VEMAGS_AKTIV = false
+
 /** Die Strecken-Quellen (= Tabs). Reihenfolge (Max): Datei · VEMAGS · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
@@ -314,16 +318,25 @@ export function RouteTab({ project }: { project: Project }) {
           {/* Quelle wählen */}
           <div className="inline-flex w-full rounded-md border border-neutral-200 bg-neutral-50 p-1">
             {STRECKE_TABS.map((opt) => {
+              // VEMAGS ist aktuell deaktiviert (Streckenextraktor wird neu gebaut) → ausgrauen,
+              // klickbar lassen für den Hinweis, aber nicht in den Tab wechseln.
+              const gesperrt = opt.id === "vemags" && !VEMAGS_AKTIV
               return (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => setTab(opt.id)}
+                  onClick={() =>
+                    gesperrt ? toast("Der VEMAGS-Upload ist aktuell nicht verfügbar.") : setTab(opt.id)
+                  }
+                  title={gesperrt ? "Aktuell nicht verfügbar" : undefined}
+                  aria-disabled={gesperrt}
                   className={cn(
-                    "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-sm font-medium transition-colors",
-                    tab === opt.id
-                      ? "bg-white text-primary-700 shadow-sm"
-                      : "text-neutral-500 hover:text-neutral-700",
+                    "flex flex-1 items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    gesperrt
+                      ? "cursor-not-allowed text-neutral-300"
+                      : tab === opt.id
+                        ? "cursor-pointer bg-white text-primary-700 shadow-sm"
+                        : "cursor-pointer text-neutral-500 hover:text-neutral-700",
                   )}
                 >
                   <opt.icon className="h-4 w-4 shrink-0" />

@@ -1,3 +1,7 @@
+// ⚠️ DEAKTIVIERT (2026-06-24) — WIRD ERSETZT: Der VEMAGS-Streckenextraktor wird manuell neu gebaut
+// (Max liefert das Modul). Im Endpoint off-by-default abgeschaltet (route.js: FEATURE_VEMAGS !== "on"
+// → 404). NICHT weiterentwickeln; bei der Neuauslieferung dieses Modul ersetzen.
+//
 // VEMAGS-Bescheid-Parser (T-567). Extrahiert aus dem TEXT eines VEMAGS-Bescheids (Großraum-/
 // Schwertransport-Genehmigung) den Fahrtweg (Punkt 9) als Strecken + die Transport-Maße.
 // Reine Textfunktion — die PDF→Text-Extraktion (in-memory, PDF wird NICHT gespeichert) liegt im
