@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **78 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **77 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (51) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (13) · ⚪ nur Portal (5)
+**Legende:** 🟢 live getestet (50) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (13) · ⚪ nur Portal (5)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -46,7 +46,6 @@
 | 🟢 | Mecklenburg-Vorpommern / Rostock | Rostock — Baustellen (OpenData.HRO) | Baustellen Stadtgebiet Rostock | GeoJSON / WFS / WMS /  | offen |
 | 🟢 | Mecklenburg-Vorpommern / Rostock | Rostock — Großraum- und Schwertransportrouten  | (a) empfohlene GST-Wege Rostoc | GeoJSON / WFS / WMS /  | offen |
 | 🔑 | Niedersachsen | Mobilithek (Bund) — NI als Datengeber (DATEX-I | Baustellen, Sperrungen, tempor | DATEX II (v2/v3, XML) | registrierung |
-| 🟢 | Niedersachsen | NLStBV INSPIRE WMS Straßennetz (DE-NI-SBV INSP | Klassifiziertes Straßennetz (I | WMS 1.3.0 (View); WFS  | offen |
 | 🔑 | Niedersachsen | NWSIB-online (Niedersächsisches Straßeninforma | Straßenbestand, Bauwerke (Brüc | Web-Auskunft (Login);  | eingeschränkt |
 | 🟢 | Niedersachsen | OpenGeoData Niedersachsen (LGLN ArcGIS Hub) | Klassifiziertes Straßennetz, D | CSV, KML, ZIP, GeoJSON | offen |
 | 🟡 | Niedersachsen | VMZ Niedersachsen (Verkehrsmanagementzentrale) | Verkehrslage, Baustellen (best | Web-Portal (Karte); ma | offen |

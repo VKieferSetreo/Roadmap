@@ -17,7 +17,6 @@
 | **P1** | HH | WFS/WMS Baustellen Hamburg (Verkehr OpenData) | Baustellen stadtweit | **verifiziert** |
 | **P1** | HH | WFS Baustellen Hauptverkehrs-/Bundesfernstraßen (LSBG) | Baustellen Hauptnetz | **verifiziert** |
 | **P1** | HH | WFS Bedarfsumleitungen Hamburg | Notumleitungen BAB/Kraftfahrstr. | **verifiziert** |
-| **P1** | NI | NLStBV INSPIRE WMS Straßennetz | klassifiziertes Straßennetz NI | **verifiziert** |
 | **P1** | NI | OpenGeoData NI (LGLN, ArcGIS Hub) | Straßennetz, DLM, ALKIS (GeoJSON/WFS) | **verifiziert** |
 | **P2** | SH | Open-Data SH — Strassenbaustellen (DATEX II via Mobilithek) | Baustellen DATEX II | verifiziert (Portal) |
 | **P2** | SH | Open-Data SH — Umleitungsstrecken (WFS) | Umleitungsrouten | zu-bestätigen |
@@ -50,28 +49,6 @@
 - **url:** `https://www.vmz-niedersachsen.de/`
 - **prio:** P2
 - **sonstiges:** Metadaten-Eintrag im Geoportal NI: `https://geoportal.geodaten.niedersachsen.de/harvest/srv/api/records/00a48b0d-3d2c-4811-b39f-6d594c9768ad` (zeitweise 503). NI-Baustellen werden zusätzlich über VMZ Bremen visualisiert (siehe 2.1).
-
-## 1.2 NLStBV — INSPIRE WMS Straßennetz (Landesbehörde für Straßenbau und Verkehr)
-
-- **quelle:** DE-NI-SBV INSPIRE Viewservice Straßennetz
-- **betreiber:** Nds. Landesbehörde für Straßenbau und Verkehr (NLStBV)
-- **datentyp:** klassifiziertes Straßennetz (INSPIRE TransportNetworks): RoadLink, TransportNode
-- **strassentyp:** A/B/L/K (Zuständigkeitsnetz NLStBV; ALKIS-/INSPIRE-konform)
-- **format:** WMS 1.3.0 (View); WFS analog vorhanden
-- **apiEndpunkt (verifiziert):**
-  - WMS GetCapabilities: `https://map.strassenbau.niedersachsen.de/srvms?map=INSPIRE_NLSTBV_STRASSE&version=1.3.0&request=GetCapabilities&service=wms` (live bestätigt)
-  - WMS-Layer: `TN.RoadTransportNetwork.RoadLink`, `TN.CommonTransportElements.TransportNode`
-  - Weitere View-Services (live): `…/srvms?map=NLSTBV_STRASSE&SERVICE=WMS&REQUEST=GetCapabilities` (Straßennetz nicht-INSPIRE), `…?map=NLSTBV_SBVDST…` (Dienststellen)
-- **update:** periodisch
-- **auth:** keine
-- **kosten:** keine („no conditions apply", „access constraints: none")
-- **lizenz:** INSPIRE-Nutzungsbedingungen; konkret bei NLStBV prüfen (i.d.R. CC BY 4.0 bei abgeleiteten Datensätzen)
-- **abdeckung:** Niedersachsen
-- **zugang:** offen (OGC WMS)
-- **verifiziert:** ja (GetCapabilities live)
-- **url:** `https://www.strassenbau.niedersachsen.de/startseite/service/geofachdaten_und_wms_kartendienste/geofachdaten-und-wms-kartendienste-133771.html`
-- **prio:** P1
-- **sonstiges:** Reines Netz/Topologie. Restriktions-/Bauwerksattribute (Höhe/Traglast) NICHT enthalten — die liegen in NWSIB (1.5) bzw. müssen aus Fachdaten ergänzt werden.
 ## 1.4 OpenGeoData Niedersachsen (LGLN ArcGIS Hub)
 
 - **quelle:** OpenGeoData NI
@@ -332,7 +309,7 @@
 
 ## Anhang B — Verifikations-Notizen
 
-- **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`), NI NLStBV INSPIRE WMS (Layer).
+- **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`).
 - **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, NI OpenGeoData Hub.
 - **Gated/blockiert:** NWSIB-online (Login), Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
 - **Casing-Hinweis:** Hamburg geodienste-Pfade sind teils case-sensitive (`hh_wfs_baustellen` lowercase vs. `HH_WFS_Brueckenbauwerke` mixed) — exakte Schreibweise aus Metadaten übernehmen.

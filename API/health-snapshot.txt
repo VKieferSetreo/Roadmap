@@ -35,7 +35,6 @@ OK   Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS 2808 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen 4045 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-gst-routen 4021 B
 🔑   Länder/Niedersachsen/Mobilithek-NI-DATEX                  Account/Key nötig
-OK   Länder/Niedersachsen/NLStBV-INSPIRE-WMS-Strassennetz      4041 B
 🔑   Länder/Niedersachsen/NWSIB-online                         Account/Key nötig
 OK   Länder/Niedersachsen/OpenGeoData-NI-LGLN-Hub              2394 B
 LEER Länder/Niedersachsen/VMZ-Niedersachsen                    (Endpunkt prüfen)
@@ -72,4 +71,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 100 getestet · OK 72 · LEER 19 · 🔑 9 übersprungen
+Σ 99 getestet · OK 71 · LEER 19 · 🔑 9 übersprungen

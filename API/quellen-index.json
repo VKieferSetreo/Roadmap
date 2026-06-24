@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 52,
+  "anzahl": 51,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -90,17 +90,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Niedersachsen/OpenGeoData-NI-LGLN-Hub",
       "test": "Länder/Niedersachsen/OpenGeoData-NI-LGLN-Hub/test.sh"
-    },
-    {
-      "name": "NLStBV INSPIRE WMS Straßennetz (DE-NI-SBV INSPIRE Viewservice)",
-      "ebene": "Niedersachsen",
-      "datentyp": "Klassifiziertes Straßennetz (INSPIRE TransportNetworks): RoadLink, TransportNode",
-      "format": "WMS 1.3.0 (View); WFS analog vorhanden",
-      "endpunkt": "https://map.strassenbau.niedersachsen.de/srvms?map=INSPIRE_NLSTBV_STRASSE&service=wms&version=1.3.0&request=GetCapabilities",
-      "lizenz": "INSPIRE-Nutzungsbedingungen (\"no conditions apply\"); i.d.R. CC BY 4.0 bei abgeleiteten Datensätzen — bei NLStBV prüfen",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Niedersachsen/NLStBV-INSPIRE-WMS-Strassennetz",
-      "test": "Länder/Niedersachsen/NLStBV-INSPIRE-WMS-Strassennetz/test.sh"
     },
     {
       "name": "MobiData BW IPL — Verkehrsmeldungen (LMS BW)",
