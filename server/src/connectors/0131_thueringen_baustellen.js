@@ -68,7 +68,11 @@ export const thueringenBaustellenConnector = {
   vollbestand: true,
 
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
-    const gj = await ladeGeoJSON({ timeoutMs })
+    // TLBV rendert den Landesbestand serverseitig (~80s, ~5 MB GeoJSON). Das globale
+    // EXTERNAL_TIMEOUT_MS (Worker 40s / Sync 25s) bricht den POST ab → Abruf failt still.
+    // Floor bei 150s gibt der Quelle Luft. ponytail: fester Floor; MBR-Tiling erst, wenn die
+    // Quelle noch träger wird (der /ping-Pfad ist durchs ~100s-Proxy-Limit ohnehin gedeckelt).
+    const gj = await ladeGeoJSON({ timeoutMs: Math.max(timeoutMs, 150000) })
     const feats = gj?.features ?? []
     // Abgelaufene Maßnahmen aussortieren — die Quelle liefert IS_ABGELAUFEN=1 mit (Live: 486/994).
     // Vollbestand-Reconcile deaktiviert dadurch bereits importierte Altlasten automatisch.
