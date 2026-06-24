@@ -25,6 +25,33 @@ export async function getTenantById(db, id) {
   return rows[0] ?? null
 }
 
+/** White-Label-Branding eines Mandanten (oder null). Eigene Query, damit die schlanken
+ *  Tenant-Lookups (id, slug, name) unverändert bleiben. */
+export async function getTenantBranding(db, id) {
+  const { rows } = await db.query("SELECT branding FROM tenants WHERE id = $1", [id])
+  return normalizeBranding(rows[0]?.branding)
+}
+
+/** Branding aus DB/Request säubern: nur erlaubte Felder, Hex-Format, Mime-Allowlist + Größen-Cap
+ *  fürs Logo (es reitet im /api/context-Payload → klein halten). Ungültiges → weggelassen. */
+export function normalizeBranding(raw) {
+  const b = typeof raw === "string" ? safeJson(raw) : raw
+  if (!b || typeof b !== "object") return null
+  const out = {}
+  if (typeof b.accent === "string" && /^#[0-9a-fA-F]{6}$/.test(b.accent)) out.accent = b.accent.toLowerCase()
+  if (typeof b.appName === "string" && b.appName.trim()) out.appName = b.appName.trim().slice(0, 60)
+  if (
+    typeof b.logo === "string" &&
+    /^data:image\/(png|jpeg|webp|svg\+xml);base64,[A-Za-z0-9+/=]+$/.test(b.logo) &&
+    b.logo.length <= 300_000 // ~220 KB — Header-Logo wird FE-seitig auf ~64px herunterskaliert
+  ) {
+    out.logo = b.logo
+  }
+  return Object.keys(out).length ? out : null
+}
+
+function safeJson(s) { try { return JSON.parse(s) } catch { return null } }
+
 /** Tenant eines Nutzers über tenant_members (E-Mail lowercase). */
 export async function getTenantForEmail(db, email) {
   const { rows } = await db.query(
@@ -37,7 +64,7 @@ export async function getTenantForEmail(db, email) {
 /** Volle Tenant-Shape-Liste (mitglieder + projekte) — Admin-Liste + Tenant-Switcher. */
 export async function listTenants(db) {
   const tenants = await db.query(
-    `SELECT t.id, t.slug, t.name, t.created_at, t.suspended_at,
+    `SELECT t.id, t.slug, t.name, t.created_at, t.suspended_at, t.branding,
        (SELECT count(*)::int FROM projects p WHERE p.tenant_id = t.id) AS projekte
      FROM tenants t ORDER BY t.created_at ASC`,
   )
@@ -88,5 +115,6 @@ export function rowToTenant(row, mitglieder = [], projekte = row.projekte ?? 0) 
     mitglieder,
     projekte: Number(projekte),
     suspended: Boolean(row.suspended_at), // T-346
+    branding: normalizeBranding(row.branding), // White-Label (null = Setreo-Standard)
   }
 }

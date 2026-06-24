@@ -27,6 +27,7 @@ import type {
   RoutePoint,
   SeatCode,
   ShareInfo,
+  Branding,
   SourceRequest,
   SourceRequestCreate,
   SourceRequestList,
@@ -54,8 +55,9 @@ export interface AppContext {
   /** true = Login über setreo-auth-extern (Kunden-Gateway) — eigenes Passwort änderbar,
    *  Logo führt zur Projektübersicht statt zum Hub-Admin. */
   extern?: boolean
-  /** Mandant des Nutzers (Admin: aktuell gewählter via X-Tenant). null = kein Mandant zugeordnet. */
-  tenant: { id: string; slug: string; name: string } | null
+  /** Mandant des Nutzers (Admin: aktuell gewählter via X-Tenant). null = kein Mandant zugeordnet.
+   *  branding = White-Label (Logo/Akzentfarbe/Tab-Name) → FE thematisiert beim Laden. */
+  tenant: { id: string; slug: string; name: string; branding?: Branding | null } | null
   /** Alle Mandanten — nur für Admins gefüllt (Tenant-Switcher). */
   tenants?: Tenant[]
 }
@@ -241,6 +243,10 @@ export const api = {
 
   renameTenant: (id: string, name: string) =>
     axiosClient<Tenant>({ url: `/admin/tenants/${id}`, method: "PATCH", data: { name } }),
+
+  /** White-Label-Branding setzen (Logo/Akzentfarbe/Tab-Name). branding=null setzt zurück. */
+  saveTenantBranding: (id: string, branding: Branding | null) =>
+    axiosClient<Tenant>({ url: `/admin/tenants/${id}/branding`, method: "PUT", data: { branding } }),
 
   deleteTenant: (id: string) =>
     axiosClient<void>({ url: `/admin/tenants/${id}`, method: "DELETE" }),

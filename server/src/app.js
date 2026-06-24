@@ -45,7 +45,7 @@ import { syncRouter } from "./routes/sync.js"
 import { accountRouter } from "./routes/account.js"
 import { routeRouter } from "./routes/route.js"
 import { analyticsRouter } from "./routes/analytics.js"
-import { listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
+import { getTenantBranding, listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
 // Version single-sourced aus server/package.json (kein doppeltes Pflegen, erscheint in den
@@ -216,7 +216,10 @@ export function createApp({
       // extern = Login über setreo-auth-extern (Kunden-Gateway). Steuert FE: eigenes
       // Passwort änderbar + Logo führt zur Projektübersicht statt zum Hub-Admin.
       extern: req.user?.gateway === "extern",
-      tenant: tenant ? { id: tenant.id, slug: tenant.slug, name: tenant.name } : null,
+      // branding = White-Label (Logo/Akzentfarbe/Tab-Name) des aktiven Mandanten → FE thematisiert beim Laden.
+      tenant: tenant
+        ? { id: tenant.id, slug: tenant.slug, name: tenant.name, branding: await getTenantBranding(db, tenant.id) }
+        : null,
       ...(isAdmin && { tenants: await listTenants(db) }),
     })
   }))

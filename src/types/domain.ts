@@ -227,6 +227,16 @@ export interface TenantMember {
   lastSeen?: string | null
 }
 
+/** White-Label-Branding eines Mandanten (null/leere Felder = Setreo-Standard).
+ *  accent = eine Akzentfarbe (#rrggbb) → die primary-Ramp wird daraus berechnet. */
+export interface Branding {
+  accent?: string | null
+  /** Tab-Titel (document.title); leer = „Roadmap — Setreo". */
+  appName?: string | null
+  /** Kundenlogo als Data-URL (klein, FE-seitig herunterskaliert). */
+  logo?: string | null
+}
+
 /** Mandant (Kunde) — Setreo-Admin verwaltet Mandanten + Nutzer. */
 export interface Tenant {
   id: string
@@ -236,6 +246,8 @@ export interface Tenant {
   projekte: number
   /** T-346: administrativ ausgesetzt (kein Produktzugriff für die Mitglieder). */
   suspended?: boolean
+  /** White-Label (null = Setreo-Standard). */
+  branding?: Branding | null
 }
 
 /** Lizenz eines Mandanten (Plan, Seats, Laufzeit). Buchhaltung rechnet extern. */

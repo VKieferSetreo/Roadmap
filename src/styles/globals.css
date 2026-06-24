@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  /* White-Label: primary-Ramp als RGB-Kanäle. Default = Setreo-Grün; applyBranding()
+     überschreibt diese pro Mandant zur Laufzeit (document.documentElement.style). */
+  :root {
+    --primary-50: 245 249 236;
+    --primary-100: 231 242 205;
+    --primary-200: 210 230 156;
+    --primary-300: 179 213 102;
+    --primary-400: 155 199 63;
+    --primary-500: 135 181 45;
+    --primary-600: 106 146 33;
+    --primary-700: 82 113 33;
+    --primary-800: 63 85 32;
+    --primary-900: 45 62 21;
+    --primary-950: 22 33 10;
+  }
   html,
   body,
   #root {

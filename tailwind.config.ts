@@ -8,19 +8,22 @@ export default {
   theme: {
     extend: {
       colors: {
+        // White-Label: primary-Ramp läuft über CSS-Variablen (RGB-Kanäle), damit sie pro
+        // Mandant zur Laufzeit überschrieben werden kann (applyBranding). Defaults = Setreo-Grün
+        // in src/styles/globals.css :root. Alpha-Modifier (z.B. primary-300/70) bleiben erhalten.
         primary: {
-          DEFAULT: "#87b52d",
-          50: "#F5F9EC",
-          100: "#E7F2CD",
-          200: "#D2E69C",
-          300: "#B3D566",
-          400: "#9BC73F",
-          500: "#87B52D",
-          600: "#6A9221",
-          700: "#527121",
-          800: "#3F5520",
-          900: "#2D3E15",
-          950: "#16210A",
+          DEFAULT: "rgb(var(--primary-500) / <alpha-value>)",
+          50: "rgb(var(--primary-50) / <alpha-value>)",
+          100: "rgb(var(--primary-100) / <alpha-value>)",
+          200: "rgb(var(--primary-200) / <alpha-value>)",
+          300: "rgb(var(--primary-300) / <alpha-value>)",
+          400: "rgb(var(--primary-400) / <alpha-value>)",
+          500: "rgb(var(--primary-500) / <alpha-value>)",
+          600: "rgb(var(--primary-600) / <alpha-value>)",
+          700: "rgb(var(--primary-700) / <alpha-value>)",
+          800: "rgb(var(--primary-800) / <alpha-value>)",
+          900: "rgb(var(--primary-900) / <alpha-value>)",
+          950: "rgb(var(--primary-950) / <alpha-value>)",
         },
         accent: {
           DEFAULT: "#E8B23F",

@@ -6,6 +6,7 @@ import { create } from "zustand"
 import { api, type AppContext } from "@/api/roadmap"
 import { setTenantHeader } from "@/api/client"
 import { slugFromPath } from "@/lib/tenantUrl"
+import { applyBranding } from "@/lib/branding"
 import type { Tenant } from "@/types/domain"
 
 interface ContextStore {
@@ -58,6 +59,7 @@ export const useContextStore = create<ContextStore>((set) => ({
         tenants: ctx.tenants ?? [],
       })
       if (ctx.isAdmin && ctx.tenant) setTenantHeader(ctx.tenant.slug)
+      applyBranding(ctx.tenant?.branding) // White-Label: Akzentfarbe + Tab-Titel des Mandanten anwenden
     } catch {
       // T-479: Abruf gescheitert ≠ „kein Mandant". Flag setzen, damit das AppLayout
       // einen Wiederholen-Screen zeigt statt fälschlich „Kein Mandant zugeordnet".
@@ -69,6 +71,7 @@ export const useContextStore = create<ContextStore>((set) => ({
     setTenantHeader(slug)
     const ctx = await api.context()
     set({ tenant: ctx.tenant, tenants: ctx.tenants ?? [] })
+    applyBranding(ctx.tenant?.branding)
   },
 
   refreshTenants: async () => {

@@ -14,13 +14,17 @@ import {
   Copy,
   Download,
   FolderKanban,
+  ImageOff,
   KeyRound,
+  Palette,
   Pause,
   Pencil,
   Play,
   Plus,
+  RotateCcw,
   Save,
   Trash2,
+  Upload,
   UserX,
   X,
 } from "lucide-react"
@@ -33,7 +37,8 @@ import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { api } from "@/api/roadmap"
 import { formatDateDE } from "@/lib/format"
-import type { SeatCode, Tenant, TenantMember, TenantRole } from "@/types/domain"
+import { primaryRampFromHex } from "@/lib/branding"
+import type { Branding, SeatCode, Tenant, TenantMember, TenantRole } from "@/types/domain"
 import { ApiError } from "@/api/client"
 
 const MIN_PW = 10
@@ -408,6 +413,8 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
 
             <TenantLicensePanel tenant={tenant} />
 
+            <TenantBrandingPanel tenant={tenant} onChanged={onChanged} />
+
             {/* Nutzer-Tabelle */}
             <div className="overflow-x-auto rounded-lg border border-neutral-200">
               <table className="w-full min-w-[560px] text-sm">
@@ -493,6 +500,188 @@ function TenantTile({ tenant, onChanged }: { tenant: Tenant; onChanged: () => vo
       </CardContent>
     </Card>
   )
+}
+
+// White-Label: EINE Akzentfarbe (Hex) → primary-Ramp wird daraus berechnet; Anzeigename (Tab-Titel)
+// + Kundenlogo. Logo wird beim Upload auf 64px Höhe herunterskaliert (reitet im /api/context-Payload).
+function TenantBrandingPanel({ tenant, onChanged }: { tenant: Tenant; onChanged: () => void }) {
+  const [accent, setAccent] = useState(tenant.branding?.accent ?? "#87b52d")
+  const [appName, setAppName] = useState(tenant.branding?.appName ?? "")
+  const [logo, setLogo] = useState<string | null>(tenant.branding?.logo ?? null)
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    setAccent(tenant.branding?.accent ?? "#87b52d")
+    setAppName(tenant.branding?.appName ?? "")
+    setLogo(tenant.branding?.logo ?? null)
+  }, [tenant])
+
+  const hexOk = /^#[0-9a-fA-F]{6}$/.test(accent)
+  const ramp = hexOk ? primaryRampFromHex(accent) : null
+
+  const onFile = async (file?: File | null) => {
+    if (!file) return
+    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type)) {
+      toast.error("Logo: PNG, JPEG, WebP oder SVG.")
+      return
+    }
+    try {
+      const dataUrl = await fileToLogo(file)
+      if (dataUrl.length > 300_000) {
+        toast.error("Logo zu groß (max. ~220 KB nach Skalierung). Bitte einfacheres Bild.")
+        return
+      }
+      setLogo(dataUrl)
+    } catch {
+      toast.error("Logo konnte nicht gelesen werden.")
+    }
+  }
+
+  const save = async (reset = false) => {
+    if (!reset && !hexOk) {
+      toast.error("Akzentfarbe: Hex-Code wie #1a73e8.")
+      return
+    }
+    setBusy(true)
+    try {
+      const payload: Branding | null = reset
+        ? null
+        : { accent: accent.toLowerCase(), appName: appName.trim() || null, logo: logo || null }
+      await api.saveTenantBranding(tenant.id, payload)
+      if (reset) {
+        setAccent("#87b52d")
+        setAppName("")
+        setLogo(null)
+      }
+      onChanged()
+      toast.success(reset ? "Branding zurückgesetzt." : "Branding gespeichert.")
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Speichern fehlgeschlagen.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="mb-3 rounded-lg border border-neutral-200 p-3">
+      <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+        <Palette className="h-3.5 w-3.5" /> Branding (White-Label)
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {/* Akzentfarbe — eine Farbe, Abstufungen automatisch */}
+        <div>
+          <Label>Akzentfarbe</Label>
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="color"
+              value={hexOk ? accent : "#87b52d"}
+              onChange={(e) => setAccent(e.target.value)}
+              aria-label="Akzentfarbe wählen"
+              className="h-9 w-12 cursor-pointer rounded border border-neutral-200 bg-white p-1"
+            />
+            <Input
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              placeholder="#87b52d"
+              className="h-9 max-w-[150px] font-mono"
+            />
+          </div>
+          {ramp ? (
+            <div className="mt-2 flex overflow-hidden rounded border border-neutral-200">
+              {Object.values(ramp).map((ch, i) => (
+                <div key={i} className="h-5 flex-1" style={{ backgroundColor: `rgb(${ch})` }} title={`rgb(${ch})`} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-1 text-[11px] text-severity-kritisch">Ungültiger Hex-Code.</p>
+          )}
+          <p className="mt-1 text-[11px] text-neutral-400">
+            Nur diese eine Farbe setzen — die Abstufungen werden automatisch daraus berechnet.
+          </p>
+        </div>
+
+        {/* Anzeigename + Logo */}
+        <div className="flex flex-col gap-3">
+          <div>
+            <Label htmlFor={`appname-${tenant.id}`}>Anzeigename (Browser-Tab)</Label>
+            <Input
+              id={`appname-${tenant.id}`}
+              value={appName}
+              onChange={(e) => setAppName(e.target.value)}
+              placeholder="z.B. Krause Transporte"
+              maxLength={60}
+              className="mt-1 h-9"
+            />
+          </div>
+          <div>
+            <Label>Logo (oben im Kopf)</Label>
+            <div className="mt-1 flex flex-wrap items-center gap-3">
+              <div className="flex h-10 w-32 items-center justify-center rounded border border-dashed border-neutral-200 bg-neutral-50">
+                {logo ? (
+                  <img src={logo} alt="Logo-Vorschau" className="max-h-9 max-w-[120px]" />
+                ) : (
+                  <span className="text-[11px] text-neutral-400">kein Logo</span>
+                )}
+              </div>
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50">
+                <Upload className="h-3.5 w-3.5" /> Hochladen
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => void onFile(e.target.files?.[0])}
+                />
+              </label>
+              {logo ? (
+                <button
+                  type="button"
+                  onClick={() => setLogo(null)}
+                  className="inline-flex cursor-pointer items-center gap-1 text-xs text-neutral-400 transition-colors hover:text-severity-kritisch"
+                >
+                  <ImageOff className="h-3.5 w-3.5" /> Entfernen
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <Button variant="ghost" size="sm" onClick={() => void save(true)} disabled={busy} className="text-neutral-500">
+          <RotateCcw className="h-3.5 w-3.5" /> Auf Setreo zurücksetzen
+        </Button>
+        <Button size="sm" onClick={() => void save(false)} loading={busy}>
+          <Save className="h-3.5 w-3.5" /> Branding speichern
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// Logo auf 64px Höhe herunterskalieren (PNG, klein fürs /api/context-Payload). SVG bleibt Vektor.
+async function fileToLogo(file: File): Promise<string> {
+  const dataUrl = await new Promise<string>((res, rej) => {
+    const fr = new FileReader()
+    fr.onload = () => res(String(fr.result))
+    fr.onerror = () => rej(new Error("read"))
+    fr.readAsDataURL(file)
+  })
+  if (file.type === "image/svg+xml") return dataUrl
+  const img = await new Promise<HTMLImageElement>((res, rej) => {
+    const i = new Image()
+    i.onload = () => res(i)
+    i.onerror = () => rej(new Error("img"))
+    i.src = dataUrl
+  })
+  const h = 64
+  const w = Math.max(1, Math.round((img.width / img.height) * h))
+  const canvas = document.createElement("canvas")
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return dataUrl
+  ctx.drawImage(img, 0, 0, w, h)
+  return canvas.toDataURL("image/png")
 }
 
 // Lizenz + Seat-Codes eines Mandanten. Lädt beim Aufklappen (GET liefert license + codes).

@@ -10,7 +10,7 @@ import { auditLog, rowToAudit } from "../auditLog.js"
 import { placeholders } from "../dbBatch.js"
 import { requireRole, requireTenantAdminParam } from "../auth.js"
 import { generateSeatCodes, listSeatCodes } from "../seatCodes.js"
-import { getTenantById, listTenants, rowToTenant, slugError, tenantMembers } from "../tenants.js"
+import { getTenantById, listTenants, normalizeBranding, rowToTenant, slugError, tenantMembers } from "../tenants.js"
 import { anonymizeTenant, exportTenant } from "../tenantErasure.js"
 import { ApiError, asyncHandler, isUuid } from "../util.js"
 
@@ -103,6 +103,20 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
       [req.params.id, name],
     )
     if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    res.json(rowToTenant(rows[0], await tenantMembers(db, rows[0].id), await projectCount(db, rows[0].id)))
+  }))
+
+  /** White-Label-Branding setzen (Logo/Akzentfarbe/Tab-Name). branding=null setzt auf Setreo-Standard
+   *  zurück. Validierung (Hex/Mime/Größe) in normalizeBranding — Ungültiges wird stillschweigend verworfen. */
+  r.put("/:id/branding", adminOnly, asyncHandler(async (req, res) => {
+    if (!isUuid(req.params.id)) throw new ApiError(404, "Mandant nicht gefunden")
+    const branding = normalizeBranding(req.body?.branding)
+    const { rows } = await db.query(
+      "UPDATE tenants SET branding = $2 WHERE id = $1 RETURNING *",
+      [req.params.id, branding ? JSON.stringify(branding) : null],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    await auditLog(db, { tenantId: req.params.id, actorEmail: req.ctx?.email, action: "tenant.branding", detail: branding ? Object.keys(branding).join(",") : "reset" })
     res.json(rowToTenant(rows[0], await tenantMembers(db, rows[0].id), await projectCount(db, rows[0].id)))
   }))
 

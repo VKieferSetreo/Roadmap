@@ -32,6 +32,20 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const email = identity?.email ?? profile.email
   const init = initialsFromEmail(email)
 
+  // White-Label: Kundenlogo statt Setreo-Logo, wenn der Mandant eines hinterlegt hat.
+  const logoUrl = tenant?.branding?.logo
+  const brand = logoUrl ? (
+    <img
+      src={logoUrl}
+      alt={tenant?.name ?? "Logo"}
+      className="flex-shrink-0 select-none"
+      style={{ height: 32, width: "auto", maxWidth: 180 }}
+      draggable={false}
+    />
+  ) : (
+    <SetreoLogo height={32} />
+  )
+
   // Mandantenwechsel: Header persistieren (überlebt Reload via localStorage) und die
   // Seite komplett neu laden — so fetchen alle Komponenten (Projekte, Datenbank, Karte)
   // sauber unter dem neuen Mandanten, ohne Stale-State.
@@ -61,7 +75,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
           zum Setreo-Hub (Domain-Root, am /roadmap-Basename vorbei). */}
       {extern ? (
         <Link to="/" className="flex items-center gap-3" aria-label="Zur Projektübersicht">
-          <SetreoLogo height={32} />
+          {brand}
           <span className="text-neutral-300" aria-hidden>
             |
           </span>
@@ -69,7 +83,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
         </Link>
       ) : (
         <a href="/" className="flex items-center gap-3" aria-label="Zurück zum Setreo-Hub">
-          <SetreoLogo height={32} />
+          {brand}
           <span className="text-neutral-300" aria-hidden>
             |
           </span>

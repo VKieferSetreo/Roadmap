@@ -28,7 +28,10 @@ export function VemagsRouteSelectDialog({
 }) {
   const strecken = result?.strecken ?? []
   // Nur ladbare Fahrtwegteile (≥2 Wegpunkte) sind wählbar; Standard: alle vorausgewählt.
-  const ladbar = useMemo(() => strecken.map((s, i) => ({ s, i })).filter(({ s }) => s.points.length >= 2), [strecken])
+  const ladbar = useMemo(
+    () => (result?.strecken ?? []).map((s, i) => ({ s, i })).filter(({ s }) => s.points.length >= 2),
+    [result],
+  )
   const [selected, setSelected] = useState<Set<number>>(() => new Set(ladbar.map(({ i }) => i)))
 
   if (!open || !result) return null

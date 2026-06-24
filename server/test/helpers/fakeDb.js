@@ -72,6 +72,10 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT id, slug, name FROM tenants WHERE id = $1")) {
       return ok(state.tenants.filter((t) => t.id === params[0]))
     }
+    if (sql.startsWith("SELECT branding FROM tenants WHERE id = $1")) {
+      const t = state.tenants.find((x) => x.id === params[0])
+      return ok([{ branding: t?.branding ?? null }])
+    }
     if (sql.startsWith("SELECT t.id, t.slug, t.name, t.valid_until, t.suspended_at FROM tenants t JOIN tenant_members m")) {
       const member = state.members.find((m) => m.email === params[0])
       return ok(member ? state.tenants.filter((t) => t.id === member.tenant_id) : [])
@@ -111,6 +115,12 @@ export function createFakeDb() {
       const row = state.tenants.find((t) => t.id === params[0])
       if (!row) return ok([])
       row.name = params[1]
+      return ok([row])
+    }
+    if (sql.startsWith("UPDATE tenants SET branding = $2")) {
+      const row = state.tenants.find((t) => t.id === params[0])
+      if (!row) return ok([])
+      row.branding = params[1] // JSON-String oder null (normalizeBranding verarbeitet beides)
       return ok([row])
     }
     if (sql.startsWith("DELETE FROM tenants WHERE id = $1")) {

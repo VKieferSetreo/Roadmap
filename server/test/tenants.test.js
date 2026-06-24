@@ -92,6 +92,7 @@ describe("admin tenants API", () => {
       mitglieder: [{ email: "vki@setreo.de", role: "user", lastSeen: null }], // T-426
       projekte: 1,
       suspended: false, // T-346
+      branding: null, // White-Label (null = Setreo-Standard)
     })
   })
 
