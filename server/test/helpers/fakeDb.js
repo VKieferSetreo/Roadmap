@@ -366,10 +366,12 @@ export function createFakeDb() {
 
     // ── projects ──────────────────────────────────────────────────────────────
     // ── Ordner (T-177) ──────────────────────────────────────────────────────
-    if (sql.startsWith("SELECT * FROM folders WHERE tenant_id = $1 ORDER BY")) {
+    // owner-aware (058): geteilt (NULL) ODER eigen ODER Admin. params [tenant, email, isAdmin].
+    if (sql.startsWith("SELECT * FROM folders WHERE tenant_id = $1 AND (owner_email")) {
+      const [tid, email, isAdmin] = params
       return ok(
         state.folders
-          .filter((f) => f.tenant_id === params[0])
+          .filter((f) => f.tenant_id === tid && (f.owner_email == null || f.owner_email === email || isAdmin === true))
           .sort((a, b) => a.sort_order - b.sort_order || String(a.name).localeCompare(b.name)),
       )
     }
@@ -388,33 +390,60 @@ export function createFakeDb() {
       )
     }
     if (sql.startsWith("SELECT * FROM folders WHERE id = $1 AND tenant_id = $2")) {
-      return ok(state.folders.filter((f) => f.id === params[0] && f.tenant_id === params[1]))
+      // getParent/PATCH-Load hängen den owner-Filter an (params [id, tenant, email, isAdmin]);
+      // die Re-Read-Variante hat nur [id, tenant] → dann keine owner-Einschränkung.
+      const [id, tid, email, isAdmin] = params
+      return ok(
+        state.folders.filter(
+          (f) => f.id === id && f.tenant_id === tid &&
+            (params.length < 3 || f.owner_email == null || f.owner_email === email || isAdmin === true),
+        ),
+      )
     }
-    if (sql.startsWith("INSERT INTO folders (tenant_id, parent_id, name)")) {
+    if (sql.startsWith("INSERT INTO folders (tenant_id, parent_id, name")) {
       const row = {
         id: randomUUID(),
         tenant_id: params[0],
         parent_id: params[1] ?? null,
         name: params[2],
+        owner_email: params[3] ?? null,
         sort_order: 0,
         created_at: now(),
       }
       state.folders.push(row)
       return ok([row])
     }
-    if (sql.startsWith("UPDATE folders SET name = $2, parent_id = $3 WHERE id = $1")) {
+    if (sql.startsWith("UPDATE folders SET name = $2, parent_id = $3")) {
       const row = state.folders.find((f) => f.id === params[0])
       if (!row) return ok([])
       row.name = params[1]
       row.parent_id = params[2] ?? null
+      row.owner_email = params[3] ?? null
       return ok([row])
     }
+    // 058-Kaskade: owner der Unterstruktur (Ordner + enthaltene Projekte) angleichen.
+    if (sql.startsWith("UPDATE folders SET owner_email = $2 WHERE tenant_id = $1 AND id = ANY")) {
+      const [tid, owner, ids] = params
+      for (const f of state.folders) if (f.tenant_id === tid && ids.includes(f.id)) f.owner_email = owner ?? null
+      return ok([])
+    }
+    if (sql.startsWith("UPDATE projects SET owner_email = $2 WHERE tenant_id = $1 AND folder_id = ANY")) {
+      const [tid, owner, ids] = params
+      for (const p of state.projects) if (p.tenant_id === tid && ids.includes(p.folder_id)) p.owner_email = owner ?? null
+      return ok([])
+    }
     if (sql.startsWith("DELETE FROM folders WHERE id = $1 AND tenant_id = $2")) {
+      const [id, tid, email, isAdmin] = params
+      // owner-Sichtbarkeit (params ab $3): fremde private Ordner sind für Nicht-Admins nicht löschbar.
+      const target = state.folders.find((f) => f.id === id && f.tenant_id === tid)
+      if (!target || (params.length >= 3 && !(target.owner_email == null || target.owner_email === email || isAdmin === true))) {
+        return ok([], 0)
+      }
       const before = state.folders.length
       // ON DELETE CASCADE (Unterordner) + projects.folder_id ON DELETE SET NULL nachbilden
       const del = new Set(
         state.folders
-          .filter((f) => (f.id === params[0] || f.parent_id === params[0]) && f.tenant_id === params[1])
+          .filter((f) => (f.id === id || f.parent_id === id) && f.tenant_id === tid)
           .map((f) => f.id),
       )
       if (!del.size) return ok([], 0)
@@ -423,10 +452,12 @@ export function createFakeDb() {
       return ok([], before - state.folders.length)
     }
 
-    if (sql.startsWith("SELECT * FROM projects WHERE tenant_id = $1 ORDER BY updated_at DESC")) {
+    // owner-aware LIST (058): geteilt ODER eigen ODER Admin. params [tenant, email, isAdmin].
+    if (sql.startsWith("SELECT * FROM projects WHERE tenant_id = $1 AND (owner_email")) {
+      const [tid, email, isAdmin] = params
       return ok(
         state.projects
-          .filter((p) => p.tenant_id === params[0])
+          .filter((p) => p.tenant_id === tid && (p.owner_email == null || p.owner_email === email || isAdmin === true))
           .sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1)),
       )
     }
@@ -442,6 +473,7 @@ export function createFakeDb() {
         distanz_km: null,
         fahrzeit_min: null,
         created_by: params[6],
+        owner_email: null,
         created_at: now(),
         updated_at: now(),
       }
@@ -449,7 +481,14 @@ export function createFakeDb() {
       return ok([row])
     }
     if (sql.startsWith("SELECT * FROM projects WHERE id = $1 AND tenant_id = $2")) {
-      return ok(state.projects.filter((p) => p.id === params[0] && p.tenant_id === params[1]))
+      // loadProjectRow hängt den owner-Filter an (params [id, tenant, email, isAdmin]).
+      const [id, tid, email, isAdmin] = params
+      return ok(
+        state.projects.filter(
+          (p) => p.id === id && p.tenant_id === tid &&
+            (params.length < 3 || p.owner_email == null || p.owner_email === email || isAdmin === true),
+        ),
+      )
     }
     if (sql.startsWith("SELECT * FROM projects WHERE id = $1")) {
       return ok(state.projects.filter((p) => p.id === params[0]))
@@ -461,8 +500,8 @@ export function createFakeDb() {
     if (sql.startsWith("UPDATE projects SET name = $2,")) {
       const row = state.projects.find((p) => p.id === params[0])
       if (!row) return ok([])
-      // T-466: optionale Version-Precondition (params[7] = erwartete Version) → 0 Rows bei Mismatch
-      if (params[7] !== undefined && (row.version ?? 0) !== params[7]) return ok([], 0)
+      // 058: owner_email = $8 eingefügt → Version-Precondition wanderte auf $9 (params[8]).
+      if (params[8] !== undefined && (row.version ?? 0) !== params[8]) return ok([], 0)
       Object.assign(row, {
         name: params[1],
         routes: J(params[2]),
@@ -470,6 +509,7 @@ export function createFakeDb() {
         zeitraum: J(params[4]),
         archived_at: params[5],
         folder_id: params[6],
+        owner_email: params[7] ?? null,
         version: (row.version ?? 0) + 1,
         updated_at: now(),
       })
@@ -487,10 +527,14 @@ export function createFakeDb() {
       return ok([], 1)
     }
     if (sql.startsWith("DELETE FROM projects WHERE id = $1 AND tenant_id = $2")) {
+      const [id, tid, email, isAdmin] = params
+      // owner-Sichtbarkeit (params ab $3): fremde private Projekte sind für Nicht-Admins nicht löschbar.
+      const target = state.projects.find((p) => p.id === id && p.tenant_id === tid)
+      if (!target || (params.length >= 3 && !(target.owner_email == null || target.owner_email === email || isAdmin === true))) {
+        return ok([], 0)
+      }
       const before = state.projects.length
-      state.projects = state.projects.filter(
-        (p) => !(p.id === params[0] && p.tenant_id === params[1]),
-      )
+      state.projects = state.projects.filter((p) => !(p.id === id && p.tenant_id === tid))
       const removed = before - state.projects.length
       if (removed) {
         // FK ON DELETE CASCADE

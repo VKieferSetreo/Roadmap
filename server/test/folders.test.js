@@ -91,6 +91,50 @@ describe("Folders API (T-177)", () => {
     expect(res.status).toBe(404)
   })
 
+  it("private Ordner: nur Besitzer + Admin sehen sie, andere Mitglieder nicht (kein Leak)", async () => {
+    const { app } = makeApp()
+    const alice = { "X-Auth-Email": "alice@setreo.de", "X-Auth-Roles": "" } // intern, Nicht-Admin
+    const bob = { "X-Auth-Email": "bob@setreo.de", "X-Auth-Roles": "" }
+
+    const priv = await request(app).post("/api/folders").set(alice).send({ name: "Alice Privat", private: true })
+    expect(priv.status).toBe(201)
+    expect(priv.body.owner).toBe("alice@setreo.de")
+
+    // Bob (anderes Mitglied) sieht den privaten Ordner NICHT und kann ihn nicht löschen.
+    const bobList = await request(app).get("/api/folders").set(bob)
+    expect(bobList.body.folders.find((f) => f.id === priv.body.id)).toBeUndefined()
+    expect((await request(app).delete(`/api/folders/${priv.body.id}`).set(bob)).status).toBe(404)
+
+    // Besitzerin sieht ihn.
+    const aliceList = await request(app).get("/api/folders").set(alice)
+    expect(aliceList.body.folders.find((f) => f.id === priv.body.id)).toBeDefined()
+
+    // Setreo-Admin (Default-Dev-Admin) sieht alles (Max-Entscheid).
+    const adminList = await request(app).get("/api/folders")
+    expect(adminList.body.folders.find((f) => f.id === priv.body.id)).toBeDefined()
+  })
+
+  it("private Projekte (im privaten Ordner) sind nur für den Besitzer sichtbar", async () => {
+    const { app } = makeApp()
+    const alice = { "X-Auth-Email": "alice@setreo.de", "X-Auth-Roles": "" }
+    const bob = { "X-Auth-Email": "bob@setreo.de", "X-Auth-Roles": "" }
+
+    const folder = (await request(app).post("/api/folders").set(alice).send({ name: "Geheim", private: true })).body
+    const proj = (await request(app).post("/api/projects").set(alice).send({ name: "Geheimprojekt" })).body
+    // In den privaten Ordner ziehen → erbt dessen Zone (owner = alice).
+    const moved = await request(app).patch(`/api/projects/${proj.id}`).set(alice).send({ folderId: folder.id })
+    expect(moved.status).toBe(200)
+    expect(moved.body.owner).toBe("alice@setreo.de")
+
+    // Bob sieht es weder in der Liste noch per Direktzugriff.
+    const bobList = await request(app).get("/api/projects").set(bob)
+    expect(bobList.body.projects.find((p) => p.id === proj.id)).toBeUndefined()
+    expect((await request(app).get(`/api/projects/${proj.id}`).set(bob)).status).toBe(404)
+
+    // Besitzerin schon.
+    expect((await request(app).get(`/api/projects/${proj.id}`).set(alice)).status).toBe(200)
+  })
+
   it("isoliert Ordner zwischen Mandanten", async () => {
     const { app, db } = makeApp()
     const other = db.seedTenant({ slug: "enercon", name: "Enercon" })

@@ -205,14 +205,17 @@ export interface Project {
   archiviertAm?: string | null
   /** Ordner-Zuordnung (T-177), null/undefined = Wurzelebene. */
   folderId?: string | null
+  /** Privatheit (058): null = geteilt (alle Mandanten-Mitglieder), gesetzt = privat (nur Besitzer). */
+  owner?: string | null
 }
 
-/** Projekt-Ordner (T-177) — tenant-geteilt. parentId=null → Überordner, sonst Unterordner. */
+/** Projekt-Ordner (T-177). parentId=null → Überordner. owner: null = geteilt, gesetzt = privat (058). */
 export interface Folder {
   id: string
   name: string
   parentId: string | null
   sortOrder: number
+  owner?: string | null
 }
 
 /** Rolle eines Nutzers innerhalb seines Mandanten. */

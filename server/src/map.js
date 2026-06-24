@@ -25,6 +25,7 @@ export function rowToProject(row, findings = [], share = null) {
     tenantId: row.tenant_id,
     erstelltVon: row.created_by ?? null, // Ersteller-E-Mail (Tracking + Mail-Empfänger + Icon)
     folderId: row.folder_id ?? null, // Ordner-Zuordnung (T-177), null = Wurzel
+    owner: row.owner_email ?? null, // null = geteilt (alle Mandanten-Mitglieder); gesetzt = privat
     routes: row.routes ?? [],
     transport: row.transport ?? {},
     zeitraum: row.zeitraum ?? {},

@@ -14,6 +14,8 @@ import { buildSeedProjects } from "@/lib/mock/seed"
 import { api, type ProjectPatch } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import { isLive } from "./datasource"
+import { useFolderStore } from "./folders"
+import { useContextStore } from "./context"
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 const now = () => new Date().toISOString()
@@ -60,8 +62,9 @@ interface ProjectStore {
   /** Projekt archivieren (true) bzw. wiederherstellen (false). */
   archiveProject: (id: string, archiviert: boolean) => void
   removeProject: (id: string) => void
-  /** Projekt einem Ordner zuordnen (T-177); folderId=null → zurück auf Wurzelebene. */
-  setProjectFolder: (id: string, folderId: string | null) => void
+  /** Projekt einem Ordner zuordnen (T-177); folderId=null → Wurzel. opts.private (058): bei
+   *  Wurzel-Drop die Zielzone (true = privat, false = geteilt); in einen Ordner wird sie geerbt. */
+  setProjectFolder: (id: string, folderId: string | null, opts?: { private?: boolean }) => void
 
   /** Strecke hinzufügen (Farbe wird automatisch aus der Palette vergeben). */
   addRoute: (id: string, route: Omit<ProjectRoute, "id" | "farbe">) => void
@@ -270,20 +273,32 @@ export const useProjectStore = create<ProjectStore>()(
         }
       },
 
-      setProjectFolder: (id, folderId) => {
-        const prev = get().getProject(id)?.folderId ?? null
-        if (prev === folderId) return
+      setProjectFolder: (id, folderId, opts) => {
+        const cur = get().getProject(id)
+        const prevFolder = cur?.folderId ?? null
+        const prevOwner = cur?.owner ?? null
+        // Optimistische Zone: in einen Ordner → dessen owner erben; auf Wurzel → private-Flag.
+        const targetOwner =
+          folderId != null
+            ? (useFolderStore.getState().folders.find((f) => f.id === folderId)?.owner ?? null)
+            : opts?.private
+              ? (useContextStore.getState().email || prevOwner || "privat")
+              : null
+        if (prevFolder === folderId && prevOwner === targetOwner) return
         set((s) => ({
-          projects: s.projects.map((p) => (p.id === id ? { ...p, folderId } : p)),
+          projects: s.projects.map((p) => (p.id === id ? { ...p, folderId, owner: targetOwner } : p)),
         }))
         if (isLive()) {
           api
-            .patchProject(id, { folderId })
-            .then((updated) => adoptVersion(set, id, updated.version)) // T-501: Version mitführen
+            .patchProject(id, { folderId, ...(opts?.private !== undefined ? { private: opts.private } : {}) })
+            .then((updated) => {
+              adoptVersion(set, id, updated.version) // T-501: Version mitführen
+              set((s) => ({ projects: s.projects.map((p) => (p.id === id ? { ...p, owner: updated.owner ?? null } : p)) }))
+            })
             .catch(() => {
               toast.error("Verschieben konnte nicht gespeichert werden.")
               set((s) => ({
-                projects: s.projects.map((p) => (p.id === id ? { ...p, folderId: prev } : p)),
+                projects: s.projects.map((p) => (p.id === id ? { ...p, folderId: prevFolder, owner: prevOwner } : p)),
               }))
             })
         }

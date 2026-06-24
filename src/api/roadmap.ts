@@ -74,6 +74,8 @@ export interface ProjectPatch {
   archiviert?: boolean
   /** Ordner-Zuordnung (T-177): Ordner-ID oder null (zurück auf Wurzelebene). */
   folderId?: string | null
+  /** Zone (058): bei Wurzel-Drop true = privat, false = geteilt; in einen Ordner geerbt. */
+  private?: boolean
   /** Optimistic-Lock (T-466): bekannte Version; Server lehnt mit 409 ab, wenn veraltet. */
   version?: number
 }
@@ -457,13 +459,14 @@ export const api = {
   folders: {
     list: () =>
       axiosClient<{ folders: Folder[] }>({ url: "/folders", method: "GET" }).then((r) => r.folders),
-    create: (name: string, parentId?: string | null) =>
-      axiosClient<Folder>({ url: "/folders", method: "POST", data: { name, parentId: parentId ?? null } }),
+    create: (name: string, parentId?: string | null, isPrivate?: boolean) =>
+      axiosClient<Folder>({ url: "/folders", method: "POST", data: { name, parentId: parentId ?? null, private: isPrivate === true } }),
     rename: (id: string, name: string) =>
       axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { name } }),
-    /** Ordner verschieben: parentId = anderer Ordner oder null (Wurzel). */
-    move: (id: string, parentId: string | null) =>
-      axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { parentId } }),
+    /** Ordner verschieben: parentId = anderer Ordner oder null (Wurzel). isPrivate (058): bei
+     *  Wurzel-Drops die Zone (true = privat, false = geteilt); in einen Ordner wird sie geerbt. */
+    move: (id: string, parentId: string | null, isPrivate?: boolean) =>
+      axiosClient<Folder>({ url: `/folders/${id}`, method: "PATCH", data: { parentId, ...(isPrivate !== undefined && { private: isPrivate }) } }),
     remove: (id: string) => axiosClient<void>({ url: `/folders/${id}`, method: "DELETE" }),
   },
 

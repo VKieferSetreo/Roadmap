@@ -16,8 +16,6 @@ import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { cn } from "@/lib/cn"
 import type { Folder as FolderT, Project } from "@/types/domain"
 
-const ROOT = "__root__"
-
 interface TreeProps {
   query: string
   activeId?: string
@@ -43,7 +41,8 @@ interface TreeCtx {
   canDropFolder: (draggedId: string, targetId: string | null) => boolean
   dragOver: string | null
   setDragOver: (v: string | null) => void
-  drop: (folderId: string | null) => void
+  /** zonePrivate nur bei Wurzel-Drop (folderId null): true = Privat-Zone, false = Geteilt-Zone. */
+  drop: (folderId: string | null, zonePrivate?: boolean) => void
   renaming: string | null
   startRename: (id: string, name: string) => void
   renameVal: string
@@ -55,6 +54,8 @@ interface TreeCtx {
   openNewProject: (folderId: string) => void
   creatingIn: string | null | undefined
   startCreate: (parentId: string | null, openPath?: string[]) => void
+  /** Wurzelordner in einer Zone anlegen (058): isPrivate = Privat-Zone. */
+  startRootCreate: (isPrivate: boolean) => void
   newName: string
   setNewName: (v: string) => void
   commitCreate: () => void
@@ -305,6 +306,89 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
   )
 }
 
+/** Eine Zone (Geteilt / Privat): Kopf mit „+ Ordner", Wurzelordner + Wurzelprojekte, Drop-Zone die
+ *  beim Ablegen die Zielzone setzt. Modul-Komponente (stabil) → das NewFolderInput verliert nicht den Fokus. */
+function ZoneSection({
+  ctx,
+  label,
+  zonePrivate,
+  folders,
+  rootProjects,
+  creatingHere,
+}: {
+  ctx: TreeCtx
+  label: string
+  zonePrivate: boolean
+  folders: FolderT[]
+  rootProjects: Project[]
+  creatingHere: boolean
+}) {
+  const dropKey = zonePrivate ? "__zone_private__" : "__zone_shared__"
+  const dragging = ctx.dragId != null || ctx.dragFolderId != null
+  const over = ctx.dragOver === dropKey
+  return (
+    <div>
+      <div className="flex items-center justify-between px-2 pb-0.5 pt-1">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">{label}</span>
+        <button
+          type="button"
+          onClick={() => ctx.startRootCreate(zonePrivate)}
+          title={`Ordner in „${label}" anlegen`}
+          aria-label={`Ordner in „${label}" anlegen`}
+          className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-primary-600"
+        >
+          <FolderPlus className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div
+        onDragOver={(e) => {
+          if (!dragging) return
+          e.preventDefault()
+          ctx.setDragOver(dropKey)
+        }}
+        onDragLeave={() => ctx.setDragOver(ctx.dragOver === dropKey ? null : ctx.dragOver)}
+        onDrop={(e) => {
+          e.preventDefault()
+          ctx.drop(null, zonePrivate)
+        }}
+        className={cn(
+          "flex flex-col gap-0.5 rounded-md p-0.5",
+          over && "bg-primary-50 ring-1 ring-primary-200",
+          dragging ? "min-h-[30px]" : "",
+        )}
+      >
+        {folders.map((f) => (
+          <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
+        ))}
+        {creatingHere ? (
+          <NewFolderInput
+            indent={0}
+            value={ctx.newName}
+            onChange={ctx.setNewName}
+            onCommit={ctx.commitCreate}
+            onCancel={ctx.cancelCreate}
+          />
+        ) : null}
+        {rootProjects.map((p) => (
+          <ProjectRow
+            key={p.id}
+            project={p}
+            active={p.id === ctx.activeId}
+            go={ctx.go}
+            activeTab={ctx.activeTab}
+            setDragId={ctx.setDragId}
+          />
+        ))}
+        {!folders.length && !rootProjects.length && !creatingHere ? (
+          <p className="px-2 py-1.5 text-[11px] text-neutral-400">
+            {zonePrivate ? "Noch nichts Privates — mit + anlegen oder hierher ziehen." : "Noch nichts Geteiltes."}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
 export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const projects = useProjectStore((s) => s.projects ?? [])
   const setProjectFolder = useProjectStore((s) => s.setProjectFolder)
@@ -320,6 +404,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const [dragFolderId, setDragFolderId] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState<string | null>(null)
   const [creatingIn, setCreatingIn] = useState<string | null | undefined>(undefined)
+  const [creatingPrivate, setCreatingPrivate] = useState(false) // Zone des Wurzelordner-Eingabefelds (058)
   const [newName, setNewName] = useState("")
   const [renaming, setRenaming] = useState<string | null>(null)
   const [renameVal, setRenameVal] = useState("")
@@ -333,6 +418,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     lastTick.current = newFolderTick
     setOpenPath([])
     setCreatingIn(null)
+    setCreatingPrivate(false) // „+ Ordner" aus der Kopfzeile → Geteilt-Zone
     setNewName("")
   }, [newFolderTick])
 
@@ -390,7 +476,8 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     const name = newName.trim()
     setCreatingIn(undefined)
     setNewName("")
-    if (name) await createFolder(name, parentId)
+    // Wurzelordner (parentId null) → Zone aus creatingPrivate; Unterordner erben die Zone des Parents.
+    if (name) await createFolder(name, parentId, parentId == null ? creatingPrivate : undefined)
   }
 
   const ctx: TreeCtx = {
@@ -411,9 +498,13 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     canDropFolder,
     dragOver,
     setDragOver,
-    drop: (folderId) => {
-      if (dragFolderId && canDropFolder(dragFolderId, folderId)) moveFolder(dragFolderId, folderId)
-      else if (dragId) setProjectFolder(dragId, folderId)
+    drop: (folderId, zonePrivate) => {
+      // In einen Ordner → Zone wird geerbt (kein Flag). Auf eine Zonen-Wurzel → Zone explizit setzen.
+      if (dragFolderId && canDropFolder(dragFolderId, folderId)) {
+        moveFolder(dragFolderId, folderId, folderId == null ? zonePrivate : undefined)
+      } else if (dragId) {
+        setProjectFolder(dragId, folderId, folderId == null ? { private: zonePrivate } : undefined)
+      }
       setDragId(null)
       setDragFolderId(null)
       setDragOver(null)
@@ -440,6 +531,12 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
       if (openPath) setOpenPath(openPath)
       else if (parentId) setOpenPath([parentId])
     },
+    startRootCreate: (isPrivate) => {
+      setCreatingIn(null)
+      setCreatingPrivate(isPrivate)
+      setNewName("")
+      setOpenPath([])
+    },
     newName,
     setNewName,
     commitCreate,
@@ -450,63 +547,34 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   }
 
   const rootProjects = projectsIn(null)
-  const rootOver = dragOver === ROOT
-
-  const leer = !rootFolders.length && !rootProjects.length && creatingIn === undefined
+  // Zwei Zonen (058): oben Geteilt (owner null = alle Mandanten-Mitglieder), unten Privat (owner
+  // gesetzt = nur eigener Account; Admin sieht zusätzlich fremde private). Wurzelordner + lose
+  // Wurzelprojekte je Zone; per DnD zwischen den Zonen verschiebbar (setzt/entfernt die Privatheit).
+  const sharedFolders = rootFolders.filter((f) => !f.owner)
+  const privateFolders = rootFolders.filter((f) => f.owner)
+  const sharedRootProjects = rootProjects.filter((p) => !p.owner)
+  const privateRootProjects = rootProjects.filter((p) => p.owner)
+  const creatingRoot = creatingIn === null
 
   return (
-    <div className="mt-1 flex flex-col gap-0.5">
-      {leer ? (
-        <div className="mt-6 flex flex-col items-center px-3 text-center">
-          <Folder className="h-6 w-6 text-neutral-300" />
-          <p className="mt-3 text-sm text-neutral-500">Noch keine Projekte.</p>
-          <p className="mt-1 text-xs text-neutral-400">Über das Plus oben Projekt oder Ordner anlegen.</p>
-        </div>
-      ) : null}
-
-      {rootFolders.map((f) => (
-        <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
-      ))}
-      {creatingIn === null ? (
-        <NewFolderInput
-          indent={0}
-          value={newName}
-          onChange={setNewName}
-          onCommit={commitCreate}
-          onCancel={ctx.cancelCreate}
-        />
-      ) : null}
-
-      {/* Wurzel-Projekte (ohne Ordner) — zugleich Drop-Zone „auf Wurzelebene"
-          (Projekt aus Ordner lösen ODER Unterordner zum Überordner machen). */}
-      <div
-        onDragOver={(e) => {
-          if (!dragId && !dragFolderId) return
-          e.preventDefault()
-          setDragOver(ROOT)
-        }}
-        onDragLeave={() => setDragOver(dragOver === ROOT ? null : dragOver)}
-        onDrop={(e) => {
-          e.preventDefault()
-          ctx.drop(null)
-        }}
-        className={cn(
-          "mt-0.5 flex flex-col gap-0.5 rounded-md",
-          rootOver && "bg-primary-50 ring-1 ring-primary-200",
-          (dragId || dragFolderId) && rootFolders.length ? "min-h-[32px]" : "",
-        )}
-      >
-        {rootProjects.map((p) => (
-          <ProjectRow
-            key={p.id}
-            project={p}
-            active={p.id === activeId}
-            go={go}
-            activeTab={activeTab}
-            setDragId={setDragId}
-          />
-        ))}
-      </div>
+    <div className="mt-1 flex flex-col gap-1.5">
+      <ZoneSection
+        ctx={ctx}
+        label="Geteilt"
+        zonePrivate={false}
+        folders={sharedFolders}
+        rootProjects={sharedRootProjects}
+        creatingHere={creatingRoot && !creatingPrivate}
+      />
+      <div className="mx-2 border-t border-neutral-200" />
+      <ZoneSection
+        ctx={ctx}
+        label="Privat"
+        zonePrivate={true}
+        folders={privateFolders}
+        rootProjects={privateRootProjects}
+        creatingHere={creatingRoot && creatingPrivate}
+      />
     </div>
   )
 }

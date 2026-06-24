@@ -63,11 +63,12 @@ function normalizeRoutes(routes) {
   })
 }
 
-async function loadProjectRow(db, id, tenantId) {
+// Sichtbar: geteilt (owner NULL) ODER eigen-privat ODER Betrachter ist Setreo-Admin (sieht alles).
+async function loadProjectRow(db, id, ctx) {
   if (!isUuid(id)) return null
   const { rows } = await db.query(
-    "SELECT * FROM projects WHERE id = $1 AND tenant_id = $2",
-    [id, tenantId],
+    "SELECT * FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
+    [id, ctx.tenant.id, ctx.email ?? "", ctx.isAdmin === true],
   )
   return rows[0] ?? null
 }
@@ -130,9 +131,10 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   }
 
   r.get("/", asyncHandler(async (req, res) => {
+    // Sichtbar: geteilt + eigen-privat (+ alle für Admin). Private fremder Nutzer nie ausliefern.
     const { rows } = await db.query(
-      "SELECT * FROM projects WHERE tenant_id = $1 ORDER BY updated_at DESC",
-      [req.ctx.tenant.id],
+      "SELECT * FROM projects WHERE tenant_id = $1 AND (owner_email IS NULL OR owner_email = $2 OR $3) ORDER BY updated_at DESC",
+      [req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
     )
     const findingsBy = new Map()
     const sharesBy = new Map()
@@ -176,13 +178,16 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   // Schneller Platzhalter-Zähler: NUR die Anzahl (ohne Funde/Geometrie) → das FE rendert sofort die
   // richtige Zahl Lade-Kacheln, bevor die schwere volle Liste da ist. MUSS vor "/:id" stehen.
   r.get("/count", asyncHandler(async (req, res) => {
+    // Zählungen respektieren die Sichtbarkeit (geteilt + eigen-privat + Admin), damit Platzhalter
+    // und Projektzahl nicht private Inhalte fremder Nutzer mitzählen. $2=eigene Mail, $3=isAdmin.
+    const vis = "(owner_email IS NULL OR owner_email = $2 OR $3)"
     const { rows } = await db.query(
       `SELECT
-         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL)::int AS aktiv,
-         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NOT NULL)::int AS archiviert,
-         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND folder_id IS NULL)::int AS wurzel_projekte,
-         (SELECT count(*) FROM folders WHERE tenant_id = $1 AND parent_id IS NULL)::int AS wurzel_ordner`,
-      [req.ctx.tenant.id],
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND ${vis})::int AS aktiv,
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NOT NULL AND ${vis})::int AS archiviert,
+         (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND folder_id IS NULL AND ${vis})::int AS wurzel_projekte,
+         (SELECT count(*) FROM folders WHERE tenant_id = $1 AND parent_id IS NULL AND ${vis})::int AS wurzel_ordner`,
+      [req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
     )
     const r0 = rows[0] ?? {}
     res.json({
@@ -213,13 +218,13 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   }))
 
   r.get("/:id", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
     res.json(await present(req, row))
   }))
 
   r.patch("/:id", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
 
     const body = req.body ?? {}
@@ -246,16 +251,23 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
           : null
 
     // folderId: Ordner-Zuordnung (T-177). null = Wurzel; Ordner muss demselben Mandanten gehören.
+    // owner_email (Zone): in einen Ordner → dessen Zone erben; auf Wurzel → private-Flag (true=privat/
+    // false=geteilt), ohne Angabe bleibt die bisherige Zone. So wandert ein Projekt mit dem Ziel-Ordner
+    // sauber zwischen geteilt/privat (Privacy-Konsistenz).
     let folderId = row.folder_id
+    let ownerEmail = row.owner_email
     if (body.folderId !== undefined) {
       folderId = body.folderId
       if (folderId != null) {
         if (!isUuid(folderId)) throw new ApiError(400, "folderId ungültig")
         const f = await db.query(
-          "SELECT id FROM folders WHERE id = $1 AND tenant_id = $2",
-          [folderId, req.ctx.tenant.id],
+          "SELECT * FROM folders WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
+          [folderId, req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
         )
         if (!f.rows[0]) throw new ApiError(404, "Ordner nicht gefunden")
+        ownerEmail = f.rows[0].owner_email ?? null
+      } else {
+        ownerEmail = body.private === true ? (req.ctx.email ?? null) : body.private === false ? null : row.owner_email
       }
     }
 
@@ -264,12 +276,12 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     // statt den frischeren Stand still zu überschreiben. Alt-Clients ohne version → blinder
     // Overwrite wie bisher (abwärtskompatibel, kein 409-Sturm während des Deploys).
     const expectedVersion = Number.isInteger(body.version) ? body.version : undefined
-    const params = [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId]
+    const params = [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId, ownerEmail]
     if (expectedVersion !== undefined) params.push(expectedVersion)
     const { rows } = await db.query(
       `UPDATE projects SET name = $2, routes = $3, transport = $4, zeitraum = $5,
-         archived_at = $6, folder_id = $7, version = version + 1, updated_at = now()
-       WHERE id = $1${expectedVersion !== undefined ? " AND version = $8" : ""} RETURNING *`,
+         archived_at = $6, folder_id = $7, owner_email = $8, version = version + 1, updated_at = now()
+       WHERE id = $1${expectedVersion !== undefined ? " AND version = $9" : ""} RETURNING *`,
       params,
     )
     if (!rows[0]) throw new ApiError(409, "konflikt-veraltet")
@@ -278,9 +290,10 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
 
   r.delete("/:id", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Projekt nicht gefunden")
+    // Sichtbarkeit (058): private Projekte fremder Nutzer darf ein Nicht-Admin nicht löschen.
     const result = await db.query(
-      "DELETE FROM projects WHERE id = $1 AND tenant_id = $2",
-      [req.params.id, req.ctx.tenant.id],
+      "DELETE FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
+      [req.params.id, req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
     )
     if (result.rowCount === 0) throw new ApiError(404, "Projekt nicht gefunden")
     res.status(204).end()
@@ -292,7 +305,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     if (!ANALYSIS_RATE_OFF && !analysisLimiter(limitKey)) {
       throw new ApiError(429, "Zu viele Analysen — bitte kurz warten")
     }
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
 
     try {
@@ -309,14 +322,14 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
       email: req.ctx?.email, tenantSlug: req.ctx?.tenant?.slug,
       typ: "manual_analysis", meta: { projectId: row.id },
     })
-    const fresh = await loadProjectRow(db, row.id, req.ctx.tenant.id)
+    const fresh = await loadProjectRow(db, row.id, req.ctx)
     res.json(await present(req, fresh))
   }))
 
   // ── Fund ausblenden / wieder einblenden (pro Projekt, an stabiler finding_key) ──
 
   r.post("/:id/findings/hide", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
     const findingKey = String(req.body?.findingKey ?? "").trim()
     if (!findingKey) throw new ApiError(400, "findingKey erforderlich")
@@ -340,7 +353,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
   }))
 
   r.post("/:id/findings/unhide", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
     const findingKey = String(req.body?.findingKey ?? "").trim()
     if (!findingKey) throw new ApiError(400, "findingKey erforderlich")
@@ -355,7 +368,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
 
   /** Publish (oder Re-Publish: ersetzt PW, reaktiviert revoked). */
   r.post("/:id/share", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
     const password = req.body?.password
     if (password !== undefined && (typeof password !== "string" || !password)) {
@@ -373,7 +386,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
 
   /** Revoke: Link wird ungültig (revoked_at), Re-POST reaktiviert. */
   r.delete("/:id/share", asyncHandler(async (req, res) => {
-    const row = await loadProjectRow(db, req.params.id, req.ctx.tenant.id)
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
     const result = await db.query(
       "UPDATE shares SET revoked_at = now() WHERE project_id = $1 AND revoked_at IS NULL",
