@@ -11,7 +11,13 @@
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
+import { createRateLimiter } from "../shares.js"
 import { asyncHandler } from "../util.js"
+
+// T-394: Heartbeat-Schreiblast kappen. Das FE pingt aktiv ~alle 30s (T-568) → 6/min lässt das mit
+// Puffer durch, bremst aber einen Client, der den Endpoint (UPDATE+ggf. INSERT) spammt. Überschuss
+// wird STILL verworfen (204), nicht 429 — es ist ein Fire-and-forget-Ping, kein Nutzer-Request.
+const heartbeatLimiter = createRateLimiter({ max: 6, windowMs: 60_000 })
 
 const ONLINE_FENSTER = "3 minutes" // last_seen jünger ⇒ "jetzt online"
 const SESSION_LUECKE = "5 minutes" // größere Pause ⇒ neue Session
@@ -55,6 +61,7 @@ export function analyticsRouter({ db }) {
   r.put("/heartbeat", asyncHandler(async (req, res) => {
     const email = req.ctx?.email
     if (!email) return res.status(204).end() // ohne Identität (dev) nichts tracken
+    if (!heartbeatLimiter(email)) return res.status(204).end() // T-394: Überschuss still verwerfen
     const slug = req.ctx?.tenant?.slug ?? null
     const ua = (req.get("user-agent") ?? "").slice(0, 300)
     // Offene Session verlängern …
@@ -86,17 +93,17 @@ export function analyticsRouter({ db }) {
       db.query(
         `SELECT email, max(last_seen) AS last_seen FROM analytics_sessions
           WHERE last_seen > now() - interval '${ONLINE_FENSTER}' AND ${EXCL}
-          GROUP BY email ORDER BY max(last_seen) DESC`,
+          GROUP BY email ORDER BY max(last_seen) DESC LIMIT 1000`, // T-406: Sicherheits-Bound
       ),
       db.query(
         `SELECT email, count(*) AS sessions, sum(hits) AS hits,
            round(sum(extract(epoch FROM (last_seen - started_at))) / 60.0) AS aktiv_min,
            min(started_at) AS erster, max(last_seen) AS letzter
-         FROM analytics_sessions WHERE ${EXCL} GROUP BY email`,
+         FROM analytics_sessions WHERE ${EXCL} GROUP BY email ORDER BY max(last_seen) DESC LIMIT 1000`, // T-406: Sicherheits-Bound
       ),
       db.query(
         `SELECT email, count(*) AS n FROM analytics_events
-         WHERE typ = 'manual_analysis' AND ${EXCL} GROUP BY email`,
+         WHERE typ = 'manual_analysis' AND ${EXCL} GROUP BY email ORDER BY count(*) DESC LIMIT 1000`, // T-406: Sicherheits-Bound
       ),
       db.query(
         `SELECT email, tenant_slug, started_at, last_seen, hits,

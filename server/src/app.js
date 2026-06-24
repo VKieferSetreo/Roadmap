@@ -252,6 +252,16 @@ export function createApp({
   // Hindernis-Datensatz (das verkaufte Asset). Interne SSO-Nutzer bekommen auto-"setreo" und
   // sind nicht betroffen; account/analytics/bug-reports bleiben bewusst offen (Seat-Redeem,
   // Heartbeat, Fehler-Melden brauchen No-Seat-Zugang).
+  // T-336: GET /api/obstacles kann den gesamten (großen) Hindernis-Datensatz serialisieren
+  // (?geom=true ~35 MB). requireTenant gated den Zugriff (T-304); guardSearch limitiert nur ?q=.
+  // Eigener, generöser Eimer (60/min je Identität) deckelt den schweren Voll-Read als DoS-Vektor —
+  // legitime FE-Ladungen (DB-Tab/Karte) bleiben weit darunter. (bbox-Viewport-Loading = T-312/502.)
+  const obstaclesLimiter = createRateLimiter({ max: 60, windowMs: 60_000 })
+  app.use("/api/obstacles", (req, res, next) => {
+    const key = req.ctx?.email || req.user?.email || req.ip || "anon"
+    if (!obstaclesLimiter(key)) throw new ApiError(429, "Zu viele Hindernis-Abfragen — bitte kurz warten")
+    next()
+  })
   app.use("/api/obstacles", requireTenant, guardSearch, obstaclesRouter({ db }))
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
