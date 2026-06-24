@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 49,
+  "anzahl": 48,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -486,17 +486,6 @@
       "typ": "live-endpunkt",
       "ordner": "Sonstige/osm-planet-diffs",
       "test": "Sonstige/osm-planet-diffs/test.sh"
-    },
-    {
-      "name": "INSPIRE Transport Networks (TN) — BKG DLM250 WFS",
-      "ebene": "Sonstige",
-      "datentyp": "Verkehrsnetz-Topologie (Road/Rail/Water/Air Networks): Geometrie, Netzknoten (tn-ro:RoadLink/RoadNode/Road, tn-ra:RailwayLink/RailwayNode ...). KEINE feinen GST-Restriktionen (Achslast etc.) — Netz-Backbone, generalisiert 1:250.000.",
-      "format": "WFS 2.0.0 (GML 3.2.1); auch ATOM (Predefined Dataset); Metadaten via CSW",
-      "endpunkt": "https://sgx.geodatenzentrum.de/wfs_dlm250_inspire",
-      "lizenz": "dl-de/by-2.0 (Namensnennung) / GeoNutzV",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/inspire-transport-networks",
-      "test": "Sonstige/inspire-transport-networks/test.sh"
     },
     {
       "name": "RVR / GEONETZWERK.RUHR — Baustellen (Beispiel Herne-GeoServer)",

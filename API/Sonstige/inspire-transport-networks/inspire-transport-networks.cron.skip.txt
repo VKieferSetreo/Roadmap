@@ -1,1 +1,0 @@
-SKIP: Referenz-/Netzdaten (INSPIRE Transport Networks — Straßen-/Schienennetz-Topologie), kein diskretes Hindernis. Netz-Layer, kein Producer.

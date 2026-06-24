@@ -10,9 +10,7 @@
     - WFS:              ...?SERVICE=WFS&REQUEST=GetCapabilities  -> Liste FeatureTypes
     - OGC API Features: .../collections  ->  .../collections/{id}/items?f=json&bbox=...
     - WMS (Raster):     ...?SERVICE=WMS&REQUEST=GetCapabilities
-  Konkrete Beispiel-Anwendung dieses Musters liegt als echter Ordner unter
-  inspire-transport-networks/ (BKG DLM250 WFS, live GetCapabilities). Bei jeder
-  Landesquelle (Ordner unter ../Länder/) nach GetCapabilities/collections suchen.
+  Bei jeder Landesquelle (Ordner unter ../Länder/) nach GetCapabilities/collections suchen.
 
 [prop2osm (gis-ops)] — TOOLING, keine API
   Dienstleistung/Tooling, das proprietaere Datensaetze (TomTom/HERE) in FOSS-Routing-
