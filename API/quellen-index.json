@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 46,
+  "anzahl": 45,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -464,17 +464,6 @@
       "typ": "live-endpunkt",
       "ordner": "Bundesweit/bast-bisstra",
       "test": "Bundesweit/bast-bisstra/test.sh"
-    },
-    {
-      "name": "Overpass API (OpenStreetMap Query-Engine)",
-      "ebene": "Sonstige",
-      "datentyp": "Restriktionen aus OSM-Tags: maxheight / maxwidth / maxweight / maxaxleload, hgv, bridge, tunnel, ford, railway=level_crossing, junction=roundabout, traffic_calming, hazmat",
-      "format": "Overpass-QL (POST/GET) -> Output JSON / GeoJSON / CSV / XML",
-      "endpunkt": "https://overpass-api.de/api/interpreter",
-      "lizenz": "ODbL 1.0 (OSM-Daten; Attribution \"© OpenStreetMap contributors\" Pflicht)",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/overpass-api",
-      "test": "Sonstige/overpass-api/test.sh"
     },
     {
       "name": "RVR / GEONETZWERK.RUHR — Baustellen (Beispiel Herne-GeoServer)",

@@ -29,9 +29,9 @@
   tunnel, ford, railway=level_crossing, junction=roundabout, traffic_calming, hazmat,
   incline) + Conditional-Restrictions-Syntax steht in der Research-Datei
   (docs/research/quellen-osm-geodaten-kommerziell.md, Abschnitt 1.0). Wird ueber die
-  konkreten OSM-APIs (overpass-api/, qlever-osm-sparql/) abgefragt.
+  konkreten OSM-APIs (qlever-osm-sparql/) abgefragt.
 
-# Lizenz-Querschnitt: ALLE OSM-abgeleiteten Quellen hier (overpass, qlever, ORS)
+# Lizenz-Querschnitt: ALLE OSM-abgeleiteten Quellen hier (qlever, ORS)
 # stehen unter ODbL 1.0 —
 # Attribution "© OpenStreetMap contributors" Pflicht, Share-Alike nur bei Weitergabe
 # einer abgeleiteten DATENBANK (nicht bei berechneten Routen / Produced Works).

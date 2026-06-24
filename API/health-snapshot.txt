@@ -60,8 +60,7 @@ OK   Länder/Schleswig-Holstein/OpenData-SH-Strassenbaustellen-DATEX 4037 B
 OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
 OK   Sonstige/govdata-ckan                                      4055 B
 🔑   Sonstige/openrouteservice                                  Account/Key nötig
-OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 92 getestet · OK 68 · LEER 17 · 🔑 7 übersprungen
+Σ 91 getestet · OK 67 · LEER 17 · 🔑 7 übersprungen

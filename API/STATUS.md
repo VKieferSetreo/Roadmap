@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **68 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **67 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (45) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (6) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
+**Legende:** 🟢 live getestet (44) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (6) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -72,7 +72,6 @@
 | 🟢 | Schleswig-Holstein | Umleitungsstrecken Schleswig-Holstein (WFS Bau | Umleitungsstrecken (Diversion  | WFS 2.0.0 (GML) | offen |
 | 🟡 | Thüringen | Baustelleninformationssystem Thüringen (TLBV) | aktuelle Baustellen auf Thürin | Web-App (GWT) | eingeschränkt |
 | 🟢 | Sonstige | GovData.de (Offene-Daten-Portal Deutschland, C | Metadaten-KATALOG ueber ALLE V | Metadaten nach DCAT-AP | offen |
-| 🟢 | Sonstige | Overpass API (OpenStreetMap Query-Engine) | Restriktionen aus OSM-Tags: ma | Overpass-QL (POST/GET) | offen |
 | 🟢 | Sonstige | QLever (OSM als SPARQL / GeoSPARQL) | Ganz OSM analytisch abfragbar  | SPARQL (POST) -> JSON  | offen |
 | 🟢 | Sonstige | RVR / GEONETZWERK.RUHR — Baustellen (Beispiel  | Baustellen mit Verkehrseinschr | WFS (2.0.0/1.1.0/1.0.0 | offen |
 | 🔑 | Sonstige | openrouteservice (ORS) — Profil driving-hgv | HGV-Routing mit profile_params | REST-JSON / GeoJSON | account |

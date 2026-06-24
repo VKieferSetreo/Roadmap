@@ -12,7 +12,6 @@
 
 | Prio | Quelle | Bereich | Datentyp | Status |
 |------|--------|---------|----------|--------|
-| **P1** | OSM via Overpass API | OSM | maxheight/width/weight/axleload, hgv, bridge, tunnel, level_crossing, roundabout | verifiziert (live) |
 | **P2** | openrouteservice (driving-hgv) | Kommerziell/OSS | height/width/length/weight/axleload + hazmat | verifiziert (Doku) |
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
@@ -51,39 +50,6 @@ OSM ist für Setreo die mit Abstand **breiteste, kostengünstigste und feinkörn
 **Conditional-Restrictions-Syntax (OSM):** `<key>:conditional = <wert> @ <bedingung>`, z.B. `maxweight:conditional = none @ destination` oder `maxweight:hgv:conditional = 12 @ (axles=2)`. Bedingungen können Fahrzeug-Properties (weight, axleload, length, width, height mit `<,>,=,<=,>=`) oder Zweck (destination, delivery) sein. Für GST-Parsing relevant, aber komplex.
 
 ---
-
-## 1.1 Overpass API (Haupt-Zugriffsweg für gezielte Abfragen)
-
-- **quelle:** Overpass API — read-only Query-Engine über OSM-Daten
-- **betreiber:** FOSSGIS e.V. (Hauptinstanz) + diverse Mirrors
-- **datentyp:** alle o.g. Tags, gefiltert nach Bbox/Tag/Geometrie
-- **strassentyp:** Alle (A/B/L/K + Wege), soweit in OSM getaggt
-- **format:** Overpass-QL (→ Output JSON / GeoJSON / CSV / XML)
-- **apiEndpunkt (verifiziert):**
-  - Hauptinstanz: `https://overpass-api.de/api/interpreter` (FOSSGIS, v0.7.62.11, **live getestet ✓**)
-  - Mirror Private.coffee: `https://overpass.private.coffee/api/interpreter` (kein Rate-Limit angegeben)
-  - Mirror kumi.systems: `https://overpass.kumi.systems/api/interpreter` (frei, kein hartes Limit)
-  - Mirror VK Maps (RU): `https://maps.mail.ru/osm/tools/overpass/api/interpreter`
-  - Geofabrik (kostenpflichtig, API-Key): `https://overpass.geofabrik.de/{API_KEY}/api/interpreter`
-- **update:** minütlich (Hauptinstanz repliziert von planet diffs, „timestamp_osm_base" im Output)
-- **auth:** keine (User-Agent/Referer-Header gefordert)
-- **kosten:** keine (Hauptinstanz). Faustregel: <10.000 Queries/Tag UND <1 GB/Tag = unkritisch. Über diesem Volumen → eigene Instanz hosten.
-- **lizenz:** Daten unter **ODbL 1.0** (siehe §1.7). Output enthält Copyright-Hinweis explizit.
-- **abdeckung:** weltweit; DE sehr gut (siehe taginfo-Zahlen oben)
-- **zugang:** offen — direkt abrufbar, keine Registrierung
-- **verifiziert:** **ja (live)** — Test-Query lieferte 166 `maxheight`-Ways in winziger Berlin-Mitte-Bbox; Output ODbL-markiert, osm_base 2026-06-13T12:19Z
-- **url:** `https://wiki.openstreetmap.org/wiki/Overpass_API` · QL-Doku: `https://dev.overpass-api.de/overpass-doc/`
-- **prio:** P1
-- **Beispiel-Query-Konzept (nicht implementieren, nur Skizze):**
-  ```
-  [out:json][timeout:60];
-  area["ISO3166-1"="DE"]->.de;
-  way(area.de)["maxheight"];   // analog maxweight/maxwidth/maxaxleload/hgv
-  out tags geom;
-  ```
-  Für Brücken-Querungen: `way["bridge"]` + benachbarte `way["maxheight"]`-Korrelation.
-- **Abdeckungslücken/Notizen:** Overpass ist ideal für **gezielte/inkrementelle** Abfragen, NICHT für DE-weiten Bulk-Export (Timeout/Last). `/api/status` braucht passenden Accept-Header (gibt sonst HTTP 406), Interpreter funktioniert aber einwandfrei.
-
 ---
 ---
 ---
