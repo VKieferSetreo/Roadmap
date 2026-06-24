@@ -1,1 +1,0 @@
-SKIP: Gated Routing-API (OpenRouteService) — API-Key erforderlich, liefert Routen/Isochronen, kein Hindernis-Bestand. Kein offener Producer fürs obstacle-Format.

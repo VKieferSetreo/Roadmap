@@ -12,7 +12,6 @@
 
 | Prio | Quelle | Bereich | Datentyp | Status |
 |------|--------|---------|----------|--------|
-| **P2** | openrouteservice (driving-hgv) | Kommerziell/OSS | height/width/length/weight/axleload + hazmat | verifiziert (Doku) |
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
 | **P2** | GovData.de (DCAT-AP.de) | Geodaten-Std | Bund-Open-Data-Katalog, CKAN-API | verifiziert |
@@ -171,28 +170,6 @@ Dieser Abschnitt beschreibt **Zugriffsmuster** (Standards) und **Kataloge**, üb
 # ABSCHNITT 3 — KOMMERZIELLE ANBIETER (Truck-/GST-Attribute)
 
 Hier nur **freie / Open-Source-Routing-Engines** mit LKW-/GST-Profil (self-hostbar, kostenlos). Kostenpflichtige kommerzielle Anbieter (PTV, HERE, TomTom) wurden auf Wunsch von Max (2026-06-13) aus dem Katalog entfernt.
-
-## 3.4 openrouteservice (ORS) — driving-hgv (OSS + Hosted)
-
-- **quelle:** openrouteservice, Profil `driving-hgv`
-- **betreiber:** HeiGIT gGmbH / Uni Heidelberg (basiert auf OSM-Daten)
-- **datentyp:** HGV-Routing mit `profile_params.restrictions`: **length, width, height, axleload, weight** (alle in m bzw. t) + **`hazmat: true`** + `vehicle_type` (hgv/bus/agricultural/…). Berücksichtigt OSM-Tags (z.B. `maxheight`) im Routing.
-- **strassentyp:** Alle (OSM-basiert → Qualität = OSM-Qualität, siehe §1.6)
-- **format:** REST-JSON / GeoJSON
-- **apiEndpunkt (verifiziert):**
-  - Hosted: `https://api.openrouteservice.org/v2/directions/driving-hgv`
-  - Self-host: eigene Instanz (Docker), beliebige OSM-Region
-- **update:** Hosted-Instanz repliziert OSM regelmäßig
-- **auth:** **API-Key** (kostenlos, Registrierung) für Hosted
-- **kosten:** **Hosted Free-Tier** (Tages-/Minuten-Limits, z.B. ~2.000 Requests/Tag für directions); Self-host **kostenlos & unlimitiert** (eigene Hardware)
-- **lizenz:** Software Apache-2.0; Daten ODbL (OSM)
-- **abdeckung:** weltweit/DE = OSM-Abdeckung
-- **zugang:** offen (Free-Tier) / Self-host
-- **verifiziert:** ja (Doku: HGV-Restrictions + hazmat bestätigt)
-- **url:** `https://openrouteservice.org/` · `https://giscience.github.io/openrouteservice/`
-- **prio:** P2
-- **Abdeckungslücken/Notizen:** **Bester Weg, OSM-Restriktionen sofort routbar zu machen** ohne eigene Engine. Da OSM-basiert: gleiche Lücken (Achslast dünn) wie §1.6. Self-host = volle Kontrolle + kein Limit, ideal wenn Setreo OSM ohnehin als Basis nutzt. ORS-Restrictions decken GST-Dimensionen direkt ab.
-
 ---
 ---
 
