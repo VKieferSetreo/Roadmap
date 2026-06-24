@@ -338,8 +338,9 @@ export function RouteTab({ project }: { project: Project }) {
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
               <p className="text-xs text-neutral-500">
-                Streckendatei hochladen. KML enthält eine Strecke, GeoPackage (.gpkg) mehrere zur
-                Auswahl. Die geladene Strecke wird 1:1 übernommen und nicht optimiert oder verändert.
+                Streckendatei hochladen. KML enthält eine Strecke, GeoPackage (.gpkg) mehrere zur Auswahl.
+                <br />
+                Die geladene Strecke wird 1:1 übernommen und nicht optimiert oder verändert.
               </p>
               <DropZone
                 compact

@@ -85,7 +85,6 @@ export interface RouteResult {
   dauerMin: number | null
   provider: { geocoder?: string; router: string; fallback: boolean }
   stops?: number
-  resolvedUrl?: string
 }
 
 /** Ergebnis eines VEMAGS-Bescheid-Uploads (POST /api/route/vemags). */

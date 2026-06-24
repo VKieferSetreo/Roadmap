@@ -147,7 +147,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
   r.post("/maps", asyncHandler(async (req, res) => {
     const url = typeof req.body?.url === "string" ? req.body.url.trim() : ""
     if (!url) throw new ApiError(400, "url erforderlich")
-    const { stops, resolvedUrl } = await extractMapsStops(url, { fetchImpl })
+    // T-301#1: resolvedUrl NICHT ans FE zurückgeben (kein SSRF-/Redirect-Oracle). Die finale
+    // URL ist ohnehin gegen die Google-Allowlist geprüft; das FE braucht sie nicht.
+    const { stops } = await extractMapsStops(url, { fetchImpl })
     if (stops.length < 2) {
       throw new ApiError(
         422,
@@ -176,7 +178,6 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
       stops: stops.length,
-      resolvedUrl,
     })
   }))
 
