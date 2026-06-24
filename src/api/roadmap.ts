@@ -139,21 +139,10 @@ export interface AnalyticsOverview {
   }[]
 }
 
-/** Datenabdeckung (GET /api/abdeckung, ungated) — EINE Quelle für In-App-Board + öffentliche Seite. */
-export interface AbdeckungResponse {
-  kats: string[]
-  data: Record<string, [number, number, string][]>
-  stand: string
-  connectoren: number
-  hinweis: string
-}
-
 export const api = {
   health: () => axiosClient<HealthResponse>({ url: "/health", method: "GET", timeout: 2_500 }),
 
   context: () => axiosClient<AppContext>({ url: "/context", method: "GET" }),
-
-  abdeckung: () => axiosClient<AbdeckungResponse>({ url: "/abdeckung", method: "GET" }),
 
   // #16: Orts-/Adress-Suche server-seitig (Nominatim-Proxy) — der direkte Browser-Fetch ist
   // seit der CSP (connect-src 'self') geblockt.

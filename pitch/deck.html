@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roadmap · Customer Pitch</title>
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 700;font-display:swap;src:url(assets/inter.woff2) format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 600;font-display:swap;src:url(assets/mono.woff2) format('woff2');}
+
+:root{
+  --g900:#2D3E15;--g800:#3F5520;--g700:#527121;--g600:#6A9221;--g500:#87B52D;--g400:#9BC73F;--g300:#B3D566;--g100:#E7F2CD;--g50:#F5F9EC;
+  --gold:#E8B23F;--gold100:#FDF4E0;--gold700:#8E6620;
+  --ink:#18181B;--n800:#27272A;--n700:#3F3F46;--n600:#52525B;--n500:#71717A;--n400:#A1A1AA;--n300:#D4D4D8;--n200:#E5E5E8;--n100:#F4F4F5;--n50:#FAFAFA;--white:#fff;
+  --red:#DC2626;--orange:#EA580C;--yellow:#CA8A04;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+*{box-shadow:none!important} /* PDF viewers rasterize box-shadow as solid grey blocks; use borders for depth */
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--n200)}
+@page{size:1280px 720px;margin:0}
+
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:var(--white);page-break-after:always}
+.slide:last-child{page-break-after:auto}
+.pad{position:absolute;inset:0;padding:64px 72px}
+
+.brandbar{display:flex;align-items:center;justify-content:space-between;height:34px}
+.brandbar .lhs{display:flex;align-items:center;gap:12px}
+.brandbar img.mark{height:30px;width:30px}
+.brandbar .wm{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.22em;font-size:13px;color:var(--n700)}
+.kicker{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.22em;font-size:12.5px;color:var(--g700);text-transform:uppercase}
+.snum{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.18em;font-size:12.5px;color:var(--n400);text-transform:uppercase}
+.snum b{color:var(--g700);font-weight:600}
+.footer{position:absolute;left:72px;right:72px;bottom:34px;display:flex;align-items:center;justify-content:space-between;
+  border-top:1.5px solid var(--n200);padding-top:12px}
+.footer .tag{font-size:12px;color:var(--n400);letter-spacing:.02em}
+.footer .tag b{color:var(--g700);font-weight:600}
+.footer .pg{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--n400)}
+
+.h1{font-weight:700;font-size:54px;line-height:1.04;letter-spacing:-.02em;color:var(--ink)}
+.h1 .em{color:var(--g600)}
+.lead{font-size:19px;line-height:1.5;color:var(--n600);max-width:760px}
+.acc{width:54px;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--g700),var(--g400));margin:18px 0 22px}
+.s-head{margin-top:30px}
+
+/* slide 1 */
+.cards3{position:absolute;left:72px;bottom:96px;display:flex;gap:18px;width:600px}
+.pcard{flex:1;background:var(--n50);border:1px solid var(--n200);border-left:4px solid var(--red);border-radius:12px;padding:16px 16px 18px}
+.pcard.o{border-left-color:var(--orange)}.pcard.y{border-left-color:var(--gold)}
+.pcard h4{font-size:14.5px;font-weight:700;margin-bottom:6px;color:var(--n800)}
+.pcard p{font-size:12.5px;line-height:1.42;color:var(--n600)}
+.s1viz{position:absolute;right:72px;top:150px}
+.statbig{position:absolute;right:72px;bottom:92px;text-align:right;width:340px}
+.statbig .n{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:30px;color:var(--g600);line-height:1}
+.statbig .l{font-size:12.5px;color:var(--n500);margin-top:9px;display:inline-block;line-height:1.4}
+.maptxt{font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* slide 2 */
+.flowrow{position:absolute;left:72px;top:284px;display:flex;align-items:center;gap:0}
+.fnode{width:150px;height:96px;border-radius:12px;border:1px solid var(--n200);background:var(--white);
+  box-shadow:0 1px 2px rgba(0,0,0,.04);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px}
+.fnode .ic{color:var(--n500)}
+.fnode .t{font-size:12.5px;font-weight:600;color:var(--n700);margin-top:7px;line-height:1.2}
+.farrow{width:26px;display:flex;align-items:center;justify-content:center;color:var(--n300)}
+.painlist{position:absolute;left:72px;top:412px;width:560px}
+.pain{display:flex;gap:12px;align-items:flex-start;margin-bottom:13px}
+.pain .x{flex:none;width:22px;height:22px;border-radius:6px;background:#FEF2F2;color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.pain p{font-size:14px;line-height:1.4;color:var(--n700)}.pain p b{color:var(--ink)}
+.costbox{position:absolute;right:72px;top:250px;width:380px;background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:24px 24px 26px}
+.costbox .ch{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.14em;font-size:12px;color:var(--red);text-transform:uppercase}
+.costbox h3{font-size:21px;font-weight:700;color:#991B1B;margin:10px 0 14px;line-height:1.15}
+.costbox li{list-style:none;font-size:13.5px;color:#7F1D1D;line-height:1.35;padding:5px 0 5px 22px;position:relative}
+.costbox li:before{content:"›";position:absolute;left:0;color:var(--red);font-family:'JetBrains Mono',monospace;font-weight:600}
+
+/* slide 3 pipeline (white) */
+.s3watermark{position:absolute;right:-60px;bottom:-90px;width:440px;opacity:.05}
+.pipe{position:absolute;left:72px;right:72px;top:352px;display:flex;align-items:stretch;gap:0}
+.pnode{flex:1;background:var(--white);border:1px solid var(--n200);border-radius:16px;padding:24px 26px;box-shadow:0 2px 10px -6px rgba(0,0,0,.12)}
+.pnode .pi{width:48px;height:48px;border-radius:13px;background:var(--g50);display:flex;align-items:center;justify-content:center;color:var(--g600);margin-bottom:16px}
+.pnode .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--g600);letter-spacing:.14em;font-weight:600}
+.pnode h4{color:var(--ink);font-size:19px;font-weight:700;margin:5px 0 9px}
+.pnode p{color:var(--n600);font-size:13.5px;line-height:1.45}
+.pnode.win{border-color:var(--g300);background:var(--g50)}
+.parrow{width:46px;display:flex;align-items:center;justify-content:center;color:var(--g400)}
+.pillars{position:absolute;left:72px;right:72px;top:592px;display:flex;gap:22px}
+.pill{flex:1;display:flex;align-items:center;gap:12px}
+.pill .d{width:10px;height:10px;border-radius:50%;background:var(--g500);flex:none;box-shadow:0 0 0 4px rgba(135,181,45,.16)}
+.pill span{color:var(--n700);font-size:14px;font-weight:600}
+
+/* slide 4 product / mac */
+.proswrap{position:absolute;left:72px;right:72px;top:230px;display:flex;align-items:center;gap:52px}
+.mac{flex:none;text-align:center}
+.mac .screen{display:inline-block;background:#111113;border-radius:18px;padding:12px}
+.mac .screen img{display:block;width:596px;height:auto;border-radius:5px}
+.mac .base{position:relative;height:15px;width:684px;margin:0 auto;background:linear-gradient(#dcdee0,#b6b8bb);border-radius:0 0 13px 13px}
+.mac .base:before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:8px;background:#a9abae;border-radius:0 0 8px 8px}
+.maccap{text-align:center;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--n400);letter-spacing:.06em}
+.proscopy{flex:1}
+.proscopy .lead2{font-size:17px;line-height:1.5;color:var(--n700);margin-bottom:24px;max-width:380px}
+.pt{display:flex;gap:13px;align-items:flex-start;margin-bottom:18px}
+.pt .pn{flex:none;width:30px;height:30px;border-radius:8px;background:var(--g50);color:var(--g600);display:flex;align-items:center;justify-content:center}
+.pt b{display:block;font-size:14.5px;color:var(--ink);font-weight:700;margin-bottom:3px}
+.pt span{font-size:12.5px;color:var(--n600);line-height:1.42;display:block;max-width:340px}
+
+/* slide 5 features */
+.s4wrap{position:absolute;left:72px;right:72px;top:208px;display:flex;align-items:flex-start;gap:30px}
+.mock{width:520px;flex:none;border-radius:14px;border:1px solid var(--n200);box-shadow:0 14px 40px -18px rgba(0,0,0,.28);overflow:hidden;background:#fff}
+.mock .bar{height:34px;background:var(--n100);border-bottom:1px solid var(--n200);display:flex;align-items:center;gap:7px;padding:0 12px}
+.mock .bar i{width:9px;height:9px;border-radius:50%;background:var(--n300);display:block}
+.mock .bar .url{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--n500);background:#fff;border:1px solid var(--n200);border-radius:6px;padding:3px 10px}
+.mock .body{display:flex;height:330px}
+.mock .side{width:184px;border-right:1px solid var(--n200);background:var(--n50);padding:12px 11px;overflow:hidden}
+.mock .side .sh{font-size:11px;font-weight:700;color:var(--n700);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.fcard{background:#fff;border:1px solid var(--n200);border-radius:9px;padding:9px 10px;margin-bottom:9px}
+.fcard .bdg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;padding:2px 7px;border-radius:5px;text-transform:uppercase}
+.fcard .ti{font-size:11.5px;font-weight:600;color:var(--n800);margin:6px 0 3px;line-height:1.2}
+.fcard .me{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--n400)}
+.bk{background:#FEF2F2;color:#991B1B}.bo{background:#FFF7ED;color:#9A3412}.by{background:#FEFCE8;color:#854D0E}
+.feat{flex:1;height:364px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:14px}
+.fc{border:1px solid var(--n200);border-radius:11px;padding:13px 14px;background:var(--white)}
+.fc .fi{width:30px;height:30px;border-radius:8px;background:var(--g50);display:flex;align-items:center;justify-content:center;color:var(--g600);margin-bottom:9px}
+.fc h5{font-size:13.5px;font-weight:700;color:var(--n800);margin-bottom:3px}
+.fc p{font-size:11.5px;line-height:1.34;color:var(--n600)}
+.s4chips{position:absolute;left:72px;right:72px;bottom:92px;display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--g700);background:var(--g50);border:1px solid var(--g100);border-radius:999px;padding:6px 13px}
+
+/* slide 6 future */
+.fugrid{position:absolute;left:72px;right:72px;top:250px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:20px;height:384px}
+.futc{border:1px solid var(--n200);border-radius:14px;padding:22px 26px;background:var(--white);position:relative;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.futc .fi{width:38px;height:38px;border-radius:10px;background:var(--g50);display:flex;align-items:center;justify-content:center;color:var(--g600)}
+.futc .pp{position:absolute;top:22px;right:24px;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:.12em;color:var(--gold700);background:var(--gold100);border:1px solid #FAE5B4;border-radius:999px;padding:4px 11px;text-transform:uppercase}
+.futc h4{font-size:18.5px;font-weight:700;color:var(--ink);margin:14px 0 8px}
+.futc p{font-size:13px;line-height:1.45;color:var(--n600);max-width:430px}
+
+/* slide 7 steps */
+.steps{position:absolute;left:72px;right:72px;top:218px;display:flex;align-items:stretch;gap:22px}
+.step{flex:1;background:var(--white);border:1px solid var(--n200);border-radius:14px;padding:24px 22px 30px;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.step .sn{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:15px;color:var(--white);background:var(--g500);width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.step h4{font-size:18px;font-weight:700;color:var(--ink);margin:16px 0 9px}
+.step p{font-size:13.5px;line-height:1.46;color:var(--n600)}
+.step .conn{position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--g400);z-index:2}
+.cta{position:absolute;left:72px;right:72px;bottom:74px;height:170px;border-radius:18px;
+  background:linear-gradient(110deg,var(--g700) 0%,var(--g600) 48%,var(--g500) 100%);padding:26px 32px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;color:#fff}
+.cta .wmk{position:absolute;right:-40px;top:-60px;width:280px;opacity:.10}
+.cta .lft{max-width:560px;position:relative;z-index:2}
+.cta .k{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.16em;font-size:12px;color:var(--g300);text-transform:uppercase}
+.cta h3{font-size:25px;font-weight:700;margin:8px 0 14px;line-height:1.12}
+.cta .rows{display:flex;gap:26px}
+.cta .rw{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#EAF2DA}
+.cta .rw .ck{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
+.cta .rgt{position:relative;z-index:2;text-align:right;border-left:1px solid rgba(255,255,255,.22);padding-left:30px}
+.cta .rgt .lab{font-size:11px;color:#C6D4AE;text-transform:uppercase;letter-spacing:.12em;font-family:'JetBrains Mono',monospace}
+.cta .rgt .v{font-size:17px;font-weight:700;margin-top:6px}
+.cta .rgt .v.sm{font-size:13px;font-weight:600;color:#EAF2DA;margin-top:4px}
+
+/* cover */
+.cover .clogo{position:absolute;top:60px;left:72px;height:40px}
+.cover .curl{position:absolute;top:72px;right:72px;font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.12em;color:var(--n400)}
+.cover .chero{position:absolute;left:72px;top:226px;max-width:740px}
+.cover .ck{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.26em;font-size:14px;color:var(--g700);text-transform:uppercase}
+.cover h1.big{font-size:132px;line-height:.95;letter-spacing:-.035em;font-weight:700;color:var(--ink);margin-top:14px}
+.cover .caccent{width:120px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--g700),var(--g400));margin:28px 0 22px}
+.cover .csub{font-size:26px;font-weight:600;color:var(--n800);line-height:1.25;max-width:600px}
+.cover .cone{font-size:18px;color:var(--n500);line-height:1.5;margin-top:14px;max-width:560px}
+.cover .cmark{position:absolute;right:54px;top:50%;transform:translateY(-50%);width:360px}
+.cover .cfoot{position:absolute;left:72px;right:72px;bottom:48px;display:flex;justify-content:space-between;align-items:center;border-top:1.5px solid var(--n200);padding-top:14px}
+.cover .cfoot .a{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--g700)}
+.cover .cfoot .b{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--n400)}
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<section class="slide cover">
+  <div class="pad">
+    <img class="clogo" src="assets/logo.png">
+    <span class="curl">setreo-cloud.com</span>
+    <img class="cmark" src="assets/mark.png">
+    <div class="chero">
+      <div class="ck">Software presentation</div>
+      <h1 class="big">Roadmap</h1>
+      <div class="caccent"></div>
+      <p class="csub">Route intelligence for heavy &amp; oversized transport</p>
+      <p class="cone">Check any route against every official German obstacle source, and know exactly where it will pass. In seconds.</p>
+    </div>
+    <div class="cfoot">
+      <span class="a">SETREO GmbH</span>
+      <span class="b">Customer presentation · 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 1 : PROBLEM ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>01</b> · The Problem</span>
+    </div>
+
+    <div class="s-head" style="max-width:620px">      <h1 class="h1" style="margin-top:12px;font-size:40px">A single low bridge can stop<br>a <span class="em">€250,000 transport.</span></h1>
+      <div class="acc"></div>
+      <p class="lead" style="max-width:600px">Whether an oversized or heavy transport can actually drive a route depends on data
+      that sits scattered across <b>dozens of public authorities</b>, and it changes every single day.</p>
+    </div>
+
+    <div class="cards3">
+      <div class="pcard">
+        <h4>Clearance &amp; weight</h4>
+        <p>One unmarked low bridge or weight-limited crossing means a forced detour, a damaged load, or a blocked convoy.</p>
+      </div>
+      <div class="pcard o">
+        <h4>Constant road works</h4>
+        <p>Thousands of construction sites open and close every week across federal, state and city road networks.</p>
+      </div>
+      <div class="pcard y">
+        <h4>No single source</h4>
+        <p>Autobahn GmbH, 16 federal states and dozens of city portals, each with its own format and update cycle.</p>
+      </div>
+    </div>
+
+    <div class="s1viz">
+      <svg width="468" height="402" viewBox="0 0 500 430">
+        <rect x="0" y="0" width="500" height="430" rx="20" fill="#FAFAFA" stroke="#E5E5E8"/>
+        <g stroke="#EFEFF1" stroke-width="1">
+          <line x1="0" y1="86" x2="500" y2="86"/><line x1="0" y1="172" x2="500" y2="172"/>
+          <line x1="0" y1="258" x2="500" y2="258"/><line x1="0" y1="344" x2="500" y2="344"/>
+          <line x1="100" y1="0" x2="100" y2="430"/><line x1="200" y1="0" x2="200" y2="430"/>
+          <line x1="300" y1="0" x2="300" y2="430"/><line x1="400" y1="0" x2="400" y2="430"/>
+        </g>
+        <g stroke="#D4D4D8" stroke-width="6" fill="none" stroke-linecap="round">
+          <path d="M40,360 C120,330 160,250 260,250 S420,210 470,140"/>
+          <path d="M60,90 C140,120 180,180 280,170"/>
+          <path d="M300,400 C340,330 380,320 440,300"/>
+        </g>
+        <path d="M60,380 C150,360 170,250 250,230 C340,208 360,120 450,90"
+              fill="none" stroke="#E8B23F" stroke-width="8" stroke-linecap="round" stroke-dasharray="2 14"/>
+        <circle cx="60" cy="380" r="9" fill="#3F3F46"/><circle cx="60" cy="380" r="3.5" fill="#fff"/>
+        <circle cx="450" cy="90" r="9" fill="#3F3F46"/><circle cx="450" cy="90" r="3.5" fill="#fff"/>
+        <g transform="translate(250,230)">
+          <circle r="19" fill="#DC2626"/><circle r="19" fill="none" stroke="#fff" stroke-width="3"/>
+          <path d="M-8,-3 H8 M-8,-3 V6 M8,-3 V6 M-10,-3 H10" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path d="M-5,6 V1 M0,6 V1 M5,6 V1" stroke="#fff" stroke-width="2.2"/>
+        </g>
+        <g transform="translate(250,230)"><rect x="22" y="-14" width="58" height="24" rx="6" fill="#fff" stroke="#FECACA"/>
+          <text x="51" y="2" class="maptxt" font-size="13" fill="#991B1B" text-anchor="middle">3.8 m</text></g>
+        <g transform="translate(330,150)">
+          <circle r="16" fill="#EA580C"/><circle r="16" fill="none" stroke="#fff" stroke-width="3"/>
+          <text x="0" y="5" class="maptxt" font-size="13" fill="#fff" text-anchor="middle">!</text>
+        </g>
+        <g transform="translate(330,150)"><rect x="20" y="-13" width="52" height="22" rx="6" fill="#fff" stroke="#FED7AA"/>
+          <text x="46" y="3" class="maptxt" font-size="12" fill="#9A3412" text-anchor="middle">30 t</text></g>
+        <g transform="translate(165,300)">
+          <circle r="14" fill="#CA8A04"/><circle r="14" fill="none" stroke="#fff" stroke-width="3"/>
+          <text x="0" y="4" class="maptxt" font-size="12" fill="#fff" text-anchor="middle">!</text>
+        </g>
+        <g transform="translate(415,55)"><circle r="15" fill="#3F3F46"/>
+          <text x="0" y="5" font-family="Inter" font-weight="700" font-size="17" fill="#fff" text-anchor="middle">?</text></g>
+      </svg>
+    </div>
+
+    <div class="statbig">
+      <div class="n">Hours</div>
+      <span class="l">of manual portal-hopping per transport today. No audit trail, no guarantee.</span>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">01 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2 : STATUS QUO ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>02</b> · How it works today</span>
+    </div>
+
+    <div class="s-head">      <h1 class="h1" style="font-size:46px;margin-top:12px">Route clearance today is <span class="em">manual,<br>fragmented and undocumented.</span></h1>
+      <div class="acc"></div>
+    </div>
+
+    <div class="flowrow">
+      <div class="fnode">
+        <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span class="t">Dispatcher</span>
+      </div>
+      <div class="farrow"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18m0 0-5-5m5 5-5 5"/></svg></div>
+      <div class="fnode">
+        <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v3m8-3v3M6 21h12"/></svg>
+        <span class="t">Autobahn<br>+ state portals</span>
+      </div>
+      <div class="farrow"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18m0 0-5-5m5 5-5 5"/></svg></div>
+      <div class="fnode">
+        <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>
+        <span class="t">PDF circulars<br>+ phone calls</span>
+      </div>
+      <div class="farrow"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h18m0 0-5-5m5 5-5 5"/></svg></div>
+      <div class="fnode" style="border-color:#FED7AA;background:#FFF7ED">
+        <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/><path d="M12 9v4m0 4h.01"/></svg>
+        <span class="t" style="color:#9A3412">"Best guess"</span>
+      </div>
+    </div>
+
+    <div class="painlist">
+      <div class="pain"><span class="x">✕</span><p><b>Incompatible formats.</b> GeoJSON, DATEX&nbsp;II, PDF, phone calls. Nothing comparable, nothing combinable.</p></div>
+      <div class="pain"><span class="x">✕</span><p><b>No direction or time awareness.</b> A closure on the opposite lane still triggers a false alarm.</p></div>
+      <div class="pain"><span class="x">✕</span><p><b>No proof.</b> No documentation for the permit file, and none for liability if something goes wrong.</p></div>
+      <div class="pain"><span class="x">✕</span><p><b>Single point of failure.</b> The know-how lives in one experienced dispatcher's head.</p></div>
+    </div>
+
+    <div class="costbox">
+      <span class="ch">The cost of a miss</span>
+      <h3>One overlooked obstacle, real consequences.</h3>
+      <ul>
+        <li>Forced detours &amp; lost driver hours</li>
+        <li>Fines and damaged loads</li>
+        <li>Delayed or rejected permits</li>
+        <li>No evidence of due diligence</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">02 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3 : SOLUTION ===== -->
+<section class="slide">
+  <div class="pad">
+    <img class="s3watermark" src="assets/mark.png">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>03</b> · The Solution</span>
+    </div>
+
+    <div class="s-head">      <h1 class="h1" style="margin-top:12px;font-size:46px">A route in. A verified<br><span class="em">feasibility report out.</span> In seconds.</h1>
+      <div class="acc"></div>
+      <p class="lead" style="max-width:840px">Roadmap takes the route you already plan to drive, checks it against every official German
+      obstacle source, and tells you exactly where it will pass and where it will not.</p>
+    </div>
+
+    <div class="pipe">
+      <div class="pnode">
+        <div class="pi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a3 3 0 0 0 3-3V8"/></svg></div>
+        <div class="num">STEP 01</div><h4>Your route in</h4>
+        <p>Start and destination, a Google&nbsp;Maps link, or a file upload. Roadmap reads the route you plan to drive, on the real road network.</p>
+      </div>
+      <div class="parrow"><svg width="34" height="16" viewBox="0 0 34 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 8h28m0 0-6-6m6 6-6 6"/></svg></div>
+      <div class="pnode">
+        <div class="pi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <div class="num">STEP 02</div><h4>Obstacle engine</h4>
+        <p>Dozens of official sources are matched to your route. Every finding is severity-graded, direction-aware and time-window aware.</p>
+      </div>
+      <div class="parrow"><svg width="34" height="16" viewBox="0 0 34 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 8h28m0 0-6-6m6 6-6 6"/></svg></div>
+      <div class="pnode win">
+        <div class="pi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <div class="num">RESULT</div><h4>Verified report</h4>
+        <p>Every obstacle on the map and in a PDF. Ready for dispatch, the permit file and the driver.</p>
+      </div>
+    </div>
+
+    <div class="pillars">
+      <div class="pill"><span class="d"></span><span>One source of truth</span></div>
+      <div class="pill"><span class="d"></span><span>Severity-graded · direction &amp; time aware</span></div>
+      <div class="pill"><span class="d"></span><span>Audit-ready documentation</span></div>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">03 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4 : PRODUCT IN ACTION (screenshot) ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>04</b> · Product</span>
+    </div>
+
+    <div class="s-head">      <h1 class="h1" style="font-size:44px;margin-top:12px">One route. Every obstacle. <span class="em">At a glance.</span></h1>
+      <div class="acc"></div>
+    </div>
+
+    <div class="proswrap">
+      <div class="mac">
+        <div class="screen"><img src="assets/screenshot.jpg" alt="Roadmap product screenshot"></div>
+        <div class="base"></div>
+        <div class="maccap">Live product · setreo-cloud.com/roadmap</div>
+      </div>
+
+      <div class="proscopy">
+        <p class="lead2">This is exactly what your dispatch sees: a real heavy transport, checked end to end in the browser.</p>
+        <div class="pt">
+          <span class="pn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <div><b>Bremen to Leipzig, 319 km</b><span>A wind-turbine blade transport, analysed in a single pass and snapped to the real road network.</span></div>
+        </div>
+        <div class="pt">
+          <span class="pn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/><path d="M12 9v4m0 4h.01"/></svg></span>
+          <div><b>8 critical, 2 warning, 4 notice</b><span>Every finding severity-graded and pinned exactly where it sits along the route.</span></div>
+        </div>
+        <div class="pt">
+          <span class="pn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span>
+          <div><b>Map, dashboard and date timeline</b><span>Filter by category, scrub the timeline, export the report. Nothing to install.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">04 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5 : FEATURES ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>05</b> · What's inside</span>
+    </div>
+
+    <div class="s-head" style="margin-top:18px">      <h1 class="h1" style="font-size:40px;margin-top:10px">Everything dispatch needs, <span class="em">in one screen.</span></h1>
+    </div>
+
+    <div class="s4wrap">
+      <div class="mock">
+        <div class="bar"><i></i><i></i><i></i><span class="url">setreo-cloud.com/roadmap</span></div>
+        <div class="body">
+          <div class="side">
+            <div class="sh">Findings · 7</div>
+            <div class="fcard"><span class="bdg bk">Critical</span><div class="ti">Clearance 3.80&nbsp;m, B27 underpass</div><div class="me">0133 · km 142 · ↑ direction</div></div>
+            <div class="fcard"><span class="bdg bo">Warning</span><div class="ti">Bridge weight limit 30&nbsp;t</div><div class="me">0150 · km 168 · ↑ direction</div></div>
+            <div class="fcard"><span class="bdg by">Notice</span><div class="ti">Lane closure, road works</div><div class="me">0131 · km 058 · until Aug</div></div>
+            <div class="fcard"><span class="bdg by">Notice</span><div class="ti">Construction site A4</div><div class="me">autobahn · km 092</div></div>
+          </div>
+          <div style="flex:1;position:relative;background:#FAFAFA">
+            <svg width="100%" height="100%" viewBox="0 0 336 330" preserveAspectRatio="xMidYMid slice">
+              <g stroke="#EFEFF1" stroke-width="1"><line x1="0" y1="82" x2="336" y2="82"/><line x1="0" y1="165" x2="336" y2="165"/><line x1="0" y1="248" x2="336" y2="248"/><line x1="84" y1="0" x2="84" y2="330"/><line x1="168" y1="0" x2="168" y2="330"/><line x1="252" y1="0" x2="252" y2="330"/></g>
+              <g stroke="#D4D4D8" stroke-width="5" fill="none" stroke-linecap="round"><path d="M20,250 C90,230 120,150 200,150 S300,120 330,70"/><path d="M40,60 C100,90 140,130 220,120"/></g>
+              <path d="M30,280 C110,250 120,160 190,150 C270,138 280,70 320,50" fill="none" stroke="#87B52D" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="30" cy="280" r="7" fill="#3F3F46"/><circle cx="30" cy="280" r="2.6" fill="#fff"/>
+              <circle cx="320" cy="50" r="7" fill="#3F3F46"/><circle cx="320" cy="50" r="2.6" fill="#fff"/>
+              <g transform="translate(190,150)"><circle r="13" fill="#DC2626"/><circle r="13" fill="none" stroke="#fff" stroke-width="2.4"/><text y="4" class="maptxt" font-size="11" fill="#fff" text-anchor="middle">!</text></g>
+              <g transform="translate(258,108)"><circle r="11" fill="#EA580C"/><circle r="11" fill="none" stroke="#fff" stroke-width="2.4"/><text y="3.5" class="maptxt" font-size="10" fill="#fff" text-anchor="middle">!</text></g>
+              <g transform="translate(120,205)"><circle r="10" fill="#CA8A04"/><circle r="10" fill="none" stroke="#fff" stroke-width="2.4"/><text y="3.5" class="maptxt" font-size="9" fill="#fff" text-anchor="middle">!</text></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat">
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a3 3 0 0 0 3-3V8"/></svg></div><h5>3-way route input</h5><p>Start and destination, a Maps link or a file. Plus a full waypoint editor.</p></div>
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></div><h5>Dozens of official sources</h5><p>Autobahn GmbH, the federal Mobilithek, plus state and city portals.</p></div>
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18v8H3z"/><path d="M7 8v3M11 8v5M15 8v3M19 8v5"/></svg></div><h5>Obstacle engine</h5><p>Clearance, weight limits, road works, bridges and tunnels, all severity-graded.</p></div>
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-3.5 1.5L10 14l3.5-1.5z"/></svg></div><h5>Direction &amp; time aware</h5><p>Opposite-lane and out-of-window obstacles are filtered out automatically.</p></div>
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h5>Court-proof chat</h5><p>Documented, timestamped discussion on every obstacle, ready for the permit file.</p></div>
+        <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><h5>PDF export &amp; share link</h5><p>Attach to the permit file, or share a live link. The recipient needs no login.</p></div>
+      </div>
+    </div>
+
+    <div class="s4chips">
+      <span class="chip">Multi-tenant SaaS</span>
+      <span class="chip">Hosted in Germany</span>
+      <span class="chip">GDPR-compliant</span>
+      <span class="chip">Seat-based licensing</span>
+      <span class="chip">Live source-health monitoring</span>
+      <span class="chip">Planning-grade data</span>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">05 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6 : FUTURE FEATURES ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>06</b> · On the roadmap</span>
+    </div>
+
+    <div class="s-head">      <h1 class="h1" style="font-size:46px;margin-top:12px">From checking routes to <span class="em">planning them.</span></h1>
+      <div class="acc"></div>
+    </div>
+
+    <div class="fugrid">
+      <div class="futc">
+        <span class="pp">Planned</span>
+        <div class="fi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 5-6"/></svg></div>
+        <h4>Approved-transport history</h4>
+        <p>A searchable archive of past approved heavy transports. Reuse corridors that already cleared the authorities as a proven planning basis.</p>
+      </div>
+      <div class="futc">
+        <span class="pp">Planned</span>
+        <div class="fi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h6a3 3 0 0 0 3-3V8"/><path d="M14 9h6V3"/></svg></div>
+        <h4>Obstacle-aware route-finding</h4>
+        <p>Not just check a route, generate one. Automatic routing for heavy and oversized loads that avoids known clearance, weight and construction restrictions.</p>
+      </div>
+      <div class="futc">
+        <span class="pp">Planned</span>
+        <div class="fi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+        <h4>Coverage beyond Germany</h4>
+        <p>Expanding official obstacle data across the DACH region (Austria and Switzerland), then France and further European markets.</p>
+      </div>
+      <div class="futc">
+        <span class="pp">Planned</span>
+        <div class="fi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18V7a2 2 0 0 1 2-2h7l3 3v3"/><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M16 14h5M18.5 11.5v5"/></svg></div>
+        <h4>Vehicle profiles &amp; permit workflow</h4>
+        <p>Per-vehicle height, weight and axle profiles applied automatically, with export toward the official permit application.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">06 / 07</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7 : GET STARTED ===== -->
+<section class="slide">
+  <div class="pad">
+    <div class="brandbar">
+      <div class="lhs"><img class="mark" src="assets/mark.png"><span class="wm">SETREO · ROADMAP</span></div>
+      <span class="snum"><b>07</b> · Get started</span>
+    </div>
+
+    <div class="s-head">      <h1 class="h1" style="font-size:44px;margin-top:12px">From route to clearance in <span class="em">three steps.</span></h1>
+      <div class="acc"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="sn">1</div>
+        <h4>We provision your tenant</h4>
+        <p>Your team, your seats, your regions. We set the data scope for the areas you drive. Onboarding in days, not months.</p>
+        <div class="conn"><svg width="34" height="16" viewBox="0 0 34 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 8h28m0 0-6-6m6 6-6 6"/></svg></div>
+      </div>
+      <div class="step">
+        <div class="sn">2</div>
+        <h4>Dispatch plans a route</h4>
+        <p>Paste a Maps link or enter start and destination. Roadmap checks the route against every monitored source instantly.</p>
+        <div class="conn"><svg width="34" height="16" viewBox="0 0 34 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 8h28m0 0-6-6m6 6-6 6"/></svg></div>
+      </div>
+      <div class="step">
+        <div class="sn">3</div>
+        <h4>Export &amp; share</h4>
+        <p>Attach the PDF to the permit file and share a live link with driver or authority. Full audit trail included.</p>
+      </div>
+    </div>
+
+    <div class="cta">
+      <img class="wmk" src="assets/mark.png">
+      <div class="lft">
+        <div class="k">Next step</div>
+        <h3>A 2-week guided pilot on your real routes.</h3>
+        <div class="rows">
+          <div class="rw"><span class="ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>Defined region &amp; data scope</div>
+          <div class="rw"><span class="ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>Your live transports</div>
+          <div class="rw"><span class="ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span>Success metric agreed up front</div>
+        </div>
+      </div>
+      <div class="rgt">
+        <div class="lab">Let's talk</div>
+        <div class="v">SETREO GmbH</div>
+        <div class="v sm">setreo-cloud.com</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="tag"><b>Roadmap</b> &nbsp;Route intelligence for heavy &amp; oversized transport</span>
+      <span class="pg">07 / 07</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

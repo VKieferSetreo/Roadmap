@@ -6,11 +6,10 @@ import { useCallback, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { AlertTriangle, Database, Map as MapIcon, BarChart3, ListTree, Search, X, Activity } from "lucide-react"
+import { AlertTriangle, Database, Map as MapIcon, ListTree, Search, X, Activity } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SyncBar } from "@/components/db/SyncBar"
-import { AbdeckungBoard } from "@/components/db/AbdeckungBoard"
 import { AnalyticsBoard } from "@/components/db/AnalyticsBoard"
 import { OrtsSuche, type OrtTreffer } from "@/components/db/OrtsSuche"
 import { QuellenRegister } from "@/components/db/QuellenRegister"
@@ -28,14 +27,14 @@ import { ApiError } from "@/api/client"
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
   const live = mode === "live"
-  // Abdeckung + Quellenregister nur für Setreo-intern (kein externer Kunden-Gateway).
-  // Abdeckung zusätzlich nur für Admins (mxk/vki) — normale interne Nutzer brauchen nur
+  // Analytics + Quellenregister nur für Setreo-intern (kein externer Kunden-Gateway).
+  // Analytics zusätzlich nur für Admins (mxk/vki) — normale interne Nutzer brauchen nur
   // Ansicht + Quellenregister (Max 2026-06-18). Die "Ansicht" (Karte + Sync) ist immer sichtbar.
   const intern = !useContextStore((s) => s.extern)
   const isAdmin = useContextStore((s) => s.isAdmin)
   const [params, setParams] = useSearchParams()
   const wunsch = params.get("tab")
-  const erlaubteTabs = intern ? (isAdmin ? ["abdeckung", "analytics", "quellen"] : ["quellen"]) : []
+  const erlaubteTabs = intern ? (isAdmin ? ["analytics", "quellen"] : ["quellen"]) : []
   const tab = wunsch && erlaubteTabs.includes(wunsch) ? wunsch : "ansicht"
   const { unreachable } = useSourceHealth()
 
@@ -65,14 +64,9 @@ export function DatenbankPage() {
                 ) : null}
               </TabsTrigger>
               {isAdmin ? (
-                <>
-                  <TabsTrigger value="abdeckung">
-                    <BarChart3 className="h-4 w-4" /> Abdeckung
-                  </TabsTrigger>
-                  <TabsTrigger value="analytics">
-                    <Activity className="h-4 w-4" /> Analytics
-                  </TabsTrigger>
-                </>
+                <TabsTrigger value="analytics">
+                  <Activity className="h-4 w-4" /> Analytics
+                </TabsTrigger>
               ) : null}
               <TabsTrigger value="quellen">
                 <ListTree className="h-4 w-4" /> Quellenregister
@@ -86,8 +80,6 @@ export function DatenbankPage() {
             {live ? <SyncBar /> : null}
             <ObstacleKarte live={live} />
           </div>
-        ) : tab === "abdeckung" ? (
-          <AbdeckungBoard />
         ) : tab === "analytics" ? (
           <AnalyticsBoard />
         ) : (
