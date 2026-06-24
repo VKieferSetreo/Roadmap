@@ -1,8 +1,0 @@
-== CSW GetCapabilities (kanonisch) ==
-HTTP 503 | text/html
-
-== Such-UI keyword=Verkehr ==
-HTTP 503 | text/html
-
-Hinweis: HTTP 503 = Dienst-Wartung (nicht Pfad-Fehler). Solange down → NI-Dienst-Suche
-über ArcGIS-Hub / LGLN-OpenData-WFS / NUMIS (siehe abdeckung.txt).

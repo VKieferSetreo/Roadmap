@@ -72,28 +72,6 @@
 - **url:** `https://www.strassenbau.niedersachsen.de/startseite/service/geofachdaten_und_wms_kartendienste/geofachdaten-und-wms-kartendienste-133771.html`
 - **prio:** P1
 - **sonstiges:** Reines Netz/Topologie. Restriktions-/Bauwerksattribute (Höhe/Traglast) NICHT enthalten — die liegen in NWSIB (1.5) bzw. müssen aus Fachdaten ergänzt werden.
-
-## 1.3 Geodatenportal Niedersachsen / GDI-NI (Koordinierungsstelle)
-
-- **quelle:** Geodatensuche Niedersachsen (CSW-Katalog GDI-NI)
-- **betreiber:** Koordinierungsstelle GDI-NI / LGLN
-- **datentyp:** Meta-Katalog aller NI-Geodienste (WMS/WFS) inkl. Verkehr, Straßennetz, ALKIS
-- **strassentyp:** Alle (Katalog)
-- **format:** CSW-Katalog → Verweise auf WMS/WFS
-- **apiEndpunkt (verifiziert):**
-  - Geodatensuche: `https://geoportal.geodaten.niedersachsen.de/harvest/srv/search?keyword=Verkehr`
-  - WFS-Suche: `https://geoportal.geodaten.niedersachsen.de/harvest/srv/search?type=service-WFS`
-- **update:** laufend
-- **auth:** keine
-- **kosten:** keine
-- **lizenz:** je Datensatz
-- **abdeckung:** Niedersachsen
-- **zugang:** offen
-- **verifiziert:** ja
-- **url:** `https://www.geodaten.niedersachsen.de/`
-- **prio:** P2
-- **sonstiges:** Einstiegspunkt zum Auffinden weiterer NI-WFS/WMS. NUMIS ist das verwandte Umwelt-Metadatensystem.
-
 ## 1.4 OpenGeoData Niedersachsen (LGLN ArcGIS Hub)
 
 - **quelle:** OpenGeoData NI

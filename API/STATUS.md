@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **79 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **78 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (51) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (14) · ⚪ nur Portal (5)
+**Legende:** 🟢 live getestet (51) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (8) · 🟡 Endpunkt/Parsing zu bestätigen (13) · ⚪ nur Portal (5)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -45,7 +45,6 @@
 | 🟢 | Mecklenburg-Vorpommern | Straßenbaustellen MV (WFS) — wfs_baustellenmv | verkehrseinschränkende Baustel | WFS 1.0/1.1/2.0 | offen |
 | 🟢 | Mecklenburg-Vorpommern / Rostock | Rostock — Baustellen (OpenData.HRO) | Baustellen Stadtgebiet Rostock | GeoJSON / WFS / WMS /  | offen |
 | 🟢 | Mecklenburg-Vorpommern / Rostock | Rostock — Großraum- und Schwertransportrouten  | (a) empfohlene GST-Wege Rostoc | GeoJSON / WFS / WMS /  | offen |
-| 🟡 | Niedersachsen | Geodatensuche Niedersachsen (CSW-Katalog GDI-N | Meta-Katalog aller NI-Geodiens | CSW-Katalog → Verweise | offen |
 | 🔑 | Niedersachsen | Mobilithek (Bund) — NI als Datengeber (DATEX-I | Baustellen, Sperrungen, tempor | DATEX II (v2/v3, XML) | registrierung |
 | 🟢 | Niedersachsen | NLStBV INSPIRE WMS Straßennetz (DE-NI-SBV INSP | Klassifiziertes Straßennetz (I | WMS 1.3.0 (View); WFS  | offen |
 | 🔑 | Niedersachsen | NWSIB-online (Niedersächsisches Straßeninforma | Straßenbestand, Bauwerke (Brüc | Web-Auskunft (Login);  | eingeschränkt |

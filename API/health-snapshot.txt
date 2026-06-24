@@ -34,7 +34,6 @@ LEER Länder/Hessen/hessen-mobil-positivkarten                  (Endpunkt prüfe
 OK   Länder/Mecklenburg-Vorpommern/LS-MV-Strassenbaustellen-WFS 2808 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-baustellen 4045 B
 OK   Länder/Mecklenburg-Vorpommern/Städte/Rostock/rostock-gst-routen 4021 B
-LEER Länder/Niedersachsen/Geodatenportal-NI-CSW                (Endpunkt prüfen)
 🔑   Länder/Niedersachsen/Mobilithek-NI-DATEX                  Account/Key nötig
 OK   Länder/Niedersachsen/NLStBV-INSPIRE-WMS-Strassennetz      4041 B
 🔑   Länder/Niedersachsen/NWSIB-online                         Account/Key nötig
@@ -73,4 +72,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 101 getestet · OK 72 · LEER 20 · 🔑 9 übersprungen
+Σ 100 getestet · OK 72 · LEER 19 · 🔑 9 übersprungen
