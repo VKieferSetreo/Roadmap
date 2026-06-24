@@ -24,7 +24,6 @@
 | **P2** | HB | VMZ Bremen (vmz.bremen.de) + RSS-Feed | Baustellen, Verkehrslage, GST-Routing-Hinweise | verifiziert (Portal) |
 | **P2** | HB | GIS-Hub / GeoPortal Bremen (ArcGIS/Masterportal) | Straßennetz, Detailnetz Bauwerke (Brücken/Tunnel) | zu-bestätigen |
 | **P2** | HB | ASV Bremen — Brücken & Ingenieurbau / GST-Stelle | Bauwerksdaten, GST-Genehmigung (Kontakt-Quelle) | zu-bestätigen (gated) |
-| **P3** | NI | NWSIB-online (Niedersächs. Straßeninformationssystem) | Straßenbestand, Bauwerke (Login-gated) | verifiziert (gated) |
 | **P3** | NI/HB | VMZ Bremen Niedersachsen-Layer | Baustellen NI über VMZ HB | verifiziert (Portal) |
 
 ---
@@ -70,26 +69,6 @@
 - **url:** `https://ni-lgln-opengeodata.hub.arcgis.com/` · `https://lgln-geodaten.niedersachsen.de/opengeodata/opengeodata-220509.html`
 - **prio:** P1
 - **sonstiges:** Bester offener NI-Einstieg mit GeoJSON-Download. Straßennetz-Datensatz deckt BAB + Bundes- + Landesstraßen (NLStBV-Zuständigkeit) sowie NLStBV-verwaltete Kreisstraßen ab.
-
-## 1.5 NWSIB-online (Niedersächsisches Straßeninformationssystem)
-
-- **quelle:** NWSIB-online
-- **betreiber:** NLStBV (Straßeninformationsbank Niedersachsen/Westfalen-Bauart)
-- **datentyp:** Straßenbestand, Bauwerke (Brücken/Durchlässe), Querschnitte, Stationierung, Ausstattung — potenziell mit Bauwerksrestriktionen
-- **strassentyp:** A/B/L/K (Bestandsnetz NI)
-- **format:** Web-Auskunft (Login); Export/Dienst-Schnittstelle restricted
-- **apiEndpunkt (verifiziert):** null (Login-gated, „Anmeldung" erforderlich)
-- **update:** laufend (Fachsystem)
-- **auth:** Login (Behörden-/registrierter Zugang)
-- **kosten:** zu-bestätigen
-- **lizenz:** restricted
-- **abdeckung:** Niedersachsen
-- **zugang:** eingeschränkt — Registrierung/Behördenzugang; Datenfreigabe für Projekt bei NLStBV anfragen
-- **verifiziert:** ja (Existenz) / Datenzugang gated
-- **url:** `https://www.nwsib-niedersachsen.de/`
-- **prio:** P3
-- **sonstiges:** Wahrscheinlich die ergiebigste NI-Quelle für Bauwerksrestriktionen (lichte Höhe/Traglast), aber NICHT offen. Für GST-Projekt: gezielt Datenexport/Schnittstelle bei NLStBV erfragen.
-
 ## 1.6 Mobilithek (Bund) — NI als Datengeber
 
 - **quelle:** Mobilithek (NAP) — DATEX-II Baustellen/Verkehr von NI-Behörden
@@ -297,7 +276,6 @@
 
 | Land | Lücke | Nächster Schritt |
 |------|-------|------------------|
-| NI | Bauwerksrestriktionen (lichte Höhe/Traglast) NICHT offen — nur in NWSIB (gated) | NLStBV: Datenexport/Schnittstelle NWSIB anfragen |
 | NI | VMZ NI ohne dokumentierte API/DATEX | VMZ NI nach maschinellem Feed fragen; Baustellen über Mobilithek |
 | HB | GST-Routen + Bauwerksrestriktionen nicht offen (ASV-intern, `bruecken.bremen.de`) | ASV Bremen Abt. 5 + GST-Stelle kontaktieren; GeoPortal „Detailnetz Bauwerke"-WFS suchen |
 | HB | Konkrete Verkehr/Brücken-WFS-Endpunkte nicht per Suche enumerierbar | GeoPortal Bremen + MetaVer (`metaver.de`) Layer-für-Layer auflösen |
@@ -311,5 +289,5 @@
 
 - **Live per GetCapabilities geprüft (HTTP 200, FeatureTypes gelesen):** HH GST-Routen-Metadaten, HH Brückenbauwerke (FeatureTypes), HH Baustellen (`de.hh.up:baustelle`), HH Bedarfsumleitungen (`app:bedarfsumleitungen`).
 - **Aus offizieller Metadaten-Doku belegt (Endpunkt nicht roh gefetcht):** HH Straßen-/Wegenetz-WFS, HH OGC API Features GST-Routen, Bremen GIS-Hub/GeoPortal, NI OpenGeoData Hub.
-- **Gated/blockiert:** NWSIB-online (Login), Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
+- **Gated/blockiert:** Open-Data-SH-Portal (Anubis-Bot-Schutz), GovData-SH-Detail (zeitweise 503), ASV Bremen (kein offener Dienst).
 - **Casing-Hinweis:** Hamburg geodienste-Pfade sind teils case-sensitive (`hh_wfs_baustellen` lowercase vs. `HH_WFS_Brueckenbauwerke` mixed) — exakte Schreibweise aus Metadaten übernehmen.

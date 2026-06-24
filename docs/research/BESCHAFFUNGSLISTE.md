@@ -25,7 +25,6 @@
 | 3 | **Mobilithek: HE + BY Land-Baustellen** (heute nur gated) | Baustellen/Sperrungen DATEX II | dito (abonnieren) | niedrig | +2 starke Länder | — | **P1** |
 | 4 | **Mobilithek: Verkehrslage/-meldungen** derselben Länder | Sperrungen/Umleitungen verdichtet | dito (German Traffic Data Profile) | niedrig | qualit. Verdichtung | — | **P2** |
 | 5 | **Brandenburg** Landesbetrieb (LS) | GST-Negativliste + Baustellen-Feed | `LS-GST@LS.Brandenburg.de` · Maik Dieling `Maik.Dieling@LS.Brandenburg.de` 03342 249-1093 | niedrig | leeres Land | erste Bauwerke | **P1** |
-| 6 | **Niedersachsen** NLStBV Dez. 34 | NWSIB-Bauwerksexport (Traglast/Höhe) + VMZ-Feed | NLStBV Dez. 34, Tel. 0511 3034-2433 (NWSIB-Freigabe = Verwaltungsakt) | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
 | 7 | **Rheinland-Pfalz** LBM | Brücken-Traglast + Negativliste + DATEX-Knoten | `Daniel.Boden@lbm.rlp.de` / LBM-Zentrale Koblenz | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
 | 8 | **Thüringen** TLBV Erfurt + Landesverwaltungsamt | Bauwerks-/Baustellenexport (Web ist CAPTCHA → Tel.) | `poststelle@tlvwa.thueringen.de` + TLBV Erfurt telefonisch | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
 | 9 | **Schleswig-Holstein** LBV.SH | Brücken-/Bauwerksverzeichnis + Negativliste | `gst@lbv-sh.landsh.de` · Fr. Panschog 0431 383-2927 | niedrig | (temp. da) | hoch (Bauwerks-Layer ergänzt) | **P2** |
@@ -58,8 +57,7 @@
    abonnieren und je Subscription-ID notieren. Das hebt temporär ~60 % → ~90 % auf einen Schlag.
    Ein einziger generischer DATEX-II-Pull-Connector bedient alle Abos (nur Config pro Land).
 
-3. **Drei leere Flächenländer per Landesbetrieb-Mail** (höchster relativer Gewinn dauerhaft):
-   - **Niedersachsen** — NLStBV Dez. 34, 0511 3034-2433 (NWSIB-Bauwerksexport)
+3. **Zwei leere Flächenländer per Landesbetrieb-Mail** (höchster relativer Gewinn dauerhaft):
    - **Rheinland-Pfalz** — `Daniel.Boden@lbm.rlp.de` (Brücken-Traglast + Negativliste)
    - **Thüringen** — `poststelle@tlvwa.thueringen.de` + TLBV Erfurt telefonisch
    Standard-Anfrage: GST-Negativliste > Bauwerksexport (Traglast/Höhe) > Baustellen-Feed; Lizenz dl-de/by-2.0.

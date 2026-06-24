@@ -89,7 +89,7 @@ Hier gibt Open Data nichts her. Ehrlich benannt, damit kein Aufwand in Sackgasse
 | Brandenburg | Brücke/Last, Höhe, Tunnel, GST | BBSIB-Bauwerke nur per E-Mail-Datenabgabe. Straßennetz-WFS ohne Bauwerksattribute. ATKIS-Höhen nicht belastbar gepflegt. Kein Tunnel-Inventar. |
 | Bremen | Brücke/Last, Höhe, Tunnel, GST | TT-SIB-Straßennetz (frei) ohne Restriktionsfelder. VMZ-LKW-Karte führt Höhe/Tonnage, aber nur als mapsight-View ohne abrufbaren Endpoint (Scraping fragil). Kein Tunnel. GST nur 1 prosaische Route (CC BY-NC-ND). |
 | Hessen | Höhe, Tunnel | Brücken-Last vorhanden (0126 PDF), aber Höhe nur 0150, kein Tunnel-Inventar. ATKIS/Geoportal ohne Höhen-/Lastattribut. |
-| Niedersachsen | Brücke/Last, Höhe, Tunnel, GST | NWSIB nur WMS (location-only, kein WFS). NLStBV-Open-Data = 0 Treffer für Brücke/Last/Höhe/Tunnel/GST. GST nur 42-MB-PDF-Karte. |
+| Niedersachsen | Brücke/Last, Höhe, Tunnel, GST | NLStBV-Open-Data = 0 Treffer für Brücke/Last/Höhe/Tunnel/GST. GST nur 42-MB-PDF-Karte. |
 | NRW | Höhe, Tunnel | ms:Bauwerke-WFS (frei) führt keine Höhe/Last — nur Standort+Typ. Nicht-BAB-Höhe/Tunnel-Profil über Open Data nicht erreichbar. |
 | Rheinland-Pfalz | Brücke/Last, Höhe, Tunnel | 5.700 Brücken / 28 Tunnel — alles in SIB-Bauwerke (verschlossen). Geoportal-WFS ohne Restriktionsfelder. |
 | Saarland | Brücke/Last, Höhe, Tunnel, GST | Verkehr-WFS (frei) ohne Bauwerks-/Höhen-/Lastlayer. Negativliste verwaltungsintern. Open-Data-Portal SL erst Q4/2026 (Beobachtungskandidat). |

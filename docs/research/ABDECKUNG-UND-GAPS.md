@@ -64,7 +64,7 @@ Hindernis-Feeds (gated/Portal/PDF/WMS — siehe §3).
 | 🟡 dünn | **Saarland** | 32 | 0 | nur baustellen.saarland, keine GST-Karte |
 | 🔴 **LEER** | **Brandenburg** | 0 | 0 | LS-BB nur Web-Karte, kein offener Feed → nur OSM |
 | 🔴 **LEER** | **Bremen** | 0 | 0 | VMZ nur Mobilithek, ASV-Brücken nur Portal → nur OSM |
-| 🔴 **LEER** | **Niedersachsen** | 0 | 0 | NWSIB gated, VMZ nur Mobilithek → nur OSM |
+| 🔴 **LEER** | **Niedersachsen** | 0 | 0 | VMZ nur Mobilithek → nur OSM |
 | 🔴 **LEER** | **Rheinl.-Pfalz** | 0 | 0 | Mobilitätsatlas nur JS-Portal, DATEX nur Mobilithek → nur OSM |
 | 🔴 **LEER** | **Thüringen** | 0 | 0 | TLBV CAPTCHA-geschützt, DATEX nur Mobilithek → nur OSM |
 
@@ -125,7 +125,6 @@ Kategorisiert aus den `*.cron.skip.txt` (nur *echte* Producer-Lücken, ohne Netz
 | BayernInfo ArbIS/VIZ → Mobilithek | BY-Baustellen + Verkehrsmeldungen | nur über Mobilithek-Vertrag (Angebote …2507001 / …2506…) |
 | LBM-RLP DATEX-Knoten | RP-Baustellen/Sperrungen | nur über Mobilithek, kein direkter Endpunkt |
 | Mobilithek NI / VMZ NI / VMZ Bremen / ST-DATEX | Länder-Baustellen | alle nur über Mobilithek-Pipeline |
-| NWSIB-online (NI) | Straßenbestand + Bauwerke | Login/Portal, kein offener Feed |
 | GDI-SBV Sachsen (Bauwerke) | Bauwerks-Fachdaten | nur im Verwaltungsnetz (SVN/KDN), nicht aus offenem Internet |
 
 ### 🖥️ Nur Portal / PDF (Daten sichtbar, nicht als Rohdaten)

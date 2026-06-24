@@ -88,21 +88,6 @@ sind zunehmend verpflichtet, vorhandene Daten maschinenlesbar bereitzustellen. L
   derzeit unklar) anfragen. Beides in eine Mail.
 - **Aufwand:** niedrig. **Gewinn:** mittel-hoch (legt den vorhandenen Feed rechtlich frei + erste
   Bauwerksdaten).
-
-### Niedersachsen — **LEER (nur OSM)**
-- **Zuständig:** **Nds. Landesbehörde für Straßenbau und Verkehr (NLStBV), Hannover — Dezernat 34
-  „Verkehrsbehördliche Angelegenheiten, GST"** (zugleich Höhere Straßenverkehrsbehörde + Anhörstelle).
-  Bauwerksdaten in **NWSIB-online** (gated).
-- **Kontakt (verifiziert):** NLStBV, Dezernat 34, Göttinger Chaussee 76 A, 30453 Hannover.
-  Tel. 0511 3034-2470 (Call Center) bzw. -2433; Fax -2099. Web:
-  `https://www.strassenbau.niedersachsen.de/.../grossraum_und_schwertransporte/`
-- **Anfrage-Aktion:** Bei Dez. 34 **NWSIB-Datenexport/Schnittstelle** für Bauwerke (Brücken,
-  Traglast, lichte Höhe) + etwaige **GST-Negativliste** anfragen; zugleich nach **direktem VMZ-NI-
-  Baustellen-Feed** fragen (sonst Mobilithek). NWSIB ist nur Login-Portal → Projekt-Datenfreigabe
-  nötig.
-- **Aufwand:** mittel (NWSIB-Freigabe = Verwaltungsakt). **Gewinn:** sehr hoch — Flächenland,
-  aktuell **0** offen.
-
 ### Rheinland-Pfalz — **LEER (nur OSM)**
 - **Zuständig:** **Landesbetrieb Mobilität Rheinland-Pfalz (LBM)** — prüft je Brücke die
   Tragfähigkeit für Schwertransporte; hält SIB-Bauwerke. DATEX über LBM-Knoten.
@@ -236,7 +221,6 @@ sowie HE/BY-Land) ist die **Mobilithek** der zentrale Hebel — ein Account stat
 |---|---|---|---|---|
 | 1 | **Mobilithek-Account** + je Land Roadworks abonnieren | mobilithek.info (Reg. + Org. + Zertifikat) | einmalig mittel | temporär ~60 %→~90 % (5–7 Länder) |
 | 2 | **Brandenburg** GST-Negativliste + Baustellen-Feed | `LS-GST@LS.Brandenburg.de` | niedrig | leeres Land komplett |
-| 3 | **Niedersachsen** NWSIB-Bauwerksexport + VMZ-Feed | NLStBV Dez. 34, 0511 3034-2433 | mittel | Flächenland, 0→aktiv |
 | 4 | **Rheinland-Pfalz** Brücken-Traglast + LBM-DATEX | `Daniel.Boden@lbm.rlp.de` / LBM Koblenz | mittel | Flächenland, 0→aktiv |
 | 5 | **Thüringen** Bauwerks-/Baustellenexport | TLBV Erfurt (Tel.) + `poststelle@tlvwa.thueringen.de` | mittel | Flächenland, 0→aktiv |
 | 6 | **Schleswig-H.** Bauwerksverzeichnis + Negativliste | `gst@lbv-sh.landsh.de` | niedrig | Bauwerks-Layer ergänzt |
