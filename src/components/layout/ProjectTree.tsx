@@ -300,6 +300,33 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
               />
             </div>
           ))}
+          {/* Beim Ziehen öffnet sich hier ein Spacer (grün, wenn man drüber ist): ablegen = auf die
+              EBENE DIESES Ordners (als direktes Kind), nicht in einen Unterordner. stopPropagation,
+              damit der Drop nicht zur Zonen-Wurzel durchfällt. */}
+          {accepts ? (
+            <div
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                ctx.setDragOver(`child:${id}`)
+              }}
+              onDragLeave={() => ctx.setDragOver(ctx.dragOver === `child:${id}` ? null : ctx.dragOver)}
+              onDrop={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                ctx.drop(id)
+              }}
+              style={{ marginLeft: (depth + 1) * 14 }}
+              className={cn(
+                "flex items-center overflow-hidden rounded-md border-2 border-dashed px-2 text-[11px] font-medium transition-all duration-150",
+                ctx.dragOver === `child:${id}`
+                  ? "h-8 border-primary-500 bg-primary-50 text-primary-700"
+                  : "h-5 border-neutral-200 text-neutral-400",
+              )}
+            >
+              {ctx.dragOver === `child:${id}` ? `In „${f.name}“ ablegen` : "hierher (gleiche Ebene)"}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -351,12 +378,20 @@ function ZoneSection({
           e.preventDefault()
           ctx.drop(null, zonePrivate)
         }}
-        className={cn(
-          "flex flex-col gap-0.5 rounded-md p-0.5",
-          over && "bg-primary-50 ring-1 ring-primary-200",
-          dragging ? "min-h-[30px]" : "",
-        )}
+        className={cn("flex flex-col gap-0.5 rounded-md p-0.5", over && "bg-primary-50")}
       >
+        {/* Beim Ziehen geht ein Spacer auf (grün umrandet, wenn man drüber ist) → klar erkennbar,
+            dass hier auf die OBERSTE Ebene der Zone abgelegt wird (nicht in einen Ordner hinein). */}
+        {dragging ? (
+          <div
+            className={cn(
+              "flex items-center justify-center overflow-hidden rounded-md border-2 border-dashed text-[11px] font-medium transition-all duration-150",
+              over ? "h-9 border-primary-500 bg-primary-50 text-primary-700" : "h-6 border-neutral-200 text-neutral-400",
+            )}
+          >
+            {over ? `Auf „${label}“-Ebene ablegen` : "auf oberste Ebene ziehen"}
+          </div>
+        ) : null}
         {folders.map((f) => (
           <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
         ))}
