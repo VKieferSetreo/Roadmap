@@ -16,7 +16,6 @@
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
 | **P2** | GovData.de (DCAT-AP.de) | Geodaten-Std | Bund-Open-Data-Katalog, CKAN-API | verifiziert |
-| **P3** | QLever (OSM-SPARQL) | OSM | analytische Geo-Queries (GeoSPARQL) auf ganz OSM | verifiziert (Doku) |
 
 > **Hinweis mCLOUD:** Das früher relevante mCLOUD-Portal des BMDV wurde 2022 von der **Mobilithek** abgelöst (ebenso der MDM/Mobility Data Marketplace). mCLOUD ist nur noch historisch zu nennen.
 
@@ -53,21 +52,6 @@ OSM ist für Setreo die mit Abstand **breiteste, kostengünstigste und feinkörn
 ---
 ---
 ---
-
-## 1.4 QLever (OSM als SPARQL / GeoSPARQL)
-
-- **quelle:** QLever SPARQL-Engine (RDF-Repräsentation von OSM)
-- **betreiber:** Universität Freiburg (AD-Lehrstuhl) / qlever.dev
-- **datentyp:** ganz OSM analytisch abfragbar; GeoSPARQL (`ogc:sfContains`, `ogc:sfIntersects`)
-- **format:** SPARQL → JSON/TSV/CSV
-- **apiEndpunkt (verifiziert):** UI `https://qlever.dev/` (OSM-Datensatz wählbar); SPARQL-Endpoint pro Datensatz
-- **update:** OSM wöchentlich repliziert
-- **auth:** keine · **kosten:** keine · **lizenz:** Daten ODbL
-- **zugang:** offen
-- **verifiziert:** ja (Doku) · **prio:** P3
-- **url:** `https://wiki.openstreetmap.org/wiki/QLever`
-- **Notizen:** Stark für **analytische** Cross-DE-Auswertungen („alle Brücken mit maxheight<4 m an B-Straßen"), die in Overpass timeouten würden. Lernkurve SPARQL. Nice-to-have, kein Muss.
-
 ---
 ---
 

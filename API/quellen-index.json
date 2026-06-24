@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 45,
+  "anzahl": 44,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -475,17 +475,6 @@
       "typ": "live-endpunkt",
       "ordner": "Sonstige/rvr-geonetzwerk-ruhr-baustellen",
       "test": "Sonstige/rvr-geonetzwerk-ruhr-baustellen/test.sh"
-    },
-    {
-      "name": "QLever (OSM als SPARQL / GeoSPARQL)",
-      "ebene": "Sonstige",
-      "datentyp": "Ganz OSM analytisch abfragbar (RDF-Repraesentation via osm2rdf); GeoSPARQL (ogc:sfContains, ogc:sfIntersects). Stark fuer Cross-DE-Auswertungen, die in Overpass timeouten (\"alle Bruecken mit maxheight<4 m an B-Strassen\").",
-      "format": "SPARQL (POST) -> JSON (sparql-results+json) / TSV / CSV",
-      "endpunkt": "https://qlever.cs.uni-freiburg.de/api/osm-planet",
-      "lizenz": "Daten ODbL 1.0 (OSM); Software QLever Apache-2.0",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/qlever-osm-sparql",
-      "test": "Sonstige/qlever-osm-sparql/test.sh"
     },
     {
       "name": "GovData.de (Offene-Daten-Portal Deutschland, CKAN-API)",
