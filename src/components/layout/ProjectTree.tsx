@@ -276,7 +276,31 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
       </div>
 
       {open ? (
-        <div className="mt-0.5 flex flex-col gap-0.5">
+        // Kinder-Container ist das (persistente) Drop-Ziel für „auf die Ebene DIESES Ordners".
+        // Drop-Handler nur wenn ablegbar (accepts) → stopPropagation, fällt nicht zur Zonen-Wurzel
+        // durch. Der grüne Spacer kommt erst beim Drüberziehen (kein dragStart-Layout-Sprung).
+        <div
+          className="mt-0.5 flex flex-col gap-0.5"
+          onDragOver={
+            accepts
+              ? (e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  ctx.setDragOver(`child:${id}`)
+                }
+              : undefined
+          }
+          onDragLeave={() => ctx.setDragOver(ctx.dragOver === `child:${id}` ? null : ctx.dragOver)}
+          onDrop={
+            accepts
+              ? (e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  ctx.drop(id)
+                }
+              : undefined
+          }
+        >
           {subs.map((s) => (
             <FolderNode key={s.id} id={s.id} depth={depth + 1} parent={id} ctx={ctx} />
           ))}
@@ -300,31 +324,12 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
               />
             </div>
           ))}
-          {/* Beim Ziehen öffnet sich hier ein Spacer (grün, wenn man drüber ist): ablegen = auf die
-              EBENE DIESES Ordners (als direktes Kind), nicht in einen Unterordner. stopPropagation,
-              damit der Drop nicht zur Zonen-Wurzel durchfällt. */}
-          {accepts ? (
+          {ctx.dragOver === `child:${id}` ? (
             <div
-              onDragOver={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                ctx.setDragOver(`child:${id}`)
-              }}
-              onDragLeave={() => ctx.setDragOver(ctx.dragOver === `child:${id}` ? null : ctx.dragOver)}
-              onDrop={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                ctx.drop(id)
-              }}
               style={{ marginLeft: (depth + 1) * 14 }}
-              className={cn(
-                "flex items-center overflow-hidden rounded-md border-2 border-dashed px-2 text-[11px] font-medium transition-all duration-150",
-                ctx.dragOver === `child:${id}`
-                  ? "h-8 border-primary-500 bg-primary-50 text-primary-700"
-                  : "h-5 border-neutral-200 text-neutral-400",
-              )}
+              className="flex h-8 items-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 px-2 text-[11px] font-medium text-primary-700 duration-150 animate-in fade-in slide-in-from-top-1"
             >
-              {ctx.dragOver === `child:${id}` ? `In „${f.name}“ ablegen` : "hierher (gleiche Ebene)"}
+              {`In „${f.name}“ ablegen`}
             </div>
           ) : null}
         </div>
@@ -378,20 +383,8 @@ function ZoneSection({
           e.preventDefault()
           ctx.drop(null, zonePrivate)
         }}
-        className={cn("flex flex-col gap-0.5 rounded-md p-0.5", over && "bg-primary-50")}
+        className={cn("flex flex-col gap-0.5 rounded-md p-0.5", over && "bg-primary-50", dragging && "min-h-[52px]")}
       >
-        {/* Beim Ziehen geht ein Spacer auf (grün umrandet, wenn man drüber ist) → klar erkennbar,
-            dass hier auf die OBERSTE Ebene der Zone abgelegt wird (nicht in einen Ordner hinein). */}
-        {dragging ? (
-          <div
-            className={cn(
-              "flex items-center justify-center overflow-hidden rounded-md border-2 border-dashed text-[11px] font-medium transition-all duration-150",
-              over ? "h-9 border-primary-500 bg-primary-50 text-primary-700" : "h-6 border-neutral-200 text-neutral-400",
-            )}
-          >
-            {over ? `Auf „${label}“-Ebene ablegen` : "auf oberste Ebene ziehen"}
-          </div>
-        ) : null}
         {folders.map((f) => (
           <FolderNode key={f.id} id={f.id} depth={0} ctx={ctx} />
         ))}
@@ -414,10 +407,17 @@ function ZoneSection({
             setDragId={ctx.setDragId}
           />
         ))}
-        {!folders.length && !rootProjects.length && !creatingHere ? (
+        {!folders.length && !rootProjects.length && !creatingHere && !dragging ? (
           <p className="px-2 py-1.5 text-[11px] text-neutral-400">
             {zonePrivate ? "Noch nichts Privates — mit + anlegen oder hierher ziehen." : "Noch nichts Geteiltes."}
           </p>
+        ) : null}
+        {/* Grüner Spacer „geht auf", sobald man über der Zonen-Fläche ist (nicht über einem Ordner)
+            → ablegen = oberste Ebene dieser Zone. Erst bei over gemountet → kein dragStart-Sprung. */}
+        {over ? (
+          <div className="flex h-9 items-center justify-center rounded-md border-2 border-dashed border-primary-500 bg-primary-50 text-[11px] font-medium text-primary-700 duration-150 animate-in fade-in slide-in-from-top-1">
+            {`Auf „${label}“-Ebene ablegen`}
+          </div>
         ) : null}
       </div>
     </div>
