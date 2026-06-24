@@ -18,7 +18,6 @@
 | **P2** | Mobilithek (BMDV, NAP) | Geodaten-Std | Katalog/Marktplatz für Verkehrs-Datensätze (DATEX II etc.) | verifiziert |
 | **P2** | GovData.de (DCAT-AP.de) | Geodaten-Std | Bund-Open-Data-Katalog, CKAN-API | verifiziert |
 | **P3** | QLever (OSM-SPARQL) | OSM | analytische Geo-Queries (GeoSPARQL) auf ganz OSM | verifiziert (Doku) |
-| **P3** | OSM planet.osm + diffs | OSM | Voll-Dump + minütliche/täglich Replikation | verifiziert |
 
 > **Hinweis mCLOUD:** Das früher relevante mCLOUD-Portal des BMDV wurde 2022 von der **Mobilithek** abgelöst (ebenso der MDM/Mobility Data Marketplace). mCLOUD ist nur noch historisch zu nennen.
 
@@ -87,25 +86,6 @@ OSM ist für Setreo die mit Abstand **breiteste, kostengünstigste und feinkörn
 
 ---
 ---
-
-## 1.3 OSM Planet + Diffs (Voll-Dump / Replikation)
-
-- **quelle:** planet.openstreetmap.org
-- **betreiber:** OpenStreetMap Foundation (OSMF)
-- **datentyp:** kompletter weltweiter OSM-Datenbestand + Änderungs-Diffs
-- **format:** `.osm.pbf` (~80 GB), `.osm.bz2`; Diffs als `.osc.gz`
-- **apiEndpunkt (verifiziert):**
-  - Planet: `https://planet.openstreetmap.org/pbf/`
-  - Minütliche Diffs: `https://planet.openstreetmap.org/replication/minute/`
-  - Tägliche Diffs: `https://planet.openstreetmap.org/replication/day/`
-- **update:** Planet wöchentlich; Diffs minütlich/stündlich/täglich
-- **auth:** keine · **kosten:** keine · **lizenz:** **ODbL 1.0**
-- **abdeckung:** weltweit
-- **zugang:** offen
-- **verifiziert:** ja (Doku) · **prio:** P3 (für DE reicht Geofabrik)
-- **url:** `https://planet.openstreetmap.org/`
-- **Notizen:** Nur relevant wenn man eine selbst-aktualisierende Mirror-DB betreiben will (Diffs einspielen). Für DE-Scope ist Geofabrik effizienter.
-
 ---
 
 ## 1.4 QLever (OSM als SPARQL / GeoSPARQL)

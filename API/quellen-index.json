@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 47,
+  "anzahl": 46,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -475,17 +475,6 @@
       "typ": "live-endpunkt",
       "ordner": "Sonstige/overpass-api",
       "test": "Sonstige/overpass-api/test.sh"
-    },
-    {
-      "name": "OSM Planet + Diffs (Voll-Dump / Replikation)",
-      "ebene": "Sonstige",
-      "datentyp": "Kompletter weltweiter OSM-Datenbestand + Aenderungs-Diffs (alle Restriktions-Tags) — fuer selbst-aktualisierende Mirror-DB (Diffs einspielen)",
-      "format": ".osm.pbf (~80 GB), .osm.bz2; Diffs als .osc.gz; State-Files .txt",
-      "endpunkt": "https://planet.openstreetmap.org/pbf/  (Diffs: /replication/minute/ , /replication/day/)",
-      "lizenz": "ODbL 1.0 (OSM-Daten; Attribution Pflicht)",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/osm-planet-diffs",
-      "test": "Sonstige/osm-planet-diffs/test.sh"
     },
     {
       "name": "RVR / GEONETZWERK.RUHR — Baustellen (Beispiel Herne-GeoServer)",

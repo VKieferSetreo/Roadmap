@@ -1,5 +1,0 @@
-== minute-Replikation state.txt (Live-Diff-Feed-Beweis) ==
-#Sat Jun 13 14:43:26 UTC 2026
-sequenceNumber=7154994
-timestamp=2026-06-13T14\:43\:01Z
-

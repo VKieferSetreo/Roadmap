@@ -1,1 +1,0 @@
-SKIP: OSM-Planet-Diff-Stream (minütliche/stündliche Replikations-Changesets) — Bulk-/Replikations-Infrastruktur, kein normalisierbarer Hindernis-Endpunkt. Gezielter Abruf läuft über Overpass (Quelle 0301).
