@@ -143,22 +143,29 @@ export async function sendProjectNotificationMail(
   // Pro Mitglied nach Präferenz versenden: aktiv? Scope (eigene = nur Ersteller, alle = jedes
   // Mandanten-Projekt)? Events auf die gewählten Schweregrade gefiltert? Jeder bekommt nur seine
   // relevanten Änderungen — kein Spam, gezielt nach Kritikalität.
-  let totalSent = 0
-  for (const m of members) {
-    if (!m.enabled) continue
-    if (m.scope === "eigene" && project.erstelltVon !== m.email) continue
-    const evs = filterEventsForSev(events, m.severities)
-    if (evs.length === 0) continue
-    const res = await sendMail(
-      {
-        recipients: [{ email: m.email }],
-        subject: buildSubject(project, evs),
-        html: buildHtml(project, evs, env),
-        text: buildText(project, evs, env),
-      },
-      { env, fetchImpl, log },
-    )
-    totalSent += res?.sent ?? 0
-  }
+  // T-386: die Empfänger-Mails parallel an Mailjet (allSettled) statt sequenziell — sonst skaliert
+  // die Latenz linear mit der Mandantengröße im (DB-tx-nahen) Auto-Rerun-Pfad. sendMail wirft nicht.
+  const empfaenger = members.filter(
+    (m) => m.enabled && !(m.scope === "eigene" && project.erstelltVon !== m.email),
+  )
+  const ergebnisse = await Promise.allSettled(
+    empfaenger.map((m) => {
+      const evs = filterEventsForSev(events, m.severities)
+      if (evs.length === 0) return Promise.resolve({ sent: 0 })
+      return sendMail(
+        {
+          recipients: [{ email: m.email }],
+          subject: buildSubject(project, evs),
+          html: buildHtml(project, evs, env),
+          text: buildText(project, evs, env),
+        },
+        { env, fetchImpl, log },
+      )
+    }),
+  )
+  const totalSent = ergebnisse.reduce(
+    (sum, r) => sum + (r.status === "fulfilled" ? (r.value?.sent ?? 0) : 0),
+    0,
+  )
   return totalSent > 0 ? { sent: totalSent } : { sent: 0, skipped: true }
 }
