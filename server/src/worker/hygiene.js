@@ -50,6 +50,32 @@ export async function purgeStaleInactive(db, { days = 30 } = {}) {
   return rows
 }
 
+// T-372: import_runs wächst ~139 Zeilen/Tag (≈50k/Jahr) ohne Pruning. Alte Runs löschen, aber je
+// Quelle den JÜNGSTEN immer behalten (Health/Status + Quellen-Register lesen den letzten Run je
+// Quelle, unabhängig vom Alter). keepDays großzügig → Historie auskunftsfähig, Bloat gekappt.
+const PRUNE_IMPORT_RUNS_SQL = `DELETE FROM import_runs
+   WHERE started_at < (now() - ($1::int * INTERVAL '1 day'))
+     AND id NOT IN (SELECT DISTINCT ON (quelle_id) id FROM import_runs ORDER BY quelle_id, started_at DESC)
+   RETURNING id`
+
+/** Alte import_runs löschen (je Quelle bleibt der jüngste erhalten). @returns Anzahl gelöschter Zeilen. */
+export async function pruneImportRuns(db, { keepDays = 90 } = {}) {
+  const { rows } = await db.query(PRUNE_IMPORT_RUNS_SQL, [keepDays])
+  return rows.length
+}
+
+// T-372: analytics_sessions + analytics_events enthalten E-Mail → Retention = Datenminimierung
+// (Art.5e). 365 Tage Nutzungshistorie reicht der Admin-Übersicht; ältere Zeilen hart löschen.
+const PRUNE_ANALYTICS_SESSIONS_SQL = `DELETE FROM analytics_sessions WHERE last_seen < (now() - ($1::int * INTERVAL '1 day')) RETURNING id`
+const PRUNE_ANALYTICS_EVENTS_SQL = `DELETE FROM analytics_events WHERE created_at < (now() - ($1::int * INTERVAL '1 day')) RETURNING id`
+
+/** Nutzungs-Sessions + -Events nach `keepDays` löschen (PII-Retention). @returns {{sessions,events}}. */
+export async function pruneAnalytics(db, { keepDays = 365 } = {}) {
+  const s = await db.query(PRUNE_ANALYTICS_SESSIONS_SQL, [keepDays])
+  const e = await db.query(PRUNE_ANALYTICS_EVENTS_SQL, [keepDays])
+  return { sessions: s.rows.length, events: e.rows.length }
+}
+
 // fach_id-Dedup/Renumber (T-262). Root-Cause war ein Index-Überlauf >9999: MAX_INDEX_SQL las nur die
 // ersten 4 Stellen der fachId → bei >9999 Einträgen/Quelle (5-stelliger Index, 15-stellige fachId)
 // hing der Zähler bei 9999 → Folge-Importe vergaben Index 10000+ ERNEUT → Dubletten. Der

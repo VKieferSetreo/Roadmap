@@ -15,7 +15,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles, purgeStaleInactive, reconcileFachIdDupes } from "./hygiene.js"
+import { expireObstacles, pruneAnalytics, pruneImportRuns, purgeStaleInactive, reconcileFachIdDupes } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -188,6 +188,19 @@ async function runRerun(grund) {
   }
 }
 
+// T-372: täglicher Retention-/Pruning-Lauf (eigener Cron, NICHT in den Rerun gemischt — Rerun
+// läuft auch import-getrieben, Pruning soll nur 1×/Tag). Löscht alte import_runs (je Quelle bleibt
+// der jüngste) + Analytics-Sessions/-Events älter als 365 Tage. Fire-and-forget, robust.
+async function runPrune() {
+  try {
+    const ir = await pruneImportRuns(db)
+    const an = await pruneAnalytics(db)
+    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events gelöscht`)
+  } catch (err) {
+    log(`Retention-Lauf fehlgeschlagen: ${err?.message ?? err}`)
+  }
+}
+
 // Prozessübergreifender Lock pro Connector (pg-Advisory-Lock auf dediziertem Client).
 // Ersetzt die frühere In-Memory-Set: verhindert Doppel-Runs NICHT nur im selben Prozess,
 // sondern über mehrere Worker-Instanzen hinweg. Cron-Duplikation (2 Worker feuern denselben
@@ -294,13 +307,15 @@ try {
   jobs.push(new Cron("30 3 * * *", CRON_OPTS, () => void runRerun("täglicher Cleanup")))
   // T-347: tägliche Lizenz-Ablauf-Erinnerung (eigener Job, NICHT in den Rerun gemischt).
   jobs.push(new Cron("0 7 * * *", CRON_OPTS, () => void runLicenseReminders()))
+  // T-372: tägliches Retention-/Pruning (import_runs + analytics) — eigener Job, früh morgens.
+  jobs.push(new Cron("45 3 * * *", CRON_OPTS, () => void runPrune()))
 
   // Heartbeat (T-469): hält den Event-Loop am Leben, macht den Worker im Log sichtbar UND
   // schreibt einen DB-Heartbeat, den /api/health auf Staleness prüft (Dead-Man's-Switch).
   // 5-Min-Takt, damit der >2h-Schwellwert sinnvoll greift. DB-Write fire-and-forget — ein
   // DB-Blip darf den Worker nicht killen.
   jobs.push(new Cron("*/5 * * * *", CRON_OPTS, () => {
-    log(`alive — ${jobs.length - 2} Connector-Job(s) geplant`)
+    log(`alive — ${jobs.length - 3} Connector-Job(s) geplant`)
     void beat()
   }))
   await beat() // Boot-Beat sofort, damit der Status nicht 5 Min „stale" startet
