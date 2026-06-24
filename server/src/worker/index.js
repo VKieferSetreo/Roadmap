@@ -15,7 +15,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles, pruneAnalytics, pruneImportRuns, purgeStaleInactive, reconcileFachIdDupes } from "./hygiene.js"
+import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, purgeStaleInactive, reconcileFachIdDupes } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -195,7 +195,8 @@ async function runPrune() {
   try {
     const ir = await pruneImportRuns(db)
     const an = await pruneAnalytics(db)
-    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events gelöscht`)
+    const shots = await pruneBugReportScreenshots(db)
+    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events, ${shots} bug-report-screenshots bereinigt`)
   } catch (err) {
     log(`Retention-Lauf fehlgeschlagen: ${err?.message ?? err}`)
   }

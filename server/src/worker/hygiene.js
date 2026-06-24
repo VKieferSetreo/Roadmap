@@ -76,6 +76,19 @@ export async function pruneAnalytics(db, { keepDays = 365 } = {}) {
   return { sessions: s.rows.length, events: e.rows.length }
 }
 
+// T-373: Screenshot-Blobs (base64-JPEG, ≤6 MB inline) aufgelöster bug_reports nach `keepDays`
+// entfernen. Report-Text/Status/Verlauf bleiben — nur der schwere Blob fällt weg → Disk-Wachstum
+// gekappt. Die LIST-Query selektiert den Blob ohnehin nicht (nur has_screenshot).
+const PRUNE_BUGREPORT_SHOTS_SQL = `UPDATE bug_reports SET screenshot = NULL
+   WHERE screenshot IS NOT NULL AND resolved_at IS NOT NULL
+     AND resolved_at < (now() - ($1::int * INTERVAL '1 day')) RETURNING id`
+
+/** Screenshots aufgelöster, gealterter bug_reports nullen. @returns Anzahl bereinigter Reports. */
+export async function pruneBugReportScreenshots(db, { keepDays = 180 } = {}) {
+  const { rows } = await db.query(PRUNE_BUGREPORT_SHOTS_SQL, [keepDays])
+  return rows.length
+}
+
 // fach_id-Dedup/Renumber (T-262). Root-Cause war ein Index-Überlauf >9999: MAX_INDEX_SQL las nur die
 // ersten 4 Stellen der fachId → bei >9999 Einträgen/Quelle (5-stelliger Index, 15-stellige fachId)
 // hing der Zähler bei 9999 → Folge-Importe vergaben Index 10000+ ERNEUT → Dubletten. Der
