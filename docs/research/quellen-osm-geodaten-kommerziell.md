@@ -13,7 +13,6 @@
 | Prio | Quelle | Bereich | Datentyp | Status |
 |------|--------|---------|----------|--------|
 | **P1** | OSM via Overpass API | OSM | maxheight/width/weight/axleload, hgv, bridge, tunnel, level_crossing, roundabout | verifiziert (live) |
-| **P1** | Geofabrik DE-Extrakte (.osm.pbf) | OSM | komplettes DE-Datenset, täglich, für Bulk/eigene DB | verifiziert |
 | **P2** | openrouteservice (driving-hgv) | Kommerziell/OSS | height/width/length/weight/axleload + hazmat | verifiziert (Doku) |
 | **P2** | GraphHopper Directions (truck/custom_model) | Kommerziell/OSS | max_height/width/weight, axle_load, hazmat | verifiziert (Doku) |
 | **P2** | INSPIRE Transport Networks (DLM250) WFS/ATOM | Geodaten-Std | Straßen-/Schienennetz-Topologie (GML) | verifiziert (Doku) |
@@ -86,31 +85,9 @@ OSM ist für Setreo die mit Abstand **breiteste, kostengünstigste und feinkörn
   out tags geom;
   ```
   Für Brücken-Querungen: `way["bridge"]` + benachbarte `way["maxheight"]`-Korrelation.
-- **Abdeckungslücken/Notizen:** Overpass ist ideal für **gezielte/inkrementelle** Abfragen, NICHT für DE-weiten Bulk-Export (Timeout/Last) → dafür Geofabrik (§1.2). `/api/status` braucht passenden Accept-Header (gibt sonst HTTP 406), Interpreter funktioniert aber einwandfrei.
+- **Abdeckungslücken/Notizen:** Overpass ist ideal für **gezielte/inkrementelle** Abfragen, NICHT für DE-weiten Bulk-Export (Timeout/Last). `/api/status` braucht passenden Accept-Header (gibt sonst HTTP 406), Interpreter funktioniert aber einwandfrei.
 
 ---
-
-## 1.2 Geofabrik Deutschland-Extrakte (Bulk / eigene DB)
-
-- **quelle:** Geofabrik GmbH — fertige regionale OSM-Extrakte
-- **betreiber:** Geofabrik GmbH, Karlsruhe
-- **datentyp:** komplettes OSM-Datenset für DE (+ je Bundesland)
-- **strassentyp:** Alle
-- **format:** `.osm.pbf` (primär, ~4,5 GB DE-gesamt), für ausgewählte Sub-Regionen `.gpkg.zip` (GeoPackage). **Keine** Shapefiles/`.osm.bz2` für DE-Gesamt.
-- **apiEndpunkt (verifiziert):**
-  - DE-gesamt: `https://download.geofabrik.de/europe/germany-latest.osm.pbf`
-  - Bundesland-Pattern: `https://download.geofabrik.de/europe/germany/{land}-latest.osm.pbf` (16 Länder: baden-wuerttemberg, bayern, berlin, … thueringen)
-- **update:** ~täglich (zuletzt 2026-06-12T20:21Z bei Prüfung)
-- **auth:** keine
-- **kosten:** keine (Download). Kostenpflichtig nur Geofabrik-Overpass / Sonderprodukte.
-- **lizenz:** **ODbL 1.0**
-- **abdeckung:** DE-gesamt + alle 16 Bundesländer einzeln
-- **zugang:** offen
-- **verifiziert:** ja (Verzeichnis + Lizenz bestätigt)
-- **url:** `https://download.geofabrik.de/europe/germany.html`
-- **prio:** P1
-- **Abdeckungslücken/Notizen:** Der richtige Weg für eine **eigene Routing-/Restriktions-DB** (osm2pgsql/osmium → PostGIS). Täglicher Stand reicht für dauerhafte Restriktionen (Brücken/Tunnel ändern sich selten). Für Echtzeit (Baustellen) ungeeignet → dafür Bund/Länder-Feeds.
-
 ---
 
 ## 1.3 OSM Planet + Diffs (Voll-Dump / Replikation)

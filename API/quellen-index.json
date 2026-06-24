@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 50,
+  "anzahl": 49,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -519,17 +519,6 @@
       "typ": "live-endpunkt",
       "ordner": "Sonstige/nominatim",
       "test": "Sonstige/nominatim/test.sh"
-    },
-    {
-      "name": "Geofabrik Deutschland-Extrakte (.osm.pbf Bulk)",
-      "ebene": "Sonstige",
-      "datentyp": "Komplettes OSM-Datenset fuer DE (+ je Bundesland) — alle Restriktions-Tags fuer eigene Routing-/Restriktions-DB (osm2pgsql/osmium -> PostGIS)",
-      "format": ".osm.pbf (primaer, ~4,5 GB DE-gesamt); fuer ausgewaehlte Sub-Regionen .gpkg.zip (GeoPackage)",
-      "endpunkt": "https://download.geofabrik.de/europe/germany-latest.osm.pbf",
-      "lizenz": "ODbL 1.0 (OSM-Daten; Attribution Pflicht)",
-      "typ": "live-endpunkt",
-      "ordner": "Sonstige/geofabrik-extrakte",
-      "test": "Sonstige/geofabrik-extrakte/test.sh"
     },
     {
       "name": "QLever (OSM als SPARQL / GeoSPARQL)",

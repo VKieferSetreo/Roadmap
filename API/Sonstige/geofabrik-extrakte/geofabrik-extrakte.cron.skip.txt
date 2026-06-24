@@ -1,1 +1,0 @@
-SKIP: Bulk-OSM-Extrakte (PBF-Dateien, mehrere GB) — Massendaten-Download, kein API-Cron. Dieselben Restriktionen werden gezielt via Overpass (Quelle 0301) gezogen; Bulk-Verarbeitung ist ein separater Offline-Importweg.

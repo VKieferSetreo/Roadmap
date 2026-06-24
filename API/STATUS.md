@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **73 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **72 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (49) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
+**Legende:** 🟢 live getestet (48) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -71,7 +71,6 @@
 | 🟢 | Schleswig-Holstein | Open-Data SH — Straßenbaustellen (WFS Baustell | Straßenbaustellen (Linien + Pu | WFS 2.0.0 (GML); DATEX | offen |
 | 🟢 | Schleswig-Holstein | Umleitungsstrecken Schleswig-Holstein (WFS Bau | Umleitungsstrecken (Diversion  | WFS 2.0.0 (GML) | offen |
 | 🟡 | Thüringen | Baustelleninformationssystem Thüringen (TLBV) | aktuelle Baustellen auf Thürin | Web-App (GWT) | eingeschränkt |
-| 🟢 | Sonstige | Geofabrik Deutschland-Extrakte (.osm.pbf Bulk) | Komplettes OSM-Datenset fuer D | .osm.pbf (primaer, ~4, | offen |
 | 🟢 | Sonstige | GovData.de (Offene-Daten-Portal Deutschland, C | Metadaten-KATALOG ueber ALLE V | Metadaten nach DCAT-AP | offen |
 | 🔑 | Sonstige | GraphHopper — Directions API (truck / custom_m | Built-in-Profile truck + small | REST-JSON | account |
 | 🟢 | Sonstige | INSPIRE Transport Networks (TN) — BKG DLM250 W | Verkehrsnetz-Topologie (Road/R | WFS 2.0.0 (GML 3.2.1); | offen |
