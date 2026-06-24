@@ -31,7 +31,7 @@
   (docs/research/quellen-osm-geodaten-kommerziell.md, Abschnitt 1.0). Wird ueber die
   konkreten OSM-APIs (overpass-api/, qlever-osm-sparql/) abgefragt.
 
-# Lizenz-Querschnitt: ALLE OSM-abgeleiteten Quellen hier (overpass, geofabrik,
-# osm-planet-diffs, qlever, nominatim, ORS, GraphHopper) stehen unter ODbL 1.0 —
+# Lizenz-Querschnitt: ALLE OSM-abgeleiteten Quellen hier (overpass, qlever, ORS)
+# stehen unter ODbL 1.0 —
 # Attribution "© OpenStreetMap contributors" Pflicht, Share-Alike nur bei Weitergabe
 # einer abgeleiteten DATENBANK (nicht bei berechneten Routen / Produced Works).
