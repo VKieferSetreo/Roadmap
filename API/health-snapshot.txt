@@ -21,7 +21,6 @@ LEER Länder/Bayern/open-bydata-Portal                          (Endpunkt prüfe
 OK   Länder/Berlin/Detailnetz-Berlin-Bauwerke-WFS              2443 B
 OK   Länder/Berlin/VIZ-Berlin-Baustellen-WFS                   1027 B
 OK   Länder/Berlin/VIZ-Berlin-GeoJSON-Feeds                    3987 B
-OK   Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS              3981 B
 OK   Länder/Brandenburg/INSPIRE-WFS-BB-Verkehrsnetze           3135 B
 LEER Länder/Bremen/ASV-Bremen-Bruecken-GST                     (Endpunkt prüfen)
 LEER Länder/Bremen/VMZ-Bremen                                  (Endpunkt prüfen)
@@ -70,4 +69,4 @@ OK   Sonstige/overpass-api                                      744 B
 OK   Sonstige/qlever-osm-sparql                                 430 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 98 getestet · OK 71 · LEER 19 · 🔑 8 übersprungen
+Σ 97 getestet · OK 70 · LEER 19 · 🔑 8 übersprungen

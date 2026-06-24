@@ -14,7 +14,7 @@
 | Land | Quellen | Offene verifizierte Top-Treffer |
 |------|--------:|----------------------------------|
 | **Berlin** | 6 | VIZ Berlin WFS+2× GeoJSON (live 200), Detailnetz-Bauwerke WFS @ gdi.berlin.de (live 200) |
-| **Brandenburg** | 5 | INSPIRE Verkehrsnetze WFS @ inspire.brandenburg.de (live 200, dl-de/by-2.0), ALKIS WMS (live 200) |
+| **Brandenburg** | 5 | INSPIRE Verkehrsnetze WFS @ inspire.brandenburg.de (live 200, dl-de/by-2.0) |
 | **Mecklenburg-Vorp.** | 5 | Straßenbaustellen-WFS + Verkehrsnetz-WFS @ geodaten-mv.de (live 200, tagesaktuell) |
 | **Sachsen** | 6 | Baustellen-WMS @ geodienste.sachsen.de (live 200, CC-BY-4.0), GST-Negativkarte (PDF, offen), INSPIRE-TN-WFS (live 200, dl-de/by-2.0) |
 | **Sachsen-Anhalt** | 5 | LSBB-Sperrinfo-WFS (live 200, GeoJSON, ABER non-commercial), INSPIRE-TN-WFS @ geodatenportal (live 200) |
@@ -136,18 +136,6 @@
 - **url:** `https://geobroker.geobasis-bb.de/` (Produkt e48146bb-284b-4ac3-a946-9c96ffe8a341)
 - **prio:** P1
 - **sonstiges:** Netzgeometrie, KEINE GST-Restriktionen. Für Bauwerke/Brücken → ATKIS-Bauwerke-WFS der LGB (Geobroker, `bw_bdlm_wfs` o.ä. — zu-bestätigen).
-
-### 2.3 GeoBasis-BB — ALKIS WMS/WFS — **P2, verifiziert (WMS live)**
-- **quelle:** ALKIS Brandenburg (WMS/WFS)
-- **betreiber:** LGB · **datentyp:** Liegenschaftskataster (Gebäude/Bauwerks-Geometrie, Flurstücke)
-- **format:** WMS (live), WFS (ALKIS vereinfacht / NAS-konform)
-- **apiEndpunkt (verifiziert, WMS HTTP 200):** `https://isk.geobasis-bb.de/ows/alkis_wms?service=WMS&request=GetCapabilities`
-- **auth:** keine · **kosten:** kostenlos · **lizenz:** dl-de/by-2.0 („© GeoBasis-DE/LGB")
-- **zugang:** offen (Brandenburger LGB-Geodaten sind seit 2023 OpenData)
-- **verifiziert:** ja (WMS live 200); WFS-Pfad je Produkt aus Geobroker
-- **url:** `https://geobasis-bb.de/lgb/de/geodaten/geodienste/`
-- **prio:** P2
-
 ### 2.4 Geoportal Brandenburg / Open Data BB — **P3, verifiziert (Portal)**
 - **quelle:** Geoportal Brandenburg (GDI-BB) — >100 Anbieter, WMS/WFS/WCS + Metadaten
 - **betreiber:** GDI-BB · **format:** Portal/CSW + diverse OGC-Dienste

@@ -1,7 +1,7 @@
 {
   "stand": "2026-06-13",
   "beschreibung": "Nutzbare DE-Datenquellen für Schwertransport-Hindernisse (🟢 live + 📄 strukturiert). Pro Eintrag: Beispiel-Endpunkt + Pfad zum lauffähigen test.sh.",
-  "anzahl": 51,
+  "anzahl": 50,
   "quellen": [
     {
       "name": "Dresden — Verkehrseinschränkungen / Straßenbaustellen (Themenstadtplan, OGC API)",
@@ -145,17 +145,6 @@
       "typ": "live-endpunkt",
       "ordner": "Länder/Brandenburg/INSPIRE-WFS-BB-Verkehrsnetze",
       "test": "Länder/Brandenburg/INSPIRE-WFS-BB-Verkehrsnetze/test.sh"
-    },
-    {
-      "name": "ALKIS Brandenburg (WMS/WFS)",
-      "ebene": "Brandenburg",
-      "datentyp": "Liegenschaftskataster (Gebäude/Bauwerks-Geometrie, Flurstücke) — KEINE Traglast/Brückenklasse",
-      "format": "WMS (live), WFS (ALKIS vereinfacht / NAS-konform)",
-      "endpunkt": "https://isk.geobasis-bb.de/ows/alkis_wms?service=WMS&request=GetCapabilities",
-      "lizenz": "dl-de/by-2.0 (\"© GeoBasis-DE/LGB\")",
-      "typ": "live-endpunkt",
-      "ordner": "Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS",
-      "test": "Länder/Brandenburg/GeoBasis-BB-ALKIS-WMS-WFS/test.sh"
     },
     {
       "name": "Baustellen Hamburg (stadtweit) — Verkehrsdaten OpenData",
