@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **76 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **75 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (50) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (13) · ⚪ nur Portal (5)
+**Legende:** 🟢 live getestet (50) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (7) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (5)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -48,7 +48,6 @@
 | 🔑 | Niedersachsen | Mobilithek (Bund) — NI als Datengeber (DATEX-I | Baustellen, Sperrungen, tempor | DATEX II (v2/v3, XML) | registrierung |
 | 🟢 | Niedersachsen | OpenGeoData Niedersachsen (LGLN ArcGIS Hub) | Klassifiziertes Straßennetz, D | CSV, KML, ZIP, GeoJSON | offen |
 | 🟡 | Niedersachsen | VMZ Niedersachsen (Verkehrsmanagementzentrale) | Verkehrslage, Baustellen (best | Web-Portal (Karte); ma | offen |
-| 🟡 | Niedersachsen / Hannover | Hannover (Region) — Geoportal / HannIT | gebündelte Geodaten/Geodienste | WMS / WFS / ATOM-Feeds | offen |
 | 🟢 | Nordrhein-Westfalen | GST-Schwertransportkarte NRW — lastbeschränkte | Für GST gesperrte/lastbeschrän | ArcGIS REST FeatureSer | offen |
 | 🟢 | Nordrhein-Westfalen | NRW.Mobidrom Datenplattform / mobilitaetsdaten | Baustellen, Sperrungen, tempor | CKAN-Katalog (JSON) +  | offen |
 | 🟢 | Nordrhein-Westfalen | OpenGeodata.NRW / Straßen.NRW — Straßennetz in | Bauwerke (Brücken/Tunnel/Bauwe | WFS (GML 3.2), WMS, At | offen |

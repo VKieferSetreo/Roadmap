@@ -34,7 +34,6 @@ bundesweite Bauwerksstatik, Bahnübergänge, kommunale Brücken) sind **nicht** 
 |---|---|---|---|
 | **Frankfurt a.M.** | offenedaten.frankfurt.de hat WFS-Datensätze (Bebauungspläne, Gewässer, Flurstücke). Verkehrsamt nennt „Baustellen" als Datenkategorie, aber **kein verifizierter Baustellen-WFS/GeoJSON** auffindbar; Mobilithek als Hauptkanal genannt. | ⚪ Portal, Feed unbestätigt | Direkt anfragen ob Baustellen-WFS existiert; sonst Mobilithek (s. §6) |
 | **Nürnberg** | GeoPortal Nürnberg = ArcGIS-Viewer; open.bydata listet städtische Daten. **Kein** dedizierter Baustellen-Feed verifiziert. | ⚪ Portal | open.bydata prüfen / Stadt anfragen |
-| **Hannover (Region)** | Geoportal Region Hannover bietet WMS/WFS/ATOM für Fachbereich „Verkehr"; LHH liefert OpenGeoData seit 2017. **WFS existiert**, konkreter Baustellen-Layer nicht final verifiziert. | 🟡 **vielversprechend** | GetCapabilities des Verkehr-WFS prüfen → wahrscheinlich anbindbar |
 | **Wiesbaden** | WFS via `geodata.o-sp.de/service/wiesbaden.cgi` — aber Inhalt v.a. **Bauleitplanung**, kein Verkehr/Baustellen. | ⚪ nur Bauleitplanung | kein GST-Nutzen |
 | **Mannheim** | Opendatasoft (`mannheim.opendatasoft.com`) — 41 Datasets, **nur Eco-Counter-Verkehrszähler**, KEIN Baustellen-Feed. Mobilitätsportal nennt Baustellen, aber nicht als offener Datensatz. | ⚪ kein Feed | Heidelberg/Mannheim laufen über MobiData-BW |
 | **Essen** | NRW — läuft bereits über **RVR-Verbund** (im Katalog 🟡). | ✅ via RVR | — |
@@ -49,7 +48,7 @@ bundesweite Bauwerksstatik, Bahnübergänge, kommunale Brücken) sind **nicht** 
 | **Heidelberg** | Baustellen über **MobiData-BW (BEMaS)** in CIFS/GeoJSON/DATEX — bereits im BW-Sammel-Feed. | ✅ via MobiData-BW | — |
 
 ### Fazit Städte
-- **Echte neue anbindbare Kandidaten:** **Hannover-Region-WFS**, **Kiel (opendata.SH)**, **Bielefeld
+- **Echte neue anbindbare Kandidaten:** **Kiel (opendata.SH)**, **Bielefeld
   (Open.NRW CSV/XML, Lizenz prüfen!)**, evtl. **Wuppertal/Bochum** (über Open.NRW/RVR-Erweiterung).
 - **Kein eigener Connector nötig:** Freiburg, Heidelberg, Mannheim (→ MobiData-BW); Essen, Bochum (→ RVR).
 - **Tote Stubs (kein GST-Feed):** Frankfurt, Nürnberg, Wiesbaden, Augsburg, Magdeburg, Erfurt.
@@ -126,9 +125,6 @@ bundesweite Bauwerksstatik ist BASt SIB (gated).
 ### A) Offen — sofort anbindbar (kleiner Aufwand, kleiner-mittlerer Gewinn)
 1. **ELWIS Brückendurchfahrtshöhen Wasserstraßen** — PDF-Parser. *Aufwand:* klein-mittel.
    *Gewinn:* einziger offener Wasserstraßen-Höhen-Layer.
-2. **Hannover-Region Verkehr-WFS** — GetCapabilities prüfen, Baustellen-Layer anbinden. *Aufwand:* klein.
-   *Gewinn:* eine Großstadt-Region (NI, sonst leer!) → **überdurchschnittlich wertvoll**, weil
-   Niedersachsen aktuell nur OSM hat.
 3. **Kiel — opendata.schleswig-holstein.de** (Verkehrslage/Baustellen GeoJSON). *Aufwand:* klein.
    *Gewinn:* Landeshauptstadt SH.
 4. **OSM `railway=level_crossing`-Layer** — eigener Overpass-Producer für Bahnübergänge.
@@ -161,7 +157,7 @@ Der frische Sweep hat **keine versteckte Goldader** gefunden. Die wirklich wertv
 
 Was der Sweep an **Neuem** bringt:
 - **ELWIS-PDFs** (Wasserstraßen-Höhen) — neuer Nischen-Producer, offen.
-- **Hannover-Region + Kiel** — 2 neue offene Stadt/Regions-Feeds (Hannover besonders, weil NI sonst leer).
+- **Kiel** — 1 neuer offener Stadt/Regions-Feed.
 - **OSM-Bahnübergangs-Layer** — pragmatischer Ersatz für die gated BÜ-Daten.
 - Bestätigung, dass **Bielefeld/Wuppertal/Bochum** über bestehende NRW/RVR-Mechanik anbindbar sind
   (Bielefeld nur mit Lizenzklärung).

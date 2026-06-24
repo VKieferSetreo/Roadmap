@@ -28,7 +28,6 @@
 | **P2** | **RVR/Geonetzwerk Ruhr** — Baustellen (geodaten.herne.de) | Baustellen Herne/Ruhr | WFS/GeoJSON/SHP | verifiziert (Doku) |
 | **P2** | **Dresden — Themenstadtplan/Open Data** (opendata.dresden.de) | Straßenbaustellen/Umleitungen | WFS/GeoJSON | zu-bestätigen |
 | **P2** | **Karlsruhe Geoportal — Brücken/Bauwerke** | Brücken, Bauwerke, Verkehrstechnik (eigene Kategorie!) | WFS/WMS (tlw. auf Anfrage) | zu-bestätigen |
-| **P3** | **Hannover (Region) — Geoportal/HannIT** | Geodaten/Verkehr, INSPIRE | WMS/WFS/Atom | zu-bestätigen |
 | **P3** | **Nürnberg — GeoPortal** | städtische Geodaten | WMS/WFS | zu-bestätigen |
 | **P3** | **Stuttgart — Open Data/Geoportal** | Verkehr/Bauen | WMS/WFS | zu-bestätigen |
 | **P3** | **Mannheim — Open Data (Opendatasoft) + Geoportal** | v.a. Verkehrszähler; Baustellen im sep. Bauportal | GeoJSON/CSV/WFS | zu-bestätigen (Baustellen) |
@@ -364,26 +363,6 @@
 - **sonstiges:** Dresden-Portal ist Teil der Urban Platform (Connected Urban Twins). >1.100 Datensätze → Baustellen-/Verkehrs-WFS sehr wahrscheinlich vorhanden, im Katalog gezielt nach „Verkehr"/„Baustelle" suchen.
 
 ---
-
-## 15. Hannover (Region) — Geoportal / HannIT
-
-- **quelle:** Geoportal der Region Hannover + Open GeoData LH Hannover
-- **betreiber:** Region Hannover (Geodatenportal) / HannIT (kommunaler IT-Dienstleister, Bereich Mobilität & GIS); LH Hannover FB Planen & Stadtentwicklung
-- **datentyp:** gebündelte Geodaten/Geodienste verschiedener Fachbereiche; Verkehr/Infrastruktur; INSPIRE-Verkehrsnetze
-- **strassentyp:** innerorts + Region
-- **format:** WMS, WFS, ATOM-Feeds (INSPIRE-konform via pmINSPIRE)
-- **apiEndpunkt:** **zu-bestätigen** — Geoportal + Geodatendienste bestätigt, dedizierter Baustellen-Endpunkt nicht isoliert. INSPIRE-WFS: `https://geoportal.de/info/d05b0b56-cd9b-4f3a-a40c-7233796d3122` (Region Hannover Download-Dienst). → `apiEndpunkt = null` (für Baustellen)
-- **update:** je Dienst
-- **auth:** keine (Open GeoData)
-- **kosten:** keine
-- **lizenz:** Open GeoData (dl-de / CC-BY je Dienst)
-- **abdeckung:** Region Hannover (21 Kommunen) + LH Hannover
-- **zugang:** offen
-- **verifiziert:** **zu-bestätigen**
-- **url:** `https://www.hannover.de/.../Geodatenportal-der-Region-Hannover` · HannIT: `https://hannit.de/bereiche/mobilitaet-und-gis/` · OpenGeoData NI: `https://ni-lgln-opengeodata.hub.arcgis.com/`
-- **prio:** **P3**
-- **sonstiges:** Region Hannover = überregionaler kommunaler Verbund (Muster wie RVR/TRK). HannIT betreut Mobilität/GIS — Ansprechpartner für Baustellen-Feed. Niedersachsen-OpenGeoData (ArcGIS Hub) ergänzt landesweit.
-
 ---
 
 ## 16. Nürnberg — GeoPortal

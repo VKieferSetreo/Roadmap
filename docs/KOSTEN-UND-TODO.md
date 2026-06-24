@@ -86,7 +86,7 @@ Vorlaufzeiten). Die wenigen *bezahlten* Optionen lohnen sich nicht und sind bewu
 |---|---|
 | C1 | BASt-Brückenkarte (CC-BY) anbinden + Export-Felder real prüfen |
 | C2 | ELWIS-PDF-Parser (Wasserstraßen-Durchfahrtshöhen) |
-| C3 | Hannover-Region-WFS + Kiel (opendata.SH) als Producer |
+| C3 | Kiel (opendata.SH) als Producer |
 | C4 | OSM `railway=level_crossing`-Producer (Bahnübergänge, Lage-Ersatz) |
 | C5 | Vincents Cron-Engine-FE-Feature (T-035) final auf done |
 

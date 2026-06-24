@@ -35,7 +35,6 @@
 | 14 | **Saarland** LfS Neunkirchen | GST-Brückenliste + Baustellenportal-Lizenz | `poststelle@lfs.saarland.de` | niedrig | kleines Land | erste Bauwerke | **P3** |
 | 15 | **BASt-Brückenkarte** (`via.bund.de/bast/br/map/`) | Bundesfernstraßen-Brücken Lage/Baustoff/Zustand (CC-BY 4.0) | Manueller Export → Parser. **Felder real prüfen** — Traglast/lichte Höhe/Achslast wahrscheinlich NICHT enthalten | Tage | — | niedrig–mittel (nur A+B, vermutl. ohne Statik) | **P2** |
 | 16 | **ELWIS** (WSV/GDWS) | Brückendurchfahrtshöhen Bundeswasserstraßen | Offene PDF-Tabellen je Wasserstraße → PDF-Parser (wie Hessen-Brücken) | klein–mittel | — | Nischen-Höhen-Layer (sonst nirgends offen) | **P2** |
-| 17 | **Hannover-Region** Verkehr-WFS | Baustellen einer Großstadt-Region (NI sonst leer!) | GetCapabilities Verkehr-WFS prüfen → anbinden | klein | +1 Region (überdurchschn. wertvoll) | — | **P2** |
 | 18 | **Kiel** opendata.SH | Verkehrslage/Baustellen GeoJSON (alle 3 Min) | `opendata.schleswig-holstein.de` Org Kiel | klein | +Landeshauptstadt SH | — | **P3** |
 | 19 | **OSM `railway=level_crossing`** | Bahnübergänge (Lage, ohne amtliche Attribute) | Eigener Overpass-Producer | klein | BÜ-Ersatz | (Lage-Ersatz) | **P3** |
 | 20 | **Wuppertal / Bochum / Bielefeld** | Stadt-Baustellen | Open.NRW/RVR-Template erweitern. **Bielefeld nur CSV/XML, Lizenz „geschlossen" — vorab klären!** | klein | lokal | — | **P3** |

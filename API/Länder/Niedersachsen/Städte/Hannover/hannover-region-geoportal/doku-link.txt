@@ -1,5 +1,0 @@
-Hannover (Region) — Geoportal / HannIT
-Geoportal: https://www.hannover.de (Geodatenportal der Region Hannover)
-HannIT: https://hannit.de/bereiche/mobilitaet-und-gis/
-OpenGeoData NI: https://ni-lgln-opengeodata.hub.arcgis.com/
-Status: zu-bestätigen — kein verifizierter maschineller Baustellen-/Fach-Endpunkt isoliert. Kein test.sh (apiEndpunkt=null).
