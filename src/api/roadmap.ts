@@ -322,6 +322,18 @@ export const api = {
       (r) => r.obstacles,
     ),
 
+  /** T-586: EINE Seite der Hindernis-Liste (limit/offset) + Gesamtzahl. Die Karte lädt den großen
+   *  Bestand so in kleinen Häppchen (kleiner Server-Heap je Request) und akkumuliert client-seitig. */
+  listObstaclesPage: (params: {
+    kategorie?: FindingKategorie | string
+    gemeldet?: boolean
+    aktiv?: boolean
+    geom?: boolean
+    limit: number
+    offset: number
+  }) =>
+    axiosClient<{ obstacles: Obstacle[]; total?: number }>({ url: "/obstacles", method: "GET", params }),
+
   /** Kunden-Hindernis anlegen (tenant-eigen, Karten-Klick-Flow). */
   createObstacle: (payload: ObstacleCreate) =>
     axiosClient<Obstacle>({ url: "/obstacles", method: "POST", data: payload }),

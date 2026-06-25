@@ -638,9 +638,9 @@ export function createFakeDb() {
     }
 
     // ── obstacles ─────────────────────────────────────────────────────────────
-    if (sql.includes("FROM obstacles WHERE ($1::text IS NULL")) {
-      const [kategorie, aktiv, q, tenantId, kategorien] = params
-      const rows = state.obstacles
+    // Gemeinsamer Filter für Obstacle-Liste + Count (T-586): WHERE-Params $1..$5.
+    const filterObstaclesList = ([kategorie, aktiv, q, tenantId, kategorien]) =>
+      state.obstacles
         .filter((o) => kategorie == null || o.kategorie === kategorie)
         .filter((o) => aktiv == null || o.aktiv === aktiv)
         .filter(
@@ -651,7 +651,19 @@ export function createFakeDb() {
         )
         .filter((o) => o.tenant_id == null || o.tenant_id === tenantId)
         .filter((o) => kategorien == null || kategorien.includes(o.kategorie))
-        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+        // created_at DESC, id (Tiebreaker) — stabil über paginierte Seiten.
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : String(a.id) < String(b.id) ? -1 : 1))
+
+    if (sql.startsWith("SELECT count(*)::int AS n FROM obstacles")) {
+      return ok([{ n: filterObstaclesList(params).length }])
+    }
+    if (sql.includes("FROM obstacles WHERE ($1::text IS NULL")) {
+      const rows = filterObstaclesList(params)
+      // T-586: LIMIT/OFFSET ($6/$7) honorieren, wenn paginiert angefragt.
+      if (sql.includes("LIMIT $6 OFFSET $7")) {
+        const [, , , , , limit, offset] = params
+        return ok(rows.slice(offset ?? 0, (offset ?? 0) + limit))
+      }
       return ok(rows)
     }
     if (sql.includes("FROM obstacles WHERE aktiv = true AND (tenant_id IS NULL OR tenant_id = $1")) {

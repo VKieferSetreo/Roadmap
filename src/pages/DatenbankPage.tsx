@@ -23,6 +23,7 @@ import { useSourceHealth } from "@/lib/sourceHealth"
 import { useDebounce } from "@/hooks/useDebounce"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
+import type { Obstacle } from "@/types/domain"
 
 export function DatenbankPage() {
   const mode = useDataSourceStore((s) => s.mode)
@@ -95,9 +96,37 @@ function ObstacleKarte({ live }: { live: boolean }) {
   // permanente Infrastruktur (lastbeschränkte Brücken, Tunnel, Gewichtslimits, GST …).
   // Max-Vorgabe: auf der Übersichtskarte nichts mehr rausfiltern.
   const queryClient = useQueryClient()
+  // T-586: Fortschritt des paginierten Ladens (für den Ladebalken unten). null = fertig/kein Laden.
+  const [ladefortschritt, setLadefortschritt] = useState<{ geladen: number; gesamt: number; mb: number; gesamtMb: number } | null>(null)
   const obstacles = useQuery({
     queryKey: ["obstacles-alle", "geom"],
-    queryFn: () => api.listObstacles({ aktiv: true, geom: true }),
+    // Den großen Bestand SEQUENZIELL in Seiten ziehen (kleiner Server-Heap je Request) und
+    // client-seitig akkumulieren → die Inhaltssuche bleibt vollständig. Fortschritt für den Balken.
+    queryFn: async () => {
+      const SEITE = 2500
+      const alle: Obstacle[] = []
+      let offset = 0
+      let gesamt = 0
+      let bytesProEintrag = 900 // Startschätzung; nach Seite 1 aus echter Größe kalibriert.
+      for (;;) {
+        const seite = await api.listObstaclesPage({ aktiv: true, geom: true, limit: SEITE, offset })
+        if (offset === 0 && seite.obstacles.length > 0) {
+          bytesProEintrag = JSON.stringify(seite.obstacles).length / seite.obstacles.length
+        }
+        alle.push(...seite.obstacles)
+        gesamt = seite.total ?? alle.length
+        offset += SEITE
+        setLadefortschritt({
+          geladen: alle.length,
+          gesamt,
+          mb: (alle.length * bytesProEintrag) / 1e6,
+          gesamtMb: (gesamt * bytesProEintrag) / 1e6,
+        })
+        if (seite.obstacles.length < SEITE || alle.length >= gesamt) break
+      }
+      setLadefortschritt(null)
+      return alle
+    },
     enabled: live,
     staleTime: 60_000,
   })
@@ -153,18 +182,37 @@ function ObstacleKarte({ live }: { live: boolean }) {
   }
 
   if (obstacles.isLoading) {
-    // Ladebalken: der Bestand kann groß sein (zehntausende Einträge) und braucht
-    // einen Moment zum Herunterladen — sichtbar machen statt "leer".
+    // T-586: Der Bestand wird in MB-Häppchen geladen — Ladebalken UNTEN zeigt den realen
+    // Fortschritt (geladene MB + Prozent), statt einer blinden Endlos-Animation.
+    const lp = ladefortschritt
+    const prozent = lp && lp.gesamt > 0 ? Math.min(100, Math.round((lp.geladen / lp.gesamt) * 100)) : 0
     return (
-      <div className="flex h-[calc(100vh-360px)] min-h-[420px] flex-col items-center justify-center gap-4 rounded-xl border border-neutral-200 bg-white">
+      <div className="relative flex h-[calc(100vh-360px)] min-h-[420px] flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white">
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
           <Database className="h-4 w-4 text-primary-500" />
           Hindernis-Datenbank wird geladen …
         </div>
-        <div className="h-1.5 w-64 overflow-hidden rounded-full bg-neutral-100">
-          <div className="h-full w-1/3 animate-progress-indeterminate rounded-full bg-primary-500" />
+        <p className="text-xs text-neutral-400">In Paketen laden — die Suche steht, sobald alles da ist.</p>
+
+        {/* Ladebalken unten am Kartenbereich */}
+        <div className="absolute inset-x-0 bottom-0 border-t border-neutral-100 bg-neutral-50/80 px-4 py-3">
+          <div className="mb-1.5 flex items-center justify-between text-xs tabular-nums text-neutral-500">
+            <span>
+              {lp
+                ? `${lp.mb.toLocaleString("de-DE", { maximumFractionDigits: 1 })} / ${lp.gesamtMb.toLocaleString("de-DE", { maximumFractionDigits: 1 })} MB`
+                : "Wird vorbereitet …"}
+            </span>
+            <span>
+              {lp ? `${lp.geladen.toLocaleString("de-DE")} / ${lp.gesamt.toLocaleString("de-DE")} · ${prozent} %` : ""}
+            </span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-neutral-200">
+            <div
+              className="h-full rounded-full bg-primary-500 transition-[width] duration-200 ease-out"
+              style={{ width: `${lp ? prozent : 8}%` }}
+            />
+          </div>
         </div>
-        <p className="text-xs text-neutral-400">Alle Einträge werden geladen und auf der Karte gebündelt.</p>
       </div>
     )
   }

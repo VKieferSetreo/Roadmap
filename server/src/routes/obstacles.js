@@ -26,14 +26,19 @@ const LIST_WHERE = `FROM obstacles
     AND ($3::text IS NULL OR name ILIKE $3 OR beschreibung ILIKE $3
          OR strassen_ref ILIKE $3 OR zustaendig ILIKE $3)
     AND (tenant_id IS NULL OR tenant_id = $4::uuid)
-    AND ($5::text[] IS NULL OR kategorie = ANY($5))
-  ORDER BY created_at DESC`
+    AND ($5::text[] IS NULL OR kategorie = ANY($5))`
+// id als Tiebreaker → stabile Reihenfolge über paginierte Folgeseiten (gleicher created_at sonst
+// nondeterministisch → Dup/Lücke an Seitengrenzen).
+const LIST_ORDER = ` ORDER BY created_at DESC, id`
 
 // Schlanke Spalten (ohne roh/geom-Blobs) für Tabelle/Listen.
-const LIST_SQL = `SELECT ${OBSTACLE_COLS} ${LIST_WHERE}`
+const LIST_SQL = `SELECT ${OBSTACLE_COLS} ${LIST_WHERE}${LIST_ORDER}`
 // Karten-Variante: zusätzlich geom (Strecken-Linie). Opt-in via ?geom=true, damit nur
 // die Karte den ~3,5-MB-Geometrie-Blob zieht und die Tabelle schlank bleibt.
-const LIST_SQL_GEOM = `SELECT ${OBSTACLE_COLS}, geom ${LIST_WHERE}`
+const LIST_SQL_GEOM = `SELECT ${OBSTACLE_COLS}, geom ${LIST_WHERE}${LIST_ORDER}`
+// T-586: Gesamtzahl für paginiertes Laden (Ladebalken). Gleiche WHERE-Params $1..$5, kein ORDER.
+const COUNT_SQL = `SELECT count(*)::int AS n ${LIST_WHERE}`
+const PAGE_MAX = 5000 // Obergrenze je Seite — hält die Server-Serialisierung pro Request klein.
 
 const mayWriteGlobal = (req) => {
   const roles = req.user?.roles ?? []
@@ -90,15 +95,31 @@ export function obstaclesRouter({ db }) {
     const aktivParam = aktiv === "true" ? true : aktiv === "false" ? false : null
     // gemeldet=true → nur gemeldete Ereignisse (Baustellen/Sperrungen), keine Infrastruktur
     const kategorienFilter = req.query.gemeldet === "true" ? GEMELDETE_KATEGORIEN : null
-    const sql = req.query.geom === "true" ? LIST_SQL_GEOM : LIST_SQL
-    const { rows } = await db.query(sql, [
+    const whereParams = [
       kategorie || null,
       aktivParam,
       q ? `%${q}%` : null,
       req.ctx?.tenant?.id ?? null,
       kategorienFilter,
-    ])
-    res.json({ obstacles: rows.map(rowToObstacle) })
+    ]
+    // T-586: optionales paginiertes Laden (?limit=&offset=) — die Karte zieht den großen Bestand
+    // in kleinen Seiten (kleiner Server-Heap/Serialisierung je Request) und akkumuliert client-seitig.
+    // Ohne limit = bisheriges Verhalten (ganzer Bestand, rückwärtskompatibel).
+    const limit = Number.parseInt(req.query.limit, 10)
+    let sql = req.query.geom === "true" ? LIST_SQL_GEOM : LIST_SQL
+    let params = whereParams
+    let total = null
+    if (Number.isInteger(limit) && limit > 0) {
+      const lim = Math.min(limit, PAGE_MAX)
+      const offRaw = Number.parseInt(req.query.offset, 10)
+      const off = Number.isInteger(offRaw) && offRaw >= 0 ? offRaw : 0
+      sql += ` LIMIT $6 OFFSET $7`
+      params = [...whereParams, lim, off]
+      const { rows: c } = await db.query(COUNT_SQL, whereParams)
+      total = c[0].n
+    }
+    const { rows } = await db.query(sql, params)
+    res.json({ obstacles: rows.map(rowToObstacle), ...(total != null && { total }) })
   }))
 
   r.post("/", asyncHandler(async (req, res) => {

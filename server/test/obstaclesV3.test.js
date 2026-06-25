@@ -175,6 +175,33 @@ describe("obstacles v3 — Sichtbarkeit (GET)", () => {
       .set("X-Auth-Gateway", "extern")
     expect(ghost.status).toBe(403)
   })
+
+  it("T-586: paginiertes Laden (limit/offset) liefert Seiten + total, akkumuliert = ganzer Bestand", async () => {
+    const { app } = await makeTwoTenantApp()
+    for (let i = 0; i < 5; i++) {
+      await asAdmin(request(app).post("/api/obstacles"))
+        .send({ ...OBSTACLE, name: `Ampel ${i}`, global: true })
+    }
+    const get = asUser("vki@setreo.de")
+
+    const p1 = await get(request(app).get("/api/obstacles?aktiv=true&limit=2&offset=0"))
+    expect(p1.body.total).toBe(5)
+    expect(p1.body.obstacles).toHaveLength(2)
+
+    const p2 = await get(request(app).get("/api/obstacles?aktiv=true&limit=2&offset=2"))
+    expect(p2.body.obstacles).toHaveLength(2)
+    const p3 = await get(request(app).get("/api/obstacles?aktiv=true&limit=2&offset=4"))
+    expect(p3.body.obstacles).toHaveLength(1) // Rest
+
+    // Akkumuliert = alle 5, ohne Dubletten/Lücken (stabile Reihenfolge dank id-Tiebreaker)
+    const ids = [...p1.body.obstacles, ...p2.body.obstacles, ...p3.body.obstacles].map((o) => o.id)
+    expect(new Set(ids).size).toBe(5)
+
+    // Ohne limit = bisheriges Verhalten (ganzer Bestand, kein total-Feld)
+    const all = await get(request(app).get("/api/obstacles?aktiv=true"))
+    expect(all.body.obstacles).toHaveLength(5)
+    expect(all.body.total).toBeUndefined()
+  })
 })
 
 describe("obstacles v3 — PATCH/DELETE Rechte", () => {
