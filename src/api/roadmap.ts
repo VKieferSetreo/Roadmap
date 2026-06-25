@@ -108,9 +108,12 @@ export interface VemagsResult {
     art: string
     istLastfahrt: boolean
     points: RoutePoint[]
+    waypoints?: RoutePoint[]
     distanzKm: number
     grob?: boolean
     wegpunkte?: number
+    bereinigt?: number // entfernte Schlenker/Fehl-Geocodes
+    verifiziert?: boolean // VEMAGS: kommt ungeprüft (false) → Prüfen-Gate
     ungeloest?: string[]
     fehler?: string
   }[]

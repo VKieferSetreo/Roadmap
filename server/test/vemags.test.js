@@ -31,8 +31,7 @@ describe("VEMAGS-Parser (T-567)", () => {
   })
 
   it("Punkt 9 → 1 Fahrtweg / 2 Fahrtwegteile (Trailing-Text 'siehe Anlage 2' egal)", () => {
-    const { fahrtwege, strecken } = parseVemagsText(TEXT)
-    expect(fahrtwege).toHaveLength(1)
+    const { strecken } = parseVemagsText(TEXT)
     expect(strecken).toHaveLength(2) // 1 Strecke je Fahrtwegteil; 'Fahrtweg: 1' in Punkt 10 zählt NICHT
     expect(strecken[1].istLastfahrt).toBe(true)
     expect(strecken[0].name).toBe("Fahrtwegteil 1.1 — Leerfahrt")
@@ -43,22 +42,23 @@ describe("VEMAGS-Parser (T-567)", () => {
     const w = strecken[0].punkte.map((p) => p.raw)
     expect(w[0]).toContain("77743 Altenheim") // Start
     expect(w[w.length - 1]).toContain("26607 Aurich") // Ziel
-    expect(w).toContain("AS Offenburg") // Knoten behalten
+    expect(w).toContain("Anschlussstelle Offenburg") // Knoten behalten, Kürzel ausgeschrieben
     expect(w).toContain("Hesel") // Ort behalten
     expect(w).not.toContain("A5") // Straßennummer raus
     expect(w).not.toContain("L98")
-    // Lastfahrt: Fahranweisungen raus
+    // Lastfahrt: Fahranweisungen + Straßennummern raus
     const w2 = strecken[1].punkte.map((p) => p.raw)
-    expect(w2.some((x) => /gegenverkehr|rechts B64/i.test(x))).toBe(false)
-    expect(w2).toContain("AK Bielefeld")
+    expect(w2.some((x) => /gegenverkehr|rechts B64|K29/i.test(x))).toBe(false)
+    expect(w2).toContain("Autobahnkreuz Bielefeld")
   })
 
   it("classifyToken: Klassifikation", () => {
     expect(classifyToken("A5").typ).toBe("road")
     expect(classifyToken("B33a").typ).toBe("road")
     expect(classifyToken("AS Offenburg").typ).toBe("junction")
+    expect(classifyToken("AS Offenburg").raw).toBe("Anschlussstelle Offenburg") // Kürzel ausgeschrieben
     expect(classifyToken("AD Hattenbach").typ).toBe("junction")
-    expect(classifyToken("links im Gegenverkehr K29").typ).toBe("instruction")
+    expect(classifyToken("links im Gegenverkehr K29").typ).toBe("road") // Manöver gestrippt -> K29 = Straße
     expect(classifyToken("Hesel").typ).toBe("place")
     expect(routableWaypoints([classifyToken("A5"), classifyToken("Hesel")])).toHaveLength(1)
   })

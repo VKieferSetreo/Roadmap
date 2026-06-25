@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { AlertTriangle, Loader2, Route, RotateCcw, Save, X } from "lucide-react"
+import { AlertTriangle, Flag, Loader2, Route, RotateCcw, Save, X } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/cn"
 import { Button } from "@/components/ui/Button"
@@ -129,9 +129,11 @@ interface RouteEditDialogProps {
   onClose: () => void
   projectId: string
   route: ProjectRoute | null
+  /** Prüfen-Gate (T-593): dieselbe Maske, aber rot markiert; Speichern gibt die VEMAGS-Strecke frei. */
+  verificationMode?: boolean
 }
 
-export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDialogProps) {
+export function RouteEditDialog({ open, onClose, projectId, route, verificationMode = false }: RouteEditDialogProps) {
   const updateRoute = useProjectStore((s) => s.updateRoute)
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
@@ -321,18 +323,34 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     failToastRef.current = false
   }
 
-  const save = () => {
-    // Kein Speichern einer Luftlinie-Pseudo-Route: bei laufendem oder fehlgeschlagenem Routing
-    // blockieren, sonst würden falsche Distanz/Geometrie + Re-Analyse persistiert (T-229).
-    if (routing) {
-      toast.error("Routing läuft noch — bitte einen Moment warten.")
-      return
-    }
+  const save = async () => {
     if (routingFailed) {
       toast.error("Speichern blockiert: Das Routing ist nicht verfügbar (nur Luftlinie). Bitte später erneut versuchen.")
       return
     }
-    const finalGeom = geometry.length >= 2 ? geometry : cps.map((c) => ({ lat: c.lat, lng: c.lng }))
+    // T-594: die finale Geometrie beim Speichern aus den AKTUELLEN Kontrollpunkten FRISCH routen —
+    // nicht auf das 300-ms-debounced Live-Routing verlassen. Sonst speichert ein schnelles „Speichern"
+    // direkt nach einem Zug die noch-alte `geometry` (Debounce-Timer hatte noch nicht gefeuert) → die
+    // manuell angepasste Strecke wird nicht so gespeichert wie zuletzt gezogen. OSRM-Cache (routeKey)
+    // macht das schnell, wenn der Stand bereits geroutet ist. Unangetastet geöffnet (!touched) = keine
+    // Änderung → die vorhandene geometry direkt übernehmen.
+    let finalGeom = geometry
+    if (touched && cps.length >= 2) {
+      setRouting(true)
+      try {
+        const res = await api.route.waypoints(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
+        finalGeom = res.points
+        setGeometry(res.points)
+        setRoutingFailed(false)
+      } catch {
+        setRoutingFailed(true)
+        setRouting(false)
+        toast.error("Speichern blockiert: Routing nicht verfügbar (nur Luftlinie). Bitte später erneut versuchen.")
+        return
+      }
+      setRouting(false)
+    }
+    if (finalGeom.length < 2) finalGeom = cps.map((c) => ({ lat: c.lat, lng: c.lng }))
     // T-582: die aktuellen Kontrollpunkte als exakte Wegpunkte mitspeichern → der nächste Edit zeigt
     // wieder genau diese Start/Ziel/Via-Punkte (kein erneutes Snappen/Driften aus den Geometrie-Enden).
     const finalWps = cps.map((c) => ({ lat: c.lat, lng: c.lng }))
@@ -340,9 +358,11 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       name: name.trim() || route.name,
       points: finalGeom,
       ...(finalWps.length >= 2 ? { waypoints: finalWps } : {}),
+      // Prüfen-Gate (T-593): Speichern im Prüf-Modus gibt die VEMAGS-Strecke frei → normale Buttons.
+      ...(verificationMode ? { verifiziert: true } : {}),
     })
     runAnalysis(projectId)
-    toast.success("Strecke gespeichert. Auswertung läuft neu.")
+    toast.success(verificationMode ? "Strecke geprüft & freigegeben. Auswertung läuft." : "Strecke gespeichert. Auswertung läuft neu.")
     onClose()
   }
 
@@ -350,7 +370,17 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 animate-fade-in bg-neutral-950/50 backdrop-blur-[2px]" onClick={onClose} />
 
-      <div className="relative flex h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-overlay">
+      <div className={cn(
+        "relative flex h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border bg-white shadow-overlay",
+        verificationMode ? "border-severity-kritisch" : "border-neutral-200",
+      )}>
+        {/* Prüfen-Gate (T-593): roter Hinweis, dass diese VEMAGS-Strecke geprüft & freigegeben werden muss. */}
+        {verificationMode ? (
+          <div className="flex items-center gap-2 border-b border-severity-kritisch/30 bg-severity-kritisch-bg px-4 py-2 text-xs font-medium text-severity-kritisch">
+            <Flag className="h-3.5 w-3.5 shrink-0" />
+            VEMAGS-Prüfung: Bescheide variieren in Qualität — fehlende/falsche Punkte sauber ziehen, dann gibt „Prüfung abschließen" die Strecke frei.
+          </div>
+        ) : null}
         {/* Kopf: Name + Aktionen */}
         <div className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3">
           <div className="flex-1">
@@ -391,8 +421,13 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
             loading={routing}
             disabled={routingFailed}
             title={routingFailed ? "Speichern blockiert: Routing nicht verfügbar" : undefined}
+            className={verificationMode ? "bg-severity-kritisch text-white hover:bg-severity-kritisch/90" : undefined}
           >
-            <Save className="mr-1 h-4 w-4" /> Speichern
+            {verificationMode ? (
+              <><Flag className="mr-1 h-4 w-4" /> Prüfung abschließen</>
+            ) : (
+              <><Save className="mr-1 h-4 w-4" /> Speichern</>
+            )}
           </Button>
         </div>
 
@@ -419,7 +454,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
                 {/* weiße Kontur unter der Strecke (sophisticated, wie Hauptkarte) */}
                 <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: "#fff", weight: 9, opacity: 0.95 }} smoothFactor={0} interactive={false} />
                 {/* sichtbare Linie */}
-                <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
+                <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: verificationMode ? "#dc2626" : route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
                 {/* breite, durchsichtige Greif-Linie — Gummiband an beliebiger Stelle */}
                 <Polyline
                   positions={geometry.map((p) => [p.lat, p.lng])}

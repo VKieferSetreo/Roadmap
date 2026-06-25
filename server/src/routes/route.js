@@ -9,6 +9,7 @@ import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
 import { resolveKnoten } from "../external/abKnoten.js"
+import { cleanWaypoints } from "../external/vemagsClean.js"
 import { ApiError, asyncHandler } from "../util.js"
 
 // VEMAGS (T-567): Wegpunkt-Auflösung. Grundsatz (Max 2026-06-23): KEINEN Bescheid-Wegpunkt
@@ -21,6 +22,30 @@ import { ApiError, asyncHandler } from "../util.js"
 //  - nicht auflösbar (privates Landmark wie „GüG Eschau"): an den nächsten Anker heften statt grob
 //    raten — Punkt bleibt erhalten, ohne falschen Umweg.
 const cleanOrt = (s) => String(s ?? "").replace(/\{[^}]*\}/g, "").split(",")[0].trim()
+
+// Start-/Ziel-Adresse moeglichst praezise (PLZ+Ort+Strasse[+Hausnr]). {Facility} + Zuwegungs-Zusatz
+// weg, Str.→Strasse. Volladresse zuerst → Strasse-zuerst (Hausnr-Praezision) → PLZ+Ort-Fallback
+// (falls die „Strasse" eine Strassennummer wie L98 ist). Portiert aus dem Prototyp.
+async function geocodeAddress(addr, geocode) {
+  let a = String(addr ?? "")
+    .replace(/\{[^}]*\}/g, "")
+    .replace(/\s*-\s*(Zuwegung|Zufahrt|Sonderabfahrt)\b.*$/i, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[,.]$/, "")
+  if (!a) return null
+  a = a.replace(/\bStr\./g, "Straße").replace(/\bstr\./g, "straße")
+  let g = await geocode(a)
+  if (!g) {
+    const m = a.match(/^(\d{5}\s+[^,]+),\s*(.+)$/) // "PLZ Ort, Strasse Nr" → "Strasse Nr, PLZ Ort"
+    if (m) g = await geocode(`${m[2]}, ${m[1]}`)
+  }
+  if (!g) {
+    const m = a.match(/^(\d{5})\s+([^,]+)/) // nur PLZ + Ort
+    if (m) g = await geocode(`${m[1]} ${m[2]}`)
+  }
+  return g
+}
 const stripKnoten = (s) => String(s ?? "").replace(/^(AS|AK|AD|Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\s+/i, "")
 // Nominatim-viewbox (lon1,lat1,lon2,lat2) um zwei Nachbar-Anker, mit Puffer (Grad).
 const neighborViewbox = (a, b, buf = 0.25) =>
@@ -90,7 +115,7 @@ async function resolveVemagsPunkte(punkte, geocode) {
       const k = resolveKnoten(p.raw)
       if (k && Number.isFinite(k.lat) && Number.isFinite(k.lng)) p.c = { lat: k.lat, lng: k.lng }
     } else if (p.typ === "start" || p.typ === "ziel") {
-      const g = await geocode(cleanOrt(p.raw))
+      const g = await geocodeAddress(p.raw, geocode)
       if (g) p.c = { lat: g.lat, lng: g.lng }
     }
   }
@@ -223,7 +248,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
     const out = []
     for (const s of strecken) {
       const pts = await resolveVemagsPunkte(s.punkte, geocode)
-      const wps = pts.filter((p) => p.c).map((p) => ({ lat: p.c.lat, lng: p.c.lng }))
+      // Schlenker/Fehl-Geocodes raus (zum naechsten sicheren Punkt ziehen) — sonst sinnlose Loops.
+      const { kept, dropped } = cleanWaypoints(pts)
+      const wps = kept.map((p) => ({ lat: p.c.lat, lng: p.c.lng }))
       if (wps.length < 2) {
         out.push({ name: s.name, art: s.art, istLastfahrt: s.istLastfahrt, points: [], distanzKm: 0, fehler: "Zu wenige Wegpunkte aufgelöst." })
         continue
@@ -234,9 +261,12 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
         art: s.art,
         istLastfahrt: s.istLastfahrt,
         points: route.geometry,
+        waypoints: route.waypoints ?? wps, // exakte Wegpunkte statisch mit der Strecke speichern (T-582)
         distanzKm: route.distanzKm,
         grob: route.provider.router === "fallback",
         wegpunkte: wps.length,
+        bereinigt: dropped.length, // entfernte Schlenker/Fehl-Geocodes (Transparenz)
+        verifiziert: false, // VEMAGS-Strecken muessen manuell geprueft & freigegeben werden (Pruefen-Gate)
       })
     }
 

@@ -32,9 +32,10 @@ const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: n
 // Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
 const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
 
-// VEMAGS-Upload aktuell deaktiviert: der Streckenextraktor wird manuell neu gebaut (Max liefert das
-// Modul). Tab bleibt sichtbar, aber ausgegraut + Hinweis. Auf true setzen, sobald das neue Modul steht.
-const VEMAGS_AKTIV = false
+// VEMAGS-Upload reaktiviert (2026-06-25): neuer Extraktor + Bereinigung (Schlenker/Fehl-Geocodes raus,
+// Fahrbahnseiten-bearings) ist live. VEMAGS-Strecken kommen UNGEPRÜFT rein und müssen über das
+// Prüfen-Gate (rotes !, „Prüfen"-Button) manuell freigegeben werden, bevor sie in die Analyse gehen.
+const VEMAGS_AKTIV = true
 
 /** Die Strecken-Quellen (= Tabs). Reihenfolge (Max): Datei · VEMAGS · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
@@ -95,6 +96,8 @@ export function RouteTab({ project }: { project: Project }) {
   const [tab, setTab] = useState<RouteSource>("datei")
   /** Strecke im Editor (T-197), null = geschlossen. */
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
+  // Prüfen-Gate: dieselbe Maske wie „Anpassen", aber im Verifikations-Modus (rot).
+  const [verifyRoute, setVerifyRoute] = useState<ProjectRoute | null>(null)
   const [linkUrl, setLinkUrl] = useState("")
   const [linkBusy, setLinkBusy] = useState(false)
   // #9: Start/Ziel + optionale Zwischenpunkte (untereinander, je Punkt Ortssuche ODER Karten-Pin).
@@ -295,7 +298,15 @@ export function RouteTab({ project }: { project: Project }) {
     }
     if (Object.keys(specPatch).length > 0) updateTransport(project.id, specPatch)
     for (const s of ok) {
-      addRoute(project.id, { name: s.name, points: s.points, source: "vemags", ...(s.grob ? { grob: true } : {}) })
+      addRoute(project.id, {
+        name: s.name,
+        points: s.points,
+        source: "vemags",
+        verifiziert: false, // Prüfen-Gate: erst nach manueller Prüfung freigegeben
+        ...(s.waypoints ? { waypoints: s.waypoints } : {}),
+        ...(s.bereinigt ? { bereinigt: s.bereinigt } : {}),
+        ...(s.grob ? { grob: true } : {}),
+      })
     }
     const massText = Object.keys(specPatch).length
       ? ` · Maße übernommen (${[laengeM && `L ${laengeM} m`, breiteM && `B ${breiteM} m`, hoeheM && `H ${hoeheM} m`, masseT && `${masseT} t`].filter(Boolean).join(" · ")})`
@@ -554,30 +565,59 @@ export function RouteTab({ project }: { project: Project }) {
                       {routeLengthKm(r.points).toLocaleString("de-DE")} km
                     </p>
                   </div>
-                  <RouteDownloadMenu route={r} />
-                  <button
-                    type="button"
-                    onClick={() => setEditRoute(r)}
-                    aria-label={`Strecke ${r.name} bearbeiten`}
-                    title="Bearbeiten: Wegpunkte, Verlauf und Name"
-                    disabled={running}
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm(`Strecke „${r.name}" wirklich entfernen? Das kann nicht rückgängig gemacht werden.`)) {
-                        removeRoute(project.id, r.id)
-                      }
-                    }}
-                    aria-label={`Strecke ${r.name} entfernen`}
-                    disabled={running}
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+                  {r.source === "vemags" && r.verifiziert !== true ? (
+                    // Prüfen-Gate (T-593): VEMAGS-Strecke ungeprüft → NUR „Prüfen" möglich (liegt über
+                    // Download/Bearbeiten/Löschen), bis die Prüfung gespeichert ist.
+                    <>
+                      <span
+                        aria-hidden
+                        title="Ungeprüfte VEMAGS-Strecke"
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-severity-kritisch-bg text-base font-bold text-severity-kritisch"
+                      >
+                        !
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setVerifyRoute(r)}
+                        aria-label={`Strecke ${r.name} prüfen und freigeben`}
+                        title={
+                          "VEMAGS-Anträge müssen wegen variierender Qualität manuell geprüft & freigegeben werden.\n" +
+                          "Fehlende/falsche Punkte in der Maske sauber ziehen, dann speichern." +
+                          (r.bereinigt ? `\n(${r.bereinigt} auffällige Punkt(e) beim Import bereits entfernt.)` : "")
+                        }
+                        className="flex items-center gap-1.5 rounded-md bg-severity-kritisch px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-severity-kritisch/90"
+                      >
+                        <Flag className="h-3.5 w-3.5" /> Prüfen
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <RouteDownloadMenu route={r} />
+                      <button
+                        type="button"
+                        onClick={() => setEditRoute(r)}
+                        aria-label={`Strecke ${r.name} bearbeiten`}
+                        title="Bearbeiten: Wegpunkte, Verlauf und Name"
+                        disabled={running}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Strecke „${r.name}" wirklich entfernen? Das kann nicht rückgängig gemacht werden.`)) {
+                            removeRoute(project.id, r.id)
+                          }
+                        }}
+                        aria-label={`Strecke ${r.name} entfernen`}
+                        disabled={running}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
@@ -619,12 +659,17 @@ export function RouteTab({ project }: { project: Project }) {
         </Dialog>
       ) : null}
 
-      {/* Strecken-Editor (T-197): Wegpunkte ziehen/fixieren, live OSRM, Speichern → Re-Auswertung. */}
+      {/* Strecken-Editor (T-197): Wegpunkte ziehen/fixieren, live OSRM, Speichern → Re-Auswertung.
+          Im Prüfen-Modus (T-593) dieselbe Maske, rot markiert, Speichern gibt die Strecke frei. */}
       <RouteEditDialog
-        open={!!editRoute}
-        route={editRoute}
+        open={!!editRoute || !!verifyRoute}
+        route={editRoute ?? verifyRoute}
         projectId={project.id}
-        onClose={() => setEditRoute(null)}
+        verificationMode={!!verifyRoute}
+        onClose={() => {
+          setEditRoute(null)
+          setVerifyRoute(null)
+        }}
       />
 
       {/* #15: GeoPackage-Streckenauswahl. */}
