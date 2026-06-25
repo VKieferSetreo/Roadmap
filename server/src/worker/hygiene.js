@@ -89,6 +89,36 @@ export async function pruneBugReportScreenshots(db, { keepDays = 180 } = {}) {
   return rows.length
 }
 
+// T-277: Glocken-Benachrichtigungen wachsen sonst unbegrenzt (kein Retention). GELESENE löschen, wenn
+// älter als keepDays; UNGELESENE bleiben immer (der Nutzer hat sie noch nicht gesehen).
+const PRUNE_NOTIFICATIONS_SQL = `DELETE FROM notifications
+   WHERE read_at IS NOT NULL
+     AND created_at < (now() - ($1::int * INTERVAL '1 day')) RETURNING id`
+
+/** Gelesene, gealterte Notifications löschen. @returns Anzahl gelöschter Zeilen. */
+export async function pruneNotifications(db, { keepDays = 120 } = {}) {
+  const { rows } = await db.query(PRUNE_NOTIFICATIONS_SQL, [keepDays])
+  return rows.length
+}
+
+// T-277: nach den großen Retention-DELETEs den Tabellen-Bloat zurückgewinnen. VACUUM (ANALYZE) ist
+// non-blocking (KEIN VACUUM FULL — das nähme ACCESS EXCLUSIVE). Tabellennamen hartcodiert (keine
+// Injection). VACUUM läuft NICHT in einer Transaktion → eigene db.query (autocommit), pro Tabelle
+// fehlertolerant. Autovacuum reicht meist; dies ist die explizite Absicherung nach dem Retention-Lauf.
+const VACUUM_TABLES = ["obstacles", "findings", "notifications", "import_runs", "analytics_events"]
+export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
+  let ok = 0
+  for (const t of VACUUM_TABLES) {
+    try {
+      await db.query(`VACUUM (ANALYZE) ${t}`)
+      ok++
+    } catch (e) {
+      log(`VACUUM ${t} fehlgeschlagen: ${e?.message ?? e}`)
+    }
+  }
+  return ok
+}
+
 // fach_id-Dedup/Renumber (T-262). Root-Cause war ein Index-Überlauf >9999: MAX_INDEX_SQL las nur die
 // ersten 4 Stellen der fachId → bei >9999 Einträgen/Quelle (5-stelliger Index, 15-stellige fachId)
 // hing der Zähler bei 9999 → Folge-Importe vergaben Index 10000+ ERNEUT → Dubletten. Der

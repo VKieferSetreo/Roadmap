@@ -15,7 +15,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, purgeStaleInactive, reconcileFachIdDupes } from "./hygiene.js"
+import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -196,7 +196,11 @@ async function runPrune() {
     const ir = await pruneImportRuns(db)
     const an = await pruneAnalytics(db)
     const shots = await pruneBugReportScreenshots(db)
-    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events, ${shots} bug-report-screenshots bereinigt`)
+    const notif = await pruneNotifications(db) // T-277: gelesene Glocken-Meldungen >120d
+    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events, ${shots} bug-report-screenshots, ${notif} notifications bereinigt`)
+    // T-277: nach den Deletes Bloat zurückgewinnen (VACUUM ANALYZE, non-blocking).
+    const vac = await vacuumChurnedTables(db, { log })
+    log(`VACUUM ANALYZE auf ${vac}/${5} churn-Tabellen`)
   } catch (err) {
     log(`Retention-Lauf fehlgeschlagen: ${err?.message ?? err}`)
   }
