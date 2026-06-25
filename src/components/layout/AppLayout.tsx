@@ -19,6 +19,8 @@ import { useContextStore } from "@/store/context"
 import { useHeartbeat } from "@/hooks/useHeartbeat"
 import { RedeemSeat } from "@/components/account/RedeemSeat"
 import { DisclaimerModal } from "@/components/account/DisclaimerModal"
+import { WelcomeModal } from "@/components/account/WelcomeModal"
+import { needsWelcome } from "@/lib/welcome"
 import { api } from "@/api/roadmap"
 import { AUTH_FAILURE_EVENT } from "@/api/client"
 import { Button } from "@/components/ui/Button"
@@ -56,6 +58,7 @@ export function AppLayout() {
   const ctxFailed = useContextStore((s) => s.loadFailed)
   const [needDisclaimer, setNeedDisclaimer] = useState(false)
   const [acceptingDisc, setAcceptingDisc] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(false)
 
   // App-weiter Heartbeat (Plattform-Analytics) — pingt im Live-Modus, solange eingeloggt.
   useHeartbeat()
@@ -97,7 +100,10 @@ export function AppLayout() {
     void api.account
       .disclaimerStatus()
       .then((s) => {
-        if (active && !s.accepted) setNeedDisclaimer(true)
+        if (!active) return
+        if (!s.accepted) setNeedDisclaimer(true)
+        // Erst-Login-Begrüßung (T-487): erst nach akzeptiertem Haftungsausschluss, einmal pro Person.
+        else if (needsWelcome(email)) setShowWelcome(true)
       })
       .catch(() => {})
     return () => {
@@ -110,6 +116,7 @@ export function AppLayout() {
     try {
       await api.account.acceptDisclaimer()
       setNeedDisclaimer(false)
+      if (needsWelcome(email)) setShowWelcome(true)
     } catch {
       // bleibt offen — Nutzer kann erneut akzeptieren
     } finally {
@@ -264,6 +271,8 @@ export function AppLayout() {
           busy={acceptingDisc}
           onAccept={() => void acceptDisclaimer()}
         />
+      ) : showWelcome ? (
+        <WelcomeModal email={email} onClose={() => setShowWelcome(false)} />
       ) : null}
     </div>
   )

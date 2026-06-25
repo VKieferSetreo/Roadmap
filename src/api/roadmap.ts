@@ -254,6 +254,17 @@ export const api = {
   anonymizeTenant: (id: string) =>
     axiosClient<{ ok: boolean; anonymizedMembers: number }>({ url: `/admin/tenants/${id}/anonymize`, method: "POST" }),
 
+  /** T-415 Self-Service (DSGVO Art.20): Voll-Export des EIGENEN Mandanten (Mandanten-Admin). */
+  exportOwnTenant: () =>
+    axiosClient<unknown>({ url: "/admin/tenants/self/export", method: "GET", timeout: 60_000 }),
+
+  /** T-415 Self-Service (DSGVO Art.17): EIGENEN Mandanten löschen/anonymisieren — irreversibel.
+   *  bestaetigung = der Mandanten-Slug (Schutz gegen versehentliches Löschen). */
+  eraseOwnTenant: (bestaetigung: string) =>
+    axiosClient<{ ok: boolean; anonymizedMembers: number }>({
+      url: "/admin/tenants/self/erase", method: "POST", data: { bestaetigung },
+    }),
+
   /** T-346: Mandant aussetzen/reaktivieren. */
   suspendTenant: (id: string, suspended: boolean) =>
     axiosClient<{ id: string; slug: string; name: string; suspended_at: string | null }>({

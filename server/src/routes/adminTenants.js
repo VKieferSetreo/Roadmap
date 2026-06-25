@@ -64,6 +64,42 @@ export function adminTenantsRouter({ db, fetchImpl = globalThis.fetch, authExter
   const adminOnly = requireRole("admin")
   const tenantAdmin = requireTenantAdminParam
 
+  // ── DSGVO Self-Service (T-415): der Mandanten-Admin exportiert/löscht den EIGENEN Mandanten,
+  //    ohne Setreo kontaktieren zu müssen. MUSS vor den /:id-Routen stehen (sonst matcht "self"
+  //    als :id). Gilt nur für den eigenen req.ctx.tenant; isTenantAdmin (nicht der param-basierte
+  //    Guard, da kein :id). Anonymisierung ist IRREVERSIBEL → Slug-Bestätigung im Body.
+  r.get("/self/export", asyncHandler(async (req, res) => {
+    if (!req.ctx?.tenant) throw new ApiError(403, "kein-mandant")
+    if (!req.ctx?.isTenantAdmin) throw new ApiError(403, "Nur Mandanten-Admins")
+    const { rows } = await db.query(
+      "SELECT id, slug, name, plan, max_seats, valid_until, created_at FROM tenants WHERE id = $1",
+      [req.ctx.tenant.id],
+    )
+    if (!rows[0]) throw new ApiError(404, "Mandant nicht gefunden")
+    const data = await exportTenant(db, rows[0])
+    await auditLog(db, { tenantId: rows[0].id, actorEmail: req.ctx?.email, action: "tenant.export.self", detail: rows[0].slug })
+    res.setHeader("Content-Disposition", `attachment; filename="export-${rows[0].slug}.json"`)
+    res.json(data)
+  }))
+
+  r.post("/self/erase", asyncHandler(async (req, res) => {
+    if (!req.ctx?.tenant) throw new ApiError(403, "kein-mandant")
+    if (!req.ctx?.isTenantAdmin) throw new ApiError(403, "Nur Mandanten-Admins")
+    const tenant = await getTenantById(db, req.ctx.tenant.id)
+    if (!tenant) throw new ApiError(404, "Mandant nicht gefunden")
+    // Schutz gegen versehentliches Löschen: der Mandanten-Slug muss exakt mitgeschickt werden.
+    if (typeof req.body?.bestaetigung !== "string" || req.body.bestaetigung.trim() !== tenant.slug) {
+      throw new ApiError(400, "Bestätigung stimmt nicht — bitte den Mandanten-Namen exakt eingeben.")
+    }
+    const deactivate =
+      authExtern?.url && authExtern?.secret
+        ? (email) => deactivateExtern({ authExtern, fetchImpl, email })
+        : null
+    const result = await anonymizeTenant(db, tenant, { deactivate })
+    await auditLog(db, { tenantId: tenant.id, actorEmail: req.ctx?.email, action: "tenant.anonymize.self", detail: `self-service · ${result.anonymizedMembers} Mitglied(er)` })
+    res.json({ ok: true, ...result })
+  }))
+
   r.get("/", adminOnly, asyncHandler(async (req, res) => {
     res.json({ tenants: await listTenants(db) })
   }))

@@ -1,7 +1,7 @@
 // Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
 import { useEffect, useState } from "react"
-import { Database, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal } from "lucide-react"
+import { Database, Download, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { formatDateDE } from "@/lib/format"
 import { PageContainer } from "@/components/layout/PageContainer"
@@ -291,6 +291,92 @@ function LicenseCard() {
   )
 }
 
+/** T-415: DSGVO-Self-Service für Mandanten-Admins — eigene Daten exportieren + Mandant löschen.
+ *  Nur sichtbar für isTenantAdmin (mit Mandant). Löschen ist irreversibel → Slug-Bestätigung. */
+function DangerZoneCard() {
+  const isTenantAdmin = useContextStore((s) => s.isTenantAdmin)
+  const tenant = useContextStore((s) => s.tenant)
+  const [confirm, setConfirm] = useState("")
+  const [busy, setBusy] = useState(false)
+  if (!isTenantAdmin || !tenant) return null
+
+  const exportieren = async () => {
+    setBusy(true)
+    try {
+      const data = await api.exportOwnTenant()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `export-${tenant.slug}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success("Daten-Export heruntergeladen.")
+    } catch {
+      toast.error("Export fehlgeschlagen.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const loeschen = async () => {
+    if (confirm.trim() !== tenant.slug) {
+      toast.error(`Bitte „${tenant.slug}" exakt eingeben, um zu bestätigen.`)
+      return
+    }
+    if (!window.confirm("Mandant endgültig löschen? Alle personenbezogenen Daten werden anonymisiert — das ist NICHT umkehrbar.")) return
+    setBusy(true)
+    try {
+      await api.eraseOwnTenant(confirm.trim())
+      toast.success("Mandant gelöscht. Sie werden abgemeldet.")
+      setTimeout(() => void handleLogout(), 1500)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Löschen fehlgeschlagen.")
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Card className="border-severity-kritisch/30">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base text-severity-kritisch">
+          <ShieldAlert className="h-4 w-4" /> Gefahrenzone
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-neutral-800">Eigene Daten exportieren</p>
+            <p className="text-xs text-neutral-500">Voll-Export aller Mandanten-Daten als JSON (DSGVO Art. 20).</p>
+          </div>
+          <Button variant="outline" onClick={exportieren} loading={busy}>
+            <Download className="mr-1 h-4 w-4" /> Exportieren
+          </Button>
+        </div>
+        <div className="border-t border-neutral-100 pt-4">
+          <p className="text-sm font-medium text-neutral-800">Mandant löschen</p>
+          <p className="mt-0.5 text-xs text-neutral-500">
+            Anonymisiert alle personenbezogenen Daten unwiderruflich (DSGVO Art. 17). Zum Bestätigen den
+            Mandanten-Namen <span className="font-mono font-medium text-neutral-700">{tenant.slug}</span> eingeben.
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder={tenant.slug} className="max-w-xs" />
+            <Button
+              variant="outline"
+              className="border-severity-kritisch/40 text-severity-kritisch hover:bg-severity-kritisch/5"
+              onClick={loeschen}
+              loading={busy}
+              disabled={confirm.trim() !== tenant.slug}
+            >
+              <Trash2 className="mr-1 h-4 w-4" /> Löschen
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function SettingsPage() {
   const resetToSeed = useProjectStore((s) => s.resetToSeed)
   const identity = useAuthStore((s) => s.identity)
@@ -422,6 +508,9 @@ export function SettingsPage() {
               </CardContent>
             </Card>
           ) : null}
+
+          {/* Gefahrenzone — Self-Service Export + Mandanten-Löschung (nur Tenant-Admin, live). */}
+          {mode === "live" ? <DangerZoneCard /> : null}
         </div>
       </PageContainer>
       {showDisc ? <DisclaimerModal mode="view" onClose={() => setShowDisc(false)} /> : null}

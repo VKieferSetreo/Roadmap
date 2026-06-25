@@ -165,4 +165,14 @@ describe("admin tenants API", () => {
     const ctx = await request(app).get("/api/context")
     expect(ctx.body.tenants.map((t) => t.slug).sort()).toEqual(["kunde-a", "setreo"])
   })
+
+  it("Self-Service-Löschung (T-415): 403 für Nicht-Tenant-Admin, 400 ohne korrekte Slug-Bestätigung", async () => {
+    const { app } = makeApp({ requireAuth: true })
+    // Interner Nutzer (role=user) ist KEIN Tenant-Admin → 403 (kann den Mandanten nicht löschen).
+    const noAdmin = await asUser("user@setreo.de")(request(app).post("/api/admin/tenants/self/erase")).send({ bestaetigung: "setreo" })
+    expect(noAdmin.status).toBe(403)
+    // Tenant-Admin, aber falsche bzw. fehlende Bestätigung → 400 (Schutz gegen versehentliches Löschen).
+    expect((await asAdmin(request(app).post("/api/admin/tenants/self/erase")).send({ bestaetigung: "falsch" })).status).toBe(400)
+    expect((await asAdmin(request(app).post("/api/admin/tenants/self/erase")).send({})).status).toBe(400)
+  })
 })
