@@ -97,7 +97,10 @@ export function RouteMap({
   const drawn = useMemo(
     () =>
       routes
-        .filter((r) => r.points.length >= 2)
+        // T-593: UNGEPRÜFTE VEMAGS-Strecken nicht zeichnen — sie fließen auch nicht in die Auswertung
+        // (engine/index.js), also soll die Karte konsistent sein. Der Prüfen-Dialog hat eine eigene
+        // Karte, der ist davon unberührt. Erst nach Freigabe (verifiziert=true) erscheint die Strecke.
+        .filter((r) => r.points.length >= 2 && !(r.source === "vemags" && r.verifiziert !== true))
         .map((r) => ({
           ...r,
           positions: r.points.map((p) => [p.lat, p.lng] as [number, number]),

@@ -103,14 +103,20 @@ export function MapPreview({
     return () => ro.disconnect()
   }, [width, height])
 
+  // T-593: ungeprüfte VEMAGS-Strecken nicht in der Vorschau zeichnen (konsistent zu Karte + Auswertung).
+  const sichtbar = useMemo(
+    () => routes.filter((r) => !(r.source === "vemags" && r.verifiziert !== true)),
+    [routes],
+  )
+
   const frame = useMemo(() => {
-    const pts = routes.flatMap((r) => r.points)
+    const pts = sichtbar.flatMap((r) => r.points)
     return buildFrame(pts, width, height)
-  }, [routes, width, height])
+  }, [sichtbar, width, height])
 
   const paths = useMemo(() => {
     if (!frame) return []
-    return routes
+    return sichtbar
       .filter((r) => r.points.length >= 2)
       .map((r) => {
         // auf ~120 Punkte ausdünnen — visuell identisch, hält das SVG klein
@@ -128,7 +134,7 @@ export function MapPreview({
           end: pts[pts.length - 1],
         }
       })
-  }, [routes, frame])
+  }, [sichtbar, frame])
 
   if (!frame || paths.length === 0) return null
 
