@@ -209,7 +209,7 @@ describe("Sync-API", () => {
     const { app } = makeApp()
     const res = await request(app).get("/api/sync/status")
     expect(res.status).toBe(200)
-    expect(res.body.connectorAnzahl).toBe(53) // … +0156 (ViP.NRW) +0157 (SEVAS NRW) +0230 (Köln LKW-Streckeninfo); OSM (0301)/LMS-BW (0122)/Düsseldorf (0217)/Bedarfsumleitungen-HH (0113) entfernt
+    expect(res.body.connectorAnzahl).toBe(54) // … +0157 (SEVAS NRW) +0158 (VMZ-NI innerorts) +0230 (Köln LKW-Streckeninfo)
     const autobahn = res.body.quellen.find((q) => q.id === "0001")
     expect(autobahn.connector).toBe(true)
     expect(autobahn.vollbestand).toBe(true)

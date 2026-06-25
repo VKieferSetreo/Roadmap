@@ -101,6 +101,8 @@ export function rowToQuelle(row) {
     abrufIntervall: row.abruf_intervall ?? null,
     letzterAbruf: toIso(row.letzter_abruf) ?? null,
     aktiv: row.aktiv !== false,
+    // T-566: Quelle nur für interne Nutzung freigegeben (keine kommerzielle Lizenz) → "Intern"-Badge.
+    nurIntern: row.nur_intern === true,
   }
 }
 

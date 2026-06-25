@@ -145,6 +145,9 @@ export function QuellenRegister() {
                     >
                       <span className="font-mono text-xs tabular-nums text-neutral-400">{qq.id}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-800">{qq.name}</span>
+                      {qq.nurIntern ? (
+                        <Badge variant="kritisch" size="sm" title="Nur für interne Nutzung freigegeben — keine kommerzielle Lizenz">Intern</Badge>
+                      ) : null}
                       {qq.connector ? (
                         <Badge variant="success" size="sm">Connector</Badge>
                       ) : (

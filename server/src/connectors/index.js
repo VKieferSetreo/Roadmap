@@ -67,6 +67,7 @@ import { lsbbStFahrauflagenConnector } from "./0154_lsbb_st_fahrauflagen.js"
 import { rostockVerkehrszeichenConnector } from "./0155_rostock_verkehrszeichen.js"
 import { vipnrwBaustellenConnector } from "./0156_vipnrw_baustellen.js"
 import { sevasNrwRestriktionenConnector } from "./0157_sevas_nrw_restriktionen.js"
+import { vmzNiBaustellenConnector } from "./0158_vmz_ni_baustellen.js"
 import { koelnLkwStreckeninfoConnector } from "./0230_koeln_lkw_streckeninfo.js"
 
 export const CONNECTORS = [
@@ -122,6 +123,7 @@ export const CONNECTORS = [
   rostockVerkehrszeichenConnector,
   vipnrwBaustellenConnector,
   sevasNrwRestriktionenConnector,
+  vmzNiBaustellenConnector,
   koelnLkwStreckeninfoConnector,
 ]
 

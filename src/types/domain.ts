@@ -430,6 +430,8 @@ export interface SyncSourceStatus {
   /** Status des letzten (automatischen) Import-Laufs: "ok" | "error" | null (nie gelaufen).
    *  "error" = beim letzten 3×/Tag-Abruf nicht erreichbar → Warn-Indikator. */
   letzterStatus?: "ok" | "error" | string | null
+  /** Quelle nur für INTERNE Nutzung freigegeben (keine kommerzielle Lizenz) → rotes "Intern"-Badge. */
+  nurIntern?: boolean
 }
 
 export interface SyncStatus {
