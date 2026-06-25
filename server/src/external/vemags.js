@@ -1,39 +1,63 @@
-// ⚠️ DEAKTIVIERT (2026-06-24) — WIRD ERSETZT: Der VEMAGS-Streckenextraktor wird manuell neu gebaut
-// (Max liefert das Modul). Im Endpoint off-by-default abgeschaltet (route.js: FEATURE_VEMAGS !== "on"
-// → 404). NICHT weiterentwickeln; bei der Neuauslieferung dieses Modul ersetzen.
+// VEMAGS-Bescheid-Parser (Neubau 2026-06-25, portiert 1:1 aus dem verifizierten Prototyp
+// VEMAGS_ROUTING/extract_strecken.py; das alte Modul wurde ersetzt). Reine Textfunktion — die
+// PDF→Text-Extraktion (in-memory, PDF wird NIE gespeichert) liegt im Aufrufer.
 //
-// VEMAGS-Bescheid-Parser (T-567). Extrahiert aus dem TEXT eines VEMAGS-Bescheids (Großraum-/
-// Schwertransport-Genehmigung) den Fahrtweg (Punkt 9) als Strecken + die Transport-Maße.
-// Reine Textfunktion — die PDF→Text-Extraktion (in-memory, PDF wird NICHT gespeichert) liegt im
-// Aufrufer. Punkt 9 ist semi-strukturiert: Fahrtweg(e) → Fahrtwegteile (Leer-/Lastfahrt), je
-// Start: / Wegpunkt-Sequenz (dash-separiert) / Ziel:.
+// Anker (ueber alle 17 Beispiel-Bescheide verifiziert): Punkt 9 "Fahrtweg" → je "Fahrtweg: N" →
+// "Fahrtwegteil: X.Y - Leer-/Lastfahrt" → "Start:" / Routenzeile(n, ' - '-getrennt) / "Ziel:".
+// Kuerzel werden ausgeschrieben (sonst geocoden Google/OSM einen falschen Punkt), Strassennummern
+// und Manoever sind KEINE Wegpunkte (Strasse = Verbindung; OSRM routet dazwischen).
 
 const num = (s) => {
   const m = String(s ?? "").replace(/\s/g, "").replace(",", ".").match(/-?\d+(?:\.\d+)?/)
   return m ? Number(m[0]) : null
 }
 
-// Token-Klassifikation der dash-separierten Wegpunkt-Sequenz.
-const ROAD_RE = /^(?:A|B|L|K|St|S)\s?\d+[a-z]?$/i // A5, B33a, L98, K29 — Verbindungsstraße, KEIN Wegpunkt
-const JUNCTION_RE = /^(AS|AK|AD)\s+|^(Anschlussstelle|Autobahnkreuz|Autobahndreieck|Kreuz|Dreieck)\b/i
-const INSTRUCTION_RE = /\b(links|rechts|geradeaus|gegenverkehr|sonderabfahrt|zufahrt|über|teilweise|wenden|abfahrt|auffahrt|im zuge)\b/i
+// VEMAGS-Standard-Kuerzel ausschreiben (in-Dokument bestaetigt). GüG = Grenzuebergang (Start-Depot).
+const ABK = {
+  AS: "Anschlussstelle",
+  AD: "Autobahndreieck",
+  AK: "Autobahnkreuz",
+  OD: "Ortsdurchfahrt",
+  "GüG": "Grenzübergang",
+}
+const ABK_RE = new RegExp("\\b(" + Object.keys(ABK).join("|") + ")\\b", "g")
+const expandAbk = (s) => String(s ?? "").replace(ABK_RE, (m) => ABK[m])
 
-/** Ein Sequenz-Token → {raw, typ}. typ: 'junction' | 'place' | 'road' | 'instruction'. */
+// Reine Strassennummer (ggf. mit vorangestelltem Manoever) → Verbindung, KEIN Wegpunkt.
+const MANEUVER_RE = /^(links|rechts|li\.|re\.|weiter|geradeaus|gerade aus|auf|über|ueber|im Gegenverkehr|entgegen der Fahrtrichtung)\s+/i
+const ROAD_RE = /^(A|B|L|K|St)\s?\d+[a-z]?$/i
+const stripManeuver = (s) => {
+  let prev = null
+  let t = String(s ?? "").trim()
+  while (prev !== t) {
+    prev = t
+    t = t.replace(MANEUVER_RE, "").trim()
+  }
+  return t
+}
+const JUNC_PREFIX = ["Anschlussstelle", "Autobahnkreuz", "Kreuz", "Autobahndreieck", "Dreieck"]
+const isRoad = (seg) => ROAD_RE.test(stripManeuver(seg))
+const isJunction = (seg) => JUNC_PREFIX.some((p) => stripManeuver(seg).startsWith(p))
+
+/** Ein Routen-Segment → {raw, typ}. typ: 'junction' | 'road' | 'instruction' | 'place'. */
 export function classifyToken(raw) {
-  const t = String(raw ?? "").trim().replace(/\s+/g, " ")
+  const t = expandAbk(String(raw ?? "").trim().replace(/\s+/g, " "))
   if (!t) return null
-  if (ROAD_RE.test(t)) return { raw: t, typ: "road" }
-  if (JUNCTION_RE.test(t)) return { raw: t, typ: "junction" }
-  if (INSTRUCTION_RE.test(t)) return { raw: t, typ: "instruction" }
+  if (isRoad(t)) return { raw: t, typ: "road" }
+  if (isJunction(t)) return { raw: t, typ: "junction" }
+  // Manoever-Beschreibung ohne Ortsbezug (z.B. "Wendemanoever", "Kreisverkehr im Gegenverkehr")
+  if (/\b(wenden|wendeman|kreisverkehr|gegenverkehr|sonderabfahrt|zufahrt|über waldweg|wirtschaftsweg|rückwärts|vorwärts)\b/i.test(t)) {
+    return { raw: t, typ: "instruction" }
+  }
   return { raw: t, typ: "place" }
 }
 
-/** Nur routbare Wegpunkte (Knoten + Orte), Straßennummern + Anweisungen raus. */
+/** Nur routbare Wegpunkte (Knoten + Orte); Strassennummern + Manoever raus. */
 export function routableWaypoints(tokens) {
   return tokens.filter((t) => t && (t.typ === "junction" || t.typ === "place"))
 }
 
-/** Maße aus dem Bescheid (Länge/Breite/Höhe/Masse + Achslasten). */
+/** Maße aus dem Bescheid (Länge/Breite/Höhe/Masse + Achslasten) — reine Datenextraktion. */
 function parseSpec(text) {
   const grab = (label, unit) => {
     const re = new RegExp(label + "\\s*:?\\s*([0-9]+[.,][0-9]+|[0-9]+)\\s*" + unit, "i")
@@ -47,18 +71,15 @@ function parseSpec(text) {
     masseT: grab("Masse", "t") ?? grab("Gesamtmasse", "t") ?? grab("Gesamtgewicht", "t"),
     achslastenT: [],
   }
-  // Achslast-Zeile(n): "Achslast [t]   7,7   7   9 …" → Zahlenliste
   for (const m of text.matchAll(/Achslast\s*\[t\][^\n]*/gi)) {
     for (const z of m[0].matchAll(/\d+(?:[.,]\d+)?/g)) spec.achslastenT.push(num(z[0]))
   }
   return spec
 }
 
-/** Bescheid-/Antragsmetadaten (best effort). */
 function parseMeta(text) {
   const g = (re) => { const m = text.match(re); return m ? m[1].trim() : null }
   return {
-    // Strukturierte Bescheid-ID (z.B. 20260017547_B_03) — NICHT das lose "Bescheidversion zu …".
     bescheidVersion: g(/Bescheidversion\s+(\d{8,}_[A-Z]_\d+)/),
     antragsteller: g(/Firma\s*:\s*(.+?)(?:\s{2,}|\n)/),
     behoerde: g(/Behörde\s*:\s*(.+?)(?:\s{2,}|\n)/),
@@ -66,78 +87,53 @@ function parseMeta(text) {
 }
 
 /**
- * Parst den Bescheid-Text → { meta, spec, fahrtwege:[{nr, teile:[{teil, art, start, ziel, sequenz, waypoints}]}], strecken:[…] }.
- * `strecken` = flache Liste (1 je Fahrtwegteil) für die direkte Übernahme als Projekt-Strecken.
+ * Parst den Bescheid-Text → { meta, spec, strecken:[{name, art, istLastfahrt, startText, zielText,
+ * punkte:[{raw,typ}]}] }. punkte-Reihenfolge: Start → routbare Wegpunkte (Knoten/Orte) → Ziel.
  */
 export function parseVemagsText(text) {
   const meta = parseMeta(text)
   const spec = parseSpec(text)
 
-  // Punkt 9 „Fahrtweg" isolieren: ab "9. Fahrtweg" bis "10." (Antragsrelevante Mitteilungen).
   const start9 = text.search(/^\s*9\.\s+Fahrtweg\b/m)
   const end10 = text.search(/^\s*10\.\s+/m)
   const block = start9 >= 0 ? text.slice(start9, end10 > start9 ? end10 : undefined) : ""
 
-  const fahrtwege = []
-  // In Fahrtweg-Blöcke splitten ("Fahrtweg: N"). KEIN Zeilen-Anker — durch das PDF-Layout steht oft
-  // Trailing-Text auf der Zeile (z.B. "Fahrtweg: 1   siehe Anlage 2"). "Fahrtweg:" matcht NICHT
-  // "Fahrtwegteil:" (dort folgt "teil", kein Doppelpunkt+Ziffer).
-  const fwParts = block.split(/Fahrtweg:\s*(\d+)/)
-  // fwParts: [vor, nr1, body1, nr2, body2, …]
+  const strecken = []
+  const fwParts = block.split(/Fahrtweg:\s*(\d+)/) // [vor, nr1, body1, …]
   for (let i = 1; i < fwParts.length; i += 2) {
-    const nr = fwParts[i]
     const body = fwParts[i + 1] || ""
-    const teile = []
-    // je Fahrtwegteil: "Fahrtwegteil: N.M - Art" … "Start:" … <seq> … "Ziel:"
     const teilRe = /Fahrtwegteil:\s*([\d.]+)\s*-\s*([^\n]+?)\s*\n([\s\S]*?)(?=Fahrtwegteil:|$)/g
     for (const tm of body.matchAll(teilRe)) {
       const teilNr = tm[1].trim()
-      const art = tm[2].trim() // Leerfahrt / Lastfahrt
+      const art = tm[2].trim()
       const seg = tm[3]
       const sm = seg.match(/Start:\s*([^\n]+)/)
       const zm = seg.match(/Ziel:\s*([^\n]+)/)
       const startText = sm ? sm[1].trim() : null
       const zielText = zm ? zm[1].trim() : null
-      // Wegpunkt-Sequenz = alles zwischen Start-Zeile und Ziel-Zeile (mehrzeilig → joinen).
+      // Routenzeile(n) = alles zwischen Start- und Ziel-Zeile (mehrzeilig → Whitespace kollabieren).
       let seqText = ""
       if (sm) {
         const after = seg.slice(seg.indexOf(sm[0]) + sm[0].length)
         seqText = zm ? after.slice(0, after.indexOf(zm[0])) : after
       }
       const seqClean = seqText.replace(/\s+/g, " ").trim()
+      // NUR auf ' - ' splitten → Bindestrich-Namen ("Hermann-Honnef Strasse") bleiben heil.
       const tokens = seqClean ? seqClean.split(/\s+-\s+/).map(classifyToken).filter(Boolean) : []
-      teile.push({
-        teil: teilNr,
+      strecken.push({
+        name: `Fahrtwegteil ${teilNr} — ${art}`,
         art,
         istLastfahrt: /last/i.test(art),
-        start: startText,
-        ziel: zielText,
-        sequenz: tokens,
-        waypoints: routableWaypoints(tokens),
-      })
-    }
-    fahrtwege.push({ nr, teile })
-  }
-
-  // Flache Strecken-Liste (1 je Fahrtwegteil) — Reihenfolge: Start → routbare Wegpunkte → Ziel.
-  const strecken = []
-  for (const fw of fahrtwege) {
-    for (const t of fw.teile) {
-      strecken.push({
-        name: `Fahrtwegteil ${t.teil} — ${t.art}`,
-        art: t.art,
-        istLastfahrt: t.istLastfahrt,
-        startText: t.start,
-        zielText: t.ziel,
-        // Geokodier-Eingaben in Reihenfolge: Start, Wegpunkte (Knoten/Orte), Ziel.
+        startText,
+        zielText,
         punkte: [
-          t.start ? { raw: t.start, typ: "start" } : null,
-          ...t.waypoints,
-          t.ziel ? { raw: t.ziel, typ: "ziel" } : null,
+          startText ? { raw: startText, typ: "start" } : null,
+          ...routableWaypoints(tokens),
+          zielText ? { raw: zielText, typ: "ziel" } : null,
         ].filter(Boolean),
       })
     }
   }
 
-  return { meta, spec, fahrtwege, strecken }
+  return { meta, spec, strecken }
 }

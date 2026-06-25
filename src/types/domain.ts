@@ -24,6 +24,13 @@ export interface ProjectRoute {
   /** Geometrie ist nur eine grobe Schätzung (OSRM nicht erreichbar → Luftlinie/Korridor statt
    *  echtem Straßenweg). Karte zeichnet gestrichelt + Warnhinweis (T-480). */
   grob?: boolean
+  /** VEMAGS-Prüfen-Gate (T-593): aus einem VEMAGS-Bescheid rekonstruierte Strecken sind wegen
+   *  variierender Bescheid-Qualität UNGEPRÜFT (false/undefined) und müssen vor der Analyse manuell
+   *  geprüft & freigegeben werden (fehlende/falsche Punkte sauber ziehen). Bis dahin nur „Prüfen"
+   *  statt der normalen Aktionen. Nach Speichern der Prüfung → true → freigegeben. */
+  verifiziert?: boolean
+  /** Anzahl beim Import entfernter Schlenker/Fehl-Geocodes (Transparenz im Prüfen-Hinweis). */
+  bereinigt?: number
 }
 
 /** Quelle, über die eine Strecke angelegt wurde (= die Upload-Tabs). */
