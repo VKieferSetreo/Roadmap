@@ -154,9 +154,13 @@ function dropCrossSourceDuplicates(findings) {
   return findings.filter((x) => !drop.has(x))
 }
 
-/** Analysierbare Routen: nur die mit ≥2 validen Punkten (Geometrie = points). */
+/** Analysierbare Routen: ≥2 valide Punkte (Geometrie) UND freigegeben.
+ *  Prüfen-Gate (T-593): aus einem VEMAGS-Bescheid rekonstruierte Strecken werden erst nach
+ *  manueller Prüfung (verifiziert=true) ausgewertet — ungeprüfte Strecken fließen NICHT in
+ *  Findings/Schnitte/Dashboard (variierende Bescheid-Qualität, müssen erst sauber gezogen werden). */
 export function usableRoutes(routes) {
   return (Array.isArray(routes) ? routes : [])
+    .filter((r) => !(r?.source === "vemags" && r?.verifiziert !== true))
     .map((r) => ({
       ...r,
       points: Array.isArray(r?.points) ? r.points.filter(sanePoint) : [],
