@@ -13,6 +13,10 @@ export interface ProjectRoute {
   fileName?: string
   /** Geometrie aus der Datei (GPX/KML/GeoJSON, client-seitig geparst, ≤1500 Punkte). */
   points: RoutePoint[]
+  /** Exakte Kontroll-Wegpunkte (Start, Zwischenstopps, Ziel), mit denen die Strecke angelegt wurde
+   *  — z.B. die gesetzten Pins bei Start/Ziel. Der Editor nutzt GENAU diese (akkurat), statt sie aus
+   *  den OSRM-gesnappten Geometrie-Enden zu rekonstruieren. Fehlt bei Datei-Uploads (T-582). */
+  waypoints?: RoutePoint[]
   /** Hex-Farbe für Karte/Listen-Zuordnung (FE vergibt aus Palette). */
   farbe: string
   /** Herkunft der Strecke — für die Zähler je Upload-Tab. Default „datei". */

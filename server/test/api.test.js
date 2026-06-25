@@ -241,6 +241,24 @@ describe("projects CRUD (v2-Shape)", () => {
     expect(second.body.routes[0].farbe).toBe("#3D5A80")
   })
 
+  it("PATCH: exakte Start/Ziel-Wegpunkte werden statisch persistiert, nicht downgesampelt (T-582)", async () => {
+    const { app } = makeApp()
+    const p = await createProject(app)
+    const points = cityPoints("Hamburg", "Hannover")
+    const waypoints = [{ lat: 53.5511, lng: 9.9937 }, { lat: 52.3759, lng: 9.732 }] // exakte Pins
+    const res = await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-1", name: "Start/Ziel", points, source: "startziel", waypoints }],
+    })
+    expect(res.status).toBe(200)
+    // Genau die gesetzten Pins bleiben erhalten (Editor zeigt sie akkurat).
+    expect(res.body.routes[0].waypoints).toEqual(waypoints)
+    // <2 valide Wegpunkte → Feld wird weggelassen (Datei-Upload ohne Pins).
+    const ohne = await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-1", name: "Datei", points, waypoints: [{ lat: 999, lng: 999 }] }],
+    })
+    expect(ohne.body.routes[0].waypoints).toBeUndefined()
+  })
+
   it("PATCH vergibt Defaults für fehlende Routen-Felder", async () => {
     const { app } = makeApp()
     const p = await createProject(app)

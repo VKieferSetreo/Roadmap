@@ -83,6 +83,8 @@ export interface ProjectPatch {
 /** Ergebnis einer Routen-Berechnung (Start/Ziel oder Google-Maps-Link). */
 export interface RouteResult {
   points: RoutePoint[]
+  /** Exakte Kontroll-Wegpunkte (Start/Via/Ziel) — statisch mit der Strecke speichern (T-582). */
+  waypoints?: RoutePoint[] | null
   distanzKm: number
   dauerMin: number | null
   provider: { geocoder?: string; router: string; fallback: boolean }

@@ -124,6 +124,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
     const out = await resolveRoute(db, { mode: "startziel", start, ziel, vias }, { nominatim, osrm })
     res.json({
       points: out.geometry,
+      waypoints: out.waypoints ?? null, // exakte Start/Ziel/Via-Punkte → statisch mit der Strecke speichern (T-582)
       distanzKm: out.distanzKm,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
@@ -174,6 +175,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch 
     })
     res.json({
       points: out.geometry,
+      waypoints: out.waypoints ?? null, // gezogene Wegpunkte des Links → statisch mit der Strecke speichern (T-582)
       distanzKm: out.distanzKm,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,

@@ -35,6 +35,16 @@ function deriveControlPoints(points: RoutePoint[]): RoutePoint[] {
   ]
 }
 
+// T-582: die exakten, beim Anlegen gesetzten Wegpunkte (Start/Via/Ziel) sind die wahren Kontrollpunkte
+// — sie GENAU übernehmen statt sie aus den OSRM-gesnappten Geometrie-Enden zu rekonstruieren (die teils
+// weit abweichen). Nur wenn ≥2 valide gespeichert sind (Start/Ziel-/Link-Strecken); sonst (Datei-Upload
+// ohne Wegpunkte) der bisherige Fallback aus der Geometrie.
+function controlPointsOf(route: ProjectRoute): RoutePoint[] {
+  const wp = (route.waypoints ?? []).filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+  if (wp.length >= 2) return wp.map((p) => ({ lat: p.lat, lng: p.lng }))
+  return deriveControlPoints(route.points)
+}
+
 /** Einfügeindex im Segment, dessen Mittelpunkt dem Greifpunkt am nächsten liegt. */
 function bestInsertIndex(cps: RoutePoint[], lat: number, lng: number): number {
   if (cps.length < 2) return cps.length
@@ -133,6 +143,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   const [routingFailed, setRoutingFailed] = useState(false)
   const [touched, setTouched] = useState(false)
   const initialPoints = useRef<RoutePoint[]>([])
+  const initialCps = useRef<RoutePoint[]>([]) // T-582: die exakten Start/Ziel-Wegpunkte für „Original"
   const mapRef = useRef<L.Map | null>(null)
   const dragIdxRef = useRef<number | null>(null)
   const failToastRef = useRef(false) // Toast nur beim Übergang ok→fehlgeschlagen, nicht pro Debounce.
@@ -140,12 +151,14 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   useEffect(() => {
     if (!open || !route) return
     setName(route.name)
-    setCps(deriveControlPoints(route.points))
+    const cps0 = controlPointsOf(route)
+    setCps(cps0)
     setGeometry(route.points)
     setTouched(false)
     setRoutingFailed(false)
     failToastRef.current = false
     initialPoints.current = route.points
+    initialCps.current = cps0
   }, [open, route])
 
   const coordKey = cps.map((c) => `${c.lat.toFixed(6)},${c.lng.toFixed(6)}`).join(";")
@@ -301,7 +314,7 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
   }
 
   const reset = () => {
-    setCps(deriveControlPoints(initialPoints.current))
+    setCps(initialCps.current)
     setGeometry(initialPoints.current)
     setTouched(false)
     setRoutingFailed(false)
@@ -320,7 +333,14 @@ export function RouteEditDialog({ open, onClose, projectId, route }: RouteEditDi
       return
     }
     const finalGeom = geometry.length >= 2 ? geometry : cps.map((c) => ({ lat: c.lat, lng: c.lng }))
-    updateRoute(projectId, route.id, { name: name.trim() || route.name, points: finalGeom })
+    // T-582: die aktuellen Kontrollpunkte als exakte Wegpunkte mitspeichern → der nächste Edit zeigt
+    // wieder genau diese Start/Ziel/Via-Punkte (kein erneutes Snappen/Driften aus den Geometrie-Enden).
+    const finalWps = cps.map((c) => ({ lat: c.lat, lng: c.lng }))
+    updateRoute(projectId, route.id, {
+      name: name.trim() || route.name,
+      points: finalGeom,
+      ...(finalWps.length >= 2 ? { waypoints: finalWps } : {}),
+    })
     runAnalysis(projectId)
     toast.success("Strecke gespeichert. Auswertung läuft neu.")
     onClose()

@@ -70,8 +70,8 @@ interface ProjectStore {
   addRoute: (id: string, route: Omit<ProjectRoute, "id" | "farbe">) => void
   removeRoute: (id: string, routeId: string) => void
   renameRoute: (id: string, routeId: string, name: string) => void
-  /** Strecke editieren (Name und/oder Geometrie) — Strecken-Editor. */
-  updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points">>) => void
+  /** Strecke editieren (Name und/oder Geometrie + exakte Wegpunkte) — Strecken-Editor. */
+  updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points" | "waypoints">>) => void
 
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void

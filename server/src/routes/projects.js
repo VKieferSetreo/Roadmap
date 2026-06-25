@@ -51,11 +51,16 @@ function normalizeRoutes(routes) {
       throw new ApiError(400, `routes[${i}].points muss ein Array sein`)
     }
     const points = (r.points ?? []).filter(sanePoint).map((p) => ({ lat: p.lat, lng: p.lng }))
+    // T-582: die exakten Start/Ziel/Via-Wegpunkte statisch mitspeichern (NICHT downsamplen — es sind
+    // nur wenige Kontrollpunkte). Der Editor zeigt genau diese Pins, statt sie aus den OSRM-gesnappten
+    // Geometrie-Enden zu rekonstruieren. Nur persistieren, wenn ≥2 valide (sonst Feld weglassen).
+    const waypoints = (Array.isArray(r.waypoints) ? r.waypoints : []).filter(sanePoint).map((p) => ({ lat: p.lat, lng: p.lng }))
     return {
       id: typeof r.id === "string" && r.id.trim() ? r.id : randomUUID(),
       name: typeof r.name === "string" && r.name.trim() ? r.name.trim() : `Strecke ${i + 1}`,
       ...(typeof r.fileName === "string" && r.fileName ? { fileName: r.fileName } : {}),
       points: downsample(points),
+      ...(waypoints.length >= 2 ? { waypoints } : {}),
       farbe: typeof r.farbe === "string" && r.farbe ? r.farbe : DEFAULT_ROUTE_FARBE,
       ...(typeof r.source === "string" && r.source ? { source: r.source } : {}),
       ...(r.grob === true ? { grob: true } : {}), // T-480: Luftlinie-Schätzung persistieren

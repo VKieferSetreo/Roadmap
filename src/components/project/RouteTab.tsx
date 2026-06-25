@@ -122,7 +122,9 @@ export function RouteTab({ project }: { project: Project }) {
     // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
     // nicht nur als Einmal-Toast — sonst sieht die grobe Schätzung nach Reload wie ein echter Weg aus.
     const grob = res.provider.router === "fallback"
-    addRoute(project.id, { name, points: res.points, source, ...(grob ? { grob: true } : {}) })
+    // T-582: die exakten Start/Ziel/Via-Wegpunkte mitspeichern → der Editor zeigt genau diese Pins.
+    const waypoints = Array.isArray(res.waypoints) && res.waypoints.length >= 2 ? res.waypoints : undefined
+    addRoute(project.id, { name, points: res.points, source, ...(waypoints ? { waypoints } : {}), ...(grob ? { grob: true } : {}) })
     toast.success(
       `Strecke „${name}" angelegt: ${res.points.length.toLocaleString("de-DE")} Punkte · ca. ${res.distanzKm.toLocaleString("de-DE", { maximumFractionDigits: 0 })} km` +
         (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),

@@ -111,10 +111,14 @@ export async function routeWaypoints(db, waypoints, { osrm } = {}, meta = {}) {
     "SELECT geometry, distanz_km, dauer_min FROM route_cache WHERE key = $1 AND fetched_at > now() - interval '30 days'",
     [key],
   )
+  // waypoints = die exakt gerouteten Stützpunkte (Pins/geocodete Orte). Mit zurückgeben, damit der
+  // Aufrufer sie STATISCH mit der Strecke speichern kann — der Editor zeigt dann genau diese Start/
+  // Ziel-Punkte (akkurat), statt sie aus den OSRM-gesnappten Geometrie-Enden zu rekonstruieren (T-582).
   if (cached.rows[0]) {
     const row = cached.rows[0]
     return {
       geometry: row.geometry,
+      waypoints: wp,
       distanzKm: Number(row.distanz_km),
       ...(row.dauer_min != null && { dauerMin: Number(row.dauer_min) }),
       provider: { geocoder, router: "cache", fallback: geocoderFallback },
@@ -132,6 +136,7 @@ export async function routeWaypoints(db, waypoints, { osrm } = {}, meta = {}) {
     )
     return {
       geometry,
+      waypoints: wp,
       distanzKm: osrmRes.distanzKm,
       dauerMin: osrmRes.dauerMin,
       provider: { geocoder, router: "osrm", fallback: geocoderFallback },
@@ -142,6 +147,7 @@ export async function routeWaypoints(db, waypoints, { osrm } = {}, meta = {}) {
   const geometry = buildPolyline(wp)
   return {
     geometry,
+    waypoints: wp,
     distanzKm: totalKm(geometry),
     provider: { geocoder, router: "fallback", fallback: true },
   }
