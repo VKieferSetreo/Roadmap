@@ -32,7 +32,7 @@ interface TreeCtx {
   childrenOf: (id: string) => FolderT[]
   projectsIn: (folderId: string | null) => Project[]
   isOpen: (id: string) => boolean
-  toggle: (id: string, depth: number, parent?: string) => void
+  toggle: (id: string) => void
   /** Beim Drüberziehen: den Zielordner nach ~1 s Halten ADDITIV aufklappen (kollabiert keine anderen
    *  Zweige — man kann in tiefe Unterordner ziehen, ohne dass Geschwister/Kinder verschwinden). */
   scheduleOpen: (id: string) => void
@@ -63,7 +63,7 @@ interface TreeCtx {
   /** Neues Projekt im angegebenen Ordner anlegen (öffnet den Dialog; AppLayout sortiert ein). */
   openNewProject: (folderId: string) => void
   creatingIn: string | null | undefined
-  startCreate: (parentId: string | null, openPath?: string[]) => void
+  startCreate: (parentId: string | null) => void
   /** Wurzelordner in einer Zone anlegen (058): isPrivate = Privat-Zone. */
   startRootCreate: (isPrivate: boolean) => void
   newName: string
@@ -167,7 +167,7 @@ function NewFolderInput({
 }
 
 /** Ordnerzeile + (rekursiv) Unterordner & enthaltene Projekte. */
-function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; parent?: string; ctx: TreeCtx }) {
+function FolderNode({ id, depth, ctx }: { id: string; depth: number; ctx: TreeCtx }) {
   const f = ctx.folderById(id)
   if (!f) return null
 
@@ -218,7 +218,7 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
         style={{ paddingLeft: indent }}
       >
         <button
-          onClick={() => ctx.toggle(id, depth, parent)}
+          onClick={() => ctx.toggle(id)}
           className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md py-1.5 pl-2 pr-1 text-sm text-neutral-700"
         >
           <ChevronRight className={cn("h-3.5 w-3.5 shrink-0 text-neutral-400 transition-transform", open && "rotate-90")} />
@@ -262,7 +262,7 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
                 </span>
               }
             >
-              <DropdownItem onClick={() => ctx.startCreate(id, depth === 0 || !parent ? [id] : [parent, id])}>
+              <DropdownItem onClick={() => ctx.startCreate(id)}>
                 <FolderPlus className="h-4 w-4 text-primary-600" /> Neuer Ordner
               </DropdownItem>
               <DropdownItem onClick={() => ctx.openNewProject(id)}>
@@ -318,7 +318,7 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
           }
         >
           {subs.map((s) => (
-            <FolderNode key={s.id} id={s.id} depth={depth + 1} parent={id} ctx={ctx} />
+            <FolderNode key={s.id} id={s.id} depth={depth + 1} ctx={ctx} />
           ))}
           {ctx.creatingIn === id ? (
             <NewFolderInput
@@ -464,11 +464,12 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   // Verzögertes Schließen der Drop-Marker (058): beim Verlassen eines Ziels noch kurz offen halten,
   // damit das Hin-und-Her-Bewegen nicht flackert. Wechsel auf ein anderes Ziel bricht den Timer ab.
   const overTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Während eines Drags ADDITIV aufgeklappte Ordner (zusätzlich zum normalen openPath). So bleibt beim
-  // Ziehen in tiefe Unterordner alles offen — kein Kollabieren von Geschwistern/Kindern (058/T-590).
-  const [dragOpen, setDragOpen] = useState<ReadonlySet<string>>(() => new Set())
-  // Aufklappen erst nach ~1 s Halten über dem Ordner → kein Hin-und-Her-Springen.
-  const OPEN_HOLD_MS = 1000
+  // Während eines Drags aufgeklappter Zweig (PFAD Wurzel→Ziel), zusätzlich zum normalen openPath. So
+  // bleiben die manuell offenen Ordner offen (kein Kollabieren, 058/T-590), aber immer nur EIN drag-
+  // geöffneter Zweig: ein neues Halten ersetzt den Pfad → der vorige drag-geöffnete Ordner schließt.
+  const [dragOpen, setDragOpen] = useState<string[]>([])
+  // Aufklappen erst nach 0,5 s Halten über dem Ordner → kein Hin-und-Her-Springen.
+  const OPEN_HOLD_MS = 500
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const holdTarget = useRef<string | null>(null)
 
@@ -560,16 +561,18 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     folderById,
     childrenOf,
     projectsIn,
-    isOpen: (id) => openPath.includes(id) || dragOpen.has(id),
-    toggle: (id, depth, parent) =>
-      setOpenPath((cur) => (cur[depth] === id ? cur.slice(0, depth) : depth === 0 ? [id] : [parent as string, id])),
+    isOpen: (id) => openPath.includes(id) || dragOpen.includes(id),
+    // Auf/Zu per Klick: offen → diesen Ordner (+ Nachfahren) schließen; sonst den VOLLEN Pfad öffnen
+    // (pathTo), damit auf Ebene 2+ der Ober-/Großelternordner offen bleibt und nicht zuklappt.
+    toggle: (id) =>
+      setOpenPath((cur) => (cur.includes(id) ? cur.slice(0, cur.indexOf(id)) : pathTo(id))),
     scheduleOpen: (id) => {
-      if (openPath.includes(id) || dragOpen.has(id)) return // schon offen
+      if (openPath.includes(id) || dragOpen.includes(id)) return // schon offen
       if (holdTarget.current === id) return // Timer läuft bereits für dieses Ziel
       if (holdTimer.current) clearTimeout(holdTimer.current)
       holdTarget.current = id
       holdTimer.current = setTimeout(() => {
-        setDragOpen((s) => new Set(s).add(id)) // ADDITIV: kollabiert nichts
+        setDragOpen(pathTo(id)) // EIN drag-offener Zweig: ersetzt → vorher drag-geöffneter Ordner schließt
         holdTimer.current = null
         holdTarget.current = null
       }, OPEN_HOLD_MS)
@@ -616,7 +619,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
       setDragId(null)
       setDragFolderId(null)
       setDragOver(null)
-      setDragOpen(new Set())
+      setDragOpen([])
     },
     drop: (folderId, zonePrivate) => {
       // In einen Ordner → Zone wird geerbt (kein Flag). Auf eine Zonen-Wurzel → Zone explizit setzen.
@@ -637,7 +640,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
       setDragId(null)
       setDragFolderId(null)
       setDragOver(null)
-      setDragOpen(new Set())
+      setDragOpen([])
       // Zielordner (+ Vorfahren) offen halten, damit man das Abgelegte sofort sieht.
       if (folderId) setOpenPath(pathTo(folderId))
     },
@@ -656,12 +659,12 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     removeFolder,
     openNewProject,
     creatingIn,
-    startCreate: (parentId, openPath) => {
+    startCreate: (parentId) => {
       setCreatingIn(parentId)
       setNewName("")
-      // Ordner sichtbar halten: bei Unterordnern den ganzen Pfad öffnen, sonst nur den Ordner.
-      if (openPath) setOpenPath(openPath)
-      else if (parentId) setOpenPath([parentId])
+      // Ziel-Ordner + ALLE Vorfahren offen halten (pathTo) — auch auf Ebene 2+, sonst klappt der
+      // Großelternordner zu (gleicher Single-Path-Bug wie toggle).
+      if (parentId) setOpenPath(pathTo(parentId))
     },
     startRootCreate: (isPrivate) => {
       setCreatingIn(null)

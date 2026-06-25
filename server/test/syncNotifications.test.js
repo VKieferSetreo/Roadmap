@@ -98,7 +98,7 @@ describe("Ablauf-Hygiene (expireObstacles)", () => {
 })
 
 describe("Fund-Diff (diffFindings)", () => {
-  it("erkennt neu / weggefallen / geaendert, ignoriert Unverändertes", () => {
+  it("erkennt neu / geaendert, ignoriert Unverändertes UND Weggefallenes (kein 'weggefallen'-Event mehr)", () => {
     const before = new Map([
       ["o-gone", { obstacle_id: "o-gone", severity: "warnung", titel: "weg" }],
       ["o-chg", { obstacle_id: "o-chg", severity: "warnung", titel: "chg", gueltig_bis: "2026-08-01" }],
@@ -113,10 +113,9 @@ describe("Fund-Diff (diffFindings)", () => {
     const byTyp = (t) => events.filter((e) => e.typ === t)
     expect(byTyp("neu")).toHaveLength(1)
     expect(byTyp("neu")[0].severity).toBe("kritisch")
-    expect(byTyp("weggefallen")).toHaveLength(1)
-    expect(byTyp("weggefallen")[0].severity).toBe("info")
+    expect(byTyp("weggefallen")).toHaveLength(0) // Max 2026-06-25: kein Wegfall-Event mehr
     expect(byTyp("geaendert")).toHaveLength(1)
-    expect(events).toHaveLength(3) // o-same erzeugt nichts
+    expect(events).toHaveLength(2) // o-same + o-gone erzeugen nichts
   })
 
   it("Bug 2026-06-21: gleicher Fund mit NEUER obstacle_id + km-Wackler (0,8↔0,9) → KEIN weggefallen+neu", () => {

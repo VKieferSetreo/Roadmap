@@ -90,14 +90,9 @@ export function diffFindings(beforeMap, afterMap) {
       if (change) events.push({ typ: "geaendert", severity: after.severity, finding: after, beschreibung: change })
     }
   }
-  for (const [oid, before] of beforeMap) {
-    if (!afterMap.has(oid)) {
-      events.push({
-        typ: "weggefallen", severity: "info", finding: before,
-        beschreibung: "Hindernis ist entfallen — Strecke entspannt sich",
-      })
-    }
-  }
+  // KEIN "weggefallen"-Event mehr (Max 2026-06-25): das Wegfallen einer Baustelle/Sperrung interessiert
+  // niemanden — keine Glocke/Mail dafür. (Hatte zudem severity "info", die man in den Einstellungen gar
+  // nicht abwählen konnte → erschien trotz Settings.) Nur NEUE + GEÄNDERTE Funde benachrichtigen.
   return events
 }
 
