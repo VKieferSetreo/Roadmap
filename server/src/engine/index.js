@@ -172,7 +172,15 @@ export function usableRoutes(routes) {
 export async function analyze({ db, project, corridorM }) {
   const routes = usableRoutes(project.routes)
   if (routes.length === 0) {
-    throw new ApiError(422, "Keine Strecke mit Punkten vorhanden — Strecke hochladen")
+    // Gate (T-593): es können Strecken existieren, aber alle ungeprüft (VEMAGS) → für die Auswertung
+    // nicht freigegeben. Klare Meldung statt „Strecke hochladen".
+    const hatUngeprüft = (project.routes ?? []).some((r) => r?.source === "vemags" && r?.verifiziert !== true)
+    throw new ApiError(
+      422,
+      hatUngeprüft
+        ? "Keine freigegebene Strecke — bitte VEMAGS-Strecken erst prüfen & freigeben."
+        : "Keine Strecke mit Punkten vorhanden — Strecke hochladen",
+    )
   }
 
   // T-330: Geometrie/Korridor je Route einmal vorbereiten, dann EIN SELECT über die OR-Verknüpfung

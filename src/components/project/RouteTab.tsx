@@ -589,6 +589,20 @@ export function RouteTab({ project }: { project: Project }) {
                       >
                         <Flag className="h-3.5 w-3.5" /> Prüfen
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Strecke „${r.name}" wirklich entfernen? Das kann nicht rückgängig gemacht werden.`)) {
+                            removeRoute(project.id, r.id)
+                          }
+                        }}
+                        aria-label={`Strecke ${r.name} entfernen`}
+                        title="Verwerfen, wenn die Strecke nicht gebraucht wird"
+                        disabled={running}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
                     </>
                   ) : (
                     <>

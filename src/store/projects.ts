@@ -411,7 +411,13 @@ export const useProjectStore = create<ProjectStore>()(
           autoTimers[id] = setTimeout(() => {
             delete autoTimers[id]
             const p = get().getProject(id)
-            if (p && p.routes.some((r) => r.points.length >= 2) && !get().analysis[id]?.running) {
+            // T-593: ungeprüfte VEMAGS-Strecken NICHT auto-auswerten (sie sind serverseitig vom
+            // Lauf ausgeschlossen → ein Lauf nur mit ihnen schlägt fehl). Erst triggern, wenn es
+            // mindestens eine analysierbare (freigegebene/andere Quelle) Strecke gibt — die
+            // Auswertung nach Freigabe läuft separat aus der Prüfen-Maske.
+            const analysierbar = (r: ProjectRoute) =>
+              r.points.length >= 2 && !(r.source === "vemags" && r.verifiziert !== true)
+            if (p && p.routes.some(analysierbar) && !get().analysis[id]?.running) {
               toast.info("Strecke geladen. Auswertung läuft …")
               get().runAnalysis(id)
             }
