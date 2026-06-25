@@ -23,8 +23,6 @@ import { requestId } from "./requestId.js"
 import { captureException } from "./sentry.js"
 import { createNominatim } from "./external/nominatim.js"
 import { createOsrm } from "./external/osrm.js"
-import { allConnectors } from "./connectors/index.js"
-import { ABDECKUNG_DATA, ABDECKUNG_HINWEIS, ABDECKUNG_KATS, ABDECKUNG_STAND } from "./abdeckung.js"
 import { adminImportRouter } from "./routes/adminImport.js"
 import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
@@ -161,28 +159,13 @@ export function createApp({
   // KEINE X-Auth-Header trägt (Docker-Netz, direkt). Eigener Secret-Gate im Router.
   app.use("/api/internal", internalRouter({ db, provisionSecret: process.env.AUTH_EXTERN_PROVISION_SECRET ?? "" }))
 
-  // Datenabdeckung (T-482): EINE Quelle für das interne Board UND die öffentliche /roadmap/abdeckung-
-  // Seite. UNGATED — die öffentliche Seite trägt keine Auth; gibt NUR die redaktionelle Matrix +
-  // echte Connector-Zahl + Stand zurück, KEINE Mandanten-/Bestandsdaten (Leak-Check: unbedenklich).
-  app.get("/api/abdeckung", (req, res) => {
-    res.json({
-      kats: ABDECKUNG_KATS,
-      data: ABDECKUNG_DATA,
-      stand: ABDECKUNG_STAND,
-      // allConnectors (nicht enabledConnectors): die api hat keine CONNECTORS-Env (nur der Worker
-      // schedulet) → enabled wäre 0. allConnectors = alle angebundenen Quellen (statisch + Mobilithek).
-      connectoren: allConnectors().length,
-      hinweis: ABDECKUNG_HINWEIS,
-    })
-  })
-
   // ── Gated API ────────────────────────────────────────────────────────────────
   // T-357: Defense-in-Depth — gated /api/* nimmt X-Auth-* nur an, wenn der Request über den
   // Gateway (Caddy) kam. Caddy stempelt X-Gateway-Secret (header_up); ein Direktzugriff am Proxy
   // vorbei (Docker-Netz-Lateral / künftige Ingress-Fehlkonfiguration) trägt es nicht → 401. Greift
   // NUR bei gesetztem GATEWAY_SECRET (sonst no-op: Dev/Tests + vor dem staged Rollout kein Lockout).
-  // Steht NACH health/internal/abdeckung (Z.120/160/165) → diese Direkt-Pfade bleiben exempt
-  // (Coolify-Healthcheck auf 127.0.0.1, auth-extern-Service-Call, öffentliche Abdeckung).
+  // Steht NACH health/internal (Z.120/160) → diese Direkt-Pfade bleiben exempt
+  // (Coolify-Healthcheck auf 127.0.0.1, auth-extern-Service-Call).
   const gatewaySecret = process.env.GATEWAY_SECRET ?? ""
   if (gatewaySecret) {
     app.use("/api", (req, res, next) => {
