@@ -278,3 +278,45 @@ describe("Sync-API", () => {
     }
   })
 })
+
+describe("Glocke respektiert mail_prefs (Scope + Severity, wie die Mail) — T-587", () => {
+  const seedNotif = (db, tenantId, severity) =>
+    db.state.notifications.push({
+      id: randomUUID(), tenant_id: tenantId, project_id: randomUUID(), projekt_name: "P",
+      typ: "neu", severity, obstacle_id: null, kategorie: "baustelle", titel: severity,
+      beschreibung: "", km: null, route_name: null, strassen_ref: null,
+      gueltig_von: null, gueltig_bis: null, created_at: new Date(), read_at: null, emailed_at: null,
+    })
+  const asVki = (r) => r.set("X-Auth-Email", "vki@setreo.de")
+
+  it("Severity-Filter: nur gewählte Schweregrade erscheinen (Scope via 'alle' isoliert)", async () => {
+    const { app, db, tenant } = makeApp()
+    for (const s of ["kritisch", "warnung", "hinweis"]) seedNotif(db, tenant.id, s)
+
+    await asVki(request(app).post("/api/notifications/mail-pref"))
+      .send({ enabled: true, scope: "alle", severities: ["kritisch"] })
+    const nur = await asVki(request(app).get("/api/notifications"))
+    expect(nur.body.notifications.map((n) => n.severity)).toEqual(["kritisch"])
+    expect(nur.body.unreadCount).toBe(1)
+    const cnt = await asVki(request(app).get("/api/notifications/unread-count"))
+    expect(cnt.body.count).toBe(1)
+
+    await asVki(request(app).post("/api/notifications/mail-pref"))
+      .send({ enabled: true, scope: "alle", severities: ["kritisch", "warnung", "hinweis"] })
+    const alle = await asVki(request(app).get("/api/notifications"))
+    expect(alle.body.notifications).toHaveLength(3)
+  })
+
+  it("System-Mitteilungen (kein Projekt/Severity) bleiben trotz Severity-Filter sichtbar", async () => {
+    const { app, db, tenant } = makeApp()
+    db.state.notifications.push({
+      id: randomUUID(), tenant_id: tenant.id, project_id: null, projekt_name: null,
+      typ: "system", severity: null, titel: "Systemhinweis", created_at: new Date(), read_at: null,
+    })
+    await asVki(request(app).post("/api/notifications/mail-pref"))
+      .send({ enabled: true, scope: "eigene", severities: ["kritisch"] })
+    const list = await asVki(request(app).get("/api/notifications"))
+    expect(list.body.notifications).toHaveLength(1)
+    expect(list.body.notifications[0].titel).toBe("Systemhinweis")
+  })
+})

@@ -27,11 +27,24 @@ export function notificationsRouter({ db }) {
       )
     )`
 
+  // Schweregrad-Filter wie bei der E-Mail (mail/notify.js filterEventsForSev): die Glocke zeigt nur
+  // Meldungen der in mail_prefs.severities gewählten Schweregrade. Default = alle drei (Migration 030),
+  // also ohne gesetzte Präferenz nichts versteckt. System-Mitteilungen (kein Projekt / keine Severity)
+  // bleiben immer sichtbar. `jsonb ? text` = enthält das severities-Array den Schweregrad?
+  const SEVERITY_FILTER = `
+    AND (
+      n.project_id IS NULL
+      OR n.severity IS NULL
+      OR (SELECT COALESCE(mp.severities, '["kritisch","warnung","hinweis"]'::jsonb)
+            FROM mail_prefs mp
+           WHERE mp.tenant_id = n.tenant_id AND mp.email = $1) ? n.severity
+    )`
+
   /** Liste (neueste zuerst, max 100) + Zähler der ungelesenen. */
   r.get("/", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
       `SELECT n.* FROM notifications n
-        WHERE n.tenant_id = $2 ${SCOPE_FILTER}
+        WHERE n.tenant_id = $2 ${SCOPE_FILTER} ${SEVERITY_FILTER}
         ORDER BY n.created_at DESC LIMIT 100`,
       [req.ctx.email, req.ctx.tenant.id],
     )
@@ -43,7 +56,7 @@ export function notificationsRouter({ db }) {
   r.get("/unread-count", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
       `SELECT count(*)::int AS n FROM notifications n
-        WHERE n.tenant_id = $2 AND n.read_at IS NULL ${SCOPE_FILTER}`,
+        WHERE n.tenant_id = $2 AND n.read_at IS NULL ${SCOPE_FILTER} ${SEVERITY_FILTER}`,
       [req.ctx.email, req.ctx.tenant.id],
     )
     res.json({ count: rows[0]?.n ?? 0 })

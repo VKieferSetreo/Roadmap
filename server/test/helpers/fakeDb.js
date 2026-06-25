@@ -36,6 +36,7 @@ export function createFakeDb() {
     })),
     importRuns: [],
     notifications: [],
+    mailPrefs: [], // { tenant_id, email, enabled, scope, severities[] } — Glocke/Mail-Präferenzen
     bugReports: [],
     news: [], // { id, kategorie, titel, body, created_by, published_at }
     hiddenFindings: [], // { project_id, finding_key, obstacle_id, grund, grund_text, kontext, hidden_by, created_at }
@@ -969,16 +970,26 @@ export function createFakeDb() {
       }
       return ok(rows)
     }
-    // Scope-Filter (#10): $1 = email, $2 = tenantId. Default-Scope 'eigene' (kein mail_prefs im
-    // Mock) → sichtbar nur System-Mitteilungen (project_id null) ODER eigene Projekte (created_by).
-    const sichtbarImScope = (n, email) =>
-      n.project_id == null ||
-      state.projects.some((p) => p.id === n.project_id && p.created_by === email)
+    // Glocken-Sichtbarkeit (#10 Scope + T-587 Severity) aus mail_prefs — wie SCOPE_FILTER +
+    // SEVERITY_FILTER in notifications.js. Ohne Pref-Zeile: Default scope 'eigene', severities alle.
+    const prefOf = (email, tenantId) =>
+      state.mailPrefs.find((p) => p.tenant_id === tenantId && p.email === email)
+    const sichtbar = (n, email) => {
+      const pref = prefOf(email, n.tenant_id)
+      const scope = pref?.scope ?? "eigene"
+      const scopeOk =
+        scope === "alle" ||
+        n.project_id == null ||
+        state.projects.some((p) => p.id === n.project_id && p.created_by === email)
+      const sevs = pref?.severities ?? ["kritisch", "warnung", "hinweis"]
+      const sevOk = n.project_id == null || n.severity == null || sevs.includes(n.severity)
+      return scopeOk && sevOk
+    }
     if (sql.startsWith("SELECT n.* FROM notifications n")) {
       const [email, tenantId] = params
       return ok(
         state.notifications
-          .filter((n) => n.tenant_id === tenantId && sichtbarImScope(n, email))
+          .filter((n) => n.tenant_id === tenantId && sichtbar(n, email))
           .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
           .slice(0, 100),
       )
@@ -987,9 +998,22 @@ export function createFakeDb() {
       const [email, tenantId] = params
       return ok([{
         n: state.notifications.filter(
-          (n) => n.tenant_id === tenantId && n.read_at == null && sichtbarImScope(n, email),
+          (n) => n.tenant_id === tenantId && n.read_at == null && sichtbar(n, email),
         ).length,
       }])
+    }
+    if (sql.startsWith("INSERT INTO mail_prefs")) {
+      const [tenant_id, email, enabled, scope, severities] = params
+      const sevs = typeof severities === "string" ? JSON.parse(severities) : severities
+      const existing = prefOf(email, tenant_id)
+      if (existing) Object.assign(existing, { enabled, scope, severities: sevs })
+      else state.mailPrefs.push({ tenant_id, email, enabled, scope, severities: sevs })
+      return ok([])
+    }
+    if (sql.startsWith("SELECT enabled, scope, severities FROM mail_prefs")) {
+      const [tenant_id, email] = params
+      const p = prefOf(email, tenant_id)
+      return ok(p ? [{ enabled: p.enabled, scope: p.scope, severities: p.severities }] : [])
     }
     if (sql.startsWith("UPDATE notifications SET read_at = now() WHERE id = $1 AND tenant_id = $2")) {
       const row = state.notifications.find(
