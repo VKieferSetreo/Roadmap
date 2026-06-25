@@ -156,7 +156,7 @@ export function QuellenRegister() {
                       {qq.connector ? (
                         <Badge variant="success" size="sm">Connector</Badge>
                       ) : (
-                        <Badge variant="muted" size="sm">nur Register</Badge>
+                        <Badge variant="muted" size="sm">Register</Badge>
                       )}
                       <ChevronDown className={cn("h-4 w-4 shrink-0 text-neutral-400 transition-transform", isOpen && "rotate-180")} />
                     </button>
