@@ -18,6 +18,7 @@
 
 import { rowToProject } from "../map.js"
 import { sendProjectNotificationMail } from "../mail/notify.js"
+import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { ENGINE_VERSION, runAnalysis, usableRoutes } from "./index.js"
 
 const SEVERITY_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
@@ -43,10 +44,9 @@ const FINDINGS_SQL = `SELECT obstacle_id, severity, titel, kategorie, km, route_
     strassen_ref, gueltig_von, gueltig_bis
   FROM findings WHERE project_id = $1`
 
-const NOTIFY_SQL = `INSERT INTO notifications
-    (tenant_id, project_id, projekt_name, typ, severity, obstacle_id, kategorie,
-     titel, beschreibung, km, route_name, strassen_ref, gueltig_von, gueltig_bis)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
+const NOTIFY_COLS = `tenant_id, project_id, projekt_name, typ, severity, obstacle_id, kategorie,
+  titel, beschreibung, km, route_name, strassen_ref, gueltig_von, gueltig_bis`
+const NOTIFY_COL_COUNT = 14
 
 /** Findings-Rows → Map(Inhalts-Identität → schwerster Fund) — eine Nachricht je Stelle,
  *  kein Strecken-Spam, stabil über Re-Imports (siehe findingIdentity). */
@@ -101,19 +101,28 @@ export function diffFindings(beforeMap, afterMap) {
   return events
 }
 
+// Eine Notification-Zeile → 14er-Param-Tupel (Reihenfolge = NOTIFY_COLS).
+function notifyParams(project, e) {
+  const f = e.finding
+  return [
+    project.tenantId, project.id, project.name, e.typ, e.severity,
+    f.obstacle_id, f.kategorie, f.titel ?? "(ohne Titel)", e.beschreibung,
+    f.km ?? null, f.route_name ?? null, f.strassen_ref ?? null,
+    f.gueltig_von ?? null, f.gueltig_bis ?? null,
+  ]
+}
+
 async function persistEvents(db, project, events) {
   if (events.length === 0) return
-  // Atomar: alle Benachrichtigungen eines Projekt-Diffs oder keine (kein halber
-  // Stand bei DB-Fehler mitten im Loop).
+  // Atomar: alle Benachrichtigungen eines Projekt-Diffs oder keine (kein halber Stand bei DB-Fehler).
+  // T-331: wenige Multi-Row-INSERTs statt eines INSERT-Round-Trips pro Event (wie Findings, T-330) —
+  // ändert NICHT, WELCHE Meldungen feuern (gleiche events), nur die Schreib-Round-Trips.
   await db.tx(async (q) => {
-    for (const e of events) {
-      const f = e.finding
-      await q.query(NOTIFY_SQL, [
-        project.tenantId, project.id, project.name, e.typ, e.severity,
-        f.obstacle_id, f.kategorie, f.titel ?? "(ohne Titel)", e.beschreibung,
-        f.km ?? null, f.route_name ?? null, f.strassen_ref ?? null,
-        f.gueltig_von ?? null, f.gueltig_bis ?? null,
-      ])
+    for (const part of chunk(events, BATCH_ROWS)) {
+      await q.query(
+        `INSERT INTO notifications (${NOTIFY_COLS}) VALUES ${placeholders(part.length, NOTIFY_COL_COUNT)}`,
+        part.flatMap((e) => notifyParams(project, e)),
+      )
     }
   })
 }

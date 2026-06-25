@@ -70,7 +70,9 @@ function mtlsGet(url, { cert, key, ca, passphrase, ifModifiedSince, timeoutMs = 
           const buf = Buffer.concat(chunks)
           const gz = (res.headers["content-encoding"] || "").includes("gzip")
           const done = (xml) => resolve({ status: code, xml, lastModified: res.headers["last-modified"] || null })
-          if (gz) gunzip(buf, (err, out) => done(err ? null : out.toString("utf8")))
+          // T-302#9: Dekompressions-Cap gegen Gzip-Bomb — >256 MB entpackt → err → null (Feed wird
+          // übersprungen statt den Worker-Heap zu fluten). Reale DATEX2-Feeds liegen weit darunter.
+          if (gz) gunzip(buf, { maxOutputLength: 256 * 1024 * 1024 }, (err, out) => done(err ? null : out.toString("utf8")))
           else done(buf.toString("utf8"))
         })
       },

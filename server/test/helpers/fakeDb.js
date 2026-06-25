@@ -939,17 +939,23 @@ export function createFakeDb() {
     }
 
     // ── notifications (v3.1: Nachrichtenzentrum/Glocke) ───────────────────────
+    // T-331: jetzt Multi-Row-INSERT (N×14 Params) — in 14er-Tupel zerlegen, je Tupel eine Zeile.
     if (sql.startsWith("INSERT INTO notifications")) {
-      const row = {
-        id: randomUUID(),
-        tenant_id: params[0], project_id: params[1], projekt_name: params[2],
-        typ: params[3], severity: params[4], obstacle_id: params[5], kategorie: params[6],
-        titel: params[7], beschreibung: params[8], km: params[9], route_name: params[10],
-        strassen_ref: params[11], gueltig_von: params[12], gueltig_bis: params[13],
-        created_at: now(), read_at: null, emailed_at: null,
+      const rows = []
+      for (let i = 0; i + 14 <= params.length; i += 14) {
+        const p = params.slice(i, i + 14)
+        const row = {
+          id: randomUUID(),
+          tenant_id: p[0], project_id: p[1], projekt_name: p[2],
+          typ: p[3], severity: p[4], obstacle_id: p[5], kategorie: p[6],
+          titel: p[7], beschreibung: p[8], km: p[9], route_name: p[10],
+          strassen_ref: p[11], gueltig_von: p[12], gueltig_bis: p[13],
+          created_at: now(), read_at: null, emailed_at: null,
+        }
+        state.notifications.push(row)
+        rows.push(row)
       }
-      state.notifications.push(row)
-      return ok([row])
+      return ok(rows)
     }
     // Scope-Filter (#10): $1 = email, $2 = tenantId. Default-Scope 'eigene' (kein mail_prefs im
     // Mock) → sichtbar nur System-Mitteilungen (project_id null) ODER eigene Projekte (created_by).

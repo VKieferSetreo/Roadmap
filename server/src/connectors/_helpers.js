@@ -575,7 +575,9 @@ export function unzipEntry(buf, nameRegex) {
     if (nameRegex.test(name)) {
       const data = buf.subarray(dataStart, dataStart + compSize)
       try {
-        return method === 0 ? data : zlib.inflateRawSync(data)
+        // T-302#9: Dekompressions-Cap gegen Zip-Bomb — überschreitet die entpackte Größe 256 MB,
+        // wirft zlib RangeError → unten gefangen → null (Eintrag wird übersprungen statt Heap zu fluten).
+        return method === 0 ? data : zlib.inflateRawSync(data, { maxOutputLength: 256 * 1024 * 1024 })
       } catch {
         return null
       }
