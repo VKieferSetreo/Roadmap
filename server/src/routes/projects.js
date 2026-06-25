@@ -64,6 +64,11 @@ function normalizeRoutes(routes) {
       farbe: typeof r.farbe === "string" && r.farbe ? r.farbe : DEFAULT_ROUTE_FARBE,
       ...(typeof r.source === "string" && r.source ? { source: r.source } : {}),
       ...(r.grob === true ? { grob: true } : {}), // T-480: Luftlinie-Schätzung persistieren
+      // T-593: Prüfen-Status persistieren — sonst strippt der Sync `verifiziert`, und die Strecke
+      // springt nach der Auswertung wieder auf „ungeprüft" (Prüfen-Gate käme erneut). Nur true
+      // speichern; false/undefined = ungeprüft (Gate aktiv, source==='vemags').
+      ...(r.verifiziert === true ? { verifiziert: true } : {}),
+      ...(typeof r.bereinigt === "number" ? { bereinigt: r.bereinigt } : {}),
     }
   })
 }
