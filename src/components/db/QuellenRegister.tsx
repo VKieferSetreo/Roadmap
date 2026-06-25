@@ -145,9 +145,14 @@ export function QuellenRegister() {
                     >
                       <span className="font-mono text-xs tabular-nums text-neutral-400">{qq.id}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-800">{qq.name}</span>
-                      {qq.nurIntern ? (
-                        <Badge variant="kritisch" size="sm" title="Nur für interne Nutzung freigegeben — keine kommerzielle Lizenz">Intern</Badge>
-                      ) : null}
+                      {/* Lizenz-Status: Ready (grün, kommerziell nutzbar) | Open (grau, unklar) | Intern (rot, NC). */}
+                      {qq.lizenzStatus === "intern" ? (
+                        <Badge variant="kritisch" size="sm" title="Kommerzielle Nutzung explizit untersagt — nur für interne Nutzung">Intern</Badge>
+                      ) : qq.lizenzStatus === "open" ? (
+                        <Badge variant="muted" size="sm" title="Lizenz unklar — kommerzielle Nutzung noch nicht bestätigt">Open</Badge>
+                      ) : (
+                        <Badge variant="success" size="sm" title="Lizenz erlaubt kommerzielle Nutzung">Ready</Badge>
+                      )}
                       {qq.connector ? (
                         <Badge variant="success" size="sm">Connector</Badge>
                       ) : (

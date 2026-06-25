@@ -103,6 +103,9 @@ export function rowToQuelle(row) {
     aktiv: row.aktiv !== false,
     // T-566: Quelle nur für interne Nutzung freigegeben (keine kommerzielle Lizenz) → "Intern"-Badge.
     nurIntern: row.nur_intern === true,
+    // T-589: Lizenz-Status fürs Quellenregister-Badge: 'ready' (grün, kommerziell OK) | 'open' (grau,
+    // unklar) | 'intern' (rot, NC/verboten). Default 'open'.
+    lizenzStatus: row.lizenz_status ?? "open",
   }
 }
 

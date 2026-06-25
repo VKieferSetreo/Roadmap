@@ -432,6 +432,8 @@ export interface SyncSourceStatus {
   letzterStatus?: "ok" | "error" | string | null
   /** Quelle nur für INTERNE Nutzung freigegeben (keine kommerzielle Lizenz) → rotes "Intern"-Badge. */
   nurIntern?: boolean
+  /** Lizenz-Status: "ready" (grün, kommerziell nutzbar) | "open" (grau, unklar) | "intern" (rot, NC). */
+  lizenzStatus?: "ready" | "open" | "intern"
 }
 
 export interface SyncStatus {
