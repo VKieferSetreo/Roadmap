@@ -33,7 +33,11 @@ interface TreeCtx {
   projectsIn: (folderId: string | null) => Project[]
   isOpen: (id: string) => boolean
   toggle: (id: string, depth: number, parent?: string) => void
-  openTo: (id: string, depth: number, parent?: string) => void
+  /** Beim Drüberziehen: den Zielordner nach ~1 s Halten ADDITIV aufklappen (kollabiert keine anderen
+   *  Zweige — man kann in tiefe Unterordner ziehen, ohne dass Geschwister/Kinder verschwinden). */
+  scheduleOpen: (id: string) => void
+  /** Ziel verlassen, bevor der 1-s-Timer feuert → Aufklappen abbrechen (kein Springen). */
+  cancelOpen: (id: string) => void
   dragId: string | null
   setDragId: (id: string | null) => void
   dragFolderId: string | null
@@ -195,9 +199,12 @@ function FolderNode({ id, depth, parent, ctx }: { id: string; depth: number; par
           e.preventDefault()
           e.stopPropagation()
           ctx.enterOver(id)
-          if (!open) ctx.openTo(id, depth, parent) // Drüberziehen klappt den Zielordner auf
+          if (!open) ctx.scheduleOpen(id) // Drüberziehen klappt den Zielordner auf — erst nach ~1 s Halten, additiv
         }}
-        onDragLeave={() => ctx.leaveOver(id)}
+        onDragLeave={() => {
+          ctx.leaveOver(id)
+          ctx.cancelOpen(id) // weg, bevor der 1-s-Timer feuert → nicht aufklappen
+        }}
         onDrop={(e) => {
           if (!accepts) return
           e.preventDefault()
@@ -457,6 +464,13 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   // Verzögertes Schließen der Drop-Marker (058): beim Verlassen eines Ziels noch kurz offen halten,
   // damit das Hin-und-Her-Bewegen nicht flackert. Wechsel auf ein anderes Ziel bricht den Timer ab.
   const overTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Während eines Drags ADDITIV aufgeklappte Ordner (zusätzlich zum normalen openPath). So bleibt beim
+  // Ziehen in tiefe Unterordner alles offen — kein Kollabieren von Geschwistern/Kindern (058/T-590).
+  const [dragOpen, setDragOpen] = useState<ReadonlySet<string>>(() => new Set())
+  // Aufklappen erst nach ~1 s Halten über dem Ordner → kein Hin-und-Her-Springen.
+  const OPEN_HOLD_MS = 1000
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const holdTarget = useRef<string | null>(null)
 
   // „+ → Ordner" aus der Sidebar-Kopfzeile öffnet die Inline-Eingabe für einen Wurzelordner.
   // Tick-Signal statt Callback, weil der Auslöser in einer anderen Komponente sitzt.
@@ -505,6 +519,16 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
   const folderById = (id: string) => folders.find((f) => f.id === id)
   const childrenOf = (id: string) => folders.filter((f) => f.parentId === id)
   const projectsIn = (folderId: string | null) => aktive.filter((p) => (p.folderId ?? null) === folderId)
+  // Pfad Wurzel→id (alle Vorfahren) — um den Zielordner nach einem Drop offen zu halten.
+  const pathTo = (id: string): string[] => {
+    const path: string[] = []
+    let cur: string | undefined = id
+    while (cur) {
+      path.unshift(cur)
+      cur = folderById(cur)?.parentId ?? undefined
+    }
+    return path
+  }
 
   // Ein Ordner darf nicht in sich selbst oder einen eigenen Nachfahren gezogen werden (Zyklus).
   const canDropFolder = (draggedId: string, targetId: string | null) => {
@@ -536,10 +560,27 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
     folderById,
     childrenOf,
     projectsIn,
-    isOpen: (id) => openPath.includes(id),
+    isOpen: (id) => openPath.includes(id) || dragOpen.has(id),
     toggle: (id, depth, parent) =>
       setOpenPath((cur) => (cur[depth] === id ? cur.slice(0, depth) : depth === 0 ? [id] : [parent as string, id])),
-    openTo: (id, depth, parent) => setOpenPath(depth === 0 ? [id] : [parent as string, id]),
+    scheduleOpen: (id) => {
+      if (openPath.includes(id) || dragOpen.has(id)) return // schon offen
+      if (holdTarget.current === id) return // Timer läuft bereits für dieses Ziel
+      if (holdTimer.current) clearTimeout(holdTimer.current)
+      holdTarget.current = id
+      holdTimer.current = setTimeout(() => {
+        setDragOpen((s) => new Set(s).add(id)) // ADDITIV: kollabiert nichts
+        holdTimer.current = null
+        holdTarget.current = null
+      }, OPEN_HOLD_MS)
+    },
+    cancelOpen: (id) => {
+      if (holdTarget.current === id && holdTimer.current) {
+        clearTimeout(holdTimer.current)
+        holdTimer.current = null
+        holdTarget.current = null
+      }
+    },
     dragId,
     setDragId,
     dragFolderId,
@@ -567,9 +608,15 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
         clearTimeout(overTimer.current)
         overTimer.current = null
       }
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current)
+        holdTimer.current = null
+      }
+      holdTarget.current = null
       setDragId(null)
       setDragFolderId(null)
       setDragOver(null)
+      setDragOpen(new Set())
     },
     drop: (folderId, zonePrivate) => {
       // In einen Ordner → Zone wird geerbt (kein Flag). Auf eine Zonen-Wurzel → Zone explizit setzen.
@@ -582,9 +629,17 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
         clearTimeout(overTimer.current)
         overTimer.current = null
       }
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current)
+        holdTimer.current = null
+      }
+      holdTarget.current = null
       setDragId(null)
       setDragFolderId(null)
       setDragOver(null)
+      setDragOpen(new Set())
+      // Zielordner (+ Vorfahren) offen halten, damit man das Abgelegte sofort sieht.
+      if (folderId) setOpenPath(pathTo(folderId))
     },
     renaming,
     startRename: (id, name) => {
