@@ -11,6 +11,7 @@ const DashboardHome = lazy(() => import("@/pages/DashboardHome").then((m) => ({ 
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail").then((m) => ({ default: m.ProjectDetail })))
 const DatenbankPage = lazy(() => import("@/pages/DatenbankPage").then((m) => ({ default: m.DatenbankPage })))
 const SettingsPage = lazy(() => import("@/pages/SettingsPage").then((m) => ({ default: m.SettingsPage })))
+const QAReviewPage = lazy(() => import("@/pages/QAReviewPage").then((m) => ({ default: m.QAReviewPage })))
 const AdminTenantsPage = lazy(() => import("@/pages/AdminTenantsPage").then((m) => ({ default: m.AdminTenantsPage })))
 const TenantUsersPage = lazy(() => import("@/pages/TenantUsersPage").then((m) => ({ default: m.TenantUsersPage })))
 const DebugPage = lazy(() => import("@/pages/DebugPage").then((m) => ({ default: m.DebugPage })))
@@ -45,6 +46,7 @@ export const router = createBrowserRouter(
         { path: "/projekte/:id", element: page(<ProjectDetail />) },
         { path: "/projekte/:id/:tab", element: page(<ProjectDetail />) },
         { path: "/datenbank", element: page(<DatenbankPage />) },
+        { path: "/datenbank/qa-review", element: page(<QAReviewPage />) },
         { path: "/nutzer", element: page(<TenantUsersPage />) },
         { path: "/news", element: page(<NewsPage />) },
         { path: "/einstellungen", element: page(<SettingsPage />) },

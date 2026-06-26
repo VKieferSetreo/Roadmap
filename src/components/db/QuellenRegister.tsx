@@ -4,6 +4,7 @@
 
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 import { ChevronDown, Database, Plus, RefreshCw, Search, Signal, X } from "lucide-react"
 import { Card } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/Badge"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { SourceRequestDialog } from "./SourceRequestDialog"
 import { api } from "@/api/roadmap"
+import { useContextStore } from "@/store/context"
 import { useDataSourceStore } from "@/store/datasource"
 import { formatRelativeDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
@@ -42,6 +44,8 @@ export function QuellenRegister() {
   const [open, setOpen] = useState<string | null>(null)
   const [allPinging, setAllPinging] = useState(false)
   const [anfrageOpen, setAnfrageOpen] = useState(false)
+  const navigate = useNavigate()
+  const isAdmin = useContextStore((s) => s.isAdmin)
 
   const quellen = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -106,6 +110,11 @@ export function QuellenRegister() {
           {quellen.length} Quellen · {mitConnector} mit Connector
         </span>
         <div className="flex-1" />
+        {isAdmin ? (
+          <Button variant="secondary" size="sm" onClick={() => navigate("/datenbank/qa-review")}>
+            QA-Review starten
+          </Button>
+        ) : null}
         <Button variant="outline" size="sm" onClick={() => void status.refetch()} disabled={status.isFetching}>
           <RefreshCw className={cn("h-3.5 w-3.5", status.isFetching && "animate-spin")} /> Aktualisieren
         </Button>
@@ -119,8 +128,6 @@ export function QuellenRegister() {
       </div>
 
       {status.isLoading ? (
-        <div className="skeleton h-64 w-full rounded-xl" />
-      ) : status.isError ? (
         // T-228: Ladefehler nicht als „keine Quelle" tarnen.
         <EmptyState
           icon={Database}
