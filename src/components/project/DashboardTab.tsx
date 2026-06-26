@@ -48,7 +48,7 @@ import {
 } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
 import { useProjectStore } from "@/store/projects"
-import { HIDE_REASON_LABEL, type Finding, type FindingSeverity, type Project } from "@/types/domain"
+import { HIDE_REASON_LABEL, routeFreigegeben, type Finding, type FindingSeverity, type Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 // Recharts nur laden, wenn der Dashboard-Tab wirklich offen ist (Code-Splitting)
@@ -163,7 +163,9 @@ export function DashboardTab({
   // #5 (Max 2026-06-21): bei vielen Strecken ist die AGGREGIERTE Gesamtstrecke/-zeit (Summe über
   // alle z.B. 100 Strecken = 11.989 km / 239 h) sinnlos → Durchschnitt je Strecke zeigen. Bei
   // genau einer Strecke bleibt es die Strecke selbst (server-gerechnetes distanzKm/fahrzeitMin).
-  const usableRoutes = project.routes.filter((r) => r.points.length >= 2)
+  // Prüfen-Gate (T-598): ungeprüfte VEMAGS-Strecken sind nicht ausgewertet → auch nicht in die
+  // Kennzahlen (Ø km/Zeit je Strecke) einrechnen, sonst verzerrt eine ungesehene Strecke den Schnitt.
+  const usableRoutes = project.routes.filter((r) => r.points.length >= 2 && routeFreigegeben(r))
   const mehrereStrecken = usableRoutes.length > 1
   const avgKm = usableRoutes.length
     ? usableRoutes.reduce((a, r) => a + routeLengthKm(r.points), 0) / usableRoutes.length

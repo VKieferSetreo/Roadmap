@@ -6,7 +6,7 @@ import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
-import type { Finding, ProjectRoute, RoutePoint } from "@/types/domain"
+import { routeFreigegeben, type Finding, type ProjectRoute, type RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
 import { LayerSwitcher } from "./MapControls"
@@ -100,7 +100,7 @@ export function RouteMap({
         // T-593: UNGEPRÜFTE VEMAGS-Strecken nicht zeichnen — sie fließen auch nicht in die Auswertung
         // (engine/index.js), also soll die Karte konsistent sein. Der Prüfen-Dialog hat eine eigene
         // Karte, der ist davon unberührt. Erst nach Freigabe (verifiziert=true) erscheint die Strecke.
-        .filter((r) => r.points.length >= 2 && !(r.source === "vemags" && r.verifiziert !== true))
+        .filter((r) => r.points.length >= 2 && routeFreigegeben(r))
         .map((r) => ({
           ...r,
           positions: r.points.map((p) => [p.lat, p.lng] as [number, number]),
