@@ -14,24 +14,79 @@ import {
   bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
-import { normRoadRef } from "../external/osrm.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 export const ENGINE_VERSION = "2.0.0"
 
-// T-601 Überführungs-Filter: Ein PUNKT-Bauwerk (Brücke/Tunnel ohne eigene Linien-Geometrie)
-// repräsentiert ein Bauwerk auf EINER Straße (strassen_ref = die getragene Straße). Liegt diese
-// Straße NICHT auf der befahrenen Route (OSRM-Straßen-Refs), fährt der Transport nicht über das
-// Bauwerk, sondern KREUZT es nur (Überführung "K142 über A1" / Unterführung) → kein Fund.
-// SICHER: greift nur bei eindeutiger Straßennummer UND bekannten Route-Refs; sonst behalten
-// (keine echte GST-/Höhen-Warnung fälschlich verwerfen). Strecken-Bauwerke (geom-Linie) sind
-// über die Geometrie ohnehin sauber zugeordnet → nie filtern.
+// T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
+// geometrisch AUF der Autobahn — die meisten sind aber KREUZUNGSBAUWERKE (ein Wirtschaftsweg /
+// eine K-/L-/B-Straße / ein Radweg führt ÜBER oder UNTER die Autobahn). Der Schwertransport auf
+// der durchgehenden Autobahn fährt da nicht drüber, sondern drunter/vorbei → kein Hindernis.
+// Entscheidung über den NAMEN (strassen_ref ist bei BASt unzuverlässig = oft die GEKREUZTE Straße):
+// Das Bauwerk trägt die Route-Straße (→ BEHALTEN) gdw. die Route-Straße als GETRAGENE Straße im
+// Namen steht ("i.Z.(d.) A7", "A7 über …"). Trägt es eine ANDERE Straße/einen Nebenweg über/unter
+// die Route ("K142 über A1", "Üf Wirtschaftsweg") → KREUZUNG → kein Fund.
+// SICHER: ohne Route-Refs (OSRM weg) wird NICHTS gefiltert; trägt der Name die Route-Straße,
+// wird IMMER behalten (kein Fehl-Drop einer echten GST-Sperre auf dem befahrenen Weg).
+// Strecken-Bauwerke (eigene Linien-Geometrie) sind über die Geometrie sauber zugeordnet → nie filtern.
+const MINOR_WAY = /(wirtschaftsweg|wi-?weg|wiwe|wirtw|\bww\b|\bfw\b|feldweg|radweg|gehweg|fuß-?weg|fuss-?weg|fußgänger|wanderweg|forstweg|waldweg|holzweg|holzabfuhrweg|\bgvs\b|\bgw\b|drahtseilbahn|durchlass|flutmulde|reitweg|geh-?\s*u(?:nd)?\.?\s*radweg|rad-?\s*u(?:nd)?\.?\s*gehweg|\bgrw\b|wildtiere|kleintiere|freilebende tiere|\btiere\b|wzg|weidezuweg|kampweg)/i
+const WATER = /(bach|bäke|baeke|graben|fluss|fluß|kanal|\bsee\b|teich|wümme|\baue\b|fleet|siel|\bwl\b|rotach|aach|acher|lumda|hegbach|sulzbach|mühlbach|fischbach|goldbach|saalbach|kammbach|landgraben|seegraben|norderbäke|havelkanal|harste|\brase\b|lubach|rehbach|befferbach|ortshäuser|entlesbach|schwabach|ofener bäke|ofendieker|gewässer|\bau\b|wartanger)/i
+const ROAD_ALL = /\b(a|b|l|k|st|s)\s?0*(\d{1,4})\b/gi
+function roadRefsIn(s) {
+  const out = []
+  for (const m of String(s ?? "").toLowerCase().matchAll(ROAD_ALL)) {
+    const p = m[1].toUpperCase()
+    out.push((p === "S" ? "ST" : p) + m[2])
+  }
+  return out
+}
+const intersects = (refs, set) => refs.some((r) => set.has(r))
+
 export function isCrossingStructure(obstacle, routeRefs) {
   if (obstacle.geom) return false
   if (obstacle.kategorie !== "bruecke" && obstacle.kategorie !== "tunnel") return false
   if (!routeRefs || routeRefs.size === 0) return false
-  const oRef = normRoadRef(obstacle.strassenRef)
-  return oRef != null && !routeRefs.has(oRef)
+  const name = ` ${String(obstacle.name ?? "").toLowerCase()} `
+
+  // 1) GETRAGENE Straße(n): "i.Z.(d.)/im Zuge (BAB)? <road>" und "<road> (in km …)? über/ü."
+  const carried = []
+  for (const m of name.matchAll(/(?:i\.?\s*z\.?\s*d?\.?|im zuge (?:der |des |einer )?)\s*(?:bab\s*)?((?:a|b|l|k|st)\s?\d{1,4})/gi))
+    carried.push(...roadRefsIn(m[1]))
+  for (const m of name.matchAll(/((?:a|b|l|k|st)\s?\d{1,4})\s*(?:in km [\d.,\s]+)?\s*(?:über|ü\.)/gi))
+    carried.push(...roadRefsIn(m[1]))
+  if (intersects(carried, routeRefs)) return false // trägt die Route-Straße → behalten
+
+  // 2) GEKREUZTE Straße: erste Klausel direkt nach "über"
+  const um = name.match(/(?:über|ü\.\s*d?\.?|ueber)\s*(?:die |der |den |das |dem |einen |einer )?(.*)$/)
+  if (um) {
+    const first = um[1].split(/[,;/]|\bkm\b/)[0]
+    if (intersects(roadRefsIn(first), routeRefs)) return true // <X> über Route-Straße = Überführung
+  }
+
+  // 3) "A<n>; <Üfg/Ufg> <X>" — X bestimmt: Wasser → behalten, Nebenweg/andere Straße → Kreuzung
+  const pm = name.match(/^\s*((?:a|b)\s?\d{1,4})\s*[;/]\s*(.*)$/)
+  if (pm) {
+    const rest = pm[2]
+    if (WATER.test(rest) && roadRefsIn(rest).length === 0) return false
+    if (MINOR_WAY.test(rest)) return true
+    const rr = roadRefsIn(rest)
+    if (rr.length && !intersects(rr, routeRefs)) return true
+  }
+
+  // 4) "Üfg/Ufg/UF/UEF/Über-/Unterführung <X>"
+  const fm = name.match(/\b(?:üfg|ufg|überführung|unterführung|uef|uf|üf)\.?\s+(?:der |des |die |den |das |einer |eine )?(.+)$/)
+  if (fm) {
+    const rest = fm[1]
+    if (MINOR_WAY.test(rest)) return true
+    const rr = roadRefsIn(rest)
+    if (rr.length && !intersects(rr, routeRefs)) return true
+    if (WATER.test(rest)) return false
+    if (intersects(rr, routeRefs)) return false
+  }
+
+  // 5) Nebenweg-Bauwerk ohne erkannte getragene Straße
+  if (MINOR_WAY.test(name) && carried.length === 0) return true
+  return false
 }
 
 // Findings-Persistenz (T-330): Spalten an einer Stelle für den Multi-Row-INSERT-Batch.
