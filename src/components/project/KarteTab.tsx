@@ -30,6 +30,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
+import { routeFreigegeben } from "@/types/domain"
 import type { Finding, FindingSeverity, Project, ProjectRoute, RoutePoint } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -101,9 +102,16 @@ export function KarteTab({
   /** Fund, der gerade ausgeblendet wird (öffnet die Grund-Abfrage). */
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
 
+  // Prüfen-Gate (T-598): ungeprüfte VEMAGS-Strecken fließen nicht in die Auswertung und werden auf
+  // der Karte nicht gezeichnet → sie dürfen auch im Ebenen-Register/in den Kennzahlen nicht auftauchen
+  // (sonst stehen sie klickbar im Register, ohne dass die Karte etwas zeigt). Nur freigegebene zeigen.
+  const freigegebeneRouten = useMemo(
+    () => project.routes.filter(routeFreigegeben),
+    [project.routes],
+  )
   const sichtbareRouten = useMemo(
-    () => project.routes.filter((r) => !hidden.has(r.id)),
-    [project.routes, hidden],
+    () => freigegebeneRouten.filter((r) => !hidden.has(r.id)),
+    [freigegebeneRouten, hidden],
   )
   // Ausgeblendete Funde (f.hidden) erscheinen NIE auf der Karte/Legende/Zählung.
   const sichtbareFindings = useMemo(
@@ -181,7 +189,7 @@ export function KarteTab({
 
   // T-220: Karte während (Re-)Auswertung sichtbar lassen (running/vorhandene Funde) statt Empty-Flash;
   // ohne Strecken-Punkte gibt es nichts zu zeigen.
-  const hatRouten = project.routes.some((r) => r.points.length >= 2)
+  const hatRouten = freigegebeneRouten.some((r) => r.points.length >= 2)
   if (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0)) {
     return (
       <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
@@ -202,7 +210,7 @@ export function KarteTab({
     n: sichtbareFindings.filter((f) => f.severity === sev).length,
   }))
   // #5 (Max 2026-06-21): bei vielen Strecken Durchschnitt je Strecke statt sinnloser Gesamtsumme.
-  const usableRoutes = project.routes.filter((r) => r.points.length >= 2)
+  const usableRoutes = freigegebeneRouten.filter((r) => r.points.length >= 2)
   const mehrereStrecken = usableRoutes.length > 1
   const avgKm = usableRoutes.length
     ? usableRoutes.reduce((a, r) => a + routeLengthKm(r.points), 0) / usableRoutes.length
@@ -397,7 +405,7 @@ export function KarteTab({
             <Layers className="h-4 w-4 text-primary-600" />
             <span className="flex-1 text-sm font-semibold text-neutral-800">Strecken</span>
             <span className="text-[11px] tabular-nums text-neutral-400">
-              {sichtbareRouten.length}/{project.routes.length}
+              {sichtbareRouten.length}/{freigegebeneRouten.length}
             </span>
             <ChevronDown
               className={cn(
@@ -408,7 +416,7 @@ export function KarteTab({
           </button>
           {layersOpen ? (
             <ul className="border-t border-neutral-200/70 px-2 py-1.5">
-              {project.routes.map((r) => {
+              {freigegebeneRouten.map((r) => {
                 const sichtbar = !hidden.has(r.id)
                 return (
                   <li

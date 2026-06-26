@@ -36,6 +36,12 @@ export interface ProjectRoute {
 /** Quelle, über die eine Strecke angelegt wurde (= die Upload-Tabs). */
 export type RouteSource = "datei" | "link" | "startziel" | "vemags"
 
+/** Prüfen-Gate (T-593/T-598): Eine Strecke ist für Analyse + Auswertungs-Karte freigegeben, solange
+ *  sie KEINE ungeprüfte VEMAGS-Strecke ist. Ungeprüfte VEMAGS-Strecken erscheinen nur im Route-Tab
+ *  („Prüfen"), nicht auf der Karte oder im Ebenen-Register. Spiegelt server/src/engine#usableRoutes. */
+export const routeFreigegeben = (r: Pick<ProjectRoute, "source" | "verifiziert">): boolean =>
+  !(r.source === "vemags" && r.verifiziert !== true)
+
 /** Stammdaten des Transports — bestimmen, was auf der Strecke zum Problem wird. */
 export interface TransportData {
   /** Gesamtlänge in Metern. */
