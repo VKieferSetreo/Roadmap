@@ -202,6 +202,15 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
   }, [coordKey, touched])
 
   const distanzKm = useMemo(() => routeLengthKm(geometry), [geometry])
+  // T-600: nur endliche Punkte an die Polylines geben — ein NaN-Punkt vergiftet Leaflets
+  // Zoom-Recalc und lässt die blauen Wegpunkt-Marker beim Zoomen/Greifen verschwinden.
+  const geomLatLng = useMemo(
+    () =>
+      geometry
+        .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+        .map((p) => [p.lat, p.lng] as [number, number]),
+    [geometry],
+  )
 
   if (!open || !route) return null
 
@@ -449,15 +458,15 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
             ))}
             <MapLayers />
             <FitOnce points={initialPoints.current} />
-            {geometry.length >= 2 ? (
+            {geomLatLng.length >= 2 ? (
               <>
                 {/* weiße Kontur unter der Strecke (sophisticated, wie Hauptkarte) */}
-                <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: "#fff", weight: 9, opacity: 0.95 }} smoothFactor={0} interactive={false} />
+                <Polyline positions={geomLatLng} pathOptions={{ color: "#fff", weight: 9, opacity: 0.95 }} smoothFactor={0} interactive={false} />
                 {/* sichtbare Linie */}
-                <Polyline positions={geometry.map((p) => [p.lat, p.lng])} pathOptions={{ color: verificationMode ? "#dc2626" : route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
+                <Polyline positions={geomLatLng} pathOptions={{ color: verificationMode ? "#dc2626" : route.farbe, weight: 5 }} smoothFactor={0} interactive={false} />
                 {/* breite, durchsichtige Greif-Linie — Gummiband an beliebiger Stelle */}
                 <Polyline
-                  positions={geometry.map((p) => [p.lat, p.lng])}
+                  positions={geomLatLng}
                   pathOptions={{ color: "#000", weight: 22, opacity: 0, className: "cursor-grab" }}
                   smoothFactor={0}
                   eventHandlers={{ mousedown: onLineGrab }}
@@ -467,6 +476,9 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
             {/* Punkte: greifen+ziehen zum Verschieben, reiner Klick entfernt (eigener Pointer-
                 Handler statt Leaflet-Marker-Drag → kein React-Reposition-Konflikt). */}
             {cps.map((c, i) => {
+              // T-600: kein Marker für nicht-endliche Koordinaten (bricht sonst Leaflets Zoom-Recalc).
+              // Index i bleibt unverändert → Drag-/Lösch-Handler (onPointGrab(i)) zeigen weiter richtig.
+              if (!Number.isFinite(c.lat) || !Number.isFinite(c.lng)) return null
               const kind = i === 0 ? "start" : i === cps.length - 1 ? "end" : "via"
               return (
                 <Marker

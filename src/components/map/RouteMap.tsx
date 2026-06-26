@@ -100,14 +100,25 @@ export function RouteMap({
         // T-593: UNGEPRÜFTE VEMAGS-Strecken nicht zeichnen — sie fließen auch nicht in die Auswertung
         // (engine/index.js), also soll die Karte konsistent sein. Der Prüfen-Dialog hat eine eigene
         // Karte, der ist davon unberührt. Erst nach Freigabe (verifiziert=true) erscheint die Strecke.
-        .filter((r) => r.points.length >= 2 && routeFreigegeben(r))
+        .filter(routeFreigegeben)
+        // T-600: NICHT-endliche Punkte (NaN/Infinity) RAUS, bevor sie in Marker/Polylines gehen.
+        // Ein einziger NaN-Marker (Start/Ziel-Pin, Richtungspfeil) im markerPane bricht Leaflets
+        // Zoom-/Pan-Animation und lässt ALLE anderen Marker verschwinden (Klick→Pan/Zoom→despawn).
+        // Längen-Check NACH dem Filter → eine Strecke mit nur 1 validen Punkt fällt ganz weg.
         .map((r) => ({
           ...r,
-          positions: r.points.map((p) => [p.lat, p.lng] as [number, number]),
-        })),
+          positions: r.points
+            .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+            .map((p) => [p.lat, p.lng] as [number, number]),
+        }))
+        .filter((r) => r.positions.length >= 2),
     [routes],
   )
-  const allPoints = useMemo(() => drawn.flatMap((r) => r.points), [drawn])
+  // Aus den BEREITS sanierten positions (finite) — sonst vergiftet ein NaN-Punkt fitBounds/Zentrieren.
+  const allPoints = useMemo(
+    () => drawn.flatMap((r) => r.positions.map(([lat, lng]) => ({ lat, lng }))),
+    [drawn],
+  )
   // T-377: Gruppierung (O(n²)) nur bei Funde-Änderung, nicht bei jedem Pan/Zoom-Render.
   const findingGroups = useMemo(() => groupFindings(findings), [findings])
   const mapRef = useRef<L.Map | null>(null)
