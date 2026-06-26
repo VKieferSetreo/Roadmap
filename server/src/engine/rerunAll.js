@@ -20,6 +20,7 @@ import { rowToProject } from "../map.js"
 import { sendProjectNotificationMail } from "../mail/notify.js"
 import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { ENGINE_VERSION, runAnalysis, usableRoutes } from "./index.js"
+import { createOsrm } from "../external/osrm.js"
 
 const SEVERITY_RANK = { kritisch: 3, warnung: 2, hinweis: 1 }
 const rank = (s) => SEVERITY_RANK[s] ?? 0
@@ -134,13 +135,13 @@ const RERUN_CONCURRENCY = 1
 const RERUN_LOCK_KEY = "roadmap_rerun_global"
 
 /** Ein Projekt neu auswerten + Fund-Diff → Benachrichtigungen (Glocke + Mail). */
-async function rerunOne({ db, row, corridorM, log, env, fetchImpl }) {
+async function rerunOne({ db, row, corridorM, log, env, fetchImpl, osrm = null }) {
   const project = rowToProject(row, [], null)
   const before = await db.query(FINDINGS_SQL, [row.id])
   const beforeMap = indexByIdentity(before.rows)
 
   try {
-    await runAnalysis({ db, project, corridorM })
+    await runAnalysis({ db, project, corridorM, osrm })
   } catch (err) {
     log(`rerun ${row.id} (${project.name}) fehlgeschlagen: ${err?.message ?? err}`)
     return { done: false, events: 0 }
@@ -208,6 +209,9 @@ export async function rerunAffectedProjects(opts) {
 async function runRerun({
   db, corridorM = 20, log = () => {}, env = process.env, fetchImpl = globalThis.fetch,
 }) {
+  // T-601: OSRM einmal je Rerun-Lauf — die Analyse zieht daraus die befahrenen Straßen-Refs für
+  // den Überführungs-Filter. Ohne konfigurierte OSRM_URL → null → Filter greift nicht (konservativ).
+  const osrm = createOsrm({ fetchImpl })
   const { rows } = await db.query(
     "SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'",
   )
@@ -220,7 +224,7 @@ async function runRerun({
   for (let i = 0; i < eligible.length; i += RERUN_CONCURRENCY) {
     const batch = eligible.slice(i, i + RERUN_CONCURRENCY)
     const results = await Promise.all(
-      batch.map((row) => rerunOne({ db, row, corridorM, log, env, fetchImpl })),
+      batch.map((row) => rerunOne({ db, row, corridorM, log, env, fetchImpl, osrm })),
     )
     for (const r of results) {
       if (r.done) neuAusgewertet += 1

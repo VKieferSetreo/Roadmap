@@ -14,9 +14,25 @@ import {
   bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
+import { normRoadRef } from "../external/osrm.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 export const ENGINE_VERSION = "2.0.0"
+
+// T-601 Überführungs-Filter: Ein PUNKT-Bauwerk (Brücke/Tunnel ohne eigene Linien-Geometrie)
+// repräsentiert ein Bauwerk auf EINER Straße (strassen_ref = die getragene Straße). Liegt diese
+// Straße NICHT auf der befahrenen Route (OSRM-Straßen-Refs), fährt der Transport nicht über das
+// Bauwerk, sondern KREUZT es nur (Überführung "K142 über A1" / Unterführung) → kein Fund.
+// SICHER: greift nur bei eindeutiger Straßennummer UND bekannten Route-Refs; sonst behalten
+// (keine echte GST-/Höhen-Warnung fälschlich verwerfen). Strecken-Bauwerke (geom-Linie) sind
+// über die Geometrie ohnehin sauber zugeordnet → nie filtern.
+export function isCrossingStructure(obstacle, routeRefs) {
+  if (obstacle.geom) return false
+  if (obstacle.kategorie !== "bruecke" && obstacle.kategorie !== "tunnel") return false
+  if (!routeRefs || routeRefs.size === 0) return false
+  const oRef = normRoadRef(obstacle.strassenRef)
+  return oRef != null && !routeRefs.has(oRef)
+}
 
 // Findings-Persistenz (T-330): Spalten an einer Stelle für den Multi-Row-INSERT-Batch.
 const FINDING_COLS = `project_id, obstacle_id, kategorie, severity, titel, beschreibung,
@@ -169,7 +185,7 @@ export function usableRoutes(routes) {
 }
 
 /** Reine Analyse (ohne Persistenz): liest Hindernisse via db, berechnet Findings. */
-export async function analyze({ db, project, corridorM }) {
+export async function analyze({ db, project, corridorM, osrm = null }) {
   const routes = usableRoutes(project.routes)
   if (routes.length === 0) {
     // Gate (T-593): es können Strecken existieren, aber alle ungeprüft (VEMAGS) → für die Auswertung
@@ -188,11 +204,22 @@ export async function analyze({ db, project, corridorM }) {
   // einmal aus der DB gezogen, auch wenn es im Korridor mehrerer Teilstrecken liegt. Bewusst die
   // OR-Verknüpfung der kleinen Boxen, NICHT die umschließende Gesamt-Bbox: bei weit auseinander
   // liegenden Teilstrecken (mehrere Bundesländer) würde die Hüll-Box halb Deutschland in den Heap ziehen.
-  const routeCtx = routes.map((route) => {
+  // T-601: je Route die tatsächlich befahrenen Straßen-Refs aus OSRM ziehen (Steps) — Grundlage des
+  // Überführungs-Filters. Wegpunkte bevorzugt (definieren die Route exakt), sonst die Punktliste
+  // ausdünnen. Null bei fehlendem OSRM/Fehler → Filter greift dann nicht (konservativ).
+  const routeRefs = await Promise.all(routes.map((route) => {
+    if (!osrm) return null
+    const wp = Array.isArray(route.waypoints) && route.waypoints.length >= 2
+      ? route.waypoints
+      : route.points.filter((_, i) => i % Math.max(1, Math.floor(route.points.length / 100)) === 0)
+    return osrm.roadRefs(wp).catch(() => null)
+  }))
+
+  const routeCtx = routes.map((route, i) => {
     const geometry = downsample(route.points.map((p) => ({ lat: p.lat, lng: p.lng })))
     // Gitter-Index je Route einmal bauen → nearestOnRoute/clip prüfen nur nahe Segmente statt aller
     // ~2000 (Hauptkost bei langen Routen mit vielen Kandidaten-Hindernissen). Gleiche Treffer.
-    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM), grid: buildRouteGrid(geometry) }
+    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM), grid: buildRouteGrid(geometry), refs: routeRefs[i] }
   })
 
   let findings = []
@@ -234,7 +261,7 @@ export async function analyze({ db, project, corridorM }) {
       lastYield = Date.now()
     }
   }
-  for (const { route, geometry, cum, bbox, grid } of routeCtx) {
+  for (const { route, geometry, cum, bbox, grid, refs } of routeCtx) {
     for (const obstacle of obstacles) {
       await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
@@ -242,6 +269,9 @@ export async function analyze({ db, project, corridorM }) {
         obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
         obstacle.lng < bbox.minLng || obstacle.lng > bbox.maxLng
       ) continue
+      // T-601: Überführung/Unterführung — Punkt-Bauwerk auf einer Straße, die der Transport gar
+      // nicht befährt (kreuzt sie nur). Vor dem teuren Geometrie-Matching aussortieren.
+      if (isCrossingStructure(obstacle, refs)) continue
       const obstaclePts = geomPoints(obstacle.geom)
       // Punkt-Hindernis: Abstand des Punkts zur Route. Strecken-Hindernis (geom = Linie):
       // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
@@ -342,7 +372,7 @@ export async function analyze({ db, project, corridorM }) {
  * Kompletter Analyse-Lauf inkl. analysis_runs-Record und transaktionaler
  * Persistenz. Wirft bei Fehlern (Projekt bleibt dann unverändert, Run = error).
  */
-export async function runAnalysis({ db, project, corridorM = 20 }) {
+export async function runAnalysis({ db, project, corridorM = 20, osrm = null }) {
   // T-467: verwaiste 'running'-Läufe (Prozess-Crash ohne finished_at) zuerst freigeben, sonst
   // blockiert der Partial-Unique-Index dauerhaft. 15 Min > jede reale Analyse (statement_timeout 2 Min).
   // WICHTIG: Der Reclaim MUSS zeit-prädikat-gebunden bleiben (nur Waisen >15 Min). Der
@@ -368,7 +398,7 @@ export async function runAnalysis({ db, project, corridorM = 20 }) {
   const runId = runRes.rows[0].id
 
   try {
-    const result = await analyze({ db, project, corridorM })
+    const result = await analyze({ db, project, corridorM, osrm })
 
     // Alte Findings ersetzen + Projekt aktualisieren — atomar
     await db.tx(async (q) => {

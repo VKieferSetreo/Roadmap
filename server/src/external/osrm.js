@@ -3,6 +3,14 @@
 
 import { fetchJson } from "./http.js"
 
+// Straßen-Referenz normalisieren: "A 1" → "A1", "B 252"/"B252" → "B252", "St 2580" → "ST2580",
+// "L 99" → "L99", "K 142" → "K142". Führende Nullen weg. NUR klassifizierte Straßennummern
+// (A/B/L/K/St/S) — gibt null für Straßennamen/leere Refs zurück (dann NICHT vergleichen).
+export function normRoadRef(s) {
+  const m = String(s ?? "").toUpperCase().match(/\b(A|B|L|K|ST|S)\s*0*(\d{1,4})\b/)
+  return m ? `${m[1] === "S" ? "ST" : m[1]}${m[2]}` : null
+}
+
 // Anfangspeilung a->b (0=Nord, 90=Ost) — fuer Fahrbahnseiten-bearings.
 function bearing(a, b) {
   const rad = Math.PI / 180
@@ -66,6 +74,31 @@ export function createOsrm({
         }
       }
       return null
+    },
+
+    /**
+     * Menge der Straßen-Refs (A/B/L/K/St), die die Route tatsächlich befährt — aus den OSRM-Steps.
+     * Für den Überführungs-Filter (T-601): ein Punkt-Bauwerk auf einer Straße, die NICHT in dieser
+     * Menge ist, wird vom Transport nur gekreuzt, nicht befahren. Null bei Fehler/Timeout (→ Filter
+     * greift dann nicht, konservativ). @returns {Set<string>|null}
+     */
+    async roadRefs(waypoints) {
+      const wp = (Array.isArray(waypoints) ? waypoints : []).filter((p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      if (wp.length < 2) return null
+      const coords = wp.map((p) => `${p.lng},${p.lat}`).join(";")
+      const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=false&steps=true&continue_straight=true`
+      const data = await fetchJson(url, { timeoutMs, fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
+      if (data?.code !== "Ok") return null
+      const refs = new Set()
+      for (const leg of data.routes?.[0]?.legs ?? []) {
+        for (const step of leg.steps ?? []) {
+          for (const part of String(step.ref ?? "").split(/[;,/]/)) {
+            const n = normRoadRef(part)
+            if (n) refs.add(n)
+          }
+        }
+      }
+      return refs
     },
 
     /** Leichter Erreichbarkeits-Ping für /api/health (T-471). Kurzer Timeout, wirft nie. */

@@ -128,7 +128,7 @@ async function loadShare(db, projectId) {
   return rows[0] ?? null
 }
 
-export function projectsRouter({ db, corridorM, shareBaseUrl }) {
+export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
   const r = Router()
 
   /** Einzelnes Projekt in v2-Shape (Findings + eingebettetes share) auflösen. */
@@ -319,7 +319,7 @@ export function projectsRouter({ db, corridorM, shareBaseUrl }) {
     if (!row) throw new ApiError(404, "Projekt nicht gefunden")
 
     try {
-      await runAnalysisGated(() => runAnalysis({ db, project: rowToProject(row, [], null), corridorM }))
+      await runAnalysisGated(() => runAnalysis({ db, project: rowToProject(row, [], null), corridorM, osrm }))
     } catch (err) {
       if (err instanceof ApiError) throw err
       // Projekt bleibt unverändert (Persistenz ist transaktional). Loggen, damit

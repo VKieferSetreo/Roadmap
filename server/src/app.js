@@ -210,7 +210,7 @@ export function createApp({
   app.use("/api/admin/tenants", adminTenantsRouter({ db, fetchImpl, authExtern }))
   app.use("/api/admin/hidden-findings", hiddenFindingsRouter({ db }))
   app.use("/api/admin", adminImportRouter({ db, fetchImpl }))
-  app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl }))
+  app.use("/api/projects", requireTenant, projectsRouter({ db, corridorM, shareBaseUrl, osrm }))
   app.use("/api/folders", requireTenant, foldersRouter({ db }))
   app.use("/api/finding-chat", requireTenant, findingChatRouter({ db }))
   // T-392: die ILIKE-Volltextsuche (?q=) ist ein nicht-indizierter Seq-Scan über alle Tenant-Funde
