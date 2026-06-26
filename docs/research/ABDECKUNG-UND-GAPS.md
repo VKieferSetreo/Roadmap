@@ -123,7 +123,6 @@ Kategorisiert aus den `*.cron.skip.txt` (nur *echte* Producer-Lücken, ohne Netz
 | **VEMAGS / Xvemags** | GST-Genehmigungen, Bauwerksstatik, Routen | Behörden-Antragssystem, SOAP nur für Workflow, **kein Restriktions-Pull** |
 | **BASt SIB-Bauwerke** | DIE bundesweite Brückenstatik | Behördensystem, kein offener WFS/Download |
 | BayernInfo ArbIS/VIZ → Mobilithek | BY-Baustellen + Verkehrsmeldungen | nur über Mobilithek-Vertrag (Angebote …2507001 / …2506…) |
-| LBM-RLP DATEX-Knoten | RP-Baustellen/Sperrungen | nur über Mobilithek, kein direkter Endpunkt |
 | Mobilithek NI / VMZ NI / VMZ Bremen / ST-DATEX | Länder-Baustellen | alle nur über Mobilithek-Pipeline |
 | GDI-SBV Sachsen (Bauwerke) | Bauwerks-Fachdaten | nur im Verwaltungsnetz (SVN/KDN), nicht aus offenem Internet |
 

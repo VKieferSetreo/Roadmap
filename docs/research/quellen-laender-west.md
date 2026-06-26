@@ -15,7 +15,7 @@
 | **P1** | NRW | OpenGeodata.NRW / Straßen.NRW — **Bauwerke** (Brücken/Tunnel) + Straßennetz (WFS/WMS/Atom/Shape) | Bauwerke, Netzknoten, Abschnitte | **verifiziert (offen, dl-de/by-2-0)** |
 | **P1** | NRW | **GST-Schwertransportkarte NRW** (lastbeschränkte Brücken, ArcGIS WebApp) | gesperrte/lastbeschränkte Brücken für GST | verifiziert (Karte offen; Rohdaten in Freigabe-Prüfung) |
 | **P1** | NRW | MOBIDROM / Verkehr.NRW — DATEX-II Baustellen/Sperrungen | Baustellen, Sperrungen, temp. Restriktionen | verifiziert (Portal); Feed-Endpunkt zu-bestätigen |
-| **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** + LBM DATEX-II-Knoten | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal + DATEX-Knoten); Feed-URL zu-bestätigen |
+| **P1** | RLP | **Mobilitätsatlas RLP / BaustellenInfo digital** | Baustellen, Sperrungen, Verkehrsmeldungen | verifiziert (Portal); Feed-URL zu-bestätigen |
 | **P1** | Hessen | **Hessen Mobil — Lastbeschränkte Brücken** (PDF-Liste + SIB-Hessen-Online-Karte) | lastbeschränkte Brücken B/L/K | verifiziert (PDF/Karte; kein offenes WFS) |
 | **P2** | Hessen | Hessen Mobil — **Positivkarten** GST (Gewichts-/Höhenklassen) | befahrbare/verbotene GST-Strecken | verifiziert (Karten; Format zu-bestätigen) |
 | **P1** | Saarland | **baustellen.saarland** (LfS) — Baustellen/Sperrungen/Verkehrslage | Baustellen, Sperrungen, Verkehrslage | verifiziert (Portal); kein offener Feed gefunden |
@@ -167,7 +167,7 @@
 - **datentyp:** Baustellen (Land, Autobahn GmbH, Kommunen), Sperrungen, Verkehrsmeldungen, Verkehrszählungen, Unfallhäufungsstellen, Ladesäulen, ÖV-Haltestellen
 - **strassentyp:** A + B + L + K + kommunal → **Alle** (meldende Baulastträger)
 - **format:** Web-Portal/Karte; Daten an Mobilithek weitergegeben (für Navi-Hersteller/Apps) → DATEX II via LBM-Knoten
-- **apiEndpunkt:** **null** (Portal); öffentlicher Feed-Endpunkt nicht direkt sichtbar (`zu-bestätigen`) — Bezug über Mobilithek bzw. LBM-DATEX-Knoten (RP-4)
+- **apiEndpunkt:** **null** (Portal); öffentlicher Feed-Endpunkt nicht direkt sichtbar (`zu-bestätigen`) — Bezug über Mobilithek
 - **update:** Echtzeit-nah
 - **auth:** Portal offen; Daten-/Feed-Bezug ggf. über Mobilithek (Registrierung)
 - **kosten:** Portal frei
@@ -181,7 +181,7 @@
   - BaustellenInfo digital: `https://baustelleninfo.rlp.de/`
   - Verkehrsportal: `https://www.verkehr.rlp.de/`
 - **prio:** **P1** (temporäre Restriktionen RLP)
-- **sonstiges:** Konkreten DATEX-II-Feed über die Mobilithek-Angebote des LBM bzw. den DATEX-Knoten (RP-4) auflösen.
+- **sonstiges:** Konkreten DATEX-II-Feed über die Mobilithek-Angebote des LBM auflösen.
 
 ## RP-3. LBM RLP — Brücken & Schwertransporte (Restriktions-Stelle)
 
@@ -203,28 +203,6 @@
   - GST: `https://lbm.rlp.de/themen/verkehrsrecht/grossraum-und-schwerverkehr`
 - **prio:** **P2** (Restriktion vorhanden, aber nicht offen — Lücke ggü. NRW/HE)
 - **sonstiges:** **Lücke RLP:** keine öffentliche GST-Negativ-/Brückenkarte wie NRW (NRW-2) oder Hessen (HE-1) auffindbar. Beim LBM gezielt nach „lastbeschränkte Brücken RLP"-Liste anfragen; sonst nur via VEMAGS-INS-GST (Bundeskatalog Q4).
-
-## RP-4. LBM RLP — DATEX-II-Knoten (Verkehrsdaten-Austausch)
-
-- **quelle:** LBM RLP als eingetragener DATEX-II-Node (Nodes Directory datex2.eu)
-- **betreiber:** Landesbetrieb Mobilität RLP
-- **datentyp:** Verkehrsmeldungen/Baustellen/Situations (DATEX II)
-- **strassentyp:** A + B + L (LBM-Netz)
-- **format:** DATEX II
-- **apiEndpunkt:** **null** (Knoten-Eintrag bestätigt Existenz; öffentlicher Endpunkt nicht im Verzeichnis exponiert) → `zu-bestätigen`, Bezug über Mobilithek
-- **update:** Echtzeit-nah
-- **auth:** i. d. R. über Mobilithek (NAP)
-- **kosten:** je Mobilithek-Angebot
-- **lizenz:** je Angebot
-- **abdeckung:** ganz RLP
-- **zugang:** **eingeschränkt/Registrierung** (über Mobilithek)
-- **verifiziert:** ja (Node im DATEX-II-Verzeichnis gelistet); Endpunkt **zu-bestätigen**
-- **url:**
-  - DATEX-II-Node: `https://datex2.eu/implementations/nodes_directory/landesbetrieb-mobilitat-rheinland-pfalz`
-  - Nodes Directory: `https://repo.datex2.eu/implementations/nodes_directory`
-- **prio:** **P2**
-- **sonstiges:** Beweist, dass RLP DATEX-II-konform liefert → der reale Bezugsweg ist die Mobilithek (Bundeskatalog). Endpunkt dort suchen.
-
 ---
 
 # ═══════════════════════════════════════════

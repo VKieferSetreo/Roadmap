@@ -1,8 +1,8 @@
 # API-Katalog — Status-Gesamtübersicht
 
-> Auto-generiert. **65 Quellen** · Stand nach Rescue + PDF-Parsing.
+> Auto-generiert. **64 Quellen** · Stand nach Rescue + PDF-Parsing.
 
-**Legende:** 🟢 live getestet (43) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (5) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
+**Legende:** 🟢 live getestet (43) · 📄 strukturierte Datei aus PDF/Liste (1) · 🔑 Account/Key nötig (4) · 🟡 Endpunkt/Parsing zu bestätigen (12) · ⚪ nur Portal (4)
 
 ➡️ **Nutzbar jetzt = 🟢 + 📄 + (nach Account) 🔑** · Maschinenlesbarer Index: [`quellen-index.json`](./quellen-index.json)
 
@@ -56,7 +56,6 @@
 | 🟢 | Nordrhein-Westfalen / Köln | Köln — Verkehrsbeeinträchtigungen Stadt Köln ( | Verkehrsbeeinträchtigungen dur | GeoJSON (EPSG:4326) üb | offen |
 | 🟢 | Nordrhein-Westfalen / Münster | Münster — Baustellen (GeoServer/MapServer) | aktuelle + geplante Baustellen | GeoJSON / CSV / KML /  | offen |
 | ⚪ | Rheinland-Pfalz | LBM RLP — Brücken & Schwertransporte (Restrikt | Brückenprüfung/Traglast (stati | Web-Info (Themenseiten | eingeschränkt |
-| 🔑 | Rheinland-Pfalz | LBM RLP — DATEX-II-Knoten (Verkehrsdaten-Austa | Verkehrsmeldungen / Baustellen | DATEX II (XML) | eingeschränkt |
 | 🟡 | Rheinland-Pfalz | Mobilitätsatlas RLP / BaustellenInfo digital — | Baustellen (Land, Autobahn Gmb | Web-Portal/Karte (JS); | offen |
 | 🟢 | Saarland | baustellen.saarland (LfS) — Baustellen, Sperru | Baustellen (Punkt + Linie), Ve | GeoJSON (Leaflet-Feeds | offen |
 | 🟢 | Sachsen | Baustelleninformationen Sachsen (SPERRINFOSYS) | tagesaktuelle Baustellen-Maßna | WMS 1.3.0 (GetMap/GetF | offen |

@@ -184,7 +184,6 @@ Bund und Landesmeldestellen** in DATEX II publiziert. Unsere eigene `STATUS.md` 
 | **Bayern** | BayernInfo/ArbIS (Baustellen) + VIZ (Verkehrsmeldungen) | Angebote „…2507001 / …2506…" referenziert |
 | **Berlin** | Berlin-Publikation (Baustellen/Verkehrsmeldungen) | DATEX II SOAP/Pull |
 | **Niedersachsen** | NI als Datengeber (VMZ NI / NLStBV) | DATEX II v2/v3 |
-| **Rheinland-Pfalz** | LBM-RLP DATEX-Knoten | DATEX II XML |
 | **Sachsen-Anhalt** | ST-Baustellen + RSA-21-Meldungen | DATEX II SOAP/Pull (NC-Lizenz beachten!) |
 | **Bremen** | VMZ Bremen | nur über Mobilithek |
 | **Brandenburg / Thüringen / Hessen** | LS-BB / TLBV / Hessen Mobil | publizieren an Mobilithek statt offenem Feed |

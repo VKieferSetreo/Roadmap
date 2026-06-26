@@ -25,7 +25,7 @@
 | 3 | **Mobilithek: HE + BY Land-Baustellen** (heute nur gated) | Baustellen/Sperrungen DATEX II | dito (abonnieren) | niedrig | +2 starke Länder | — | **P1** |
 | 4 | **Mobilithek: Verkehrslage/-meldungen** derselben Länder | Sperrungen/Umleitungen verdichtet | dito (German Traffic Data Profile) | niedrig | qualit. Verdichtung | — | **P2** |
 | 5 | **Brandenburg** Landesbetrieb (LS) | GST-Negativliste + Baustellen-Feed | `LS-GST@LS.Brandenburg.de` · Maik Dieling `Maik.Dieling@LS.Brandenburg.de` 03342 249-1093 | niedrig | leeres Land | erste Bauwerke | **P1** |
-| 7 | **Rheinland-Pfalz** LBM | Brücken-Traglast + Negativliste + DATEX-Knoten | `Daniel.Boden@lbm.rlp.de` / LBM-Zentrale Koblenz | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
+| 7 | **Rheinland-Pfalz** LBM | Brücken-Traglast + Negativliste | `Daniel.Boden@lbm.rlp.de` / LBM-Zentrale Koblenz | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
 | 8 | **Thüringen** TLBV Erfurt + Landesverwaltungsamt | Bauwerks-/Baustellenexport (Web ist CAPTCHA → Tel.) | `poststelle@tlvwa.thueringen.de` + TLBV Erfurt telefonisch | mittel | Flächenland 0→aktiv | **sehr hoch** | **P1** |
 | 9 | **Schleswig-Holstein** LBV.SH | Brücken-/Bauwerksverzeichnis + Negativliste | `gst@lbv-sh.landsh.de` · Fr. Panschog 0431 383-2927 | niedrig | (temp. da) | hoch (Bauwerks-Layer ergänzt) | **P2** |
 | 10 | **Sachsen-Anhalt** LSBB/MID | NC-Freigabe Sperrinfo-WFS + Bauwerksliste | Kontaktformular `lsbb.sachsen-anhalt.de` (Feed `service.ifak.eu/sperrinfo` ist „non-commercial only") | niedrig | Feed legalisiert | erste Bauwerke | **P2** |

@@ -5,6 +5,5 @@ Mobilitätsatlas (LBM):            https://lbm.rlp.de/themen/verkehrssteuerung/m
 Mobilitätsatlas (MWTEK):          https://mwtek.rlp.de/themen/verkehr/mobilitaetsatlas-rheinland-pfalz
 Verkehrsportal:                   https://www.verkehr.rlp.de/
 
-Maschineller Bezug: über Mobilithek (NAP, Bundeskatalog) bzw. LBM-DATEX-II-Knoten
-  → siehe ../lbm-rlp-datex2-knoten
+Maschineller Bezug: über Mobilithek (NAP, Bundeskatalog)
 Geprüft 2026-06-13: kein offener /api,/data,/geojson,/wfs-Endpunkt am Portal (alle 404).

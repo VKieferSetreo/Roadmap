@@ -1,1 +1,0 @@
-SKIP: Hindernis-Producer (DATEX-II Baustellen/Sperrungen), aber kein öffentlich exponierter Endpunkt — LBM-RLP liefert DATEX-II nur über die Mobilithek (NAP, Registrierung/Konto nötig, .env-gated). Datex2.eu-Node-Directory ist 404. Cron erst nach Mobilithek-Zugang baubar.

@@ -1,9 +1,0 @@
-# LBM RLP — DATEX-II-Knoten (Bezug über Mobilithek)
-
-LBM Verkehrssteuerung/Mobilitätsatlas:  https://lbm.rlp.de/themen/verkehrssteuerung/mobilitaetsatlas
-Mobilithek (NAP, realer Bezugsweg):     https://mobilithek.info/   → siehe ../../../Bundesweit/mobilithek
-
-Hinweis: Die früheren datex2.eu/implementations/nodes_directory-Deeplinks
-(landesbetrieb-mobilitat-rheinland-pfalz) sind 404 (Verzeichnis umgezogen, geprüft 2026-06-13).
-Der DATEX-II-Feed des LBM RLP wird über die Mobilithek angeboten — dort das
-LBM-RP-Roadworks/Situation-Angebot suchen; i.d.R. Mobilithek-Konto nötig.

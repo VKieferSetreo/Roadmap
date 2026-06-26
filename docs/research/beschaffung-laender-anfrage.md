@@ -221,7 +221,7 @@ sowie HE/BY-Land) ist die **Mobilithek** der zentrale Hebel — ein Account stat
 |---|---|---|---|---|
 | 1 | **Mobilithek-Account** + je Land Roadworks abonnieren | mobilithek.info (Reg. + Org. + Zertifikat) | einmalig mittel | temporär ~60 %→~90 % (5–7 Länder) |
 | 2 | **Brandenburg** GST-Negativliste + Baustellen-Feed | `LS-GST@LS.Brandenburg.de` | niedrig | leeres Land komplett |
-| 4 | **Rheinland-Pfalz** Brücken-Traglast + LBM-DATEX | `Daniel.Boden@lbm.rlp.de` / LBM Koblenz | mittel | Flächenland, 0→aktiv |
+| 4 | **Rheinland-Pfalz** Brücken-Traglast | `Daniel.Boden@lbm.rlp.de` / LBM Koblenz | mittel | Flächenland, 0→aktiv |
 | 5 | **Thüringen** Bauwerks-/Baustellenexport | TLBV Erfurt (Tel.) + `poststelle@tlvwa.thueringen.de` | mittel | Flächenland, 0→aktiv |
 | 6 | **Schleswig-H.** Bauwerksverzeichnis + Negativliste | `gst@lbv-sh.landsh.de` | niedrig | Bauwerks-Layer ergänzt |
 | 7 | **Sachsen-Anhalt** NC-Freigabe + Bauwerksliste | LSBB/MID Kontaktformular | niedrig | Feed legalisiert + Bauwerke |

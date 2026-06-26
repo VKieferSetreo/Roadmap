@@ -46,7 +46,6 @@ OK   Länder/Nordrhein-Westfalen/gst-schwertransportkarte-nrw   1336 B
 OK   Länder/Nordrhein-Westfalen/mobidrom-mobilitaetsdaten-nrw  3970 B
 OK   Länder/Nordrhein-Westfalen/opengeodata-nrw-strassennetz   2549 B
 OK   Länder/Rheinland-Pfalz/lbm-rlp-bruecken-gst               4000 B
-🔑   Länder/Rheinland-Pfalz/lbm-rlp-datex2-knoten              Account/Key nötig
 OK   Länder/Rheinland-Pfalz/mobilitaetsatlas-rlp-baustellen    3994 B
 OK   Länder/Saarland/baustellen-saarland-lfs                   4000 B
 OK   Länder/Sachsen-Anhalt/LSBB-Sperrinfo-WFS                  1035 B
@@ -61,4 +60,4 @@ OK   Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS 4043 B
 OK   Sonstige/govdata-ckan                                      4055 B
 OK   Sonstige/rvr-geonetzwerk-ruhr-baustellen                   572 B
 ────────────────────────────────────────────────────────────────────────
-Σ 89 getestet · OK 66 · LEER 17 · 🔑 6 übersprungen
+Σ 88 getestet · OK 66 · LEER 17 · 🔑 5 übersprungen
