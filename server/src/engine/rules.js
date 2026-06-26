@@ -61,9 +61,9 @@ const dateOnly = (v) => (v ? String(v).slice(0, 10) : null)
 function overlapsZeitraum(obstacle, zeitraum) {
   const zVon = dateOnly(zeitraum?.von)
   const zBis = dateOnly(zeitraum?.bis)
-  // T-267: kein Transport-Zeitraum geplant → "gilt immer". Ein Hindernis ohne erkennbares
-  // Transportfenster wird als potenziell relevant behandelt (nicht stumm ausgeblendet) —
-  // sonst bliebe selbst eine Vollsperrung unkritisch.
+  // Kein Transport-Zeitraum geplant → "gilt immer" (T-267). Die zeitliche Aussortierung
+  // abgelaufener/zukünftiger Ereignisse passiert zentral in evaluate() (T-601, auf heute
+  // angekert) — hier bleibt es bei "im Zweifel sichtbar", damit Vollsperrungen greifen.
   if (!zVon && !zBis) return true
   const oVon = dateOnly(obstacle.gueltigVon) ?? dateOnly(obstacle.realerStart) ?? "0000-01-01"
   const oBis = dateOnly(obstacle.gueltigBis) ?? "9999-12-31"
@@ -404,6 +404,15 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   const wirksamAb = dateOnly(obstacle.gueltigVon) ?? dateOnly(obstacle.realerStart)
   const zEnde = dateOnly(zeitraum?.bis)
   if (wirksamAb && zEnde && wirksamAb > zEnde) return null
+  // T-601: OHNE geplanten Transport-Zeitraum gemeldete EREIGNISSE (baustelle/sperrung) auf HEUTE
+  // ankern → abgelaufene (gueltigBis < heute) UND Jahre entfernte Maßnahmen (gueltigVon > heute)
+  // fallen KOMPLETT raus, statt als "überschneidet den Transportzeitraum" weiterzulaufen.
+  // Brücken/Tunnel/Gewicht NICHT zeitfiltern — deren gueltigBis ist Datenstand, kein Lebensende.
+  if (!von && !zEnde && EVENT_KATEGORIEN.has(obstacle.kategorie)) {
+    const heute = dateOnly(new Date().toISOString())
+    if (bis && bis < heute) return null
+    if (wirksamAb && wirksamAb > heute) return null
+  }
 
   const attrs = obstacle.attrs ?? {}
   let result

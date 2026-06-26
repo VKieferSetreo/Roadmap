@@ -248,6 +248,19 @@ describe("baustelle", () => {
     const ohneZeitraum = evaluate(ob("baustelle", { vollsperrung: true }), TR, {})
     expect(ohneZeitraum.severity).toBe("kritisch")
   })
+
+  // T-601: ohne geplanten Transport-Zeitraum werden abgelaufene/zukünftige EREIGNISSE auf heute
+  // angekert und fallen komplett raus (statt als "überschneidet den Transportzeitraum" zu bleiben).
+  it("abgelaufenes Ereignis ohne Zeitraum → komplett raus (null)", () => {
+    expect(evaluate(ob("baustelle", { restbreiteM: 3.6 }, { gueltigBis: "2020-01-01" }), TR, {})).toBeNull()
+    expect(evaluate(ob("sperrung", { vollsperrung: true }, { gueltigBis: "2020-01-01" }), TR, {})).toBeNull()
+  })
+  it("Zukunfts-Ereignis (Beginn 2099) ohne Zeitraum → komplett raus (null)", () => {
+    expect(evaluate(ob("baustelle", { restbreiteM: 3.6 }, { gueltigVon: "2099-01-01" }), TR, {})).toBeNull()
+  })
+  it("Brücke mit altem gueltigBis ohne Zeitraum → bleibt sichtbar (Datenstand, kein Lebensende)", () => {
+    expect(evaluate(ob("bruecke", { maxHoeheM: 3.0 }, { gueltigBis: "2020-01-01" }), TR, {})).not.toBeNull()
+  })
 })
 
 describe("bahnuebergang / ampel", () => {
