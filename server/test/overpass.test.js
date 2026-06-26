@@ -69,4 +69,13 @@ describe("isCrossingStructure — getragene vs gekreuzte Straße", () => {
   it("nur Brücke/Tunnel, nicht baustelle/sperrung", () => {
     expect(isCrossingStructure(ob("Üf K142 über A1", { kategorie: "baustelle" }), refs("A1"))).toBe(false)
   })
+
+  it("Fallback strassen_ref: Name unklar + ref nicht auf Route → raus; Name trägt Route → behalten", () => {
+    // Name ohne über-/i.Z.-Muster, strassen_ref K77 nicht auf Route → Kreuzung
+    expect(isCrossingStructure(ob("Brückenbauwerk XY", { strassenRef: "K 77" }), refs("A7"))).toBe(true)
+    // Name trägt die Route (i.Z.d. A7) — Schritt 1 schützt, irreführender ref K77 wird ignoriert
+    expect(isCrossingStructure(ob("Brücke i.Z.d. A7 über den Bach", { strassenRef: "K 77" }), refs("A7"))).toBe(false)
+    // strassen_ref ist die Route-Straße → behalten
+    expect(isCrossingStructure(ob("Brückenbauwerk XY", { strassenRef: "A 7" }), refs("A7"))).toBe(false)
+  })
 })

@@ -14,6 +14,7 @@ import {
   bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
+import { normRoadRef } from "../external/osrm.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 export const ENGINE_VERSION = "2.0.0"
@@ -86,6 +87,13 @@ export function isCrossingStructure(obstacle, routeRefs) {
 
   // 5) Nebenweg-Bauwerk ohne erkannte getragene Straße
   if (MINOR_WAY.test(name) && carried.length === 0) return true
+
+  // 6) Fallback: Name unklar, aber strassen_ref ist eine Straßennummer NICHT auf der Route.
+  // Schritt 1 hat bereits alles behalten, dessen Name die Route-Straße trägt → hier kein
+  // Übergehen eines echten „trägt-die-Route"-Falls. Fängt BASt-Brücken, deren Name kein
+  // klares „über"-Muster hat, deren strassen_ref aber eine routenfremde Straße ist.
+  const oRef = normRoadRef(obstacle.strassenRef)
+  if (oRef != null && !routeRefs.has(oRef)) return true
   return false
 }
 
