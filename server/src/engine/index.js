@@ -47,6 +47,14 @@ export function isCrossingStructure(obstacle, routeRefs) {
   if (obstacle.geom) return false
   if (obstacle.kategorie !== "bruecke" && obstacle.kategorie !== "tunnel") return false
   if (!routeRefs || routeRefs.size === 0) return false
+
+  // AUTORITATIV: BASt liefert die getragene Straße strukturiert (hoechst_sachverhalt_oben →
+  // attrs.getrageneStrasse). Das Bauwerk ist relevant gdw. die Route auf der getragenen Straße
+  // fährt; trägt es eine andere Straße (Route-Straße liegt UNTEN = Überführung) → kein Fund.
+  // Schlägt die Namens-Heuristik unten (für Bauwerke ohne dieses Feld).
+  const getragen = normRoadRef(obstacle.attrs?.getrageneStrasse)
+  if (getragen != null) return !routeRefs.has(getragen)
+
   const name = ` ${String(obstacle.name ?? "").toLowerCase()} `
 
   // 1) GETRAGENE Straße(n): "i.Z.(d.)/im Zuge (BAB)? <road>" und "<road> (in km …)? über/ü."

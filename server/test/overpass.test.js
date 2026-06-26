@@ -77,6 +77,15 @@ describe("isCrossingStructure — getragene vs gekreuzte Straße", () => {
     expect(isCrossingStructure(ob("Üf K142 über A1", { geom: { type: "LineString", coordinates: [] } }), refs("A1"))).toBe(false)
   })
 
+  it("AUTORITATIV: attrs.getrageneStrasse (BASt oben) schlägt die Namens-Heuristik", () => {
+    // K47-Brücke ÜBER A1 (oben=K47): Route auf A1 → A1 liegt UNTEN → Überführung → raus
+    expect(isCrossingStructure(ob("K 47 [Kr. OH] / A 1", { attrs: { getrageneStrasse: "K47" } }), refs("A1"))).toBe(true)
+    // A1 trägt über Wirtschaftsweg (oben=A1): Route auf A1 → behalten, trotz "Wi-Weg" im Namen
+    expect(isCrossingStructure(ob("A 1 / Wi-Weg (BW 2.02)", { attrs: { getrageneStrasse: "A1" } }), refs("A1"))).toBe(false)
+    // ohne Feld → Namens-Heuristik greift weiterhin
+    expect(isCrossingStructure(ob("Üf K142 über A1", { attrs: {} }), refs("A1"))).toBe(true)
+  })
+
   it("nur Brücke/Tunnel, nicht baustelle/sperrung", () => {
     expect(isCrossingStructure(ob("Üf K142 über A1", { kategorie: "baustelle" }), refs("A1"))).toBe(false)
   })

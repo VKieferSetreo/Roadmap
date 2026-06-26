@@ -353,7 +353,10 @@ const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef"])
 // ungeprüft zurück → inkonsistent (Connector-Strings still weg, Extraktions-Strings überlebten).
 // Eine Regel für BEIDE Stellen: number/boolean immer (0-Sentinel bei Maßen droppen), Strings nur
 // aus dieser Whitelist (sonst gehört der Text in die Beschreibung, nicht in die Grenzwert-attrs).
-const STRING_ATTRS = new Set(["zeitfenster", "medium", "richtung"])
+// getrageneStrasse (T-601): bei Punkt-Brücken die Straße, die das Bauwerk TRÄGT (BASt
+// hoechst_sachverhalt_oben). Der Engine-Überführungsfilter behält das Bauwerk nur, wenn die
+// Route auf dieser Straße fährt — sonst kreuzt sie es nur. Reiner String-Ref ("A1"), keine Maße.
+const STRING_ATTRS = new Set(["zeitfenster", "medium", "richtung", "getrageneStrasse"])
 function attrErlaubt(k, v) {
   if (v == null || v === "") return false
   if (typeof v === "number") return !(v === 0 && NULL_BEI_NULL.has(k))
