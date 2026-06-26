@@ -74,15 +74,17 @@ export function isCrossingStructure(obstacle, routeRefs) {
     if (rr.length && !intersects(rr, routeRefs)) return true
   }
 
-  // 4) "Üfg/Ufg/UF/UEF/Über-/Unterführung <X>"
-  const fm = name.match(/\b(?:üfg|ufg|überführung|unterführung|uef|uf|üf)\.?\s+(?:der |des |die |den |das |einer |eine )?(.+)$/)
+  // 4) Über-/Unterführung: Das Bauwerk ist nach der QUERENDEN Sache benannt (Querstraße /
+  // Wirtschaftsweg / Gewässer wie "UF Lumda", "Üf K142", "Zw6 / A28 - Überführung L815"),
+  // NICHT nach der durchgehenden Autobahn → Kreuzungsbauwerk, der Transport fährt nicht drauf.
+  // Die echten Autobahn-Brücken tragen die Autobahn explizit ("A5 über …" / "i.Z.d. A5") und
+  // sind in Schritt 1 bereits behalten; Talbrücken o.ä. ohne ÜF-/UF-Marker fallen unten durch.
+  // Ausnahme: der getragene Name nennt selbst eine Route-Straße ("UF Ast A5") → behalten.
+  const fm = name.match(/(?:^|[\s,;/(-])(?:üfg|ufg|überführung|unterführung|uef|üf|uf)[.\s]/)
   if (fm) {
-    const rest = fm[1]
-    if (MINOR_WAY.test(rest)) return true
-    const rr = roadRefsIn(rest)
-    if (rr.length && !intersects(rr, routeRefs)) return true
-    if (WATER.test(rest)) return false
-    if (intersects(rr, routeRefs)) return false
+    const after = name.slice(fm.index + fm[0].length)
+    if (intersects(roadRefsIn(after.split(/[,;/]/)[0]), routeRefs)) return false
+    return true
   }
 
   // 5) Nebenweg-Bauwerk ohne erkannte getragene Straße

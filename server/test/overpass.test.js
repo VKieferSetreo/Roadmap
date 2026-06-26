@@ -55,6 +55,17 @@ describe("isCrossingStructure — getragene vs gekreuzte Straße", () => {
     expect(cross("UF Wildtiere", refs("A7"))).toBe(true)
   })
 
+  it("UF/Unterführung nach Querungs-Feature benannt (Gewässer/Gemeindestr.) → raus; nur Route-Ast bleibt", () => {
+    // "UF Lumda" (Bach) ist nach dem querenden Gewässer benannt, NICHT nach der A5 → Kreuzung → raus
+    expect(cross("UF Lumda/UF Lumda Abschnitt Grünberg Nord", refs("A5"))).toBe(true)
+    expect(cross("UF Fischbach/UF Fischbach - FR Frankfurt", refs("A7"))).toBe(true)
+    expect(cross("UF Gemeindestraße/UF Gemeindestrasse - FR Frankfurt", refs("A7"))).toBe(true)
+    // "UF Ast A 5" nennt eine Route-Straße als getragen → behalten (sicher)
+    expect(cross("UF Ast A 5 -Gambacher Kreuz-", refs("A5"))).toBe(false)
+    // Aber: Autobahn explizit als tragend genannt ("A5; Ufg des <Gewässer>") bleibt (Schritt 3)
+    expect(cross("A5; Ufg des Saalbaches bei Karlsdorf", refs("A5"))).toBe(false)
+  })
+
   it("trailing Straßen-Label nach 'über <Wasser>' wird NICHT als Kreuzung gewertet (false)", () => {
     // "ü.d.WL Wartangergraben km 272, A7" — A7 ist Label, gekreuzt ist Wasser → behalten
     expect(cross("BW 14 Brücke ü.d.WL Wartangergraben km 272,239, A7", refs("A7"))).toBe(false)
