@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hindernis-Tinder (Voting)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: #1a202c;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 13px;
+      color: #718096;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 24px;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 4px;
+    }
+    .card-category {
+      font-size: 12px;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-description {
+      font-size: 14px;
+      color: #2d3748;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      white-space: pre-line;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .meta-label {
+      color: #718096;
+    }
+    .meta-value {
+      color: #2d3748;
+      font-weight: 500;
+      text-align: right;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-source {
+      font-size: 11px;
+      color: #a0aec0;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #edf2f7;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .badge.category-baustelleUmleitug { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge.category-brueckeWegfall { background: #dbeafe; color: #0c4a6e; border: 1px solid #bfdbfe; }
+    .badge.category-gewichtsbeschraenkung { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+    .badge.category-hoehenbeschraenkung { background: #f3e8ff; color: #581c87; border: 1px solid #e9d5ff; }
+    .badge.category-ampel { background: #ecfdf5; color: #064e3b; border: 1px solid #a7f3d0; }
+    .badge.demo { background: #fef08a; color: #713f12; border: 1px solid #fef08a; }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: auto;
+    }
+    button {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-passt {
+      background: #22c55e;
+      color: white;
+    }
+    .btn-passt:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+    }
+    .btn-korrigieren {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-korrigieren:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .stats {
+      background: rgba(0, 0, 0, 0.02);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #718096;
+      margin-top: 16px;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .stats-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .loading, .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #4a5568;
+    }
+    .loading {
+      font-size: 14px;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #4299e1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .error {
+      background: #fff5f5;
+      color: #c53030;
+      border: 1px solid #feb2b2;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏗️ Hindernis-Check</h1>
+      <p>Stimmt die Datenqualität? Abstimmen und korrigieren.</p>
+    </div>
+    <div id="app"></div>
+  </div>
+
+  <script type="module">
+    const API_BASE = 'http://localhost:3000/api';
+    const RESULTS_FILE = 'data/tinder-results.json';
+
+    let currentObstacle = null;
+    let results = [];
+    let allObstacles = [];
+    let seenIds = new Set();
+
+    // Lade bisherige Ergebnisse
+    async function loadResults() {
+      try {
+        const response = await fetch(RESULTS_FILE);
+        if (response.ok) {
+          results = await response.json();
+          seenIds = new Set(results.map(r => r.id));
+        }
+      } catch (e) {
+        console.log('Keine bisherigen Ergebnisse — starten fresh.');
+      }
+    }
+
+    // Fetche alle Hindernisse und wähle Random aus
+    async function fetchRandomObstacle() {
+      try {
+        if (allObstacles.length === 0) {
+          const res = await fetch(`${API_BASE}/obstacles?limit=1000&aktiv=true`);
+          if (!res.ok) throw new Error(`API Error: ${res.status}`);
+          const data = await res.json();
+          allObstacles = data.obstacles || [];
+        }
+
+        // Finde einen ungesehenen Hindernis
+        const unseen = allObstacles.filter(o => !seenIds.has(o.id));
+        if (unseen.length === 0) {
+          showMessage('✅ Alle Hindernisse durchgesehen!', 'success');
+          return null;
+        }
+
+        const random = unseen[Math.floor(Math.random() * unseen.length)];
+        seenIds.add(random.id);
+        return random;
+      } catch (e) {
+        console.error('Fehler beim Laden:', e);
+        showMessage('⚠️ Hindernisse konnten nicht geladen werden.', 'error');
+        return null;
+      }
+    }
+
+    // Speichere Vote lokal
+    async function saveVote(vote, fehlerbeschreibung = '') {
+      if (!currentObstacle) return;
+
+      const record = {
+        id: currentObstacle.id,
+        name: currentObstacle.name,
+        vote,
+        fehlerbeschreibung: fehlerbeschreibung || '',
+        timestamp: new Date().toISOString()
+      };
+      results.push(record);
+
+      // Versuche in results.json zu speichern (nur in Electron/Node-Umgebungen)
+      try {
+        const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tinder-results.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.log('Konnte Datei nicht speichern (Browser-Sicherheit). Votes sind in memory gespeichert.');
+      }
+
+      // Lade nächsten
+      await showNextObstacle();
+    }
+
+    async function showNextObstacle() {
+      document.getElementById('app').innerHTML = '<div class="loading"><span class="spinner"></span>Laden...</div>';
+      currentObstacle = await fetchRandomObstacle();
+      if (!currentObstacle) {
+        document.getElementById('app').innerHTML = '<div class="error">Keine neuen Hindernisse mehr verfügbar.</div>';
+        return;
+      }
+      render();
+    }
+
+    function render() {
+      const o = currentObstacle;
+      if (!o) return;
+
+      const categoryMeta = {
+        'baustelle': 'Baustelle',
+        'brueckeWegfall': 'Brücke',
+        'gewichtsbeschraenkung': 'Gewichtsbegrenzung',
+        'hoehenbeschraenkung': 'Höhenbegrenzung',
+        'ampel': 'Ampel',
+        'sperrung': 'Sperrung'
+      };
+
+      const categoryClass = `category-${o.kategorie || 'sonstiges'}`;
+      const catLabel = categoryMeta[o.kategorie] || o.kategorie || 'Sonstiges';
+
+      // Attribute formatieren
+      const metaRows = [];
+      if (o.gueltigVon || o.gueltigBis) {
+        const von = o.gueltigVon ? new Date(o.gueltigVon).toLocaleDateString('de-DE') : '—';
+        const bis = o.gueltigBis ? new Date(o.gueltigBis).toLocaleDateString('de-DE') : '—';
+        metaRows.push(`<div class="meta-row"><span class="meta-label">Gültig</span><span class="meta-value">${von} bis ${bis}</span></div>`);
+      }
+      if (o.strassenRef) {
+        metaRows.push(`<div class="meta-row"><span class="meta-label">Straße</span><span class="meta-value">${esc(o.strassenRef)}</span></div>`);
+      }
+      if (o.fachId) {
+        metaRows.push(`<div class="meta-row"><span class="meta-label">Fach-ID</span><span class="meta-value">${esc(o.fachId)}</span></div>`);
+      }
+
+      // Attribute (attrs)
+      if (o.attrs && typeof o.attrs === 'object') {
+        Object.entries(o.attrs).forEach(([key, val]) => {
+          const label = attrLabel(key);
+          if (label) {
+            metaRows.push(`<div class="meta-row"><span class="meta-label">${esc(label)}</span><span class="meta-value">${esc(String(val))}</span></div>`);
+          }
+        });
+      }
+
+      const html = `
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">${esc(o.name)}</h2>
+            <p class="card-category">${esc(catLabel)}${o.strassenRef ? ' · ' + esc(o.strassenRef) : ''}</p>
+          </div>
+
+          ${o.demo ? '<div class="badges"><span class="badge demo">Demo-Datensatz</span></div>' : ''}
+
+          ${o.beschreibung ? `<p class="card-description">${esc(o.beschreibung)}</p>` : ''}
+
+          ${metaRows.length ? `<div class="card-meta">${metaRows.join('')}</div>` : ''}
+
+          ${o.quelle?.name ? `<p class="card-source">Quelle: <strong>${esc(o.quelle.name)}</strong>${o.quelle.aktualisiertAm ? ' · ' + esc(o.quelle.aktualisiertAm) : ''}</p>` : ''}
+
+          <div class="buttons">
+            <button class="btn-passt" onclick="vote('passt')">✓ Passt</button>
+            <button class="btn-korrigieren" onclick="vote('korrigieren')">✎ Korrigieren</button>
+          </div>
+
+          <div class="stats">
+            <div class="stats-row">
+              <span>Bewertet:</span>
+              <strong>${results.length}</strong>
+            </div>
+            <div class="stats-row">
+              <span>Offen:</span>
+              <strong>${allObstacles.length - seenIds.size}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('app').innerHTML = html;
+    }
+
+    function attrLabel(key) {
+      const labels = {
+        'gewicht': 'Max. Gewicht',
+        'hoehe': 'Max. Höhe',
+        'breite': 'Breite',
+        'gesperrtKomplett': 'Gesperrt',
+        'maxHoeheM': 'Auslegerhöhe',
+        'tragfaehigkeit': 'Tragfähigkeit'
+      };
+      return labels[key] || key;
+    }
+
+    function esc(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function showMessage(msg, type) {
+      const className = type === 'success' ? 'loading' : 'error';
+      document.getElementById('app').innerHTML = `<div class="${className}">${msg}</div>`;
+    }
+
+    // Global vote handler
+    window.vote = async (vote) => {
+      document.querySelectorAll('button').forEach(b => b.disabled = true);
+      await saveVote(vote);
+    };
+
+    // Starte App
+    async function init() {
+      await loadResults();
+      await showNextObstacle();
+    }
+    init();
+  </script>
+</body>
+</html>
