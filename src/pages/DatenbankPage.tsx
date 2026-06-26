@@ -129,6 +129,10 @@ function ObstacleKarte({ live }: { live: boolean }) {
     },
     enabled: live,
     staleTime: 60_000,
+    // T-599: KEIN Retry. Der queryFn zieht den Vollbestand (~55k) in ~23 paginierten Requests —
+    // ein Retry würde die ganze Schleife erneut feuern und bei einem 429 (Rate-Limit) genau die
+    // Überlast verdoppeln, die den Fehler ausgelöst hat. Lieber sauber den Fehlerzustand zeigen.
+    retry: false,
   })
 
   // Stabile Referenz: sonst würde ObstaclesMap das markercluster-Layer bei JEDEM

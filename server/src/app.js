@@ -236,10 +236,12 @@ export function createApp({
   // sind nicht betroffen; account/analytics/bug-reports bleiben bewusst offen (Seat-Redeem,
   // Heartbeat, Fehler-Melden brauchen No-Seat-Zugang).
   // T-336: GET /api/obstacles kann den gesamten (großen) Hindernis-Datensatz serialisieren
-  // (?geom=true ~35 MB). requireTenant gated den Zugriff (T-304); guardSearch limitiert nur ?q=.
-  // Eigener, generöser Eimer (60/min je Identität) deckelt den schweren Voll-Read als DoS-Vektor —
-  // legitime FE-Ladungen (DB-Tab/Karte) bleiben weit darunter. (bbox-Viewport-Loading = T-312/502.)
-  const obstaclesLimiter = createRateLimiter({ max: 60, windowMs: 60_000 })
+  // (?geom=true). requireTenant gated den Zugriff (T-304); guardSearch limitiert nur ?q=.
+  // T-599: Der DB-Tab zieht den Vollbestand SEQUENZIELL paginiert (SEITE=2500). Bei ~55k aktiven
+  // Hindernissen sind das ~23 Requests PRO Seitenaufbau — der alte 60/min-Eimer riss deshalb schon
+  // nach ~2-3 schnellen Reloads (429 → "DB nicht erreichbar"). 480/min lässt ~20 Voll-Reloads/min
+  // zu und bleibt klar unter dem globalen Backstop (1200/min). (bbox-Viewport-Loading = T-312/502.)
+  const obstaclesLimiter = createRateLimiter({ max: 480, windowMs: 60_000 })
   app.use("/api/obstacles", (req, res, next) => {
     const key = req.ctx?.email || req.user?.email || req.ip || "anon"
     if (!obstaclesLimiter(key)) throw new ApiError(429, "Zu viele Hindernis-Abfragen — bitte kurz warten")
