@@ -423,15 +423,24 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // T-607: Markerposition. Bei langen Linien-Hindernissen (Autobahn-/AkD-Baustellen über viele km)
       // ist obstacle.lat/lng der ANKER der Gesamtlinie und liegt bis zig km vom Routen-Schnittpunkt
       // entfernt (gemessen 58 km) → der Marker säße weit außerhalb der Route. Für Linien-Hindernisse
-      // den der Route NÄCHSTEN Punkt der GECLIPPTEN Linie nehmen: clipGeomToCorridor ist densifiziert
-      // + auf den Korridor reduziert (kein Downsample-Drift, kein 2-Punkt-Grobraster) → garantiert nah
-      // an der befahrenen Trasse. Punkt-Hindernisse behalten ihre echte Koordinate.
+      // den der Route nächsten Punkt der geclippten Linie bestimmen und dann auf den nächsten ROHEN
+      // Routen-Stützpunkt (route.points — das ist die im FE GEZEICHNETE Linie) schnappen. So sitzt der
+      // Marker GARANTIERT exakt auf der gerenderten Trasse, robust gegen den Downsample-Drift der
+      // Auswertungs-Geometrie auf gewundenen Routen. Punkt-Hindernisse behalten ihre echte Koordinate.
       let markerPt = { lat: obstacle.lat, lng: obstacle.lng }
       if (obstacle.geom) {
-        let best = Infinity
+        let obstNear = null, best = Infinity
         for (const p of geomPoints(geomFuerFund)) {
           const d = nearestOnRoute(p, geometry, cum, grid).distM
-          if (d < best) { best = d; markerPt = p }
+          if (d < best) { best = d; obstNear = p }
+        }
+        if (obstNear) {
+          let bp = Infinity
+          for (const rp of route.points) {
+            if (!isFiniteNumber(rp?.lat) || !isFiniteNumber(rp?.lng)) continue
+            const d = haversineKm(obstNear, rp)
+            if (d < bp) { bp = d; markerPt = { lat: rp.lat, lng: rp.lng } }
+          }
         }
       }
       findings.push({
