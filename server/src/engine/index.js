@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, pointAtKm, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef } from "../external/osrm.js"
@@ -375,20 +375,21 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
       // und ein Punkt 16 m neben der Route fällt sauber raus.
       let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum, grid)
-      // T-607: Marker-Punkt mitführen. obstacle.lat/lng ist bei langen Linien-Hindernissen
-      // (Autobahn-/AkD-Baustellen über viele km) der ANKER der Gesamtlinie und kann zig km vom
-      // Routen-Schnittpunkt entfernt liegen (gemessen bis 58 km) → der Karten-Marker säße weit
-      // außerhalb der Route, obwohl die geclippte Linie korrekt aufliegt. Den der Route NÄCHSTEN
-      // Stützpunkt als Markerposition nehmen (liegt im Korridor). Punkt-Hindernisse: bleibt = obstacle.
-      let markerPt = { lat: obstacle.lat, lng: obstacle.lng }
       for (let pi = 0; pi < obstaclePts.length; pi++) {
         const p = obstaclePts[pi]
         if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
         if ((pi & 63) === 0) await maybeYield() // alle 64 Stützpunkte den Loop atmen lassen
         const n = nearestOnRoute(p, geometry, cum, grid)
-        if (n.distM < near.distM) { near = n; markerPt = p }
+        if (n.distM < near.distM) near = n
       }
       if (near.distM > corridorM) continue
+      // T-607: Markerposition. Bei langen Linien-Hindernissen (Autobahn-/AkD-Baustellen über viele km)
+      // ist obstacle.lat/lng der ANKER der Gesamtlinie und liegt bis zig km vom Routen-Schnittpunkt
+      // entfernt (gemessen 58 km) → der Marker säße weit außerhalb der Route. Für Linien-Hindernisse
+      // den Routenpunkt am Fund-km nehmen (liegt exakt auf der befahrenen Trasse, ≤ Korridor genau am
+      // nächsten Punkt — robuster als der nächste Stützpunkt, der bei groben 2-Punkt-Linien daneben
+      // liegt). Punkt-Hindernisse behalten ihre echte Koordinate.
+      const markerPt = obstacle.geom ? (pointAtKm(geometry, cum, near.km) ?? { lat: obstacle.lat, lng: obstacle.lng }) : { lat: obstacle.lat, lng: obstacle.lng }
 
       // Gegenfahrbahn-Filter: Strecken-Meldungen (Linien-Geometrie, faktisch nur Autobahn)
       // laufen je Fahrbahn als eigene Linie in REISERICHTUNG (Daten geprüft: Koordinaten-

@@ -118,7 +118,7 @@ function bearingDeg(a, b) {
 }
 
 /** Punkt auf der Route an einer km-Marke (lineare Interpolation zwischen Stützpunkten). */
-function pointAtKm(geometry, cum, km) {
+export function pointAtKm(geometry, cum, km) {
   if (geometry.length === 0) return null
   if (km <= 0) return geometry[0]
   const total = cum[cum.length - 1]
