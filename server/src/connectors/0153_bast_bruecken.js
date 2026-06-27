@@ -94,7 +94,12 @@ export const bastBrueckenConnector = {
       // Großraum-/Schwertransporte (GST) TRAGFÄHIGKEITSRELEVANTEN Bauwerke. Die Strecke ist offen;
       // für GST ist die Tragfähigkeit (Traglastindex) gegen das Transportgewicht zu prüfen
       // (Auflage/Einzelfallgenehmigung möglich). "gesperrt" wäre eine Falschaussage (Max 2026-06-27).
-      const beschreibung = ["Für Großraum-/Schwertransporte tragfähigkeitsbeschränkt (BASt-Brückenstatistik)", idx, ortBl]
+      // T-603: NICHT "tragfähigkeitsbeschränkt" — das liest sich im selben Satz mit "Traglastindex
+      // Stufe I — keine Defizite" widersprüchlich (267 Funde). sperrung_sv='ja' = die Brücke steht auf
+      // der GST-Liste = für Großraum-/Schwertransporte AUFLAGENPFLICHTIG (Tragfähigkeit gegen das
+      // Transportgewicht prüfen, Einzelfallgenehmigung möglich) — das ist unabhängig vom Traglastindex
+      // (Listung ≠ reduzierte Kapazität). So bleibt der Satz mit "Stufe I — keine Defizite" konsistent.
+      const beschreibung = ["Für Großraum-/Schwertransporte auflagenpflichtig — Tragfähigkeit prüfen (BASt-Brückenstatistik)", idx, ortBl]
         .filter(Boolean).join(". ") || null
       // Stabile externeId: Bauwerks- + Teilbauwerksnummer (ändern sich nicht) + Geo-Hash als Diskriminator.
       const externeId = `${clean(p.bwnr) || "x"}-${clean(p.tbwnr) || "0"}#${stabilHash(lat, lng, p.id_nr)}`

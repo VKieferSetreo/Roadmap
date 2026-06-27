@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef } from "../external/osrm.js"
@@ -133,13 +133,30 @@ const OPPOSITE_DEG = 120
 const SAME_LANE_M = Number(process.env.SAME_LANE_M ?? 8)
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
+// T-603 (Daten-Audit 2026-06-27): SEVAS-Maß-Restriktionen (Höhe/Gewicht/Breite, Quelle 0157) sind
+// Linien ENTLANG einer konkreten Straße. Liegt diese Straße QUER zur Route (Route über-/unterführt
+// sie), berührt die Linie den 20-m-Match-Korridor nur am Kreuzungspunkt → die Auflage der gekreuzten
+// Nebenstraße wird fälschlich dem Transport angehängt (geometrisch belegt: 27% der SEVAS-Funde lagen
+// >80 m abseits, alle als kritisch). Der Überführungsfilter greift nicht (nur Punkt-Bauwerke ohne
+// Geom). Diskriminator: läuft die Restriktionslinie DECKUNGSGLEICH (≤ SAME_LANE_M) auf der Route?
+// >0 ⇒ Transport fährt auf der Straße → echte Auflage, behalten. ≈0 ⇒ nur gekreuzt → verwerfen.
+const CROSS_MIN_KM = Number(process.env.SEVAS_CROSS_MIN_KM ?? 0.02) // 20 m deckungsgleicher Mindestlauf
+const istMassRestriktion = (a) => !!a && (a.maxHoeheM != null || a.maxGewichtT != null || a.maxBreiteM != null)
+
+// Zwei Linien-Geometrien sind IDENTISCH (byte-gleiche Koordinaten) — kommt vom Re-Import-Churn:
+// dieselbe Quell-Restriktion landet als zwei Obstacle-Zeilen mit verschiedener obstacle_id, aber
+// gleicher Geometrie (T-603/T-532). Solche Klone DÜRFEN gemergt werden; zwei VERSCHIEDENE Geometrien
+// (echte Fahrtrichtungs-/Fahrbahn-Paare) bleiben getrennt.
+const sameGeom = (a, b) => a && b && a.type === b.type && JSON.stringify(a.coordinates) === JSON.stringify(b.coordinates)
+
 export function dedupeFindings(findings) {
   const kept = []
   for (const f of findings) {
     const key = `${f.routeId}|${f.kategorie}|${normName(f.titel)}`
-    // Strecken-Funde (beide mit geom) NICHT mergen → Fahrtrichtungen bleiben getrennt.
+    // Strecken-Funde (beide mit geom) NICHT mergen → Fahrtrichtungen bleiben getrennt; AUSNAHME:
+    // byte-identische Geometrie = Re-Import-Klon derselben Stelle → doch mergen (T-603).
     const dup = kept.find(
-      (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM && !(k.geom && f.geom),
+      (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM && (!(k.geom && f.geom) || sameGeom(k.geom, f.geom)),
     )
     if (!dup) {
       kept.push({ ...f, __key: key })
@@ -339,6 +356,14 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         oppositeDeg: OPPOSITE_DEG,
       })
       if (relation === "opposite") continue
+      // T-603: Maß-Restriktion (SEVAS Höhe/Gewicht/Breite) auf einer Linie, die die Route nur KREUZT
+      // statt deckungsgleich auf ihr zu verlaufen → gilt der gekreuzten Straße, nicht uns → verwerfen.
+      // Echte Auflagen auf der befahrenen Trasse (auch kurzes Erst-/Letztstück) laufen deckungsgleich
+      // → coincidentRouteKm > 0 → bleiben. Greift nur bei Linien-Geom mit Maßwert-Attribut.
+      if (
+        obstacle.geom && istMassRestriktion(obstacle.attrs) &&
+        coincidentRouteKm(obstaclePts, geometry, cum, SAME_LANE_M, grid) < CROSS_MIN_KM
+      ) continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle

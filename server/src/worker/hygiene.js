@@ -50,6 +50,31 @@ export async function purgeStaleInactive(db, { days = 30 } = {}) {
   return rows
 }
 
+// T-603 (Daten-Audit 2026-06-27): Funde werden persistent zum Projekt gespeichert; eine Re-Analyse
+// überschreibt/bereinigt sie. Werden aber die Routen eines Projekts gelöscht/ersetzt OHNE Re-Analyse,
+// bleiben die Fund-Zeilen als eingefrorener Geister-Snapshot zurück (Bsp. Borgentreich: 0 Routen, 679
+// Funde = 49% des Gesamtbestands, inkl. abgelaufener/inaktiver/2030er-Treffer). Routen liegen als
+// JSONB in projects.routes (kein FK möglich) → kein ON DELETE CASCADE. Dieser Reconcile löscht Funde,
+// deren route_id nicht (mehr) in den aktuellen Projekt-Routen liegt — deckt Voll-Orphan (0 Routen) UND
+// Teil-Löschung. Self-healing im Wartungszyklus. Verifiziert: trifft NUR losgelöste Funde, keine Live.
+const PURGE_ORPHAN_FINDINGS_SQL = `DELETE FROM findings f
+   USING projects p
+   WHERE p.id = f.project_id
+     AND (
+       jsonb_array_length(COALESCE(p.routes, '[]'::jsonb)) = 0
+       OR (f.route_id IS NOT NULL AND NOT EXISTS (
+            SELECT 1 FROM jsonb_array_elements(COALESCE(p.routes, '[]'::jsonb)) rt
+            WHERE rt->>'id' = f.route_id))
+     )
+   RETURNING f.id`
+
+/** Löscht Funde, deren route_id nicht mehr in den Projekt-Routen existiert (Routen-/Projekt-Edit ohne
+ *  Re-Analyse). @returns Anzahl gelöschter Geister-Funde. */
+export async function purgeOrphanFindings(db) {
+  const { rows } = await db.query(PURGE_ORPHAN_FINDINGS_SQL)
+  return rows.length
+}
+
 // T-372: import_runs wächst ~139 Zeilen/Tag (≈50k/Jahr) ohne Pruning. Alte Runs löschen, aber je
 // Quelle den JÜNGSTEN immer behalten (Health/Status + Quellen-Register lesen den letzten Run je
 // Quelle, unabhängig vom Alter). keepDays großzügig → Historie auskunftsfähig, Bloat gekappt.

@@ -35,6 +35,15 @@ describe("dedupeFindings", () => {
     expect(out[0].geom).not.toBeNull()
   })
 
+  it("T-603: byte-identische Geometrie (Re-Import-Klon, andere obstacle_id) → gemergt", () => {
+    const klon = { type: "LineString", coordinates: [[8, 49], [8.01, 49.01]] } // gleiche Koords wie LINE
+    const out = dedupeFindings([
+      f({ km: 10.0, geom: LINE, severity: "kritisch" }),
+      f({ km: 10.05, geom: klon, severity: "kritisch" }),
+    ])
+    expect(out).toHaveLength(1)
+  })
+
   it("größerer Abstand (Δkm > 0.15) bleibt getrennt", () => {
     const out = dedupeFindings([f({ km: 10 }), f({ km: 10.3 })])
     expect(out).toHaveLength(2)

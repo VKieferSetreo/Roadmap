@@ -1,7 +1,7 @@
 // Geometrie: Haversine-Sanity, Punkt→Segment-Distanz, km-entlang-Position.
 
 import { describe, expect, it } from "vitest"
-import { bboxWithBuffer, cumulativeKm, haversineKm, nearestOnRoute, totalKm } from "../src/engine/geometry.js"
+import { bboxWithBuffer, coincidentRouteKm, cumulativeKm, haversineKm, nearestOnRoute, totalKm } from "../src/engine/geometry.js"
 
 const HH = { lat: 53.5511, lng: 9.9937 }
 const M = { lat: 48.1351, lng: 11.582 }
@@ -73,5 +73,23 @@ describe("bboxWithBuffer", () => {
     expect(box.maxLng).toBeGreaterThan(M.lng)
     // Puffer in der richtigen Größenordnung (~0,001° für 120 m)
     expect(M.lat - box.minLat).toBeLessThan(0.01)
+  })
+})
+
+// T-603: coincidentRouteKm trennt "Transport fährt AUF der Straße" (deckungsgleich) von
+// "Route kreuzt die Straße nur" (Über-/Unterführung) — Basis des SEVAS-Kreuzungsfilters.
+describe("coincidentRouteKm", () => {
+  // Route: gerade Ost-West-Linie bei lat 49 (lng 8.00 → 8.02, ~1,46 km)
+  const route = [{ lat: 49, lng: 8.0 }, { lat: 49, lng: 8.02 }]
+  const cum = cumulativeKm(route)
+
+  it("Restriktion DECKUNGSGLEICH auf der Route → volle Lauflänge", () => {
+    const along = [{ lat: 49, lng: 8.005 }, { lat: 49, lng: 8.015 }] // exakt auf der Trasse
+    expect(coincidentRouteKm(along, route, cum, 8)).toBeGreaterThan(0.3)
+  })
+
+  it("Restriktion QUER zur Route (gekreuzte Nebenstraße) → ≈0", () => {
+    const across = [{ lat: 48.998, lng: 8.01 }, { lat: 49.002, lng: 8.01 }] // senkrecht, kreuzt bei lng 8.01
+    expect(coincidentRouteKm(across, route, cum, 8)).toBeLessThan(0.05)
   })
 })

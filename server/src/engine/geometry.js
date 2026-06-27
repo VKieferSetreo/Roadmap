@@ -209,6 +209,33 @@ export function obstacleRouteRelation(
   return "none"
 }
 
+// T-603: Länge (km) der Hindernis-Linie, die DECKUNGSGLEICH (≤ coincidentM) auf der Route verläuft —
+// also die Strecke, die der Transport tatsächlich AUF dieser Straße fährt. ≈0 ⇒ die Linie KREUZT die
+// Route nur (Über-/Unterführung einer gekreuzten Straße), der Transport ist nie auf ihr. Für den
+// SEVAS-Kreuzungsfilter: eine Höhen-/Gewichts-/Breitenauflage einer gekreuzten Nebenstraße gilt nicht
+// dem Transport. Jedes Segment wird auf ~stepM densifiziert, damit grobe 2-Punkt-Linien nicht
+// all-or-nothing nach ihrem Mittelpunkt gewertet werden (sonst zählte eine 150-m-Querstraße ganz
+// mit, wenn die Route zufällig nahe ihrem Mittelpunkt kreuzt).
+export function coincidentRouteKm(obstaclePts, geometry, cum, coincidentM = 8, grid = null, stepM = 12) {
+  if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return 0
+  let onKm = 0
+  for (let i = 0; i < obstaclePts.length - 1; i++) {
+    const a = obstaclePts[i]
+    const b = obstaclePts[i + 1]
+    const segKm = haversineKm(a, b)
+    if (segKm === 0) continue
+    const steps = Math.max(1, Math.round((segKm * 1000) / stepM))
+    let inCount = 0
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps
+      const pt = { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) }
+      if (nearestOnRoute(pt, geometry, cum, grid).distM <= coincidentM) inCount++
+    }
+    onKm += segKm * (inCount / (steps + 1))
+  }
+  return onKm
+}
+
 /**
  * Clippt die Linien-Geometrie eines Hindernisses auf den Routen-Korridor: behält NUR die
  * Abschnitte, die innerhalb clipM um die Route liegen (= die der Transport tatsächlich

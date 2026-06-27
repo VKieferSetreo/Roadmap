@@ -15,7 +15,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
+import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -177,6 +177,9 @@ async function runRerun(grund) {
     // T-262: fachId-Dubletten selbstheilen (sollte nach dem Präventions-Fix leer bleiben → Warnung wenn nicht).
     const deduped = await reconcileFachIdDupes(db, { log })
     if (deduped.renumbered) log(`Hygiene: fachId-Dedup ${deduped.groups} Gruppen / ${deduped.renumbered} Zeilen`)
+    // T-603: Geister-Funde routenloser/route-veränderter Projekte hart entfernen (Snapshot ohne Re-Analyse).
+    const orphans = await purgeOrphanFindings(db)
+    if (orphans) log(`Hygiene: ${orphans} Geister-Funde ohne gültige Route gelöscht`)
     const res = await withTimeout(
       rerunAffectedProjects({ db, log: (m) => log(m) }), RERUN_TIMEOUT_MS, "Auto-Rerun",
     )
