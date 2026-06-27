@@ -154,6 +154,24 @@ describe("Auto-Rerun (rerunAffectedProjects)", () => {
     expect(neu.length).toBeGreaterThanOrEqual(1)
     expect(neu[0].project_id).toBe(p.id) // rohe DB-Row (camelCase erst im Mapper)
   })
+
+  it("T-603: OSRM konfiguriert aber unerreichbar → Rerun übersprungen (kein Funde-Downgrade)", async () => {
+    const { app, db } = makeApp()
+    const points = cityPoints("Hamburg", "Hannover")
+    const p = await createRoutedProject(app, { points })
+    await request(app).post(`/api/projects/${p.id}/analysis`)
+    const prev = process.env.OSRM_URL
+    process.env.OSRM_URL = "http://osrm:5000" // OSRM konfiguriert …
+    try {
+      // … aber jeder fetch schlägt fehl → ping false → der Überführungsfilter hätte keine Refs.
+      const res = await rerunAffectedProjects({ db, fetchImpl: async () => { throw new Error("OSRM down") } })
+      expect(res.skipped).toBe(true)
+      expect(res.neuAusgewertet).toBe(0)
+    } finally {
+      if (prev === undefined) delete process.env.OSRM_URL
+      else process.env.OSRM_URL = prev
+    }
+  })
 })
 
 describe("Notifications-API", () => {

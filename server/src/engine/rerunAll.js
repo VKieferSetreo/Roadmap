@@ -212,6 +212,18 @@ async function runRerun({
   // T-601: OSRM einmal je Rerun-Lauf — die Analyse zieht daraus die befahrenen Straßen-Refs für
   // den Überführungs-Filter. Ohne konfigurierte OSRM_URL → null → Filter greift nicht (konservativ).
   const osrm = createOsrm({ fetchImpl })
+  // T-603: Der Auto-Rerun ÜBERSCHREIBT die Funde JEDES Projekts. Der Überführungs- (T-601) und der
+  // SEVAS-Kreuzungsfilter brauchen die OSRM-Refs; ist OSRM konfiguriert, aber gerade nicht erreichbar,
+  // kämen die gefilterten Brücken-Überführungen projektweit zurück (stilles Daten-Downgrade). Dann den
+  // GANZEN Lauf überspringen statt mit schlechteren Daten zu überschreiben — der nächste Cron/Sync holt
+  // es nach. (osrm === null = bewusst ohne Router deployt → weiterlaufen, das ist die Design-Wahl.)
+  if (osrm && !(await osrm.ping())) {
+    log("Auto-Rerun übersprungen: OSRM nicht erreichbar — kein Funde-Downgrade (nächster Lauf holt es nach)")
+    return {
+      engineVersion: ENGINE_VERSION, geprueft: 0, neuAusgewertet: 0,
+      mitAenderung: 0, benachrichtigungen: 0, skipped: true,
+    }
+  }
   const { rows } = await db.query(
     "SELECT * FROM projects WHERE archived_at IS NULL AND status = 'fertig'",
   )

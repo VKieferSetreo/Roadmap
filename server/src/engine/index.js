@@ -17,7 +17,9 @@ import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef } from "../external/osrm.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
-export const ENGINE_VERSION = "2.0.0"
+// 2.1.0 (T-603): SEVAS-Kreuzungsfilter (coincidentRouteKm + Parallelität), Klon-Dedup (identische
+// Geom), Orphan-Funde-Purge. Materielle Engine-Änderung → Version-Bump markiert sie in analysis_runs.
+export const ENGINE_VERSION = "2.1.0"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
