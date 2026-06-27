@@ -280,6 +280,19 @@ function ruleKreisverkehr(attrs, transport) {
   }
 }
 
+// Eine "Vollsperrung" eines PARK-/RASTPLATZES mit 0 gesperrten Fahrstreifen ist KEINE
+// Fahrbahn-Vollsperrung — die Durchfahrt bleibt frei. Der Connector setzt vollsperrung=true am
+// Keyword "Vollsperrung"; bei "Vollsperrung der Parkplätze … 0 Fahrstreifen" führte das zu einer
+// falschen kritischen Eskalation (Audit Kefenrod). Nur dann entschärfen, NICHT bei echten
+// Fahrbahn-Sperrungen (spurenGesperrt > 0 oder unbekannt).
+function nurParkplatzSperre(attrs, obstacle) {
+  if (attrs?.vollsperrung !== true) return false
+  if (num(attrs?.spurenGesperrt) !== 0) return false
+  return /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast/i.test(
+    `${obstacle?.name ?? ""} ${obstacle?.beschreibung ?? ""}`,
+  )
+}
+
 // Prinzip (Max 2026-06-14): ALLE Baustellen auf der Strecke werden als Fund angezeigt
 // (nie ausgeblendet). ROT (kritisch) nur, wenn die HINTERLEGTEN Daten eine Restriktion
 // wirklich verletzen (Restbreite < Transportbreite oder Höhenbegrenzung < Transporthöhe).
@@ -302,8 +315,9 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const breiteVerletzt = rb != null && rb < transport.breite
   const hoeheVerletzt = mh != null && mh < transport.hoehe
   // T-265: eine als 'baustelle' eingestufte Vollsperrung (0112/0210/0211/0214/0216/0302)
-  // muss im Transportzeitraum kritisch sein, nicht nur gelb.
-  const vollsperrung = attrs.vollsperrung === true
+  // muss im Transportzeitraum kritisch sein, nicht nur gelb. T-602: reine Parkplatz-Sperrung
+  // (0 Fahrstreifen) ist KEINE Fahrbahn-Vollsperrung → nicht eskalieren.
+  const vollsperrung = attrs.vollsperrung === true && !nurParkplatzSperre(attrs, obstacle)
   // T-266: strukturelle Blocker, die bisher nur FE-Label waren, heben mindestens auf Warnung.
   const blocker = attrs.havarie === true || attrs.sackgasse === true ||
     attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
@@ -343,7 +357,7 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
     attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
   // Vollsperrung im Zeitraum = kritisch; sonst Gewichts-/Restbreite prüfen, sonst Hinweis.
   let severity = "hinweis"
-  if (attrs.vollsperrung === true && overlap) severity = "kritisch"
+  if (attrs.vollsperrung === true && !nurParkplatzSperre(attrs, obstacle) && overlap) severity = "kritisch"
   else if (rb != null && rb < transport.breite) severity = "kritisch"
   else if (maxG != null && maxG < transport.gesamtgewicht) severity = "kritisch"
   else if (overlap || blocker) severity = "warnung"

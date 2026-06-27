@@ -251,6 +251,16 @@ describe("baustelle", () => {
 
   // T-601: ohne geplanten Transport-Zeitraum werden abgelaufene/zukünftige EREIGNISSE auf heute
   // angekert und fallen komplett raus (statt als "überschneidet den Transportzeitraum" zu bleiben).
+  it("Parkplatz-Vollsperrung mit 0 Fahrstreifen → NICHT kritisch; echte Fahrbahn-Vollsperrung bleibt (T-602)", () => {
+    const park = evaluate(
+      ob("baustelle", { vollsperrung: true, spurenGesperrt: 0 }, { name: "Vollsperrung der Parkplätze auf der A3" }),
+      TR, {},
+    )
+    expect(park.severity).not.toBe("kritisch")
+    const echt = evaluate(ob("baustelle", { vollsperrung: true, spurenGesperrt: 2 }, { name: "A3 Vollsperrung" }), TR, {})
+    expect(echt.severity).toBe("kritisch")
+  })
+
   it("abgelaufenes Ereignis ohne Zeitraum → komplett raus (null)", () => {
     expect(evaluate(ob("baustelle", { restbreiteM: 3.6 }, { gueltigBis: "2020-01-01" }), TR, {})).toBeNull()
     expect(evaluate(ob("sperrung", { vollsperrung: true }, { gueltigBis: "2020-01-01" }), TR, {})).toBeNull()
