@@ -1,7 +1,7 @@
 // Funde-Dedup: NUR ko-lokalisierte Punkt-Dubletten zusammenfassen; Strecken/Fahrtrichtungen bleiben.
 
 import { describe, expect, it } from "vitest"
-import { dedupeFindings } from "../src/engine/index.js"
+import { dedupeByLocation, dedupeFindings } from "../src/engine/index.js"
 
 const LINE = { type: "LineString", coordinates: [[8, 49], [8.01, 49.01]] }
 const f = (over = {}) => ({
@@ -93,6 +93,47 @@ describe("dedupeFindings", () => {
     const out = dedupeFindings([
       f({ km: 28.3, titel: "Maßnahme A", severity: "hinweis", quelle: { name: "Autobahn GmbH" } }),
       f({ km: 28.35, titel: "Maßnahme B", severity: "warnung", quelle: { name: "Autobahn GmbH" } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+})
+
+// T-607: Standort-Dedup — Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten.
+describe("dedupeByLocation", () => {
+  const b = (over = {}) => ({
+    routeId: "r1", kategorie: "bruecke", titel: "Brücke", severity: "warnung",
+    km: 6.94, lat: 51.6467, lng: 7.9141, geom: null, ...over,
+  })
+
+  it("FR-Zwillinge am ~selben Punkt (≤25 m) → EIN Fund", () => {
+    const out = dedupeByLocation([
+      b({ titel: "Ahsebrücke FR Hannover", lat: 51.64677, lng: 7.91412 }),
+      b({ titel: "Ahsebrücke FR Oberhausen", lat: 51.64677, lng: 7.91411 }),
+    ])
+    expect(out).toHaveLength(1)
+  })
+
+  it("behält den schwereren Fund", () => {
+    const out = dedupeByLocation([
+      b({ km: 2.16, lat: 51.68126, lng: 7.95370, severity: "warnung" }),
+      b({ km: 2.16, lat: 51.68136, lng: 7.95347, severity: "kritisch" }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+  })
+
+  it("verschiedene Kategorie am selben Punkt bleibt getrennt (konservativ, nichts übersehen)", () => {
+    const out = dedupeByLocation([
+      b({ kategorie: "baustelle" }),
+      b({ kategorie: "sperrung" }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+
+  it("echte distinkte Brücken >25 m auseinander bleiben getrennt", () => {
+    const out = dedupeByLocation([
+      b({ lat: 51.6467, lng: 7.9141 }),
+      b({ lat: 51.6478, lng: 7.9141 }), // ~120 m nördlich
     ])
     expect(out).toHaveLength(2)
   })

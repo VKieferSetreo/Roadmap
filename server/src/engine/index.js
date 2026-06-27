@@ -226,6 +226,47 @@ function dropCrossSourceDuplicates(findings) {
   return findings.filter((x) => !drop.has(x))
 }
 
+// T-607 (Audit-Runde 2): dieselbe physische Stelle erscheint mehrfach. (a) Brücken-Zwillinge je
+// Fahrtrichtung — BASt/Autobahn-PUNKT-Brücken („… FR Hannover" / „… FR Oberhausen") am ~selben
+// Punkt; der Gegenfahrbahn-Filter greift nur bei Linien-Geometrie (~15 %), Punkt-Brückenpaare
+// entkommen, jedes Bauwerk erscheint 2× (eines ist die Gegenfahrbahn, die der Transport nie befährt).
+// (b) Quell-übergreifende Doppelmeldung am identischen Ort (0001 Autobahn-live + 0145 AkD-Planung).
+// Pro Route + GLEICHER Kategorie Funde ≤ LOC_M (Koord) und ≤ DUP_KM (km) zu EINEM zusammenfassen
+// (schwerster; bei Gleichstand der mit Geom). Kategorie-KONSERVATIV: Baustelle wird NIE mit Sperrung
+// verschmolzen (könnten distinkt sein — Max: nichts übersehen). Die Last/Restriktion gilt richtungs-
+// unabhängig, daher ist der Merge zweier Richtungsdecks korrekt.
+const LOC_M = 25
+export function dedupeByLocation(findings) {
+  const out = []
+  for (const f of findings) {
+    // NUR Punkt-Funde (kein geom): die FR-Zwillinge sind Punkt-Brücken; Linien-Hindernisse sind
+    // bereits über den Gegenfahrbahn-Filter + dedupeFindings sauber richtungs-/dublettenbehandelt —
+    // die werden hier NICHT angefasst (kein Risiko für die getunte Fahrtrichtungs-Logik).
+    const twin = !f.geom && Number.isFinite(f.lat) && Number.isFinite(f.lng)
+      ? out.find((k) =>
+        !k.geom && k.routeId === f.routeId && k.kategorie === f.kategorie &&
+        Math.abs(k.km - f.km) <= DUP_KM &&
+        Number.isFinite(k.lat) && Number.isFinite(k.lng) &&
+        haversineKm({ lat: k.lat, lng: k.lng }, { lat: f.lat, lng: f.lng }) * 1000 <= LOC_M)
+      : null
+    if (!twin) { out.push(f); continue }
+    const fr = SEV_RANK[f.severity] ?? 0
+    const tr = SEV_RANK[twin.severity] ?? 0
+    if (fr > tr || (fr === tr && f.geom && !twin.geom)) Object.assign(twin, f)
+  }
+  return out
+}
+
+// FR-/Rifa-Richtungssuffix aus Brücken-/Tunnel-Titeln entfernen — nach dem Zwillings-Merge ist das
+// Richtungs-Label sinnlos/irreführend (die Restriktion gilt beidseitig). Nur Bauwerks-Kategorien:
+// bei Baustellen/Sperrungen kann „FR <Ort>" eine echte Richtungsangabe sein → unangetastet lassen.
+function cleanBauwerkTitel(s) {
+  return String(s ?? "")
+    .replace(/\s*[,(]?\s*\b(FR|Rifa)\s+[A-Za-zÄÖÜäöüß.-]+\b\)?/g, "")
+    .replace(/_FR\s*\w+(_\w+)?/gi, "")
+    .replace(/\s{2,}/g, " ").replace(/\s*[/,]\s*$/, "").replace(/^\s*[/,]\s*/, "").trim()
+}
+
 /** Analysierbare Routen: ≥2 valide Punkte (Geometrie) UND freigegeben.
  *  Prüfen-Gate (T-593): aus einem VEMAGS-Bescheid rekonstruierte Strecken werden erst nach
  *  manueller Prüfung (verifiziert=true) ausgewertet — ungeprüfte Strecken fließen NICHT in
@@ -414,6 +455,10 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   }
   findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
   findings = dedupeByObstacle(findings) // #22: dieselbe Stelle über viele Strecken → EIN Fund
+  findings = dedupeByLocation(findings) // T-607: Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten
+  for (const f of findings) {
+    if (f.kategorie === "bruecke" || f.kategorie === "tunnel") f.titel = cleanBauwerkTitel(f.titel)
+  }
   findings.sort((a, b) => a.km - b.km)
 
   distanzKm = round1(distanzKm)
