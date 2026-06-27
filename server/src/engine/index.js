@@ -334,12 +334,18 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Route entlanglaufende Maßnahme auch dann, wenn ihr Mittel-/Ankerpunkt versetzt liegt,
       // und ein Punkt 16 m neben der Route fällt sauber raus.
       let near = nearestOnRoute({ lat: obstacle.lat, lng: obstacle.lng }, geometry, cum, grid)
+      // T-607: Marker-Punkt mitführen. obstacle.lat/lng ist bei langen Linien-Hindernissen
+      // (Autobahn-/AkD-Baustellen über viele km) der ANKER der Gesamtlinie und kann zig km vom
+      // Routen-Schnittpunkt entfernt liegen (gemessen bis 58 km) → der Karten-Marker säße weit
+      // außerhalb der Route, obwohl die geclippte Linie korrekt aufliegt. Den der Route NÄCHSTEN
+      // Stützpunkt als Markerposition nehmen (liegt im Korridor). Punkt-Hindernisse: bleibt = obstacle.
+      let markerPt = { lat: obstacle.lat, lng: obstacle.lng }
       for (let pi = 0; pi < obstaclePts.length; pi++) {
         const p = obstaclePts[pi]
         if (near.distM <= corridorM) break // schon im Korridor — günstig, kein Weitersuchen nötig
         if ((pi & 63) === 0) await maybeYield() // alle 64 Stützpunkte den Loop atmen lassen
         const n = nearestOnRoute(p, geometry, cum, grid)
-        if (n.distM < near.distM) near = n
+        if (n.distM < near.distM) { near = n; markerPt = p }
       }
       if (near.distM > corridorM) continue
 
@@ -389,8 +395,10 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         // keinen Beschreibungstext liefert.
         beschreibung: (obstacle.beschreibung && obstacle.beschreibung.trim()) || verdict.beschreibung,
         detail: verdict.detail,
-        lat: obstacle.lat,
-        lng: obstacle.lng,
+        // T-607: Marker an den Routen-Schnittpunkt (nächster Linien-Stützpunkt im Korridor), nicht an
+        // den oft zig km entfernten Anker langer Linien-Hindernisse. Punkt-Hindernisse: = obstacle.
+        lat: markerPt.lat,
+        lng: markerPt.lng,
         geom: geomFuerFund, // auf den Routen-Korridor geclippte Strecke (nur durchfahrener Teil), sonst Punkt
         km: near.km, // Position auf SEINER Route — bereits deterministisch in nearestOnRoute() gerundet (#9)
         routeId: route.id,

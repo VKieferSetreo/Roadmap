@@ -172,6 +172,29 @@ describe("Auto-Rerun (rerunAffectedProjects)", () => {
       else process.env.OSRM_URL = prev
     }
   })
+
+  it("T-607: Marker eines langen Linien-Hindernisses sitzt am Routen-Schnittpunkt, nicht am fernen Anker", async () => {
+    const { app, db, tenant } = makeApp()
+    const points = cityPoints("Hamburg", "Hannover")
+    const mid = midOf(points) // exakt auf der Route
+    const p = await createRoutedProject(app, { points })
+    // Linien-Hindernis: Anker ~33 km nördlich der Routenmitte (in der großen Routen-Bbox), aber die
+    // Geometrie endet EXAKT auf der Routenmitte → matcht dort. Marker muss an mid, nicht am Anker.
+    const ankerLat = mid.lat + 0.3
+    db.state.obstacles.push({
+      id: randomUUID(), kategorie: "baustelle", name: "Lange Autobahn-Baustelle",
+      beschreibung: "Vollsperrung", lat: ankerLat, lng: mid.lng, // ferner Anker
+      geom: { type: "LineString", coordinates: [[mid.lng, ankerLat], [mid.lng, mid.lat]] },
+      attrs: { vollsperrung: true }, aktiv: true, tenant_id: null, demo: false,
+      gueltig_von: null, gueltig_bis: null, quelle: { name: "Test" }, strassen_ref: "A7", richtung: null,
+    })
+    await request(app).post(`/api/projects/${p.id}/analysis`)
+    const fs = db.state.findings.filter((f) => f.project_id === p.id)
+    expect(fs.length).toBeGreaterThanOrEqual(1)
+    const f = fs[0]
+    expect(Math.abs(f.lat - mid.lat)).toBeLessThan(0.05) // am Schnittpunkt
+    expect(Math.abs(f.lat - ankerLat)).toBeGreaterThan(0.2) // NICHT am Anker
+  })
 })
 
 describe("Notifications-API", () => {
