@@ -216,7 +216,7 @@ export function obstacleRouteRelation(
 // dem Transport. Jedes Segment wird auf ~stepM densifiziert, damit grobe 2-Punkt-Linien nicht
 // all-or-nothing nach ihrem Mittelpunkt gewertet werden (sonst zählte eine 150-m-Querstraße ganz
 // mit, wenn die Route zufällig nahe ihrem Mittelpunkt kreuzt).
-export function coincidentRouteKm(obstaclePts, geometry, cum, coincidentM = 8, grid = null, stepM = 12) {
+export function coincidentRouteKm(obstaclePts, geometry, cum, coincidentM = 8, grid = null, stepM = 12, alignDeg = 40) {
   if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return 0
   let onKm = 0
   for (let i = 0; i < obstaclePts.length - 1; i++) {
@@ -224,12 +224,25 @@ export function coincidentRouteKm(obstaclePts, geometry, cum, coincidentM = 8, g
     const b = obstaclePts[i + 1]
     const segKm = haversineKm(a, b)
     if (segKm === 0) continue
+    const segBear = bearingDeg(a, b)
     const steps = Math.max(1, Math.round((segKm * 1000) / stepM))
     let inCount = 0
     for (let s = 0; s <= steps; s++) {
       const t = s / steps
       const pt = { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) }
-      if (nearestOnRoute(pt, geometry, cum, grid).distM <= coincidentM) inCount++
+      const near = nearestOnRoute(pt, geometry, cum, grid)
+      if (near.distM > coincidentM) continue
+      // NUR deckungsgleich, wenn die Restriktionslinie hier ~PARALLEL zur Route läuft (Transport
+      // fährt AUF dieser Straße). Eine quer kreuzende Straße (≈90°) durchquert zwar das 8-m-Band,
+      // läuft aber nicht auf der Route — sonst zählte eine lange 2-Punkt-Querlinie ihr Durchqueren
+      // als ~20 m „deckungsgleich" und entkäme dem Kreuzungsfilter (Mess-Artefakt T-603). Parallel
+      // in BEIDE Richtungen (Δ≈0 oder ≈180, Gegenfahrbahn derselben Straße) gilt.
+      const rb = routeBearingAtKm(geometry, cum, near.km)
+      if (rb != null) {
+        const d = angleDeltaDeg(segBear, rb)
+        if (Math.min(d, 180 - d) > alignDeg) continue
+      }
+      inCount++
     }
     onKm += segKm * (inCount / (steps + 1))
   }
