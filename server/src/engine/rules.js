@@ -176,9 +176,11 @@ function ruleBauwerk(art, attrs, transport) {
     detail["Schwertransport"] = "gesperrt"
     gruende.push("für genehmigungspflichtigen Schwerverkehr gesperrt")
   } else if (gstSperre) {
+    // T-601: NICHT pauschal "gesperrt" — grundsaetzlicheGstSperre = für Großraum-/Schwertransporte
+    // auflagenpflichtig/tragfähigkeitsbeschränkt (Einzelfallprüfung), nicht für den Verkehr gesperrt.
     severity = schlimmer(severity, "warnung")
-    detail["Schwertransport"] = "grundsätzlich gesperrt/auflagenpflichtig"
-    gruende.push("grundsätzliche Schwertransport-Sperre")
+    detail["Schwertransport"] = "auflagenpflichtig (Tragfähigkeit für GST prüfen)"
+    gruende.push("Großraum-/Schwertransport-auflagenpflichtig (Tragfähigkeit prüfen)")
   }
 
   const beschreibung =
