@@ -20,18 +20,13 @@ import { ApiError, isFiniteNumber } from "../util.js"
 export const ENGINE_VERSION = "2.0.0"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
-// geometrisch AUF der Autobahn — die meisten sind aber KREUZUNGSBAUWERKE (ein Wirtschaftsweg /
-// eine K-/L-/B-Straße / ein Radweg führt ÜBER oder UNTER die Autobahn). Der Schwertransport auf
-// der durchgehenden Autobahn fährt da nicht drüber, sondern drunter/vorbei → kein Hindernis.
-// Entscheidung über den NAMEN (strassen_ref ist bei BASt unzuverlässig = oft die GEKREUZTE Straße):
-// Das Bauwerk trägt die Route-Straße (→ BEHALTEN) gdw. die Route-Straße als GETRAGENE Straße im
-// Namen steht ("i.Z.(d.) A7", "A7 über …"). Trägt es eine ANDERE Straße/einen Nebenweg über/unter
-// die Route ("K142 über A1", "Üf Wirtschaftsweg") → KREUZUNG → kein Fund.
-// SICHER: ohne Route-Refs (OSRM weg) wird NICHTS gefiltert; trägt der Name die Route-Straße,
-// wird IMMER behalten (kein Fehl-Drop einer echten GST-Sperre auf dem befahrenen Weg).
+// geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
+// → attrs.getrageneStrasse): Trägt das Bauwerk die Route-Straße, fährt der Transport DRAUF → echte
+// (oft GST-)Restriktion, BEHALTEN. Trägt es eine andere Straße über/unter die Route (Route-Straße
+// liegt UNTEN = Überführung, z.B. "K47 / A1") → der Transport fährt nur drunter → kein Fund.
+// Fehlt das Strukturfeld (~13%, "Sonstige"/Bahn), greift eine KONSERVATIVE Namens-Heuristik, die
+// nur eindeutige Überführungen aussortiert. SICHER: ohne Route-Refs wird nichts gefiltert;
 // Strecken-Bauwerke (eigene Linien-Geometrie) sind über die Geometrie sauber zugeordnet → nie filtern.
-const MINOR_WAY = /(wirtschaftsweg|wi-?weg|wiwe|wirtw|\bww\b|\bfw\b|feldweg|radweg|gehweg|fuß-?weg|fuss-?weg|fußgänger|wanderweg|forstweg|waldweg|holzweg|holzabfuhrweg|\bgvs\b|\bgw\b|drahtseilbahn|durchlass|flutmulde|reitweg|geh-?\s*u(?:nd)?\.?\s*radweg|rad-?\s*u(?:nd)?\.?\s*gehweg|\bgrw\b|wildtiere|kleintiere|freilebende tiere|\btiere\b|wzg|weidezuweg|kampweg)/i
-const WATER = /(bach|bäke|baeke|graben|fluss|fluß|kanal|\bsee\b|teich|wümme|\baue\b|fleet|siel|\bwl\b|rotach|aach|acher|lumda|hegbach|sulzbach|mühlbach|fischbach|goldbach|saalbach|kammbach|landgraben|seegraben|norderbäke|havelkanal|harste|\brase\b|lubach|rehbach|befferbach|ortshäuser|entlesbach|schwabach|ofener bäke|ofendieker|gewässer|\bau\b|wartanger)/i
 const ROAD_ALL = /\b(a|b|l|k|st|s)\s?0*(\d{1,4})\b/gi
 function roadRefsIn(s) {
   const out = []
@@ -55,55 +50,21 @@ export function isCrossingStructure(obstacle, routeRefs) {
   const getragen = normRoadRef(obstacle.attrs?.getrageneStrasse)
   if (getragen != null) return !routeRefs.has(getragen)
 
+  // FALLBACK (Bauwerk ohne Strukturfeld, ~13%): KONSERVATIV — nur EINDEUTIGE Überführungen raus,
+  // sonst behalten. Die getragene Straße ist die Wahrheit (oben); fehlt sie, dürfen wir keine
+  // echte Gewichts-Sperre verstecken (Max-Entscheid 2026-06-26: alle echten Sperren zeigen).
   const name = ` ${String(obstacle.name ?? "").toLowerCase()} `
-
-  // 1) GETRAGENE Straße(n): "i.Z.(d.)/im Zuge (BAB)? <road>" und "<road> (in km …)? über/ü."
+  // (a) Name trägt die Route-Straße ("i.Z.(d.) A7" / "A7 (in km …) über …") → behalten.
   const carried = []
   for (const m of name.matchAll(/(?:i\.?\s*z\.?\s*d?\.?|im zuge (?:der |des |einer )?)\s*(?:bab\s*)?((?:a|b|l|k|st)\s?\d{1,4})/gi))
     carried.push(...roadRefsIn(m[1]))
   for (const m of name.matchAll(/((?:a|b|l|k|st)\s?\d{1,4})\s*(?:in km [\d.,\s]+)?\s*(?:über|ü\.)/gi))
     carried.push(...roadRefsIn(m[1]))
-  if (intersects(carried, routeRefs)) return false // trägt die Route-Straße → behalten
-
-  // 2) GEKREUZTE Straße: erste Klausel direkt nach "über"
+  if (intersects(carried, routeRefs)) return false
+  // (b) Name führt eine ANDERE Sache "über" die Route-Straße → eindeutige Überführung → raus.
   const um = name.match(/(?:über|ü\.\s*d?\.?|ueber)\s*(?:die |der |den |das |dem |einen |einer )?(.*)$/)
-  if (um) {
-    const first = um[1].split(/[,;/]|\bkm\b/)[0]
-    if (intersects(roadRefsIn(first), routeRefs)) return true // <X> über Route-Straße = Überführung
-  }
-
-  // 3) "A<n>; <Üfg/Ufg> <X>" — X bestimmt: Wasser → behalten, Nebenweg/andere Straße → Kreuzung
-  const pm = name.match(/^\s*((?:a|b)\s?\d{1,4})\s*[;/]\s*(.*)$/)
-  if (pm) {
-    const rest = pm[2]
-    if (WATER.test(rest) && roadRefsIn(rest).length === 0) return false
-    if (MINOR_WAY.test(rest)) return true
-    const rr = roadRefsIn(rest)
-    if (rr.length && !intersects(rr, routeRefs)) return true
-  }
-
-  // 4) Über-/Unterführung: Das Bauwerk ist nach der QUERENDEN Sache benannt (Querstraße /
-  // Wirtschaftsweg / Gewässer wie "UF Lumda", "Üf K142", "Zw6 / A28 - Überführung L815"),
-  // NICHT nach der durchgehenden Autobahn → Kreuzungsbauwerk, der Transport fährt nicht drauf.
-  // Die echten Autobahn-Brücken tragen die Autobahn explizit ("A5 über …" / "i.Z.d. A5") und
-  // sind in Schritt 1 bereits behalten; Talbrücken o.ä. ohne ÜF-/UF-Marker fallen unten durch.
-  // Ausnahme: der getragene Name nennt selbst eine Route-Straße ("UF Ast A5") → behalten.
-  const fm = name.match(/(?:^|[\s,;/(-])(?:üfg|ufg|überführung|unterführung|uef|üf|uf)[.\s]/)
-  if (fm) {
-    const after = name.slice(fm.index + fm[0].length)
-    if (intersects(roadRefsIn(after.split(/[,;/]/)[0]), routeRefs)) return false
-    return true
-  }
-
-  // 5) Nebenweg-Bauwerk ohne erkannte getragene Straße
-  if (MINOR_WAY.test(name) && carried.length === 0) return true
-
-  // 6) Fallback: Name unklar, aber strassen_ref ist eine Straßennummer NICHT auf der Route.
-  // Schritt 1 hat bereits alles behalten, dessen Name die Route-Straße trägt → hier kein
-  // Übergehen eines echten „trägt-die-Route"-Falls. Fängt BASt-Brücken, deren Name kein
-  // klares „über"-Muster hat, deren strassen_ref aber eine routenfremde Straße ist.
-  const oRef = normRoadRef(obstacle.strassenRef)
-  if (oRef != null && !routeRefs.has(oRef)) return true
+  if (um && intersects(roadRefsIn(um[1].split(/[,;/]|\bkm\b/)[0]), routeRefs)) return true
+  // sonst: im Zweifel BEHALTEN.
   return false
 }
 
