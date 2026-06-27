@@ -605,6 +605,14 @@ export function createFakeDb() {
       state.findings = state.findings.filter((f) => f.project_id !== params[0])
       return ok([], before - state.findings.length)
     }
+    // T-603: Orphan-Purge im PATCH — Funde löschen, deren route_id nicht mehr in den neuen Routen liegt.
+    if (sql.startsWith("DELETE FROM findings f WHERE f.project_id = $1 AND (jsonb_array_length")) {
+      const routeIds = new Set((J(params[1]) || []).map((r) => r && r.id).filter(Boolean))
+      const before = state.findings.length
+      state.findings = state.findings.filter((f) =>
+        !(f.project_id === params[0] && (routeIds.size === 0 || (f.route_id != null && !routeIds.has(f.route_id)))))
+      return ok([], before - state.findings.length)
+    }
     if (sql.startsWith("INSERT INTO findings (project_id,")) {
       // T-330: Multi-Row-Batch — Params in 18er-Tupeln (kann auch 1 Zeile sein).
       const COLS = 18

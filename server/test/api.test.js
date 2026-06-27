@@ -259,6 +259,29 @@ describe("projects CRUD (v2-Shape)", () => {
     expect(ohne.body.routes[0].waypoints).toBeUndefined()
   })
 
+  it("T-603: PATCH entfernt eine Route → deren Funde werden gepurged (kein Geister-Snapshot)", async () => {
+    const { app, db } = makeApp()
+    const p = await createProject(app)
+    const points = cityPoints("Hamburg", "Hannover")
+    await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-1", name: "A", points }, { id: "r-2", name: "B", points }],
+    })
+    // Funde auf beiden Routen direkt seeden (ohne Analyse).
+    db.state.findings.push(
+      { id: "f1", project_id: p.id, route_id: "r-1", kategorie: "bruecke", severity: "warnung", km: 1 },
+      { id: "f2", project_id: p.id, route_id: "r-2", kategorie: "bruecke", severity: "warnung", km: 2 },
+    )
+    // r-2 entfernen → f2 muss verschwinden, f1 bleibt.
+    const res = await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [{ id: "r-1", name: "A", points }],
+    })
+    expect(res.status).toBe(200)
+    expect(db.state.findings.map((f) => f.id)).toEqual(["f1"])
+    // Alle Routen entfernen → kein Fund bleibt (Voll-Orphan kann nicht entstehen).
+    await request(app).patch(`/api/projects/${p.id}`).send({ routes: [] })
+    expect(db.state.findings.filter((f) => f.project_id === p.id)).toHaveLength(0)
+  })
+
   it("PATCH vergibt Defaults für fehlende Routen-Felder", async () => {
     const { app } = makeApp()
     const p = await createProject(app)

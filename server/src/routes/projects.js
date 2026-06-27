@@ -295,6 +295,21 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
       params,
     )
     if (!rows[0]) throw new ApiError(409, "konflikt-veraltet")
+    // T-603 (Wurzel-Fix Orphan-Geister): Routen-Edit läuft über PATCH, die Re-Analyse aber über den
+    // SEPARATEN POST /:id/analysis. Wird eine Strecke hier gelöscht/ersetzt OHNE anschließende
+    // Re-Analyse, blieben ihre Funde als Geister liegen (so entstand der 679-Funde-Orphan). Funde,
+    // deren route_id nicht mehr in den neuen Routen liegt (oder ALLE bei 0 Routen), sofort und
+    // transaktional wegräumen. Identische Definition wie purgeOrphanFindings (Worker-Self-Heal).
+    if (body.routes !== undefined) {
+      await db.query(
+        `DELETE FROM findings f
+           WHERE f.project_id = $1
+             AND (jsonb_array_length($2::jsonb) = 0
+                  OR (f.route_id IS NOT NULL AND NOT EXISTS (
+                       SELECT 1 FROM jsonb_array_elements($2::jsonb) rt WHERE rt->>'id' = f.route_id)))`,
+        [row.id, JSON.stringify(routes)],
+      )
+    }
     res.json(await present(req, rows[0]))
   }))
 
