@@ -30,6 +30,22 @@ function ersteKoordinate(geom) {
 
 const clean = (s) => String(s ?? "").replace(/\s+/g, " ").trim()
 
+// Traglastindex in Klartext (BASt-Skala I–V: I = erfüllt die Zieltragfähigkeit ohne bauliche
+// Defizite, V = stärkste Defizite — KEINE Tonnage, sondern eine Tragfähigkeits-Defizitstufe).
+// GST-Auflagenpflicht besteht unabhängig davon; die Stufe gibt das strukturelle Risiko.
+const TLI = {
+  I: "Stufe I/V — keine Tragfähigkeits-Defizite (baulich erfüllt)",
+  II: "Stufe II/V — geringe Tragfähigkeits-Defizite",
+  III: "Stufe III/V — mittlere Tragfähigkeits-Defizite",
+  IV: "Stufe IV/V — deutliche Tragfähigkeits-Defizite",
+  V: "Stufe V/V — stärkste Tragfähigkeits-Defizite",
+}
+function traglastindexText(raw) {
+  const v = clean(raw)
+  if (!v || v === "-" || v === "*") return null
+  return `Traglastindex ${TLI[v] ?? v}` // GR/kZN/>GR unbekannt → roh durchreichen
+}
+
 // Getragene Straße aus hoechst_sachverhalt_oben (z.B. "*O:  A 1" → "A1", "O:  K 11" → "K11",
 // "*O:  B 503 (A…" → "B503"). Das ist die Straße, die das Bauwerk OBEN trägt — der Transport
 // fährt nur dann drüber, wenn seine Route auf dieser Straße liegt. Kein Treffer → undefined
@@ -72,7 +88,7 @@ export const bastBrueckenConnector = {
       // Beschreibung OHNE m/t-Einheiten (sonst extractStammdaten-Scheinwerte). Zustandsnote (zn)
       // bewusst NICHT ausgegeben — inkonsistent kodiert (mal ×10, mal roh) und ohnehin keine
       // GST-Restriktion. Traglastindex (I–V/GR) trägt keine Einheit → unkritisch.
-      const idx = clean(p.trag_l_idx) ? `Traglastindex ${clean(p.trag_l_idx)}` : null
+      const idx = traglastindexText(p.trag_l_idx)
       const ortBl = [clean(p.ort), clean(p.bl)].filter(Boolean).join(", ")
       // T-601: NICHT "gesperrt" — sperrung_sv='ja' = die Brücke ist in der BASt-Liste der für
       // Großraum-/Schwertransporte (GST) TRAGFÄHIGKEITSRELEVANTEN Bauwerke. Die Strecke ist offen;
