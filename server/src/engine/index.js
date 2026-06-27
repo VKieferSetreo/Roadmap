@@ -263,18 +263,11 @@ export function dedupeByLocation(findings) {
 // Text (Popup) bleibt der ECHTE Quelltext, nur der Anzeige-Titel wird humanisiert.
 export function humanizeTitel(s, kat) {
   let t = String(s ?? "").replace(/[\s\-–/,]+$/, "").trim()
-  // BASt-Volldup „X/X" (Quelle hängt denselben Block 2× an, evtl. mit kleinem Spacing-Unterschied).
-  const slash = t.split("/")
-  if (slash.length >= 2 && slash.length % 2 === 0) {
-    const h = slash.length / 2
-    const norm = (x) => x.join("/").replace(/[\s\-–]+/g, "").toLowerCase()
-    if (norm(slash.slice(0, h)) === norm(slash.slice(h))) t = slash.slice(0, h).join("/").trim()
-  }
   if (kat === "bruecke" || kat === "tunnel") {
+    // ZUERST Richtungs-/Teilbauwerk-/FR-Tails — sonst bricht ein FR-Suffix auf NUR EINER Hälfte
+    // („…Windmühle/…Windmühle, FR Hannover") die Symmetrie und der „X/X"-Dup-Collapse greift nicht.
     t = t
-      // Richtungs-/Teilbauwerk-Tail ab einem Trenner komplett abschneiden (.*$).
       .replace(/\s*[/,]\s*(Rifa|RiFa|RiFb|Fahrtrichtung|Ri\.?Fb?|RF|Tbw|TBW|Überbau|Ostseite|Westseite|Nordseite|Südseite|südl\.|nördl\.|östl\.|westl\.|östliches|nördliches|BA\s+I+I*\b)\b.*$/i, "")
-      // dann space-getrennte Richtungs-Suffixe ohne Trenner (z.B. „… FR Hannover", „(FR Oberhausen)", „_FR OE_West").
       .replace(/\s*[,(]?\s*\b(FR|Rifa)\s+[A-Za-zÄÖÜäöüß.-]+\b\)?/gi, "")
       .replace(/_FR\s*\w+(_\w+)?/gi, "")
       .replace(/\s*\(\s*\d+\/\d+\s*\)/g, "").replace(/\s*\(\s*BW\s*[\d.]+\s*\)/gi, "") // (5/1), (BW 2.02)
@@ -283,6 +276,14 @@ export function humanizeTitel(s, kat) {
       .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
       .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
       .replace(/\s*-\s*\d{1,2}\.\d{1,2}\.\d{2,4}/g, "").replace(/\s*\(ARV[^)]*\)/gi, "")
+  }
+  // DANN BASt-Volldup „X/X" (Quelle hängt denselben Block 2× an) — jetzt symmetrisch kollabierbar.
+  t = t.replace(/[\s\-–/,]+$/, "").trim()
+  const slash = t.split("/")
+  if (slash.length >= 2 && slash.length % 2 === 0) {
+    const h = slash.length / 2
+    const norm = (x) => x.join("/").replace(/[\s\-–]+/g, "").toLowerCase()
+    if (norm(slash.slice(0, h)) === norm(slash.slice(h))) t = slash.slice(0, h).join("/").trim()
   }
   t = t.replace(/[\s\-–/,]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
   return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)

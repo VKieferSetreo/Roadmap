@@ -161,6 +161,10 @@ describe("humanizeTitel", () => {
     expect(humanizeTitel("A24 Fahrbahninstandsetzung AM Fahrbinde (ARV 2024-372 NOO-2024-0124) - Lage-10 - 23.06.2026", "baustelle"))
       .toBe("A24 Fahrbahninstandsetzung AM Fahrbinde")
   })
+  it("FR-Suffix auf einer Hälfte bricht den Dup-Collapse NICHT (Reihenfolge)", () => {
+    expect(humanizeTitel('A2 / Gem-Str. "An der Windmühle"/A2 / Gem-Str. "An der Windmühle", FR Hannover', "bruecke"))
+      .toBe('A2 / Gem-Str. "An der Windmühle"')
+  })
   it("saubere Titel bleiben unverändert; nie leer", () => {
     expect(humanizeTitel("Datteln-Hamm-Kanal", "bruecke")).toBe("Datteln-Hamm-Kanal")
     expect(humanizeTitel("Am Eifeltor", "bruecke")).toBe("Am Eifeltor")
