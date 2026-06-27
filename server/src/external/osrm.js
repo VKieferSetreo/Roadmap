@@ -87,7 +87,10 @@ export function createOsrm({
       if (wp.length < 2) return null
       const coords = wp.map((p) => `${p.lng},${p.lat}`).join(";")
       const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=false&steps=true&continue_straight=true`
-      const data = await fetchJson(url, { timeoutMs, fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
+      // T-602: steps=true auf sehr langen Routen (800+ km) ist langsam — großzügiges Timeout, damit
+      // der Überführungsfilter auch im Worker-Rerun (Default 4 s) greift und nicht still degradiert.
+      // Einmaliger Batch-Call je Route, nicht latenzkritisch.
+      const data = await fetchJson(url, { timeoutMs: Math.max(timeoutMs, 30000), fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
       if (data?.code !== "Ok") return null
       const refs = new Set()
       for (const leg of data.routes?.[0]?.legs ?? []) {
