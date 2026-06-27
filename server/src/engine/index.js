@@ -267,7 +267,7 @@ export function humanizeTitel(s, kat) {
     // ZUERST Richtungs-/Teilbauwerk-/FR-Tails — sonst bricht ein FR-Suffix auf NUR EINER Hälfte
     // („…Windmühle/…Windmühle, FR Hannover") die Symmetrie und der „X/X"-Dup-Collapse greift nicht.
     t = t
-      .replace(/\s*[/,]\s*(Rifa|RiFa|RiFb|Fahrtrichtung|Ri\.?Fb?|RF|Tbw|TBW|Überbau|Ostseite|Westseite|Nordseite|Südseite|südl\.|nördl\.|östl\.|westl\.|östliches|nördliches|BA\s+I+I*\b)\b.*$/i, "")
+      .replace(/\s*[/,]\s*(Rifa|RiFa|RiFb|Fahrtrichtung|Richtungsfahrbahn|Ri\.?Fb?|RF|Tbw|TBW|Bauwerk|Betriebs|Überbau|Ostseite|Westseite|Nordseite|Südseite|südl\.|nördl\.|östl\.|westl\.|östliches|nördliches|BA\s+I+I*\b)\b.*$/i, "")
       .replace(/\s*[,(]?\s*\b(FR|Rifa)\s+[A-Za-zÄÖÜäöüß.-]+\b\)?/gi, "")
       .replace(/_FR\s*\w+(_\w+)?/gi, "")
       .replace(/\s*\(\s*\d+\/\d+\s*\)/g, "").replace(/\s*\(\s*BW\s*[\d.]+\s*\)/gi, "") // (5/1), (BW 2.02)
