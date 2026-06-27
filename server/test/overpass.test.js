@@ -25,6 +25,13 @@ describe("isCrossingStructure — getrageneStrasse autoritativ", () => {
     expect(isCrossingStructure(ob("K 47 [Kr. OH] / A 1", G("K47")), refs("A1"))).toBe(true)
     expect(isCrossingStructure(ob("Üf L815", G("L815")), refs("A28"))).toBe(true)
   })
+  it("gekreuzte Straße (unten) = Route → Überführung raus, auch wenn oben ein Nebenweg ist", () => {
+    // "Forstweg / A45": oben=Forstweg (kein Ref), unten=A45 → Route A45 fährt DRUNTER → raus
+    expect(isCrossingStructure(ob("Forstweg \"Kalteiche\" / A45", { attrs: { gekreuzteStrasse: "A45" } }), refs("A45"))).toBe(true)
+    // "UF L3071": oben=A5, unten=L3071 → Route A5 fährt DRÜBER → behalten
+    expect(isCrossingStructure(ob("UF L3071", { attrs: { getrageneStrasse: "A5", gekreuzteStrasse: "L3071" } }), refs("A5"))).toBe(false)
+  })
+
   it("trägt die Route-Straße → behalten (echte Restriktion), auch kleine Bauwerke", () => {
     // BASt-Wahrheit: "UF Lumda" trägt die A5 (A5-Deck über dem Bach) → echte A5-Sperre → behalten
     expect(isCrossingStructure(ob("UF Lumda/UF Lumda Abschnitt Grünberg Nord", G("A5")), refs("A5"))).toBe(false)

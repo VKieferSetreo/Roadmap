@@ -34,8 +34,9 @@ const clean = (s) => String(s ?? "").replace(/\s+/g, " ").trim()
 // "*O:  B 503 (A…" → "B503"). Das ist die Straße, die das Bauwerk OBEN trägt — der Transport
 // fährt nur dann drüber, wenn seine Route auf dieser Straße liegt. Kein Treffer → undefined
 // (Engine fällt dann auf die Namens-Heuristik zurück).
-function getrageneStrasseAus(oben) {
-  const m = String(oben ?? "").match(/\b(A|B|L|K|St)\s?0*(\d{1,4})\b/i)
+// Straßen-Ref aus einem Sachverhalt-Feld ("*O:  A 1" / "U:  L 3071" → "A1"/"L3071").
+function refAus(feld) {
+  const m = String(feld ?? "").match(/\b(A|B|L|K|St)\s?0*(\d{1,4})\b/i)
   if (!m) return undefined
   const p = m[1].toUpperCase()
   return (p === "ST" ? "ST" : p) + m[2]
@@ -45,7 +46,7 @@ async function ladeAlle({ pageSize = 2000, maxPages = 50, timeoutMs = 45000 } = 
   const all = []
   for (let page = 0; page < maxPages; page++) {
     const url = `${LAYER}?where=${encodeURIComponent("sperrung_sv='ja'")}` +
-      `&outFields=${encodeURIComponent("id_nr,bwnr,tbwnr,bauwerksname,zn,trag_l_idx,ort,kreis,bl,hoechst_sachverhalt_oben")}` +
+      `&outFields=${encodeURIComponent("id_nr,bwnr,tbwnr,bauwerksname,zn,trag_l_idx,ort,kreis,bl,hoechst_sachverhalt_oben,hoechst_sachverhalt_unten")}` +
       `&outSR=4326&f=geojson&resultRecordCount=${pageSize}&resultOffset=${page * pageSize}`
     const data = await getJson(url, { timeoutMs })
     const feats = data?.features ?? []
@@ -85,9 +86,11 @@ export const bastBrueckenConnector = {
         lat, lng,
         attrs: {
           grundsaetzlicheGstSperre: true, // sperrung_sv='ja' = harte GST-Sperrung
-          // T-601: getragene Straße (oben) → Engine filtert Überführungen, wo der Transport
-          // nur DRUNTER durchfährt (Routen-Straße ist die GEKREUZTE, nicht die getragene).
-          getrageneStrasse: getrageneStrasseAus(p.hoechst_sachverhalt_oben),
+          // T-601: getragene (oben) + gekreuzte (unten) Straße → Engine-Überführungsfilter.
+          // Route auf der getragenen Straße = fährt DRÜBER (behalten); Route auf der gekreuzten
+          // Straße = fährt DRUNTER durch = Überführung (raus).
+          getrageneStrasse: refAus(p.hoechst_sachverhalt_oben),
+          gekreuzteStrasse: refAus(p.hoechst_sachverhalt_unten),
         },
         quelleName: QUELLE_NAME, quelleUrl: "https://www.bast.de",
       })

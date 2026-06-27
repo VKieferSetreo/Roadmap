@@ -356,7 +356,7 @@ const EX_NICHT_ATTR = new Set(["gueltigVon", "gueltigBis", "strassenRef"])
 // getrageneStrasse (T-601): bei Punkt-Brücken die Straße, die das Bauwerk TRÄGT (BASt
 // hoechst_sachverhalt_oben). Der Engine-Überführungsfilter behält das Bauwerk nur, wenn die
 // Route auf dieser Straße fährt — sonst kreuzt sie es nur. Reiner String-Ref ("A1"), keine Maße.
-const STRING_ATTRS = new Set(["zeitfenster", "medium", "richtung", "getrageneStrasse"])
+const STRING_ATTRS = new Set(["zeitfenster", "medium", "richtung", "getrageneStrasse", "gekreuzteStrasse"])
 function attrErlaubt(k, v) {
   if (v == null || v === "") return false
   if (typeof v === "number") return !(v === 0 && NULL_BEI_NULL.has(k))

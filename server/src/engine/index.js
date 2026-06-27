@@ -43,12 +43,15 @@ export function isCrossingStructure(obstacle, routeRefs) {
   if (obstacle.kategorie !== "bruecke" && obstacle.kategorie !== "tunnel") return false
   if (!routeRefs || routeRefs.size === 0) return false
 
-  // AUTORITATIV: BASt liefert die getragene Straße strukturiert (hoechst_sachverhalt_oben →
-  // attrs.getrageneStrasse). Das Bauwerk ist relevant gdw. die Route auf der getragenen Straße
-  // fährt; trägt es eine andere Straße (Route-Straße liegt UNTEN = Überführung) → kein Fund.
-  // Schlägt die Namens-Heuristik unten (für Bauwerke ohne dieses Feld).
+  // AUTORITATIV: BASt liefert oben (getragene) + unten (gekreuzte) Straße strukturiert.
+  // Fährt die Route auf der GETRAGENEN Straße (oben) → über die Brücke → echte Restriktion (behalten).
+  // Fährt sie auf der GEKREUZTEN Straße (unten) → drunter durch = Überführung → kein Fund.
+  // (jast_lage="O: Bund" = Autobahn oben = behalten; "U: Bund" = Autobahn unten = raus.)
   const getragen = normRoadRef(obstacle.attrs?.getrageneStrasse)
-  if (getragen != null) return !routeRefs.has(getragen)
+  const gekreuzt = normRoadRef(obstacle.attrs?.gekreuzteStrasse)
+  if (getragen != null && routeRefs.has(getragen)) return false // Route fährt oben drüber → behalten
+  if (gekreuzt != null && routeRefs.has(gekreuzt)) return true // Route fährt unten drunter → Überführung
+  if (getragen != null) return true // trägt eine routenfremde Straße → Kreuzungsbauwerk → raus
 
   // FALLBACK (Bauwerk ohne Strukturfeld, ~13%): KONSERVATIV — nur EINDEUTIGE Überführungen raus,
   // sonst behalten. Die getragene Straße ist die Wahrheit (oben); fehlt sie, dürfen wir keine
