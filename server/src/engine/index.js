@@ -257,14 +257,35 @@ export function dedupeByLocation(findings) {
   return out
 }
 
-// FR-/Rifa-Richtungssuffix aus Brücken-/Tunnel-Titeln entfernen — nach dem Zwillings-Merge ist das
-// Richtungs-Label sinnlos/irreführend (die Restriktion gilt beidseitig). Nur Bauwerks-Kategorien:
-// bei Baustellen/Sperrungen kann „FR <Ort>" eine echte Richtungsangabe sein → unangetastet lassen.
-function cleanBauwerkTitel(s) {
-  return String(s ?? "")
-    .replace(/\s*[,(]?\s*\b(FR|Rifa)\s+[A-Za-zÄÖÜäöüß.-]+\b\)?/g, "")
-    .replace(/_FR\s*\w+(_\w+)?/gi, "")
-    .replace(/\s{2,}/g, " ").replace(/\s*[/,]\s*$/, "").replace(/^\s*[/,]\s*/, "").trim()
+// T-607 (Audit-Runde 2): Roh-Quell-Labels lesbar machen. Die Connectoren reichen interne Bauwerks-/
+// Planungs-Strings 1:1 als Titel durch (BASt-„X/X"-Vollduplikate, Teilbauwerk-/Richtungs-Codes,
+// AkD-Planungs-IDs „Lage-N/AkD NNNNN/1-str. R KS/19h bis 6h"). Hier zentral säubern — der Beschreibungs-
+// Text (Popup) bleibt der ECHTE Quelltext, nur der Anzeige-Titel wird humanisiert.
+export function humanizeTitel(s, kat) {
+  let t = String(s ?? "").replace(/[\s\-–/,]+$/, "").trim()
+  // BASt-Volldup „X/X" (Quelle hängt denselben Block 2× an, evtl. mit kleinem Spacing-Unterschied).
+  const slash = t.split("/")
+  if (slash.length >= 2 && slash.length % 2 === 0) {
+    const h = slash.length / 2
+    const norm = (x) => x.join("/").replace(/[\s\-–]+/g, "").toLowerCase()
+    if (norm(slash.slice(0, h)) === norm(slash.slice(h))) t = slash.slice(0, h).join("/").trim()
+  }
+  if (kat === "bruecke" || kat === "tunnel") {
+    t = t
+      // Richtungs-/Teilbauwerk-Tail ab einem Trenner komplett abschneiden (.*$).
+      .replace(/\s*[/,]\s*(Rifa|RiFa|RiFb|Fahrtrichtung|Ri\.?Fb?|RF|Tbw|TBW|Überbau|Ostseite|Westseite|Nordseite|Südseite|südl\.|nördl\.|östl\.|westl\.|östliches|nördliches|BA\s+I+I*\b)\b.*$/i, "")
+      // dann space-getrennte Richtungs-Suffixe ohne Trenner (z.B. „… FR Hannover", „(FR Oberhausen)", „_FR OE_West").
+      .replace(/\s*[,(]?\s*\b(FR|Rifa)\s+[A-Za-zÄÖÜäöüß.-]+\b\)?/gi, "")
+      .replace(/_FR\s*\w+(_\w+)?/gi, "")
+      .replace(/\s*\(\s*\d+\/\d+\s*\)/g, "").replace(/\s*\(\s*BW\s*[\d.]+\s*\)/gi, "") // (5/1), (BW 2.02)
+  } else {
+    t = t
+      .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
+      .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
+      .replace(/\s*-\s*\d{1,2}\.\d{1,2}\.\d{2,4}/g, "").replace(/\s*\(ARV[^)]*\)/gi, "")
+  }
+  t = t.replace(/[\s\-–/,]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
+  return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)
 }
 
 /** Analysierbare Routen: ≥2 valide Punkte (Geometrie) UND freigegeben.
@@ -473,9 +494,7 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
   findings = dedupeByObstacle(findings) // #22: dieselbe Stelle über viele Strecken → EIN Fund
   findings = dedupeByLocation(findings) // T-607: Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten
-  for (const f of findings) {
-    if (f.kategorie === "bruecke" || f.kategorie === "tunnel") f.titel = cleanBauwerkTitel(f.titel)
-  }
+  for (const f of findings) f.titel = humanizeTitel(f.titel, f.kategorie) // T-607: kryptische Roh-Labels lesbar machen
   findings.sort((a, b) => a.km - b.km)
 
   distanzKm = round1(distanzKm)

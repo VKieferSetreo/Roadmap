@@ -138,3 +138,32 @@ describe("dedupeByLocation", () => {
     expect(out).toHaveLength(2)
   })
 })
+
+// T-607: Titel-Humanisierung — kryptische Roh-Labels lesbar machen.
+import { humanizeTitel } from "../src/engine/index.js"
+describe("humanizeTitel", () => {
+  it("BASt-Volldup X/X → einfach", () => {
+    expect(humanizeTitel('A2 / Gem-Str. "An der Windmühle"/A2 / Gem-Str. "An der Windmühle"', "bruecke"))
+      .toBe('A2 / Gem-Str. "An der Windmühle"')
+    expect(humanizeTitel("A1/Vogelsang/A1/Vogelsang", "bruecke")).toBe("A1/Vogelsang")
+    expect(humanizeTitel("UF WW/UF WW -", "bruecke")).toBe("UF WW")
+  })
+  it("Brücke: Richtungs-/Teilbauwerk-Tail + FR-Suffix raus", () => {
+    expect(humanizeTitel("Ahsebrücke FR Hannover", "bruecke")).toBe("Ahsebrücke")
+    expect(humanizeTitel("BW 2026 - Brücke über die Harste im Zuge der A 7/Ostseite", "bruecke"))
+      .toBe("BW 2026 - Brücke über die Harste im Zuge der A 7")
+    expect(humanizeTitel("Del25 / A28 über Geh-und Radweg in km 119,193/RiFa Oldenburg - Brücke", "bruecke"))
+      .toBe("Del25 / A28 über Geh-und Radweg in km 119,193")
+  })
+  it("Baustelle: AkD-/Lage-/Zeit-Codes raus", () => {
+    expect(humanizeTitel("A44 - Fahrbahninstandsetzung - AkD 31550 - 1-str. R KS - 19h bis 6h - Lage-1", "baustelle"))
+      .toBe("A44 - Fahrbahninstandsetzung")
+    expect(humanizeTitel("A24 Fahrbahninstandsetzung AM Fahrbinde (ARV 2024-372 NOO-2024-0124) - Lage-10 - 23.06.2026", "baustelle"))
+      .toBe("A24 Fahrbahninstandsetzung AM Fahrbinde")
+  })
+  it("saubere Titel bleiben unverändert; nie leer", () => {
+    expect(humanizeTitel("Datteln-Hamm-Kanal", "bruecke")).toBe("Datteln-Hamm-Kanal")
+    expect(humanizeTitel("Am Eifeltor", "bruecke")).toBe("Am Eifeltor")
+    expect(humanizeTitel("Lage-1", "baustelle")).toBe("Lage-1") // Fallback statt leer
+  })
+})
