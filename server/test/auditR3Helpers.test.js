@@ -2,8 +2,8 @@
 // richtungAus (Wortanker), humanizeTitel (Uf/ÜF, Ab/St-Codes, A#/A#-NearDup, //-Mehrsegment).
 import { describe, it, expect } from "vitest"
 import { decodeEntities, cleanText } from "../src/util.js"
-import { extractStammdaten, stripHtml } from "../src/connectors/_helpers.js"
-import { humanizeTitel } from "../src/engine/index.js"
+import { extractStammdaten, stripHtml, tonnageAusText } from "../src/connectors/_helpers.js"
+import { humanizeTitel, dedupeDominatedWidth } from "../src/engine/index.js"
 import { evaluate } from "../src/engine/rules.js"
 import { normalizeAutobahn } from "../src/connectors/autobahn.js"
 
@@ -105,5 +105,47 @@ describe("T-611 Falsch-Kritische (Wave A)", () => {
   it("A1: Mainline-Sperrung (von X nach Y) bleibt vollsperrung", () => {
     const o = normalizeAutobahn(aItem("A5 von Rust nach Riegel Erneuerung der Fahrbahn"), "A5", "closure", "u")
     expect(o.attrs.vollsperrung).toBe(true)
+  })
+})
+
+describe("T-611 Welle C/Engine (geteilte Fixes)", () => {
+  it("0112: Überholverbot 'über 7,5 t' ist KEIN Gewichtslimit", () => {
+    expect(tonnageAusText("Überholverbot für Fahrzeuge über 7,5 t")).toBeNull()
+  })
+  it("echtes Limit 'gesperrt für Fahrzeuge über 7,5 t' bleibt 7,5", () => {
+    expect(tonnageAusText("gesperrt für Fahrzeuge über 7,5 t")).toBe(7.5)
+  })
+  it("VSP wird als Vollsperrung erkannt (False-Negative-Fix)", () => {
+    expect(extractStammdaten("Wittbräucker Straße - VSP wegen Kanalsanierung").vollsperrung).toBe(true)
+  })
+  it("deutsche Monatsnamen-Daten werden geparst (0215/0227)", () => {
+    const ex = extractStammdaten("Beginn der Arbeit: 3. November 2025, Ende: 15. Dezember 2025")
+    expect(ex.gueltigVon).toBe("2025-11-03")
+    expect(ex.gueltigBis).toBe("2025-12-15")
+  })
+  it("Geh-/Radweg-Vollsperrung → nicht kritisch (Fahrbahn frei)", () => {
+    const o = { kategorie: "baustelle", attrs: { vollsperrung: true }, name: "Radweg gesperrt", beschreibung: "Sperrung des Radwegs", gueltigVon: null, gueltigBis: null }
+    expect(evaluate(o, TR, {})?.severity).not.toBe("kritisch")
+  })
+  it("Vollsperrung mit 0 Fahrstreifen + Rampen-Kontext → nicht kritisch", () => {
+    const o = { kategorie: "sperrung", attrs: { vollsperrung: true, spurenGesperrt: 0 }, name: "Einfahrt A14 → A2", beschreibung: "Überfahrt gesperrt", gueltigVon: null, gueltigBis: null }
+    expect(evaluate(o, TR, {})?.severity).not.toBe("kritisch")
+  })
+  it("echte Fahrbahn-Vollsperrung bleibt kritisch", () => {
+    const o = { kategorie: "sperrung", attrs: { vollsperrung: true }, name: "Vollsperrung A3", beschreibung: "Fahrbahn voll gesperrt", gueltigVon: null, gueltigBis: null }
+    expect(evaluate(o, TR, {})?.severity).toBe("kritisch")
+  })
+  it("dominierte Restbreite-Dublette (gleiche Zeit+km) → breitere raus", () => {
+    const base = { routeId: "r1", kategorie: "baustelle", km: 215.7, gueltigVon: "2026-06-01", gueltigBis: "2026-07-03", severity: "warnung" }
+    const eng = { ...base, restbreiteM: 5.0, titel: "eng" }
+    const breit = { ...base, restbreiteM: 6.5, titel: "breit" }
+    const out = dedupeDominatedWidth([eng, breit])
+    expect(out).toHaveLength(1)
+    expect(out[0].restbreiteM).toBe(5.0)
+  })
+  it("verschiedene Zeitfenster bleiben getrennt (T-609-Schutz)", () => {
+    const a = { routeId: "r1", kategorie: "baustelle", km: 215.7, gueltigVon: "2026-06-01", gueltigBis: "2026-07-03", severity: "warnung", restbreiteM: 5.0 }
+    const b = { ...a, gueltigBis: "2026-08-03", restbreiteM: 6.5 }
+    expect(dedupeDominatedWidth([a, b])).toHaveLength(2)
   })
 })
