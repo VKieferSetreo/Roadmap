@@ -5,6 +5,7 @@
 // Importer-Vertrag (NormalizedObstacle). Koordinaten-Plausibilität + UTM-Reprojektion inklusive.
 
 import zlib from "node:zlib"
+import { decodeEntities } from "../util.js"
 
 /** Plausibilität: Punkt in der DE-Bbox? (verwirft kaputte Quell-Koords). */
 export function inDeBbox(lat, lng) {
@@ -121,10 +122,15 @@ function standDaten(text) {
   return out
 }
 
-/** Erstes Straßen-Kennzeichen (A/B/L/K + Nummer) aus Freitext → "B252", sonst null. */
+/** Erstes Straßen-Kennzeichen (A/B/L/K + Nummer, opt. Buchstabensuffix wie B96A) aus Freitext →
+ *  "B252"/"B96A", sonst null. T-611: auch ausgeschriebene Form ("Autobahn 3" → A3, "Bundesstraße 55a"
+ *  → B55a) — sonst bleibt z.B. eine Rampensperrung im Autobahnkreuz ohne Netz-Ref. */
 function strassenRefAus(text) {
-  const m = String(text).match(/\b(A|B|L|K)[\s-]?(\d{1,4})\b/)
-  return m ? `${m[1].toUpperCase()}${m[2]}` : null
+  const s = String(text)
+  const lang = s.match(/\bAutobahn\s+(\d{1,4})\b/i) || s.match(/\bBundesstra(?:ß|ss)e\s+(\d{1,4}[a-z]?)\b/i)
+  if (lang) return `${/^Autobahn/i.test(lang[0]) ? "A" : "B"}${lang[1]}`
+  const m = s.match(/\b(A|B|L|K)[\s-]?0*(\d{1,4})([a-zA-Z])?\b/)
+  return m ? `${m[1].toUpperCase()}${m[2]}${m[3] ? m[3].toUpperCase() : ""}` : null
 }
 
 /** Fahrtrichtung/Korridor aus Freitext → "Hamburg → Kassel" / "stadtauswärts" / "beide Richtungen". */
@@ -135,7 +141,10 @@ function richtungAus(text) {
   if (/in beide (?:fahrt)?richtungen|beidseitig|wechselseitig/i.test(s)) return "beide Richtungen"
   if (/stadtausw(?:ä|ae)rts/i.test(s)) return "stadtauswärts"
   if (/stadteinw(?:ä|ae)rts/i.test(s)) return "stadteinwärts"
-  const fr = s.match(/(?:Fahrtrichtung|Richtung)\s+([A-ZÄÖÜ][\wäöüß.\- ]{1,28}?)(?=[\n,;.()|]|$)/i)
+  // T-611: \b vor „Richtung" (sonst matcht „Einrichtung/Verkehrseinrichtung"), Großschreibung
+  // verpflichtend (kein /i → nur echte Orts-/Richtungsangaben), Capture endet am ersten Verb/Stoppwort
+  // (sonst landet „eingeengt"/„gesperrt" als Richtung).
+  const fr = s.match(/\b(?:Fahrtrichtung|Richtung)\s+([A-ZÄÖÜ][\wäöüß.\- ]{1,28}?)(?=\s+(?:eingeengt|gesperrt|verengt|verschwenkt|frei|umgeleitet|verbleibend|wird|ist|in)\b|[\n,;.()|]|$)/)
   return fr ? fr[1].trim() : null
 }
 
@@ -398,10 +407,8 @@ function attrErlaubt(k, v) {
  *  Zeilenumbrüche bleiben erhalten (sinnvolle Struktur, z.B. Autobahn-Meldungen). null-sicher. */
 export function stripHtml(text) {
   if (text == null) return null
-  const s = String(text)
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'").replace(/&nbsp;/g, " ")
+  // T-611: decodeEntities deckt auch deutsche Umlaut-/ß-Entities (&auml; &szlig;) + numerische ab.
+  const s = decodeEntities(String(text).replace(/<[^>]+>/g, " "))
     .replace(/[ \t]{2,}/g, " ").replace(/[ \t]+\n/g, "\n").trim()
   return s || null
 }

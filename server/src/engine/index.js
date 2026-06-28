@@ -22,7 +22,9 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // 2.2.0 (T-611): allgemeiner Kreuzungsfilter (lineCrossesRoute) für ALLE Linien-Meldungen — quer
 // kreuzende Baustellen/Sperrungen an Autobahndreiecken/-kreuzen + kreuzende K-/L-Straßen raus
 // (richtungsbasiert, längs-versetzte bleiben). Systemweit −12 Querlinien (3 Falsch-Kritische).
-export const ENGINE_VERSION = "2.2.0"
+// 2.2.1 (T-611 Audit R3, Welle 1): humanizeTitel erweitert — Uf/UF→Unterführung, Üf/ÜF→Überführung,
+// BASt-Stationscodes „Ab/St" raus (Staatsstraße geschützt), A#/A#-NearDup-Collapse, //-Mehrsegment.
+export const ENGINE_VERSION = "2.2.1"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
@@ -275,7 +277,12 @@ export function humanizeTitel(s, kat) {
       .replace(/\s*[,;]?\s*i\.?\s*Z\.?\s*d\.?\s*(?:BAB\s*)?[AB]\s?\d+.*$/i, "")
       .replace(/\s*[,;]\s*(?:in\s*)?km\s*[\d.,]+.*$/i, "")
       .replace(/\s*;\s*FR:?\s*\w*\s*$/i, "")
-      .replace(/Ufg\.?/g, "Unterführung").replace(/(^|\s)Üf(\s|$)/g, "$1Überführung$2")
+      // T-611: BASt-Netzknoten-Code-Tail „, Ab 265, St 5006" / „, Ab 280, St 5806/Tbw2" raus (für
+      // Disponenten bedeutungslos). NUR am „Ab …"-Anker — ein freistehendes „St 2406" ist eine bayerische
+      // STAATSSTRASSE (überquerte Straße, behalten), kein Stationscode. Vor dem X/X-Collapse, weil „/Tbw2"
+      // sonst einen Stör-Slash hinterließe; Uf/ÜF-Expansion erst NACH dem Collapse (sonst bricht die
+      // Symmetrie von „UF WW/UF WW").
+      .replace(/\s*[,/]?\s*\bAb\s+\d+(?:\s*,?\s*St\s+\d+(?:\/[A-Za-zÄÖÜ]+\d*)?)?\b/gi, "")
     // ZUERST Richtungs-/Teilbauwerk-/FR-Tails — sonst bricht ein FR-Suffix auf NUR EINER Hälfte
     // („…Windmühle/…Windmühle, FR Hannover") die Symmetrie und der „X/X"-Dup-Collapse greift nicht.
     t = t
@@ -285,6 +292,7 @@ export function humanizeTitel(s, kat) {
       .replace(/\s*\(\s*\d+\/\d+\s*\)/g, "").replace(/\s*\(\s*BW\s*[\d.]+\s*\)/gi, "") // (5/1), (BW 2.02)
   } else {
     t = t
+      .replace(/\s*\/{2,}.*$/s, "") // T-611: „/// Halbseitige Sperrung…" / „// halbseitig…" — Sperr-Meta nach Doppelslash raus, Straßenteil bleibt
       .replace(/\s*-?\s*\bHDF_[\w-]+/gi, "").replace(/\s*\bA-\d{5}-\d+\b/g, "") // T-610: Länder-Auftragscodes
       .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
       .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
@@ -297,6 +305,21 @@ export function humanizeTitel(s, kat) {
     const h = slash.length / 2
     const norm = (x) => x.join("/").replace(/[\s\-–]+/g, "").toLowerCase()
     if (norm(slash.slice(0, h)) === norm(slash.slice(h))) t = slash.slice(0, h).join("/").trim()
+  }
+  // T-611: Near-Dup „A2 / Ahse/A2 / Ahsebrücke" (Quelle hängt eine Namensvariante an) — wenn der Titel an
+  // einem zweiten „A<nr> /" mit IDENTISCHER A-Nummer bricht, erste Hälfte behalten (bounded, kein echtes Verstecken).
+  const adup = t.match(/^(A\d+\b.*?)\/\s*(A\d+\b.*)$/)
+  if (adup) {
+    const aNr = (x) => (x.match(/^A\d+/) || [])[0]
+    if (aNr(adup[1]) && aNr(adup[1]) === aNr(adup[2])) t = adup[1].trim()
+  }
+  // T-611: Uf/UF→Unterführung, Üf/ÜF/UeF/UEF→Überführung — NACH dem Dup-Collapse (s.o.), sonst bricht
+  // die Expansion die „X/X"-Symmetrie. Vorher expandierte nur Ufg + lowercase-Üf.
+  if (kat === "bruecke" || kat === "tunnel") {
+    t = t
+      .replace(/\bUfg\.?/gi, "Unterführung")
+      .replace(/(^|\s)(?:Üf|ÜF|UeF|UEF|Uef)(?=\s|$)/g, "$1Überführung")
+      .replace(/(^|\s)(?:Uf|UF)(?=\s|$)/g, "$1Unterführung")
   }
   t = t.replace(/[\s\-–/,]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
   return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)

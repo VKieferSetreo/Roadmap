@@ -30,13 +30,30 @@ export function toIsoDate(v) {
  *  <value lang="de">…</value> heraus, sonst strippt alle Tags. Leerstring wenn nichts bleibt.
  *  ponytail: Read-Time-Schutz gegen Alt-Daten mit <comment>-Brackets. Neue Importe sind schon
  *  sauber (Connector commentText), eine Re-Analyse macht das hier überflüssig. */
+// T-611 (Audit R3): HTML-Entities dekodieren — benannte deutsche Umlaut-/ß-Entities (&auml; &szlig; …)
+// und numerische (&#13; &#xNN;). Quellen liefern teils entity-kodierten Freitext (Heidelberg 0227
+// "Ma&szlig;nahme", NI-DATEX 0143 "…&#13;"), der sonst roh im Popup/PDF/CSV landet. null-/leer-sicher.
+const NAMED_ENTITIES = {
+  szlig: "ß", auml: "ä", ouml: "ö", uuml: "ü", Auml: "Ä", Ouml: "Ö", Uuml: "Ü",
+  eacute: "é", egrave: "è", agrave: "à", ccedil: "ç", amp: "&", lt: "<", gt: ">",
+  quot: '"', apos: "'", nbsp: " ",
+}
+export function decodeEntities(s) {
+  if (s == null) return s
+  return String(s)
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&([A-Za-z]+);/g, (m, n) => (Object.prototype.hasOwnProperty.call(NAMED_ENTITIES, n) ? NAMED_ENTITIES[n] : m))
+    .replace(/[\x00-\x08\x0B-\x1F]/g, "") // Steuerzeichen (inkl. CR/VT/FF) raus, \t und \n bleiben
+}
+
 export function cleanText(raw) {
   if (raw == null) return ""
   const s = String(raw)
-  if (!s.includes("<")) return s
+  if (!s.includes("<") && !s.includes("&")) return s
   const de = s.match(/<value\b[^>]*lang="de"[^>]*>([\s\S]*?)<\/value>/i)
   const any = de || s.match(/<value\b[^>]*>([\s\S]*?)<\/value>/i)
-  return (any ? any[1] : s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+  return decodeEntities((any ? any[1] : s).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim()
 }
 
 export const isPlainObject = (v) => v != null && typeof v === "object" && !Array.isArray(v)

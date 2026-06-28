@@ -225,10 +225,20 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       // Beschreibender Text: Record-Kommentar, sonst Situations-Kommentar (0144). Verdopplung
       // mancher Quellen ("X - X - Y", BAB-AkD 0145) über dedupeName glätten.
       const beschr = commentText(tag(rec, "generalPublicComment")) || commentText(tag(rec, "comment")) || sitComment || null
-      const name = dedupeName(beschr || tag(rec, "situationRecordCreationReference") || `${kategorie} (DATEX)`)
       // roadNumber/roadName können — wie der Kommentar — verschachtelt sein → über commentText
-      // bereinigen, sonst leakt roher XML als Straßen-Ref.
-      const strasse = commentText(tag(rec, "roadNumber")) || commentText(tag(rec, "roadName")) || null
+      // bereinigen, sonst leakt roher XML als Straßen-Ref. T-611: umschließende Klammern strippen
+      // (NI-DATEX 0143 liefert literal "[B169]"); fehlt die Ref ganz, per Straßen-Regex aus dem
+      // Freitext ziehen (Bayern 0147 nennt die Straße nur als Titel-Token, nicht in roadNumber).
+      const refRoh = commentText(tag(rec, "roadNumber")) || commentText(tag(rec, "roadName")) || null
+      const strasse =
+        (refRoh ? refRoh.replace(/^[[(]\s*|\s*[)\]]$/g, "").trim() : "") ||
+        (beschr || "").match(/\b(?:A|B|St|L|K|S)\s?\d{1,4}[a-z]?\b/)?.[0]?.replace(/\s/g, "") ||
+        null
+      // T-611: kein generischer "<kat> (DATEX)"-Platzhalter, wenn die Straße bekannt ist → "<Straße> — <kat>".
+      const name = dedupeName(
+        beschr || tag(rec, "situationRecordCreationReference") ||
+        (strasse ? `${strasse} — ${kategorie}` : `${kategorie} (DATEX)`),
+      )
 
       obstacles.push({
         externeId: String(externeId),

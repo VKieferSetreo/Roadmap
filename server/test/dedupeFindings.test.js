@@ -146,7 +146,7 @@ describe("humanizeTitel", () => {
     expect(humanizeTitel('A2 / Gem-Str. "An der Windmühle"/A2 / Gem-Str. "An der Windmühle"', "bruecke"))
       .toBe('A2 / Gem-Str. "An der Windmühle"')
     expect(humanizeTitel("A1/Vogelsang/A1/Vogelsang", "bruecke")).toBe("A1/Vogelsang")
-    expect(humanizeTitel("UF WW/UF WW -", "bruecke")).toBe("UF WW")
+    expect(humanizeTitel("UF WW/UF WW -", "bruecke")).toBe("Unterführung WW") // T-611: Dup-Collapse zuerst, dann UF→Unterführung
   })
   it("Brücke: Richtungs-/Teilbauwerk-Tail + FR-Suffix raus", () => {
     expect(humanizeTitel("Ahsebrücke FR Hannover", "bruecke")).toBe("Ahsebrücke")
