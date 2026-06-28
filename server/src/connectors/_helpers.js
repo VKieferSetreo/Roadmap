@@ -263,6 +263,18 @@ export function dupGroupKey(o) {
   return `${o?.kategorie ?? ""}|${name}|${ll}`
 }
 
+// T-609: Restriktions-Profil = die GST-relevanten Grenzwerte/Sperr-Flags, die die Severity treiben.
+// Dient als Merge-Diskriminator: dieselbe Stelle (Name+Ort) mit UNTERSCHIEDLICHEM Profil = verschiedene
+// Bauphasen (z.B. Autobahn-Maßnahme 5,85 m / 5,5 m / 3,5 m) → NICHT zusammenfassen (sonst min-merge der
+// Restbreite → falsch-kritisch). Gleiches Profil (z.B. mehrere Nacht-Teilstücke „Fahrbahnverengung"
+// ohne Maße) → mergen wie bisher. Bewusst NUR die severity-treibenden Werte (nicht Zeitfenster) →
+// kein Churn bei rollenden Enddaten.
+const PROFIL_KEYS = ["restbreiteM", "maxHoeheM", "maxBreiteM", "maxGewichtT", "vollsperrung", "gesperrtKomplett", "grundsaetzlicheGstSperre"]
+export function restriktionsProfil(attrs) {
+  if (!attrs || typeof attrs !== "object") return ""
+  return PROFIL_KEYS.map((k) => attrs[k] ?? "").join("|")
+}
+
 /** Stabile externeId einer zusammengefassten Gruppe (gleich über Läufe → Upsert statt Insert,
  *  Reconcile deaktiviert die alten Einzel-Segmente). */
 export function dupExterneId(o) {
@@ -329,22 +341,21 @@ export function dedupeObstacles(items) {
   }
   for (const group of groups.values()) {
     if (group.length === 1) { out.push(group[0]); continue }
-    // T-609: dieselbe Stelle (Name+Koord) kann mehrere zeitversetzte BAUPHASEN mit UNTERSCHIEDLICHER
-    // Restbreite tragen (Autobahn-Maßnahme: 5,85 m / 5,5 m / 3,5 m je Phase). Der Min-Merge der
-    // restbreiteM machte sonst jede Phase so schmal wie die schmalste → falsch-kritisch + Widerspruch
-    // Text↔Restbreite. Bei MEHREREN Zeitfenstern je Phase getrennt mergen (eigene Restbreite + Fenster);
-    // EIN Zeitfenster bleibt unverändert (stabile externeId → KEIN Churn, anders als ein generischer
-    // Zeitfenster-Key, der bei rollenden Enddaten jede Sync neue IDs erzeugt hätte).
-    const byTf = new Map()
+    // T-609: dieselbe Stelle (Name+Koord) kann mehrere BAUPHASEN mit UNTERSCHIEDLICHEM Restriktions-
+    // Profil tragen (Autobahn-Maßnahme: 5,85 m / 5,5 m / 3,5 m). Der Min-Merge der restbreiteM machte
+    // sonst jede Phase so schmal wie die schmalste → falsch-kritisch + Widerspruch Text↔Restbreite.
+    // Nach Profil sub-gruppieren: gleiches Profil (z.B. Nacht-Teilstücke ohne Maße) mergen wie bisher,
+    // verschiedene Profile bleiben getrennt mit EIGENER Restbreite + eindeutiger externeId.
+    const byProfil = new Map()
     for (const o of group) {
-      const tf = `${o?.gueltigVon ?? ""}|${o?.gueltigBis ?? ""}`
-      if (!byTf.has(tf)) byTf.set(tf, [])
-      byTf.get(tf).push(o)
+      const p = restriktionsProfil(o?.attrs)
+      if (!byProfil.has(p)) byProfil.set(p, [])
+      byProfil.get(p).push(o)
     }
-    if (byTf.size <= 1) { out.push(mergeDupGroup(group)); continue }
-    for (const sub of byTf.values()) {
+    if (byProfil.size <= 1) { out.push(mergeDupGroup(group)); continue }
+    for (const [p, sub] of byProfil) {
       const merged = mergeDupGroup(sub)
-      merged.externeId = `${merged.externeId}@${sub[0]?.gueltigVon ?? ""}` // je Phase eindeutig
+      merged.externeId = `${merged.externeId}@${stabilHash(p)}` // je Profil eindeutig
       out.push(merged)
     }
   }

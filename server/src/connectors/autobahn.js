@@ -6,7 +6,7 @@
 //   Spuren · impact.lower/upper → Streckenabschnitt. future=true (zukünftig startende) bleibt erhalten.
 
 import { fetchJson } from "../external/http.js"
-import { extractStammdaten, stabilHash } from "./_helpers.js"
+import { extractStammdaten, restriktionsProfil, stabilHash } from "./_helpers.js"
 
 /** Projekt-Schlüssel = die Autobahn-Maßnahmen-Nummer (Format YYYY-NNNNNN am Anfang des identifier).
  *  Die API zerlegt EINE Maßnahme nicht nur geografisch (…de1/de3/de9), sondern auch zeitlich pro
@@ -168,8 +168,9 @@ function mergeAutobahnGruppe(group) {
   const gueltigVon = vons[0] ?? null
   const gueltigBis = bisse.length ? bisse[bisse.length - 1] : null
   return {
-    // Zeitfenster MIT in die externeId — sonst kollidieren zwei Bauphasen gleicher Projekt-Nr./Richtung.
-    externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie, gueltigVon ?? "", gueltigBis ?? "")}`, // stabil, eindeutig je Projekt+Richtung+Phase
+    // Restriktions-Profil MIT in die externeId — sonst kollidieren zwei Bauphasen gleicher Projekt-Nr./
+    // Richtung mit unterschiedlicher Breite (5,85 m vs 3,5 m) auf einer ID.
+    externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie, restriktionsProfil(attrs))}`, // stabil, eindeutig je Projekt+Richtung+Profil
     kategorie: first.kategorie,
     name: first.name,
     beschreibung: first.beschreibung ?? null, // purer Quelltext; die Strecke steckt in geom (MultiLineString)
@@ -185,17 +186,17 @@ function mergeAutobahnGruppe(group) {
   }
 }
 
-/** Teil-Segmente (gleiche Projekt-ID + Richtung + Kategorie + ZEITFENSTER) zu Strecken-Hindernissen
- *  zusammenfassen. Das Zeitfenster MUSS in den Key: eine Maßnahme (gleiche Projekt-Nr.) hat oft mehrere
- *  zeitlich versetzte BAUPHASEN mit UNTERSCHIEDLICHER Durchfahrtsbreite (z.B. A7 2025-009385: 5,5 m ab
- *  März, 5,85 m + 3,5 m ab Juli). Ohne Zeitfenster-Key landeten alle in einer Gruppe und der Min-Merge
- *  der restbreiteM machte JEDE Phase so schmal wie die schmalste (3,5 m) → falsch-kritisch + Widerspruch
- *  zwischen angezeigtem Text (5,85 m) und Restbreite (3,5 m). Min-Merge bleibt korrekt für RÄUMLICHE
- *  Teilstücke DERSELBEN Phase (gleiches Zeitfenster); zeitliche Phasen bleiben getrennt. */
+/** Teil-Segmente (gleiche Projekt-ID + Richtung + Kategorie + RESTRIKTIONS-PROFIL) zu Strecken-
+ *  Hindernissen zusammenfassen. Das Profil MUSS in den Key: eine Maßnahme (gleiche Projekt-Nr.) hat oft
+ *  mehrere BAUPHASEN mit UNTERSCHIEDLICHER Durchfahrtsbreite (z.B. A7 2025-009385: 5,85 m / 5,5 m /
+ *  3,5 m). Ohne Profil-Key landeten alle in einer Gruppe, der Min-Merge der restbreiteM machte JEDE
+ *  Phase so schmal wie die schmalste (3,5 m) → falsch-kritisch + Widerspruch Text (5,85 m) ↔ Restbreite
+ *  (3,5 m). Min-Merge bleibt korrekt für RÄUMLICHE Nacht-/Teilstücke GLEICHEN Profils (z.B.
+ *  Fahrbahnverengung ohne Maße → 1 Strecke); unterschiedliche Profile bleiben getrennt. */
 export function gruppiereStrecken(obstacles) {
   const groups = new Map()
   for (const o of obstacles) {
-    const key = `${o._pk}|${o._ri}|${o.kategorie}|${o.gueltigVon ?? ""}|${o.gueltigBis ?? ""}`
+    const key = `${o._pk}|${o._ri}|${o.kategorie}|${restriktionsProfil(o.attrs)}`
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key).push(o)
   }

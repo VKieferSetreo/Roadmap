@@ -197,14 +197,25 @@ describe("dedupeObstacles (genereller Dublettenfilter)", () => {
     expect(out[0].gueltigBis).toBe("2026-07-20") // spätestes Bis
   })
 
-  it("schärfste Maße gewinnen beim Zusammenfassen", () => {
+  it("schärfste Maße gewinnen beim Zusammenfassen GLEICHEN Profils (max Spuren)", () => {
+    // T-609: gleiches Restriktions-Profil (gleiche Restbreite) → mergen; spurenGesperrt = Maximum.
+    // UNTERSCHIEDLICHE Restbreite = verschiedene Bauphasen → bleiben getrennt (eigener Test).
     const out = dedupeObstacles([
-      seg("a", 48.12, 9.50, null, { attrs: { restbreiteM: 3.5, spurenGesperrt: 1 } }),
+      seg("a", 48.12, 9.50, null, { attrs: { restbreiteM: 3.0, spurenGesperrt: 1 } }),
       seg("b", 48.12, 9.50, null, { attrs: { restbreiteM: 3.0, spurenGesperrt: 2 } }),
     ])
     expect(out).toHaveLength(1)
-    expect(out[0].attrs.restbreiteM).toBe(3.0) // Minimum (engste Stelle)
+    expect(out[0].attrs.restbreiteM).toBe(3.0)
     expect(out[0].attrs.spurenGesperrt).toBe(2) // Maximum
+  })
+
+  it("T-609: unterschiedliche Restbreite an gleicher Stelle = Bauphasen → getrennt (kein Min-Leak)", () => {
+    const out = dedupeObstacles([
+      seg("a", 48.12, 9.50, null, { attrs: { restbreiteM: 3.5 } }),
+      seg("b", 48.12, 9.50, null, { attrs: { restbreiteM: 3.0 } }),
+    ])
+    expect(out).toHaveLength(2)
+    expect(out.map((o) => o.attrs.restbreiteM).sort()).toEqual([3.0, 3.5])
   })
 
   it("verschiedene Namen / weit entfernte Orte bleiben getrennt; Einträge ohne Namen unangetastet", () => {

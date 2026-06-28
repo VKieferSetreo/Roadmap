@@ -10,7 +10,7 @@
 // Fehler im Connector → Run status 'error' mit Log; runImport wirft NIE
 // (der Worker und der Admin-Trigger laufen immer weiter).
 
-import { dedupeObstacles } from "../connectors/_helpers.js"
+import { dedupeObstacles, restriktionsProfil } from "../connectors/_helpers.js"
 import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import {
   buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
@@ -105,7 +105,11 @@ export async function runImport({
       for (const r of existingRows) {
         if (r.aktiv && r.lat != null && r.lng != null) {
           const k = `${r.kategorie}|${normName(r.name)}`
-          const cand = { id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng) }
+          // T-609: Restriktions-Profil mit in den Drift-Kandidaten — eine Stelle kann mehrere Bauphasen
+          // mit unterschiedlicher Breite tragen; ohne dieses Feld zog der Fuzzy-Match alle Phasen auf EINE
+          // Zeile (last-write, schmalste Restbreite → falsch-kritisch). Profil statt Zeitfenster → kein
+          // Churn bei rollenden Enddaten.
+          const cand = { id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng), profil: restriktionsProfil(r.attrs) }
           const arr = fuzzyIndex.get(k)
           if (arr) arr.push(cand)
           else fuzzyIndex.set(k, [cand])
@@ -157,9 +161,12 @@ export async function runImport({
         // statt es neu anzulegen (sonst Reconcile-Churn jeden Lauf, T-078).
         if (!target && value.name && value.lat != null && value.lng != null) {
           const cand = fuzzyIndex.get(`${value.kategorie}|${normName(value.name)}`)
+          // T-609: nur Kandidaten mit GLEICHEM Restriktions-Profil — sonst kollabiert der Drift-Match
+          // Bauphasen unterschiedlicher Breite derselben Stelle auf eine Zeile (schmalste gewinnt).
+          const itemProfil = restriktionsProfil(value.attrs)
           const near = cand
             ? cand.filter(
-                (r) => Math.abs(r.lat - value.lat) <= FUZZY_LAT && Math.abs(r.lng - value.lng) <= FUZZY_LNG,
+                (r) => r.profil === itemProfil && Math.abs(r.lat - value.lat) <= FUZZY_LAT && Math.abs(r.lng - value.lng) <= FUZZY_LNG,
               )
             : []
           if (near.length) {
