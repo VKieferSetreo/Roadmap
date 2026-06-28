@@ -249,6 +249,47 @@ export function coincidentRouteKm(obstaclePts, geometry, cum, coincidentM = 8, g
   return onKm
 }
 
+// T-611 (Audit R3): eine Linien-Meldung (Baustelle/Sperrung/Maß-Restriktion mit geom) KREUZT die
+// Route nur — sie läuft an einem Autobahndreieck/-kreuz quer über/unter die Route, statt auf oder
+// neben ihr entlangzulaufen. Solche Funde gehören der gekreuzten Straße, nicht dem Transport.
+// Diskriminator = RICHTUNG: im Match-Korridor überwiegend QUER (≈90°) UND kein nennenswertes Stück
+// LÄNGS. Anders als coincidentRouteKm (enger 8-m-Same-Lane-Test) zählt hier der ganze Korridor
+// (nearM ≈ Match-Korridor) als „längs" — damit eine durch den Mittelstreifen >8 m VERSETZTE, aber
+// gleichläufige Baustelle als aligned zählt und NICHT fälschlich als Kreuzung gedroppt wird
+// (Max: „nichts übersehen"). Densifiziert (stepM), damit grobe 2-Punkt-Querlinien nicht über ihren
+// zufällig auf der Route liegenden Mittelpunkt als „parallel" durchrutschen.
+export function lineCrossesRoute(
+  obstaclePts, geometry, cum, grid = null,
+  { nearM = 20, alignDeg = 40, transverseDeg = 50, stepM = 12, minTransverseKm = 0.03, maxAlignedKm = 0.05 } = {},
+) {
+  if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) return false
+  let alignedKm = 0
+  let transverseKm = 0
+  for (let i = 0; i < obstaclePts.length - 1; i++) {
+    const a = obstaclePts[i]
+    const b = obstaclePts[i + 1]
+    const segKm = haversineKm(a, b)
+    if (segKm === 0) continue
+    const segBear = bearingDeg(a, b)
+    const steps = Math.max(1, Math.round((segKm * 1000) / stepM))
+    const w = segKm / (steps + 1)
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps
+      const pt = { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) }
+      const near = nearestOnRoute(pt, geometry, cum, grid)
+      if (near.distM > nearM) continue
+      const rb = routeBearingAtKm(geometry, cum, near.km)
+      if (rb == null) continue
+      const folded = Math.min(angleDeltaDeg(segBear, rb), 180 - angleDeltaDeg(segBear, rb)) // 0=längs, 90=quer
+      if (folded <= alignDeg) alignedKm += w
+      else if (folded >= transverseDeg) transverseKm += w
+    }
+  }
+  // Kreuzung nur, wenn nennenswert quer UND praktisch kein Längslauf im Korridor (sonst echte,
+  // teils mitlaufende Meldung → behalten). Konservativ: im Zweifel behalten.
+  return transverseKm >= minTransverseKm && transverseKm > alignedKm && alignedKm < maxAlignedKm
+}
+
 /**
  * Clippt die Linien-Geometrie eines Hindernisses auf den Routen-Korridor: behält NUR die
  * Abschnitte, die innerhalb clipM um die Route liegen (= die der Transport tatsächlich

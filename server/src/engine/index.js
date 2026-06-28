@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, lineCrossesRoute, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef } from "../external/osrm.js"
@@ -19,7 +19,10 @@ import { ApiError, isFiniteNumber } from "../util.js"
 
 // 2.1.0 (T-603): SEVAS-Kreuzungsfilter (coincidentRouteKm + Parallelität), Klon-Dedup (identische
 // Geom), Orphan-Funde-Purge. Materielle Engine-Änderung → Version-Bump markiert sie in analysis_runs.
-export const ENGINE_VERSION = "2.1.0"
+// 2.2.0 (T-611): allgemeiner Kreuzungsfilter (lineCrossesRoute) für ALLE Linien-Meldungen — quer
+// kreuzende Baustellen/Sperrungen an Autobahndreiecken/-kreuzen + kreuzende K-/L-Straßen raus
+// (richtungsbasiert, längs-versetzte bleiben). Systemweit −12 Querlinien (3 Falsch-Kritische).
+export const ENGINE_VERSION = "2.2.0"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
@@ -439,6 +442,12 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         obstacle.geom && istMassRestriktion(obstacle.attrs) &&
         coincidentRouteKm(obstaclePts, geometry, cum, SAME_LANE_M, grid) < CROSS_MIN_KM
       ) continue
+      // T-611 (Audit R3): allgemeiner Kreuzungsfilter für ALLE Linien-Meldungen (auch Baustelle/
+      // Sperrung OHNE Maßwert). Am Autobahndreieck/-kreuz laufen die gekreuzte Autobahn + Rampen
+      // quer durch den 20-m-Korridor, ohne dass der Transport sie befährt → gehören der gekreuzten
+      // Straße, nicht uns. Richtungsbasiert (quer vs. längs), damit eine nur durch den Mittelstreifen
+      // versetzte, aber GLEICHLAUFENDE Baustelle NICHT mitgedroppt wird (konservativ, im Zweifel behalten).
+      if (obstacle.geom && lineCrossesRoute(obstaclePts, geometry, cum, grid, { nearM: corridorM })) continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle

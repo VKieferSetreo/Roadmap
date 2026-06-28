@@ -2,7 +2,7 @@
 // antiparallel droppen, Punkte/kurze Linien NIE droppen).
 import { describe, it, expect } from "vitest"
 import {
-  angleDeltaDeg, cumulativeKm, lineBearingDeg, obstacleRouteRelation, routeBearingAtKm,
+  angleDeltaDeg, cumulativeKm, lineBearingDeg, lineCrossesRoute, obstacleRouteRelation, routeBearingAtKm,
 } from "../src/engine/geometry.js"
 
 const nordLinie = [{ lat: 50.0, lng: 8.0 }, { lat: 50.5, lng: 8.0 }]
@@ -68,6 +68,29 @@ describe("obstacleRouteRelation (auf-Fahrbahn behalten, versetzte Gegenfahrbahn 
   })
   it("Punkt / <2 Stützpunkte → none (nie droppen)", () => {
     expect(obstacleRouteRelation([{ lat: 50.2, lng: 8.0 }], route, cum, {})).toBe("none")
+  })
+})
+
+describe("lineCrossesRoute (T-611: quer kreuzende Linien droppen, längs-versetzte behalten)", () => {
+  const route = [{ lat: 50.0, lng: 8.0 }, { lat: 50.5, lng: 8.0 }] // Nord-Route bei lng 8.0
+  const cum = cumulativeKm(route)
+  it("quer kreuzende E-W-Linie (2 Punkte, Mittelpunkt auf Route) → crossing (droppen)", () => {
+    const linie = [{ lat: 50.25, lng: 7.99 }, { lat: 50.25, lng: 8.01 }]
+    expect(lineCrossesRoute(linie, route, cum)).toBe(true)
+  })
+  it("auf der Route entlang → kein crossing (behalten)", () => {
+    const linie = [{ lat: 50.1, lng: 8.0 }, { lat: 50.4, lng: 8.0 }]
+    expect(lineCrossesRoute(linie, route, cum)).toBe(false)
+  })
+  it("durch Mittelstreifen ~12 m versetzt, aber GLEICHLAUFEND → kein crossing (Max: nichts übersehen)", () => {
+    const linie = [{ lat: 50.1, lng: 8.000168 }, { lat: 50.4, lng: 8.000168 }]
+    expect(lineCrossesRoute(linie, route, cum)).toBe(false)
+  })
+  it("Punkt / <2 Stützpunkte → nie crossing", () => {
+    expect(lineCrossesRoute([{ lat: 50.25, lng: 8.0 }], route, cum)).toBe(false)
+  })
+  it("abseits der Route → kein crossing", () => {
+    expect(lineCrossesRoute([{ lat: 60.0, lng: 20.0 }, { lat: 60.0, lng: 20.1 }], route, cum)).toBe(false)
   })
 })
 
