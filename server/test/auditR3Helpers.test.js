@@ -119,6 +119,17 @@ describe("T-611 Hindernis-DB-Karten-Titel (Voll-Bestand)", () => {
   })
 })
 
+describe("T-611 Beauty (Detail-Werte großschreiben)", () => {
+  it("Schwertransport 'gesperrt' → 'Gesperrt'", () => {
+    const r = evaluate(ob("bruecke", { gesperrtKomplett: true }), TR, {})
+    expect(r.detail.Schwertransport).toBe("Gesperrt")
+  })
+  it("Zahlen/Einheiten bleiben (kein False-Cap)", () => {
+    const r = evaluate(ob("gewicht", { maxGewichtT: 40 }), TR, {})
+    expect(r.detail["Zul. Gesamtlast"]).toMatch(/^\d/) // beginnt mit Ziffer → unverändert
+  })
+})
+
 describe("T-611 Beauty (humanizeTitel)", () => {
   it("ALL-CAPS-Kataster → deutsche Schreibung, Refs/Kürzel geschützt", () => {
     expect(humanizeTitel("B 3; BRÜCKE ÜBER DEN HUNGERBRUNNENGRABEN", "bruecke")).toBe("B 3; Brücke über den Hungerbrunnengraben")

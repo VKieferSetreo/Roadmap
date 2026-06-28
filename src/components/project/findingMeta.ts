@@ -121,9 +121,9 @@ export function formatGueltigkeit(von?: string | null, bis?: string | null): str
   const v = fmtDate(von)
   const b = fmtDate(bis)
   if (v && b) return `${v} – ${b}`
-  if (v) return `ab/am ${v}`
-  if (b) return `bis ${b}`
-  return "unbefristet"
+  if (v) return `Ab/am ${v}` // T-611: groß anfangen (Max-Wunsch)
+  if (b) return `Bis ${b}`
+  return "Unbefristet"
 }
 
 /** Custom-SVG-Glyphen für Kategorien wo kein passendes Lucide-Icon existiert.

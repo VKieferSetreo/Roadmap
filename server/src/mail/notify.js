@@ -30,9 +30,9 @@ const gueltig = (f) => {
   const v = fmtDate(f.gueltig_von)
   const b = fmtDate(f.gueltig_bis)
   if (v && b) return `${v} – ${b}`
-  if (v) return `ab ${v}`
-  if (b) return `bis ${b}`
-  return "unbefristet"
+  if (v) return `Ab ${v}` // T-611: groß anfangen
+  if (b) return `Bis ${b}`
+  return "Unbefristet"
 }
 
 const ALL_SEV = ["kritisch", "warnung", "hinweis"]

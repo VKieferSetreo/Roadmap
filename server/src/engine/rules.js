@@ -84,6 +84,16 @@ const INFO_ATTRS = [
   ["anzahlFahrstreifen", "Fahrstreifen (verbleibend)", (v) => String(v)],
   ["spurenGesperrt", "Gesperrte Fahrstreifen", (v) => String(v)],
 ]
+// T-611 (Beauty): Detail-WERTE mit großem Anfangsbuchstaben anzeigen — „gesperrt"→„Gesperrt",
+// „überschneidet den Transportzeitraum"→„Überschneidet …". Zahlen/Einheiten („6,50 m", „−79,0 t")
+// beginnen mit Ziffer/− → unverändert. Die Labels (Keys) sind bereits groß. Greift bei jeder Analyse.
+const capFirst = (s) => (typeof s === "string" && /^[a-zäöüß]/.test(s) ? s.charAt(0).toUpperCase() + s.slice(1) : s)
+function capDetailWerte(detail) {
+  if (!detail) return detail
+  const out = {}
+  for (const [k, v] of Object.entries(detail)) out[k] = capFirst(v)
+  return out
+}
 function withInfoAttrs(detail, attrs) {
   const out = { ...(detail ?? {}) }
   for (const [key, label, fmt] of INFO_ATTRS) {
@@ -520,7 +530,7 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
   }
   return {
     ...result,
-    detail: withInfoAttrs(result.detail, attrs), // T-459: tote ATTR_LABEL beleben (reine Anzeige)
+    detail: capDetailWerte(withInfoAttrs(result.detail, attrs)), // T-459 Info-Attrs + T-611 Werte großschreiben
     titel: obstacle.name || DEFAULT_TITEL[obstacle.kategorie],
   }
 }

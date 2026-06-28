@@ -38,7 +38,9 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // 2.3.3 (T-611 Beauty): humanizeTitel — ALL-CAPS-Kataster-Namen → deutsche Schreibung (BASt 0153),
 // ÜFG/UEF→Überführung/EÜ→Eisenbahnüberführung, km-/Datum-/Uhrzeit-Tails strippen (0147/0153), nur-Junk-
 // Titel → Kategorie-Default. 11.668/54.713 Titel verschönert, 0 geleert. EVB/3-Buchstaben-Kürzel geschützt.
-export const ENGINE_VERSION = "2.3.3"
+// 2.3.4 (T-611 Beauty): Detail-WERTE großschreiben („gesperrt"→„Gesperrt", „auflagenpflichtig…"→„Auf…");
+// Gültigkeits-Label „unbefristet/ab/bis" groß (FE+Mail). Zahlen/Einheiten unverändert.
+export const ENGINE_VERSION = "2.3.4"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben

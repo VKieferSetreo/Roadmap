@@ -725,7 +725,7 @@ function FindingRow({
               <span className="text-neutral-600">
                 <span className="font-semibold text-neutral-700">Gültig:</span>{" "}
                 {finding.gueltigVon ? formatIsoDE(finding.gueltigVon) : "—"} bis{" "}
-                {finding.gueltigBis ? formatIsoDE(finding.gueltigBis) : "unbefristet"}
+                {finding.gueltigBis ? formatIsoDE(finding.gueltigBis) : "Unbefristet"}
               </span>
             </div>
           ) : null}

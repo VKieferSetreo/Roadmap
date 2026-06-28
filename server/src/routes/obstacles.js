@@ -167,7 +167,7 @@ export function obstaclesRouter({ db }) {
       }
       return insertObstacle(q, value)
     })
-    res.status(201).json(rowToObstacle(row))
+    res.status(201).json(humanizeObstacle(rowToObstacle(row)))
   }))
 
   r.patch("/:id", asyncHandler(async (req, res) => {
@@ -191,7 +191,7 @@ export function obstaclesRouter({ db }) {
       // (Index 16/17) sind bewusst NICHT patchbar, daher slice auf die ersten 16.
       [req.params.id, ...insertParams(check.value).slice(0, 16)],
     )
-    res.json(rowToObstacle(rows[0]))
+    res.json(humanizeObstacle(rowToObstacle(rows[0])))
   }))
 
   r.delete("/:id", asyncHandler(async (req, res) => {
