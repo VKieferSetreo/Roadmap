@@ -60,10 +60,33 @@ function ersterPunktUtm33(geom) {
   if (!v) return [null, null]
   return utmZuWgs84(v[0], v[1], 33)
 }
+// T-611: sprechender Anzeige-Titel je Schild-Art (analog 0134) statt rohem vz_bez. Key = attrs-Key,
+// damit die Achslast-Trennung aus T-611 (263 → maxAchslastT) auch im Titel sichtbar bleibt.
+const VZ_LABEL = {
+  maxGewichtT: { wort: "Gewichtsbeschränkung", einheit: "t" },
+  maxAchslastT: { wort: "Achslastbeschränkung", einheit: "t" },
+  maxBreiteM: { wort: "Breitenbeschränkung", einheit: "m" },
+  maxHoeheM: { wort: "Durchfahrtshöhe", einheit: "m" },
+  maxLaengeM: { wort: "Längenbeschränkung", einheit: "m" },
+}
+// T-611: Titel "Gewichtsbeschränkung 6 t — Lauchstädter Straße"; ohne Wert nur Schild-Art, ohne
+// Straße nur die Beschränkung. wert=null (nicht extrahierbar) → Wert wird weggelassen statt geraten.
+function baueTitel(vz, wert, strasse) {
+  const l = VZ_LABEL[vz.key]
+  const kern = l
+    ? (wert != null ? `${l.wort} ${String(wert).replace(".", ",")} ${l.einheit}` : l.wort)
+    : `VZ ${vz.key}`
+  return strasse ? `${kern} — ${strasse}` : kern
+}
+
+// T-611: Sentinel-Platzhalter der Quelle (z.B. 1900-01-01/1900-01-02, Jahr < 2000) sind KEIN echtes
+// Datum → null, statt sie als gueltigVon/Bis durchzureichen (verfälscht Gültigkeits-/Reconcile-Logik).
 function dateOnlySafe(v) {
   if (!v) return null
   const m = String(v).match(/\d{4}-\d{2}-\d{2}/)
-  return m ? m[0] : null
+  if (!m) return null
+  if (Number(m[0].slice(0, 4)) < 2000) return null
+  return m[0]
 }
 
 export const leipzigVerkehrszeichenConnector = {
@@ -92,7 +115,13 @@ export const leipzigVerkehrszeichenConnector = {
       if (!vz) continue
       const [lng, lat] = ersterPunktUtm33(f.geometry)
       const text = [p.vz_zus_tx, p.so_av_tx, p.vz_bez].filter(Boolean).join(" ")
-      const wert = vz.einheit === "t" ? tonnageAusText(text) : meterAusText(text, null)
+      // T-611: dedizierter Gewichts-/Maß-Schild-Feed — die Zahl am Schild IST das Limit. Daher
+      // tonnageAusText mit requireKontext:false (rohe erste t-Zahl), denn Standort-Specs wie
+      // "325/60,3" sind nicht von "t" gefolgt und stören die Extraktion nicht.
+      const wert = vz.einheit === "t"
+        ? tonnageAusText(text, { requireKontext: false })
+        : meterAusText(text, null)
+      const strasse = String(p.so_seg_sn ?? p.vz_seg_sn ?? "").trim()
       obstacles.push(makeNormalized({
         // so_id = Standort, NICHT Schild — ein Standort kann mehrere GST-Schilder tragen (z.B. Brücke
         // mit 265 Höhe + 262 Gewicht). so_id allein würde sie beim Upsert auf (quelle, externe_id)
@@ -103,7 +132,8 @@ export const leipzigVerkehrszeichenConnector = {
           lat, lng, p.vz_nr, p.so_beg ?? p.vz_aufst, p.so_end, (text.split("\n")[0] || "").slice(0, 60),
         )}`,
         kategorie: vz.kat,
-        name: `${p.vz_bez ?? `VZ ${p.vz_nr}`} — ${p.so_seg_sn ?? p.vz_seg_sn ?? ""}`.trim(),
+        // T-611: Titel aus Schild-Art + Wert + Straße (analog 0134) statt rohem vz_bez.
+        name: baueTitel(vz, wert, strasse),
         beschreibung: text.trim() || null,
         lat, lng,
         strassenRef: null,

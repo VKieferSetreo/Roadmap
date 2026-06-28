@@ -27,7 +27,9 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // 2.2.2 (T-611 Welle A, Falsch-Kritische): VZ263 Achslast→maxAchslastT (kein Gesamtgewicht-Falsch-
 // Kritisch), Rampen-/Auf-Abfahrt-Sperrung ohne vollsperrung (0001/0156), „Vollsperrung (Querstraße)"
 // bei halbseitiger Hauptmaßnahme nicht als Vollsperrung werten.
-export const ENGINE_VERSION = "2.2.2"
+// 2.3.0 (T-611 Welle B+C): dominierte-Restbreite-Dedup (gleiche Route+km+Zeit, breitere raus),
+// Geh-/Radweg-Vollsperrung + Vollsperrung-mit-0-Fahrstreifen+Rampe nicht mehr kritisch, „;"-Titel-Trim.
+export const ENGINE_VERSION = "2.3.0"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben

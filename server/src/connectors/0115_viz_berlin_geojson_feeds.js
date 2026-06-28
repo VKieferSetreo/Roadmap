@@ -11,10 +11,13 @@ const FEEDS = [
   { url: "https://api.viz.berlin.de/tic3/baustellen_sperrungen_tic.json", herkunft: "Landesmeldestelle (TIC3)" },
 ]
 
-function katAus(subtype) {
+function katAus(subtype, text) {
   const s = String(subtype ?? "").toLowerCase()
   if (s.includes("baustelle") || s.includes("bauarbeit")) return "baustelle"
   if (s.includes("sperrung")) return "sperrung"
+  // T-611: vor dem 'sonstige'-Default den content/section-Text auf Bau-Schlüsselwörter prüfen — viele
+  // echte Baustellen tragen einen generischen subtype (z.B. "Störung"), benennen die Bauart nur im Text.
+  if (/bauarbeit|baustelle|tiefbau|brückenarbeit|straßenbau|deckenbau/i.test(String(text ?? ""))) return "baustelle"
   // T-436: Gefahr/Störung/Veranstaltung etc. sind KEINE planbaren Hindernisse → 'sonstige'
   // (Engine schließt 'sonstige' aus). Vorher pauschal 'sperrung' = Falsch-Sperrung. Der echte
   // Sperr-Entscheid kommt aus dem severity-Feld (istVollsperrung), nicht aus dem subtype.
@@ -25,7 +28,10 @@ function katAus(subtype) {
 function istVollsperrung(severity, text) {
   const sev = String(severity ?? "").toLowerCase()
   if (sev) return sev.includes("vollsperr") || sev.includes("fahrtrichtungssperr")
-  return /vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))
+  // T-611: "auf allen Fahrstreifen gesperrt" = Vollsperrung, NICHT Einzelspur — der
+  // Fahrstreifen-/Spur-Qualifizierer darf hier nicht ausschließen.
+  const alleSpuren = /all(e|en)\s+fahrstreifen/i.test(text)
+  return /vollsperr/i.test(text) || (/gesperrt/i.test(text) && (alleSpuren || !/fahrstreifen|spur|einzel/i.test(text)))
 }
 function geomPunkt(geometry) {
   if (!geometry) return [null, null]
@@ -59,7 +65,9 @@ function validity(v) {
   if (!v || typeof v !== "object") return { von: null, bis: null }
   return { von: dateOnly(v.from), bis: dateOnly(v.to) }
 }
-function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?(\d{1,4})\b/); return m ? `${m[1]}${m[2]}` : null }
+// T-611: Buchstabensuffix (z.B. B2a) zulassen + führende Nullen strippen. Einzeln aufgerufen, damit
+// die tragende Straße (p.street) vor Querstraßen/p.section bevorzugt wird (siehe Aufruf unten).
+function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?0*(\d{1,4})([a-zA-Z])?\b/); return m ? `${m[1]}${m[2]}${m[3] ?? ""}` : null }
 
 export const vizBerlinGeojsonFeedsConnector = {
   quelleId: "0115",
@@ -79,7 +87,7 @@ export const vizBerlinGeojsonFeedsConnector = {
         const geom = geomLinie(f.geometry)
         const { von, bis } = validity(p.validity)
         const text = [p.section, p.content].filter(Boolean).join(" — ")
-        const kat = katAus(p.subtype)
+        const kat = katAus(p.subtype, text)
         const tonnage = tonnageAusText(text)
         obstacles.push(makeNormalized({
           // T-434: stabile Hash-externeId (wie 0114) statt roher Quell-id — beide Feeds
@@ -90,7 +98,9 @@ export const vizBerlinGeojsonFeedsConnector = {
           name: p.street || p.section || `${p.subtype ?? "Meldung"} Berlin`,
           beschreibung: text || null,
           lat: point[1], lng: point[0],
-          strassenRef: refAus(`${p.street ?? ""} ${p.section ?? ""}`),
+          // T-611: tragende Straße (p.street) vor Querstraßen/p.section — section nennt oft die
+          // kreuzende Straße, deren Ref sonst fälschlich als Strecken-Ref übernommen würde.
+          strassenRef: refAus(p.street) ?? refAus(p.section),
           attrs: {
             maxGewichtT: tonnage ?? undefined,
             restbreiteM: meterAusText(text, /breite/i) ?? undefined,

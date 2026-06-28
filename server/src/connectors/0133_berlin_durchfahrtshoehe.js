@@ -51,7 +51,11 @@ export const berlinDurchfahrtshoehenConnector = {
       // Solche Artefakte sind keine befahrbaren Durchfahrten — als maxHoeheM würde eine 0,1-m-Höhe
       // JEDEN realen Transport fälschlich als „zu niedrig/kritisch" flaggen (Audit 2026-06-22, FIX-1).
       // Echte niedrige Limits (z.B. 1,8 m) liefert das VZ-Kataster 0134, nicht diese Befahrung.
-      if (!(hoehe >= 2.0) || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+      // T-611: Obergrenze 10,0 m — die Befahrung misst vereinzelt Phantom-Bauwerke bis 16,65 m (freier
+      // Himmel/offene Strecke). 10 m gewählt (statt 7), damit reale 7–8-m-Überführungen sicher erhalten
+      // bleiben (Skeptiker-Verify): kein realer Transport/keine reale lichte Höhe erreicht 10 m, daher
+      // 0 Funde-Risiko, nur die klar artefakthaften >10-m-Werte fallen weg. Per-Eintrag VOR dem Raster-Min.
+      if (!(hoehe >= 2.0 && hoehe <= 10.0) || !Number.isFinite(lat) || !Number.isFinite(lng)) {
         ohneHoehe++
         continue
       }

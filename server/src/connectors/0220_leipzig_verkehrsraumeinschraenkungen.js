@@ -40,9 +40,13 @@ export const leipzigVerkehrsraumeinschraenkungenConnector = {
       const vollsperrung = sperrart.toLowerCase() === "vollsperrung" || /vollsperrung|voll gesperrt/i.test(text) || undefined
       const istSperrung = /sperrung/i.test(sperrart)
       const istSondernutzung = /sondernutzung/i.test(sparte)
+      // T-611: echte Vollsperrung (Indiz oft nur in meldung, nicht in sperrart) darf nicht als
+      // Sondernutzung-'sonstige' verworfen werden → vollsperrung zählt als Sperrung (bleibt kritisch).
+      // T-611: Umzug/Haltverbotszone sind nicht transport-relevant → 'sonstige' statt 'baustelle' (Rauschen raus).
+      const istNichtRelevant = /umzug|haltverbotszone/i.test(text)
       obstacles.push(makeNormalized({
         externeId: p.objectid ?? f.id,
-        kategorie: istSperrung ? "sperrung" : istSondernutzung ? "sonstige" : "baustelle",
+        kategorie: (istSperrung || vollsperrung) ? "sperrung" : (istSondernutzung || istNichtRelevant) ? "sonstige" : "baustelle",
         name: (p.adresse ?? "").trim() || sparte || "Verkehrsraumeinschränkung Leipzig",
         beschreibung: [sparte, sperrart, p.meldung].filter((x) => x && x !== "keine Meldung").join(" — ").trim() || null,
         lat, lng,

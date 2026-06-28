@@ -23,6 +23,16 @@ const GST_VZ = {
   "266": { kat: "engstelle", key: "maxLaengeM" },
 }
 
+// T-611: Sprechender Titel je VZ-Basis aus Kategorie + Wert + Straße statt generischem "VZ {base}".
+// Achslast (263) bewusst eigenes Label (nicht "Gewicht"), passend zur maxAchslastT-Trennung oben.
+const VZ_TITEL = {
+  "262": { label: "Gewichtsbeschränkung", einheit: "t" },
+  "263": { label: "Achslast", einheit: "t" },
+  "264": { label: "Breitenbeschränkung", einheit: "m" },
+  "265": { label: "Durchfahrtshöhe", einheit: "m" },
+  "266": { label: "Längenbeschränkung", einheit: "m" },
+}
+
 /** stvo_nummer → { base, wert }. "262-7,5t"→{262,7.5}; "265-3,5"→{265,3.5}; "262"→{262,null}. */
 function vzWert(stvo) {
   const s = String(stvo ?? "").trim()
@@ -51,10 +61,17 @@ export const rostockVerkehrszeichenConnector = {
       const lng = Array.isArray(c) ? Number(c[0]) : null
       const lat = Array.isArray(c) ? Number(c[1]) : null
       const strasse = String(p.strasse_name ?? "").trim()
+      // T-611: Titel aus Kategorie+Wert+Straße (z.B. "Durchfahrtshöhe 3,5 m · Lange Straße");
+      // Wert deutsch mit Dezimalkomma. Fallback auf alten "VZ {base}"-Titel falls Basis unbekannt.
+      const titel = VZ_TITEL[base]
+      const wertStr = String(wert).replace(".", ",")
+      const name = titel
+        ? [`${titel.label} ${wertStr} ${titel.einheit}`, strasse].filter(Boolean).join(" · ")
+        : [`VZ ${base}`, strasse].filter(Boolean).join(" · ") || `Verkehrszeichen ${base} Rostock`
       obstacles.push(makeNormalized({
         externeId: p.uuid ? `ro-vz-${p.uuid}` : `ro-vz-${base}-${p.nummer ?? ""}-${lat},${lng}`,
         kategorie: map.kat,
-        name: [`VZ ${base}`, strasse].filter(Boolean).join(" · ") || `Verkehrszeichen ${base} Rostock`,
+        name,
         beschreibung: `Verkehrszeichen-Beschränkung (Rostock VZ-Kataster)${strasse ? ` · ${strasse}` : ""}`,
         lat, lng,
         attrs: { [map.key]: wert }, // explizit gesetzt → makeNormalized-Gap-Fill greift nicht drüber

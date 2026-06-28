@@ -45,7 +45,9 @@ function strasseRef(p) {
   const rn = typeof p.roadNumber === "string" ? p.roadNumber.trim() : ""
   if (rn) return rn.slice(0, 80)
   const m = String(p.name ?? "").match(/,\s*([^,]+?)\s+(?:zwischen|bis|in|Richtung|ab|von)\s/i)
-  if (m && m[1].trim()) return m[1].trim().slice(0, 80)
+  // T-611: das Gattungswort „Straße"/„Weg" alleinstehend ist KEINE Straßen-Ref (Quelle liefert oft
+  // „…, Straße zwischen Abzweig X und Y" für unbenannte Straßen) → null statt wertlosem Gattungswort.
+  if (m && m[1].trim() && !/^(?:Stra(?:ß|ss)e|Weg)$/i.test(m[1].trim())) return m[1].trim().slice(0, 80)
   return null
 }
 

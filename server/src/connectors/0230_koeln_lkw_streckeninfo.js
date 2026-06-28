@@ -56,18 +56,24 @@ export const koelnLkwStreckeninfoConnector = {
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue
         const strasse = String(p.strasse ?? "").trim()
         const titel = String(p.titel ?? "").trim()
+        // T-611: richtungsgebundene Beschränkung (z. B. einseitig befahrbare Brücke). Nur ausgeben,
+        // wenn die Quelle das Feld real liefert — KEINE harte Richtungsfilterung (würde echte Funde
+        // verstecken, kein Max-Sign-off). Wird in attrs.richtung + beschreibung als Kontext benannt.
+        const richtung = String(p.richtung ?? "").trim()
         const attrs = {}
         if (L.key) {
           const w = wertNum(p.beschraenkung)
           if (w) attrs[L.key] = w // explizit → Gap-Fill greift nicht drüber
         }
+        if (richtung) attrs.richtung = richtung // T-611: Fahrtrichtung als Attribut
         obstacles.push(makeNormalized({
           externeId: `koeln-lkwstr-${L.id}-${p.objectid}`,
           kategorie: L.kat,
           name: [L.label, titel || strasse.split(",")[0]].filter(Boolean).join(" · ") || `${L.label} (Köln)`,
           // Lage-Kontext aus strasse; beschraenkung trägt für Layer 3 den Freitext (Nachtfahrverbote
           // etc.) — die "X Tonnen/Meter"-Token decken sich bei Layer 1/2 mit dem explizit gesetzten attr.
-          beschreibung: [strasse, p.beschraenkung].filter(Boolean).join(" · ") || null,
+          // T-611: Fahrtrichtung mit aufnehmen, damit der Fund nicht stumm beide Richtungen flaggt.
+          beschreibung: [strasse, p.beschraenkung, richtung ? `Richtung: ${richtung}` : null].filter(Boolean).join(" · ") || null,
           lat, lng,
           strassenRef: strasse ? strasse.split(",")[0] : null,
           attrs,

@@ -96,8 +96,11 @@ export const rvrGeonetzwerkRuhrBaustellenConnector = {
         obstacles.push(makeNormalized({
           externeId,
           kategorie: "baustelle",
-          name: p.massnahme ?? p.strasse ?? "Baustelle (RVR)",
-          beschreibung: text || null,
+          // T-611: Titel = Straße zuerst, dann Maßnahme (vorher nur Maßnahme → reines "Fernwärme"
+          // ohne Straßenbezug). Straße dem Beschreibungstext voranstellen — bewusst NICHT in `text`
+          // (Attr-Extraktion meterAusText/tonnageAusText) gemischt, um Falsch-Funde zu vermeiden.
+          name: [p.strasse, p.massnahme].filter(Boolean).join(" — ") || "Baustelle (RVR)",
+          beschreibung: [p.strasse, text].filter(Boolean).join(" · ") || null,
           lat, lng,
           strassenRef,
           attrs: {

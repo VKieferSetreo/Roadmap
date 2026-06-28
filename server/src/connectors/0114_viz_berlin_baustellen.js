@@ -11,10 +11,14 @@ const BASE =
   "https://api.viz.berlin.de/geoserver/mdhwfs/wfs?service=WFS&version=2.0.0&request=GetFeature" +
   "&typeNames=mdhwfs:baustellen_sperrungen&outputFormat=application/json&srsName=EPSG:4326"
 
-function katAus(subtype) {
+function katAus(subtype, text) {
   const s = String(subtype ?? "").toLowerCase()
   if (s.includes("baustelle") || s.includes("bauarbeit")) return "baustelle"
   if (s.includes("sperrung")) return "sperrung"
+  // T-611: Bau-Engstellen ("Fahrbahn auf einen Fahrstreifen verengt, Bauarbeiten") tragen den
+  // Bau-Hinweis nur im content/section-Text, nicht im subtype → vor dem 'sonstige'-Default scannen,
+  // sonst fällt eine echte Baustelle fälschlich aus der Engine ('sonstige' ist ausgeschlossen).
+  if (/bauarbeit|baustelle|tiefbau|brückenarbeit|straßenbau|deckenbau/i.test(String(text ?? ""))) return "baustelle"
   // T-436: Gefahr/Störung/Veranstaltung etc. sind KEINE planbaren Hindernisse → 'sonstige'
   // (Engine schließt 'sonstige' aus). Vorher pauschal 'sperrung' = Falsch-Sperrung (live: subtype
   // "Störung" mit severity "keine Sperrung"). Sperr-Entscheid kommt aus severity (istVollsperrung).
@@ -23,8 +27,12 @@ function katAus(subtype) {
 // T-436: echtes severity-Feld als Sperr-Entscheid; Text-Heuristik (T-432) nur Fallback.
 function istVollsperrung(severity, text) {
   const sev = String(severity ?? "").toLowerCase()
-  if (sev) return sev.includes("vollsperr") || sev.includes("fahrtrichtungssperr")
-  return /vollsperr/i.test(text) || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))
+  // T-611: "auf allen Fahrstreifen gesperrt" = faktische Vollsperrung (alle Spuren dicht), NICHT
+  // Einzelspur/halbseitig. Überstimmt den Fahrstreifen-/Spur-Ausschluss; verlangt einen Sperr-Kontext,
+  // damit "auf allen Fahrstreifen verengt" o. Ä. nicht fälschlich als Sperrung gilt.
+  const alleSpuren = /all(e|en|er)\s+(fahrstreifen|fahrspur\w*|spuren?)/i.test(text) && /sperr|gesperrt/i.test(text)
+  if (sev) return sev.includes("vollsperr") || sev.includes("fahrtrichtungssperr") || alleSpuren
+  return /vollsperr/i.test(text) || alleSpuren || (/gesperrt/i.test(text) && !/fahrstreifen|spur|einzel/i.test(text))
 }
 // Erste plausible [lng,lat]-Koordinate aus einer beliebig tief verschachtelten
 // Geometrie ziehen (Point/MultiPoint/LineString/MultiLineString/Polygon/MultiPolygon).
@@ -73,7 +81,12 @@ function validity(v) {
   try { const o = typeof v === "string" ? JSON.parse(v) : v; return { von: dateOnly(o.from), bis: dateOnly(o.to) } }
   catch { return { von: null, bis: null } }
 }
-function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?(\d{1,4})\b/); return m ? `${m[1]}${m[2]}` : null }
+// T-611: Buchstabensuffix (B96A) + führende Nullen (B0096 → B96) mit-matchen; der Aufrufer wertet
+// die tragende Straße (p.street) VOR p.section, damit nicht die Querstraße als Ref gezogen wird.
+function refAus(s) {
+  const m = String(s ?? "").match(/\b([ABLK])\s?0*(\d{1,4})([a-zA-Z])?\b/)
+  return m ? `${m[1]}${m[2]}${m[3] ? m[3].toUpperCase() : ""}` : null
+}
 
 export const vizBerlinBaustellenConnector = {
   quelleId: "0114",
@@ -93,7 +106,7 @@ export const vizBerlinBaustellenConnector = {
       const geom = geomLinie(f.geometry) // EPSG:4326 → unverändert durchreichen (keine Reprojektion)
       const { von, bis } = validity(p.validity)
       const text = [p.section, p.content].filter(Boolean).join(" — ")
-      const kat = katAus(p.subtype)
+      const kat = katAus(p.subtype, text)
       const tonnage = tonnageAusText(text)
       // externeId: eindeutig pro echtem Einzel-Eintrag UND deterministisch/reconcile-stabil.
       // Quell-id allein ist nicht garantiert eindeutig; (lat,lng) allein würde zwei Meldungen am
@@ -108,7 +121,7 @@ export const vizBerlinBaustellenConnector = {
         name: p.street || p.section || `${p.subtype ?? "Meldung"} Berlin`,
         beschreibung: text || null,
         lat: point[1], lng: point[0],
-        strassenRef: refAus(`${p.street ?? ""} ${p.section ?? ""}`),
+        strassenRef: refAus(p.street) || refAus(p.section),
         attrs: {
           maxGewichtT: tonnage ?? undefined,
           restbreiteM: meterAusText(text, /breite/i) ?? undefined,

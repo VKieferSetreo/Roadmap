@@ -31,7 +31,8 @@ export const ingolstadtBaustellenConnector = {
         name: p.STRASSE || "Baustelle",
         beschreibung: text || null,
         lat, lng,
-        strassenRef: refAus(p.STRASSE) ?? (p.STRASSE || null),
+        // T-611: nur A/B/L/K-Klassifikation als strassen_ref — kein Roh-Namen-Fallback (Name steht in name).
+        strassenRef: refAus(p.STRASSE) || null,
         attrs: { vollsperrung },
         gueltigVon: dateOnly(p.BEGINN), gueltigBis: dateOnly(p.ENDE), realerStart: dateOnly(p.BEGINN),
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,

@@ -46,13 +46,20 @@ export const baustellenShConnector = {
       const gewicht = num(p.Gewichtsbeschränkung_in_t)
       // T-439: betroffene Fahrtrichtung in den Freitext (Ortskontext) aufnehmen.
       const text = [p.Verkehrseinschränkung, p.Art_der_Maßnahme, p.Betroffene_Fahrtrichtung, p.Hinweise_zur_Verkehrsführung].filter(Boolean).join(" — ")
+      // T-611: Bloßer Klassenbuchstabe (G/K/L = Gemeinde-/Kreis-/Landesstraße OHNE Ziffer) ist
+      // kein echter Straßenname → sonst strassenRef="G" und Titel "Baustelle G". Dann Ref=null
+      // und Titel aus dem Ortskontext (Art der Maßnahme) statt aus dem nackten Klassenbuchstaben.
+      const nurKlasse = /^[GKL]$/.test(String(p.Straßenname ?? "").trim())
+      const name = nurKlasse
+        ? `Baustelle (${p.Art_der_Maßnahme ?? "Bauarbeiten"})`
+        : `Baustelle ${p.Straßenname ?? ""} (${p.Art_der_Maßnahme ?? "Bauarbeiten"})`.trim()
       obstacles.push(makeNormalized({
         externeId: p.OBJECTID ?? f.id,
         kategorie: gewicht ? "gewicht" : "baustelle",
-        name: `Baustelle ${p.Straßenname ?? ""} (${p.Art_der_Maßnahme ?? "Bauarbeiten"})`.trim(),
+        name,
         beschreibung: text || null,
         lat, lng,
-        strassenRef: refAus(p.Straßenname) ?? (p.Straßenname || null),
+        strassenRef: nurKlasse ? null : (refAus(p.Straßenname) ?? (p.Straßenname || null)),
         attrs: {
           restbreiteM: num(p.Verbleibende_Restbreite_in_m) ?? undefined,
           maxHoeheM: num(p.Höhenbeschränkung_in_m) ?? undefined, // live-Feldname mit ö

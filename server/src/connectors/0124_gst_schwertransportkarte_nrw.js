@@ -62,6 +62,13 @@ export const gstSchwertransportkarteNrwConnector = {
       const gewichtText = String(p.gewicht ?? "")
       const tonnage = tonnageAusText(gewichtText, { requireKontext: false }) // dediziertes Gewichtsfeld → rohe Zahl (T-253)
       const komplettsperre = /keine schwertransporte/i.test(gewichtText)
+      // T-611: Display-Angleichung an Engine-Semantik — grundsaetzlicheGstSperre wird als
+      // warnung "auflagenpflichtig" gewertet (NICHT kritisch, Max-kalibriert). Die Roh-Phrase
+      // "keine Schwertransporte" liest sich wie Vollsperre; Beschreibung daher auf die
+      // tatsächliche Bedeutung (außerhalb des freigegebenen GST-Netzes) umformulieren.
+      const beschreibung = komplettsperre
+        ? "NRW-GST-Karte: nicht im freigegebenen GST-Netz — Tragfähigkeit/Auflagen prüfen"
+        : (gewichtText || null)
       // EINDEUTIG pro echtem Einzel-Eintrag UND STABIL über Läufe (reconcile-stabil):
       // quellId (tbwnr/fid/f.id) + Diskriminator-Hash aus Geometrie + unterscheidenden
       // Quellfeldern (Straßen-Ref, Restriktionstext). So kollabieren zwei Last-Restriktionen
@@ -73,7 +80,7 @@ export const gstSchwertransportkarteNrwConnector = {
         externeId,
         kategorie: "bruecke",
         name: p.bw_name || `Brücke ${p.tbwnr ?? ""}`.trim(),
-        beschreibung: gewichtText || null,
+        beschreibung,
         lat, lng,
         strassenRef: normRef(p.strkl, p.strnr),
         attrs: {

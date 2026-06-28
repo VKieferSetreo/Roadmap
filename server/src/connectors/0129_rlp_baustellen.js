@@ -15,7 +15,23 @@ const CQL = encodeURIComponent("quelle='Verkehrsbehörden in Rheinland-Pfalz'")
 const BASE = "https://maps.mobilitaetsatlas.de/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature" +
   `&typeNames=mwvlw:baustelle&outputFormat=application/json&srsName=EPSG:4326&CQL_FILTER=${CQL}`
 
-function refAus(s) { const m = String(s ?? "").match(/\b([ABLK])\s?(\d{1,4})\b/); return m ? `${m[1]}${m[2]}` : null }
+// T-611: Klassen-Rang für „tragende Straße"-Präferenz (Autobahn > Bundes- > Landes- > Kreisstraße);
+// die höhere Klasse ist die maßgebliche Hauptstraße, nicht ein minderklassiger Kreuzungs-/Auffahrt-Ref.
+const KLASSEN_RANG = { A: 4, B: 3, L: 2, K: 1 }
+// T-611: Buchstabensuffix (z.B. B96A) mitnehmen, führende Nullen (B096→B96) strippen und bei mehreren
+// Refs die tragende (höchste Klasse) bevorzugen.
+function refAus(s) {
+  let best = null
+  for (const m of String(s ?? "").matchAll(/\b([ABLK])\s?0*(\d{1,4})([a-zA-Z])?\b/g)) {
+    const ref = `${m[1]}${m[2]}${m[3] ? m[3].toUpperCase() : ""}`
+    const rang = KLASSEN_RANG[m[1]] ?? 0
+    if (!best || rang > best.rang) best = { ref, rang }
+  }
+  return best ? best.ref : null
+}
+// T-611: bloßer Klassenbuchstabe ohne Nummer (z.B. „G"/„g" = Gemeindestraße) ist kein verwertbarer
+// Straßen-Ref → null statt rohem Buchstaben durchreichen.
+function strasseRoh(s) { const v = String(s ?? "").trim(); return v && !/^[a-zA-Z]$/.test(v) ? v : null }
 function ersterPunkt(geom) {
   if (!geom?.coordinates) return [null, null]
   let c = geom.coordinates
@@ -46,7 +62,7 @@ export const rlpBaustellenConnector = {
         name: p.art_der_arbeiten || (vollsperrung ? "Sperrung" : "Baustelle"),
         beschreibung: p.beschreibung || null,
         lat, lng,
-        strassenRef: refAus(p.strasse) ?? (p.strasse || null),
+        strassenRef: refAus(p.strasse) ?? strasseRoh(p.strasse),
         attrs: { maxGewichtT: tonnage, restbreiteM: meterAusText(text, /breite|einengung/i), vollsperrung },
         gueltigVon: dateOnly(p.von), gueltigBis: dateOnly(p.bis), realerStart: dateOnly(p.von),
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,

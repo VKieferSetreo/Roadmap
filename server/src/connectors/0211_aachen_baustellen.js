@@ -42,8 +42,10 @@ export const aachenBaustellenConnector = {
       obstacles.push(makeNormalized({
         externeId: p.gid ?? p.sdatenid ?? f.id,
         kategorie: "baustelle",
-        name: p.name ?? p.strassen ?? p.art ?? "Baustelle Aachen",
-        beschreibung: [p.beschreibu, p.einschraen, ort].filter(Boolean).join(" — ").trim() || null,
+        // T-611: Titel ist die Straße (p.strassen), nicht die Maßnahmen-Art (p.name);
+        // die Maßnahmen-Art bleibt vorne in der Beschreibung erhalten.
+        name: p.strassen ?? p.name ?? p.art ?? "Baustelle Aachen",
+        beschreibung: [p.name, p.beschreibu, p.einschraen, ort].filter(Boolean).join(" — ").trim() || null,
         lat, lng,
         strassenRef: refM ? `${refM[1].toUpperCase()}${refM[2]}` : null,
         attrs: {
