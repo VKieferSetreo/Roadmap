@@ -328,7 +328,25 @@ export function dedupeObstacles(items) {
     groups.get(k).push(o)
   }
   for (const group of groups.values()) {
-    out.push(group.length === 1 ? group[0] : mergeDupGroup(group))
+    if (group.length === 1) { out.push(group[0]); continue }
+    // T-609: dieselbe Stelle (Name+Koord) kann mehrere zeitversetzte BAUPHASEN mit UNTERSCHIEDLICHER
+    // Restbreite tragen (Autobahn-Maßnahme: 5,85 m / 5,5 m / 3,5 m je Phase). Der Min-Merge der
+    // restbreiteM machte sonst jede Phase so schmal wie die schmalste → falsch-kritisch + Widerspruch
+    // Text↔Restbreite. Bei MEHREREN Zeitfenstern je Phase getrennt mergen (eigene Restbreite + Fenster);
+    // EIN Zeitfenster bleibt unverändert (stabile externeId → KEIN Churn, anders als ein generischer
+    // Zeitfenster-Key, der bei rollenden Enddaten jede Sync neue IDs erzeugt hätte).
+    const byTf = new Map()
+    for (const o of group) {
+      const tf = `${o?.gueltigVon ?? ""}|${o?.gueltigBis ?? ""}`
+      if (!byTf.has(tf)) byTf.set(tf, [])
+      byTf.get(tf).push(o)
+    }
+    if (byTf.size <= 1) { out.push(mergeDupGroup(group)); continue }
+    for (const sub of byTf.values()) {
+      const merged = mergeDupGroup(sub)
+      merged.externeId = `${merged.externeId}@${sub[0]?.gueltigVon ?? ""}` // je Phase eindeutig
+      out.push(merged)
+    }
   }
   return out
 }
