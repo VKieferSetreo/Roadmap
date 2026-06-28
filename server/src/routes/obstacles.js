@@ -12,6 +12,11 @@
 import { Router } from "express"
 import { requireRole } from "../auth.js"
 import { rowToObstacle } from "../map.js"
+import { humanizeTitel } from "../engine/index.js"
+
+// T-611: Display-Humanisierung für die Hindernis-Übersicht — gleiche Logik wie bei den Funden,
+// aber nur fürs Anzeige-Feld (Rohtext bleibt in DB/Suche/Export). Conservative: nie leeren Namen.
+const humanizeObstacle = (o) => ({ ...o, name: humanizeTitel(o.name, o.kategorie) })
 import {
   assignFachId, GEMELDETE_KATEGORIEN, insertObstacle, insertParams, INSERT_SQL, KUNDEN_QUELLE,
   OBSTACLE_COLS, todayIso, validateObstacle,
@@ -119,7 +124,10 @@ export function obstaclesRouter({ db }) {
       total = c[0].n
     }
     const { rows } = await db.query(sql, params)
-    res.json({ obstacles: rows.map(rowToObstacle), ...(total != null && { total }) })
+    // T-611: die Hindernis-Übersicht (DB-Karte) zeigte bisher den ROHEN Quell-Namen (HDF_-Codes,
+    // „baustelle (DATEX)", Ab/St-Stationscodes, VZ-Codes) — humanizeTitel lief nur auf den Funden.
+    // Hier display-seitig humanisieren (keine Datenänderung; Suche/Export bleiben auf dem Rohtext).
+    res.json({ obstacles: rows.map(rowToObstacle).map(humanizeObstacle), ...(total != null && { total }) })
   }))
 
   r.post("/", asyncHandler(async (req, res) => {

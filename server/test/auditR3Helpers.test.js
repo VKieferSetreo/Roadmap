@@ -108,6 +108,17 @@ describe("T-611 Falsch-Kritische (Wave A)", () => {
   })
 })
 
+describe("T-611 Hindernis-DB-Karten-Titel (Voll-Bestand)", () => {
+  it("'baustelle (DATEX)' → 'Baustelle'", () => {
+    expect(humanizeTitel("baustelle (DATEX)", "baustelle")).toBe("Baustelle")
+  })
+  it("HDF_-Code-Token wird gestrippt (Titel beginnt mit der Nutzinfo)", () => {
+    const out = humanizeTitel("Erneuerung der Fahrbahn - 4 HDF_2023-002727_bRF km 160", "baustelle")
+    expect(out).not.toContain("HDF_")
+    expect(out.startsWith("Erneuerung der Fahrbahn")).toBe(true)
+  })
+})
+
 describe("T-611 Welle C/Engine (geteilte Fixes)", () => {
   it("0112: Überholverbot 'über 7,5 t' ist KEIN Gewichtslimit", () => {
     expect(tonnageAusText("Überholverbot für Fahrzeuge über 7,5 t")).toBeNull()
