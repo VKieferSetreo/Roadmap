@@ -27,6 +27,31 @@ function wertNum(s) {
   return n && n > 0 && n < 1000 ? n : null
 }
 
+// T-611: Lage-Marker, ab denen `strasse` Standort-Freitext statt Straßenname trägt.
+// Greift nur, wenn dem Marker noch Inhalt folgt (\s+\S) — sonst würde ein legitimer
+// Straßenname, der auf "…Höhe"/"…nach" endet (z. B. "Auf der Höhe"), fälschlich gekürzt.
+const LAGE_RE = /\s+(?:nach|höhe|hoehe|richtung|zwischen|einmündung|einmuendung|kreuzung)\s+\S/i
+
+/**
+ * T-611: strassenRef auf den führenden Straßennamen-Token kürzen.
+ * Die Köln-Quelle füllt `strasse` neben dem Namen mit Lage-Freitext (" nach …",
+ * " Höhe …", Klammer-Zusätzen) und gelegentlich der ss-Schreibvariante von "Straße".
+ * Für eine saubere Match-Ref nur den Namen vor dem ersten Lage-Zusatz behalten.
+ * Konservativ: bleibt nichts Brauchbares übrig, gilt der bisherige Komma-Token —
+ * kein echter Fund geht verloren, das Hindernis wird unabhängig davon emittiert.
+ */
+function strassenRefKurz(strasse) {
+  const basis = String(strasse ?? "").split(",")[0].trim()
+  if (!basis) return null
+  let ref = basis.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s{2,}/g, " ").trim() // Klammer-Zusätze raus
+  const m = ref.match(LAGE_RE)
+  if (m) ref = ref.slice(0, m.index).trim() // ab erstem Lage-Marker abschneiden
+  // T-611: bekannte Quellen-Schreibvariante normalisieren ("…strasse" → "…straße"),
+  // damit dieselbe Brücke nicht über zwei Ref-Schreibweisen in zwei Funde zerfällt.
+  ref = ref.replace(/strasse\b/gi, (s) => (s[0] === "S" ? "Straße" : "straße"))
+  return ref || basis // im Zweifel: bisheriger Wert
+}
+
 const layerUrl = (id) =>
   `${BASE}/${id}/query?where=${encodeURIComponent("1=1")}&outFields=*&f=geojson&outSR=4326&resultRecordCount=2000`
 
@@ -75,7 +100,7 @@ export const koelnLkwStreckeninfoConnector = {
           // T-611: Fahrtrichtung mit aufnehmen, damit der Fund nicht stumm beide Richtungen flaggt.
           beschreibung: [strasse, p.beschraenkung, richtung ? `Richtung: ${richtung}` : null].filter(Boolean).join(" · ") || null,
           lat, lng,
-          strassenRef: strasse ? strasse.split(",")[0] : null,
+          strassenRef: strassenRefKurz(strasse), // T-611: führender Straßenname statt Lage-Freitext/Tippfehler
           attrs,
           quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
         }))

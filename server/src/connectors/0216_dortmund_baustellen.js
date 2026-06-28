@@ -1,14 +1,17 @@
 // Connector Quelle 0216: Dortmund — Baustellen (Opendatasoft Explore API v2.1).
-// Port aus dortmund-baustellen-ods.cron.mjs. Zwei Punkt-Datensätze (tagesaktuell + geplant),
-// Pagination via limit/offset (max limit=100). Koordinaten WGS84 in geo-Feld.
+// Port aus dortmund-baustellen-ods.cron.mjs. Ein Punkt-Datensatz (tagesaktuell/laufend; den
+// geplant-Datensatz deckt Connector 0229 ab — T-611), Pagination via limit/offset (max limit=100).
+// Koordinaten WGS84 in geo-Feld.
 
 import { makeNormalized, getJson, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
 
 const PORTAL = "https://open-data.dortmund.de/explore/?q=baustelle"
 const QUELLE_NAME = "Dortmund — Baustellen (Opendatasoft)"
+// T-611: Dublette entfernt — den geplant-Datensatz „fb66-baustellen-geplant" importiert bereits
+// Connector 0229 (Dortmund — Geplante Baustellen). Doppel-Import brachte jede geplante
+// Dortmund-Baustelle zweimal in den Bestand. 0216 = laufende (tagesaktuell), 0229 = geplante.
 const DATASETS = [
   { id: "fb66-baustellen-tagesaktuell", phase: "tagesaktuell" },
-  { id: "fb66-baustellen-geplant", phase: "geplant" },
 ]
 const BASE = "https://open-data.dortmund.de/api/explore/v2.1/catalog/datasets"
 const LIMIT = 100
@@ -17,7 +20,7 @@ export const dortmundBaustellenConnector = {
   quelleId: "0216",
   name: QUELLE_NAME,
   schedule: "0 8,12,18 * * *",
-  // Beide Punkt-Datensätze voll paginiert → kompletter Bestand.
+  // Punkt-Datensatz voll paginiert → kompletter Bestand.
   vollbestand: true,
 
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {

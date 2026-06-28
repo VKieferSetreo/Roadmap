@@ -14,6 +14,12 @@ const MAPSERVER = "https://geoportal.stadt-koeln.de/arcgis/rest/services/verkehr
 const LAYERS = [0, 2]
 const PAGE = 1000
 
+// T-611: Eindeutige Veranstaltungs-typ-Codes — reines „erhöhtes Verkehrsaufkommen", kein Bauwerk,
+// keine Restriktion. 8 = LANXESS arena, 9 = Stadion-/Großevents. Live gegen den Quell-Bestand
+// verifiziert (alle Features beider Codes ohne Sperr-Text). typ 1/2/3/14 bewusst NICHT gelistet —
+// sie tragen reale Baustellen/Sperrungen (z.B. Brücken-Generalsanierung, Straßenfest-Vollsperrung).
+const EVENT_TYPEN = new Set([8, 9])
+
 function epochToDate(ms) {
   if (ms == null) return null
   const d = new Date(Number(ms))
@@ -49,11 +55,15 @@ export const koelnVerkehrsbeeintraechtigungenConnector = {
       const [lng, lat] = ersterPunkt(f.geometry)
       const text = String(p.beschreibung ?? "")
       const istSperrung = /gesperrt|sperrung|nicht möglich|keine einfahrt/i.test(text)
+      // T-611: Veranstaltungs-Hinweis (typ 8/9) → "sonstige" (Engine schließt 'sonstige' aus, kein
+      // Routen-Fund) statt fälschlich "baustelle". istSperrung behält Vorrang, damit eine echte
+      // Sperrung selbst bei Event-typ niemals versteckt wird (lieber zeigen als verstecken).
+      const istEvent = EVENT_TYPEN.has(Number(p.typ))
       obstacles.push(makeNormalized({
         // objectid ist nur je-Layer eindeutig → Layer 2 prefixen. Layer 0 bleibt bare objectid
         // (kein Re-Keying des Bestands beim Upsert auf (quelle, externe_id)).
         externeId: f.__layer ? `${f.__layer}-${p.objectid ?? f.id}` : (p.objectid ?? f.id),
-        kategorie: istSperrung ? "sperrung" : "baustelle",
+        kategorie: istSperrung ? "sperrung" : istEvent ? "sonstige" : "baustelle",
         name: p.name ?? "Verkehrsbeeinträchtigung Köln",
         beschreibung: text.trim() || null,
         lat, lng,

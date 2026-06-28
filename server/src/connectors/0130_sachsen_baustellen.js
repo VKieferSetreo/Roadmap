@@ -48,7 +48,12 @@ export const sachsenBaustellenConnector = {
       return makeNormalized({
         externeId: p.ID,
         kategorie: tonnage ? "gewicht" : vollsperrung ? "sperrung" : "baustelle",
-        name: p.Sperrung_Grund || p.Strasse || "Baustelle",
+        // T-611: Titel orts-anker-first — die Straße steht nur in der Beschreibung, der Sperrung_Grund
+        // nennt bloß Anlass/Maßnahme. Straße voran, Maßnahme als Suffix erhalten (kein "undefined", falls
+        // Sperrung_Grund fehlt); ohne Straße bleibt der Anlass als Titel.
+        name: p.Strasse
+          ? (p.Sperrung_Grund ? `${p.Strasse} — ${p.Sperrung_Grund}` : p.Strasse)
+          : (p.Sperrung_Grund || "Baustelle"),
         beschreibung: p.Bemerkung || p.Strasse || null,
         lat, lng,
         strassenRef: refAus(p.Strasse),

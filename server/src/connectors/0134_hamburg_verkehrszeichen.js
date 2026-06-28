@@ -68,12 +68,15 @@ export const hamburgVerkehrszeichenConnector = {
         continue
       }
       const { kategorie, name, attrs } = mappe(parsed.code, parsed.wert)
+      // T-611: Straße an den Titel hängen (Konsistenz mit 0155/0221) — der Straßenname liegt
+      // vor, der reine Schild-Art-Titel ließ ihn aber ungenutzt. Format wie dort: " — <Straße>".
+      const strasse = stripHtml(p.strassenname) || ""
       obstacles.push(
         makeNormalized({
           externeId: f.id ?? `hh-vz#${p.id}`,
           kategorie,
-          name,
-          beschreibung: stripHtml(p.strassenname) || null,
+          name: name + (strasse ? ` — ${strasse}` : ""),
+          beschreibung: strasse || null,
           lat,
           lng,
           attrs,

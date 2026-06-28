@@ -30,7 +30,7 @@ describe("Hamburg Verkehrszeichen 0134", () => {
     expect(obstacles).toHaveLength(3) // 306 + wertloses 265 verworfen
 
     const hoehe = obstacles.find((o) => o.kategorie === "bruecke")
-    expect(hoehe.name).toBe("Durchfahrtshöhe 3,8 m")
+    expect(hoehe.name).toBe("Durchfahrtshöhe 3,8 m — Moorburger Straße") // T-611: Straße im Titel (wie 0155/0221)
     expect(hoehe.attrs.maxHoeheM).toBe(3.8)
     expect(hoehe.lat).toBeCloseTo(53.55, 5)
     expect(hoehe.lng).toBeCloseTo(9.99, 5)
@@ -38,7 +38,7 @@ describe("Hamburg Verkehrszeichen 0134", () => {
 
     const gewicht = obstacles.find((o) => o.kategorie === "gewicht")
     expect(gewicht.attrs.maxGewichtT).toBe(7.5)
-    expect(gewicht.name).toBe("Gewichtsbeschränkung 7,5 t")
+    expect(gewicht.name).toBe("Gewichtsbeschränkung 7,5 t — Klütjenfelder Straße") // T-611: Straße im Titel
 
     const breite = obstacles.find((o) => o.kategorie === "engstelle")
     expect(breite.attrs.maxBreiteM).toBe(2.1)

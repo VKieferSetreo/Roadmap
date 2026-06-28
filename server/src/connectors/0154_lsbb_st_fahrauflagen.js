@@ -91,14 +91,28 @@ export const lsbbStFahrauflagenConnector = {
       ].filter(Boolean).join(". ") || null
 
       const [lng, lat] = [b.lng, b.lat]
+      // T-611: BW_NAME-Muster „X über Y" / „i.Z./im Zuge der X über Y": X (vor „über") = GETRAGENE
+      // (befahrene) Straße, Y (nach „über") = GEKREUZTE (unterquerte). Das ZUGEORDNET-Feld (b.ref) trägt
+      // hier die gekreuzte Autobahn („…über die A 36" → ZUGEORDNET A36) → falsches Label + Überführungs-FP.
+      // refsIn normalisiert „BAB 14"→A14 / „St"→ST. Bei eindeutigem Parse Label = getragene + Struktur-attrs
+      // (spiegelt 0153/0150 → autoritativer isCrossingStructure-Pfad). Ohne „über": Altverhalten (b.ref).
+      const refsIn = (s) => [...String(s ?? "").matchAll(/\b(BAB|A|B|L|K|St|S)\s?0*(\d{1,4})\b/gi)]
+        .map((m) => { const p = m[1].toUpperCase(); return (p === "BAB" ? "A" : p === "S" ? "ST" : p) + m[2] })
+      const ueberM = String(b.name || "").match(/^(.*?)\s(?:über|ueber)\s+(.*)$/i)
+      const getrageneStrasse = ueberM ? (refsIn(ueberM[1]).slice(-1)[0] || null) : null
+      const gekreuzteStrasse = ueberM ? (refsIn(ueberM[2])[0] || null) : null
       obstacles.push(makeNormalized({
         externeId: `lsbb-st-${id}#${stabilHash(lat, lng, b.ibwnr)}`,
         kategorie: "bruecke",
         name: b.name || `Bauwerk ${b.ibwnr || id}`,
         beschreibung,
         lat, lng,
-        strassenRef: b.ref || null,
-        attrs: vollSperre ? { grundsaetzlicheGstSperre: true } : { maxGewichtT },
+        strassenRef: getrageneStrasse || b.ref || null,
+        attrs: {
+          ...(vollSperre ? { grundsaetzlicheGstSperre: true } : { maxGewichtT }),
+          ...(getrageneStrasse && { getrageneStrasse }),
+          ...(gekreuzteStrasse && { gekreuzteStrasse }),
+        },
         quelleName: QUELLE_NAME, quelleUrl: "https://www.geodatenportal.sachsen-anhalt.de",
       }))
     }

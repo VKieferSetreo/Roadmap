@@ -26,6 +26,20 @@ function ersteKoordinate(geom) {
   return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : [null, null]
 }
 
+// T-611: Straßen-Refs in Textreihenfolge aus einem Namensfragment ("BAB 14" → A14, "B 2" → B2,
+// "St 2063" → ST2063). "BAB" → A normalisiert (sonst greift normRoadRef im Engine-Überführungs-
+// filter nicht). Liefert die Refs in Reihenfolge ihres Auftretens.
+function refsIn(s) {
+  const out = []
+  for (const m of String(s ?? "").matchAll(/\b(BAB|A|B|L|K|St|S)\s?0*(\d{1,4})\b/gi)) {
+    let p = m[1].toUpperCase()
+    if (p === "BAB") p = "A"
+    else if (p === "S") p = "ST"
+    out.push(p + m[2])
+  }
+  return out
+}
+
 async function ladeAlle({ pageSize = 2000, maxPages = 50, timeoutMs = 45000 } = {}) {
   const all = []
   for (let page = 0; page < maxPages; page += 1) {
@@ -66,7 +80,24 @@ export const autobahnLastbeschraenkteBrueckenConnector = {
 
       // Straßen-Ref aus dem Bauwerksnamen ("A 7 / NOK …" → A7).
       const strM = bwName.match(/\bA\s?(\d+)\b/i)
-      const strassenRef = strM ? `A${strM[1]}` : null
+      let strassenRef = strM ? `A${strM[1]}` : null
+
+      // T-611: Bauwerksname-Muster "X über Y" / "i.Z./im Zuge der X über Y": X (vor "über") ist die
+      // GETRAGENE (vom Transport befahrene) Straße, Y (nach "über") die GEKREUZTE (unterquerte). Vorher
+      // zog strassenRef die erste A-Nummer im Namen → bei "Brücke B 2 über A3" die GEKREUZTE A3 statt
+      // der getragenen B2, bei "im Zuge der BAB 14 über die B 189" die A14 statt der gekreuzten B189.
+      // Token VOR "über" (letzter Ref links) = getragen; Token NACH "über" (erster Ref rechts) = gekreuzt.
+      let getrageneStrasse = null
+      let gekreuzteStrasse = null
+      const ueberM = bwName.match(/^(.*?)\s(?:über|ueber|ü\.)\s+(.*)$/i)
+      if (ueberM) {
+        const linkeRefs = refsIn(ueberM[1])
+        const rechteRefs = refsIn(ueberM[2])
+        getrageneStrasse = linkeRefs.length ? linkeRefs[linkeRefs.length - 1] : null
+        gekreuzteStrasse = rechteRefs.length ? rechteRefs[0] : null
+        // Angezeigtes Label = die getragene Straße (nur wenn eindeutig geparst); sonst Altverhalten.
+        if (getrageneStrasse) strassenRef = getrageneStrasse
+      }
 
       // Stabil + eindeutig: Teilbauwerks-ID + Hash aus Geometrie/Beschränkung (zwei Schilder
       // am selben Bauwerk kollabieren nicht).
@@ -88,6 +119,12 @@ export const autobahnLastbeschraenkteBrueckenConnector = {
           ...(tonnage != null && { maxGewichtT: tonnage }),
           ...(maxHoeheM != null && { maxHoeheM }),
           ...(gesperrtKomplett && { gesperrtKomplett: true }),
+          // T-611: getragene (vor "über") + gekreuzte (nach "über") Straße → autoritativer
+          // isCrossingStructure-Pfad im Engine-Überführungsfilter (spiegelt 0153/T-610): Route auf
+          // der getragenen Straße fährt DRÜBER (behalten), Route auf der gekreuzten fährt DRUNTER
+          // durch = Überführung (raus). Kein "über"-Muster → kein Strukturfeld → bisheriges Verhalten.
+          ...(getrageneStrasse && { getrageneStrasse }),
+          ...(gekreuzteStrasse && { gekreuzteStrasse }),
         },
         quelleName: QUELLE_NAME,
         quelleUrl: "https://autobahn.maps.arcgis.com/apps/webappviewer/index.html?id=b6b86f3d26ab4f07a73e265aad097f38",

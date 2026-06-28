@@ -17,6 +17,33 @@ function kategorieAusArt(art) {
   return "sperrung"
 }
 
+// T-611: Gattungswort-Varianten, die dasselbe Bauwerk meinen (Abkürzung/Umlaut),
+// damit z.B. „LSW" und „Lärmschutzwand" als dieselbe Gattung erkannt werden.
+const GATTUNGS_SYNONYME = [
+  ["brücke", "bruecke"],
+  ["stützwand", "stuetzwand"],
+  ["lärmschutzwand", "laermschutzwand", "lsw"],
+]
+
+// T-611: Gattungswort-Verdopplung vermeiden — p.art nur voranstellen, wenn die
+// Bezeichnung nicht ohnehin schon mit dem (ggf. synonymen) Gattungswort beginnt.
+// Sonst entstünde „Brücke … Brücke" bzw. „LSW … Lärmschutzwand".
+function bezeichnungMitArt(art, bezeichnung) {
+  const a = String(art ?? "").trim()
+  const b = String(bezeichnung ?? "").trim()
+  if (!a) return b
+  if (!b) return a
+  const al = a.toLowerCase()
+  const bl = b.toLowerCase()
+  // Direkte Verdopplung: Bezeichnung beginnt bereits mit der art selbst.
+  if (bl.startsWith(al)) return b
+  // Synonyme: art gehört zu einer Gattung und Bezeichnung beginnt mit einer Variante.
+  for (const gruppe of GATTUNGS_SYNONYME) {
+    if (gruppe.some((g) => al.includes(g)) && gruppe.some((g) => bl.startsWith(g))) return b
+  }
+  return `${a} ${b}`
+}
+
 export const rostockGstRoutenConnector = {
   quelleId: "0223",
   name: QUELLE_NAME,
@@ -35,7 +62,8 @@ export const rostockGstRoutenConnector = {
         externeId: p.uuid ?? p.bauwerksnummer ?? f.id,
         kategorie: kategorieAusArt(p.art),
         name: [p.bauwerksnummer, p.bezeichnung].filter(Boolean).join(" — ") || "GST-gesperrtes Bauwerk Rostock",
-        beschreibung: `Für Großraum-/Schwertransporte gesperrtes Bauwerk (§34 StVZO): ${p.art ?? ""} ${p.bezeichnung ?? ""}`.trim(),
+        // T-611: Gattungswort nicht doppeln (siehe bezeichnungMitArt).
+        beschreibung: `Für Großraum-/Schwertransporte gesperrtes Bauwerk (§34 StVZO): ${bezeichnungMitArt(p.art, p.bezeichnung)}`.trim(),
         lat, lng,
         strassenRef: null,
         attrs: {

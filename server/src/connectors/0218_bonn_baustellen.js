@@ -14,6 +14,14 @@ function refAusBezeichnung(b) {
   return m ? m[1].replace(/\s/, "") : null
 }
 
+// T-611: Erste erkennbare Straße aus einem Adress-Freitext (deutsche Straßen-Endungen), z. B.
+// "Adenauerallee 50, 53113 Bonn" → "Adenauerallee". Dient nur dem Abgleich, ob die 'bezeichnung'
+// dieselbe Straße meint wie die 'adresse'. Findet sich keine eindeutige Straße → null (konservativ).
+function strasseAusAdresse(s) {
+  const m = String(s ?? "").match(/\b([A-Za-zÄÖÜäöüß.-]+(?:stra(?:ß|ss)e|str\.?|weg|ring|allee|platz|gasse|ufer|damm|wall|chaussee|br(?:ü|ue)cke))\b/i)
+  return m ? m[1] : null
+}
+
 export const bonnBaustellenConnector = {
   quelleId: "0218",
   name: QUELLE_NAME,
@@ -42,10 +50,22 @@ export const bonnBaustellenConnector = {
       // einen deterministischen Diskriminator aus unterscheidenden Quellfeldern anhängen (kein Index).
       const quellId = p.baustelle_id ?? f.id ?? "x"
       const externeId = `${quellId}#${stabilHash(lat, lng, p.sperrung, p.massnahme, p.bezeichnung, p.adresse, p.von, p.bis)}`
+      // T-611: 'bezeichnung' ist teils ein Bereichs-/Projektname, der eine ANDERE Straße nennt als die
+      // tatsächliche Arbeitsadresse. Die echte Lage trägt die Geometrie bzw. das Feld 'adresse'. Nennt
+      // 'adresse' eine konkrete Straße, die in 'bezeichnung' NICHT vorkommt, ist 'bezeichnung' ein
+      // Projektname → Titel um die echte Adresse bauen, 'bezeichnung' bleibt als Kontext in Klammern
+      // (es verschwindet nichts). Im Zweifel — keine eindeutige Straße in 'adresse' oder die Straße
+      // steckt schon in 'bezeichnung' — bleibt 'bezeichnung' der Titel (konservativ, alte Logik).
+      const bez = String(p.bezeichnung ?? "").trim()
+      const adrStrasse = strasseAusAdresse(p.adresse)
+      const bezIstProjektname = !!bez && !!adrStrasse && !bez.toLowerCase().includes(adrStrasse.toLowerCase())
+      const titel = bezIstProjektname
+        ? `${p.adresse} (${p.bezeichnung})`
+        : (p.bezeichnung ?? p.adresse ?? "Baustelle Bonn")
       obstacles.push(makeNormalized({
         externeId,
         kategorie: istSperrung ? "sperrung" : "baustelle",
-        name: p.bezeichnung ?? p.adresse ?? "Baustelle Bonn",
+        name: titel,
         beschreibung: [p.massnahme, p.sperrung, p.adresse].filter(Boolean).join(" — ").trim() || null,
         lat, lng,
         strassenRef: refAusBezeichnung(p.bezeichnung),
