@@ -89,8 +89,9 @@ export default {
             text: "#991B1B",
           },
           warnung: {
-            DEFAULT: "#EA580C",
-            strong: "#C2410C",
+            // T-611: heller/klares Orange (orange-500) statt orange-600 — #EA580C lag zu nah an Kritisch-Rot.
+            DEFAULT: "#F97316",
+            strong: "#EA580C",
             bg: "#FFF7ED",
             border: "#FED7AA",
             text: "#9A3412",

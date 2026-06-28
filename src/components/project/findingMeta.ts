@@ -204,7 +204,7 @@ export const SEVERITY_META: Record<
   warnung: {
     label: "Warnung",
     badge: "warnung",
-    marker: "#EA580C", // T-238: an Token severity-warnung.DEFAULT angeglichen (war #F59E0B)
+    marker: "#F97316", // T-611: heller/klares Orange (orange-500), an Token severity-warnung.DEFAULT angeglichen (war #EA580C — zu nah an Kritisch-Rot)
     dot: "bg-severity-warnung",
     chip: "bg-severity-warnung text-white",
     soft: "bg-severity-warnung-bg border-severity-warnung-border text-severity-warnung-text",

@@ -70,7 +70,7 @@ export function DashboardHome() {
             <circle cx="18" cy="168" r="6" fill="#87B52D" stroke="#fff" strokeWidth="2.5" />
             <circle cx="306" cy="8" r="6" fill="#DC2626" stroke="#fff" strokeWidth="2.5" />
             <circle cx="306" cy="8" r="2" fill="#fff" />
-            <circle cx="140" cy="70" r="4.5" fill="#EA580C" stroke="#fff" strokeWidth="2" />
+            <circle cx="140" cy="70" r="4.5" fill="#F97316" stroke="#fff" strokeWidth="2" />
           </svg>
 
           <div className="relative">
