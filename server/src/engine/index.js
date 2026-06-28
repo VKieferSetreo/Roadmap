@@ -264,6 +264,15 @@ export function dedupeByLocation(findings) {
 export function humanizeTitel(s, kat) {
   let t = String(s ?? "").replace(/[\s\-–/,]+$/, "").trim()
   if (kat === "bruecke" || kat === "tunnel") {
+    // T-610: BASt-Kataster-Codes raus (Titel = roher Bauwerksname, lief bisher nicht durch den Humanizer):
+    // führende Bauwerksnummer „BW 26 - "/„Bw 24, "; „i.Z.d. [BAB] A7 …"-Tail (im-Zuge-der = getragene
+    // Straße, steht bereits in strassen_ref); „, km 272,903"-Tail; „; FR: F"-Tail; Ufg→Unterführung.
+    t = t
+      .replace(/^\s*B[wW]\s*\d+[a-z]?\s*[,\-]\s*/, "")
+      .replace(/\s*[,;]?\s*i\.?\s*Z\.?\s*d\.?\s*(?:BAB\s*)?[AB]\s?\d+.*$/i, "")
+      .replace(/\s*[,;]\s*(?:in\s*)?km\s*[\d.,]+.*$/i, "")
+      .replace(/\s*;\s*FR:?\s*\w*\s*$/i, "")
+      .replace(/Ufg\.?/g, "Unterführung").replace(/(^|\s)Üf(\s|$)/g, "$1Überführung$2")
     // ZUERST Richtungs-/Teilbauwerk-/FR-Tails — sonst bricht ein FR-Suffix auf NUR EINER Hälfte
     // („…Windmühle/…Windmühle, FR Hannover") die Symmetrie und der „X/X"-Dup-Collapse greift nicht.
     t = t
@@ -273,6 +282,7 @@ export function humanizeTitel(s, kat) {
       .replace(/\s*\(\s*\d+\/\d+\s*\)/g, "").replace(/\s*\(\s*BW\s*[\d.]+\s*\)/gi, "") // (5/1), (BW 2.02)
   } else {
     t = t
+      .replace(/\s*-?\s*\bHDF_[\w-]+/gi, "").replace(/\s*\bA-\d{5}-\d+\b/g, "") // T-610: Länder-Auftragscodes
       .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
       .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
       .replace(/\s*-\s*\d{1,2}\.\d{1,2}\.\d{2,4}/g, "").replace(/\s*\(ARV[^)]*\)/gi, "")

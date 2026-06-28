@@ -28,3 +28,21 @@ describe("gruppiereStrecken — Bauphasen-Trennung nach Restriktions-Profil (T-6
     expect(out[0].geom.type).toBe("MultiLineString")
   })
 })
+
+// T-610: Eintags-Fenster ohne separates Ende-Datum bekommt gueltig_bis = der Tag (sonst nie ablaufend).
+import { normalizeAutobahn } from "../src/connectors/autobahn.js"
+describe("endeAusBeschreibung — Eintags-Fenster (T-610)", () => {
+  const item = (desc) => ({
+    identifier: "2026-111111--vi-bs.2026-07-02_07-00-00-000.de1", title: "A7 | X - Y", subtitle: "Nord",
+    startTimestamp: "2026-07-02T07:00:00.000+0200", coordinate: { lat: "48.1", long: "9.5" },
+    description: desc, geometry: { type: "LineString", coordinates: [[9.5, 48.1], [9.51, 48.11]] },
+  })
+  it("'gültig: 02.07.26 von 07:00 bis 17:00 Uhr' → gueltigBis = 2026-07-02", () => {
+    const o = normalizeAutobahn(item(["Die Baustelle ist zu folgenden Zeiträumen gültig: 02.07.26 von 07:00 bis 17:00 Uhr"]), "A7", "roadworks", "u")
+    expect(o.gueltigBis).toBe("2026-07-02")
+  })
+  it("Mehrtages-Zeitraum (zwei Daten) NICHT als Eintag → gueltigBis aus 'Ende'", () => {
+    const o = normalizeAutobahn(item(["gültig: 02.07.26 bis 17.07.26", "Ende: 17.07.26 um 08:00 Uhr"]), "A7", "roadworks", "u")
+    expect(o.gueltigBis).toBe("2026-07-17")
+  })
+})

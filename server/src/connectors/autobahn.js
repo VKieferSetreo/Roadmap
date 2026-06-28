@@ -41,10 +41,16 @@ const isoDateOrNull = (ts) => {
 /** "Ende: 31.08.26 um 15:00 Uhr" aus den description-Zeilen → ISO-Datum (natives Ende statt Heuristik). */
 function endeAusBeschreibung(descLines) {
   const txt = Array.isArray(descLines) ? descLines.join("\n") : String(descLines ?? "")
+  const iso = (m) => `${m[3].length === 2 ? "20" + m[3] : m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`
   const m = txt.match(/Ende[^0-9]{0,14}(\d{1,2})\.(\d{1,2})\.(\d{2,4})/i)
-  if (!m) return null
-  const yyyy = m[3].length === 2 ? "20" + m[3] : m[3]
-  return `${yyyy}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`
+  if (m) return iso(m)
+  // T-610: Eintages-Fenster „… gültig: DD.MM.YY von HH:MM bis HH:MM Uhr" hat KEIN separates Ende-Datum
+  // (nur Tages-Uhrzeiten) → die Maßnahme gilt NUR an diesem Tag. Ohne Cutoff bliebe gueltig_bis NULL =
+  // nie ablaufend und überlappte jeden künftigen Transport (Zeit-Analogon zum Buchwald-Bug, 24 FP/6 krit).
+  // Nur greifen, wenn KEIN zweites (Ende-)Datum existiert, sonst ist es ein Mehrtages-Zeitraum.
+  const sw = txt.match(/g(?:ü|ue)ltig:?\s*(\d{1,2})\.(\d{1,2})\.(\d{2,4})\s+von\s+\d{1,2}[:.]\d{2}\s+bis\s+\d{1,2}[:.]\d{2}\s*Uhr/i)
+  if (sw && (txt.match(/\d{1,2}\.\d{1,2}\.\d{2,4}/g) || []).length === 1) return iso(sw)
+  return null
 }
 
 /** impact.symbols → { spurenFrei, spurenGesperrt }. ARROW_UP/DOWN = offene Fahrstreifen, CLOSED = gesperrt

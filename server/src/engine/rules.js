@@ -79,7 +79,8 @@ const sev3 = (kritisch, warnung) => (kritisch ? "kritisch" : warnung ? "warnung"
 const INFO_ATTRS = [
   ["maxAchslastT", "Zul. Achslast", (v) => `${fmtKomma(v, 1)} t`],
   ["maxLaengeM", "Zul. Länge", (v) => `${fmtKomma(v, 1)} m`],
-  ["sperrlaengeM", "Länge der Maßnahme", (v) => `${fmtKomma(v, 0)} m`],
+  // T-610: ab 1 km als km anzeigen (11490 m → „11,49 km") — rohe 5-stellige Meter lasen sich falsch.
+  ["sperrlaengeM", "Länge der Maßnahme", (v) => (v >= 1000 ? `${fmtKomma(v / 1000, 2)} km` : `${fmtKomma(v, 0)} m`)],
   ["anzahlFahrstreifen", "Fahrstreifen (verbleibend)", (v) => String(v)],
   ["spurenGesperrt", "Gesperrte Fahrstreifen", (v) => String(v)],
 ]
@@ -301,10 +302,12 @@ function nurParkplatzSperre(attrs, obstacle) {
 function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   const rb = num(attrs.restbreiteM)
   const mh = num(attrs.maxHoeheM)
+  const mg = num(attrs.maxGewichtT) // T-610: temporäres Gewichtslimit der Baustelle (z.B. saniertes BW)
   const overlap = overlapsZeitraum(obstacle, zeitraum)
   const detail = {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
     ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
+    ...(mg != null && { Gewichtslimit: fmtT(mg), Gesamtgewicht: fmtT(transport.gesamtgewicht) }),
     ...(attrs.vollsperrung === true && { Sperrung: "Vollsperrung" }),
     Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
   }
@@ -314,6 +317,9 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   // NICHT kritisch sein). Gleichstand „passt exakt" gilt als ausreichend.
   const breiteVerletzt = rb != null && rb < transport.breite
   const hoeheVerletzt = mh != null && mh < transport.hoehe
+  // T-610: Baustellen-Gewichtslimit < Transportgewicht = harter Blocker (war bisher ungeprüft → False
+  // Negative: ein 130-t-Transport an einem 30-t-Baustellenlimit blieb nur Warnung). Analog zur Brücke.
+  const gewichtVerletzt = mg != null && mg < transport.gesamtgewicht
   // T-265: eine als 'baustelle' eingestufte Vollsperrung (0112/0210/0211/0214/0216/0302)
   // muss im Transportzeitraum kritisch sein, nicht nur gelb. T-602: reine Parkplatz-Sperrung
   // (0 Fahrstreifen) ist KEINE Fahrbahn-Vollsperrung → nicht eskalieren.
@@ -324,21 +330,21 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
 
   let severity
   let beschreibung
-  if ((vollsperrung && overlap) || breiteVerletzt || hoeheVerletzt) {
+  if ((vollsperrung && overlap) || breiteVerletzt || hoeheVerletzt || gewichtVerletzt) {
     severity = "kritisch"
-    beschreibung =
-      vollsperrung && !breiteVerletzt && !hoeheVerletzt
-        ? "Baustelle mit Vollsperrung im Transportzeitraum. Durchfahrt nicht möglich, Umfahrung erforderlich."
-        : breiteVerletzt && hoeheVerletzt
-          ? "Baustelle verletzt Restbreite und Durchfahrtshöhe. Durchfahrt nicht möglich, bitte umfahren."
-          : breiteVerletzt
-            ? "Die Restbreite der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
-            : "Die Höhenbegrenzung der Baustelle reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren."
+    const gruende = [
+      breiteVerletzt && "Restbreite",
+      hoeheVerletzt && "Durchfahrtshöhe",
+      gewichtVerletzt && "Tragfähigkeit/Gewichtslimit",
+    ].filter(Boolean)
+    beschreibung = gruende.length
+      ? `Baustelle: ${gruende.join(" + ")} reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren.`
+      : "Baustelle mit Vollsperrung im Transportzeitraum. Durchfahrt nicht möglich, Umfahrung erforderlich."
   } else if (overlap || blocker) {
     // Auf der Strecke, im Zeitraum aktiv, aber keine hinterlegte Restriktion verletzt
     // (oder keine Maße bekannt) → anzeigen zur Prüfung, NICHT automatisch rot.
     severity = "warnung"
-    beschreibung = rb == null && mh == null
+    beschreibung = rb == null && mh == null && mg == null
       ? "Aktive Baustelle auf der Strecke. Keine Maße hinterlegt, Relevanz vor Ort prüfen."
       : "Aktive Baustelle auf der Strecke. Hinterlegte Maße reichen aus, Durchfahrt zeitlich abstimmen."
   } else {

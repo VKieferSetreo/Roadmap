@@ -109,6 +109,10 @@ export const bastBrueckenConnector = {
         name: clean(p.bauwerksname) || `Brücke ${clean(p.bwnr)}`,
         beschreibung,
         lat, lng,
+        // T-610: angezeigte Straße = die GETRAGENE (vom Transport befahrene) Straße, nicht die gekreuzte
+        // Unterführungsstraße. Vorher zog makeNormalized die Straße aus dem rohen Bauwerksnamen → oft die
+        // gekreuzte (B49/K155) statt der Route-Straße (A5/A7) → irreführendes Label auf ~108/305 Brücken.
+        strassenRef: refAus(p.hoechst_sachverhalt_oben) || undefined,
         attrs: {
           grundsaetzlicheGstSperre: true, // sperrung_sv='ja' = harte GST-Sperrung
           // T-601: getragene (oben) + gekreuzte (unten) Straße → Engine-Überführungsfilter.

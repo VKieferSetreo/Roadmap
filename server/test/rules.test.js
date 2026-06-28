@@ -210,6 +210,17 @@ describe("baustelle", () => {
     expect(r.severity).toBe("kritisch")
   })
 
+  it("T-610: Baustellen-Gewichtslimit < Transportgewicht → kritisch", () => {
+    const r = evaluate(ob("baustelle", { maxGewichtT: 30 }), TR, {}) // 30 t < 68 t
+    expect(r.severity).toBe("kritisch")
+    expect(r.detail.Gewichtslimit).toBeDefined()
+  })
+
+  it("T-610: Baustellen-Gewichtslimit ≥ Transportgewicht → NICHT kritisch", () => {
+    const r = evaluate(ob("baustelle", { maxGewichtT: 100 }), TR, {}) // 100 t ≥ 68 t
+    expect(r.severity).toBe("warnung")
+  })
+
   it("Restbreite ≥ Transportbreite → NICHT kritisch (3,05 reicht für 3,00, kein Puffer)", () => {
     // Max 2026-06-14: passt = passt → nicht kritisch. Ohne Transport-Zeitraum gilt das
     // Hindernis als relevant (T-267) → warnung (sichtbar zur Prüfung), nicht kritisch.

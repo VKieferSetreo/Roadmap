@@ -151,7 +151,7 @@ describe("humanizeTitel", () => {
   it("Brücke: Richtungs-/Teilbauwerk-Tail + FR-Suffix raus", () => {
     expect(humanizeTitel("Ahsebrücke FR Hannover", "bruecke")).toBe("Ahsebrücke")
     expect(humanizeTitel("BW 2026 - Brücke über die Harste im Zuge der A 7/Ostseite", "bruecke"))
-      .toBe("BW 2026 - Brücke über die Harste im Zuge der A 7")
+      .toBe("Brücke über die Harste im Zuge der A 7") // T-610: führende BW-Nr gestrippt
     expect(humanizeTitel("Del25 / A28 über Geh-und Radweg in km 119,193/RiFa Oldenburg - Brücke", "bruecke"))
       .toBe("Del25 / A28 über Geh-und Radweg in km 119,193")
   })
@@ -164,6 +164,11 @@ describe("humanizeTitel", () => {
   it("FR-Suffix auf einer Hälfte bricht den Dup-Collapse NICHT (Reihenfolge)", () => {
     expect(humanizeTitel('A2 / Gem-Str. "An der Windmühle"/A2 / Gem-Str. "An der Windmühle", FR Hannover', "bruecke"))
       .toBe('A2 / Gem-Str. "An der Windmühle"')
+  })
+  it("T-610: BASt-Kataster-Codes (BW-Nr, i.Z.d., FR:) raus", () => {
+    expect(humanizeTitel("Bw 26 - Brücke ü.d. L564 i.Z.d. BAB A7", "bruecke")).toBe("Brücke ü.d. L564")
+    expect(humanizeTitel("BW 16, Brücke ü. Graben i.Z.d. A 7 in km 272,903", "bruecke")).toBe("Brücke ü. Graben")
+    expect(humanizeTitel("A5; Ufg des Saalbaches bei Karlsdorf/A5; Ufg des Saalbaches bei Karlsdorf; FR: F", "bruecke")).toBe("A5; Unterführung des Saalbaches bei Karlsdorf")
   })
   it("saubere Titel bleiben unverändert; nie leer", () => {
     expect(humanizeTitel("Datteln-Hamm-Kanal", "bruecke")).toBe("Datteln-Hamm-Kanal")
