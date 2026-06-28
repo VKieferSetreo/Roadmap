@@ -168,7 +168,8 @@ function mergeAutobahnGruppe(group) {
   const gueltigVon = vons[0] ?? null
   const gueltigBis = bisse.length ? bisse[bisse.length - 1] : null
   return {
-    externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie)}`, // stabil, eindeutig je Projekt+Richtung
+    // Zeitfenster MIT in die externeId — sonst kollidieren zwei Bauphasen gleicher Projekt-Nr./Richtung.
+    externeId: `${first._pk}#${stabilHash(first._ri, first.kategorie, gueltigVon ?? "", gueltigBis ?? "")}`, // stabil, eindeutig je Projekt+Richtung+Phase
     kategorie: first.kategorie,
     name: first.name,
     beschreibung: first.beschreibung ?? null, // purer Quelltext; die Strecke steckt in geom (MultiLineString)
@@ -184,11 +185,17 @@ function mergeAutobahnGruppe(group) {
   }
 }
 
-/** Teil-Segmente (gleiche Projekt-ID + Richtung + Kategorie) zu Strecken-Hindernissen zusammenfassen. */
-function gruppiereStrecken(obstacles) {
+/** Teil-Segmente (gleiche Projekt-ID + Richtung + Kategorie + ZEITFENSTER) zu Strecken-Hindernissen
+ *  zusammenfassen. Das Zeitfenster MUSS in den Key: eine Maßnahme (gleiche Projekt-Nr.) hat oft mehrere
+ *  zeitlich versetzte BAUPHASEN mit UNTERSCHIEDLICHER Durchfahrtsbreite (z.B. A7 2025-009385: 5,5 m ab
+ *  März, 5,85 m + 3,5 m ab Juli). Ohne Zeitfenster-Key landeten alle in einer Gruppe und der Min-Merge
+ *  der restbreiteM machte JEDE Phase so schmal wie die schmalste (3,5 m) → falsch-kritisch + Widerspruch
+ *  zwischen angezeigtem Text (5,85 m) und Restbreite (3,5 m). Min-Merge bleibt korrekt für RÄUMLICHE
+ *  Teilstücke DERSELBEN Phase (gleiches Zeitfenster); zeitliche Phasen bleiben getrennt. */
+export function gruppiereStrecken(obstacles) {
   const groups = new Map()
   for (const o of obstacles) {
-    const key = `${o._pk}|${o._ri}|${o.kategorie}`
+    const key = `${o._pk}|${o._ri}|${o.kategorie}|${o.gueltigVon ?? ""}|${o.gueltigBis ?? ""}`
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key).push(o)
   }
