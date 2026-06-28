@@ -50,7 +50,8 @@ export const stuttgartBaustellenConnector = {
           lat, lng,
           strassenRef: null,
           attrs: {
-            vollsperrung: /vollsperr|gesperrt/i.test(text) || undefined,
+            // T-611: bare „gesperrt" raus (Geh-/Radweg-/Spursperren → Falsch-Kritisch); nur echte Vollsperrung.
+            vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(text) || undefined,
             restbreiteM: meterAusText(text, /breite/i),
             maxHoeheM: meterAusText(text, /(?:höhe|hoehe|durchfahrt)/i),
             maxGewichtT: tonnageAusText(text),

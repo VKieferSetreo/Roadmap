@@ -27,7 +27,8 @@ export const osnabrueckBaustellenConnector = {
       while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
       const [lng, lat] = Array.isArray(c) ? c : [null, null]
       const text = [p.MERKMALKUR, p.BEEINTRAEC, p.PRESSEINFO].filter(Boolean).join(" — ")
-      const vollsperrung = /vollsperr|gesperrt/i.test(text) || undefined
+      // T-611: bare „gesperrt" raus (Geh-/Radweg-/Spursperren → Falsch-Kritisch); nur echte Vollsperrung.
+      const vollsperrung = /vollsperr|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(text) || undefined
       return makeNormalized({
         externeId: p.OBJECTID,
         kategorie: vollsperrung ? "sperrung" : "baustelle",

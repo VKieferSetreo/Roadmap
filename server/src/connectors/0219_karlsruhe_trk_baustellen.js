@@ -38,7 +38,9 @@ export const karlsruheTrkBaustellenConnector = {
         const [lng, lat] = ersterPunktUtm32(f.geometry)
         const text = [p.art, p.lage, p.zusatzinfo, p.sperrung].filter(Boolean).join(" ")
         const sperrung = String(p.sperrung ?? "")
-        const vollsperrung = /vollsperrung|gesperrt|fermeture totale/i.test(text) || undefined
+        // T-611: bare „gesperrt" raus (matchte Geh-/Radweg-/Spur-/Richtungssperren → Falsch-Kritisch).
+        // Nur echte Vollsperrungen (kontrolliertes Vokabular, analog _helpers.js).
+        const vollsperrung = /vollsperr|voll gesperrt|komplett gesperrt|gesamtsperrung|fermeture totale/i.test(text) || undefined
         const istSperrung = sperrung && /sperrung|gesperrt|fermeture/i.test(sperrung)
         obstacles.push(makeNormalized({
           externeId: `${L.phase}-${p.id ?? f.id}`,
