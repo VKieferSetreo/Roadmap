@@ -34,6 +34,11 @@ export const AUTOBAHN_DEFAULT_ROADS = "A1,A2,A3,A5,A7,A8,A9,A24"
 
 const isoDateOrNull = (ts) => {
   if (typeof ts !== "string") return null
+  // T-610: LOKALES Datum direkt aus dem ISO-String („2026-07-06T00:00:00+02:00") nehmen. new Date()
+  // .toISOString() rechnete nach UTC um → ein Mitternachts-Start (00:00 lokal) kippte auf den Vortag
+  // (−1-Tag-Off-by-one, 48 Karten). Der führende YYYY-MM-DD-Teil IST bereits das lokale Datum.
+  const m = ts.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`
   const d = new Date(ts)
   return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10)
 }

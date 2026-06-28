@@ -79,12 +79,15 @@ export const sevasNrwRestriktionenConnector = {
         const strasse = String(p.name ?? "").trim()
         const ort = [p.gemeinde, p.kreis].filter(Boolean).join(", ")
         const label = VZ_LABEL[String(p.typ)] || "Beschränkung"
+        // T-610: Grenzwert IN den Titel (war nur im detail) — „Gewichtsbeschränkung 7,5 t · <Straße>"
+        // statt nacktem „Gewichtsbeschränkung". Einheit aus dem attr-Schlüssel (…T = Tonne, sonst Meter).
+        const labelMitWert = `${label} ${String(wert).replace(".", ",")} ${/T$/.test(map.key) ? "t" : "m"}`
         obstacles.push(makeNormalized({
           // Beschreibung bewusst OHNE "X m"/"X t"-Token (sonst extractStammdaten-Scheinwert) —
           // der Grenzwert steht strukturiert in attrs.
           externeId: `nrw-sevas-${p.segment_id}-${p.restrkn_id}`,
           kategorie: map.kat,
-          name: [label, strasse].filter(Boolean).join(" · ") || `${label} (NRW)`,
+          name: [labelMitWert, strasse].filter(Boolean).join(" · "),
           beschreibung: `${label} (SEVAS NRW, amtliches Restriktionskataster IT.NRW)${ort ? ` · ${ort}` : ""}`,
           lat, lng,
           strassenRef: strasse || null,

@@ -210,6 +210,13 @@ describe("baustelle", () => {
     expect(r.severity).toBe("kritisch")
   })
 
+  it("T-610: detail.Zeitraum ohne gesetzten Transportzeitraum → 'Kein Transportzeitraum gesetzt'", () => {
+    const r = evaluate(ob("baustelle", { restbreiteM: 5 }), TR, {})
+    expect(r.detail.Zeitraum).toBe("Kein Transportzeitraum gesetzt")
+    const r2 = evaluate(ob("baustelle", { restbreiteM: 5 }), TR, { von: "2026-08-01", bis: "2026-08-05" })
+    expect(r2.detail.Zeitraum).not.toBe("Kein Transportzeitraum gesetzt")
+  })
+
   it("T-610: Baustellen-Gewichtslimit < Transportgewicht → kritisch", () => {
     const r = evaluate(ob("baustelle", { maxGewichtT: 30 }), TR, {}) // 30 t < 68 t
     expect(r.severity).toBe("kritisch")

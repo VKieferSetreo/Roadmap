@@ -309,7 +309,8 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
     ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
     ...(mg != null && { Gewichtslimit: fmtT(mg), Gesamtgewicht: fmtT(transport.gesamtgewicht) }),
     ...(attrs.vollsperrung === true && { Sperrung: "Vollsperrung" }),
-    Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
+    Zeitraum: !(zeitraum?.von || zeitraum?.bis) ? "Kein Transportzeitraum gesetzt"
+      : overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
   }
 
   // ROT nur bei ECHTER Verletzung: Restbreite kleiner als die Transportbreite
@@ -376,7 +377,8 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
     detail: {
       ...(rb != null && { Restbreite: fmtM(rb) }),
       ...(maxG != null && { "Zul. Gesamtlast": fmtT(maxG) }),
-      Zeitraum: overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
+      Zeitraum: !(zeitraum?.von || zeitraum?.bis) ? "Kein Transportzeitraum gesetzt"
+      : overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
     },
   }
 }
