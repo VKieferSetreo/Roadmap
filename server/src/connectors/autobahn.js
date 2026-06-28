@@ -109,7 +109,15 @@ export function normalizeAutobahn(item, road, service, url) {
     if (v != null && v !== false && v !== "") attrs[k] = v
   }
   Object.assign(attrs, spurenAusSymbols(item?.impact?.symbols)) // native Spur-Belegung
-  if (istSperrung) attrs.vollsperrung = true
+  // T-611 (Audit R3, Max-Freigabe): eine reine RAMPEN-/Auf-/Abfahrt-Sperrung ist KEINE Sperrung der
+  // durchgehenden Fahrbahn → kein vollsperrung (sonst Falsch-Kritisch „Strecke gesperrt"). HIGH-PRECISION:
+  // nur eindeutige Rampen-Formulierungen, und NIE wenn ein Mainline-Marker („von X nach Y"/„zwischen X und Y")
+  // vorliegt (im Zweifel kritisch lassen — Max: nichts übersehen). Bleibt als sperrung-Warnung sichtbar.
+  const rampenText = `${item.title ?? ""} ${beschreibung ?? ""}`
+  const istRampe =
+    /\b(?:Ein|Auf|Ab|Aus|Zu)fahrt\b[^.\n]{0,45}\b(?:gesperrt|Sperrung)|\bSperrung\b[^.\n]{0,20}\b(?:Ein|Auf|Ab|Aus|Zu)fahrt|\bAst\s+(?:von|nach)\b|\bSperrung\s+(?:der\s+)?(?:Anschlussstelle|Auffahrt|Abfahrt|Ausfahrt|Rampe)\b|\bVerbindung(?:srampe|sfahrbahn)\b/i.test(rampenText) &&
+    !/\bvon\s+\w[^.\n]{0,30}?\bnach\s+\w|\bzwischen\s+\w[^.\n]{0,40}?\bund\s+\w|->|→/i.test(rampenText)
+  if (istSperrung && !istRampe) attrs.vollsperrung = true
   if (istGewichtsschild && attrs.maxGewichtT == null) attrs.maxGewichtT = maxGewichtLimit
 
   const gueltigVon = start ?? ex.gueltigVon ?? null

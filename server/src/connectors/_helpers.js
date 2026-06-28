@@ -196,10 +196,15 @@ export function extractStammdaten(text) {
 
   // Sperrart (kontrolliertes Vokabular): Voll- vor Halbsperrung prüfen ("halbseitige Sperrung"
   // enthält "Sperrung", ist aber KEINE Vollsperrung).
-  if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s)) out.vollsperrung = true
   // "einseitig" NUR im Sperr-/Fahrbahn-Kontext werten, nicht bloß-anwesend — sonst feuert das
   // Bauteil-Wort "einseitiger Kragträger" (Schilderbrücke) als halbseitige Sperrung (Audit FIX-3).
-  else if (/halbseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen|einseitig\w*\s+(?:gesperrt|sperrung|fahrbahn|fahrstreifen|verkehr)|(?:fahrbahn|fahrstreifen)\b[^.;]{0,15}\beinseitig/i.test(s)) out.halbseitig = true
+  const HALBSEITIG_RE = /halbseitig|halbe sperrung|ein(?:en|es)?\s+fahrstreifen|einseitig\w*\s+(?:gesperrt|sperrung|fahrbahn|fahrstreifen|verkehr)|(?:fahrbahn|fahrstreifen)\b[^.;]{0,15}\beinseitig/i
+  // T-611 (Audit R3, Max-Freigabe): „Vollsperrung (Iltisweg)" = Sperrung der einmündenden QUERSTRASSE,
+  // nicht der befahrenen Hauptstraße. Wenn die EINZIGE Vollsperrung geklammert ist UND die Hauptmaßnahme
+  // halbseitig ist → nicht als Vollsperrung der Route werten (sonst Falsch-Kritisch).
+  const nurQuerVoll = /\bvollsperrung\s*\([^)]*\)/i.test(s) && !/\bvollsperrung\b(?!\s*\()/i.test(s)
+  if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s) && !(nurQuerVoll && HALBSEITIG_RE.test(s))) out.vollsperrung = true
+  else if (HALBSEITIG_RE.test(s)) out.halbseitig = true
 
   // Zusätzliche GST-Signale (Workflow-entdeckt + adversarial verifiziert, FP-arm). Booleans nur true.
   // Fahrbahn-Verengung = wichtigstes Restbreiten-Surrogat, wenn keine cm-Angabe da ist.

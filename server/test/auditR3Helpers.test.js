@@ -4,6 +4,15 @@ import { describe, it, expect } from "vitest"
 import { decodeEntities, cleanText } from "../src/util.js"
 import { extractStammdaten, stripHtml } from "../src/connectors/_helpers.js"
 import { humanizeTitel } from "../src/engine/index.js"
+import { evaluate } from "../src/engine/rules.js"
+import { normalizeAutobahn } from "../src/connectors/autobahn.js"
+
+const TR = { laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68, achsen: 8 }
+const ob = (kategorie, attrs) => ({ kategorie, attrs, gueltigVon: null, gueltigBis: null })
+const aItem = (title) => ({
+  identifier: "id1", title, subtitle: "Nord", coordinate: { lat: "51.6", long: "7.8" },
+  description: [], geometry: { type: "LineString", coordinates: [[7.8, 51.6], [7.81, 51.61]] },
+})
 
 describe("decodeEntities / cleanText / stripHtml", () => {
   it("deutsche Umlaut-/ß-Entities", () => {
@@ -70,5 +79,31 @@ describe("humanizeTitel (T-611 baustelle //-Mehrsegment)", () => {
   it("Sperr-Meta nach /// raus, Straßenteil bleibt", () => {
     expect(humanizeTitel("Berghofer Straße 206 - Velegung Glasfaser /// Halbseitige Sperrung (wechselseitig) + LSA", "baustelle"))
       .toBe("Berghofer Straße 206 - Velegung Glasfaser")
+  })
+})
+
+describe("T-611 Falsch-Kritische (Wave A)", () => {
+  it("A2: Achslast (VZ263→maxAchslastT) erzeugt KEIN Falsch-Kritisch (unterdrückt wie alle Achslast-Daten)", () => {
+    expect(evaluate(ob("gewicht", { maxAchslastT: 5 }), TR, {})).toBeNull()
+  })
+  it("A2: echtes Gewichtslimit überschritten bleibt kritisch", () => {
+    const r = evaluate(ob("gewicht", { maxGewichtT: 40 }), TR, {})
+    expect(r.severity).toBe("kritisch")
+  })
+  it("A3: Vollsperrung (Querstraße) bei halbseitiger Hauptmaßnahme → keine vollsperrung", () => {
+    const ex = extractStammdaten("Berghofer Straße - Halbseitige Sperrung (wechselseitig) + Vollsperrung (Iltisweg)")
+    expect(ex.vollsperrung).toBeUndefined()
+    expect(ex.halbseitig).toBe(true)
+  })
+  it("A3: echte Vollsperrung der Hauptstraße bleibt", () => {
+    expect(extractStammdaten("Vollsperrung A3 zwischen Köln und Bonn").vollsperrung).toBe(true)
+  })
+  it("A1: Rampen-Sperrung (Einfahrt … gesperrt) → kein vollsperrung", () => {
+    const o = normalizeAutobahn(aItem("A2 - AS Hamm Uentrop - Einfahrt FR Dortmund gesperrt"), "A2", "closure", "u")
+    expect(o.attrs.vollsperrung).toBeUndefined()
+  })
+  it("A1: Mainline-Sperrung (von X nach Y) bleibt vollsperrung", () => {
+    const o = normalizeAutobahn(aItem("A5 von Rust nach Riegel Erneuerung der Fahrbahn"), "A5", "closure", "u")
+    expect(o.attrs.vollsperrung).toBe(true)
   })
 })

@@ -24,7 +24,10 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // (richtungsbasiert, längs-versetzte bleiben). Systemweit −12 Querlinien (3 Falsch-Kritische).
 // 2.2.1 (T-611 Audit R3, Welle 1): humanizeTitel erweitert — Uf/UF→Unterführung, Üf/ÜF→Überführung,
 // BASt-Stationscodes „Ab/St" raus (Staatsstraße geschützt), A#/A#-NearDup-Collapse, //-Mehrsegment.
-export const ENGINE_VERSION = "2.2.1"
+// 2.2.2 (T-611 Welle A, Falsch-Kritische): VZ263 Achslast→maxAchslastT (kein Gesamtgewicht-Falsch-
+// Kritisch), Rampen-/Auf-Abfahrt-Sperrung ohne vollsperrung (0001/0156), „Vollsperrung (Querstraße)"
+// bei halbseitiger Hauptmaßnahme nicht als Vollsperrung werten.
+export const ENGINE_VERSION = "2.2.2"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben

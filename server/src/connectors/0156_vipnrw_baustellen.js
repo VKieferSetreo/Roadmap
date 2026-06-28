@@ -39,7 +39,10 @@ const TYPE_MAP = {
   ROADWORKS: { kat: "baustelle", label: "Baustelle" },
   SHORT_TERM_ROADWORKS: { kat: "baustelle", label: "Kurzzeit-Baustelle" },
   CLOSURE: { kat: "sperrung", label: "Sperrung", attrs: { vollsperrung: true } },
-  CLOSURE_ENTRY_EXIT: { kat: "sperrung", label: "Auf-/Abfahrt gesperrt", attrs: { vollsperrung: true } },
+  // T-611 (Audit R3, Max-Freigabe): Auf-/Abfahrt = RAMPE, nicht die durchgehende Fahrbahn → KEIN
+  // vollsperrung (sonst Falsch-Kritisch „Strecke gesperrt", obwohl der Transport die Rampe nicht fährt).
+  // Bleibt als sperrung-Warnung sichtbar.
+  CLOSURE_ENTRY_EXIT: { kat: "sperrung", label: "Auf-/Abfahrt gesperrt" },
   WEIGHT_LIMIT: { kat: "gewicht", label: "Gewichtsbeschränkung" },
   WARNING: { kat: "sonstige", label: "Warnung" },
 }

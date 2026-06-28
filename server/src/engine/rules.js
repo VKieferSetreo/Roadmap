@@ -220,6 +220,10 @@ function ruleEngstelle(attrs, transport) {
 function ruleGewicht(attrs, transport) {
   const maxG = num(attrs.maxGewichtT)
   if (maxG == null) {
+    // T-611: VZ263 trägt jetzt maxAchslastT statt maxGewichtT → maxG ist null → dieser Hinweis greift
+    // ohne hinterlegtes Gesamtgewicht; da Achslast bewusst NICHT bewertet wird (Max 2026-06-16) und
+    // keine Last-Beschränkung i.S. hatLastBeschraenkung vorliegt, unterdrückt evaluate den Fund (kein
+    // Falsch-Kritisch mehr). Die Achslast-Auflage bleibt auf der Hindernis-DB-Karte sichtbar.
     return {
       severity: "hinweis",
       beschreibung: "Gewichtsbeschränkung ohne hinterlegte Traglast. Bescheid prüfen.",

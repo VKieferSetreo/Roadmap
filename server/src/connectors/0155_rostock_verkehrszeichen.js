@@ -12,10 +12,12 @@ const QUELLE = "0155"
 const QUELLE_NAME = "Rostock — Verkehrszeichen-Kataster (GST-Beschränkungen)"
 const URL = "https://geo.sv.rostock.de/download/opendata/verkehrszeichen/verkehrszeichen.json"
 
-// VZ-Basis → Kategorie + attrs-Key (identisch zu 0221: 263 Achslast→maxGewichtT, da Engine nur das wertet).
+// VZ-Basis → Kategorie + attrs-Key. T-611 (Audit R3, Max-Freigabe): VZ263 (zul. ACHSLAST) → maxAchslastT
+// (INFO), NICHT maxGewichtT. Achslast als Gesamtgewicht zu werten erzeugte Falsch-Kritische (ein 5-t-
+// Achslast-Schild blockte jeden schweren Transport); Achslast wird bewusst nicht bewertet (Max 2026-06-16).
 const GST_VZ = {
   "262": { kat: "gewicht", key: "maxGewichtT" },
-  "263": { kat: "gewicht", key: "maxGewichtT" },
+  "263": { kat: "gewicht", key: "maxAchslastT" },
   "264": { kat: "engstelle", key: "maxBreiteM" },
   "265": { kat: "bruecke", key: "maxHoeheM" },
   "266": { kat: "engstelle", key: "maxLaengeM" },
