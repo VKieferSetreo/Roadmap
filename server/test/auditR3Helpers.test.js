@@ -145,6 +145,12 @@ describe("T-611 Voll-Bestand (geteilte Fixes)", () => {
       beschreibung: "Breite 3 m", attrs: { maxBreiteM: 3 }, lat: 52, lng: 10 })
     expect(o.attrs.restbreiteM).toBeUndefined()
   })
+  it("invertierter Zeitraum (von > bis) → Ende verworfen (Selbstheilung)", () => {
+    const o = makeNormalized({ externeId: "x", kategorie: "baustelle", name: "X", lat: 52, lng: 10,
+      gueltigVon: "2026-08-01", gueltigBis: "2026-06-01" })
+    expect(o.gueltigVon).toBe("2026-08-01")
+    expect(o.gueltigBis).toBeNull()
+  })
 })
 
 describe("T-611 Welle C/Engine (geteilte Fixes)", () => {

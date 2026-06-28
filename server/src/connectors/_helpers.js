@@ -487,6 +487,9 @@ export function makeNormalized({
   let vonFinal = gueltigVon, bisFinal = gueltigBis
   if (vonFinal == null && ex.gueltigVon) { vonFinal = ex.gueltigVon; extrahiert = true }
   if (bisFinal == null && ex.gueltigBis) { bisFinal = ex.gueltigBis; extrahiert = true }
+  // T-611 (Selbstheilung): invertierter Zeitraum (von > bis) ist ein Quell-Artefakt → Ende verwerfen
+  // (offen lassen) statt ein „endet vor Beginn"-Hindernis durchzureichen. Greift bei JEDEM Import.
+  if (vonFinal != null && bisFinal != null && dateOnly(vonFinal) > dateOnly(bisFinal)) bisFinal = null
   let refFinal = strassenRef
   if ((refFinal == null || refFinal === "") && ex.strassenRef) { refFinal = ex.strassenRef; extrahiert = true }
 
