@@ -290,12 +290,20 @@ function ruleKreisverkehr(attrs, transport) {
 // Keyword "Vollsperrung"; bei "Vollsperrung der Parkplätze … 0 Fahrstreifen" führte das zu einer
 // falschen kritischen Eskalation (Audit Kefenrod). Nur dann entschärfen, NICHT bei echten
 // Fahrbahn-Sperrungen (spurenGesperrt > 0 oder unbekannt).
-function nurParkplatzSperre(attrs, obstacle) {
+// T-611 (Audit R3, Max-Freigabe): erweitert um (a) reine Geh-/Radweg-Sperrungen (0218/0215 — Fahrbahn
+// frei, kein Fahrbahn-/Straßen-/Spur-Bezug) und (b) Vollsperrung mit 0 Fahrstreifen + Rampen-/Überfahrt-
+// Kontext (0145/0152 — „Überfahrt A14→A2"/„Einfahrt", die durchgehende Fahrbahn bleibt). Beides war
+// fälschlich kritisch. Konservativ: nur mit positiver Evidenz, echte Fahrbahn-Vollsperrungen bleiben kritisch.
+function nurNichtFahrbahnSperre(attrs, obstacle) {
   if (attrs?.vollsperrung !== true) return false
-  if (num(attrs?.spurenGesperrt) !== 0) return false
-  return /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast/i.test(
-    `${obstacle?.name ?? ""} ${obstacle?.beschreibung ?? ""}`,
-  )
+  const t = `${obstacle?.name ?? ""} ${obstacle?.beschreibung ?? ""}`
+  // (a) nur Geh-/Radweg — kein Fahrbahn-/Straßen-/Fahrstreifen-Bezug
+  if (/geh-?\s*\/?\s*radweg|\bradweg|\bgehweg|veloroute|radverkehr|fu(?:ß|ss)weg/i.test(t) &&
+      !/fahrbahn|fahrstreifen|\bstra(?:ß|ss)e\b|\bfahrspur|\bspur\b/i.test(t)) return true
+  // (b) 0 gesperrte Fahrstreifen + Parkplatz/Rampe/Überfahrt-Kontext → keine Fahrbahn-Sperrung
+  if (num(attrs?.spurenGesperrt) === 0 &&
+      /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast|[üu]berfahrt|\beinfahrt|\bauffahrt|\babfahrt|\bausfahrt|rampe|verbindungsfahrbahn/i.test(t)) return true
+  return false
 }
 
 // Prinzip (Max 2026-06-14): ALLE Baustellen auf der Strecke werden als Fund angezeigt
@@ -328,7 +336,7 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
   // T-265: eine als 'baustelle' eingestufte Vollsperrung (0112/0210/0211/0214/0216/0302)
   // muss im Transportzeitraum kritisch sein, nicht nur gelb. T-602: reine Parkplatz-Sperrung
   // (0 Fahrstreifen) ist KEINE Fahrbahn-Vollsperrung → nicht eskalieren.
-  const vollsperrung = attrs.vollsperrung === true && !nurParkplatzSperre(attrs, obstacle)
+  const vollsperrung = attrs.vollsperrung === true && !nurNichtFahrbahnSperre(attrs, obstacle)
   // T-266: strukturelle Blocker, die bisher nur FE-Label waren, heben mindestens auf Warnung.
   const blocker = attrs.havarie === true || attrs.sackgasse === true ||
     attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
@@ -368,7 +376,7 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
     attrs.einbahnstrasse === true || attrs.fahrbahnVerengt === true
   // Vollsperrung im Zeitraum = kritisch; sonst Gewichts-/Restbreite prüfen, sonst Hinweis.
   let severity = "hinweis"
-  if (attrs.vollsperrung === true && !nurParkplatzSperre(attrs, obstacle) && overlap) severity = "kritisch"
+  if (attrs.vollsperrung === true && !nurNichtFahrbahnSperre(attrs, obstacle) && overlap) severity = "kritisch"
   else if (rb != null && rb < transport.breite) severity = "kritisch"
   else if (maxG != null && maxG < transport.gesamtgewicht) severity = "kritisch"
   else if (overlap || blocker) severity = "warnung"

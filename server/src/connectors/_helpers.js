@@ -26,8 +26,12 @@ export function tonnageAusText(text, { requireKontext = true } = {}) {
   // Kontext-Wort höchstens ~25 Zeichen VOR der Zahl: "zul. Gesamtgewicht 7,5 t", "Tragfähigkeit
   // 16 t", "max 16 to", "gesperrt … über 7,5 t", "lastbeschränkt auf 30 t". Adjazenz statt
   // bloßer Anwesenheit → "40t-Kran, Tragfähigkeit 16 t" liefert korrekt 16, nicht 40.
+  // T-611 (Audit R3): bare „über X t" NICHT mehr als Gewichtslimit werten — „Überholverbot für
+  // Fahrzeuge über 7,5 t" (A1 Norderelbbrücke 0112) ist KEIN Brücken-/Streckenlimit → Falsch-Kritisch.
+  // Ein echtes Limit hat ein Restriktions-Wort in Reichweite (gesperrt/Tragfähigkeit/Gesamtgewicht/…),
+  // das matcht weiterhin („gesperrt für Fahrzeuge über 7,5 t" → 7,5 via „gesperrt").
   const vor = s.match(
-    /(?:gesamtgewicht|zul[.\s]*ges|zgg|tragf[äa]hig\w*|tragkraft|tragl\w*|lastbe\w*|gewichtsbe\w*|gewichtsl\w*|zul[äa]ssig|\bmax\.?|gesperrt|[üu]ber|\bab\b|\bbis\b)[^.\d]{0,25}(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i,
+    /(?:gesamtgewicht|zul[.\s]*ges|zgg|tragf[äa]hig\w*|tragkraft|tragl\w*|lastbe\w*|gewichtsbe\w*|gewichtsl\w*|zul[äa]ssig|\bmax\.?|gesperrt)[^.\d]{0,25}(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i,
   )
   if (vor) return Number(vor[1])
   // Kontext NACH der Zahl: "7,5 t zul. Gesamtgewicht", "16 t zGG", "30 t Tragfähigkeit".
@@ -107,6 +111,16 @@ function alleDaten(text) {
     if (Number(mon) >= 1 && Number(mon) <= 12 && Number(tag) >= 1 && Number(tag) <= 31) out.add(`${jahr}-${mon}-${tag}`)
   }
   for (const m of String(text).matchAll(/\b(\d{4})-(\d{2})-(\d{2})\b/g)) out.add(`${m[1]}-${m[2]}-${m[3]}`)
+  // T-611 (Audit R3): deutsche Monatsnamen-Daten „3. November 2025" / „15. Dez. 2026" (Münster 0215,
+  // Heidelberg 0227 lieferten sonst gueltig_von/bis=null → permanent aktiv). Konservativ: nur mit
+  // 4-stelligem Jahr; Monat über die vorhandene MONATE-Tabelle.
+  for (const m of String(text).matchAll(/\b(\d{1,2})\.\s*([A-Za-zÄÖÜäöü]{3,9})\.?\s+(20\d{2})\b/g)) {
+    const monatIdx = MONATE.findIndex((re) => re.test(m[2]))
+    const tag = Number(m[1])
+    if (monatIdx >= 0 && tag >= 1 && tag <= 31) {
+      out.add(`${m[3]}-${String(monatIdx + 1).padStart(2, "0")}-${String(tag).padStart(2, "0")}`)
+    }
+  }
   return [...out].filter((d) => d >= "2000-01-01" && d <= "2100-12-31").sort()
 }
 
@@ -203,7 +217,8 @@ export function extractStammdaten(text) {
   // nicht der befahrenen Hauptstraße. Wenn die EINZIGE Vollsperrung geklammert ist UND die Hauptmaßnahme
   // halbseitig ist → nicht als Vollsperrung der Route werten (sonst Falsch-Kritisch).
   const nurQuerVoll = /\bvollsperrung\s*\([^)]*\)/i.test(s) && !/\bvollsperrung\b(?!\s*\()/i.test(s)
-  if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(s) && !(nurQuerVoll && HALBSEITIG_RE.test(s))) out.vollsperrung = true
+  // T-611: „VSP" (Dortmund/0216/0229-Kürzel) ist Vollsperrung → sonst verpasste Kritische (False Negative).
+  if (/vollsperrung|voll gesperrt|komplett gesperrt|gesamtsperrung|\bVSP\.?\b/i.test(s) && !(nurQuerVoll && HALBSEITIG_RE.test(s))) out.vollsperrung = true
   else if (HALBSEITIG_RE.test(s)) out.halbseitig = true
 
   // Zusätzliche GST-Signale (Workflow-entdeckt + adversarial verifiziert, FP-arm). Booleans nur true.

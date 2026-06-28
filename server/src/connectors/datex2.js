@@ -225,6 +225,10 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       // Beschreibender Text: Record-Kommentar, sonst Situations-Kommentar (0144). Verdopplung
       // mancher Quellen ("X - X - Y", BAB-AkD 0145) über dedupeName glätten.
       const beschr = commentText(tag(rec, "generalPublicComment")) || commentText(tag(rec, "comment")) || sitComment || null
+      // T-611 (Audit R3): stornierte Maßnahmen („entfällt") NICHT als aktives Hindernis importieren
+      // (Thüringen 0146 lieferte u.a. eine Vollsperrung „entfällt" als aktiv). Konservativ: nur exakter
+      // „entfällt"-Inhalt (kein Teilstring), analog zum suspended-Filter oben.
+      if (/^\s*-?\s*entf[aä]llt\s*-?\s*$/i.test(beschr ?? "") || /^\s*-?\s*entf[aä]llt\s*-?\s*$/i.test(sitComment ?? "")) continue
       // roadNumber/roadName können — wie der Kommentar — verschachtelt sein → über commentText
       // bereinigen, sonst leakt roher XML als Straßen-Ref. T-611: umschließende Klammern strippen
       // (NI-DATEX 0143 liefert literal "[B169]"); fehlt die Ref ganz, per Straßen-Regex aus dem

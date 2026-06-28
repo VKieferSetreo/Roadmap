@@ -92,8 +92,10 @@ export function istReineInfrastruktur(o) {
 //     Bau-Kontext im Text steht. So fliegt der echte "Unfall/Stau/defekt"-Live-Eintrag raus, die
 //     geplante Baustelle bleibt.
 const LIVE_IMMER_RX =
-  /gefahr durch|liegengeblieb|liegen geblieb|\bpanne\b|defekte[ns]? (pkw|lkw|kfz|fahrzeug|lastwagen|transporter|ampel)|bergung|geborgen|rettungseinsatz|rettungsdienst|umgestürzt|umgekippte|ölspur|verlorene? ladung|gegenstand auf der fahrbahn|hindernis auf der fahrbahn|tier(e)? auf der|falschfahrer|geisterfahrer|aquaplaning|glätte|glatteis|witterungsbedingt|fahrzeugbrand|brennende[sr]? (pkw|lkw|fahrzeug)|in brand geraten|lkw-brand|pkw-brand/i
-const LIVE_MEHRDEUTIG_RX = /\bunfall|\bstau\b|\bdefekt/i
+  /gefahr durch|liegengeblieb|liegen geblieb|\bpanne\b|defekte[ns]? (pkw|lkw|kfz|fahrzeug|lastwagen|transporter|ampel)|bergung|geborgen|rettungseinsatz|rettungsdienst|umgestürzt|umgekippte|ölspur|verlorene? ladung|gegenstand auf der fahrbahn|hindernis auf der fahrbahn|tier(e)? auf der|falschfahrer|geisterfahrer|aquaplaning|glätte|glatteis|witterungsbedingt|fahrzeugbrand|brennende[sr]? (pkw|lkw|fahrzeug)|in brand geraten|lkw-brand|pkw-brand|ortskundige[^.]{0,20}umfahr|(?:weiträumig|gro(?:ß|ss)räumig)[^.]{0,20}umfahr|notfall-?umfahr/i
+// T-611 (Audit R3): Straßen-/Fahrbahnschäden = MEHRDEUTIG (geplante Sanierung vs. akute Schadstelle) →
+// nur OHNE Bau-Kontext als Live werten (eine „Sanierung von Fahrbahnschäden" bleibt geplante Baustelle).
+const LIVE_MEHRDEUTIG_RX = /\bunfall|\bstau\b|\bdefekt|stra(?:ß|ss)ensch[äa]den|fahrbahnsch[äa]den/i
 const BAU_KONTEXT_RX =
   /baustelle|bauarbeit|bauma(ß|ss)nahme|sanierung|erneuerung|bauphase|instandsetzung|instandhaltung|unterhaltung|beseitigung|leitung|sondernutzung|stra(ß|ss)enbau|fahrbahnerhalt|deckenbau|fahrbahndecke|brücke|gültig|zeitraum dieser|umleitung|sperrung wegen|vollsperrung|halbseitig|markierung/i
 

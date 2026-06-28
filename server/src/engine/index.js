@@ -181,6 +181,36 @@ export function dedupeFindings(findings) {
   return dropCrossSourceDuplicates(same)
 }
 
+// T-611 (Audit R3, Max-Freigabe „nur dominierte"): zwei Funde auf DERSELBEN Route, am gleichen km,
+// im IDENTISCHEN Zeitfenster, gleiche Kategorie, die sich NUR in der Restbreite unterscheiden — die
+// BREITERE ist dominiert (wer durch die engere passt, passt durch die breitere). Nur die engste
+// (kleinste Restbreite) behalten. NICHT T-609: dort waren es ZEITVERSETZTE Bauphasen (verschiedenes
+// Zeitfenster → verschiedener Key → bleiben getrennt). Nur droppen, wenn eine engere Variante mit
+// MINDESTENS gleicher Severity existiert (kein Info-/Severity-Verlust). Restbreite engt severity
+// monoton ein, das Gate ist also in der Praxis immer erfüllt — als Sicherung trotzdem geprüft.
+export function dedupeDominatedWidth(findings) {
+  const groups = new Map()
+  for (const f of findings) {
+    if (f.restbreiteM == null) continue
+    const key = `${f.routeId}|${f.kategorie}|${Math.round((f.km ?? 0) * 10)}|${f.gueltigVon ?? ""}|${f.gueltigBis ?? ""}`
+    let g = groups.get(key)
+    if (!g) { g = []; groups.set(key, g) }
+    g.push(f)
+  }
+  const drop = new Set()
+  for (const grp of groups.values()) {
+    if (grp.length < 2) continue
+    const minRb = Math.min(...grp.map((f) => f.restbreiteM))
+    for (const f of grp) {
+      if (f.restbreiteM > minRb + 0.01 &&
+          grp.some((g) => g !== f && g.restbreiteM <= minRb + 0.01 && SEV_RANK[g.severity] >= SEV_RANK[f.severity])) {
+        drop.add(f)
+      }
+    }
+  }
+  return findings.filter((f) => !drop.has(f))
+}
+
 // #22 (Max 2026-06-21): Dieselbe reale Stelle (obstacleId) wird oft von VIELEN Strecken eines
 // Projekts passiert — bei z.B. 100 hochgeladenen Strecken über dieselbe Baustelle meldete die
 // Engine 100 separate Funde. Über das ganze Projekt auf EINEN Fund je Stelle zusammenfassen
@@ -270,7 +300,7 @@ export function dedupeByLocation(findings) {
 // AkD-Planungs-IDs „Lage-N/AkD NNNNN/1-str. R KS/19h bis 6h"). Hier zentral säubern — der Beschreibungs-
 // Text (Popup) bleibt der ECHTE Quelltext, nur der Anzeige-Titel wird humanisiert.
 export function humanizeTitel(s, kat) {
-  let t = String(s ?? "").replace(/[\s\-–/,]+$/, "").trim()
+  let t = String(s ?? "").replace(/[\s\-–/,;]+$/, "").trim()
   if (kat === "bruecke" || kat === "tunnel") {
     // T-610: BASt-Kataster-Codes raus (Titel = roher Bauwerksname, lief bisher nicht durch den Humanizer):
     // führende Bauwerksnummer „BW 26 - "/„Bw 24, "; „i.Z.d. [BAB] A7 …"-Tail (im-Zuge-der = getragene
@@ -302,7 +332,7 @@ export function humanizeTitel(s, kat) {
       .replace(/\s*-\s*\d{1,2}\.\d{1,2}\.\d{2,4}/g, "").replace(/\s*\(ARV[^)]*\)/gi, "")
   }
   // DANN BASt-Volldup „X/X" (Quelle hängt denselben Block 2× an) — jetzt symmetrisch kollabierbar.
-  t = t.replace(/[\s\-–/,]+$/, "").trim()
+  t = t.replace(/[\s\-–/,;]+$/, "").trim()
   const slash = t.split("/")
   if (slash.length >= 2 && slash.length % 2 === 0) {
     const h = slash.length / 2
@@ -324,7 +354,7 @@ export function humanizeTitel(s, kat) {
       .replace(/(^|\s)(?:Üf|ÜF|UeF|UEF|Uef)(?=\s|$)/g, "$1Überführung")
       .replace(/(^|\s)(?:Uf|UF)(?=\s|$)/g, "$1Unterführung")
   }
-  t = t.replace(/[\s\-–/,]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
+  t = t.replace(/[\s\-–/,;]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
   return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)
 }
 
@@ -534,12 +564,14 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         quelle: obstacle.quelle,
         zustaendig: obstacle.zustaendig,
         herkunft: obstacle.herkunft, // 'global'|'eigen' — nur für Dedup (nicht persistiert)
+        restbreiteM: isFiniteNumber(obstacle.attrs?.restbreiteM) ? obstacle.attrs.restbreiteM : null, // T-611: transient für dominierte-Breite-Dedup (nicht persistiert)
       })
     }
   }
   findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
   findings = dedupeByObstacle(findings) // #22: dieselbe Stelle über viele Strecken → EIN Fund
   findings = dedupeByLocation(findings) // T-607: Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten
+  findings = dedupeDominatedWidth(findings) // T-611: gleiche Route+km+Zeit, nur breitere Restbreite = dominiert → raus
   for (const f of findings) f.titel = humanizeTitel(f.titel, f.kategorie) // T-607: kryptische Roh-Labels lesbar machen
   findings.sort((a, b) => a.km - b.km)
 
