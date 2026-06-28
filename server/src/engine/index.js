@@ -35,7 +35,10 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // Kritisch 0001); roadClosed schlägt Geh-/Radweg-Entschärfung (0142); tonnage „Verbot über X t"=Limit
 // (0127/0130 FN) aber Überholverbot nicht; maxGewichtT/restbreiteM-Cross-Gap-Fill-Ausschluss (0221/0157);
 // DATEX-Richtungs-Enum→Deutsch; Reaktivierung abgelaufener Hindernisse gestoppt; VST_/EF_/ZM_-Codes.
-export const ENGINE_VERSION = "2.3.2"
+// 2.3.3 (T-611 Beauty): humanizeTitel — ALL-CAPS-Kataster-Namen → deutsche Schreibung (BASt 0153),
+// ÜFG/UEF→Überführung/EÜ→Eisenbahnüberführung, km-/Datum-/Uhrzeit-Tails strippen (0147/0153), nur-Junk-
+// Titel → Kategorie-Default. 11.668/54.713 Titel verschönert, 0 geleert. EVB/3-Buchstaben-Kürzel geschützt.
+export const ENGINE_VERSION = "2.3.3"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
@@ -303,6 +306,28 @@ export function dedupeByLocation(findings) {
   return out
 }
 
+// T-611 (Beauty): deutsche Klein-/Verbindungswörter (mitten im Titel klein) + 3-Buchstaben-Abkürzungen,
+// die NICHT als ALL-CAPS-Wort kleingeschrieben werden dürfen (Bauwerks-/Behörden-Kürzel).
+const TITEL_KLEINWORT = new Set([
+  "über", "unter", "den", "der", "die", "das", "dem", "des", "bei", "beim", "und", "oder", "im", "am",
+  "an", "auf", "aus", "für", "mit", "von", "vom", "zur", "zum", "zwischen", "nach", "bis", "ob", "vor",
+])
+const TITEL_ABKZ_SCHUTZ = new Set([
+  "BAB", "GST", "NOK", "PWC", "LSA", "LZA", "VFW", "AFW", "BOR", "TBW", "RFB", "ARV", "HDF", "VST", "ABS",
+  "OVS", "BÜ", "EÜ", "RIFA", "AKD", "ALD", "VSP", "USA", "DEGES",
+])
+// ALL-CAPS-Wörter (≥3 Buchstaben) in deutsche Schreibung — Kataster (v.a. BASt 0153) liefert GROSS.
+// Schützt Refs/Codes (Ziffern) automatisch (matcht nur reine Buchstaben-Läufe) + bekannte Kürzel.
+function titelSchreibung(t) {
+  if (!/[A-ZÄÖÜ]{3,}/.test(t)) return t // keine längeren ALL-CAPS-Wörter → unverändert (gute Titel unangetastet)
+  return t
+    // 1) ALL-CAPS-Funktionswörter (ÜBER/DEN/UND/BEI…) kleinschreiben — egal wie lang.
+    .replace(/[A-ZÄÖÜ]{2,}/g, (w) => (TITEL_KLEINWORT.has(w.toLowerCase()) ? w.toLowerCase() : w))
+    // 2) ALL-CAPS-Wörter ab 4 Buchstaben → Title Case. NICHT 3-Buchstaben (EVB/AKD/Bahn-/Behörden-
+    //    Kürzel bleiben groß), NICHT geschützte Kürzel, NICHT Refs/Codes (die haben Ziffern → matcht nicht).
+    .replace(/[A-ZÄÖÜ][A-ZÄÖÜß]{3,}/g, (w) => (TITEL_ABKZ_SCHUTZ.has(w) ? w : w.charAt(0) + w.slice(1).toLowerCase()))
+}
+
 // T-607 (Audit-Runde 2): Roh-Quell-Labels lesbar machen. Die Connectoren reichen interne Bauwerks-/
 // Planungs-Strings 1:1 als Titel durch (BASt-„X/X"-Vollduplikate, Teilbauwerk-/Richtungs-Codes,
 // AkD-Planungs-IDs „Lage-N/AkD NNNNN/1-str. R KS/19h bis 6h"). Hier zentral säubern — der Beschreibungs-
@@ -317,6 +342,9 @@ export function humanizeTitel(s, kat) {
       .replace(/^\s*B[wW]\s*\d+[a-z]?\s*[,\-]\s*/, "")
       .replace(/\s*[,;]?\s*i\.?\s*Z\.?\s*d\.?\s*(?:BAB\s*)?[AB]\s?\d+.*$/i, "")
       .replace(/\s*[,;]\s*(?:in\s*)?km\s*[\d.,]+.*$/i, "")
+      // T-611 (Beauty): „… über A1 km 176,817" / „in km 119,193" / „km 44,5-37,0 RiFa Nord" — Stations-
+      // km-Tail (auch space-getrennt, inkl. führendem „in/bei") bis Zeilenende strippen (BASt 0153).
+      .replace(/[\s,]*(?:\b(?:in|bei)\s+)?km\s+\d[\d.,]*(?:\s*-\s*[\d.,]+)?.*$/i, "")
       .replace(/\s*;\s*FR:?\s*\w*\s*$/i, "")
       // T-611: BASt-Netzknoten-Code-Tail „, Ab 265, St 5006" / „, Ab 280, St 5806/Tbw2" raus (für
       // Disponenten bedeutungslos). NUR am „Ab …"-Anker — ein freistehendes „St 2406" ist eine bayerische
@@ -335,6 +363,10 @@ export function humanizeTitel(s, kat) {
     t = t
       .replace(/\s*\/{2,}.*$/s, "") // T-611: „/// Halbseitige Sperrung…" / „// halbseitig…" — Sperr-Meta nach Doppelslash raus, Straßenteil bleibt
       .replace(/\s*\(DATEX\)\s*$/i, "") // T-611: „baustelle (DATEX)" → „baustelle" (Platzhalter ohne Straße/Beschr; wird unten großgeschrieben)
+      // T-611 (Beauty): Bayern 0147 hängt „…, Baustelle, von 31.08.2026 07:00 bis … Uhr" an — der Zeitraum
+      // steht strukturiert in gueltig_von/bis. Datums-/Uhrzeit-Tail + nachgestelltes Maßnahmenwort strippen.
+      .replace(/,?\s*(?:von|ab|bis|g(?:ü|ue)ltig:?)\s+\d{1,2}\.\d{1,2}\.\d{2,4}\b.*$/i, "")
+      .replace(/,\s*(?:Baustelle|Beschr(?:ä|ae)nkungen|Sperrung|Sonstiges)\s*$/i, "")
       .replace(/\s*-?\s*\b(?:HDF|VST|EF|ZM|SW|BRW)_[\w-]+/gi, "").replace(/\s*\bA-\d{5}-\d+\b/g, "") // T-610/T-611: Länder-/Autobahn-Auftragscodes (HDF_/VST_/EF_/ZM_/SW_/BRW_)
       .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
       .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
@@ -359,11 +391,19 @@ export function humanizeTitel(s, kat) {
   // die Expansion die „X/X"-Symmetrie. Vorher expandierte nur Ufg + lowercase-Üf.
   if (kat === "bruecke" || kat === "tunnel") {
     t = t
-      .replace(/\bUfg\.?/gi, "Unterführung")
+      .replace(/(^|\s)(?:Üfg|ÜFG)\.?/g, "$1Überführung") // \b greift nicht vor Umlaut Ü (non-ASCII)
+      .replace(/\b(?:Ufg|UFG)\.?/g, "Unterführung")
       .replace(/(^|\s)(?:Üf|ÜF|UeF|UEF|Uef)(?=\s|$)/g, "$1Überführung")
       .replace(/(^|\s)(?:Uf|UF)(?=\s|$)/g, "$1Unterführung")
+      .replace(/(^|\s)E(?:Ü|ü)(?=\s|$)/g, "$1Eisenbahnüberführung")
   }
+  t = titelSchreibung(t) // T-611 (Beauty): ALL-CAPS-Kataster-Namen → deutsche Schreibung
   t = t.replace(/[\s\-–/,;]+$/, "").replace(/^\s*[/,]\s*/, "").replace(/\s{2,}/g, " ").trim()
+  // T-611 (Beauty): nur-Junk-Titel („---", „/", „.") → sprechender Kategorie-Default statt Müll/Original.
+  if (/^[\s\-–/.,;:_]*$/.test(t)) {
+    const DEFAULT = { bruecke: "Brücke", tunnel: "Tunnel", engstelle: "Engstelle", gewicht: "Gewichtsbeschränkung", baustelle: "Baustelle", sperrung: "Sperrung", sonstige: "Hindernis" }
+    return DEFAULT[kat] || "Hindernis"
+  }
   // T-611: Erstbuchstabe groß (z.B. „baustelle"→„Baustelle"); für bereits großgeschriebene Titel ein No-op.
   if (t && /^[a-zäöü]/.test(t)) t = t.charAt(0).toUpperCase() + t.slice(1)
   return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)

@@ -153,7 +153,7 @@ describe("humanizeTitel", () => {
     expect(humanizeTitel("BW 2026 - Brücke über die Harste im Zuge der A 7/Ostseite", "bruecke"))
       .toBe("Brücke über die Harste im Zuge der A 7") // T-610: führende BW-Nr gestrippt
     expect(humanizeTitel("Del25 / A28 über Geh-und Radweg in km 119,193/RiFa Oldenburg - Brücke", "bruecke"))
-      .toBe("Del25 / A28 über Geh-und Radweg in km 119,193")
+      .toBe("Del25 / A28 über Geh-und Radweg") // T-611 Beauty: km-Tail jetzt gestrippt
   })
   it("Baustelle: AkD-/Lage-/Zeit-Codes raus", () => {
     expect(humanizeTitel("A44 - Fahrbahninstandsetzung - AkD 31550 - 1-str. R KS - 19h bis 6h - Lage-1", "baustelle"))

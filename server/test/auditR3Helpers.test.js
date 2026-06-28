@@ -119,6 +119,28 @@ describe("T-611 Hindernis-DB-Karten-Titel (Voll-Bestand)", () => {
   })
 })
 
+describe("T-611 Beauty (humanizeTitel)", () => {
+  it("ALL-CAPS-Kataster → deutsche Schreibung, Refs/Kürzel geschützt", () => {
+    expect(humanizeTitel("B 3; BRÜCKE ÜBER DEN HUNGERBRUNNENGRABEN", "bruecke")).toBe("B 3; Brücke über den Hungerbrunnengraben")
+    expect(humanizeTitel("ÜFG B51/K29 BEI MECKEL", "bruecke")).toBe("Überführung B51/K29 bei Meckel")
+    expect(humanizeTitel("UF WICKERBACH", "bruecke")).toBe("Unterführung Wickerbach")
+  })
+  it("3-Buchstaben-Kürzel (EVB) bleiben groß", () => {
+    expect(humanizeTitel("Uf EVB-Strecke unter A1, Ab 265, St 5006", "bruecke")).toBe("Unterführung EVB-Strecke unter A1")
+  })
+  it("km-Tail gestrippt", () => {
+    expect(humanizeTitel("Überführung einer Gemeindestr. über A1 km 176,817", "bruecke")).toBe("Überführung einer Gemeindestr. über A1")
+  })
+  it("Bayern Datum/Uhrzeit-Tail gestrippt", () => {
+    expect(humanizeTitel("St1022 zwischen X und Y gesperrt, Baustelle, von 31.08.2026 07:00 bis 12.09.2026 18:00 Uhr", "baustelle"))
+      .toBe("St1022 zwischen X und Y gesperrt")
+  })
+  it("nur-Junk-Titel → Kategorie-Default", () => {
+    expect(humanizeTitel("---", "baustelle")).toBe("Baustelle")
+    expect(humanizeTitel("/", "bruecke")).toBe("Brücke")
+  })
+})
+
 describe("T-611 Voll-Bestand (geteilte Fixes)", () => {
   it("tonnage: 'Verbot für Kraftfahrzeuge über 7,5 t' = echtes Limit (0127/0130 FN-Fix)", () => {
     expect(tonnageAusText("Verbot für Kraftfahrzeuge über 7,5 t")).toBe(7.5)
