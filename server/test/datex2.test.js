@@ -75,7 +75,7 @@ describe("parseDatex2", () => {
     expect(o.attrs.sperrungArt).toBe("roadClosed")
     expect(o.attrs.spurenGesperrt).toBe(2)
     expect(o.attrs.spurenGesamt).toBe(2)
-    expect(o.attrs.richtung).toBe("both")
+    expect(o.attrs.richtung).toBeUndefined() // T-611: „both" = unspezifisch → keine Richtung (statt rohem Enum)
 
     // Teilsperrung (laneClosures) → teilsperrung (KEIN harter Block-Flag).
     const teil = voll.replace("roadClosed", "laneClosures").replace("<constructionWorkType>construction</constructionWorkType>", "")

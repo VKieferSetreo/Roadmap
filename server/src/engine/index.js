@@ -31,7 +31,11 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // Geh-/Radweg-Vollsperrung + Vollsperrung-mit-0-Fahrstreifen+Rampe nicht mehr kritisch, „;"-Titel-Trim.
 // 2.3.1 (T-611 Voll-Bestand): humanizeTitel auch auf der Hindernis-DB-Karte (alle 55k), „(DATEX)"-Strip
 // + Erstbuchstabe groß. Bisher liefen die kryptischen Roh-Titel (HDF_/DATEX/Ab-St/VZ) nur durch Funde.
-export const ENGINE_VERSION = "2.3.1"
+// 2.3.2 (T-611 Voll-Bestand-Fixes): „Gesamtmaßnahme"-Datum nicht als gueltigBis (Nacht-Sperrung-Falsch-
+// Kritisch 0001); roadClosed schlägt Geh-/Radweg-Entschärfung (0142); tonnage „Verbot über X t"=Limit
+// (0127/0130 FN) aber Überholverbot nicht; maxGewichtT/restbreiteM-Cross-Gap-Fill-Ausschluss (0221/0157);
+// DATEX-Richtungs-Enum→Deutsch; Reaktivierung abgelaufener Hindernisse gestoppt; VST_/EF_/ZM_-Codes.
+export const ENGINE_VERSION = "2.3.2"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
@@ -331,7 +335,7 @@ export function humanizeTitel(s, kat) {
     t = t
       .replace(/\s*\/{2,}.*$/s, "") // T-611: „/// Halbseitige Sperrung…" / „// halbseitig…" — Sperr-Meta nach Doppelslash raus, Straßenteil bleibt
       .replace(/\s*\(DATEX\)\s*$/i, "") // T-611: „baustelle (DATEX)" → „baustelle" (Platzhalter ohne Straße/Beschr; wird unten großgeschrieben)
-      .replace(/\s*-?\s*\bHDF_[\w-]+/gi, "").replace(/\s*\bA-\d{5}-\d+\b/g, "") // T-610: Länder-Auftragscodes
+      .replace(/\s*-?\s*\b(?:HDF|VST|EF|ZM|SW|BRW)_[\w-]+/gi, "").replace(/\s*\bA-\d{5}-\d+\b/g, "") // T-610/T-611: Länder-/Autobahn-Auftragscodes (HDF_/VST_/EF_/ZM_/SW_/BRW_)
       .replace(/\s*-\s*Lage-\d+.*$/i, "").replace(/\s*-\s*AkD\s*\d+/gi, "").replace(/\s*-\s*A[lL]D\b/g, "")
       .replace(/\s*-\s*\d{1,2}-?str\.?\s*R\s*\w+/gi, "").replace(/\s*-\s*\d{1,2}h\s*bis\s*\d{1,2}h/gi, "")
       .replace(/\s*-\s*\d{1,2}\.\d{1,2}\.\d{2,4}/g, "").replace(/\s*\(ARV[^)]*\)/gi, "")

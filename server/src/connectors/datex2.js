@@ -94,8 +94,21 @@ function sperrAttrsAusRecord(recordXml) {
   if (gesperrt != null) out.spurenGesperrt = gesperrt
   if (gesamt != null) out.spurenGesamt = gesamt
   const dir = (tag(recordXml, "directionRelativeOnLinearSection") || tag(recordXml, "alertCDirectionCoded") || "").trim()
-  if (dir) out.richtung = dir
+  // T-611: DATEX-Richtungs-Enum in lesbares Deutsch mappen statt roh durchzureichen („positive"/„aligned"
+  // landete sonst wörtlich im Popup als „Richtung positive"). Unspezifische/beide → weglassen.
+  const r = mapDatexRichtung(dir)
+  if (r) out.richtung = r
   return out
+}
+
+// DATEX directionRelativeOnLinearSection / alertC-Codes → deutsche Fahrtrichtung. T-611.
+function mapDatexRichtung(dir) {
+  const d = String(dir).toLowerCase()
+  if (!d) return null
+  if (/^(positive|aligned|alongdrivingdirection|withdrivingdirection)$/.test(d)) return "in Fahrtrichtung"
+  if (/^(negative|opposite|againstdrivingdirection)$/.test(d)) return "Gegenrichtung"
+  if (/^(both|alldirections|unknown|allcarriageways)$/.test(d)) return null // unspezifisch → keine Richtung
+  return dir // bereits lesbarer Freitext (z.B. Ortsname) → behalten
 }
 
 /** Restriktionswerte (Höhe/Breite/Gewicht in m/t) aus dem Record ziehen, soweit DATEX sie führt.

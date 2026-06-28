@@ -182,9 +182,16 @@ export async function runImport({
           stats.aktualisiert += 1
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
           // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.
+          // T-611 (Voll-Bestand): NICHT reaktivieren, wenn die Quell-Meldung selbst schon abgelaufen ist
+          // (gueltigBis < heute−Grace). Sonst belebt jeder Lauf abgelaufene Hindernisse zyklisch wieder
+          // (0114/0141/0143/0146 hielten so jahrealte Meldungen aktiv). gueltigBis=null bleibt unbegrenzt.
           if (connector.vollbestand && target.aktiv === false) {
-            pendingReactivate.add(target.id)
-            stats.reaktiviert += 1
+            const bis = value.gueltigBis ? String(value.gueltigBis).slice(0, 10) : null
+            const graceCutoff = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10)
+            if (bis == null || bis >= graceCutoff) {
+              pendingReactivate.add(target.id)
+              stats.reaktiviert += 1
+            }
           }
         } else if (pendingInserts.has(externeId)) {
           // Zweites Item mit GLEICHER externe_id im selben Feed → kein zweiter INSERT (sonst

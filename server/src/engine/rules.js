@@ -297,8 +297,12 @@ function ruleKreisverkehr(attrs, transport) {
 function nurNichtFahrbahnSperre(attrs, obstacle) {
   if (attrs?.vollsperrung !== true) return false
   const t = `${obstacle?.name ?? ""} ${obstacle?.beschreibung ?? ""}`
-  // (a) nur Geh-/Radweg — kein Fahrbahn-/Straßen-/Fahrstreifen-Bezug
-  if (/geh-?\s*\/?\s*radweg|\bradweg|\bgehweg|veloroute|radverkehr|fu(?:ß|ss)weg/i.test(t) &&
+  // (a) nur Geh-/Radweg — kein Fahrbahn-/Straßen-/Fahrstreifen-Bezug. T-611: NICHT entschärfen, wenn die
+  // Quelle die Maßnahme strukturiert als echte Fahrbahn-/Straßensperre kennzeichnet (DATEX
+  // sperrungArt=roadClosed/carriagewayClosed) — sonst würde eine echte roadClosed-Vollsperrung, deren
+  // Freitext nur nebenbei einen Radweg erwähnt, fälschlich auf Warnung gedrückt (0142 Bremen).
+  if (!/^(roadclosed|carriagewayclosed)$/i.test(String(attrs?.sperrungArt ?? "")) &&
+      /geh-?\s*\/?\s*radweg|\bradweg|\bgehweg|veloroute|radverkehr|fu(?:ß|ss)weg/i.test(t) &&
       !/fahrbahn|fahrstreifen|\bstra(?:ß|ss)e\b|\bfahrspur|\bspur\b/i.test(t)) return true
   // (b) 0 gesperrte Fahrstreifen + Parkplatz/Rampe/Überfahrt-Kontext → keine Fahrbahn-Sperrung
   if (num(attrs?.spurenGesperrt) === 0 &&

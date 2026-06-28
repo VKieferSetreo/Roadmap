@@ -34,11 +34,19 @@ export function tonnageAusText(text, { requireKontext = true } = {}) {
     /(?:gesamtgewicht|zul[.\s]*ges|zgg|tragf[äa]hig\w*|tragkraft|tragl\w*|lastbe\w*|gewichtsbe\w*|gewichtsl\w*|zul[äa]ssig|\bmax\.?|gesperrt)[^.\d]{0,25}(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i,
   )
   if (vor) return Number(vor[1])
-  // Kontext NACH der Zahl: "7,5 t zul. Gesamtgewicht", "16 t zGG", "30 t Tragfähigkeit".
+  // Kontext NACH der Zahl: "7,5 t zul. Gesamtgewicht", "16 t zGG", "30 t Tragfähigkeit", "7,5 t gesperrt".
   const nach = s.match(
-    /(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)[^.\d]{0,20}(?:zul|gesamtgewicht|zgg|gewichtsbe|tragf|lastbe)/i,
+    /(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)[^.\d]{0,20}(?:zul|gesamtgewicht|zgg|gewichtsbe|tragf|lastbe|gesperrt)/i,
   )
-  return nach ? Number(nach[1]) : null
+  if (nach) return Number(nach[1])
+  // T-611: „Verbot für (Kraft)fahrzeuge über X t" IST ein echtes Limit (0127/0130) — aber „Überholverbot
+  // über X t" / „Abstandsgebot" NICHT (0112 Norderelbbrücke). Das bare „über X t" wurde in Welle B ganz
+  // entfernt; hier gezielt am „Verbot"-Kontext (ohne Überhol/Abstand) wieder zulassen.
+  if (!/(?:überhol|abstandsgebot)/i.test(s)) {
+    const verbot = s.match(/\bverbot\b[^.\d]{0,30}?[üu]ber\s*(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
+    if (verbot) return Number(verbot[1])
+  }
+  return null
 }
 
 /** Erste Höhen-/Breiten-Meterzahl aus Freitext. */
@@ -132,6 +140,16 @@ function alleDaten(text) {
 function standDaten(text) {
   const out = new Set()
   const re = /\b(?:(?:planungs|daten|bearbeitungs|redaktions|erfassungs)?stand(?:\s+der\s+daten)?|letzte\s+aktualisierung|aktualisiert\s+am)\s*:?\s*(?:vom\s+)?(\d{1,2}\.\d{1,2}\.\d{2,4}|\d{4}-\d{2}-\d{2})/gi
+  for (const m of String(text).matchAll(re)) for (const d of alleDaten(m[1])) out.add(d)
+  return out
+}
+
+// T-611 (Audit R3 Voll-Bestand): „(Ende der) Gesamtmaßnahme: <Datum>" ist die PROJEKT-HÜLLE (oft Jahre),
+// NICHT das Ende der aktuellen — oft intermittierenden Nacht- — Sperrung. Aus der gueltigBis-Max-Heuristik
+// ausschließen, sonst gilt eine Eintags-/Nacht-Vollsperrung jahrelang als aktiv (Falsch-Kritisch, 0001 A12).
+function gesamtmassnahmeDaten(text) {
+  const out = new Set()
+  const re = /(?:ende\s+der\s+)?gesamtma(?:ß|ss)nahme\s*:?\s*(\d{1,2}\.\d{1,2}\.\d{2,4}|\d{4}-\d{2}-\d{2})/gi
   for (const m of String(text).matchAll(re)) for (const d of alleDaten(m[1])) out.add(d)
   return out
 }
@@ -245,7 +263,8 @@ export function extractStammdaten(text) {
   // Datums-Heuristik: kleinstes = Start, größtes = Ende. Einzeldatum nur mit Gültigkeits-Kontext.
   // T-257: als „Stand"/„Datenstand" gelabelte Daten vorher rausfiltern (= Quell-Aktualität, kein Beginn).
   const standSet = standDaten(s)
-  const daten = alleDaten(s).filter((d) => !standSet.has(d))
+  const gesamtSet = gesamtmassnahmeDaten(s)
+  const daten = alleDaten(s).filter((d) => !standSet.has(d) && !gesamtSet.has(d))
   const hatKontext = /\b(g(?:ü|ue)ltig|gilt|zeitraum|vom|bis|ab\s|baubeginn|bauende|dauer|gesperrt|sperrung|wirksam)\b/i.test(s)
   if (daten.length >= 2) {
     out.gueltigVon = daten[0]
@@ -456,6 +475,12 @@ export function makeNormalized({
   // Alle extrahierten attrs generisch übernehmen (außer den Nicht-attr-Feldern) — nur Lücken füllen.
   for (const [k, v] of Object.entries(ex)) {
     if (EX_NICHT_ATTR.has(k)) continue
+    // T-611 (Voll-Bestand): sich ausschließende Maß-Keys NICHT quer aus dem Freitext gap-fillen — ein
+    // Achslast-Schild (maxAchslastT gesetzt) darf KEIN maxGewichtT aus dem Text ziehen (sonst wird die
+    // Achslast als Gesamtgewicht gewertet → Falsch-Kritisch, 0221 VZ263); eine Breitenbeschränkung
+    // (maxBreiteM gesetzt) keinen restbreiteM-Scheinwert aus dem Titel (0157).
+    if (k === "maxGewichtT" && cleanAttrs.maxAchslastT != null) continue
+    if (k === "restbreiteM" && cleanAttrs.maxBreiteM != null) continue
     // T-460: gleicher Filter wie initial — kein ungeprüftes String-Zurückschreiben mehr.
     if (cleanAttrs[k] == null && attrErlaubt(k, v)) { cleanAttrs[k] = v; extrahiert = true }
   }

@@ -2,7 +2,7 @@
 // richtungAus (Wortanker), humanizeTitel (Uf/ÜF, Ab/St-Codes, A#/A#-NearDup, //-Mehrsegment).
 import { describe, it, expect } from "vitest"
 import { decodeEntities, cleanText } from "../src/util.js"
-import { extractStammdaten, stripHtml, tonnageAusText } from "../src/connectors/_helpers.js"
+import { extractStammdaten, stripHtml, tonnageAusText, makeNormalized } from "../src/connectors/_helpers.js"
 import { humanizeTitel, dedupeDominatedWidth } from "../src/engine/index.js"
 import { evaluate } from "../src/engine/rules.js"
 import { normalizeAutobahn } from "../src/connectors/autobahn.js"
@@ -116,6 +116,34 @@ describe("T-611 Hindernis-DB-Karten-Titel (Voll-Bestand)", () => {
     const out = humanizeTitel("Erneuerung der Fahrbahn - 4 HDF_2023-002727_bRF km 160", "baustelle")
     expect(out).not.toContain("HDF_")
     expect(out.startsWith("Erneuerung der Fahrbahn")).toBe(true)
+  })
+})
+
+describe("T-611 Voll-Bestand (geteilte Fixes)", () => {
+  it("tonnage: 'Verbot für Kraftfahrzeuge über 7,5 t' = echtes Limit (0127/0130 FN-Fix)", () => {
+    expect(tonnageAusText("Verbot für Kraftfahrzeuge über 7,5 t")).toBe(7.5)
+  })
+  it("tonnage: 'X Tonnen gesperrt' = Limit", () => {
+    expect(tonnageAusText("12 Tonnen gesperrt")).toBe(12)
+  })
+  it("tonnage: 'Überholverbot über 7,5 t' bleibt KEIN Limit (0112)", () => {
+    expect(tonnageAusText("Überholverbot für Fahrzeuge über 7,5 t")).toBeNull()
+  })
+  it("Gesamtmaßnahme-Datum NICHT als gueltigBis (0001 Nacht-Sperrung)", () => {
+    const ex = extractStammdaten("gültig: 02.07.26 19:00 bis zum 03.07.26 05:00 Uhr. (Ende der Gesamtmaßnahme: 31.10.28)")
+    expect(ex.gueltigBis).toBe("2026-07-03")
+    expect(ex.gueltigVon).toBe("2026-07-02")
+  })
+  it("Achslast-Schild zieht KEIN maxGewichtT aus dem Text (0221)", () => {
+    const o = makeNormalized({ externeId: "x", kategorie: "gewicht", name: "Achslast",
+      beschreibung: "Verbot für Fahrzeuge über 8 t", attrs: { maxAchslastT: 8 }, lat: 52, lng: 10 })
+    expect(o.attrs.maxGewichtT).toBeUndefined()
+    expect(o.attrs.maxAchslastT).toBe(8)
+  })
+  it("Breitenbeschränkung injiziert keinen restbreiteM-Scheinwert (0157)", () => {
+    const o = makeNormalized({ externeId: "x", kategorie: "engstelle", name: "Breitenbeschränkung 3 m",
+      beschreibung: "Breite 3 m", attrs: { maxBreiteM: 3 }, lat: 52, lng: 10 })
+    expect(o.attrs.restbreiteM).toBeUndefined()
   })
 })
 
