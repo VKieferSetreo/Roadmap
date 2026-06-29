@@ -50,6 +50,22 @@ describe("extractMapsStops", () => {
     expect(stops).toEqual([{ lat: 51.6889035, lng: 7.9320421 }, { lat: 51.7142651, lng: 7.9791429 }])
   })
 
+  it("Regression (Bug 2026-06-29): Start+Ziel als Pfad-Koord + gezogener !1m2-Via im Blob → Via eingefügt", async () => {
+    // Echter gemeldeter Link: Pfad = Start(Hannover) + Ziel(Kassel-Süd) als lat,lng; der per Hand
+    // gezogene Zwischenstopp (Hamm/Dortmund, West-Loop) steht NUR als !1m2!1d<lng>!2d<lat> im Blob.
+    // Früher verworfen → direkte Route ohne Umweg. Jetzt zwischen Start und Ziel eingefügt.
+    const final =
+      "https://www.google.com/maps/dir/52.410494,9.8946346/51.4713589,9.10817/@51.48,9.03,12753m/" +
+      "data=!3m1!1e3!4m9!4m8!1m5!3m4!1m2!1d7.6708107!2d51.5759288!3s0x47b912ea:0xabc!1m0!3e0!5m1!1e1"
+    const fetchImpl = async () => ({ url: final })
+    const { stops } = await extractMapsStops("https://maps.app.goo.gl/YESEVTsbEDetqTeF8", { fetchImpl })
+    expect(stops).toEqual([
+      { lat: 52.410494, lng: 9.8946346 },
+      { lat: 51.5759288, lng: 7.6708107 },
+      { lat: 51.4713589, lng: 9.10817 },
+    ])
+  })
+
   it("Einzel-Ort/Murks → keine 2 Wegpunkte", async () => {
     const { stops } = await extractMapsStops("https://www.google.com/maps/place/Köln/@50.9,6.9,12z")
     expect(stops.length).toBeLessThan(2)

@@ -126,6 +126,17 @@ function parseStops(finalUrl) {
     // Stopps liefern wie die Pfad-Namen — sonst (z.B. ein Pfad-Stopp ohne aufgelöste Koordinate
     // im Blob) lieber die vollständigen Pfad-Namen, um keinen Stopp zu verlieren.
     if (structured.length >= 2 && structured.length >= nameStops.length) return structured
+    // (A2) Häufiger Share-Fall: Start+Ziel stehen als KOORDINATEN im Pfad (/maps/dir/<lat,lng>/<lat,lng>/),
+    //     die per Hand GEZOGENEN Zwischenstopps NUR im Blob als !1m2!1d<lng>!2d<lat>. Dann liefert (A)
+    //     zu wenige strukturierte Stopps (nur die Vias, ohne Start/Ziel) und (B) verwirft sie wegen
+    //     Anzahl-Ungleichheit → das Tool fuhr Start→Ziel direkt und ließ den gezogenen Umweg weg
+    //     (Bug 2026-06-29). Korrekt: die !1m2-Vias (in Blob-Reihenfolge) zwischen die Pfad-Stopps setzen.
+    const vias = [...finalUrl.matchAll(/!1m2!1d(-?\d+\.\d+)!2d(-?\d+\.\d+)/g)]
+      .map((m) => ({ lat: Number(m[2]), lng: Number(m[1]) }))
+      .filter((p) => Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180)
+    if (nameStops.length >= 2 && vias.length >= 1 && structured.length < nameStops.length) {
+      return [...nameStops.slice(0, -1), ...vias, nameStops[nameStops.length - 1]]
+    }
     // (B) Fallback für einfachere Links OHNE strukturierten Blob: bare !1d!2d. Der data=-Blob kann
     //     hier ZUSÄTZLICHE !1d!2d (Karten-Mitte/Viewport/POI) tragen → mehr Koordinaten als echte
     //     Wegpunkte. Darum bare-Koordinaten NUR bei exakter Anzahl-Übereinstimmung mit den
