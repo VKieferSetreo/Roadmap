@@ -219,10 +219,12 @@ function FindingMarkerImpl({
               scale-90 hält die rechte Kante und schiebt sie 8px raus → man sieht, dass dahinter
               etwas ist). Nur an/aus, kein Fade. */}
           {showChat && !chatOpen ? (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 origin-right translate-x-2 scale-90 rounded-xl border border-neutral-200 bg-white shadow-md"
-            />
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+              {/* Zwei GETRENNTE Karten-Andeutungen, die rechts hinter der Hauptkarte hervorschauen
+                  (oben Kontakt klein, unten Chat groß) → man sieht im Ruhezustand: hier liegen zwei Karten. */}
+              <div className="absolute inset-x-0 top-[3%] h-[36%] translate-x-2 scale-95 rounded-xl border border-neutral-200 bg-white shadow-md" />
+              <div className="absolute inset-x-0 bottom-[3%] h-[54%] translate-x-2 scale-95 rounded-xl border border-neutral-200 bg-white shadow-md" />
+            </div>
           ) : null}
 
           {/* Clip-Container rechts der Hauptkarte (z-0 dahinter). overflow-hidden kappt den
@@ -231,12 +233,11 @@ function FindingMarkerImpl({
           {/* pointer-events-none am Container → die (unsichtbare) Fläche über der Karte fängt
               die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
           {showChat ? (
-          <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
-            {/* ZWEI separate gestapelte Bubbles (mit Luft = gap-2 dazwischen), die mit dem einen
-                Plus-Toggle rausfahren: oben die kompakte Kontakt-Bubble, darunter die Chat-Bubble.
-                Jede Bubble fährt EIGENSTÄNDIG (leichter Versatz über delay) — kein gemeinsamer
-                Kasten mehr. pl-9 hält sie rechts neben der Hauptkarte; overflow-hidden des
-                Eltern-Containers blendet sie im Ruhezustand sauber aus. */}
+          <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-2.25rem)] -right-[27rem] z-0 overflow-hidden">
+            {/* ZWEI separate gestapelte Bubbles (Luft = gap-2), die GEMEINSAM (ein Translate →
+                gleichzeitig) mit dem Plus rausfahren. Jede Bubble liegt mit ihrem linken Rand hinter
+                der Hauptkarte (left-Overlap 2.25rem); das pl-12 IN jeder Bubble hält den Inhalt rechts
+                sichtbar, ohne ihn zu verschieben. overflow-hidden blendet sie im Ruhezustand aus. */}
             <div
               id={`finding-chat-${primary.id}`}
               role="region"
@@ -249,29 +250,19 @@ function FindingMarkerImpl({
                 if (e.key === "Escape") setChatOpen(false)
               }}
               className={cn(
-                "flex h-full w-[420px] flex-col gap-2 pl-9",
-                chatOpen ? "pointer-events-auto" : "pointer-events-none",
+                "flex h-full w-[420px] flex-col gap-2",
+                "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
+                chatOpen ? "pointer-events-auto translate-x-0" : "pointer-events-none -translate-x-[112%]",
               )}
             >
-              {/* Bubble 1: Kontakt — eigene kleine Karte, fährt zuerst raus. */}
+              {/* Bubble 1: Kontakt (kompakt, 2/3) — pl-12 steckt in der Karte selbst. */}
               {kontakt ? (
-                <div
-                  className={cn(
-                    "shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
-                    chatOpen ? "translate-x-0" : "-translate-x-[160%]",
-                  )}
-                >
+                <div className="shrink-0">
                   <FindingContactCard kontakt={kontakt} compact />
                 </div>
               ) : null}
-              {/* Bubble 2: Chat — eigene Karte, fährt minimal später raus (separat). */}
-              <div
-                className={cn(
-                  "flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xl",
-                  "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
-                  chatOpen ? "translate-x-0 delay-75" : "-translate-x-[160%]",
-                )}
-              >
+              {/* Bubble 2: Chat — eigene Karte, pl-12 schiebt den Inhalt rechts neben die Hauptkarte. */}
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-12 shadow-xl">
                 {shareChat ? (
                   <ShareChatReadonly messages={shareChat} />
                 ) : (
