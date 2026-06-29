@@ -77,6 +77,15 @@ export function AnlageTab({ project }: { project: Project }) {
                   <span className="flex items-center gap-2 text-sm font-semibold text-neutral-800">
                     <CalendarRange className="h-4 w-4 text-primary-600" /> Transport-Zeitraum
                   </span>
+                  <div className="flex items-center gap-2">
+                  {/* Dauer-Badge links neben „Ganztägig" (Max 2026-06-29). */}
+                  {project.zeitraum?.von &&
+                  project.zeitraum?.bis &&
+                  !isZeitraumInvalid(project.zeitraum) ? (
+                    <span className="rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
+                      {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
+                    </span>
+                  ) : null}
                   <label className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-xs text-neutral-600 transition-colors duration-200 hover:bg-neutral-50">
                     <input
                       type="checkbox"
@@ -103,6 +112,7 @@ export function AnlageTab({ project }: { project: Project }) {
                     />
                     Ganztägig
                   </label>
+                  </div>
                 </div>
 
                 {/* Zwei Zeilen: Von [Datum] [Uhrzeit] — direkt darunter Bis [Datum] [Uhrzeit]. */}
@@ -170,17 +180,6 @@ export function AnlageTab({ project }: { project: Project }) {
                       />
                     ) : null}
                   </div>
-                  {/* Dauer-Badge unter den Zeilen, rechtsbündig — hält die Von/Bis-Felder über die
-                      volle Breite gefluchtet (Max 2026-06-29). */}
-                  {project.zeitraum?.von &&
-                  project.zeitraum?.bis &&
-                  !isZeitraumInvalid(project.zeitraum) ? (
-                    <div className="flex justify-end">
-                      <span className="rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
-                        {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
-                      </span>
-                    </div>
-                  ) : null}
                 </div>
 
                 {/* Fehlermeldung bei Bis vor Von */}
