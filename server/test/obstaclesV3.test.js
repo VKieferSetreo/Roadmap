@@ -212,6 +212,12 @@ describe("obstacles v3 — PATCH/DELETE Rechte", () => {
       .send({ ...OBSTACLE, name: "Setreo-Ampel" })
     const kundeA = await asUser("a@kunde-a.de")(request(app).post("/api/obstacles"))
       .send({ ...OBSTACLE, name: "KundeA-Ampel" })
+    // Seeds müssen wirklich angelegt sein (sonst liefern Folge-PATCH/DELETE 404 statt der geprüften
+    // 403/204 → wäre ein irreführender Flake). Hier laut scheitern, am echten Punkt.
+    for (const [k, r] of [["global", global], ["setreo", setreo], ["kundeA", kundeA]]) {
+      expect(r.status, `seed ${k} POST`).toBe(201)
+      expect(r.body.id, `seed ${k} id`).toBeTruthy()
+    }
     return { global: global.body, setreo: setreo.body, kundeA: kundeA.body }
   }
 

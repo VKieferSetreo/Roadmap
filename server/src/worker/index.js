@@ -11,6 +11,7 @@ import { enabledConnectors } from "../connectors/index.js"
 import { createSemaphore } from "../concurrency.js"
 import { createDb, createPool } from "../db.js"
 import { rerunAffectedProjects } from "../engine/rerunAll.js"
+import { checkGstDrift } from "../engine/zustaendigkeitResolver.js"
 import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
@@ -209,6 +210,25 @@ async function runPrune() {
   }
 }
 
+// T-614: Drift-Check der amtlichen Kreis→GST-Zuordnung (Autobahn GmbH) gegen unseren Snapshot.
+// Reiner Monitor — meldet, wenn der Layer sich geändert hat (dann Snapshot neu ziehen + deployen).
+async function runGstDriftCheck() {
+  try {
+    const r = await checkGstDrift()
+    if (r.changed.length || r.removed.length) {
+      log(
+        `⚠ GST-Zuordnung-Drift: ${r.changed.length} geänderte, ${r.removed.length} entfernte Kreise — ` +
+          `Snapshot (data/gst_kreis_zuordnung.geojson) neu ziehen + deployen. ` +
+          `Beispiele: ${r.changed.slice(0, 5).map((c) => `${c.kreis}: ${c.alt}→${c.neu}`).join("; ")}`,
+      )
+    } else {
+      log(`GST-Zuordnung aktuell (${r.committedCount} Kreise, kein Drift)`)
+    }
+  } catch (err) {
+    log(`GST-Drift-Check fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  }
+}
+
 // Prozessübergreifender Lock pro Connector (pg-Advisory-Lock auf dediziertem Client).
 // Ersetzt die frühere In-Memory-Set: verhindert Doppel-Runs NICHT nur im selben Prozess,
 // sondern über mehrere Worker-Instanzen hinweg. Cron-Duplikation (2 Worker feuern denselben
@@ -317,6 +337,8 @@ try {
   jobs.push(new Cron("0 7 * * *", CRON_OPTS, () => void runLicenseReminders()))
   // T-372: tägliches Retention-/Pruning (import_runs + analytics) — eigener Job, früh morgens.
   jobs.push(new Cron("45 3 * * *", CRON_OPTS, () => void runPrune()))
+  // T-614: monatlicher Drift-Check der GST-Kreis-Zuordnung (1. des Monats, 04:10).
+  jobs.push(new Cron("10 4 1 * *", CRON_OPTS, () => void runGstDriftCheck()))
 
   // Heartbeat (T-469): hält den Event-Loop am Leben, macht den Worker im Log sichtbar UND
   // schreibt einen DB-Heartbeat, den /api/health auf Staleness prüft (Dead-Man's-Switch).

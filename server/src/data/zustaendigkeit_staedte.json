@@ -1,0 +1,178 @@
+{
+ "hamburg": {
+  "stadt": "Hamburg",
+  "stelle": "Landesbetrieb Straßen, Brücken und Gewässer (LSBG)",
+  "rolle": "Stadt Hamburg — kommunale Straßen",
+  "email": "info@lsbg.hamburg.de",
+  "telefon": "040 428 28 0",
+  "adresse": "Sachsenfeld 3-5, 20097 Hamburg"
+ },
+ "münchen": {
+  "stadt": "München",
+  "stelle": "Baureferat – Hauptabteilung Tiefbau, Straßenunterhalt und -betrieb (Landeshauptstadt München)",
+  "rolle": "Stadt München — kommunale Straßen",
+  "email": "strassenunterhalt.bau@muenchen.de",
+  "telefon": "+49 89 233-761201",
+  "adresse": "Friedenstraße 40, 81671 München"
+ },
+ "münster": {
+  "stadt": "Münster",
+  "stelle": "Amt für Mobilität und Tiefbau",
+  "rolle": "Stadt Münster — kommunale Straßen",
+  "email": "tiefbauamt@stadt-muenster.de",
+  "telefon": "0251 492-6631 oder 0251 492-6601",
+  "adresse": "Stadthaus 3, Albersloher Weg 33, 48155 Münster"
+ },
+ "duisburg": {
+  "stadt": "Duisburg",
+  "stelle": "Amt für Stadtentwicklung und Projektmanagement (Amt 61)",
+  "rolle": "Stadt Duisburg — kommunale Straßen",
+  "email": "stadtentwicklung@stadt-duisburg.de",
+  "telefon": "0203 283-3666",
+  "adresse": "Stadthaus, Eingang Moselstraße, Friedrich-Albert-Lange-Platz 7, 47051 Duisburg"
+ },
+ "aachen": {
+  "stadt": "Aachen",
+  "stelle": "Stadt Aachen – Fachbereich Tiefbau (FB 68/500), Straßenbau",
+  "rolle": "Stadt Aachen — kommunale Straßen",
+  "email": "strassenbau@mail.aachen.de",
+  "telefon": "0241 432-68531",
+  "adresse": "Verwaltungsgebäude Am Marschiertor, Lagerhausstraße 20, 52064 Aachen"
+ },
+ "dortmund": {
+  "stadt": "Dortmund",
+  "stelle": "Stadt Dortmund - Tiefbauamt",
+  "rolle": "Stadt Dortmund — kommunale Straßen",
+  "email": "tiefbauamt@dortmund.de",
+  "telefon": "+49 231 50-10100",
+  "adresse": "Königswall 14, 44137 Dortmund"
+ },
+ "bonn": {
+  "stadt": "Bonn",
+  "stelle": "Tiefbauamt (Amt 66), Bundesstadt Bonn",
+  "rolle": "Stadt Bonn — kommunale Straßen",
+  "email": "tiefbauamt@bonn.de",
+  "telefon": "0228 770",
+  "adresse": "Stadthaus, Berliner Platz 2, 53111 Bonn"
+ },
+ "karlsruhe": {
+  "stadt": "Karlsruhe",
+  "stelle": "Tiefbauamt",
+  "rolle": "Stadt Karlsruhe — kommunale Straßen",
+  "email": "tba@karlsruhe.de",
+  "telefon": "0721 133-6601",
+  "adresse": "Kaiserallee 4, 76133 Karlsruhe"
+ },
+ "freiburg": {
+  "stadt": "Freiburg im Breisgau",
+  "stelle": "Garten- und Tiefbauamt (GuT)",
+  "rolle": "Stadt Freiburg im Breisgau — kommunale Straßen",
+  "email": "GuT@freiburg.de",
+  "telefon": "0761 201-4600",
+  "adresse": "Fehrenbachallee 12, 79106 Freiburg"
+ },
+ "ingolstadt": {
+  "stadt": "Ingolstadt",
+  "stelle": "Tiefbauamt",
+  "rolle": "Stadt Ingolstadt — kommunale Straßen",
+  "email": "tiefbauamt@ingolstadt.de",
+  "telefon": "0841 305-2340",
+  "adresse": "Ludwigstraße 34, 85049 Ingolstadt"
+ },
+ "köln": {
+  "stadt": "Köln",
+  "stelle": "Amt für Straßen und Radwegebau",
+  "rolle": "Stadt Köln — kommunale Straßen",
+  "email": "strassen-radwegebau@stadt-koeln.de",
+  "telefon": "0221 221-27813",
+  "adresse": "Stadthaus Deutz - Westgebäude, Willy-Brandt-Platz 2, 50679 Köln"
+ },
+ "düsseldorf": {
+  "stadt": "Düsseldorf",
+  "stelle": "Amt für Verkehrsmanagement (Amt 66), Landeshauptstadt Düsseldorf — zuständig für Straßenbau und -unterhaltung der städtischen Straßen; operative Untereinheit: Abteilung 66/3 – Straßenbau",
+  "rolle": "Stadt Düsseldorf — kommunale Straßen",
+  "email": "verkehrsmanagement@duesseldorf.de",
+  "telefon": "0211 8991",
+  "adresse": "Auf'm Hennekamp 45, 40225 Düsseldorf"
+ },
+ "stuttgart": {
+  "stadt": "Stuttgart",
+  "stelle": "Tiefbauamt mit Eigenbetrieb Stadtentwässerung (SES), Technisches Referat, Landeshauptstadt Stuttgart",
+  "rolle": "Stadt Stuttgart — kommunale Straßen",
+  "email": "poststelle.tiefbauamt@stuttgart.de",
+  "telefon": "0711 21680082",
+  "adresse": "Hohe Straße 25, 70176 Stuttgart"
+ },
+ "leipzig": {
+  "stadt": "Leipzig",
+  "stelle": "Mobilitäts- und Tiefbauamt (Amt 66, Stadt Leipzig; vormals Verkehrs- und Tiefbauamt)",
+  "rolle": "Stadt Leipzig — kommunale Straßen",
+  "email": "mta@leipzig.de",
+  "telefon": "0341 123-7641 / 0341 123-7631",
+  "adresse": "Technisches Rathaus, Haus C, Prager Straße 118-120, 04317 Leipzig (Postanschrift: Stadt Leipzig, 04092 Leipzig)"
+ },
+ "dresden": {
+  "stadt": "Dresden",
+  "stelle": "Straßen- und Tiefbauamt (Landeshauptstadt Dresden) — Straßenbaubehörde, Straßenbaulastträger und Straßenverkehrsbehörde",
+  "rolle": "Stadt Dresden — kommunale Straßen",
+  "email": "strassen-tiefbauamt@dresden.de",
+  "telefon": "0351 4884300",
+  "adresse": "Waisenhausstraße 14, 01069 Dresden"
+ },
+ "rostock": {
+  "stadt": "Rostock",
+  "stelle": "Tiefbauamt (Amt für Verkehrsanlagen) der Hanse- und Universitätsstadt Rostock — Straßenbaulastträger für nahezu alle öffentlichen Verkehrsflächen der Stadt; Abteilung Verkehrsanlagenbau und -unterhaltung, Straßenverwaltung und Genehmigungen",
+  "rolle": "Stadt Rostock — kommunale Straßen",
+  "email": "strassenaufsicht@rostock.de",
+  "telefon": "0381 381-6600",
+  "adresse": "Holbeinplatz 14, 18069 Rostock"
+ },
+ "osnabrück": {
+  "stadt": "Osnabrück",
+  "stelle": "Osnabrücker ServiceBetrieb (OSB) – Straßenunterhaltung",
+  "rolle": "Stadt Osnabrück — kommunale Straßen",
+  "email": "osb@osnabrueck.de",
+  "telefon": "0541 323-3300",
+  "adresse": "Hafenringstraße 12, 49090 Osnabrück"
+ },
+ "heidelberg": {
+  "stadt": "Heidelberg",
+  "stelle": "Tiefbauamt (Stadt Heidelberg) — Straßenbaulastträger des Stadtkreises für Neubau, Unterhaltung und Instandsetzung öffentlicher Verkehrsflächen (Straßen, Rad- und Gehwege)",
+  "rolle": "Stadt Heidelberg — kommunale Straßen",
+  "email": "tiefbauamt@heidelberg.de",
+  "telefon": "06221 58-27000",
+  "adresse": "Bergheimer Straße 111, 69115 Heidelberg"
+ },
+ "berlin": {
+  "stadt": "Berlin",
+  "stelle": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt — Verkehrsmanagement (Abt. VI A 5), Genehmigung von Großraum- und Schwertransporten",
+  "rolle": "Stadt Berlin — kommunale Straßen",
+  "email": "schwertransporte@SenMVKU.berlin.de",
+  "telefon": "",
+  "adresse": "Columbiadamm 10, 12101 Berlin"
+ },
+ "nürnberg": {
+  "stadt": "Nürnberg",
+  "stelle": "Servicebetrieb Öffentlicher Raum (SÖR) — Straßenbaulastträger der Stadt Nürnberg (vormals Tiefbauamt)",
+  "rolle": "Stadt Nürnberg — kommunale Straßen",
+  "email": "",
+  "telefon": "0911 / 231-7637",
+  "adresse": "Sulzbacher Straße 2-6, 90489 Nürnberg"
+ },
+ "hannover": {
+  "stadt": "Hannover",
+  "stelle": "Fachbereich Tiefbau der Landeshauptstadt Hannover (Fachbereich 66)",
+  "rolle": "Stadt Hannover — kommunale Straßen",
+  "email": "buergerservice-tiefbau@hannover-stadt.de",
+  "telefon": "+49 511 168-41122",
+  "adresse": "Rudolf-Hillebrecht-Platz 1, 30159 Hannover"
+ },
+ "wuppertal": {
+  "stadt": "Wuppertal",
+  "stelle": "Stadt Wuppertal – Ressort Straßen und Verkehr (104), Abteilung Straßenbau (104.2)",
+  "rolle": "Stadt Wuppertal — kommunale Straßen",
+  "email": "baustellen@stadt.wuppertal.de",
+  "telefon": "0202 563-0",
+  "adresse": "Johannes-Rau-Platz 1, 42275 Wuppertal"
+ }
+}
