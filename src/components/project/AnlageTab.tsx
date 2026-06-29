@@ -3,14 +3,14 @@
 
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { AlertTriangle, ArrowRight, CalendarRange, Check, Loader2, Play, Truck } from "lucide-react"
+import { AlertTriangle, ArrowRight, CalendarRange, Check, CheckCircle2, Loader2, Play, Route as RouteIcon, Truck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { TransportDataForm } from "./TransportDataForm"
 import { PublishCard } from "./PublishCard"
-import { visibleFindings } from "./findingMeta"
+import { SEVERITY_META, SEVERITY_ORDER, visibleFindings } from "./findingMeta"
 import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
@@ -31,6 +31,10 @@ export function AnlageTab({ project }: { project: Project }) {
   const fehltHoehe = !Number.isFinite(t?.hoehe) || (t?.hoehe ?? 0) <= 0
   const fehltGewicht = !Number.isFinite(t?.gesamtgewicht) || (t?.gesamtgewicht ?? 0) <= 0
   const fehltMass = fehltHoehe || fehltGewicht
+
+  // Kennzahlen für den „abgeschlossen"-Zustand: Funde nach Severity aufgeschlüsselt (farbige Chips).
+  const fertigeFunde = project.status === "fertig" ? visibleFindings(project.findings) : []
+  const sevCounts = SEVERITY_ORDER.map((sev) => ({ sev, n: fertigeFunde.filter((f) => f.severity === sev).length }))
 
   const onRun = () => {
     if (!routeReady) {
@@ -260,26 +264,79 @@ export function AnlageTab({ project }: { project: Project }) {
             </div>
           ) : (
             <>
-              <div className="text-sm text-neutral-600">
-                {project.status === "fertig" ? (
-                  <span>
-                    Auswertung abgeschlossen ·{" "}
-                    <strong className="text-neutral-800">{visibleFindings(project.findings).length} Funde</strong>{" "}
-                    auf {project.distanzKm?.toLocaleString("de-DE")} km
-                    {project.routes.length > 1 ? ` (${project.routes.length} Strecken)` : ""}
-                  </span>
-                ) : routeReady ? (
-                  "Bereit zur Auswertung."
-                ) : (
-                  "Oben eine Strecke anlegen, um die Auswertung zu starten."
-                )}
-              </div>
+              {project.status === "fertig" ? (
+                <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+                  {/* Erfolg + Kennzahlen */}
+                  <div className="flex min-w-0 flex-col gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100">
+                        <CheckCircle2 className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-neutral-900">Auswertung abgeschlossen</p>
+                        <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-neutral-400">
+                          <span className="inline-flex items-center gap-1">
+                            <RouteIcon className="h-3 w-3" />
+                            {project.distanzKm?.toLocaleString("de-DE")} km
+                          </span>
+                          {project.routes.length > 1 ? <span>· {project.routes.length} Strecken</span> : null}
+                          <span>· Stand {formatStampDE(project.updatedAt)}</span>
+                        </p>
+                      </div>
+                    </div>
+                    {/* Severity-Aufschlüsselung als farbige Chips — Funde auf einen Blick nach Schweregrad. */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {fertigeFunde.length === 0 ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                          <Check className="h-3.5 w-3.5" /> Keine Funde
+                        </span>
+                      ) : (
+                        sevCounts
+                          .filter((c) => c.n > 0)
+                          .map(({ sev, n }) => (
+                            <span
+                              key={sev}
+                              className={cn(
+                                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums",
+                                SEVERITY_META[sev].soft,
+                              )}
+                            >
+                              <span className={cn("h-1.5 w-1.5 rounded-full", SEVERITY_META[sev].dot)} />
+                              {n} {SEVERITY_META[sev].label}
+                            </span>
+                          ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Aktionen */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="outline" onClick={() => navigate(`/projekte/${project.id}/karte`)}>
+                      Ergebnis öffnen <ArrowRight className="h-4 w-4" />
+                    </Button>
+                    <Button onClick={onRun} disabled={!routeReady}>
+                      <Play className="h-4 w-4" /> Erneut auswerten
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="text-sm text-neutral-600">
+                    {routeReady ? "Bereit zur Auswertung." : "Oben eine Strecke anlegen, um die Auswertung zu starten."}
+                  </div>
+                  <div className="flex flex-wrap items-start justify-end gap-2">
+                    <Button className="min-w-[210px]" onClick={onRun} disabled={!routeReady}>
+                      <Play className="h-4 w-4" /> Auswertung starten
+                    </Button>
+                  </div>
+                </>
+              )}
               {/* T-222: Weicher Hinweis (nicht-blockierend) wenn Höhe/Gewicht fehlen — die Auswertung
                   kann dann Durchfahrtshöhen/Traglastgrenzen nicht prüfen. */}
               {fehltMass && routeReady ? (
                 <div
                   role="alert"
-                  className="mb-2 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+                  className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
                 >
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>
@@ -292,27 +349,6 @@ export function AnlageTab({ project }: { project: Project }) {
                   </span>
                 </div>
               ) : null}
-              {/* Aktionen nebeneinander: „Ergebnis öffnen" links, „Erneut auswerten" rechts
-                  (etwas breiter). „Letzter Stand" hängt direkt unter dem Auswerten-Button,
-                  im selben relativen Format wie der Header-Sync (heute/gestern/Datum). */}
-              <div className="flex flex-wrap items-start justify-end gap-2">
-                {project.status === "fertig" ? (
-                  <Button variant="outline" onClick={() => navigate(`/projekte/${project.id}/karte`)}>
-                    Ergebnis öffnen <ArrowRight className="h-4 w-4" />
-                  </Button>
-                ) : null}
-                <div className="flex flex-col gap-1">
-                  <Button className="min-w-[210px]" onClick={onRun} disabled={!routeReady}>
-                    <Play className="h-4 w-4" />
-                    {project.status === "fertig" ? "Erneut auswerten" : "Auswertung starten"}
-                  </Button>
-                  {project.status === "fertig" ? (
-                    <p className="whitespace-nowrap text-center text-xs text-neutral-400">
-                      Letzter Stand: {formatStampDE(project.updatedAt)}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
             </>
           )}
         </CardContent>
