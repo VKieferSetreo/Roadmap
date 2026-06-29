@@ -5,7 +5,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Copy, Globe2, Link2, Lock, LockOpen, Pencil, Trash2 } from "lucide-react"
+import { Check, Copy, Globe2, Link2, Lock, LockOpen, PowerOff } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Input, Label } from "@/components/ui/Input"
@@ -54,11 +54,11 @@ export function PublishCard({ project }: { project: Project }) {
 
   const remove = async () => {
     // T-235: Widerrufen tötet einen ggf. an Kunden/Behörden verteilten Link sofort → bestätigen.
-    if (!window.confirm("Freigabe wirklich löschen? Der bereits geteilte Link wird sofort unerreichbar.")) return
+    if (!window.confirm("Freigabe wirklich offline schalten? Der bereits geteilte Link wird sofort unerreichbar.")) return
     setBusy(true)
     try {
       await revokeShare(project.id)
-      toast.success("Freigabe gelöscht. Der Link ist nicht mehr erreichbar.")
+      toast.success("Freigabe offline geschaltet. Der Link ist nicht mehr erreichbar.")
     } catch {
       toast.error("Freigabe konnte nicht gelöscht werden.")
     } finally {
@@ -77,7 +77,7 @@ export function PublishCard({ project }: { project: Project }) {
     <div className="flex h-full flex-col gap-2.5">
       {share ? (
         <>
-          {/* Kopfzeile mit Aktionen rechts — kompakt, umbruchsicher */}
+          {/* Kopfzeile: Titel links, Live/Offline-Badge rechts (Aktionen jetzt als Button-Reihe unten). */}
           <div className="flex items-center gap-2">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
               {/* Globe inline (kein grünes Tile) — wie die anderen Karten-Header (Max 2026-06-29). */}
@@ -94,51 +94,34 @@ export function PublishCard({ project }: { project: Project }) {
                 </span>
               )}
             </div>
-            {/* Live/Offline-Badge links neben den Icon-Aktionen, gleiche Höhe (h-7) wie die Dauer-Marke. */}
             {statusBadge}
-            <button
-              type="button"
-              onClick={() => setDialogOpen(true)}
-              disabled={busy}
-              title="Bearbeiten"
-              aria-label="Freigabe bearbeiten"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:opacity-50"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => void remove()}
-              disabled={busy}
-              title="Löschen"
-              aria-label="Freigabe löschen"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch disabled:opacity-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
           </div>
 
-          {/* URL + Kopieren */}
-          <div className="flex items-center gap-2">
-            <code
-              title={share.url}
-              className="min-w-0 flex-1 truncate rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 font-mono text-xs text-neutral-700"
-            >
-              {share.url}
-            </code>
+          {/* Freigabe-Link über die volle Breite, gleiche Höhe (h-9) wie die Datums-/Eingabefelder. */}
+          <code
+            title={share.url}
+            className="flex h-9 w-full items-center truncate rounded-md border border-neutral-200 bg-neutral-50 px-3 font-mono text-xs text-neutral-700"
+          >
+            {share.url}
+          </code>
+
+          {/* Drei Aktionen über die volle Breite: Passwort ändern (Maske) · Link kopieren · Offline schalten. */}
+          <div className="grid grid-cols-3 gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)} disabled={busy} className="w-full">
+              <Lock className="h-3.5 w-3.5 shrink-0" /> Passwort ändern
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => void copy()} disabled={busy} className="w-full">
+              {copied ? <Check className="h-3.5 w-3.5 shrink-0 text-primary-600" /> : <Copy className="h-3.5 w-3.5 shrink-0" />}
+              {copied ? "Kopiert" : "Link kopieren"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => void copy()}
-              aria-label="Link kopieren"
-              className="shrink-0"
+              onClick={() => void remove()}
+              disabled={busy}
+              className="w-full text-severity-kritisch hover:border-severity-kritisch/30 hover:bg-severity-kritisch-bg hover:text-severity-kritisch"
             >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-primary-600" />
-              ) : (
-                <Copy className="h-3.5 w-3.5" />
-              )}
-              {copied ? "Kopiert" : "Kopieren"}
+              <PowerOff className="h-3.5 w-3.5 shrink-0" /> Offline schalten
             </Button>
           </div>
         </>
