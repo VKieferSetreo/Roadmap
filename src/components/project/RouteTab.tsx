@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { DropZone } from "@/components/upload/DropZone"
-import { PlaceAutocomplete } from "./PlaceAutocomplete"
 import { MapPointPicker } from "./MapPointPicker"
 import { RoutePreview } from "./RoutePreview"
 import { RouteEditDialog } from "./RouteEditDialog"
@@ -26,11 +25,12 @@ import { ApiError } from "@/api/client"
 import type { Project, ProjectRoute, RoutePoint, RouteSource } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
-// #9: Ein Start/Ziel/Zwischenpunkt. label = Anzeige + Geocoding-Text; lat/lng = exakte Pin-Position.
+// #9: Ein Start/Ziel/Zwischenpunkt. label = Anzeige (Reverse-Geocode des Pins); lat/lng = exakte Pin-Position.
 type SzPoint = { id: string; label: string; lat: number | null; lng: number | null }
 const makeSzPoint = (): SzPoint => ({ id: crypto.randomUUID(), label: "", lat: null, lng: null })
-// Routing-Wert: exakte Koordinate (Picker) als "lat,lng", sonst der Label-Text (Backend geokodiert).
-const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : p.label.trim())
+// T-611 (Max): Start/Ziel NUR per Karten-Pin — keine Text-/Adresseingabe mehr. Routing-Wert = exakte
+// Koordinate "lat,lng"; ohne gesetzten Pin leer (→ Validierung verlangt einen Pin).
+const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.lng}` : "")
 
 // VEMAGS-Upload reaktiviert (2026-06-25): neuer Extraktor + Bereinigung (Schlenker/Fehl-Geocodes raus,
 // Fahrbahnseiten-bearings) ist live. VEMAGS-Strecken kommen UNGEPRÜFT rein und müssen über das
@@ -222,9 +222,7 @@ export function RouteTab({ project }: { project: Project }) {
     }
   }
 
-  // #9 Punkt-Handler. Tippen → Label setzen + Pin-Koordinate verwerfen (re-geocoden). Picker → Label+Koord.
-  const setPointLabel = (i: number, label: string) =>
-    setSzPoints((ps) => ps.map((p, idx) => (idx === i ? { ...p, label, lat: null, lng: null } : p)))
+  // T-611 (Max): Punkt wird AUSSCHLIESSLICH per Karten-Picker gesetzt (Label = Reverse-Geocode + Koord).
   const setPointFromPicker = (i: number, r: { lat: number; lng: number; label: string }) =>
     setSzPoints((ps) => ps.map((p, idx) => (idx === i ? { ...p, label: r.label, lat: r.lat, lng: r.lng } : p)))
   const addViaAfter = (i: number) => setSzPoints((ps) => [...ps.slice(0, i + 1), makeSzPoint(), ...ps.slice(i + 1)])
@@ -234,7 +232,7 @@ export function RouteTab({ project }: { project: Project }) {
     const startVal = szValue(szPoints[0])
     const zielVal = szValue(szPoints[szPoints.length - 1])
     if (!startVal || !zielVal) {
-      toast.error("Bitte Start und Ziel angeben.")
+      toast.error("Bitte Start und Ziel auf der Karte setzen.")
       return
     }
     const vias = szPoints.slice(1, -1).map(szValue).filter(Boolean)
@@ -428,20 +426,20 @@ export function RouteTab({ project }: { project: Project }) {
           ) : (
             <div className="flex flex-col gap-1">
               <p className="mb-1.5 text-xs text-neutral-500">
-                Start und Ziel als Ort oder Adresse eingeben; die Route wird über das Straßennetz
-                berechnet und als Strecke angelegt. Zwischen zwei Feldern erscheint beim Überfahren
-                ein Plus, mit dem sich ein Zwischenpunkt einfügen lässt.
+                Start und Ziel direkt auf der Karte als Pin setzen — die Route wird über das Straßennetz
+                berechnet und als Strecke angelegt. Zwischen zwei Punkten erscheint beim Überfahren ein
+                Plus, mit dem sich ein Zwischenpunkt einfügen lässt.
               </p>
-              {/* #9: Start/Ziel untereinander; Plus je Lücke fügt einen Zwischenpunkt ein. Pro Punkt
-                  Ortssuche ODER Karten-Pin (genaue Position). */}
+              {/* T-611 (Max): Start/Ziel NUR per Karten-Pin — keine Text-/Adresseingabe. Jedes Feld öffnet
+                  den Karten-Picker; gesetzte Pins zeigen die Adresse (Reverse-Geocode) oder die Koordinate. */}
               {szPoints.map((p, i) => {
                 const isStart = i === 0
                 const isZiel = i === szPoints.length - 1
                 const ph = isStart
-                  ? "Start (Ort oder Adresse)"
+                  ? "Start auf der Karte setzen"
                   : isZiel
-                    ? "Ziel (Ort oder Adresse)"
-                    : "Zwischenpunkt (Ort oder Adresse)"
+                    ? "Ziel auf der Karte setzen"
+                    : "Zwischenpunkt auf der Karte setzen"
                 return (
                   <div key={p.id}>
                     <div className="flex items-center gap-2">
@@ -452,24 +450,20 @@ export function RouteTab({ project }: { project: Project }) {
                       ) : (
                         <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-neutral-400" />
                       )}
-                      <PlaceAutocomplete
-                        className="flex-1"
-                        value={p.label}
-                        onChange={(v) => setPointLabel(i, v)}
-                        placeholder={ph}
-                        disabled={szBusy}
-                      />
                       <button
                         type="button"
                         onClick={() => setPickerIdx(i)}
                         disabled={szBusy}
                         title="Auf der Karte setzen"
                         className={cn(
-                          "rounded-lg border px-2 py-2 transition hover:bg-neutral-50",
-                          p.lat != null ? "border-primary-300 text-primary-600" : "border-neutral-200 text-neutral-500",
+                          "flex flex-1 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition hover:bg-neutral-50",
+                          p.lat != null ? "border-primary-300 text-neutral-900" : "border-neutral-200 text-neutral-400",
                         )}
                       >
-                        <MapPinned className="h-4 w-4" />
+                        <MapPinned className={cn("h-4 w-4 shrink-0", p.lat != null ? "text-primary-600" : "text-neutral-400")} />
+                        <span className="truncate">
+                          {p.lat != null ? (p.label || `${p.lat.toFixed(5)}, ${(p.lng as number).toFixed(5)}`) : ph}
+                        </span>
                       </button>
                       {!isStart && !isZiel ? (
                         <button
