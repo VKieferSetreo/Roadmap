@@ -12,6 +12,7 @@ import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { DropZone } from "@/components/upload/DropZone"
 import { MapPointPicker } from "./MapPointPicker"
 import { RoutePreview } from "./RoutePreview"
+import { RoutePreviewMap } from "@/components/map/RoutePreviewMap"
 import { RouteEditDialog } from "./RouteEditDialog"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
@@ -619,13 +620,22 @@ export function RouteTab({ project }: { project: Project }) {
       </Card>
 
       {pendingFile ? (
-        <Dialog open onClose={() => setPendingFile(null)} size="sm">
+        <Dialog open onClose={() => setPendingFile(null)} size="default">
           <DialogHeader
-            title="Strecke benennen"
-            subtitle={`${pendingFile.fileName ?? SOURCE_LABEL[pendingFile.source]} · ${pendingFile.points.length.toLocaleString("de-DE")} Punkte`}
+            title="Strecke prüfen & benennen"
+            subtitle={`${pendingFile.fileName ?? SOURCE_LABEL[pendingFile.source]} · ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km`}
             onClose={() => setPendingFile(null)}
           />
           <div className="px-6 py-5">
+            {/* T-611 (Max): Vorschau der geladenen Strecke — der Nutzer sieht Start/Ziel/Vias und fängt
+                eine fehlerhafte Google-Link-Extraktion ab, BEVOR die Strecke angelegt wird. */}
+            <div className="mb-2 overflow-hidden rounded-lg border border-neutral-200">
+              <RoutePreviewMap points={pendingFile.points} className="h-60 w-full" />
+            </div>
+            <p className="mb-4 text-xs text-neutral-500">
+              Vorschau der geladenen Strecke — bitte prüfen, dass Start, Ziel und Zwischenstopps stimmen.
+              {pendingFile.grob ? " Hinweis: nur grobe Luftlinie (kein Straßenverlauf)." : ""}
+            </p>
             <Label htmlFor="route-name">Name der Strecke</Label>
             <Input
               id="route-name"
