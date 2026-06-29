@@ -468,7 +468,7 @@ export function stripHtml(text) {
 export function makeNormalized({
   externeId, kategorie, name = null, beschreibung = null, lat, lng,
   strassenRef = null, attrs = {}, gueltigVon = null, gueltigBis = null, realerStart = null,
-  quelleName = null, quelleUrl = null, geom = null,
+  quelleName = null, quelleUrl = null, geom = null, refAusBeschreibung = true,
 }) {
   let nlat = lat != null ? Number(lat) : null
   let nlng = lng != null ? Number(lng) : null
@@ -504,7 +504,14 @@ export function makeNormalized({
   // (offen lassen) statt ein „endet vor Beginn"-Hindernis durchzureichen. Greift bei JEDEM Import.
   if (vonFinal != null && bisFinal != null && dateOnly(vonFinal) > dateOnly(bisFinal)) bisFinal = null
   let refFinal = strassenRef
-  if ((refFinal == null || refFinal === "") && ex.strassenRef) { refFinal = ex.strassenRef; extrahiert = true }
+  // T-618: bei reinen Stadt-/Gemeinde-Quellen (refAusBeschreibung:false) darf die klassifizierte
+  // Straßen-Ref NUR aus dem Namen kommen, nicht aus der Beschreibung. Im Beschreibungs-Freitext ist ein
+  // "A 5"/"B 535"/"L 594" dort regelmäßig eine Umleitungs- ("…Ziel Innenstadt über A 5"), Querstraßen-
+  // ("zwischen Leimer Straße und L 594") oder Brücke-über-Referenz — nie die Straße des Funds selbst.
+  // Sonst landet eine innerörtliche Baustelle fälschlich auf der Autobahn (Feind-Audit #648 Dossenheimer
+  // Landstraße → A5 → Autobahn-GmbH-Kontakt). Eine Ref IM Namen ("Speyerer Straße / L 600a") bleibt erhalten.
+  const exRef = refAusBeschreibung ? ex.strassenRef : extractStammdaten(name || "").strassenRef
+  if ((refFinal == null || refFinal === "") && exRef) { refFinal = exRef; extrahiert = true }
 
   const besch = beschreibung != null ? String(beschreibung) : null
   return {

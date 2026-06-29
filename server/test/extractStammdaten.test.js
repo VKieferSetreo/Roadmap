@@ -174,6 +174,21 @@ describe("makeNormalized — Strip-down-Integration", () => {
     expect(o.attrs.maxGewichtT).toBe(7.5) // echter Wert bleibt
     expect(o.beschreibung).toBe("Hinweis Link & mehr")
   })
+
+  // T-618: reine Stadt-Quelle (refAusBeschreibung:false) — Ref NUR aus dem Namen, nicht aus dem
+  // Umleitungs-/Querstraßen-Freitext. Feind-Audit #648: "Dossenheimer Landstraße" + "…über A 5" → A5.
+  it("refAusBeschreibung:false — Beschreibungs-Ref (Umleitung) wird ignoriert, Name-Ref bleibt", () => {
+    const base = { externeId: "h1", kategorie: "baustelle", lat: 49.43, lng: 8.68, strassenRef: null, quelleName: "Heidelberg" }
+    // Umleitung im Text → kein A5 (war der Bug)
+    const detour = makeNormalized({ ...base, name: "Dossenheimer Landstraße", beschreibung: "Umleitung mit Ziel Innenstadt über A 5", refAusBeschreibung: false })
+    expect(detour.strassenRef).toBeNull()
+    // Ref IM Namen → bleibt erhalten
+    const named = makeNormalized({ ...base, name: "Speyerer Straße / L 600a", beschreibung: "im Bereich der Überführung der B535", refAusBeschreibung: false })
+    expect(named.strassenRef).toBe("L600A")
+    // Default (Autobahn-Connector): Beschreibungs-Ref MUSS weiter greifen
+    const def = makeNormalized({ ...base, name: "Baustelle", beschreibung: "Vollsperrung der A99 Richtung Nord" })
+    expect(def.strassenRef).toBe("A99")
+  })
 })
 
 describe("dedupeObstacles (genereller Dublettenfilter)", () => {

@@ -61,6 +61,7 @@ export const heidelbergBaustellenConnector = {
         lat: Number.isFinite(lat) ? lat : null,
         lng: Number.isFinite(lng) ? lng : null,
         strassenRef: null,
+        refAusBeschreibung: false, // T-618: reine Stadt-Quelle → Ref nur aus Name, nicht aus Umleitungstext ("…über A 5")
         attrs: {},
         gueltigVon: zeit.von,
         gueltigBis: zeit.bis,
