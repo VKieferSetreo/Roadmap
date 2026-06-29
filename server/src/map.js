@@ -2,6 +2,7 @@
 // (SPEC-backend-v2.md — das FE wird parallel 1:1 dagegen gebaut).
 
 import { cleanText, toIso, toIsoDate } from "./util.js"
+import { resolveKontakt } from "./engine/zustaendigkeitResolver.js"
 
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 
@@ -38,6 +39,8 @@ export function rowToProject(row, findings = [], share = null) {
 }
 
 export function rowToFinding(row) {
+  // T-614: zuständige Stelle + Kontakt zur Anzeige-Zeit auflösen (Stufe 1: Autobahn → GST-NL).
+  const kontakt = resolveKontakt({ lat: row.lat, lng: row.lng, strassenRef: row.strassen_ref })
   return {
     id: row.id,
     key: findingKey(row), // stabile Identität für Ausblenden (FE echot sie nur zurück)
@@ -57,6 +60,7 @@ export function rowToFinding(row) {
     ...(row.gueltig_bis != null && { gueltigBis: toIsoDate(row.gueltig_bis) }),
     ...(row.quelle != null && { quelle: row.quelle }),
     ...(row.zustaendig != null && { zustaendig: row.zustaendig }),
+    ...(kontakt && { kontakt }),
     ...(row.geom != null && { geom: row.geom }),
   }
 }

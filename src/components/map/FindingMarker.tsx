@@ -5,7 +5,7 @@
 import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
 import { EyeOff, Plus, Phone, Trash2, User } from "lucide-react"
-import type { Finding, FindingKontakt } from "@/types/domain"
+import type { Finding } from "@/types/domain"
 import {
   EIGEN_BADGE,
   EIGEN_COLOR,
@@ -23,20 +23,6 @@ import { geomMidpoint } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const SEV_RANK: Record<string, number> = { kritisch: 3, warnung: 2, hinweis: 1 }
-
-// PREVIEW (T-613 Stufe 1): solange der Zuständigkeits-Resolver noch keine echten Daten an die
-// Funde hängt, zeigt die Kontakt-Kachel auf AUTOBAHN-Funden die echte zuständige GST-Niederlassung
-// als Beispiel (Region-genau folgt aus dem ArcGIS-Layer; Telefon/Adresse aus dem laufenden Scrape).
-// Sobald f.kontakt vom Backend kommt, hat das Vorrang und diese Vorschau entfällt.
-const PREVIEW_GST_KONTAKT: FindingKontakt = {
-  stelle: "Autobahn GmbH – Niederlassung Rheinland",
-  rolle: "Großraum- & Schwertransport (GST)",
-  email: "gst.rheinland@autobahn.de",
-  telefon: "+49 2151 36807-0",
-  adresse: "Willy-Brandt-Platz 2, 47805 Krefeld",
-}
-// Autobahn-Bezug am Straßenref/Titel erkennen (A7, A 7, "BAB A1", "(A99)" …), ohne B96A o.ä. falsch zu treffen.
-const istAutobahnRef = (s: string) => /(?:^|[\s(\/])A ?\d/.test(s)
 
 /** Popup-Inhalt EINES Funds (eine Richtung/Variante) — gemeinsames FindingCard-Layout. */
 function FindingDetail({
@@ -170,11 +156,8 @@ function FindingMarkerImpl({
   // gegatete API/kein Posten. App-Pfad (canChat) bleibt unverändert.
   const shareChat = current.publicChat
   const showChat = canChat || shareChat !== undefined
-  // Zuständigkeits-Kachel: echter Resolver-Kontakt (primary.kontakt) hat Vorrang; sonst auf
-  // Autobahn-Funden die GST-Vorschau (s. PREVIEW_GST_KONTAKT). Sonst keine Kachel.
-  const kontakt: FindingKontakt | undefined =
-    primary.kontakt ??
-    (istAutobahnRef(`${primary.strassenRef ?? ""} | ${primary.titel ?? ""}`) ? PREVIEW_GST_KONTAKT : undefined)
+  // Zuständigkeits-Kachel: Kontakt der zuständigen Stelle aus dem Backend-Resolver (T-614).
+  const kontakt = primary.kontakt
 
   // Ohne endliche Koordinaten keinen Marker setzen: ein [NaN,NaN]-Marker bricht Leaflets
   // Zoom-Animation und lässt andere Marker beim Zoomen verschwinden (spawnen/despawnen).
