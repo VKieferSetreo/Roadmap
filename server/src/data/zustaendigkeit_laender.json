@@ -1,112 +1,98 @@
 {
- "Baden-Württemberg": {
-  "stelle": "Ministerium für Verkehr Baden-Württemberg",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
-  "email": "poststelle@vm.bwl.de",
-  "telefon": "0711 89686-0",
-  "adresse": "Dorotheenstraße 8, 70173 Stuttgart"
- },
- "Bayern": {
-  "stelle": "Oberste Baubehörde – Bayer. Staatsministerium für Wohnen, Bau und Verkehr (StMB)",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
-  "email": "poststelle@stmb.bayern.de",
-  "telefon": "089 2192-02",
-  "adresse": "Franz-Josef-Strauß-Ring 4, 80539 München"
- },
  "Berlin": {
   "stelle": "Senatsverwaltung fuer Mobilitaet, Verkehr, Klimaschutz und Umwelt (SenMVKU)",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "post@senmvku.berlin.de",
   "telefon": "(030) 9025-0",
   "adresse": "Am Koellnischen Park 3, 10179 Berlin"
  },
  "Brandenburg": {
   "stelle": "Landesbetrieb Straßenwesen Brandenburg (Zentrale / Betriebssitz)",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "LS-Kontakt@LS.Brandenburg.de",
   "telefon": "03342 249-1000",
   "adresse": "Lindenallee 51, 15366 Hoppegarten"
  },
  "Bremen": {
   "stelle": "Amt für Straßen und Verkehr (ASV) — Zentrale / Amtsleitung",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "office@asv.bremen.de",
   "telefon": "0421 361-89780",
   "adresse": "Herdentorsteinweg 49/50, 28195 Bremen"
  },
  "Hamburg": {
   "stelle": "Landesbetrieb Straßen, Brücken und Gewässer (LSBG) – Hauptgeschäftsstelle",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "info@lsbg.hamburg.de",
   "telefon": "040 428 28 0",
   "adresse": "Sachsenfeld 3-5, 20097 Hamburg (Postfach 101422, 20009 Hamburg)"
  },
  "Hessen": {
   "stelle": "Hessen Mobil – Zentrale Wiesbaden",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "info@mobil.hessen.de",
   "telefon": "+49 611 366-0",
   "adresse": "Dostojewskistraße 4-6, 65187 Wiesbaden"
  },
  "Mecklenburg-Vorpommern": {
   "stelle": "Landesamt für Straßenbau und Verkehr Mecklenburg-Vorpommern (LS M-V) — Zentrale",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "lsmv@sbv.mv-regierung.de",
   "telefon": "0385 588-80370",
   "adresse": "Blücherstraße 1 (Haus 5), 18055 Rostock (Landesbehördenzentrum Rostock)"
  },
  "Niedersachsen": {
   "stelle": "NLStBV – Zentrale Hannover",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "poststelle@nlstbv.niedersachsen.de",
   "telefon": "(0511) 3034-01",
   "adresse": "Göttinger Chaussee 76 A, 30453 Hannover"
  },
  "Nordrhein-Westfalen": {
   "stelle": "Straßen.NRW — Betriebssitz Gelsenkirchen",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "kontakt@strassen.nrw.de",
   "telefon": "0209 3808-0",
   "adresse": "Wildenbruchplatz 1, 45888 Gelsenkirchen"
  },
  "Rheinland-Pfalz": {
   "stelle": "LBM Zentrale",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "lbm@lbm.rlp.de",
   "telefon": "0261/3029-0",
   "adresse": "Friedrich-Ebert-Ring 14-20, 56068 Koblenz (Postanschrift: Postfach 20 13 65, 56013 Koblenz)"
  },
  "Saarland": {
   "stelle": "Landesbetrieb für Straßenbau (LfS) - Telefonzentrale / Poststelle",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "poststelle@lfs.saarland.de",
   "telefon": "+49 6821 100-0",
   "adresse": "Peter-Neuber-Allee 1, 66538 Neunkirchen"
  },
  "Sachsen": {
   "stelle": "Landesamt für Straßenbau und Verkehr (LASuV) — Zentrale Dresden",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "poststelle@lasuv.sachsen.de",
   "telefon": "0351 8139-0",
   "adresse": "Stauffenbergallee 24, 01099 Dresden"
  },
  "Sachsen-Anhalt": {
   "stelle": "LSBB Zentrale (Präsident / Poststelle)",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "Poststelle@lsbb.sachsen-anhalt.de",
   "telefon": "(0391) 567-2800",
   "adresse": "Hasselbachstraße 6, 39104 Magdeburg"
  },
  "Schleswig-Holstein": {
   "stelle": "LBV.SH Zentrale / Betriebssitz Kiel",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "Poststelle-KI@lbv-sh.landsh.de",
   "telefon": "0431/383-0",
   "adresse": "Mercatorstraße 9, 24106 Kiel"
  },
  "Thüringen": {
   "stelle": "Thüringer Landesamt für Bau und Verkehr (TLBV) — Zentrale / Hauptsitz Erfurt",
-  "rolle": "Zuständig für Bundes-/Landesstraßen",
+  "rolle": "Straßenbaulastträger (Bundes-/Landesstraßen)",
   "email": "poststelle@tlbv.thueringen.de",
   "telefon": "+49 361 57 4135 309",
   "adresse": "Hallesche Straße 15/16, 99085 Erfurt"

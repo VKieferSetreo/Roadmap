@@ -96,14 +96,16 @@ function state() {
 const normCity = (s) =>
   String(s || "")
     .toLowerCase()
-    .replace(/\(kreisfreie stadt\)|\(stadt\)|, stadt|landeshauptstadt|hansestadt|stadt /g, "")
+    .replace(/\(kreisfreie stadt\)|\(stadtkreis\)|\(stadt\)|, stadt|stadtkreis|landeshauptstadt|hansestadt|stadt /g, "")
     .replace(/im breisgau|i\. br\.|a\.d\..*$/g, "")
     .replace(/[^a-zäöüß]/g, "")
     .trim()
 
-// Straßenklasse am Ref erkennen.
+// Straßenklasse am Ref erkennen (Baulastträger-Systematik).
 const AUTOBAHN_RE = /(?:^|[\s(/])A ?\d/ // A7, A 7, "BAB A1", "(A99)"
-const BUNDES_LANDES_RE = /(?:^|[\s(/])[BL] ?\d/ // B27, L1100 (nicht "Lange Straße" / "Bahnhofstr.")
+const KREIS_RE = /(?:^|[\s(/])K ?\d/ // K9 — Kreis-Baulast (nicht erfasst → kein Kontakt)
+// Bundes-/Landes-/Staatsstraße (alle Land-Baulast bzw. Land-Auftragsverwaltung): B27, L1100, St 2406.
+const LAND_STR_RE = /(?:^|[\s(/])(?:B|L|St) ?\d/
 
 function clean(c) {
   // leere Felder weglassen
@@ -121,38 +123,52 @@ function clean(c) {
 export function resolveKontakt(f) {
   const lat = Number(f?.lat), lng = Number(f?.lng)
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
-  const ref = String(f?.strassenRef ?? "")
-  // Schnell-Ausstieg ohne Daten-Load, wenn der Ref gar keine relevante Straßenklasse trägt UND
-  // wir keinen Stadt-Check brauchen — der Stadt-Check (Tier 3) braucht aber den Kreis-Lookup, also
-  // laden wir nur, wenn überhaupt eine Auflösung möglich ist (immer der Fall mit gültiger Koordinate).
+  const ref = String(f?.strassenRef ?? "").trim()
   const { kreisIndex, blIndex, contactByNlz, laenderKontakt, staedteKontakt } = state()
 
-  // Tier 1: Autobahn → GST-Niederlassung
+  // Tiefbauamt der Stadt am Punkt (kreisfreie Großstadt) — falls erfasst, sonst null.
+  const stadtAmPunkt = () => {
+    const hit = lookup(kreisIndex, lat, lng)
+    return (hit && staedteKontakt[normCity(hit.kreis)]) || null
+  }
+
+  // Tier 1 — AUTOBAHN: zuständige GST-Niederlassung der Autobahn GmbH (für GST der Bundesautobahnen
+  // tatsächlich die Erlaubnisbehörde). Kein GST-Treffer → kein Kontakt.
   if (AUTOBAHN_RE.test(ref)) {
     const hit = lookup(kreisIndex, lat, lng)
     const c = hit && contactByNlz.get(hit.nlz)
-    if (c) {
-      return clean({
-        stelle: `Autobahn GmbH – ${c.niederlassung}`,
-        rolle: "Großraum- & Schwertransport (GST)",
-        email: c.email, telefon: c.telefon, adresse: c.adresse,
-      })
-    }
-    return null
+    return c
+      ? clean({
+          stelle: `Autobahn GmbH – ${c.niederlassung}`,
+          rolle: "Großraum- & Schwertransport (GST)",
+          email: c.email, telefon: c.telefon, adresse: c.adresse,
+        })
+      : null
   }
 
-  // Tier 2: Bundes-/Landesstraße → Landesbetrieb des Bundeslandes
-  if (BUNDES_LANDES_RE.test(ref)) {
+  // KREISSTRASSE: Baulast beim Landkreis (nicht erfasst) → bewusst KEIN Kontakt (lieber leer als falsch).
+  if (KREIS_RE.test(ref)) return null
+
+  // Bundes-/Landes-/Staatsstraße: in kreisfreier Großstadt = Ortsdurchfahrt → Gemeinde-Baulast
+  // (§ 5 Abs. 2 FStrG) → Stadt-Tiefbauamt; sonst der Straßenbaulastträger des Bundeslandes
+  // (BW/Bayern bewusst nicht hinterlegt → leer statt Ministeriums-Fehlangabe).
+  if (LAND_STR_RE.test(ref)) {
+    const stadt = stadtAmPunkt()
+    if (stadt) return clean(stadt)
     const land = lookup(blIndex, lat, lng)
-    const c = land && laenderKontakt[land]
-    if (c) return clean(c)
-    return null
+    const lc = land && laenderKontakt[land]
+    return lc ? clean(lc) : null
   }
 
-  // Tier 3: Gemeinde-/sonstige Straße → Tiefbauamt der Stadt (falls erfasst)
-  const hit = lookup(kreisIndex, lat, lng)
-  const c = hit && staedteKontakt[normCity(hit.kreis)]
-  if (c) return clean(c)
+  // Benannte (Gemeinde-)Straße: nicht-leerer Ref OHNE Straßenklasse → Stadt-Tiefbauamt, falls erfasst.
+  if (ref) {
+    const stadt = stadtAmPunkt()
+    return stadt ? clean(stadt) : null
+  }
+
+  // LEERER/unklassifizierbarer Ref → KEIN Kontakt. Verhindert die Fehlattribution bei Funden ohne
+  // Straßenref (z.B. BASt-/SEVAS-Brücken, Vollsperrungen), die sonst fälschlich ein Stadt-Tiefbauamt
+  // bekämen.
   return null
 }
 
