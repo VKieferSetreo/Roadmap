@@ -220,10 +220,11 @@ function FindingMarkerImpl({
               etwas ist). Nur an/aus, kein Fade. */}
           {showChat && !chatOpen ? (
             <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-              {/* Zwei GETRENNTE Karten-Andeutungen, die rechts hinter der Hauptkarte hervorschauen
-                  (oben Kontakt klein, unten Chat groß) → man sieht im Ruhezustand: hier liegen zwei Karten. */}
-              <div className="absolute inset-x-0 top-[3%] h-[36%] translate-x-2 scale-95 rounded-xl border border-neutral-200 bg-white shadow-md" />
-              <div className="absolute inset-x-0 bottom-[3%] h-[54%] translate-x-2 scale-95 rounded-xl border border-neutral-200 bg-white shadow-md" />
+              {/* Zwei GETRENNTE, leicht dunkelgraue Karten-Andeutungen, die rechts hinter der
+                  Hauptkarte hervorschauen (oben Kontakt klein, unten Chat groß) → man sieht im
+                  Ruhezustand: hier liegen zwei Karten. */}
+              <div className="absolute inset-x-0 top-[3%] h-[36%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
+              <div className="absolute inset-x-0 bottom-[3%] h-[54%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
             </div>
           ) : null}
 
