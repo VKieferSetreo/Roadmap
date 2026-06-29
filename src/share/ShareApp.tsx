@@ -318,6 +318,9 @@ function ShareDownload({ routes }: { routes: ProjectRoute[] }) {
                   </div>
                   <DropdownMenu
                     triggerLabel={`Strecke ${r.name} herunterladen oder öffnen`}
+                    // Menü wird AUS dem Download-Dialog (z-[2000]) getriggert → über den Dialog heben
+                    // (Default z-[1700] läge dahinter). twMerge überschreibt das Basis-z (Max 2026-06-29).
+                    className="z-[2100]"
                     trigger={
                       <span title="Herunterladen / in Google Maps öffnen" className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-50 hover:text-neutral-800">
                         <Download className="h-4 w-4" />
