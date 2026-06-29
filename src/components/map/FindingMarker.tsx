@@ -5,7 +5,7 @@
 import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
 import { EyeOff, MessageCircle, Phone, Trash2, User } from "lucide-react"
-import type { Finding } from "@/types/domain"
+import type { Finding, FindingKontakt } from "@/types/domain"
 import {
   EIGEN_BADGE,
   EIGEN_COLOR,
@@ -14,6 +14,7 @@ import {
   SEVERITY_META,
 } from "@/components/project/findingMeta"
 import { FindingCard } from "./FindingCard"
+import { FindingContactCard } from "./FindingContactCard"
 import { FindingChatPanel } from "./chat/FindingChatPanel"
 import { ShareChatReadonly } from "./chat/ShareChatReadonly"
 import { useFindingChatPresence } from "@/hooks/useFindingChat"
@@ -22,6 +23,18 @@ import { geomMidpoint } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const SEV_RANK: Record<string, number> = { kritisch: 3, warnung: 2, hinweis: 1 }
+
+// PREVIEW (T-613 Stufe 1): solange der Zuständigkeits-Resolver noch keine echten Daten an die
+// Funde hängt, zeigt die Kontakt-Kachel auf AUTOBAHN-Funden die echte zuständige GST-Niederlassung
+// als Beispiel (Region-genau folgt aus dem ArcGIS-Layer; Telefon/Adresse aus dem laufenden Scrape).
+// Sobald f.kontakt vom Backend kommt, hat das Vorrang und diese Vorschau entfällt.
+const PREVIEW_GST_KONTAKT: FindingKontakt = {
+  stelle: "Autobahn GmbH – Niederlassung Rheinland",
+  rolle: "Großraum- & Schwertransport (GST)",
+  email: "gst.rheinland@autobahn.de",
+}
+// Autobahn-Bezug am Straßenref/Titel erkennen (A7, A 7, "BAB A1", "(A99)" …), ohne B96A o.ä. falsch zu treffen.
+const istAutobahnRef = (s: string) => /(?:^|[\s(\/])A ?\d/.test(s)
 
 /** Popup-Inhalt EINES Funds (eine Richtung/Variante) — gemeinsames FindingCard-Layout. */
 function FindingDetail({
@@ -155,6 +168,11 @@ function FindingMarkerImpl({
   // gegatete API/kein Posten. App-Pfad (canChat) bleibt unverändert.
   const shareChat = current.publicChat
   const showChat = canChat || shareChat !== undefined
+  // Zuständigkeits-Kachel: echter Resolver-Kontakt (primary.kontakt) hat Vorrang; sonst auf
+  // Autobahn-Funden die GST-Vorschau (s. PREVIEW_GST_KONTAKT). Sonst keine Kachel.
+  const kontakt: FindingKontakt | undefined =
+    primary.kontakt ??
+    (istAutobahnRef(`${primary.strassenRef ?? ""} | ${primary.titel ?? ""}`) ? PREVIEW_GST_KONTAKT : undefined)
 
   // Ohne endliche Koordinaten keinen Marker setzen: ein [NaN,NaN]-Marker bricht Leaflets
   // Zoom-Animation und lässt andere Marker beim Zoomen verschwinden (spawnen/despawnen).
@@ -187,6 +205,10 @@ function FindingMarkerImpl({
           Interaktionen das Ticket NICHT schließen, stoppt das Chat-Panel die Klick-Weitergabe
           (es liegt über der Karte). autoPan aus — wir pannen selbst beim Marker-Klick. */}
       <Popup className="fcard-popup" maxWidth={340} minWidth={300} autoPan={false}>
+        {/* Vertikaler Stapel: oben die Hauptkarte (Ticket) mit Chat, darunter — wenn ein Kontakt
+            vorliegt — die Zuständigkeits-Kachel im selben Design (gap-3 Abstand). Der Chat hängt
+            NUR an der Hauptkarte (eigener relative-Container), die Kachel ist ein Geschwister. */}
+        <div className="flex w-[300px] max-w-[78vw] flex-col gap-3">
         {/* Wrapper: die Hauptkarte (z-10) bestimmt allein die von Leaflet gemessene Box.
             Geister-Karte + Pop-out-Panel sind position:absolute (out of flow) → kein
             Reposition/Clipping, das Popup bleibt am Marker stehen. */}
@@ -291,6 +313,10 @@ function FindingMarkerImpl({
             ) : null}
           </button>
           ) : null}
+        </div>
+
+        {/* Zuständigkeits-Kachel unter dem Ticket — eigene Karte, hängt NICHT am Chat. */}
+        {kontakt ? <FindingContactCard kontakt={kontakt} /> : null}
         </div>
       </Popup>
     </Marker>

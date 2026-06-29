@@ -115,6 +115,20 @@ export interface Kontakt {
   telefon?: string
 }
 
+/** Aufgelöste zuständige Stelle eines Funds (Zuständigkeits-Resolver, T-613) → Kontakt-Kachel.
+ *  Nur befüllte Felder werden angezeigt; ist nichts bekannt, bleibt die Kachel weg. */
+export interface FindingKontakt {
+  /** Name der zuständigen Stelle, z.B. "Autobahn GmbH – Niederlassung Rheinland". */
+  stelle?: string
+  /** Rolle/Funktion, z.B. "Großraum- & Schwertransport (GST)". */
+  rolle?: string
+  /** Namentlicher Ansprechpartner, falls bekannt. */
+  ansprechpartner?: string
+  email?: string
+  telefon?: string
+  adresse?: string
+}
+
 /** Datenquelle eines Funds (Behörde, API, OSM …). */
 export interface FindingSource {
   name: string
@@ -161,6 +175,8 @@ export interface Finding {
   quelle?: FindingSource
   /** Zuständige Stelle (Behörde, Niederlassung). */
   zustaendig?: string
+  /** Aufgelöste zuständige Stelle inkl. Kontakt (Zuständigkeits-Resolver, T-613) → Kontakt-Kachel. */
+  kontakt?: FindingKontakt
   /** GeoJSON-Geometrie (LineString/MultiLineString = Strecke) für Linien-Darstellung statt nur Punkt. */
   geom?: GeoJSONGeometry | null
   /** #14: vorab geladener ÖFFENTLICHER Chat (nur im externen Share gesetzt) → read-only anzeigen. */
