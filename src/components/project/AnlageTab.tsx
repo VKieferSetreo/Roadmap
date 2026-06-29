@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/Input"
 import { TimePicker } from "@/components/ui/TimePicker"
 import { TransportDataForm } from "./TransportDataForm"
 import { PublishCard } from "./PublishCard"
-import { SEVERITY_META, SEVERITY_ORDER, visibleFindings } from "./findingMeta"
 import { ANALYSE_SCHRITTE, useProjectStore } from "@/store/projects"
 import type { Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
@@ -31,10 +30,6 @@ export function AnlageTab({ project }: { project: Project }) {
   const fehltHoehe = !Number.isFinite(t?.hoehe) || (t?.hoehe ?? 0) <= 0
   const fehltGewicht = !Number.isFinite(t?.gesamtgewicht) || (t?.gesamtgewicht ?? 0) <= 0
   const fehltMass = fehltHoehe || fehltGewicht
-
-  // Kennzahlen für den „abgeschlossen"-Zustand: Funde nach Severity aufgeschlüsselt (farbige Chips).
-  const fertigeFunde = project.status === "fertig" ? visibleFindings(project.findings) : []
-  const sevCounts = SEVERITY_ORDER.map((sev) => ({ sev, n: fertigeFunde.filter((f) => f.severity === sev).length }))
 
   // Status-Kopf: abgeschlossen (grüner Haken) · noch nicht ausgewertet (gelbe Uhr) · fehlgeschlagen (rotes Kreuz).
   const fehlgeschlagen = Boolean(analysis?.error)
@@ -317,31 +312,6 @@ export function AnlageTab({ project }: { project: Project }) {
                     </Button>
                   </div>
                 </div>
-
-                {/* Severity-Aufschlüsselung als farbige Chips (nur bei sauberem Abschluss) — ohne Punkt-Marker. */}
-                {abgeschlossen ? (
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {fertigeFunde.length === 0 ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
-                        <Check className="h-3.5 w-3.5" /> Keine Funde
-                      </span>
-                    ) : (
-                      sevCounts
-                        .filter((c) => c.n > 0)
-                        .map(({ sev, n }) => (
-                          <span
-                            key={sev}
-                            className={cn(
-                              "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums",
-                              SEVERITY_META[sev].soft,
-                            )}
-                          >
-                            {n} {SEVERITY_META[sev].label}
-                          </span>
-                        ))
-                    )}
-                  </div>
-                ) : null}
               </div>
               {/* T-222: Weicher Hinweis (nicht-blockierend) wenn Höhe/Gewicht fehlen — die Auswertung
                   kann dann Durchfahrtshöhen/Traglastgrenzen nicht prüfen. */}
