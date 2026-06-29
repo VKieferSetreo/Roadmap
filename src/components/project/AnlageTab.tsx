@@ -3,7 +3,7 @@
 
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { AlertTriangle, ArrowRight, CalendarRange, Check, CheckCircle2, Loader2, Play, Route as RouteIcon, Truck } from "lucide-react"
+import { AlertTriangle, ArrowRight, CalendarRange, Check, CheckCircle2, Clock, Loader2, Play, Route as RouteIcon, Truck, XCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -35,6 +35,16 @@ export function AnlageTab({ project }: { project: Project }) {
   // Kennzahlen für den „abgeschlossen"-Zustand: Funde nach Severity aufgeschlüsselt (farbige Chips).
   const fertigeFunde = project.status === "fertig" ? visibleFindings(project.findings) : []
   const sevCounts = SEVERITY_ORDER.map((sev) => ({ sev, n: fertigeFunde.filter((f) => f.severity === sev).length }))
+
+  // Status-Kopf: abgeschlossen (grüner Haken) · noch nicht ausgewertet (gelbe Uhr) · fehlgeschlagen (rotes Kreuz).
+  const fehlgeschlagen = Boolean(analysis?.error)
+  const abgeschlossen = project.status === "fertig" && !fehlgeschlagen
+  const statusKopf = fehlgeschlagen
+    ? { Icon: XCircle, ring: "bg-red-50 text-red-600 ring-red-100", titel: "Auswertung fehlgeschlagen" }
+    : abgeschlossen
+      ? { Icon: CheckCircle2, ring: "bg-primary-50 text-primary-600 ring-primary-100", titel: "Auswertung abgeschlossen" }
+      : { Icon: Clock, ring: "bg-amber-50 text-amber-600 ring-amber-100", titel: routeReady ? "Bereit zur Auswertung" : "Noch nicht ausgewertet" }
+  const StatusIcon = statusKopf.Icon
 
   const onRun = () => {
     if (!routeReady) {
@@ -219,7 +229,7 @@ export function AnlageTab({ project }: { project: Project }) {
 
       {/* ── Auswertung-Block (Status + Aktionen) — volle Breite ── */}
       <Card className="lg:col-span-2">
-        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <CardContent className="flex flex-col gap-3">
           {running ? (
             <div className="w-full animate-fade-in">
               <div className="mb-1.5 flex items-center justify-between text-sm">
@@ -264,73 +274,75 @@ export function AnlageTab({ project }: { project: Project }) {
             </div>
           ) : (
             <>
-              {project.status === "fertig" ? (
-                <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-                  {/* Erfolg + Kennzahlen */}
-                  <div className="flex min-w-0 flex-col gap-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100">
-                        <CheckCircle2 className="h-5 w-5" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-neutral-900">Auswertung abgeschlossen</p>
-                        <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-neutral-400">
-                          <span className="inline-flex items-center gap-1">
-                            <RouteIcon className="h-3 w-3" />
-                            {project.distanzKm?.toLocaleString("de-DE")} km
-                          </span>
-                          {project.routes.length > 1 ? <span>· {project.routes.length} Strecken</span> : null}
-                          <span>· Stand {formatStampDE(project.updatedAt)}</span>
-                        </p>
-                      </div>
-                    </div>
-                    {/* Severity-Aufschlüsselung als farbige Chips — Funde auf einen Blick nach Schweregrad. */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {fertigeFunde.length === 0 ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
-                          <Check className="h-3.5 w-3.5" /> Keine Funde
-                        </span>
-                      ) : (
-                        sevCounts
-                          .filter((c) => c.n > 0)
-                          .map(({ sev, n }) => (
-                            <span
-                              key={sev}
-                              className={cn(
-                                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums",
-                                SEVERITY_META[sev].soft,
-                              )}
-                            >
-                              <span className={cn("h-1.5 w-1.5 rounded-full", SEVERITY_META[sev].dot)} />
-                              {n} {SEVERITY_META[sev].label}
+              <div className="flex w-full flex-col gap-2.5">
+                {/* Kopfzeile: Status links, Aktionen rechts — deren Unterkante an der Info-Zeile ausgerichtet. */}
+                <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-full ring-1", statusKopf.ring)}>
+                      <StatusIcon className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-neutral-900">{statusKopf.titel}</p>
+                      <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-neutral-400">
+                        {abgeschlossen ? (
+                          <>
+                            <span className="inline-flex items-center gap-1">
+                              <RouteIcon className="h-3 w-3" />
+                              {project.distanzKm?.toLocaleString("de-DE")} km
                             </span>
-                          ))
-                      )}
+                            {project.routes.length > 1 ? <span>· {project.routes.length} Strecken</span> : null}
+                            <span>· Stand {formatStampDE(project.updatedAt)}</span>
+                          </>
+                        ) : fehlgeschlagen ? (
+                          <span className="text-red-500">{analysis?.error ?? "Bitte erneut versuchen."}</span>
+                        ) : routeReady ? (
+                          <span>Bereit — Auswertung jetzt starten.</span>
+                        ) : (
+                          <span>Oben eine Strecke anlegen, um die Auswertung zu starten.</span>
+                        )}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Aktionen */}
+                  {/* Aktionen rechts */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <Button variant="outline" onClick={() => navigate(`/projekte/${project.id}/karte`)}>
-                      Ergebnis öffnen <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    {abgeschlossen ? (
+                      <Button variant="outline" onClick={() => navigate(`/projekte/${project.id}/karte`)}>
+                        Ergebnis öffnen <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    ) : null}
                     <Button onClick={onRun} disabled={!routeReady}>
-                      <Play className="h-4 w-4" /> Erneut auswerten
+                      <Play className="h-4 w-4" />
+                      {fehlgeschlagen ? "Erneut versuchen" : abgeschlossen ? "Erneut auswerten" : "Auswertung starten"}
                     </Button>
                   </div>
                 </div>
-              ) : (
-                <>
-                  <div className="text-sm text-neutral-600">
-                    {routeReady ? "Bereit zur Auswertung." : "Oben eine Strecke anlegen, um die Auswertung zu starten."}
+
+                {/* Severity-Aufschlüsselung als farbige Chips (nur bei sauberem Abschluss) — ohne Punkt-Marker. */}
+                {abgeschlossen ? (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {fertigeFunde.length === 0 ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                        <Check className="h-3.5 w-3.5" /> Keine Funde
+                      </span>
+                    ) : (
+                      sevCounts
+                        .filter((c) => c.n > 0)
+                        .map(({ sev, n }) => (
+                          <span
+                            key={sev}
+                            className={cn(
+                              "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums",
+                              SEVERITY_META[sev].soft,
+                            )}
+                          >
+                            {n} {SEVERITY_META[sev].label}
+                          </span>
+                        ))
+                    )}
                   </div>
-                  <div className="flex flex-wrap items-start justify-end gap-2">
-                    <Button className="min-w-[210px]" onClick={onRun} disabled={!routeReady}>
-                      <Play className="h-4 w-4" /> Auswertung starten
-                    </Button>
-                  </div>
-                </>
-              )}
+                ) : null}
+              </div>
               {/* T-222: Weicher Hinweis (nicht-blockierend) wenn Höhe/Gewicht fehlen — die Auswertung
                   kann dann Durchfahrtshöhen/Traglastgrenzen nicht prüfen. */}
               {fehltMass && routeReady ? (

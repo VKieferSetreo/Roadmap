@@ -24,6 +24,8 @@ interface AnalysisState {
   running: boolean
   progress: number
   step: string
+  /** gesetzt, wenn der letzte Lauf fehlschlug — die Anlage zeigt dann das Fehler-Icon. */
+  error?: string
 }
 
 export const ANALYSE_SCHRITTE = [
@@ -516,16 +518,14 @@ export const useProjectStore = create<ProjectStore>()(
         const fail = (message: string) => {
           clearInterval(timers[id])
           delete timers[id]
-          set((s) => {
-            const analysis = { ...s.analysis }
-            delete analysis[id]
-            return {
-              analysis,
-              projects: s.projects.map((p) =>
-                p.id === id ? { ...p, status: p.findings.length > 0 ? "fertig" : "entwurf" } : p,
-              ),
-            }
-          })
+          set((s) => ({
+            // Eintrag behalten (running:false) MIT Fehler-Marker → die Anlage zeigt das rote Kreuz.
+            // Ein neuer Lauf ersetzt den Eintrag und löscht damit den Fehler.
+            analysis: { ...s.analysis, [id]: { running: false, progress: 0, step: "Fehlgeschlagen", error: message } },
+            projects: s.projects.map((p) =>
+              p.id === id ? { ...p, status: p.findings.length > 0 ? "fertig" : "entwurf" } : p,
+            ),
+          }))
           toast.error(message)
         }
 
