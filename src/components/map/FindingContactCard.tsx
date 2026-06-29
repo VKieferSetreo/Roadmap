@@ -26,7 +26,7 @@ export function FindingContactCard({ kontakt, compact = false }: { kontakt: Find
         "fcontact rounded-xl border border-neutral-200 bg-white shadow-xl",
         // compact = Bubble im Aufklapp-Panel: 2/3-Größe + großes pl-12, damit die Karte mit dem linken
         // Rand hinter der Hauptkarte liegt (Overlap), der Inhalt aber rechts daneben sichtbar bleibt.
-        compact ? "py-3 pl-12 pr-3" : "p-3",
+        compact ? "py-4 pl-12 pr-3" : "p-3",
       )}
     >
       {/* Kopf-Zeile: Icon vertikal zentriert auf den Mittelpunkt von Behörde + Abteilung. */}

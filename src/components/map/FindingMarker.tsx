@@ -226,8 +226,9 @@ function FindingMarkerImpl({
               {/* Zwei GETRENNTE, leicht dunkelgraue Karten-Andeutungen, die rechts hinter der
                   Hauptkarte hervorschauen (oben Kontakt klein, unten Chat groß) → man sieht im
                   Ruhezustand: hier liegen zwei Karten. */}
-              <div className="absolute inset-x-0 top-[3%] h-[36%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
-              <div className="absolute inset-x-0 bottom-[3%] h-[54%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
+              {/* Top/Bottom-Linien = dieselben Insets wie der Clip (1.5%) → bündig mit den ausgefahrenen Bubbles. */}
+              <div className="absolute inset-x-0 top-[1.5%] h-[34%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
+              <div className="absolute inset-x-0 bottom-[1.5%] h-[57%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
             </div>
           ) : null}
 
@@ -266,8 +267,8 @@ function FindingMarkerImpl({
                 </div>
               ) : null}
               {/* Bubble 2: Chat — eigene Karte, pl-12 schiebt den Inhalt rechts neben die Hauptkarte.
-                  max-h deckelt die Höhe, damit der Chat bei hoher Hauptkarte nicht überhängt. */}
-              <div className="flex max-h-[18rem] min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-12 shadow-xl">
+                  flex-1 füllt bis zur Clip-Unterkante → Unterkante bündig mit der unteren Dummy-Box. */}
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-12 shadow-xl">
                 {shareChat ? (
                   <ShareChatReadonly messages={shareChat} />
                 ) : (
