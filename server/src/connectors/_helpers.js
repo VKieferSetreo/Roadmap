@@ -161,8 +161,21 @@ function strassenRefAus(text) {
   const s = String(text)
   const lang = s.match(/\bAutobahn\s+(\d{1,4})\b/i) || s.match(/\bBundesstra(?:ß|ss)e\s+(\d{1,4}[a-z]?)\b/i)
   if (lang) return `${/^Autobahn/i.test(lang[0]) ? "A" : "B"}${lang[1]}`
-  const m = s.match(/\b(A|B|L|K)[\s-]?0*(\d{1,4})([a-zA-Z])?\b/)
-  return m ? `${m[1].toUpperCase()}${m[2]}${m[3] ? m[3].toUpperCase() : ""}` : null
+  // T-617: Ein Ref, der direkt hinter einer Orts-/Namens-Präposition steht ("An der B 432", "Am A 9",
+  // "zur L 5"), gehört zu einem nach der Nähe benannten LOKALEN Weg — NICHT zur klassifizierten Straße
+  // selbst. Solche Treffer überspringen, sonst landet eine Anlieger-/Umleitungsstrecke fälschlich auf
+  // der Bundes-/Autobahn (Feind-Audit #63: "An der B 432" → B432). Legitimes "auf der B27"/"Baustelle
+  // A99" bleibt unberührt (keine Namens-Präposition davor).
+  // Nur die KLAREN Straßennamen-Präfixe ("Am B432", "An der B 432", "Zur A 9"). Locational-Präpositionen
+  // (nahe/beim/hinter/vor) bewusst NICHT — dort ist die klassifizierte Straße meist gemeint ("Stau nahe der A8").
+  const NAME_PRAEP = /\b(?:an der|an dem|am|zur|zum)\s*$/i
+  const re = /\b(A|B|L|K)[\s-]?0*(\d{1,4})([a-zA-Z])?\b/g
+  let m
+  while ((m = re.exec(s))) {
+    if (NAME_PRAEP.test(s.slice(Math.max(0, m.index - 14), m.index))) continue
+    return `${m[1].toUpperCase()}${m[2]}${m[3] ? m[3].toUpperCase() : ""}`
+  }
+  return null
 }
 
 /** Fahrtrichtung/Korridor aus Freitext → "Hamburg → Kassel" / "stadtauswärts" / "beide Richtungen". */
