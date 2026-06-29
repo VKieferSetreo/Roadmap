@@ -82,11 +82,11 @@ export function AnlageTab({ project }: { project: Project }) {
                   {project.zeitraum?.von &&
                   project.zeitraum?.bis &&
                   !isZeitraumInvalid(project.zeitraum) ? (
-                    <span className="rounded-md border border-primary-100 bg-primary-50/60 px-2 py-1 text-[11px] font-semibold tabular-nums text-primary-800">
+                    <span className="inline-flex h-7 items-center rounded-md border border-primary-100 bg-primary-50/60 px-2.5 text-[11px] font-semibold tabular-nums text-primary-800">
                       {durationLabel(project.zeitraum.von, project.zeitraum.bis)}
                     </span>
                   ) : null}
-                  <label className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-xs text-neutral-600 transition-colors duration-200 hover:bg-neutral-50">
+                  <label className="flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2 text-xs text-neutral-600 transition-colors duration-200 hover:bg-neutral-50">
                     <input
                       type="checkbox"
                       checked={ganztaegigEffective}
