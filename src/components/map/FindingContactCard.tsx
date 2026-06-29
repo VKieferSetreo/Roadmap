@@ -4,20 +4,22 @@
 // ist nichts Verwertbares da, rendert die Kachel gar nicht.
 
 import { Mail, MapPin, Phone, UserRound } from "lucide-react"
+import { cn } from "@/lib/cn"
 import type { FindingKontakt } from "@/types/domain"
 
-export function FindingContactCard({ kontakt }: { kontakt: FindingKontakt }) {
+export function FindingContactCard({ kontakt, compact = false }: { kontakt: FindingKontakt; compact?: boolean }) {
   const { stelle, rolle, ansprechpartner, email, telefon, adresse } = kontakt
   // Kopf: namentlicher Ansprechpartner zuerst, sonst die Stelle. Zweitzeile = die jeweils andere Info.
   const primaer = ansprechpartner || stelle
   const sekundaer = ansprechpartner ? stelle : rolle
   if (!primaer && !email && !telefon && !adresse) return null
 
+  // compact = Variante im Aufklapp-Panel (über dem Chat): ohne Schatten, enger, kleineres Icon.
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-3 shadow-xl">
-      <div className="flex items-start gap-2.5">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100">
-          <UserRound className="h-5 w-5" />
+    <div className={cn("rounded-xl border border-neutral-200 bg-white", compact ? "p-2.5" : "p-3 shadow-xl")}>
+      <div className={cn("flex items-start", compact ? "gap-2" : "gap-2.5")}>
+        <span className={cn("flex shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100", compact ? "h-7 w-7" : "h-9 w-9")}>
+          <UserRound className={compact ? "h-4 w-4" : "h-5 w-5"} />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-neutral-400">Zuständig</p>

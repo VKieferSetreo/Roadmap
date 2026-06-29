@@ -4,7 +4,7 @@
 
 import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
-import { EyeOff, MessageCircle, Phone, Trash2, User } from "lucide-react"
+import { EyeOff, Plus, Phone, Trash2, User } from "lucide-react"
 import type { Finding, FindingKontakt } from "@/types/domain"
 import {
   EIGEN_BADGE,
@@ -251,11 +251,20 @@ function FindingMarkerImpl({
                 chatOpen ? "pointer-events-auto translate-x-0" : "pointer-events-none -translate-x-full",
               )}
             >
-              {shareChat ? (
-                <ShareChatReadonly messages={shareChat} />
-              ) : (
-                <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
-              )}
+              {/* Oben eine kompakte Kontakt-Karte, darunter der Chat (flex-1, etwas kleiner) —
+                  beide klappen mit dem einen Toggle zusammen aus. */}
+              {kontakt ? (
+                <div className="shrink-0 px-2 pt-2">
+                  <FindingContactCard kontakt={kontakt} compact />
+                </div>
+              ) : null}
+              <div className="flex min-h-0 flex-1 flex-col">
+                {shareChat ? (
+                  <ShareChatReadonly messages={shareChat} />
+                ) : (
+                  <FindingChatPanel findingKey={current.key ?? current.id} obstacleId={current.obstacleId} />
+                )}
+              </div>
             </div>
           </div>
           ) : null}
@@ -263,7 +272,7 @@ function FindingMarkerImpl({
           {/* Hauptkarte — bestimmt die Leaflet-Box. min-h hält eine angenehme Mindesthöhe,
               max-h + scroll fängt langen Inhalt ab. flex-col, damit die FindingCard (flex-1)
               die Mindesthöhe füllt und ihre Stammdaten/Fußzeile nach unten schiebt. */}
-          <div className="relative z-10 flex max-h-[60vh] min-h-[24rem] w-[300px] max-w-[78vw] flex-col overflow-y-auto rounded-xl border border-neutral-200 bg-white p-3 shadow-xl">
+          <div className="relative z-10 flex max-h-[60vh] min-h-[20rem] w-[300px] max-w-[78vw] flex-col overflow-y-auto rounded-xl border border-neutral-200 bg-white p-3 shadow-xl">
             {group.length > 1 ? (
               <div className="mb-2.5 flex gap-1 rounded-md bg-neutral-100 p-0.5">
                 {group.map((g, i) => (
@@ -296,8 +305,8 @@ function FindingMarkerImpl({
             type="button"
             aria-expanded={chatOpen}
             aria-controls={`finding-chat-${primary.id}`}
-            aria-label={chatOpen ? "Baustellen-Chat schließen" : "Baustellen-Chat öffnen"}
-            title={chatOpen ? "Baustellen-Chat schließen" : "Baustellen-Chat öffnen"}
+            aria-label={chatOpen ? "Kontakt & Chat schließen" : "Kontakt & Chat öffnen"}
+            title={chatOpen ? "Kontakt & Chat schließen" : "Kontakt & Chat öffnen"}
             onClick={() => {
               if (!chatOpen) markSeen()
               setChatOpen((o) => !o)
@@ -309,7 +318,7 @@ function FindingMarkerImpl({
                 : "border-neutral-200 bg-white text-neutral-500 hover:text-primary-600",
             )}
           >
-            <MessageCircle className="h-4 w-4" />
+            <Plus className={cn("h-4 w-4 transition-transform duration-200", chatOpen && "rotate-45")} />
             {hasUnread ? (
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-red-500" />
             ) : null}
@@ -317,8 +326,8 @@ function FindingMarkerImpl({
           ) : null}
         </div>
 
-        {/* Zuständigkeits-Kachel unter dem Ticket — eigene Karte, hängt NICHT am Chat. */}
-        {kontakt ? <FindingContactCard kontakt={kontakt} /> : null}
+        {/* Zuständigkeit liegt jetzt als kompakte Karte oben im Aufklapp-Panel (über dem Chat),
+            nicht mehr als separate Dauer-Kachel → Ruhezustand kompakt. */}
         </div>
       </Popup>
     </Marker>
