@@ -361,11 +361,7 @@ export function RouteTab({ project }: { project: Project }) {
           <div className="flex min-h-[116px] flex-col justify-start">
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
-              <p className="text-xs text-neutral-500">
-                Streckendatei hochladen. KML enthält eine Strecke, GeoPackage (.gpkg) mehrere zur Auswahl.
-                <br />
-                Die geladene Strecke wird 1:1 übernommen und nicht optimiert oder verändert.
-              </p>
+              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
               <DropZone
                 compact
                 label={
@@ -380,11 +376,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : tab === "link" ? (
             <div className="flex flex-col gap-2.5">
-              <p className="text-xs text-neutral-500">
-                Google-Maps-Routenlink (Wegbeschreibung mit Start und Ziel) einfügen. Die im Link
-                hinterlegte Strecke wird inklusive aller gesetzten Zwischenstopps 1:1 übernommen. Es
-                wird nichts optimiert oder verändert.
-              </p>
+              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
               <div className="flex gap-2">
                 <Input
                   value={linkUrl}
@@ -404,11 +396,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : tab === "vemags" ? (
             <div className="flex flex-col gap-2.5">
-              <p className="text-xs text-neutral-500">
-                VEMAGS-Genehmigungsbescheid hochladen. Fahrtweg und Maße werden ausgelesen und je
-                Fahrtwegteil als Strecke rekonstruiert; das PDF wird nicht gespeichert. Je nach
-                Dokumentenqualität sind Abweichungen von der Originalstrecke möglich.
-              </p>
+              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
               {vemagsBusy ? (
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
                   <Loader2 className="h-4 w-4 animate-spin" /> Bescheid wird ausgewertet …
@@ -425,11 +413,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              <p className="mb-1.5 text-xs text-neutral-500">
-                Start und Ziel direkt auf der Karte als Pin setzen — die Route wird über das Straßennetz
-                berechnet und als Strecke angelegt. Zwischen zwei Punkten erscheint beim Überfahren ein
-                Plus, mit dem sich ein Zwischenpunkt einfügen lässt.
-              </p>
+              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
               {/* T-611 (Max): Start/Ziel NUR per Karten-Pin — keine Text-/Adresseingabe. Jedes Feld öffnet
                   den Karten-Picker; gesetzte Pins zeigen die Adresse (Reverse-Geocode) oder die Koordinate. */}
               {szPoints.map((p, i) => {
