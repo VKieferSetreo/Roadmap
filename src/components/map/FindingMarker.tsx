@@ -200,6 +200,9 @@ function FindingMarkerImpl({
             animate: true,
           })
         },
+        // Wegklicken (Popup schließt) → Bubbles einfahren, damit der Marker beim nächsten
+        // Öffnen wieder eingeklappt startet (nicht ausgefahren).
+        popupclose: () => setChatOpen(false),
       }}
       zIndexOffset={active ? 1000 : 0}
     >
@@ -262,8 +265,9 @@ function FindingMarkerImpl({
                   <FindingContactCard kontakt={kontakt} compact />
                 </div>
               ) : null}
-              {/* Bubble 2: Chat — eigene Karte, pl-12 schiebt den Inhalt rechts neben die Hauptkarte. */}
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-12 shadow-xl">
+              {/* Bubble 2: Chat — eigene Karte, pl-12 schiebt den Inhalt rechts neben die Hauptkarte.
+                  max-h deckelt die Höhe, damit der Chat bei hoher Hauptkarte nicht überhängt. */}
+              <div className="flex max-h-[18rem] min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-12 shadow-xl">
                 {shareChat ? (
                   <ShareChatReadonly messages={shareChat} />
                 ) : (
