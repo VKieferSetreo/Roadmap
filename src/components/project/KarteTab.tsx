@@ -91,8 +91,12 @@ export function KarteTab({
   const [katOpen, setKatOpen] = useState(false)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
   const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
-  /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Leer = alle sichtbar. */
-  const [severityHidden, setSeverityHidden] = useState<Set<FindingSeverity>>(new Set())
+  /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Default: „Warnung" +
+   *  „Hinweis" versteckt → die Karte zeigt zunächst nur kritische Funde, der Rest ist über die
+   *  Severity-Chips (oben rechts) zuschaltbar (Max 2026-06-29). */
+  const [severityHidden, setSeverityHidden] = useState<Set<FindingSeverity>>(
+    () => new Set<FindingSeverity>(["warnung", "hinweis"]),
+  )
   /** gesnappte Position des Strecken-Klicks fürs Eintrag-Formular. */
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"

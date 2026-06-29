@@ -94,6 +94,11 @@ export function RouteMap({
   const tileStyle = useSettingsStore((s) => s.tileStyle)
   const autoFit = useSettingsStore((s) => s.autoFit)
   const tiles = TILE_LAYERS[tileStyle]
+  // SVG-Renderer mit großzügigem Padding: Leaflets Default (0.1) zeichnet Vektoren nur knapp
+  // über den Viewport hinaus → Strecken-Polylines + farbige Fund-Segmente werden beim Zoomen/
+  // Pannen am Rand abgeschnitten und „verschwinden", bis moveend neu zeichnet. padding:1 hält
+  // ein volles Viewport ringsum gezeichnet (deckt einen Zoom-Schritt + Pan ab) → kein Despawn.
+  const renderer = useMemo(() => L.svg({ padding: 1 }), [])
   const drawn = useMemo(
     () =>
       routes
@@ -166,6 +171,7 @@ export function RouteMap({
         zoom={6}
         scrollWheelZoom
         zoomControl={false}
+        renderer={renderer}
         className="h-full w-full"
         style={{ height: "100%", width: "100%" }}
       >
