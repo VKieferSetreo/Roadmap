@@ -111,7 +111,7 @@ export function RouteTab({ project }: { project: Project }) {
   // Gilt für KML-Datei UND Google-Link (Max-Wunsch: bei beiden Namen vergeben; nur GeoPackage
   // bringt native Tabellennamen mit und überspringt die Maske).
   const [pendingFile, setPendingFile] = useState<
-    { points: RoutePoint[]; fileName?: string; suggest: string; source: RouteSource; grob?: boolean } | null
+    { points: RoutePoint[]; fileName?: string; suggest: string; source: RouteSource; grob?: boolean; waypoints?: RoutePoint[] } | null
   >(null)
   const [pendingName, setPendingName] = useState("")
   // #15: GeoPackage mit mehreren Strecken → Auswahl-Maske.
@@ -121,19 +121,6 @@ export function RouteTab({ project }: { project: Project }) {
   const [vemagsBusy, setVemagsBusy] = useState(false)
   // Geparstes VEMAGS-Ergebnis → Auswahl-Maske (welche Fahrtwegteile laden), analog zu GeoPackage.
   const [vemags, setVemags] = useState<{ fileName: string; result: VemagsResult } | null>(null)
-
-  const addRouteFromResult = (res: RouteResult, name: string, source: RouteSource) => {
-    // T-480: Luftlinie-Fallback dauerhaft an der Strecke vermerken (gestrichelt + Banner),
-    // nicht nur als Einmal-Toast — sonst sieht die grobe Schätzung nach Reload wie ein echter Weg aus.
-    const grob = res.provider.router === "fallback"
-    // T-582: die exakten Start/Ziel/Via-Wegpunkte mitspeichern → der Editor zeigt genau diese Pins.
-    const waypoints = Array.isArray(res.waypoints) && res.waypoints.length >= 2 ? res.waypoints : undefined
-    addRoute(project.id, { name, points: res.points, source, ...(waypoints ? { waypoints } : {}), ...(grob ? { grob: true } : {}) })
-    toast.success(
-      `Strecke „${name}" angelegt: ${res.points.length.toLocaleString("de-DE")} Punkte · ca. ${res.distanzKm.toLocaleString("de-DE", { maximumFractionDigits: 0 })} km` +
-        (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),
-    )
-  }
 
   const onRouteFile = async (file: File) => {
     const name = file.name.toLowerCase()
@@ -183,17 +170,21 @@ export function RouteTab({ project }: { project: Project }) {
     const name = pendingName.trim()
     if (name.length < 2) return
     const grob = pendingFile.grob === true
+    // T-582: Start/Ziel-Wegpunkte mitspeichern (Editor zeigt genau diese Pins). KML hat keine → undefined.
+    const waypoints = Array.isArray(pendingFile.waypoints) && pendingFile.waypoints.length >= 2 ? pendingFile.waypoints : undefined
     addRoute(project.id, {
       name,
       fileName: pendingFile.fileName,
       points: pendingFile.points,
       source: pendingFile.source,
+      ...(waypoints ? { waypoints } : {}),
       ...(grob ? { grob: true } : {}),
     })
     toast.success(
       `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km` +
         (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),
     )
+    if (pendingFile.source === "startziel") setSzPoints([makeSzPoint(), makeSzPoint()]) // T-611: Pins zurücksetzen
     setPendingFile(null)
     setPendingName("")
   }
@@ -240,9 +231,12 @@ export function RouteTab({ project }: { project: Project }) {
     setSzBusy(true)
     try {
       const res = await api.route.startziel(startVal, zielVal, vias)
+      // T-611 (Max): wie bei KML/Google-Link erst die Vorschau-Maske (Karte prüfen + benennen), dann anlegen.
       const nameOf = (p: SzPoint) => p.label.trim() || szValue(p)
-      addRouteFromResult(res, `${nameOf(szPoints[0])} → ${nameOf(szPoints[szPoints.length - 1])}`, "startziel")
-      setSzPoints([makeSzPoint(), makeSzPoint()])
+      const suggest = `${nameOf(szPoints[0])} → ${nameOf(szPoints[szPoints.length - 1])}`
+      const wp = Array.isArray(res.waypoints) && res.waypoints.length >= 2 ? res.waypoints : undefined
+      setPendingFile({ points: res.points, suggest, source: "startziel", grob: res.provider.router === "fallback", ...(wp ? { waypoints: wp } : {}) })
+      setPendingName(suggest)
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Route konnte nicht berechnet werden.")
     } finally {
