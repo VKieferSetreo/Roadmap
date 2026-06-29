@@ -108,7 +108,8 @@
 /* Leaflet setzt p { margin: 18px 0 } im Popup — das zerschießt die Absatz-Abstände
    in der FindingCard (u.a. Titel↔Untertitel). Nur DORT zurücksetzen (Spezifität schlägt
    Leaflet), damit andere Popups (z.B. ObstaclesMap) ihre eigenen Margins behalten. */
-.leaflet-popup-content .fcard p {
+.leaflet-popup-content .fcard p,
+.leaflet-popup-content .fcontact p {
   margin: 0;
 }
 

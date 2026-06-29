@@ -1,6 +1,7 @@
 // Zuständigkeits-Kachel: zeigt die aufgelöste zuständige Stelle (Resolver, T-613) als eigene
 // kleine Bubble mit Kopf-Icon + Behörde / Abteilung / Mail / Tel / Standort. Leere Felder werden
 // NIE angezeigt; ist nichts Verwertbares da, rendert die Kachel gar nicht.
+// Klasse `fcontact` → globals.css setzt Leaflets p-Margin (18px) im Popup zurück.
 
 import { Mail, MapPin, Phone, UserRound } from "lucide-react"
 import { cn } from "@/lib/cn"
@@ -22,13 +23,14 @@ export function FindingContactCard({ kontakt, compact = false }: { kontakt: Find
   return (
     <div
       className={cn(
-        "rounded-xl border border-neutral-200 bg-white shadow-xl",
+        "fcontact rounded-xl border border-neutral-200 bg-white shadow-xl",
         // compact = Bubble im Aufklapp-Panel: 2/3-Größe + großes pl-12, damit die Karte mit dem linken
         // Rand hinter der Hauptkarte liegt (Overlap), der Inhalt aber rechts daneben sichtbar bleibt.
         compact ? "py-2 pl-12 pr-3" : "p-3",
       )}
     >
-      <div className="flex items-start gap-2">
+      {/* Kopf-Zeile: Icon vertikal zentriert auf den Mittelpunkt von Behörde + Abteilung. */}
+      <div className="flex items-center gap-2">
         <span
           className={cn(
             "flex shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100",
@@ -38,38 +40,38 @@ export function FindingContactCard({ kontakt, compact = false }: { kontakt: Find
           <UserRound className={compact ? "h-3.5 w-3.5" : "h-5 w-5"} />
         </span>
         <div className="min-w-0 flex-1">
-          {/* Zeile 1: Behörde (schwarz) — direkt darunter die Abteilung. */}
           {behoerde ? (
             <p className={cn("font-semibold leading-tight text-neutral-900", compact ? "text-xs" : "text-sm")}>
               {behoerde}
             </p>
           ) : null}
+          {/* Abteilung direkt unter dem Schwarzen — Abstand ~0 (p-Margin per globals.css genullt). */}
           {abteilung ? <p className="truncate text-[10px] leading-tight text-neutral-500">{abteilung}</p> : null}
-          {/* Mail · Tel · Standort — kompakt, gleiches Format; Standort als Google-Maps-Link. */}
-          {email || telefon || adresse ? (
-            <div className="mt-1 flex flex-col gap-0.5">
-              {email ? (
-                <a href={`mailto:${email}`} className={zeile}>
-                  <Mail className="h-3 w-3 shrink-0 text-primary-500" />
-                  <span className="truncate">{email}</span>
-                </a>
-              ) : null}
-              {telefon ? (
-                <a href={`tel:${telefon.replace(/\s+/g, "")}`} className={zeile}>
-                  <Phone className="h-3 w-3 shrink-0 text-primary-500" />
-                  {telefon}
-                </a>
-              ) : null}
-              {adresse ? (
-                <a href={gmapsUrl(adresse)} target="_blank" rel="noopener noreferrer" className={cn(zeile, "items-start")}>
-                  <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-primary-500" />
-                  <span className="leading-snug">{adresse}</span>
-                </a>
-              ) : null}
-            </div>
-          ) : null}
         </div>
       </div>
+      {/* Mail · Tel · Standort — leicht unter dem Titel eingerückt, kompakt; Standort = Google-Maps-Link. */}
+      {email || telefon || adresse ? (
+        <div className={cn("mt-0.5 flex flex-col gap-0.5", compact ? "pl-9" : "pl-11")}>
+          {email ? (
+            <a href={`mailto:${email}`} className={zeile}>
+              <Mail className="h-3 w-3 shrink-0 text-primary-500" />
+              <span className="truncate">{email}</span>
+            </a>
+          ) : null}
+          {telefon ? (
+            <a href={`tel:${telefon.replace(/\s+/g, "")}`} className={zeile}>
+              <Phone className="h-3 w-3 shrink-0 text-primary-500" />
+              {telefon}
+            </a>
+          ) : null}
+          {adresse ? (
+            <a href={gmapsUrl(adresse)} target="_blank" rel="noopener noreferrer" className={cn(zeile, "items-start")}>
+              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-primary-500" />
+              <span className="leading-snug">{adresse}</span>
+            </a>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }
