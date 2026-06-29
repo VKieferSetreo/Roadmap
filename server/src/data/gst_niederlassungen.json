@@ -1,0 +1,92 @@
+[
+  {
+    "gst_nlz": "NL Nord",
+    "niederlassung": "Niederlassung Nord",
+    "email": "gst.nord@autobahn.de",
+    "telefon": "+49 40 23513380",
+    "adresse": "Heidenkampsweg 96-98, 20097 Hamburg",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Nordbayern",
+    "niederlassung": "Niederlassung Nordbayern",
+    "email": "gst.nordbayern@autobahn.de",
+    "telefon": "+49 911 4621-222",
+    "adresse": "Flaschenhofstraße 55, 90402 Nürnberg",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Nordost",
+    "niederlassung": "Niederlassung Nordost",
+    "email": "gst.nordost@autobahn.de",
+    "telefon": "+49 3303 5800",
+    "adresse": "An der Autobahn A111, 16540 Hohen Neuendorf",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Nordwest",
+    "niederlassung": "Niederlassung Nordwest",
+    "email": "gst.nordwest@autobahn.de",
+    "telefon": "+49 511 515197-411",
+    "adresse": "Gradestraße 18, 30163 Hannover",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Ost",
+    "niederlassung": "Niederlassung Ost",
+    "email": "gst.ost@autobahn.de",
+    "telefon": "+49 345 940 997 00",
+    "adresse": "Magdeburger Straße 51, 06112 Halle (Saale)",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Rheinland",
+    "niederlassung": "Niederlassung Rheinland",
+    "email": "gst.rheinland@autobahn.de",
+    "telefon": "+49 2151 36807-0",
+    "adresse": "Willy-Brandt-Platz 2, 47805 Krefeld",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Südbayern",
+    "niederlassung": "Niederlassung Südbayern",
+    "email": "gst.suedbayern@autobahn.de",
+    "telefon": "+49 89 54552-0",
+    "adresse": "Seidlstraße 7-11, 80335 München",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Südwest",
+    "niederlassung": "Niederlassung Südwest",
+    "email": "gst.suedwest@autobahn.de",
+    "telefon": "+49 711 34250440",
+    "adresse": "Augsburger Str. 748, 70329 Stuttgart",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL West",
+    "niederlassung": "Niederlassung West",
+    "email": "gst.west@autobahn.de",
+    "telefon": "+49 2602 924479",
+    "adresse": "Bahnhofsplatz 1, 56410 Montabaur",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  },
+  {
+    "gst_nlz": "NL Westfalen",
+    "niederlassung": "Niederlassung Westfalen",
+    "email": "gst.westfalen@autobahn.de",
+    "telefon": "+49 2381 912-0",
+    "adresse": "Lilienthalstraße 5, 59065 Hamm",
+    "beleg": "https://www.autobahn.de/fuer-unternehmen/gst-niederlassungskontakte ; https://www.autobahn.de/ueber-uns/niederlassungen",
+    "confidence": "high"
+  }
+]

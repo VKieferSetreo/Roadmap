@@ -32,6 +32,8 @@ const PREVIEW_GST_KONTAKT: FindingKontakt = {
   stelle: "Autobahn GmbH – Niederlassung Rheinland",
   rolle: "Großraum- & Schwertransport (GST)",
   email: "gst.rheinland@autobahn.de",
+  telefon: "+49 2151 36807-0",
+  adresse: "Willy-Brandt-Platz 2, 47805 Krefeld",
 }
 // Autobahn-Bezug am Straßenref/Titel erkennen (A7, A 7, "BAB A1", "(A99)" …), ohne B96A o.ä. falsch zu treffen.
 const istAutobahnRef = (s: string) => /(?:^|[\s(\/])A ?\d/.test(s)
