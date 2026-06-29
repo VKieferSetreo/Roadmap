@@ -352,10 +352,10 @@ export function RouteTab({ project }: { project: Project }) {
             })}
           </div>
 
-          {/* Quellen-Inhalt: Mindesthöhe = Höhe des Datei/VEMAGS-Tabs (Spacer 12 + Gap 10 + kompakte
-              DropZone ~110) → die kürzeren Tabs (Google-Link, Start/Ziel) füllen denselben Raum, kein
-              Springen beim Tab-Wechsel (Max 2026-06-29). Oben ausgerichtet. */}
-          <div className="flex min-h-[132px] flex-col justify-start">
+          {/* Quellen-Inhalt: Mindesthöhe = Höhe des HÖCHSTEN Tabs (Start/Ziel: Spacer + Start-/Ziel-Pin
+              + Connector + „Route berechnen"-Button ≈ 148px) → alle anderen Tabs füllen denselben Raum,
+              kein Springen beim Tab-Wechsel (Max 2026-06-29). Oben ausgerichtet. */}
+          <div className="flex min-h-[150px] flex-col justify-start">
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
               <div aria-hidden className="h-3" />{/* T-611 (Max): Hilfetext entfernt, kleiner Spacer */}
