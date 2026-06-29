@@ -226,9 +226,10 @@ function FindingMarkerImpl({
               {/* Zwei GETRENNTE, leicht dunkelgraue Karten-Andeutungen, die rechts hinter der
                   Hauptkarte hervorschauen (oben Kontakt klein, unten Chat groß) → man sieht im
                   Ruhezustand: hier liegen zwei Karten. */}
-              {/* Top/Bottom-Linien = dieselben Insets wie der Clip (1.5%) → bündig mit den ausgefahrenen Bubbles. */}
+              {/* Top/Bottom-Linien = dieselben Insets wie der Clip (top 1.5% / bottom 3.5%) → bündig
+                  mit den ausgefahrenen Bubbles; unterer Abstand wirkt damit gleich dem oberen. */}
               <div className="absolute inset-x-0 top-[1.5%] h-[34%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
-              <div className="absolute inset-x-0 bottom-[1.5%] h-[57%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
+              <div className="absolute inset-x-0 bottom-[3.5%] h-[55%] translate-x-2.5 rounded-xl border border-neutral-300 bg-neutral-200 shadow-md" />
             </div>
           ) : null}
 
@@ -238,7 +239,7 @@ function FindingMarkerImpl({
           {/* pointer-events-none am Container → die (unsichtbare) Fläche über der Karte fängt
               die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
           {showChat ? (
-          <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-2.25rem)] -right-[27rem] z-0 overflow-hidden">
+          <div className="pointer-events-none absolute left-[calc(100%-2.25rem)] -right-[27rem] top-[1.5%] bottom-[3.5%] z-0 overflow-hidden">
             {/* ZWEI separate gestapelte Bubbles (Luft = gap-2), die GEMEINSAM (ein Translate →
                 gleichzeitig) mit dem Plus rausfahren. Jede Bubble liegt mit ihrem linken Rand hinter
                 der Hauptkarte (left-Overlap 2.25rem); das pl-12 IN jeder Bubble hält den Inhalt rechts
