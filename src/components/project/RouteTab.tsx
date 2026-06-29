@@ -361,7 +361,7 @@ export function RouteTab({ project }: { project: Project }) {
           <div className="flex min-h-[116px] flex-col justify-start">
           {tab === "datei" ? (
             <div className="flex flex-col gap-2.5">
-              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
+              <div aria-hidden className="h-3" />{/* T-611 (Max): Hilfetext entfernt, kleiner Spacer */}
               <DropZone
                 compact
                 label={
@@ -376,7 +376,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : tab === "link" ? (
             <div className="flex flex-col gap-2.5">
-              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
+              <div aria-hidden className="h-3" />{/* T-611 (Max): Hilfetext entfernt, kleiner Spacer */}
               <div className="flex gap-2">
                 <Input
                   value={linkUrl}
@@ -396,7 +396,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : tab === "vemags" ? (
             <div className="flex flex-col gap-2.5">
-              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
+              <div aria-hidden className="h-3" />{/* T-611 (Max): Hilfetext entfernt, kleiner Spacer */}
               {vemagsBusy ? (
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
                   <Loader2 className="h-4 w-4 animate-spin" /> Bescheid wird ausgewertet …
@@ -413,7 +413,7 @@ export function RouteTab({ project }: { project: Project }) {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              <div aria-hidden className="h-5" />{/* T-611 (Max): Hilfetext entfernt, nur 1-Zeilen-Spacer */}
+              <div aria-hidden className="h-3" />{/* T-611 (Max): Hilfetext entfernt, kleiner Spacer */}
               {/* T-611 (Max): Start/Ziel NUR per Karten-Pin — keine Text-/Adresseingabe. Jedes Feld öffnet
                   den Karten-Picker; gesetzte Pins zeigen die Adresse (Reverse-Geocode) oder die Koordinate. */}
               {szPoints.map((p, i) => {
