@@ -232,33 +232,46 @@ function FindingMarkerImpl({
               die Maus NICHT ab; nur das ausgeklappte Panel selbst ist interaktiv. */}
           {showChat ? (
           <div className="pointer-events-none absolute inset-y-[1.5%] left-[calc(100%-1.25rem)] -right-[27rem] z-0 overflow-hidden">
-            {/* Pop-out-Panel: 40% breiter (w-420), reine translate-Animation (kein opacity/scale).
-                Überlappt links 20px hinter der Hauptkarte — Inhalt per pl-5 nach rechts gedrückt. */}
+            {/* ZWEI separate gestapelte Bubbles (mit Luft = gap-2 dazwischen), die mit dem einen
+                Plus-Toggle rausfahren: oben die kompakte Kontakt-Bubble, darunter die Chat-Bubble.
+                Jede Bubble fährt EIGENSTÄNDIG (leichter Versatz über delay) — kein gemeinsamer
+                Kasten mehr. pl-9 hält sie rechts neben der Hauptkarte; overflow-hidden des
+                Eltern-Containers blendet sie im Ruhezustand sauber aus. */}
             <div
               id={`finding-chat-${primary.id}`}
               role="region"
-              aria-label="Baustellen-Chat"
+              aria-label="Kontakt & Chat"
               aria-hidden={!chatOpen}
-              // Klicks im Chat NICHT zur Karte durchreichen → Senden/Kontakt schließt das Ticket nicht.
+              // Klicks NICHT zur Karte durchreichen → Senden/Kontakt schließt das Ticket nicht.
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
                 if (e.key === "Escape") setChatOpen(false)
               }}
               className={cn(
-                "absolute inset-y-0 left-0 flex w-[420px] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white pl-9 shadow-xl",
-                "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
-                chatOpen ? "pointer-events-auto translate-x-0" : "pointer-events-none -translate-x-full",
+                "flex h-full w-[420px] flex-col gap-2 pl-9",
+                chatOpen ? "pointer-events-auto" : "pointer-events-none",
               )}
             >
-              {/* Oben eine kompakte Kontakt-Karte, darunter der Chat (flex-1, etwas kleiner) —
-                  beide klappen mit dem einen Toggle zusammen aus. */}
+              {/* Bubble 1: Kontakt — eigene kleine Karte, fährt zuerst raus. */}
               {kontakt ? (
-                <div className="shrink-0 px-2 pt-2">
+                <div
+                  className={cn(
+                    "shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
+                    chatOpen ? "translate-x-0" : "-translate-x-[160%]",
+                  )}
+                >
                   <FindingContactCard kontakt={kontakt} compact />
                 </div>
               ) : null}
-              <div className="flex min-h-0 flex-1 flex-col">
+              {/* Bubble 2: Chat — eigene Karte, fährt minimal später raus (separat). */}
+              <div
+                className={cn(
+                  "flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-xl",
+                  "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
+                  chatOpen ? "translate-x-0 delay-75" : "-translate-x-[160%]",
+                )}
+              >
                 {shareChat ? (
                   <ShareChatReadonly messages={shareChat} />
                 ) : (
