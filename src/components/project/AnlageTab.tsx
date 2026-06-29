@@ -154,7 +154,7 @@ export function AnlageTab({ project }: { project: Project }) {
                       }}
                       disabled={running}
                       min={splitDateTime(project.zeitraum?.von).date || undefined}
-                      className="w-[150px]"
+                      className="min-w-0 flex-1"
                     />
                     {!ganztaegigEffective ? (
                       <TimePicker
