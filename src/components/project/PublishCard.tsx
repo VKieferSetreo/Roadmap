@@ -28,7 +28,7 @@ export function PublishCard({ project }: { project: Project }) {
   const statusBadge = (
     <span
       className={cn(
-        "shrink-0 rounded-md border px-2 py-1 text-[11px] font-semibold",
+        "inline-flex h-7 shrink-0 items-center rounded-md border px-2.5 text-[11px] font-semibold",
         live
           ? "border-primary-100 bg-primary-50/60 text-primary-800"
           : "border-neutral-200 bg-neutral-100 text-neutral-500",
@@ -79,12 +79,11 @@ export function PublishCard({ project }: { project: Project }) {
         <>
           {/* Kopfzeile mit Aktionen rechts — kompakt, umbruchsicher */}
           <div className="flex items-center gap-2">
-            <span className="shrink-0 rounded-lg bg-primary-50 p-2 text-primary-700">
-              <Globe2 className="h-4 w-4" />
-            </span>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5">
-              <span className="text-sm font-semibold text-neutral-900">Veröffentlicht</span>
-              {statusBadge}
+              {/* Globe inline (kein grünes Tile) — wie die anderen Karten-Header (Max 2026-06-29). */}
+              <span className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                <Globe2 className="h-4 w-4 text-primary-600" /> Veröffentlicht
+              </span>
               {share.hatPasswort ? (
                 <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-neutral-500">
                   <Lock className="h-3 w-3" /> passwortgeschützt
@@ -95,24 +94,28 @@ export function PublishCard({ project }: { project: Project }) {
                 </span>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
+            {/* Live/Offline-Badge links neben den Icon-Aktionen, gleiche Höhe (h-7) wie die Dauer-Marke. */}
+            {statusBadge}
+            <button
+              type="button"
               onClick={() => setDialogOpen(true)}
               disabled={busy}
-              className="shrink-0"
+              title="Bearbeiten"
+              aria-label="Freigabe bearbeiten"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:opacity-50"
             >
-              <Pencil className="h-3.5 w-3.5" /> Bearbeiten
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Pencil className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
               onClick={() => void remove()}
               disabled={busy}
-              className="shrink-0 text-severity-kritisch hover:bg-severity-kritisch-bg"
+              title="Löschen"
+              aria-label="Freigabe löschen"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-severity-kritisch-bg hover:text-severity-kritisch disabled:opacity-50"
             >
-              <Trash2 className="h-3.5 w-3.5" /> Löschen
-            </Button>
+              <Trash2 className="h-4 w-4" />
+            </button>
           </div>
 
           {/* URL + Kopieren */}
