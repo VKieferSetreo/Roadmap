@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
+  EyeOff,
   Filter,
   Layers,
   MapPinned,
@@ -103,8 +104,12 @@ export function KarteTab({
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
   const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false) // T-220
   const hideFinding = useProjectStore((s) => s.hideFinding)
+  const unhideFinding = useProjectStore((s) => s.unhideFinding)
   /** Fund, der gerade ausgeblendet wird (öffnet die Grund-Abfrage). */
   const [hideTarget, setHideTarget] = useState<Finding | null>(null)
+  /** „Ausgeblendet"-Marke: ausgeblendete Funde als graue Geister-Marker zeigen. Default AUS (wie
+   *  Warnung/Hinweis). An → graue Pins, Klick darauf blendet wieder ein. Nur in der App (canHide). */
+  const [zeigeAusgeblendet, setZeigeAusgeblendet] = useState(false)
 
   // Prüfen-Gate (T-598): ungeprüfte VEMAGS-Strecken fließen nicht in die Auswertung und werden auf
   // der Karte nicht gezeichnet → sie dürfen auch im Ebenen-Register/in den Kennzahlen nicht auftauchen
@@ -136,6 +141,20 @@ export function KarteTab({
         : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie) && !severityHidden.has(f.severity))
     return timeWin ? base.filter((f) => findingInTime(f, timeWin.start, timeWin.end)) : base
   }, [sichtbareFindings, katHidden, severityHidden, timeWin])
+
+  // Ausgeblendete Funde (f.hidden) auf sichtbaren Strecken, im Zeitfenster — eigene Achse, NICHT an
+  // Severity-/Kategorie-Filter gekoppelt. Zähler fürs „Ausgeblendet"-Chip; bei aktivem Chip als graue
+  // Geister-Marker auf der Karte (Klick → wieder einblenden).
+  const ausgeblendeteFindings = useMemo(
+    () =>
+      project.findings.filter(
+        (f) =>
+          f.hidden &&
+          (!f.routeId || !hidden.has(f.routeId)) &&
+          (!timeWin || findingInTime(f, timeWin.start, timeWin.end)),
+      ),
+    [project.findings, hidden, timeWin],
+  )
 
   // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
   const [suche, setSuche] = useState("")
@@ -281,6 +300,8 @@ export function KarteTab({
         onRouteClick={live ? onRouteClick : undefined}
         onDeleteOwn={live ? (id) => void onDeleteOwn(id) : undefined}
         onHide={canHide ? (f) => setHideTarget(f) : undefined}
+        ghostFindings={canHide && zeigeAusgeblendet ? ausgeblendeteFindings : undefined}
+        onUnhide={canHide ? (f) => unhideFinding(project.id, f) : undefined}
         canChat={canChat}
         focusPoint={focusPoint}
       >
@@ -392,6 +413,28 @@ export function KarteTab({
             })}
             {/* Kein „Alle"-Reset (Max 2026-06-23): ein erneuter Klick auf eine durchgestrichene
                 Schweregrad-Marke blendet sie wieder ein — der separate Reset-Button entfällt. */}
+            {/* „Ausgeblendet"-Marke (nur App, nur wenn es ausgeblendete Funde gibt): eigene Achse neben
+                den Schweregraden. Default AUS; an → graue Geister-Marker, Klick darauf blendet wieder ein. */}
+            {canHide && ausgeblendeteFindings.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setZeigeAusgeblendet((v) => !v)}
+                aria-pressed={zeigeAusgeblendet}
+                title={zeigeAusgeblendet ? "Ausgeblendete verbergen" : "Ausgeblendete grau anzeigen (zum Wieder-Einblenden)"}
+                className={cn(
+                  "inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition hover:opacity-80",
+                  zeigeAusgeblendet
+                    ? "border-neutral-300 bg-neutral-100 text-neutral-700"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                  !zeigeAusgeblendet && "line-through",
+                )}
+              >
+                <EyeOff
+                  className={cn("h-3 w-3 shrink-0", zeigeAusgeblendet ? "text-neutral-500" : "text-neutral-400")}
+                />
+                {ausgeblendeteFindings.length} Ausgeblendet
+              </button>
+            ) : null}
           </div>
         </div>
 

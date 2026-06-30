@@ -18,6 +18,8 @@ import { geomToLines, hasImplausibleJump, sliceRouteByKm } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const GERMANY: [number, number] = [51.1657, 10.4515]
+/** Grau für ausgeblendete (Geister-)Funde — neutral-400 (deckungsgleich mit FindingMarker). */
+const GHOST_LINE = "#9ca3af"
 
 /** Bildschirm-Winkel (°) eines Segments a→b: 0° = nach rechts (Osten), −90° = nach oben (Norden).
  *  lng um cos(lat) gestaucht (DE-Verzerrung), Bildschirm-y zeigt nach unten → −dLat. */
@@ -68,6 +70,10 @@ interface RouteMapProps {
   onDeleteOwn?: (obstacleId: string) => void
   /** wenn gesetzt: Fund aus dem Popup ausblenden (nicht löschen) — für die Sichtung. */
   onHide?: (finding: Finding) => void
+  /** ausgeblendete Funde als graue „Geister"-Marker zeigen (Karten-Chip „Ausgeblendet" an).
+   *  Klick auf einen grauen Pin bietet „Wieder einblenden" (onUnhide). */
+  ghostFindings?: Finding[]
+  onUnhide?: (finding: Finding) => void
   /** Baustellen-Chat in den Fund-Markern anbieten (App = true, öffentliche Freigabe = false). */
   canChat?: boolean
   /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
@@ -86,6 +92,8 @@ export function RouteMap({
   onRouteClick,
   onDeleteOwn,
   onHide,
+  ghostFindings,
+  onUnhide,
   canChat = true,
   focusPoint,
   className,
@@ -126,6 +134,9 @@ export function RouteMap({
   )
   // T-377: Gruppierung (O(n²)) nur bei Funde-Änderung, nicht bei jedem Pan/Zoom-Render.
   const findingGroups = useMemo(() => groupFindings(findings), [findings])
+  // Ausgeblendete (Geister-)Funde separat gruppieren — sie dürfen NICHT mit normalen Funden in
+  // einen Marker fallen (sonst würde ein grauer Geist einen echten Fund schlucken).
+  const ghostGroups = useMemo(() => groupFindings(ghostFindings ?? []), [ghostFindings])
   const mapRef = useRef<L.Map | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [isFs, setIsFs] = useState(false)
@@ -159,6 +170,56 @@ export function RouteMap({
       { padding: [48, 48] },
     )
   }
+
+  // Strecke, auf der ein Fund GREIFT, in der Severity-Farbe (weißes Casing + Klick wählt den Fund).
+  // ghost = ausgeblendeter Fund → grau + gestrichelt + dezenter (gleiche Geometrie-Logik, wiederverwendet).
+  const findingLines = (list: Finding[], ghost: boolean) =>
+    list.flatMap((f) => {
+      let lines = geomToLines(f.geom)
+      // Kaputte Sprung-Geometrie verwerfen → auf das plausible Streckensegment zurückfallen (T-559).
+      if (lines.length === 0 || hasImplausibleJump(lines)) {
+        lines = []
+        // Kein eigenes Hindernis-geom (viele Quellen liefern nur einen Punkt) → den betroffenen
+        // Routen-Abschnitt um f.km (±150 m) als Segment markieren, statt nur die Fahrbahnlinie zu zeigen.
+        const route = drawn.find((r) => r.id === f.routeId)
+        if (route) {
+          const seg = sliceRouteByKm(route.positions, f.km - 0.15, f.km + 0.15)
+          if (seg.length >= 2) lines = [seg]
+        }
+      }
+      if (lines.length === 0) return []
+      const meta = SEVERITY_META[f.severity]
+      const eigen = istEigenerEintrag(f.quelle)
+      const color = ghost ? GHOST_LINE : eigen ? EIGEN_COLOR : meta.marker
+      const active = selectedId === f.id
+      return [
+        <Polyline
+          key={`fgeom-bg-${f.id}`}
+          positions={lines}
+          pathOptions={{ color: "#ffffff", weight: active ? 11 : 8, opacity: ghost ? 0.5 : 0.85 }}
+          eventHandlers={{ click: () => onSelect?.(f.id) }}
+        />,
+        <Polyline
+          key={`fgeom-${f.id}`}
+          positions={lines}
+          pathOptions={{
+            color,
+            weight: active ? 7 : 5,
+            opacity: ghost ? 0.7 : 0.95,
+            lineCap: "round",
+            lineJoin: "round",
+            ...(ghost ? { dashArray: "6 7" } : {}),
+          }}
+          eventHandlers={{ click: () => onSelect?.(f.id) }}
+        >
+          {/* Tag der markierten Strecke: WAS ist hier — Kategorie + Severity/Status + Bezeichnung */}
+          <Tooltip sticky direction="top">
+            <span className="font-semibold">{katMeta(f.kategorie).label}</span> · {ghost ? "ausgeblendet" : meta.label}
+            {f.titel ? ` · ${f.titel}` : ""}
+          </Tooltip>
+        </Polyline>,
+      ]
+    })
 
   return (
     <div
@@ -249,54 +310,10 @@ export function RouteMap({
         ))}
         {allPoints.length >= 2 ? <FitBounds points={allPoints} enabled={autoFit} /> : null}
 
-        {/* Strecke, auf der ein Fund GREIFT (geom = Linie/MultiLineString), in der
-            Severity-Farbe — weißes Casing darunter + Klick wählt den Fund. So sieht man
-            die betroffene Strecke, nicht nur einen Punkt. */}
-        {findings.flatMap((f) => {
-          let lines = geomToLines(f.geom)
-          // Kaputte Sprung-Geometrie verwerfen → auf das plausible Streckensegment zurückfallen (T-559).
-          if (lines.length === 0 || hasImplausibleJump(lines)) {
-            lines = []
-            // Kein eigenes Hindernis-geom (viele Quellen liefern nur einen Punkt) → den betroffenen
-            // Routen-Abschnitt um f.km (±150 m) als Segment markieren, statt nur die Fahrbahnlinie zu zeigen.
-            const route = drawn.find((r) => r.id === f.routeId)
-            if (route) {
-              const seg = sliceRouteByKm(route.positions, f.km - 0.15, f.km + 0.15)
-              if (seg.length >= 2) lines = [seg]
-            }
-          }
-          if (lines.length === 0) return []
-          const meta = SEVERITY_META[f.severity]
-          const eigen = istEigenerEintrag(f.quelle)
-          const color = eigen ? EIGEN_COLOR : meta.marker
-          const active = selectedId === f.id
-          return [
-            <Polyline
-              key={`fgeom-bg-${f.id}`}
-              positions={lines}
-              pathOptions={{ color: "#ffffff", weight: active ? 11 : 8, opacity: 0.85 }}
-              eventHandlers={{ click: () => onSelect?.(f.id) }}
-            />,
-            <Polyline
-              key={`fgeom-${f.id}`}
-              positions={lines}
-              pathOptions={{
-                color,
-                weight: active ? 7 : 5,
-                opacity: 0.95,
-                lineCap: "round",
-                lineJoin: "round",
-              }}
-              eventHandlers={{ click: () => onSelect?.(f.id) }}
-            >
-              {/* Tag der markierten Strecke: WAS ist hier — Kategorie + Severity + Bezeichnung */}
-              <Tooltip sticky direction="top">
-                <span className="font-semibold">{katMeta(f.kategorie).label}</span> · {meta.label}
-                {f.titel ? ` · ${f.titel}` : ""}
-              </Tooltip>
-            </Polyline>,
-          ]
-        })}
+        {/* Strecke, auf der ein Fund GREIFT (geom = Linie/MultiLineString), in der Severity-Farbe —
+            weißes Casing + Klick wählt den Fund. Ausgeblendete (Geister-)Funde grau gestrichelt. */}
+        {findingLines(findings, false)}
+        {ghostFindings ? findingLines(ghostFindings, true) : null}
 
         {/* Fund-Marker, gruppiert: mehrere Funde am selben Ort (z.B. beide Fahrtrichtungen
             derselben Maßnahme) werden EIN Marker mit Tabs zum Aufsplitten — keiner geht verloren. */}
@@ -309,6 +326,19 @@ export function RouteMap({
             onDeleteOwn={onDeleteOwn}
             onHide={onHide}
             canChat={canChat}
+          />
+        ))}
+        {/* Geister-Marker: ausgeblendete Funde grau, Klick öffnet das Ticket mit „Wieder einblenden".
+            Kein Chat (canChat=false) → schlankes Restore-Popup. */}
+        {ghostGroups.map((group) => (
+          <FindingMarker
+            key={`ghost-${group[0].id}`}
+            group={group}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            onUnhide={onUnhide}
+            ghost
+            canChat={false}
           />
         ))}
       </MapContainer>

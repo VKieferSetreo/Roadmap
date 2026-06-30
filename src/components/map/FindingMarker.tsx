@@ -4,7 +4,7 @@
 
 import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
-import { EyeOff, Plus, Phone, Trash2, User } from "lucide-react"
+import { Eye, EyeOff, Plus, Phone, Trash2, User } from "lucide-react"
 import type { Finding } from "@/types/domain"
 import {
   EIGEN_BADGE,
@@ -23,16 +23,21 @@ import { geomMidpoint } from "@/lib/geom"
 import { cn } from "@/lib/cn"
 
 const SEV_RANK: Record<string, number> = { kritisch: 3, warnung: 2, hinweis: 1 }
+/** Grau für ausgeblendete (Geister-)Funde — neutral-400. */
+const GHOST_COLOR = "#9ca3af"
 
 /** Popup-Inhalt EINES Funds (eine Richtung/Variante) — gemeinsames FindingCard-Layout. */
 function FindingDetail({
   f,
   onDeleteOwn,
   onHide,
+  onUnhide,
 }: {
   f: Finding
   onDeleteOwn?: (obstacleId: string) => void
   onHide?: (finding: Finding) => void
+  /** Ausgeblendeten Fund wieder einblenden (Geister-Marker). */
+  onUnhide?: (finding: Finding) => void
 }) {
   const kat = katMeta(f.kategorie)
   const eigen = istEigenerEintrag(f.quelle)
@@ -76,7 +81,8 @@ function FindingDetail({
       </div>
     ) : null
 
-  // Aktion über volle Breite: eigene Einträge verwerfen, sonst für die Auswertung ausblenden.
+  // Aktion über volle Breite: eigene Einträge verwerfen; ausgeblendete wieder einblenden;
+  // sonst für die Auswertung ausblenden.
   const action =
     eigen && onDeleteOwn && f.obstacleId ? (
       <button
@@ -89,6 +95,14 @@ function FindingDetail({
         className="flex w-full items-center justify-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
       >
         <Trash2 className="h-4 w-4" /> Eintrag verwerfen
+      </button>
+    ) : onUnhide && f.hidden ? (
+      <button
+        type="button"
+        onClick={() => onUnhide(f)}
+        className="flex w-full items-center justify-center gap-1.5 rounded-md border border-primary-200 bg-primary-50 px-3 py-2.5 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-100"
+      >
+        <Eye className="h-4 w-4" /> Wieder einblenden
       </button>
     ) : !eigen && onHide && !f.hidden ? (
       <button
@@ -127,6 +141,8 @@ function FindingMarkerImpl({
   onSelect,
   onDeleteOwn,
   onHide,
+  onUnhide,
+  ghost = false,
   canChat = true,
 }: {
   group: Finding[]
@@ -134,6 +150,10 @@ function FindingMarkerImpl({
   onSelect?: (id: string) => void
   onDeleteOwn?: (obstacleId: string) => void
   onHide?: (finding: Finding) => void
+  /** Ausgeblendeten (Geister-)Fund wieder einblenden. */
+  onUnhide?: (finding: Finding) => void
+  /** Geister-Marker eines ausgeblendeten Funds → grauer Pin, Popup bietet „Wieder einblenden". */
+  ghost?: boolean
   /** Baustellen-Chat anbieten. App = true; öffentliche Freigabe = false (T-224: kein Chat,
    *  kein Demo-Seed-Leak an externe Empfänger). */
   canChat?: boolean
@@ -168,7 +188,7 @@ function FindingMarkerImpl({
       position={pos}
       icon={findingPinIcon(
         primary.kategorie,
-        eigen ? EIGEN_COLOR : SEVERITY_META[primary.severity].marker,
+        ghost ? GHOST_COLOR : eigen ? EIGEN_COLOR : SEVERITY_META[primary.severity].marker,
         active,
         primary.detail?.["Schwertransport"] === "gesperrt" ? "fahrverbot" : undefined,
       )}
@@ -289,7 +309,7 @@ function FindingMarkerImpl({
                 ))}
               </div>
             ) : null}
-            <FindingDetail f={current} onDeleteOwn={onDeleteOwn} onHide={onHide} />
+            <FindingDetail f={current} onDeleteOwn={onDeleteOwn} onHide={onHide} onUnhide={onUnhide} />
           </div>
 
           {/* Chat-Button auf der rechten Kante (Sibling des Wrappers, NICHT im Scroll-Div) —
