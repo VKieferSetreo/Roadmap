@@ -160,8 +160,11 @@ export interface Finding {
   lng: number
   /** Position entlang SEINER Strecke in Kilometern ab Start. */
   km: number
-  /** Zuordnung zur Projekt-Strecke (Multi-Strecken). */
+  /** Zuordnung zur Projekt-Strecke (Multi-Strecken). routeId = Repräsentant (km/Position beziehen sich
+   *  darauf). routeIds = ALLE Strecken, die diese Stelle befahren (T-621) — gesetzt, wenn >1; das FE
+   *  zeigt den Fund, sobald irgendeine davon sichtbar ist. */
   routeId?: string
+  routeIds?: string[]
   routeName?: string
   severity: FindingSeverity
   /** Strukturierte Detailwerte, z.B. { "Durchfahrtshöhe": "3,80 m" }. */

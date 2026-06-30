@@ -1,0 +1,11 @@
+-- 064 — T-621: Cross-Routen-Konsistenz der Funde.
+--
+-- Dieselbe reale Stelle (obstacle_id) liegt oft auf MEHREREN Strecken eines Projekts (z.B. zwei
+-- Strecken über dieselbe A5-Baustelle). Der Cross-Routen-Dedup (engine dedupeByObstacle) behält EINEN
+-- Repräsentanten mit EINER route_id — blendete man dann die Repräsentanten-Strecke aus / zeigte nur
+-- eine andere befahrende Strecke, verschwand der Fund. route_ids hält ALLE befahrenden Strecken-IDs;
+-- das FE zeigt den Fund, sobald IRGENDEINE davon sichtbar ist (einmal, aber konsistent).
+--
+-- Nullable + ohne Backfill: bestehende Funde fallen im FE auf route_id zurück; die nächste Re-Analyse
+-- (DELETE+INSERT je Projekt) füllt route_ids automatisch.
+ALTER TABLE findings ADD COLUMN IF NOT EXISTS route_ids jsonb;

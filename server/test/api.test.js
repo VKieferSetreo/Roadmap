@@ -397,6 +397,32 @@ describe("analysis (multi-route, offline)", () => {
     expect(db.state.findings).toHaveLength(2)
   })
 
+  it("T-621: Fund auf zwei Strecken trägt BEIDE routeIds (Cross-Routen-Konsistenz, einmal)", async () => {
+    const { app, db } = makeApp()
+    const p = await createProject(app, "Zwei Wege, eine Baustelle")
+    // zwei Strecken auf demselben Weg → eine Baustelle in der Mitte liegt auf BEIDEN
+    await request(app).patch(`/api/projects/${p.id}`).send({
+      routes: [
+        { id: "r-a", name: "Strecke A", points: cityPoints("Hamburg", "München") },
+        { id: "r-b", name: "Strecke B", points: cityPoints("Hamburg", "München"), farbe: "#3D5A80" },
+      ],
+    })
+    const mid = midOf(cityPoints("Hamburg", "München"))
+    await request(app).post("/api/obstacles").send({
+      kategorie: "bruecke", name: "Brücke Mitte", lat: mid.lat, lng: mid.lng,
+      attrs: { maxHoeheM: 3.8 }, strassenRef: "A7 km 300,0",
+    })
+    const res = await request(app).post(`/api/projects/${p.id}/analysis`)
+    expect(res.status).toBe(200)
+    // EINMAL angezeigt (Dedup greift), aber beide Strecken zugeordnet → bleibt sichtbar, egal welche an ist
+    expect(res.body.findings).toHaveLength(1)
+    const f = res.body.findings[0]
+    expect(f.routeIds).toEqual(expect.arrayContaining(["r-a", "r-b"]))
+    expect(f.routeIds).toHaveLength(2)
+    // persistiert (route_ids-Spalte) — der überlebende Fund kennt beide Routen
+    expect(db.state.findings[0].route_ids).toEqual(expect.arrayContaining(["r-a", "r-b"]))
+  })
+
   it("keine Route mit Punkten → 422, Projekt bleibt unverändert", async () => {
     const { app, db } = makeApp()
     const p = await createProject(app)

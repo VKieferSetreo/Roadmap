@@ -614,8 +614,8 @@ export function createFakeDb() {
       return ok([], before - state.findings.length)
     }
     if (sql.startsWith("INSERT INTO findings (project_id,")) {
-      // T-330: Multi-Row-Batch — Params in 18er-Tupeln (kann auch 1 Zeile sein).
-      const COLS = 18
+      // T-330/T-621: Multi-Row-Batch — Params in 19er-Tupeln (kann auch 1 Zeile sein).
+      const COLS = 19
       const inserted = []
       for (let b = 0; b < params.length; b += COLS) {
         const row = {
@@ -638,6 +638,7 @@ export function createFakeDb() {
           route_id: params[b + 15],
           route_name: params[b + 16],
           geom: params[b + 17] != null ? J(params[b + 17]) : null,
+          route_ids: params[b + 18] != null ? J(params[b + 18]) : null, // T-621
           created_at: now(),
         }
         state.findings.push(row)

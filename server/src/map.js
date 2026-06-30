@@ -54,6 +54,9 @@ export function rowToFinding(row) {
     detail: row.detail ?? {},
     ...(row.obstacle_id != null && { obstacleId: row.obstacle_id }),
     ...(row.route_id != null && { routeId: row.route_id }),
+    // T-621: alle befahrenden Strecken (Cross-Routen-Konsistenz). jsonb → Array; nur setzen, wenn
+    // mehr als die Repräsentanten-Route drinsteht (sonst reicht routeId; spart FE-Payload bei Altdaten).
+    ...(Array.isArray(row.route_ids) && row.route_ids.length > 1 && { routeIds: row.route_ids }),
     ...(row.route_name != null && { routeName: row.route_name }),
     ...(row.strassen_ref != null && { strassenRef: cleanText(row.strassen_ref) || null }),
     ...(row.gueltig_von != null && { gueltigVon: toIsoDate(row.gueltig_von) }),

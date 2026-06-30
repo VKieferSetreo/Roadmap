@@ -97,14 +97,16 @@ export function isCrossingStructure(obstacle, routeRefs) {
 // Findings-Persistenz (T-330): Spalten an einer Stelle für den Multi-Row-INSERT-Batch.
 const FINDING_COLS = `project_id, obstacle_id, kategorie, severity, titel, beschreibung,
   lat, lng, km, detail, strassen_ref, gueltig_von, gueltig_bis, quelle, zustaendig,
-  route_id, route_name, geom`
-const FINDING_COL_COUNT = 18
+  route_id, route_name, geom, route_ids`
+const FINDING_COL_COUNT = 19
 const findingParams = (projectId, f) => [
   projectId, f.obstacleId, f.kategorie, f.severity, f.titel, f.beschreibung,
   f.lat, f.lng, f.km, JSON.stringify(f.detail ?? {}), f.strassenRef ?? null,
   f.gueltigVon ?? null, f.gueltigBis ?? null,
   f.quelle != null ? JSON.stringify(f.quelle) : null, f.zustaendig ?? null,
   f.routeId ?? null, f.routeName ?? null, f.geom != null ? JSON.stringify(f.geom) : null,
+  // T-621: alle befahrenden Strecken-IDs (Cross-Routen-Konsistenz). null → FE fällt auf routeId zurück.
+  f.routeIds != null ? JSON.stringify(f.routeIds) : null,
 ]
 
 const round1 = (n) => Math.round(n * 10) / 10
@@ -621,10 +623,27 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       })
     }
   }
+  // T-621: dieselbe reale Stelle (obstacleId) liegt oft auf MEHREREN Strecken eines Projekts. Der
+  // Cross-Routen-Dedup (dedupeByObstacle) behält EINEN Repräsentanten mit EINER routeId — zeigte man
+  // dann nur eine ANDERE befahrende Strecke, verschwände der Fund (nur an Strecke 1 „angehängt"). Daher
+  // VOR dem Dedup je obstacleId ALLE befahrenden routeIds sammeln und sie NACH dem Dedup an den
+  // überlebenden Fund hängen (order-unabhängig, verliert keine Strecke). Das FE zeigt den Fund, sobald
+  // IRGENDEINE seiner routeIds sichtbar ist — einmal, aber konsistent über alle befahrenden Strecken.
+  const routesByObstacle = new Map()
+  for (const f of findings) {
+    if (f.obstacleId == null || f.routeId == null) continue
+    let set = routesByObstacle.get(f.obstacleId)
+    if (!set) { set = new Set(); routesByObstacle.set(f.obstacleId, set) }
+    set.add(f.routeId)
+  }
   findings = dedupeFindings(findings) // klare Dubletten (quellenübergreifend / beide Richtungen) rausschneiden
   findings = dedupeByObstacle(findings) // #22: dieselbe Stelle über viele Strecken → EIN Fund
   findings = dedupeByLocation(findings) // T-607: Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten
   findings = dedupeDominatedWidth(findings) // T-611: gleiche Route+km+Zeit, nur breitere Restbreite = dominiert → raus
+  for (const f of findings) {
+    const set = f.obstacleId != null ? routesByObstacle.get(f.obstacleId) : null
+    f.routeIds = set && set.size ? [...set] : f.routeId != null ? [f.routeId] : []
+  }
   for (const f of findings) f.titel = humanizeTitel(f.titel, f.kategorie) // T-607: kryptische Roh-Labels lesbar machen
   findings.sort((a, b) => a.km - b.km)
 

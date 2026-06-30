@@ -122,10 +122,19 @@ export function KarteTab({
     () => freigegebeneRouten.filter((r) => !hidden.has(r.id)),
     [freigegebeneRouten, hidden],
   )
+  // Ein Fund liegt oft auf MEHREREN Strecken (T-621: gleiche Stelle, beide befahren sie). Er bleibt
+  // sichtbar, solange IRGENDEINE seiner befahrenden Strecken eingeblendet ist — nicht nur die eine
+  // Repräsentanten-Strecke. Ohne Routen-Bezug (manuelle/Legacy-Funde) immer sichtbar.
+  const findingAufSichtbarerRoute = useMemo(() => {
+    return (f: Finding): boolean => {
+      const ids = f.routeIds ?? (f.routeId ? [f.routeId] : [])
+      return ids.length === 0 || ids.some((id) => !hidden.has(id))
+    }
+  }, [hidden])
   // Ausgeblendete Funde (f.hidden) erscheinen NIE auf der Karte/Legende/Zählung.
   const sichtbareFindings = useMemo(
-    () => project.findings.filter((f) => !f.hidden && (!f.routeId || !hidden.has(f.routeId))),
-    [project.findings, hidden],
+    () => project.findings.filter((f) => !f.hidden && findingAufSichtbarerRoute(f)),
+    [project.findings, findingAufSichtbarerRoute],
   )
   // Kategorie-Filter (oben rechts) angewandt → nur das landet auf der Karte + in der Suche.
   // kategoriesOnRoute (Filter-Liste) bleibt aus sichtbareFindings → alle Kategorien immer wählbar.
@@ -150,10 +159,10 @@ export function KarteTab({
       project.findings.filter(
         (f) =>
           f.hidden &&
-          (!f.routeId || !hidden.has(f.routeId)) &&
+          findingAufSichtbarerRoute(f) &&
           (!timeWin || findingInTime(f, timeWin.start, timeWin.end)),
       ),
-    [project.findings, hidden, timeWin],
+    [project.findings, findingAufSichtbarerRoute, timeWin],
   )
 
   // ── Ticket-Suche (Strg+F über alle sichtbaren Funde der Ansicht) ──────────────
