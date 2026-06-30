@@ -82,7 +82,9 @@ export function ProjectDetail() {
       {/* Reiter-Inhalt */}
       <div className="min-h-0 flex-1">
         {tab === "karte" ? (
-          <KarteTab project={project} canHide />
+          // key={project.id}: bei Projektwechsel (gleiche Route, anderes :id) remountet KarteTab sauber →
+          // per-Projekt-State (u.a. T-622 Strecken-Sichtbarkeit) wird frisch initialisiert.
+          <KarteTab key={project.id} project={project} canHide />
         ) : (
           <div className="h-full overflow-y-auto px-4 py-6 lg:px-6">
             {tab === "route" ? (

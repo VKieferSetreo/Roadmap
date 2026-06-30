@@ -227,6 +227,16 @@ export const api = {
   hiddenFindings: () =>
     axiosClient<HiddenFindingsResponse>({ url: "/admin/hidden-findings", method: "GET" }),
 
+  // ── Strecken-Sichtbarkeit im Viewer (T-622): pro Account + Projekt persistiert (Ebenen-Panel) ──
+  getViewerRoutes: (projectId: string) =>
+    axiosClient<{ hiddenRouteIds: string[] }>({ url: `/projects/${projectId}/viewer-routes`, method: "GET" }),
+  saveHiddenRoutes: (projectId: string, hiddenRouteIds: string[]) =>
+    axiosClient<{ ok: true }>({
+      url: `/projects/${projectId}/viewer-routes`,
+      method: "PUT",
+      data: { hiddenRouteIds },
+    }),
+
   // ── Mandanten-Verwaltung (nur Setreo-Admin) ────────────────────────────────
   listTenants: () =>
     axiosClient<{ tenants: Tenant[] }>({ url: "/admin/tenants", method: "GET" }).then(

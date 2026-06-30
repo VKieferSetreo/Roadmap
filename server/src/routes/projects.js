@@ -389,6 +389,37 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
     res.json({ ok: true })
   }))
 
+  // ── Strecken-Sichtbarkeit im Viewer (T-622): pro Account (req.ctx.email) + pro Projekt persistiert,
+  //    damit die Ebenen-Auswahl session-/geräteübergreifend konstant bleibt. Nur die App (gegatet hinter
+  //    requireTenant); der öffentliche Share-Viewer kennt keinen Account und persistiert NIE. ───────────
+
+  r.get("/:id/viewer-routes", asyncHandler(async (req, res) => {
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
+    if (!row) throw new ApiError(404, "Projekt nicht gefunden")
+    const { rows } = await db.query(
+      "SELECT hidden_route_ids FROM viewer_route_prefs WHERE project_id = $1 AND email = $2",
+      [row.id, req.ctx.email ?? ""],
+    )
+    res.json({ hiddenRouteIds: rows[0]?.hidden_route_ids ?? [] })
+  }))
+
+  r.put("/:id/viewer-routes", asyncHandler(async (req, res) => {
+    const row = await loadProjectRow(db, req.params.id, req.ctx)
+    if (!row) throw new ApiError(404, "Projekt nicht gefunden")
+    const email = req.ctx.email
+    if (!email) throw new ApiError(401, "Kein Account") // ohne Account-Identität nichts speichern
+    // Voller Set-Ersatz: das FE besitzt die ganze Auswahl. Nur Strings, gegen Aufblähung/Müll begrenzt.
+    const raw = Array.isArray(req.body?.hiddenRouteIds) ? req.body.hiddenRouteIds : []
+    const hiddenRouteIds = [...new Set(raw.filter((x) => typeof x === "string" && x).map((x) => x.slice(0, 64)))].slice(0, 500)
+    await db.query(
+      `INSERT INTO viewer_route_prefs (project_id, email, hidden_route_ids, updated_at)
+       VALUES ($1, $2, $3::jsonb, now())
+       ON CONFLICT (project_id, email) DO UPDATE SET hidden_route_ids = EXCLUDED.hidden_route_ids, updated_at = now()`,
+      [row.id, email, JSON.stringify(hiddenRouteIds)],
+    )
+    res.json({ ok: true })
+  }))
+
   // ── Share-Links ─────────────────────────────────────────────────────────────
 
   /** Publish (oder Re-Publish: ersetzt PW, reaktiviert revoked). */

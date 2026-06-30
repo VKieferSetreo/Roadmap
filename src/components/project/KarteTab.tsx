@@ -29,6 +29,8 @@ import { katMeta, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
+import { useContextStore } from "@/store/context"
+import { useViewPrefsStore } from "@/store/viewPrefs"
 import { api } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
 import { routeFreigegeben } from "@/types/domain"
@@ -83,8 +85,14 @@ export function KarteTab({
 }) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  /** ausgeblendete Strecken-IDs (Ebenen-Panel). */
-  const [hidden, setHidden] = useState<Set<string>>(new Set())
+  /** Account-Schlüssel für die persistierten Viewer-Prefs (E-Mail; "demo" ohne Account). */
+  const accountKey = useContextStore((s) => s.email) || "demo"
+  const getHiddenPref = useViewPrefsStore((s) => s.getHidden)
+  const setHiddenPref = useViewPrefsStore((s) => s.setHidden)
+  const hydrateHiddenPref = useViewPrefsStore((s) => s.hydrate)
+  /** ausgeblendete Strecken-IDs (Ebenen-Panel) — T-622 pro Account+Projekt persistiert. Sofort aus dem
+   *  localStorage-Cache hydriert (kein Flackern), beim Mount mit dem Backend abgeglichen. */
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set(getHiddenPref(accountKey, project.id)))
   const [layersOpen, setLayersOpen] = useState(false)
   /** Strecke im Editor (T-197), null = geschlossen. */
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
@@ -110,6 +118,29 @@ export function KarteTab({
   /** „Ausgeblendet"-Marke: ausgeblendete Funde als graue Geister-Marker zeigen. Default AUS (wie
    *  Warnung/Hinweis). An → graue Pins, Klick darauf blendet wieder ein. Nur in der App (canHide). */
   const [zeigeAusgeblendet, setZeigeAusgeblendet] = useState(false)
+
+  // Hat der Nutzer in DIESER Ansicht eine Strecke getoggelt? Dann darf ein verspätet eintreffender
+  // Backend-GET seine frische Auswahl NICHT mehr überschreiben (Race → Toggle würde zurückschnappen).
+  // Bei Projektwechsel remountet KarteTab (key={project.id} in ProjectDetail) → Ref startet je Projekt frisch.
+  const routenBeruehrtRef = useRef(false)
+  // T-622: gespeicherte Strecken-Sichtbarkeit dieses Accounts beim Mount aus dem Backend holen und die
+  // lokale Auswahl + den Cache damit abgleichen (Quelle der Wahrheit, geräteübergreifend). Nur App (canHide)
+  // + live; der öffentliche Share-Viewer hat keinen Account und bleibt ephemer.
+  useEffect(() => {
+    if (!canHide || !live) return
+    let abgebrochen = false
+    api
+      .getViewerRoutes(project.id)
+      .then(({ hiddenRouteIds }) => {
+        if (abgebrochen || routenBeruehrtRef.current) return // Nutzer-Toggle gewinnt gegen verspäteten GET
+        hydrateHiddenPref(accountKey, project.id, hiddenRouteIds)
+        setHidden(new Set(hiddenRouteIds))
+      })
+      .catch(() => {}) // Cache-Wert bleibt bestehen
+    return () => {
+      abgebrochen = true
+    }
+  }, [canHide, live, project.id, accountKey, hydrateHiddenPref])
 
   // Prüfen-Gate (T-598): ungeprüfte VEMAGS-Strecken fließen nicht in die Auswertung und werden auf
   // der Karte nicht gezeichnet → sie dürfen auch im Ebenen-Register/in den Kennzahlen nicht auftauchen
@@ -254,12 +285,14 @@ export function KarteTab({
     (a, b) => katMeta(a).label.localeCompare(katMeta(b).label),
   )
   const toggleRoute = (routeId: string) => {
-    setHidden((prev) => {
-      const next = new Set(prev)
-      if (next.has(routeId)) next.delete(routeId)
-      else next.add(routeId)
-      return next
-    })
+    const next = new Set(hidden)
+    if (next.has(routeId)) next.delete(routeId)
+    else next.add(routeId)
+    setHidden(next)
+    routenBeruehrtRef.current = true // ab jetzt darf ein verspäteter Backend-GET nicht mehr klobbern
+    // Persistenz nur in der App (canHide) — der öffentliche Share-Viewer bleibt wirklich ephemer
+    // (kein localStorage-Schreiben, kein Backend), wie die Doku verspricht.
+    if (canHide) setHiddenPref(accountKey, project.id, [...next])
   }
   /** Kategorie im Filter (oben rechts) ein-/ausblenden. */
   const toggleKat = (kat: string) =>
@@ -478,16 +511,18 @@ export function KarteTab({
                   <li
                     key={r.id}
                     className={cn(
-                      "flex items-center gap-1 rounded-md transition-colors hover:bg-neutral-100/70",
+                      "group flex items-center gap-1 rounded-md transition-colors hover:bg-neutral-100/70",
                       !sichtbar && "opacity-55",
                     )}
                   >
-                    <label className="flex flex-1 cursor-pointer items-center gap-2 px-1.5 py-1.5">
+                    {/* min-w-0 am label = truncate des Namens greift; sonst überläuft der Name und
+                        drückt die km-Spalte raus. */}
+                    <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 px-1.5 py-1.5">
                       <input
                         type="checkbox"
                         checked={sichtbar}
                         onChange={() => toggleRoute(r.id)}
-                        className="h-3.5 w-3.5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                        className="h-3.5 w-3.5 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
                         aria-label={`Strecke ${r.name} ${sichtbar ? "ausblenden" : "einblenden"}`}
                       />
                       <span
@@ -498,15 +533,17 @@ export function KarteTab({
                       <span className="min-w-0 flex-1 truncate text-xs font-medium text-neutral-700">
                         {r.name}
                       </span>
-                      <span className="text-[10px] tabular-nums text-neutral-400">
+                      {/* feste, rechtsbündige km-Spalte (bis 4-stellig: "9.999 km") → Werte fluchten, nichts rutscht */}
+                      <span className="w-16 shrink-0 text-right text-[10px] tabular-nums text-neutral-400">
                         {routeLengthKm(r.points).toLocaleString("de-DE")} km
                       </span>
                     </label>
+                    {/* Stift nur bei Hover/Fokus der Zeile → Ruhezustand bleibt sauber (Name + km), Edit bleibt erreichbar */}
                     <button
                       onClick={() => setEditRoute(r)}
                       title="Strecke bearbeiten"
                       aria-label={`Strecke ${r.name} bearbeiten`}
-                      className="mr-1 shrink-0 rounded p-1 text-neutral-400 hover:bg-neutral-200/70 hover:text-neutral-700"
+                      className="mr-1 shrink-0 rounded p-1 text-neutral-400 opacity-0 transition-opacity hover:bg-neutral-200/70 hover:text-neutral-700 focus-visible:opacity-100 group-hover:opacity-100"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>

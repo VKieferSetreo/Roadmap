@@ -433,6 +433,42 @@ describe("analysis (multi-route, offline)", () => {
   })
 })
 
+describe("viewer-routes — Strecken-Sichtbarkeit pro Account (T-622)", () => {
+  it("PUT speichert + GET liefert die ausgeblendeten Strecken (sanitisiert); Default leer", async () => {
+    const { app, db } = makeApp()
+    const p = await createRoutedProject(app, { points: cityPoints("Hamburg", "Hannover") })
+    const g0 = await request(app).get(`/api/projects/${p.id}/viewer-routes`)
+    expect(g0.status).toBe(200)
+    expect(g0.body.hiddenRouteIds).toEqual([]) // nichts gespeichert → alles sichtbar
+    const put = await request(app)
+      .put(`/api/projects/${p.id}/viewer-routes`)
+      .send({ hiddenRouteIds: ["r-1", "r-1", 42, ""] }) // Dubletten/Nicht-Strings werden gefiltert
+    expect(put.status).toBe(200)
+    const g1 = await request(app).get(`/api/projects/${p.id}/viewer-routes`)
+    expect(g1.body.hiddenRouteIds).toEqual(["r-1"])
+    // pro Account gekeyt (email aus req.ctx, nie aus dem Body) — Dev-Account dev@local
+    expect(db.state.viewerRoutePrefs).toHaveLength(1)
+    expect(db.state.viewerRoutePrefs[0]).toMatchObject({ email: "dev@local", hidden_route_ids: ["r-1"] })
+  })
+
+  it("PUT ist voller Set-Ersatz (leeres Array blendet wieder alles ein)", async () => {
+    const { app } = makeApp()
+    const p = await createRoutedProject(app, { points: cityPoints("Hamburg", "Hannover") })
+    await request(app).put(`/api/projects/${p.id}/viewer-routes`).send({ hiddenRouteIds: ["r-1"] })
+    await request(app).put(`/api/projects/${p.id}/viewer-routes`).send({ hiddenRouteIds: [] })
+    expect((await request(app).get(`/api/projects/${p.id}/viewer-routes`)).body.hiddenRouteIds).toEqual([])
+  })
+
+  it("fremdes/unbekanntes Projekt → 404 (Mandanten-Gate via loadProjectRow)", async () => {
+    const { app } = makeApp()
+    const fake = "00000000-0000-0000-0000-000000000000"
+    expect((await request(app).get(`/api/projects/${fake}/viewer-routes`)).status).toBe(404)
+    expect(
+      (await request(app).put(`/api/projects/${fake}/viewer-routes`).send({ hiddenRouteIds: [] })).status,
+    ).toBe(404)
+  })
+})
+
 describe("findings-Suche", () => {
   it("filtert nach severity/kategorie/q und liefert projektName + routeId", async () => {
     const { app } = makeApp()

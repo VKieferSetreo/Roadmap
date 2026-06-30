@@ -32,6 +32,7 @@ describe("anonymizeTenant (Art.17)", () => {
     for (const t of [
       "obstacles", "findings", "projects", "hidden_findings", "shares", "folders",
       "finding_chat_messages", "seat_codes", "tenant_members", "mail_prefs", "mail_optout",
+      "viewer_route_prefs",
       "disclaimer_acceptances", "bug_reports", "source_requests", "analytics_sessions",
       "analytics_events", "tenant_audit_log", "tenants",
     ]) {

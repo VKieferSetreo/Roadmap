@@ -125,6 +125,13 @@ export async function anonymizeTenant(db, tenant, { deactivate = null } = {}) {
     // Reine Mail-Präferenzen (kein Statistikwert) → entfernen.
     await q.query("DELETE FROM mail_prefs WHERE tenant_id = $1", [id])
     await q.query("DELETE FROM mail_optout WHERE tenant_id = $1", [id])
+    // T-622: Viewer-Strecken-Sichtbarkeit pro Account (email als PK) — reine Präferenz, kein Statistikwert.
+    // Projekte werden nur anonymisiert (nicht gelöscht), daher greift das ON DELETE CASCADE hier NICHT →
+    // explizit über die Projekt-IDs des Mandanten löschen, sonst bleiben Klartext-Mails liegen.
+    await q.query(
+      "DELETE FROM viewer_route_prefs WHERE project_id IN (SELECT id FROM projects WHERE tenant_id = $1)",
+      [id],
+    )
     // FK-lose Tabellen: über Mitglied-Mails bzw. tenant_slug matchen (kein CASCADE-Pfad).
     if (emails.length) {
       await q.query(`UPDATE disclaimer_acceptances SET email = ${ANON("email")}, ip = NULL WHERE email = ANY($1::text[])`, [emails])

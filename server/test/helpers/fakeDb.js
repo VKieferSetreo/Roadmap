@@ -40,6 +40,7 @@ export function createFakeDb() {
     bugReports: [],
     news: [], // { id, kategorie, titel, body, created_by, published_at }
     hiddenFindings: [], // { project_id, finding_key, obstacle_id, grund, grund_text, kontext, hidden_by, created_at }
+    viewerRoutePrefs: [], // T-622 { project_id, email, hidden_route_ids, updated_at }
     geocodeCache: new Map(),
     routeCache: new Map(),
   }
@@ -1159,6 +1160,27 @@ export function createFakeDb() {
         (h) => !(h.project_id === params[0] && h.finding_key === params[1]),
       )
       return ok([], before - state.hiddenFindings.length)
+    }
+
+    // ── viewer_route_prefs (T-622: Strecken-Sichtbarkeit pro Account+Projekt) ──
+    if (sql.startsWith("SELECT hidden_route_ids FROM viewer_route_prefs WHERE project_id = $1 AND email = $2")) {
+      const row = state.viewerRoutePrefs.find((v) => v.project_id === params[0] && v.email === params[1])
+      return ok(row ? [{ hidden_route_ids: row.hidden_route_ids }] : [])
+    }
+    if (sql.startsWith("INSERT INTO viewer_route_prefs (project_id, email,")) {
+      let row = state.viewerRoutePrefs.find((v) => v.project_id === params[0] && v.email === params[1])
+      if (row) row.hidden_route_ids = J(params[2])
+      else {
+        row = { project_id: params[0], email: params[1], hidden_route_ids: J(params[2]), updated_at: now() }
+        state.viewerRoutePrefs.push(row)
+      }
+      return ok([row], 1)
+    }
+    if (sql.startsWith("DELETE FROM viewer_route_prefs WHERE project_id IN (SELECT id FROM projects WHERE tenant_id")) {
+      const projIds = new Set(state.projects.filter((p) => p.tenant_id === params[0]).map((p) => p.id))
+      const before = state.viewerRoutePrefs.length
+      state.viewerRoutePrefs = state.viewerRoutePrefs.filter((v) => !projIds.has(v.project_id))
+      return ok([], before - state.viewerRoutePrefs.length)
     }
     if (sql.startsWith("SELECT h.id, h.project_id, h.finding_key")) {
       const rows = [...state.hiddenFindings]
