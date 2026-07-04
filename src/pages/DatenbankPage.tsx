@@ -40,11 +40,14 @@ export function DatenbankPage() {
   const { unreachable } = useSourceHealth()
 
   return (
-    <div className="h-full overflow-y-auto">
+    // Ansicht-Tab (Karte) füllt exakt die Viewport-Höhe → NICHT scrollbar (flex-Kette statt 100vh-Raterei).
+    // Analytics/Quellenregister behalten den Scroll (lange Listen).
+    <div className={tab === "ansicht" ? "flex h-full flex-col overflow-hidden" : "h-full overflow-y-auto"}>
       <PageContainer
         title="Datenbank"
         description="Datenquellen aktualisieren und alle Einträge auf der Karte sehen."
         width="wide"
+        className={tab === "ansicht" ? "min-h-0 flex-1" : undefined}
       >
         {intern ? (
           <Tabs
@@ -77,7 +80,7 @@ export function DatenbankPage() {
         ) : null}
 
         {tab === "ansicht" ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex h-full min-h-0 flex-col gap-4">
             {live ? <SyncBar /> : null}
             <ObstacleKarte live={live} />
           </div>
@@ -191,7 +194,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
     const lp = ladefortschritt
     const prozent = lp && lp.gesamt > 0 ? Math.min(100, Math.round((lp.geladen / lp.gesamt) * 100)) : 0
     return (
-      <div className="relative flex h-[calc((100vh-360px)*0.95)] min-h-[400px] flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white">
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
           <Database className="h-4 w-4 text-primary-500" />
           Hindernis-Datenbank wird geladen …
@@ -232,8 +235,10 @@ function ObstacleKarte({ live }: { live: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="h-[calc((100vh-360px)*0.95)] min-h-[418px]">
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      {/* flex-1 füllt den Rest exakt (kein Scroll); min-h als Boden gegen Kollaps, falls die Flex-Kette
+          mal nicht auflöst (auf normalen Schirmen ist flex-1 größer → greift nicht). */}
+      <div className="min-h-[420px] flex-1">
         <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo}>
           {/* Suchleisten IN der Karte (links Ort = schwenkt, rechts Inhalt = filtert). Liegen im
               Karten-Wrapper → bleiben auch im Vollbild sichtbar; rechts bleibt Platz für den
