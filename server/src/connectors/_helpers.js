@@ -63,6 +63,9 @@ export function dateOnly(v) {
   if (!v) return null
   const m = String(v).match(/\d{4}-\d{2}-\d{2}/)
   if (m) return m[0]
+  // T-626: Slash-Format YYYY/MM/DD (z.B. Münster-Feed 0215 "2026/07/02 00:00:00")
+  const s = String(v).match(/(\d{4})\/(\d{2})\/(\d{2})/)
+  if (s) return `${s[1]}-${s[2]}-${s[3]}`
   const d = String(v).match(/(\d{2})\.(\d{2})\.(\d{2,4})/)
   if (d) {
     const yyyy = d[3].length === 2 ? "20" + d[3] : d[3]

@@ -263,9 +263,11 @@ export async function runImport({
      WHERE id = $1 RETURNING *`,
     [run.id, status, JSON.stringify(stats), logLines.length ? logLines.join("\n") : null],
   )
-  // T-476: letzter_abruf NUR bei Nicht-Fehler hochziehen — sonst stempelt ein toter Feed sich
-  // selbst als „gerade frisch" und die Staleness (zuletztAktualisiert = max(letzter_abruf)) lügt.
-  if (status !== "error") {
+  // T-476/T-626: letzter_abruf NUR bei echtem Daten-Refresh hochziehen. 'ok' und 'partial' haben
+  // verwertbare Daten geliefert; 'warn' (Vollbestand-Feed mit 0 Einträgen = toter/kaputter Feed) und
+  // 'error' NICHT — sonst stempelt sich eine tote Quelle (0124 Token-Pflicht, 0122/0217 aus Schedule
+  // gefallen) selbst als „gerade frisch" und die Register-Staleng lügt.
+  if (status === "ok" || status === "partial") {
     await db.query("UPDATE quellen SET letzter_abruf = now() WHERE id = $1", [connector.quelleId])
   }
   return doneRows[0]

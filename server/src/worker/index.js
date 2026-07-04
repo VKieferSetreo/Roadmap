@@ -16,7 +16,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
+import { detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 
 loadEnv()
@@ -205,6 +205,9 @@ async function runPrune() {
     // T-277: nach den Deletes Bloat zurückgewinnen (VACUUM ANALYZE, non-blocking).
     const vac = await vacuumChurnedTables(db, { log })
     log(`VACUUM ANALYZE auf ${vac}/${5} churn-Tabellen`)
+    // T-626: Staleness-Monitor — tote/eingefrorene/ertraglose Quellen sichtbar machen (nur WARN-Log).
+    const stale = await detectStaleSources(db, { log })
+    if (!stale.length) log("Staleness (T-626): alle aktiven Quellen frisch")
   } catch (err) {
     log(`Retention-Lauf fehlgeschlagen: ${err?.message ?? err}`)
   }

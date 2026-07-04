@@ -144,6 +144,64 @@ export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
   return ok
 }
 
+// T-626 Staleness-Monitor: der systemische blinde Fleck des Audits — ein eingefrorener/toter Feed
+// erzeugt dauerhaft grüne Sync-Runs, sodass eine ausgefallene Quelle (0124 NRW-Schwertransportkarte:
+// ArcGIS verlangt seit 2026-06-29 Token; 0122/0217 aus dem Schedule gefallen; 0121 Sachsen viewer-tot)
+// unbemerkt veraltet und das Tool jahrealte Daten als „aktuell" zeigt. Dieser Job MUTIERT NICHTS — er
+// prüft je Quelle den jüngsten import_run + den aktiven Bestand und liefert die auffälligen Quellen für
+// eine WARN-Zeile im täglichen Cleanup (durabler Breadcrumb im Worker-Log). Drei eindeutige Signale:
+//   - kein_lauf_seit: jüngster Run älter als staleDays → Quelle synct gar nicht mehr
+//   - letzter_lauf_fehlgeschlagen: jüngster Run status warn/error → Feed tot/kaputt/leer
+//   - keine_aktiven_daten: Quelle aktiv, hat gelaufen, aber 0 aktive obstacles → No-Op/Pipeline-Bruch
+// (Bewusst NICHT: Churn-Freeze-Heuristik „nichts ändert sich seit N Läufen" — die würde statische
+//  Referenzquellen wie 0153 BASt-Brücken / 0150 fälschlich flaggen. Der 0114-Fall „ok-Läufe, aber
+//  Upstream ein Jahr alt" bleibt daher manuell; er ist ohne Upstream-Frische-Signal nicht sicher erkennbar.)
+const STALE_SOURCES_SQL = `
+  WITH last_run AS (
+    SELECT DISTINCT ON (quelle_id) quelle_id, status, started_at
+    FROM import_runs ORDER BY quelle_id, started_at DESC
+  ),
+  aktiv AS (
+    SELECT quellen_id, count(*) AS n FROM obstacles WHERE aktiv GROUP BY quellen_id
+  )
+  SELECT q.id, q.name, lr.status AS last_status,
+         to_char(lr.started_at, 'YYYY-MM-DD HH24:MI') AS last_run,
+         EXTRACT(EPOCH FROM (now() - lr.started_at))/86400 AS age_days,
+         COALESCE(a.n, 0) AS aktiv_n
+  FROM quellen q
+  LEFT JOIN last_run lr ON lr.quelle_id = q.id
+  LEFT JOIN aktiv a ON a.quellen_id = q.id
+  WHERE q.aktiv = true
+    AND (
+      lr.started_at IS NULL
+      OR lr.started_at < now() - ($1::int * INTERVAL '1 day')
+      OR lr.status IN ('warn', 'error')
+      OR COALESCE(a.n, 0) = 0
+    )
+  ORDER BY lr.status IN ('warn','error') DESC, age_days DESC NULLS FIRST`
+
+/**
+ * Findet Quellen, die veraltet/tot/ertraglos wirken (siehe SQL). Reiner Read + WARN-Log, keine Mutation.
+ * @returns {Promise<Array>} auffällige Quellen mit { id, name, last_status, last_run, age_days, aktiv_n, grund }
+ */
+export async function detectStaleSources(db, { staleDays = 3, log = () => {} } = {}) {
+  const { rows } = await db.query(STALE_SOURCES_SQL, [staleDays])
+  const flagged = rows.map((r) => {
+    const age = r.age_days == null ? null : Math.round(Number(r.age_days))
+    let grund
+    if (r.last_run == null) grund = "nie gelaufen"
+    else if (r.last_status === "error" || r.last_status === "warn") grund = `letzter Lauf ${r.last_status}`
+    else if (Number(r.aktiv_n) === 0) grund = "0 aktive Hindernisse"
+    else grund = `kein Lauf seit ${age} Tagen`
+    return { ...r, aktiv_n: Number(r.aktiv_n), age_days: age, grund }
+  })
+  if (flagged.length) {
+    log(`WARN Staleness (T-626): ${flagged.length} auffällige Quellen — ` +
+        flagged.map((f) => `${f.id} (${f.grund}, ${f.aktiv_n} aktiv, letzter ${f.last_run ?? "—"})`).join("; "))
+  }
+  return flagged
+}
+
 // fach_id-Dedup/Renumber (T-262). Root-Cause war ein Index-Überlauf >9999: MAX_INDEX_SQL las nur die
 // ersten 4 Stellen der fachId → bei >9999 Einträgen/Quelle (5-stelliger Index, 15-stellige fachId)
 // hing der Zähler bei 9999 → Folge-Importe vergaben Index 10000+ ERNEUT → Dubletten. Der
