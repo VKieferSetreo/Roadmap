@@ -32,6 +32,17 @@ const VZ = {
 }
 const VZ_LABEL = { "262": "Gewichtsbeschränkung", "263": "Achslastbeschränkung", "264": "Breitenbeschränkung", "265": "Durchfahrtshöhe", "266": "Längenbeschränkung" }
 
+// T-632: KATEGORISCHE Verbote (keine Maß-Zeichen) — bisher als "nicht-SGT" verworfen, dabei sind es
+// De-facto-Schwertransport-Restriktionen (~21k VZ-253-Segmente = 61% des Katasters). VZ 253 (Lkw-Verbot
+// > 3,5 t) ist ein RECHTLICHES Verbot → gewicht + verkehrsverbotLkwT (Engine wertet als WARNUNG,
+// genehmigungsabhängig, NICHT als physische Traglast-Überschreitung). VZ 250/251 (Verbot für Fahrzeuge
+// aller Art / Kraftwagen) = echte Durchfahrtssperre → sperrung + vollsperrung (kritisch im Zeitraum).
+const VZ_VERBOT = {
+  "250": { kat: "sperrung", label: "Durchfahrt verboten (Zeichen 250, Fahrzeuge aller Art)", attrs: { vollsperrung: true } },
+  "251": { kat: "sperrung", label: "Verbot für Kraftwagen (Zeichen 251)", attrs: { vollsperrung: true } },
+  "253": { kat: "gewicht", label: "Lkw-Durchfahrtsverbot über 3,5 t (Zeichen 253)", attrs: { verkehrsverbotLkwT: 3.5 } },
+}
+
 /** "3,6" / "6" → 3.6 / 6 (dt. Komma). Plausibel (>0, <200). */
 function wertNum(w) {
   const m = String(w ?? "").replace(",", ".").match(/(\d+(?:\.\d+)?)/)
@@ -44,6 +55,59 @@ function firstCoord(geom) {
   while (Array.isArray(c) && Array.isArray(c[0])) c = c[0]
   const lng = Number(c?.[0]), lat = Number(c?.[1])
   return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : [null, null]
+}
+
+// Zusatzzeichen (vz_*=true) = Ausnahmen (Anlieger/Lieferverkehr/landwirtschaftl. Verkehr frei). Für einen
+// DURCHFAHRENDEN Großraum-/Schwertransport i.d.R. irrelevant (er ist kein Anlieger) → ändert die Severity
+// NICHT, wird aber als Kontext genannt, damit der Disponent den Sonderfall (Ziel als Anlieger) erkennt.
+function ausnahmenHinweis(p) {
+  const hat = Object.entries(p).some(([k, v]) => k.startsWith("vz_") && v === "true")
+  return hat ? " Mit Zusatzzeichen (Ausnahmen möglich, z. B. Anlieger- oder Lieferverkehr frei)." : ""
+}
+// Zeitfenster (SEVAS zeit1_von/zeit1_bis, HH:MM) → nur als Klartext-Hinweis (kein strukturiertes
+// zeitfenster, Tages-Bitmaske hier bewusst nicht interpretiert).
+function zeitHinweis(p) {
+  const von = String(p.zeit1_von ?? "").trim(), bis = String(p.zeit1_bis ?? "").trim()
+  return von && bis ? ` Zeitlich beschränkt (${von}–${bis} Uhr).` : ""
+}
+
+/** Ein SEVAS-Feature → normalisiertes Obstacle oder null (nicht relevant). Pure/testbar. */
+export function sevasFeatureToObstacle(f) {
+  const p = f?.properties ?? {}
+  const typ = String(p.typ ?? "")
+  const typBase = typ.split("-")[0] // "257-57" → "257"
+  const mass = VZ[typ]
+  const verbot = VZ_VERBOT[typBase]
+  if (!mass && !verbot) return null // nicht-SGT-Zeichen
+  const [lng, lat] = firstCoord(f?.geometry)
+  if (lat == null) return null
+  const strasse = String(p.name ?? "").trim()
+  const ort = [p.gemeinde, p.kreis].filter(Boolean).join(", ")
+  const geom = f?.geometry && f.geometry.type ? f.geometry : null
+  const eid = `nrw-sevas-${p.segment_id}-${p.restrkn_id}`
+  const base = { externeId: eid, lat, lng, strassenRef: strasse || null, geom, quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL }
+
+  if (mass) {
+    const wert = wertNum(p.wert)
+    if (wert == null) return null // Maß-Zeichen ohne Grenzwert → nichts zu prüfen
+    const label = VZ_LABEL[typ] || "Beschränkung"
+    const labelMitWert = `${label} ${String(wert).replace(".", ",")} ${/T$/.test(mass.key) ? "t" : "m"}`
+    return makeNormalized({
+      ...base,
+      kategorie: mass.kat,
+      name: [labelMitWert, strasse].filter(Boolean).join(" · "),
+      beschreibung: `${label} (SEVAS NRW, amtliches Restriktionskataster IT.NRW)${ort ? ` · ${ort}` : ""}`,
+      attrs: { [mass.key]: wert },
+    })
+  }
+  // Verbot (VZ 250/251/253)
+  return makeNormalized({
+    ...base,
+    kategorie: verbot.kat,
+    name: [verbot.label, strasse].filter(Boolean).join(" · "),
+    beschreibung: `${verbot.label} (SEVAS NRW, amtliches Restriktionskataster IT.NRW)${ort ? ` · ${ort}` : ""}.${ausnahmenHinweis(p)}${zeitHinweis(p)}`,
+    attrs: { ...verbot.attrs },
+  })
 }
 
 function pageUrl(startIndex) {
@@ -69,37 +133,14 @@ export const sevasNrwRestriktionenConnector = {
       const feats = data?.features ?? []
       total += feats.length
       for (const f of feats) {
-        const p = f.properties ?? {}
-        const map = VZ[String(p.typ)]
-        if (!map) { skipped++; continue } // nicht-SGT-Zeichen raus
-        const wert = wertNum(p.wert)
-        if (wert == null) { skipped++; continue } // Maß-Zeichen ohne Grenzwert → nichts zu prüfen
-        const [lng, lat] = firstCoord(f.geometry)
-        if (lat == null) { skipped++; continue }
-        const strasse = String(p.name ?? "").trim()
-        const ort = [p.gemeinde, p.kreis].filter(Boolean).join(", ")
-        const label = VZ_LABEL[String(p.typ)] || "Beschränkung"
-        // T-610: Grenzwert IN den Titel (war nur im detail) — „Gewichtsbeschränkung 7,5 t · <Straße>"
-        // statt nacktem „Gewichtsbeschränkung". Einheit aus dem attr-Schlüssel (…T = Tonne, sonst Meter).
-        const labelMitWert = `${label} ${String(wert).replace(".", ",")} ${/T$/.test(map.key) ? "t" : "m"}`
-        obstacles.push(makeNormalized({
-          // Beschreibung bewusst OHNE "X m"/"X t"-Token (sonst extractStammdaten-Scheinwert) —
-          // der Grenzwert steht strukturiert in attrs.
-          externeId: `nrw-sevas-${p.segment_id}-${p.restrkn_id}`,
-          kategorie: map.kat,
-          name: [labelMitWert, strasse].filter(Boolean).join(" · "),
-          beschreibung: `${label} (SEVAS NRW, amtliches Restriktionskataster IT.NRW)${ort ? ` · ${ort}` : ""}`,
-          lat, lng,
-          strassenRef: strasse || null,
-          attrs: { [map.key]: wert }, // explizit → makeNormalized-Gap-Fill greift nicht drüber
-          geom: f.geometry && f.geometry.type ? f.geometry : null, // LineString = betroffenes Segment
-          quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
-        }))
+        const o = sevasFeatureToObstacle(f)
+        if (o) obstacles.push(o)
+        else skipped++
       }
       if (feats.length < PAGE) break // letzte Seite
       start += PAGE
     }
-    log(`${QUELLE}: ${obstacles.length} Restriktionen (Höhe/Gewicht/Breite/Länge/Achslast) aus ${total} Segmenten (${pages + 1} Seiten, ${skipped} übersprungen)`)
+    log(`${QUELLE}: ${obstacles.length} Restriktionen (Höhe/Gewicht/Breite/Länge/Achslast + Lkw-/Durchfahrtsverbote VZ 250/251/253) aus ${total} Segmenten (${pages + 1} Seiten, ${skipped} übersprungen)`)
     return { obstacles }
   },
 }

@@ -1,7 +1,17 @@
-// T-626 Data-Quality-Audit — Fixes: dateOnly-Slash-Format (0215 Münster) + Staleness-Monitor-Klassifikation.
+// T-626 Data-Quality-Audit — Fixes: dateOnly-Slash-Format (0215 Münster) + Staleness-Monitor-Klassifikation
+// + T-632 SEVAS VZ 253/250 (Lkw-/Durchfahrtsverbote) + ruleGewicht-Verbots-Semantik.
 import { describe, it, expect } from "vitest"
 import { dateOnly } from "../src/connectors/_helpers.js"
 import { detectStaleSources } from "../src/worker/hygiene.js"
+import { sevasFeatureToObstacle } from "../src/connectors/0157_sevas_nrw_restriktionen.js"
+import { evaluate } from "../src/engine/rules.js"
+
+const TRANSPORT = { laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68, achsen: 8 }
+const sevasFeat = (props) => ({
+  type: "Feature",
+  geometry: { type: "LineString", coordinates: [[7.5, 51.5], [7.51, 51.51]] },
+  properties: { segment_id: 1, restrkn_id: 2, name: "Teststraße", gemeinde: "Krefeld", kreis: "Krefeld", ...props },
+})
 
 describe("dateOnly — Slash-Format (T-626, Münster-Feed 0215)", () => {
   it("parst YYYY/MM/DD [HH:MM:SS] → ISO", () => {
@@ -41,5 +51,45 @@ describe("detectStaleSources — Grund-Klassifikation (T-626)", () => {
   it("leere Liste → keine Flags", async () => {
     const out = await detectStaleSources(stubDb([]), {})
     expect(out).toEqual([])
+  })
+})
+
+describe("T-632 — SEVAS VZ 253/250 Verbote (0157)", () => {
+  it("VZ 253 → gewicht + verkehrsverbotLkwT=3.5, Zusatzzeichen als Kontext", () => {
+    const o = sevasFeatureToObstacle(sevasFeat({ typ: "253", wert: "", vz_1020_30: "true" }))
+    expect(o.kategorie).toBe("gewicht")
+    expect(o.attrs.verkehrsverbotLkwT).toBe(3.5)
+    expect(o.attrs.maxGewichtT).toBeUndefined() // KEINE physische Traglast
+    expect(o.name).toMatch(/Lkw-Durchfahrtsverbot/)
+    expect(o.beschreibung).toMatch(/Zusatzzeichen/)
+  })
+  it("VZ 250 → sperrung + vollsperrung; Zeitfenster als Hinweis", () => {
+    const o = sevasFeatureToObstacle(sevasFeat({ typ: "250", zeit1_von: "22:00", zeit1_bis: "06:00" }))
+    expect(o.kategorie).toBe("sperrung")
+    expect(o.attrs.vollsperrung).toBe(true)
+    expect(o.beschreibung).toMatch(/22:00–06:00/)
+  })
+  it("Maß-Zeichen VZ 265 (Höhe) bleibt unverändert; typ mit Suffix + unbekannt → null", () => {
+    const o = sevasFeatureToObstacle(sevasFeat({ typ: "265", wert: "3,8" }))
+    expect(o.kategorie).toBe("bruecke")
+    expect(o.attrs.maxHoeheM).toBe(3.8)
+    expect(sevasFeatureToObstacle(sevasFeat({ typ: "257-57" }))).toBe(null)
+    expect(sevasFeatureToObstacle(sevasFeat({ typ: "262", wert: "" }))).toBe(null) // Maß ohne Wert
+  })
+})
+
+describe("T-632/T-631 — ruleGewicht Verbots-Severity", () => {
+  const obst = (attrs) => ({ kategorie: "gewicht", name: "x", attrs, gueltigVon: null, gueltigBis: null })
+  it("VZ-253-Verbot (verkehrsverbotLkwT) → WARNUNG, nicht kritisch (kein Karten-Flut)", () => {
+    const r = evaluate(obst({ verkehrsverbotLkwT: 3.5 }), TRANSPORT, {})
+    expect(r).not.toBe(null)
+    expect(r.severity).toBe("warnung")
+  })
+  it("grundsaetzlicheGstSperre → warnung; gesperrtKomplett → kritisch", () => {
+    expect(evaluate(obst({ grundsaetzlicheGstSperre: true }), TRANSPORT, {}).severity).toBe("warnung")
+    expect(evaluate(obst({ gesperrtKomplett: true }), TRANSPORT, {}).severity).toBe("kritisch")
+  })
+  it("physische Traglast maxGewichtT < Transport bleibt kritisch", () => {
+    expect(evaluate(obst({ maxGewichtT: 30 }), TRANSPORT, {}).severity).toBe("kritisch")
   })
 })

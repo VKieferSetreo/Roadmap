@@ -65,7 +65,7 @@ export const buildFachId = (index, quellenId, realerStart) =>
 // sonstige Bauwerke ohne Restriktion und das GST-Positiv-Routennetz (gstRoute) sind Standard-Themen,
 // die das Strecken-Engineering abdeckt. SOBALD eine Abweichung dranhängt (Höhen-/Breiten-/Gewichts-/
 // Achslast-Limit, GST-Sperre, Vollsperrung, Bezugsgewicht) ist es zu behalten — auch bei Brücken.
-const RESTRIKTIONS_ATTRS = ["maxHoeheM", "maxBreiteM", "maxGewichtT", "maxAchslastT", "restbreiteM", "maxLaengeM", "bezugsgewichtT"]
+const RESTRIKTIONS_ATTRS = ["maxHoeheM", "maxBreiteM", "maxGewichtT", "maxAchslastT", "restbreiteM", "maxLaengeM", "bezugsgewichtT", "verkehrsverbotLkwT"]
 const BLOCK_FLAGS = ["vollsperrung", "halbseitig", "grundsaetzlicheGstSperre", "gesperrtKomplett"]
 const INFRA_KATEGORIEN = new Set(["bruecke", "tunnel", "sonstige"])
 

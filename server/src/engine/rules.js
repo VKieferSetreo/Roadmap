@@ -111,6 +111,7 @@ function withInfoAttrs(detail, attrs) {
 function hatLastBeschraenkung(attrs) {
   return (
     num(attrs?.maxGewichtT) != null ||
+    num(attrs?.verkehrsverbotLkwT) != null || // T-632: VZ 253 Lkw-Durchfahrtsverbot > x t
     attrs?.gesperrtKomplett === true ||
     attrs?.grundsaetzlicheGstSperre === true
   )
@@ -229,6 +230,31 @@ function ruleEngstelle(attrs, transport) {
 // Achslast-Verteilung war zu fehleranfällig/aufwändig; relevant ist die zulässige Gesamtlast.
 function ruleGewicht(attrs, transport) {
   const maxG = num(attrs.maxGewichtT)
+  // T-632/T-631: behördliche/verkehrsrechtliche Verbote gegenüber der PHYSISCHEN Traglast (maxGewichtT)
+  // korrekt einstufen. gesperrtKomplett = harte GST-Sperre → kritisch. verkehrsverbotLkwT (VZ 253
+  // Lkw-Durchfahrtsverbot > x t) und grundsaetzlicheGstSperre = RECHTLICHES Verbot, für den
+  // genehmigungspflichtigen GST auflagen-/genehmigungsabhängig (mit Ausnahme befahrbar) → WARNUNG, nicht
+  // kritisch (sonst würden ~20k VZ-253-Segmente in NRW jede Route rot fluten). Vorher ignorierte
+  // ruleGewicht diese Flags komplett (Sachsen-Negativkarte 0121 blieb dauerhaft nur "hinweis").
+  if (attrs.gesperrtKomplett === true) {
+    return {
+      severity: "kritisch",
+      beschreibung: "Für den genehmigungspflichtigen Schwerverkehr gesperrt. Umfahren oder Ausnahmegenehmigung erforderlich.",
+      detail: { Schwertransport: "gesperrt", Gesamtgewicht: fmtT(transport.gesamtgewicht) },
+    }
+  }
+  const verbotT = num(attrs.verkehrsverbotLkwT)
+  if (verbotT != null || attrs.grundsaetzlicheGstSperre === true) {
+    return {
+      severity: "warnung",
+      beschreibung: "Verkehrsrechtliches Gewichts- bzw. Durchfahrtsverbot. Für den Großraum- und Schwertransport genehmigungs- bzw. auflagenabhängig, vor der Fahrt klären.",
+      detail: {
+        ...(verbotT != null && { "Verbot ab": fmtT(verbotT) }),
+        Gesamtgewicht: fmtT(transport.gesamtgewicht),
+        Schwertransport: "genehmigungs-/auflagenabhängig",
+      },
+    }
+  }
   if (maxG == null) {
     // T-611: VZ263 trägt jetzt maxAchslastT statt maxGewichtT → maxG ist null → dieser Hinweis greift
     // ohne hinterlegtes Gesamtgewicht; da Achslast bewusst NICHT bewertet wird (Max 2026-06-16) und
