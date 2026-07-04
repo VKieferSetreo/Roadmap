@@ -191,7 +191,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
     const lp = ladefortschritt
     const prozent = lp && lp.gesamt > 0 ? Math.min(100, Math.round((lp.geladen / lp.gesamt) * 100)) : 0
     return (
-      <div className="relative flex h-[calc(100vh-360px)] min-h-[420px] flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white">
+      <div className="relative flex h-[calc((100vh-360px)*0.95)] min-h-[400px] flex-col items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white">
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
           <Database className="h-4 w-4 text-primary-500" />
           Hindernis-Datenbank wird geladen …
@@ -233,7 +233,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="h-[calc(100vh-360px)] min-h-[440px]">
+      <div className="h-[calc((100vh-360px)*0.95)] min-h-[418px]">
         <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo}>
           {/* Suchleisten IN der Karte (links Ort = schwenkt, rechts Inhalt = filtert). Liegen im
               Karten-Wrapper → bleiben auch im Vollbild sichtbar; rechts bleibt Platz für den
