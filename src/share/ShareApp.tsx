@@ -225,7 +225,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
 
   return (
     <>
-      {showDisclaimer ? <DisclaimerModal mode="view" onClose={() => setShowDisclaimer(false)} /> : null}
+      {showDisclaimer ? <DisclaimerModal mode="view" closeLabel="Akzeptieren" onClose={() => setShowDisclaimer(false)} /> : null}
       <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
         <Shell projektName={data.name} routes={data.routes}>
           <Routes>

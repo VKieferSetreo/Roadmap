@@ -47,11 +47,15 @@ export function DisclaimerModal({
   busy = false,
   onAccept,
   onClose,
+  closeLabel = "Schließen",
 }: {
   mode: "accept" | "view"
   busy?: boolean
   onAccept?: () => void
   onClose?: () => void
+  // Label des view-Buttons. Default „Schließen" (Einstellungen: reines Ansehen). Der Share-Viewer zeigt
+  // den Haftungsausschluss als Consent-Gate beim Öffnen → dort „Akzeptieren" (Zustimmung, nicht Wegklicken).
+  closeLabel?: string
 }) {
   const [checked, setChecked] = useState(false)
 
@@ -82,7 +86,7 @@ export function DisclaimerModal({
         <div className="mt-6 flex justify-end gap-2">
           {mode === "view" ? (
             <Button variant="outline" onClick={onClose}>
-              Schließen
+              {closeLabel}
             </Button>
           ) : (
             <Button onClick={onAccept} loading={busy} disabled={!checked}>
