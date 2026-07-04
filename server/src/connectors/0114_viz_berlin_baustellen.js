@@ -1,15 +1,17 @@
-// Connector Quelle 0114: Berlin VIZ — Baustellen/Sperrungen/Störungen (mdhwfs).
-// Port aus API/Länder/Berlin/VIZ-Berlin-Baustellen-WFS/viz-berlin-baustellen.cron.mjs.
-// GeoServer WFS 2.0, GeoJSON, EPSG:4326 (keine Reprojektion). Geometrie = GeometryCollection
-// (Point + optional LineString). validity = JSON-String { from, to } (dd.mm.yyyy [HH:MM]).
+// Connector Quelle 0114: Berlin VIZ — Baustellen/Sperrungen/Störungen.
+// T-626 (2026-07-04): Der alte GeoServer-WFS mdhwfs:baustellen_sperrungen war seit 2025-07-02
+// EINGEFROREN (Upstream lieferte jahrealte Daten als aktuell) — VIZ hat auf die „Digitale Plattform
+// Stadtverkehr" (DPS) umgestellt. Jetzt: kuratierter DPS-GeoJSON-Feed der Verkehrsredaktion (stündlich
+// aktualisiert, verifiziert frisch: tstore 2026-07-03). Struktur identisch (GeometryCollection Point+
+// LineString, EPSG:4326, validity {from,to} jetzt ISO-Objekt) → geomPunkt/geomLinie/validity/refAus
+// unverändert. Bonusfelder total_lanes/closed_lanes/lms_id verfügbar (noch ungenutzt).
+// Format: einzelne GeoJSON-Datei (keine Pagination) → getJson statt fetchAllFeatures.
 
-import { makeNormalized, fetchAllFeatures, dateOnly, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
+import { makeNormalized, getJson, dateOnly, tonnageAusText, meterAusText, stabilHash } from "./_helpers.js"
 
-const QUELLE_NAME = "Berlin VIZ — Baustellen/Sperrungen/Störungen (mdhwfs)"
-const QUELLE_URL = "https://daten.berlin.de/datensaetze?groups=verkehr"
-const BASE =
-  "https://api.viz.berlin.de/geoserver/mdhwfs/wfs?service=WFS&version=2.0.0&request=GetFeature" +
-  "&typeNames=mdhwfs:baustellen_sperrungen&outputFormat=application/json&srsName=EPSG:4326"
+const QUELLE_NAME = "Berlin VIZ — Baustellen/Sperrungen/Störungen (DPS)"
+const QUELLE_URL = "https://daten.berlin.de/datensaetze/baustellen-sperrungen-und-sonstige-storungen-von-besonderem-verkehrlichem-interesse"
+const FEED = "https://api.viz.berlin.de/daten/baustellen_sperrungen_viz.json"
 
 function katAus(subtype, text) {
   const s = String(subtype ?? "").toLowerCase()
@@ -95,10 +97,12 @@ export const vizBerlinBaustellenConnector = {
   vollbestand: true,
 
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
-    // Pagination NICHT kappen: fetchAllFeatures terminiert via numberMatched; maxPages ist nur
-    // ein hoher Sicherheits-Backstop (log warnt, falls er je erreicht wird). Kein stiller Cap mehr.
-    const feats = await fetchAllFeatures(BASE, { mode: "wfs2", pageSize: 1000, maxPages: 500, timeoutMs, log })
-    log(`VIZ-Berlin-Baustellen: ${feats.length} Features`)
+    // DPS-Feed = einzelne GeoJSON-Datei (kein WFS-Paging). Abruf fehlgeschlagen → Teilbestand
+    // signalisieren (kein zerstörerischer Reconcile, T-311/314).
+    const fc = await getJson(FEED, { timeoutMs })
+    if (!fc) { log(`VIZ-Berlin: Feed nicht erreichbar`); return { obstacles: [], complete: false } }
+    const feats = fc.features ?? []
+    log(`VIZ-Berlin-Baustellen: ${feats.length} Features (DPS-Feed)`)
     const obstacles = []
     for (const f of feats) {
       const p = f.properties ?? {}

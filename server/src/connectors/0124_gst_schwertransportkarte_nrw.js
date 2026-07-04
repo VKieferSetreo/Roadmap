@@ -1,14 +1,18 @@
 // Connector Quelle 0124: GST-Schwertransportkarte NRW — lastbeschränkte/gesperrte Brücken.
 // Port aus API/Länder/Nordrhein-Westfalen/gst-schwertransportkarte-nrw/*.cron.mjs.
 // Goldstandard-Restriktion NRW (Straßen.NRW + Autobahn GmbH). ArcGIS-REST-FeatureServer,
-// f=geojson&outSR=4326 → WGS84-GeoJSON. Live 157 Bauwerke, maxRecordCount=2000 → eine Seite
+// f=geojson&outSR=4326 → WGS84-GeoJSON. Live 158 Bauwerke, maxRecordCount=2000 → eine Seite
 // reicht, Paging über resultOffset zieht den GESAMTEN Bestand → vollbestand=true.
+// 2026-06-29: Alt-Endpoint Hosted/last_bruecken1/FeatureServer/0 wurde token-pflichtig
+// (499 Token Required) — Public-Sharing entzogen. Straßen.NRW hat den Layer als
+// Hosted/lastbeschränkte_Brücken_2/FeatureServer/2 neu veröffentlicht (gleicher offener
+// Server, identisches Feld-Schema: fid/bw_name/gewicht/strkl/strnr/tbwnr, token-frei).
 
 import { makeNormalized, getJson, tonnageAusText, stabilHash } from "./_helpers.js"
 
 const QUELLE = "0124"
 const QUELLE_NAME = "GST-Schwertransportkarte NRW (lastbeschränkte Brücken)"
-const QUELLE_URL = "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/last_bruecken1/FeatureServer/0"
+const QUELLE_URL = "https://www.arcgishostedserver.nrw.de/arcgis/rest/services/Hosted/lastbeschränkte_Brücken_2/FeatureServer/2"
 const LAYER = `${QUELLE_URL}/query`
 
 function normRef(strkl, strnr) {
