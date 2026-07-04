@@ -36,14 +36,18 @@ export const koelnVerkehrsbeeintraechtigungenConnector = {
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
     const HEAD = { headers: { "user-agent": "Mozilla/5.0 (compatible; roadmap-connector/1.0)" }, timeoutMs }
     const feats = []
+    let complete = true
     for (const layer of LAYERS) {
       for (let offset = 0; ; offset += PAGE) {
         const url = `${MAPSERVER}/${layer}/query?where=1=1&outFields=*&outSR=4326&f=geojson&resultRecordCount=${PAGE}&resultOffset=${offset}`
         const data = await getJson(url, HEAD)
-        const f = data?.features ?? []
+        // T-627: getJson → NULL bei Fehler (kein throw). Nicht als Feed-Ende werten, sonst deaktiviert
+        // der Reconcile real existierende Kölner Einträge. Teilbestand signalisieren (kein Reconcile).
+        if (!data) { log(`Köln: Layer ${layer} bei offset=${offset} nicht ladbar → Teilbestand`); complete = false; break }
+        const f = data.features ?? []
         for (const feat of f) feat.__layer = layer // Layer-Herkunft für eindeutige externeId
         feats.push(...f)
-        const mehr = data?.exceededTransferLimit || data?.properties?.exceededTransferLimit
+        const mehr = data.exceededTransferLimit || data.properties?.exceededTransferLimit
         if (!mehr || f.length === 0) break
         if (offset > 100000) break // Sicherheits-Cap
       }
@@ -83,6 +87,6 @@ export const koelnVerkehrsbeeintraechtigungenConnector = {
       }))
     }
     log(`Köln: ${feats.length} Features → ${obstacles.length} obstacles`)
-    return { obstacles }
+    return { obstacles, complete }
   },
 }

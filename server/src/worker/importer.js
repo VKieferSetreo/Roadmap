@@ -69,6 +69,7 @@ export async function runImport({
     log(`[import ${connector.quelleId}] ${msg}`)
   }
   let status = "ok"
+  let reconcileSuspended = false // T-627: Reconcile-Guard hat Massen-Deaktivierung abgewehrt → partial
 
   try {
     // T-275: Default 4000ms war für paginierte WFS zu knapp (4s/Seite → Timeout → Abbruch →
@@ -235,9 +236,26 @@ export async function runImport({
       // tatsächlich etwas Gültiges gesehen haben (sonst würde ein leerer/kaputter
       // Feed fälschlich den ganzen Bestand deaktivieren).
       if (connector.vollbestand && seen.size > 0 && result?.complete !== false) {
-        const { rowCount } = await q.query(RECONCILE_SQL, [connector.quelleId, [...seen]])
-        stats.deaktiviert = rowCount
-        if (rowCount > 0) note(`Reconcile: ${rowCount} nicht mehr im Feed → deaktiviert`)
+        // T-627/T-626: Reconcile-Plausibilitäts-Guard gegen Massen-Deaktivierung durch stillen
+        // Teilbestand — hand-rolled Paging-Loops (0157/0212/0124/…) interpretieren eine per getJson
+        // NULL zurückgegebene Fehler-Seite als "Feed-Ende" und liefern trotzdem complete=true; ein
+        // Mobilithek-Teilcontainer (0146: 17 Records deaktivierten 738 Thüringen-Hindernisse = 73%)
+        // hat dieselbe Wirkung. Würde der Reconcile einen GROSSEN Anteil des bestehenden aktiven
+        // Bestands deaktivieren, ist das kein normaler Feed-Schwund → aussetzen + partial, statt real
+        // existierende Hindernisse zu löschen (= gesperrte Strecke fälschlich "frei"). Selbstheilung
+        // beim nächsten vollständigen Lauf. Kleiner Bestand (<50) bleibt ungeguarded (dort ist starke
+        // Fluktuation normal und ein Fehl-Delete verkraftbar).
+        const aktivAlt = existingRows.filter((r) => r.aktiv && r.externe_id != null)
+        const weg = aktivAlt.reduce((n, r) => (seen.has(r.externe_id) ? n : n + 1), 0)
+        const anteil = aktivAlt.length ? weg / aktivAlt.length : 0
+        if (aktivAlt.length >= 50 && anteil > 0.4) {
+          reconcileSuspended = true
+          note(`Reconcile-Guard: ${weg}/${aktivAlt.length} (${Math.round(anteil * 100)}%) des aktiven Bestands würden deaktiviert — Verdacht Teilbestand/Feed-Fehler → übersprungen (status=partial, kein false-Deaktivieren)`)
+        } else {
+          const { rowCount } = await q.query(RECONCILE_SQL, [connector.quelleId, [...seen]])
+          stats.deaktiviert = rowCount
+          if (rowCount > 0) note(`Reconcile: ${rowCount} nicht mehr im Feed → deaktiviert`)
+        }
       } else if (connector.vollbestand && result?.complete === false) {
         // T-311/T-314: Teilbestand → NICHT reconcilen, sonst verschwinden real existierende
         // Hindernisse und das Tool zeigt eine gesperrte Strecke faelschlich als frei.
@@ -247,6 +265,9 @@ export async function runImport({
     // T-314: Teilbestand ehrlich kennzeichnen (status='partial' statt 'ok'), damit Sync/Health
     // den degradierten Lauf sichtbar machen können (nicht stiller Voll-Erfolg).
     if (result?.complete === false && status === "ok") status = "partial"
+    // T-627: hat der Reconcile-Guard eine Massen-Deaktivierung abgewehrt, ist der Lauf ebenfalls
+    // degradiert (Verdacht Teilbestand) → partial, damit die Staleng/Health das sieht.
+    if (reconcileSuspended && status === "ok") status = "partial"
     // T-476: ein Vollbestand-Feed mit 0 Einträgen ist KEIN gesunder Voll-Erfolg (kaputter/leerer
     // Feed) → als 'warn' markieren, damit Staleness sichtbar wird statt grün durchzugehen.
     if (connector.vollbestand && stats.gefunden === 0 && status === "ok") {

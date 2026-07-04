@@ -126,11 +126,20 @@ export const sevasNrwRestriktionenConnector = {
 
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
     const obstacles = []
-    let start = 0, total = 0, skipped = 0, pages = 0
+    let start = 0, total = 0, skipped = 0, pages = 0, complete = true
     // Defensiver Seiten-Backstop: 33.711 / 2000 ≈ 17 → 40 reicht weit, verhindert Endlosschleife.
     for (; pages < 40; pages++) {
       const data = await getJson(pageUrl(start), { timeoutMs })
-      const feats = data?.features ?? []
+      // T-627: getJson gibt bei HTTP-/Timeout-/Parse-Fehler NULL zurück (wirft nicht). Das darf NICHT
+      // als "letzte Seite" (feats.length < PAGE) durchgehen, sonst signalisiert der Connector einen
+      // vollständigen Bestand und der Reconcile deaktiviert die restlichen ~20k echten Zeilen. →
+      // Teilbestand signalisieren (complete=false), Reconcile wird übersprungen. Selbstheilung nächster Lauf.
+      if (!data) {
+        log(`${QUELLE}: Seite bei startIndex=${start} nicht ladbar → Teilbestand (kein Reconcile)`)
+        complete = false
+        break
+      }
+      const feats = data.features ?? []
       total += feats.length
       for (const f of feats) {
         const o = sevasFeatureToObstacle(f)
@@ -141,6 +150,6 @@ export const sevasNrwRestriktionenConnector = {
       start += PAGE
     }
     log(`${QUELLE}: ${obstacles.length} Restriktionen (Höhe/Gewicht/Breite/Länge/Achslast + Lkw-/Durchfahrtsverbote VZ 250/251/253) aus ${total} Segmenten (${pages + 1} Seiten, ${skipped} übersprungen)`)
-    return { obstacles }
+    return { obstacles, complete }
   },
 }

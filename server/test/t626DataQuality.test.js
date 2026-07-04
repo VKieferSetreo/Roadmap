@@ -5,6 +5,8 @@ import { dateOnly } from "../src/connectors/_helpers.js"
 import { detectStaleSources } from "../src/worker/hygiene.js"
 import { sevasFeatureToObstacle } from "../src/connectors/0157_sevas_nrw_restriktionen.js"
 import { evaluate } from "../src/engine/rules.js"
+import { runImport } from "../src/worker/importer.js"
+import { createFakeDb } from "./helpers/fakeDb.js"
 
 const TRANSPORT = { laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68, achsen: 8 }
 const sevasFeat = (props) => ({
@@ -91,5 +93,32 @@ describe("T-632/T-631 — ruleGewicht Verbots-Severity", () => {
   })
   it("physische Traglast maxGewichtT < Transport bleibt kritisch", () => {
     expect(evaluate(obst({ maxGewichtT: 30 }), TRANSPORT, {}).severity).toBe("kritisch")
+  })
+})
+
+describe("T-627 — Reconcile-Plausibilitäts-Guard (Data-Loss-Schutz)", () => {
+  const item = (i) => ({ externeId: `g-${i}`, kategorie: "baustelle", name: `Baustelle Nr ${i}`, lat: 52 + i * 0.01, lng: 9 + i * 0.01, attrs: {}, quelle: { name: "m", url: "https://x" } })
+  const voll = (items) => ({ quelleId: "0009", name: "M", schedule: "0 4 * * *", vollbestand: true, fetch: async () => ({ obstacles: items }) })
+  const many = Array.from({ length: 60 }, (_, i) => item(i))
+  const aktivN = (db) => db.state.obstacles.filter((o) => o.aktiv).length
+
+  it("Massen-Deaktivierung (>40% von ≥50) → Reconcile ausgesetzt, status=partial, nichts gelöscht", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: voll(many), log: () => {} })
+    expect(aktivN(db)).toBe(60)
+    // nächster Lauf liefert nur 20 (40 „verschwunden" = 66%) — z.B. Paging-Abbruch → Guard greift
+    const run = await runImport({ db, connector: voll(many.slice(0, 20)), log: () => {} })
+    expect(run.status).toBe("partial")
+    expect(run.stats.deaktiviert).toBe(0)
+    expect(aktivN(db)).toBe(60) // KEINE echte Zeile deaktiviert
+  })
+
+  it("normale Fluktuation (<40%) → Reconcile läuft normal", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: voll(many), log: () => {} })
+    const run = await runImport({ db, connector: voll(many.slice(0, 55)), log: () => {} }) // 5 weg = 8%
+    expect(run.status).toBe("ok")
+    expect(run.stats.deaktiviert).toBe(5)
+    expect(aktivN(db)).toBe(55)
   })
 })
