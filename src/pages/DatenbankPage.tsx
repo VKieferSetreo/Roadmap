@@ -236,9 +236,9 @@ function ObstacleKarte({ live }: { live: boolean }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      {/* flex-1 füllt den Rest exakt (kein Scroll); min-h als Boden gegen Kollaps, falls die Flex-Kette
-          mal nicht auflöst (auf normalen Schirmen ist flex-1 größer → greift nicht). */}
-      <div className="min-h-[420px] flex-1">
+      {/* Die Karte füllt den verbleibenden Bereich zu 95 % (Max-Wunsch: 5 % vertikal kleiner) → 5 % Luft
+          nach unten, kein Scroll. min-h als Boden gegen Kollaps, falls die Flex-Kette mal nicht auflöst. */}
+      <div className="h-[95%] min-h-[400px]">
         <ObstaclesMap obstacles={gefiltert} onDelete={deleteObstacle} flyTo={flyTo}>
           {/* Suchleisten IN der Karte (links Ort = schwenkt, rechts Inhalt = filtert). Liegen im
               Karten-Wrapper → bleiben auch im Vollbild sichtbar; rechts bleibt Platz für den
