@@ -7,6 +7,7 @@ import { sevasFeatureToObstacle } from "../src/connectors/0157_sevas_nrw_restrik
 import { evaluate } from "../src/engine/rules.js"
 import { runImport } from "../src/worker/importer.js"
 import { createFakeDb } from "./helpers/fakeDb.js"
+import { zeitfensterAusRecord } from "../src/connectors/datex2.js"
 
 const TRANSPORT = { laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68, achsen: 8 }
 const sevasFeat = (props) => ({
@@ -120,5 +121,42 @@ describe("T-627 — Reconcile-Plausibilitäts-Guard (Data-Loss-Schutz)", () => {
     expect(run.status).toBe("ok")
     expect(run.stats.deaktiviert).toBe(5)
     expect(aktivN(db)).toBe(55)
+  })
+})
+
+describe("T-635 — Richtung + Zeitfenster als Info (Severity UNVERÄNDERT, FN-Schutz)", () => {
+  const inZeitraum = { von: "2026-08-01", bis: "2026-08-01" }
+  const ob = (kategorie, attrs) => ({ kategorie, name: "x", attrs, gueltigVon: "2026-07-01", gueltigBis: "2026-12-31" })
+
+  it("einseitige Vollsperrung bleibt KRITISCH, Richtung nur im Detail", () => {
+    const r = evaluate(ob("sperrung", { vollsperrung: true, richtung: "in Fahrtrichtung" }), TRANSPORT, inZeitraum)
+    expect(r.severity).toBe("kritisch") // FN-Schutz: NICHT gesenkt
+    expect(r.detail.Sperrung).toBe("Vollsperrung (nur in Fahrtrichtung)")
+  })
+  it("beidseitige Vollsperrung: kein Richtungs-Suffix", () => {
+    expect(evaluate(ob("sperrung", { vollsperrung: true, richtung: "beide Richtungen" }), TRANSPORT, inZeitraum).detail.Sperrung).toBe("Vollsperrung")
+  })
+  it("Baustellen-Vollsperrung einseitig: Beschreibung nennt Richtungs-Prüfung, kritisch", () => {
+    const r = evaluate(ob("baustelle", { vollsperrung: true, richtung: "Gegenrichtung" }), TRANSPORT, inZeitraum)
+    expect(r.severity).toBe("kritisch")
+    expect(r.beschreibung).toMatch(/gesperrten Richtung/)
+  })
+  it("Zeitfenster als Info-Detail, Severity unverändert", () => {
+    const r = evaluate(ob("sperrung", { vollsperrung: true, zeitfenster: "22:00–05:00", nurNachts: true }), TRANSPORT, inZeitraum)
+    expect(r.severity).toBe("kritisch")
+    expect(r.detail.Sperrzeitfenster).toBe("22:00–05:00 (nur nachts)")
+  })
+})
+
+describe("T-635 — datex2 Zeitfenster-Extraktion (Freitext, eng verankert)", () => {
+  it("'20h bis 5h' → nächtlich", () => {
+    expect(zeitfensterAusRecord("", "Sperrung 20h bis 5h")).toEqual({ zeitfenster: "20:00–05:00", nurNachts: true })
+  })
+  it("'9h bis 15h' → kein nurNachts", () => {
+    expect(zeitfensterAusRecord("", "je 9h bis 15h")).toEqual({ zeitfenster: "09:00–15:00" })
+  })
+  it("km-/Datumsangaben werden NICHT als Zeitfenster gematcht", () => {
+    expect(zeitfensterAusRecord("", "km 10 bis 15 gesperrt")).toEqual({})
+    expect(zeitfensterAusRecord("", "vom 17.6. bis 20.6.")).toEqual({})
   })
 })

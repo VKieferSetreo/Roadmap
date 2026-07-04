@@ -346,6 +346,21 @@ function nurNichtFahrbahnSperre(attrs, obstacle) {
   return false
 }
 
+// T-635 (Data-Audit): Richtung + Sperrzeitfenster als reine INFO ins Detail — KEINE Severity-Absenkung.
+// Verifiziert: DATEX-'in Fahrtrichtung'/'Gegenrichtung' ist relativ zur Digitalisierung der Linearsektion,
+// nicht zur Reiserichtung — die Engine kann same-vs-opposite nicht auflösen (obstacleRouteRelation faltet
+// 0°/180°); und eine Nacht-Vollsperrung ist für den (oft nachts fahrenden) Schwertransport relevant. Also
+// nur anzeigen, damit der Disponent Fahrtrichtung/Uhrzeit selbst prüft, statt eine Sicherheit vorzutäuschen.
+const EINSEITIG_RICHTUNG = new Set(["in Fahrtrichtung", "Gegenrichtung"])
+const istEinseitig = (attrs) => EINSEITIG_RICHTUNG.has(String(attrs?.richtung ?? "").trim())
+function sperrDetail(attrs) {
+  const d = {}
+  if (attrs?.vollsperrung === true) d.Sperrung = istEinseitig(attrs) ? `Vollsperrung (nur ${attrs.richtung})` : "Vollsperrung"
+  const zf = typeof attrs?.zeitfenster === "string" ? attrs.zeitfenster.trim() : ""
+  if (zf) d.Sperrzeitfenster = attrs?.nurNachts ? `${zf} (nur nachts)` : zf
+  return d
+}
+
 // Prinzip (Max 2026-06-14): ALLE Baustellen auf der Strecke werden als Fund angezeigt
 // (nie ausgeblendet). ROT (kritisch) nur, wenn die HINTERLEGTEN Daten eine Restriktion
 // wirklich verletzen (Restbreite < Transportbreite oder Höhenbegrenzung < Transporthöhe).
@@ -360,7 +375,7 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
     ...(rb != null && { Restbreite: fmtM(rb), Transportbreite: fmtM(transport.breite) }),
     ...(mh != null && { Höhenbegrenzung: fmtM(mh), Transporthöhe: fmtM(transport.hoehe) }),
     ...(mg != null && { Gewichtslimit: fmtT(mg), Gesamtgewicht: fmtT(transport.gesamtgewicht) }),
-    ...(attrs.vollsperrung === true && { Sperrung: "Vollsperrung" }),
+    ...sperrDetail(attrs), // T-635: Vollsperrung (+ ggf. Richtung) + Sperrzeitfenster als Info
     Zeitraum: !(zeitraum?.von || zeitraum?.bis) ? "Kein Transportzeitraum gesetzt"
       : overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
   }
@@ -392,7 +407,9 @@ function ruleBaustelle(attrs, transport, obstacle, zeitraum) {
     ].filter(Boolean)
     beschreibung = gruende.length
       ? `Baustelle: ${gruende.join(" + ")} reicht für den Transport nicht aus. Durchfahrt abstimmen oder umfahren.`
-      : "Baustelle mit Vollsperrung im Transportzeitraum. Durchfahrt nicht möglich, Umfahrung erforderlich."
+      : istEinseitig(attrs)
+        ? `Vollsperrung ${attrs.richtung} im Transportzeitraum. Prüfen, ob der Transport diesen Abschnitt in der gesperrten Richtung befährt, sonst Umfahrung erforderlich.`
+        : "Baustelle mit Vollsperrung im Transportzeitraum. Durchfahrt nicht möglich, Umfahrung erforderlich."
   } else if (overlap || blocker) {
     // Auf der Strecke, im Zeitraum aktiv, aber keine hinterlegte Restriktion verletzt
     // (oder keine Maße bekannt) → anzeigen zur Prüfung, NICHT automatisch rot.
@@ -429,6 +446,7 @@ function ruleSperrung(attrs, transport, obstacle, zeitraum) {
     detail: {
       ...(rb != null && { Restbreite: fmtM(rb) }),
       ...(maxG != null && { "Zul. Gesamtlast": fmtT(maxG) }),
+      ...sperrDetail(attrs), // T-635: Vollsperrung (+ ggf. Richtung) + Sperrzeitfenster als Info
       Zeitraum: !(zeitraum?.von || zeitraum?.bis) ? "Kein Transportzeitraum gesetzt"
       : overlap ? "überschneidet den Transportzeitraum" : "außerhalb des Transportzeitraums",
     },

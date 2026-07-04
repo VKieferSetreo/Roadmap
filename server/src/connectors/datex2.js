@@ -101,6 +101,29 @@ function sperrAttrsAusRecord(recordXml) {
   return out
 }
 
+// T-635 (Data-Audit): tägliches Uhrzeit-Sperrfenster nächtlicher/zeitweiser Sperrungen → attrs.zeitfenster.
+// REIN INFORMATIV (Popup) — die Severity wird NICHT gesenkt: Großraum-/Schwertransporte fahren häufig
+// NACHTS unter genehmigungspflichtigen Nacht-Vollsperrungen, eine Nacht-Sperrung ist also relevant, nicht
+// harmlos. (a) strukturiert aus recurringTimePeriodOfDay (startTimeOfPeriod/endTimeOfPeriod), (b) Freitext-
+// Fallback NUR mit Pflicht-„h"/„Uhr" auf beiden Seiten (verifiziert an realen 0145-Daten „20h bis 5h",
+// „19h-6h") — so treffen km-/Datumsangaben („km 10 bis 15") den Regex nicht.
+function normHHMM(s) {
+  const m = String(s ?? "").match(/^\s*(\d{1,2})(?::(\d{2}))?/)
+  if (!m || Number(m[1]) > 23) return null
+  return `${String(m[1]).padStart(2, "0")}:${m[2] ?? "00"}`
+}
+export function zeitfensterAusRecord(rec, text) {
+  let von = normHHMM(tag(rec, "startTimeOfPeriod"))
+  let bis = normHHMM(tag(rec, "endTimeOfPeriod"))
+  if (!(von && bis)) {
+    const m = String(text ?? "").match(/\b(\d{1,2})(?::(\d{2}))?\s*(?:h|uhr)\s*(?:bis|-|–|—)\s*(\d{1,2})(?::(\d{2}))?\s*(?:h|uhr)\b/i)
+    if (m) { von = normHHMM(`${m[1]}:${m[2] ?? "00"}`); bis = normHHMM(`${m[3]}:${m[4] ?? "00"}`) }
+  }
+  if (!(von && bis) || von === bis) return {}
+  const nurNachts = /\bnachts?\b|\bnächtlich/i.test(text ?? "") || Number(von.slice(0, 2)) > Number(bis.slice(0, 2))
+  return { zeitfenster: `${von}–${bis}`, ...(nurNachts && { nurNachts: true }) }
+}
+
 // DATEX directionRelativeOnLinearSection / alertC-Codes → deutsche Fahrtrichtung. T-611.
 function mapDatexRichtung(dir) {
   const d = String(dir).toLowerCase()
@@ -266,8 +289,8 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
         lng,
         ...(geom && { geom }),
         strassenRef: strasse,
-        // Höhe/Gewicht/Breite (falls geführt) + strukturierte Sperrart/Spuren/Richtung.
-        attrs: { ...attrsAusRecord(rec), ...sperrAttrsAusRecord(rec) },
+        // Höhe/Gewicht/Breite (falls geführt) + strukturierte Sperrart/Spuren/Richtung + Zeitfenster (Info).
+        attrs: { ...attrsAusRecord(rec), ...sperrAttrsAusRecord(rec), ...zeitfensterAusRecord(rec, `${name} ${beschr ?? ""}`) },
         ...(von && { gueltigVon: von, realerStart: von }),
         ...(bis && { gueltigBis: bis }),
         quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: now },
