@@ -74,12 +74,19 @@ export function notificationsRouter({ db }) {
     res.json({ count: rows[0]?.n ?? 0 })
   }))
 
+  // T-638: eine Mutation (lesen/löschen) darf NUR Meldungen zu SICHTBAREN Projekten treffen — geteilt
+  // (owner NULL), eigen-privat (owner = eigene E-Mail) oder ohne Projektbezug. Sonst könnte ein Nutzer
+  // Benachrichtigungen zu fremden PRIVATEN Projekten als gelesen markieren oder mit dem Papierkorb
+  // mitlöschen (Tampering, obwohl er sie nach dem Read-Fix nicht mehr sieht). $-Index als Parameter.
+  const visMut = (p) => `(project_id IS NULL OR EXISTS (SELECT 1 FROM projects pr
+      WHERE pr.id = notifications.project_id AND (pr.owner_email IS NULL OR pr.owner_email = $${p})))`
+
   /** Eine Nachricht als gelesen markieren. */
   r.post("/:id/read", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Nachricht nicht gefunden")
     const result = await db.query(
-      "UPDATE notifications SET read_at = now() WHERE id = $1 AND tenant_id = $2 AND read_at IS NULL",
-      [req.params.id, req.ctx.tenant.id],
+      `UPDATE notifications SET read_at = now() WHERE id = $1 AND tenant_id = $2 AND read_at IS NULL AND ${visMut(3)}`,
+      [req.params.id, req.ctx.tenant.id, req.ctx.email ?? ""],
     )
     res.json({ updated: result.rowCount })
   }))
@@ -87,15 +94,18 @@ export function notificationsRouter({ db }) {
   /** Alle als gelesen markieren. */
   r.post("/read-all", asyncHandler(async (req, res) => {
     const result = await db.query(
-      "UPDATE notifications SET read_at = now() WHERE tenant_id = $1 AND read_at IS NULL",
-      [req.ctx.tenant.id],
+      `UPDATE notifications SET read_at = now() WHERE tenant_id = $1 AND read_at IS NULL AND ${visMut(2)}`,
+      [req.ctx.tenant.id, req.ctx.email ?? ""],
     )
     res.json({ updated: result.rowCount })
   }))
 
-  /** Alle Nachrichten des Mandanten löschen (Papierkorb im Nachrichtenzentrum). */
+  /** Alle (sichtbaren) Nachrichten des Mandanten löschen (Papierkorb im Nachrichtenzentrum). */
   r.delete("/", asyncHandler(async (req, res) => {
-    const result = await db.query("DELETE FROM notifications WHERE tenant_id = $1", [req.ctx.tenant.id])
+    const result = await db.query(
+      `DELETE FROM notifications WHERE tenant_id = $1 AND ${visMut(2)}`,
+      [req.ctx.tenant.id, req.ctx.email ?? ""],
+    )
     res.json({ deleted: result.rowCount })
   }))
 

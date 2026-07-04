@@ -6,6 +6,9 @@ import { asyncHandler } from "../util.js"
 
 // Statisches SQL mit nullable Filtern — bewusst kein dynamischer Query-Builder.
 // v2: strikt auf den Request-Tenant gescoped ($4).
+// T-638: ZUSÄTZLICH owner-gescoped ($5) — die projektübergreifende Fund-Suche muss dieselbe
+// Sichtbarkeit wie die Projekt-Liste haben (geteilt owner NULL + eigen-privat), sonst leaken Funde
+// UND Projektnamen fremder PRIVATER Projekte an jedes Mandanten-Mitglied (auch Admin).
 // T-343: NICHT f.* — der geom-jsonb-Blob (Strecken-Geometrie) ist in der Such-LISTE ungenutzt
 // (kein Karten-Render) und blähte die Antwort auf. Explizite Spalten ohne geom.
 const SEARCH_SQL = `SELECT f.id, f.project_id, f.obstacle_id, f.kategorie, f.severity, f.titel,
@@ -18,6 +21,7 @@ const SEARCH_SQL = `SELECT f.id, f.project_id, f.obstacle_id, f.kategorie, f.sev
     AND ($3::text IS NULL OR f.titel ILIKE $3 OR f.beschreibung ILIKE $3
          OR f.strassen_ref ILIKE $3 OR p.name ILIKE $3)
     AND p.tenant_id = $4
+    AND (p.owner_email IS NULL OR p.owner_email = $5)
   ORDER BY f.km ASC
   LIMIT 500` // T-405: harte Obergrenze gegen unbounded Response (Suche, kein Karten-Render)
 
@@ -31,6 +35,7 @@ export function findingsRouter({ db }) {
       severity || null,
       q ? `%${q}%` : null,
       req.ctx.tenant.id,
+      req.ctx.email ?? "",
     ])
     res.json({
       findings: rows.map((row) => ({
