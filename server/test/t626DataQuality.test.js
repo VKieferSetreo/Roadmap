@@ -7,7 +7,7 @@ import { sevasFeatureToObstacle } from "../src/connectors/0157_sevas_nrw_restrik
 import { evaluate } from "../src/engine/rules.js"
 import { runImport } from "../src/worker/importer.js"
 import { createFakeDb } from "./helpers/fakeDb.js"
-import { zeitfensterAusRecord } from "../src/connectors/datex2.js"
+import { zeitfensterAusRecord, kreisRefAus } from "../src/connectors/datex2.js"
 
 const TRANSPORT = { laenge: 24.5, breite: 3.0, hoehe: 4.2, gesamtgewicht: 68, achsen: 8 }
 const sevasFeat = (props) => ({
@@ -158,5 +158,19 @@ describe("T-635 — datex2 Zeitfenster-Extraktion (Freitext, eng verankert)", ()
   it("km-/Datumsangaben werden NICHT als Zeitfenster gematcht", () => {
     expect(zeitfensterAusRecord("", "km 10 bis 15 gesperrt")).toEqual({})
     expect(zeitfensterAusRecord("", "vom 17.6. bis 20.6.")).toEqual({})
+  })
+})
+
+describe("T-629 — bayerische Kreisstraßen-Ref (0147, kreisRefAus)", () => {
+  it("echte BayernInfo-Kreisstraßen am Namensanfang", () => {
+    expect(kreisRefAus("PAN31 zwischen Furth und Unterthann gesperrt")).toBe("PAN31")
+    expect(kreisRefAus("OA32 zwischen Felben und Binzen gesperrt")).toBe("OA32")
+    expect(kreisRefAus("DLG10 Osterbuch, Buchbergstraße zwischen …")).toBe("DLG10")
+    expect(kreisRefAus("RO2 Feldkirchen, Dorfplatz bis Glonner Straße")).toBe("RO2")
+  })
+  it("Fehlmatch-Schutz: Einheiten + Innerorts-Straßen → null", () => {
+    expect(kreisRefAus("VK 0,4kV rep.")).toBe(null) // Kilovolt, kein Straßen-Kontext
+    expect(kreisRefAus("München, Schellingstraße zwischen Arcisstraße")).toBe(null) // Ortsname, keine Kreis-Ref
+    expect(kreisRefAus("Oberndorfer Straße zwischen Oberndorf und Bad Abbach")).toBe(null)
   })
 })

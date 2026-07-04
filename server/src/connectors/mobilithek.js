@@ -133,6 +133,9 @@ export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAUL
       // tmc=true (ALERT-C-only-Quellen wie NI): Location-Codes über die BASt-LCL geocodieren.
       const obstacles = parseDatex2(res.xml, {
         quelleName: name, quelleUrl: url, resolveTmc: tmc ? resolveTmc : undefined,
+        // T-629: bayerische Kreisstraßen-Refs (PAN/OA/DLG…) nur aus dem BayernInfo-Feed ziehen — andere
+        // DATEX-Feeds führen am Namensanfang Nicht-Straßen-Tokens (0148 "VK 0,4kV", 0145 "BAB 14").
+        kreisRef: quelleId === "0147",
       })
       log(`${quelleId}: ${obstacles.length} DATEX-II-Records normalisiert`)
       return { obstacles }

@@ -227,7 +227,16 @@ function koordAusRecord(recordXml, resolveTmc) {
  * @param xml   DATEX-II-XML (SituationPublication)
  * @param meta  { quelleName, quelleUrl } für die quelle-Referenz
  */
-export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, resolveTmc = null } = {}) {
+// T-629: bayerische Kreisstraße aus dem BayernInfo-Namen („PAN 31 zwischen …", „OA 32 …", „DLG 10 …").
+// NUR für 0147 (kreisRef=true): Kreis-Kürzel (1–3 Großbuchstaben) + Nr am TEXTANFANG, und NUR wenn direkt
+// ein Straßen-Kontext folgt (zwischen/von/bis/Richtung/Ortsname). Der Boundary-Lookahead verhindert
+// Fehlmatches auf Einheiten („VK 0,4kV" 0148) oder „BAB 14"/„RV 2025" (0145) — deshalb 0147-exklusiv.
+export function kreisRefAus(text) {
+  const m = String(text || "").match(/^([A-ZÄÖÜ]{1,3})\s?(\d{1,4}[a-z]?)\b(?=\s+(?:zwischen|von\b|bis\b|Richtung|[A-ZÄÖÜ][a-zäöü]))/)
+  return m ? `${m[1]}${m[2]}` : null
+}
+
+export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, resolveTmc = null, kreisRef = false } = {}) {
   if (typeof xml !== "string" || !xml.includes("ituation")) return []
   const now = new Date().toISOString()
   const obstacles = []
@@ -273,6 +282,7 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       const strasse =
         (refRoh ? refRoh.replace(/^[[(]\s*|\s*[)\]]$/g, "").trim() : "") ||
         (beschr || "").match(/\b(?:A|B|St|L|K|S)\s?\d{1,4}[a-z]?\b/)?.[0]?.replace(/\s/g, "") ||
+        (kreisRef ? kreisRefAus(beschr) : null) || // T-629: bayerische Kreisstraße (nur 0147)
         null
       // T-611: kein generischer "<kat> (DATEX)"-Platzhalter, wenn die Straße bekannt ist → "<Straße> — <kat>".
       const name = dedupeName(
