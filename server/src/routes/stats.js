@@ -10,17 +10,23 @@ export function statsRouter({ db }) {
 
   r.get("/", asyncHandler(async (req, res) => {
     const tenantId = req.ctx.tenant.id
+    const email = req.ctx.email ?? ""
+    // T-638: Dashboard-Zahlen respektieren dieselbe Sichtbarkeit wie die Projekt-Liste — geteilt
+    // (owner NULL) + eigen-privat (owner = eigene E-Mail). Sonst zählt die Statistik private Projekte/
+    // Funde fremder Nutzer mit (Info-Leak über die reine Zahl), auch für Admins.
+    const VIS = "(owner_email IS NULL OR owner_email = $2)"
+    const VIS_P = "(p.owner_email IS NULL OR p.owner_email = $2)"
     const projekte = await db.query(
-      "SELECT count(*)::int AS projekte, count(*) FILTER (WHERE status = 'fertig')::int AS fertig FROM projects WHERE tenant_id = $1",
-      [tenantId],
+      `SELECT count(*)::int AS projekte, count(*) FILTER (WHERE status = 'fertig')::int AS fertig FROM projects WHERE tenant_id = $1 AND ${VIS}`,
+      [tenantId, email],
     )
     const funde = await db.query(
       `SELECT count(*)::int AS funde,
               count(*) FILTER (WHERE f.severity = 'kritisch')::int AS kritisch,
               count(*) FILTER (WHERE f.severity = 'warnung')::int AS warnung,
               count(*) FILTER (WHERE f.severity = 'hinweis')::int AS hinweis
-       FROM findings f JOIN projects p ON p.id = f.project_id WHERE p.tenant_id = $1`,
-      [tenantId],
+       FROM findings f JOIN projects p ON p.id = f.project_id WHERE p.tenant_id = $1 AND ${VIS_P}`,
+      [tenantId, email],
     )
     const hindernisse = await db.query(
       `SELECT count(*) FILTER (WHERE aktiv)::int AS hindernisse,
@@ -31,8 +37,8 @@ export function statsRouter({ db }) {
     const letzte = await db.query(
       `SELECT max(r.finished_at) AS letzte FROM analysis_runs r
        JOIN projects p ON p.id = r.project_id
-       WHERE r.status = 'done' AND p.tenant_id = $1`,
-      [tenantId],
+       WHERE r.status = 'done' AND p.tenant_id = $1 AND ${VIS_P}`,
+      [tenantId, email],
     )
     res.json({
       projekte: projekte.rows[0].projekte,

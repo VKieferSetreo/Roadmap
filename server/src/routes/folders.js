@@ -10,10 +10,12 @@ function rowToFolder(row) {
   return { id: row.id, name: row.name, parentId: row.parent_id ?? null, sortOrder: row.sort_order ?? 0, owner: row.owner_email ?? null }
 }
 
-// Sichtbarkeits-Prädikat: geteilt ODER eigen-privat ODER Betrachter ist Setreo-Admin (sieht alles).
-// Liefert {clause, params} passend ab Parameter-Index $start.
+// Sichtbarkeits-Prädikat: geteilt (owner NULL) ODER eigen-privat (owner = eigene E-Mail). PRIVAT ist
+// strikt pro Account — auch ein Setreo-Super-Admin sieht/verändert/löscht KEINE fremden privaten Ordner
+// (T-638, Max 2026-07-04). Der frühere Admin-Bypass (OR isAdmin) hat fremde private in die persönliche
+// Sidebar geleakt. Liefert {clause, params} passend ab Parameter-Index $start.
 function visibleClause(ctx, start) {
-  return { clause: `(owner_email IS NULL OR owner_email = $${start} OR $${start + 1})`, params: [ctx.email ?? "", ctx.isAdmin === true] }
+  return { clause: `(owner_email IS NULL OR owner_email = $${start})`, params: [ctx.email ?? ""] }
 }
 
 /** Lädt den (sichtbaren) Überordner für owner-Vererbung; null wenn parentId null. 404 wenn fremd/unsichtbar. */

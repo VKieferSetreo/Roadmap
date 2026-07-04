@@ -91,10 +91,11 @@ describe("Folders API (T-177)", () => {
     expect(res.status).toBe(404)
   })
 
-  it("private Ordner: nur Besitzer + Admin sehen sie, andere Mitglieder nicht (kein Leak)", async () => {
+  it("private Ordner: NUR der Besitzer sieht sie — auch KEIN Setreo-Admin (T-638, strikt pro Account)", async () => {
     const { app } = makeApp()
     const alice = { "X-Auth-Email": "alice@setreo.de", "X-Auth-Roles": "" } // intern, Nicht-Admin
     const bob = { "X-Auth-Email": "bob@setreo.de", "X-Auth-Roles": "" }
+    const admin = { "X-Auth-Email": "admin@setreo.de", "X-Auth-Roles": "admin" } // Setreo-Super-Admin
 
     const priv = await request(app).post("/api/folders").set(alice).send({ name: "Alice Privat", private: true })
     expect(priv.status).toBe(201)
@@ -109,9 +110,11 @@ describe("Folders API (T-177)", () => {
     const aliceList = await request(app).get("/api/folders").set(alice)
     expect(aliceList.body.folders.find((f) => f.id === priv.body.id)).toBeDefined()
 
-    // Setreo-Admin (Default-Dev-Admin) sieht alles (Max-Entscheid).
-    const adminList = await request(app).get("/api/folders")
-    expect(adminList.body.folders.find((f) => f.id === priv.body.id)).toBeDefined()
+    // T-638 (Max 2026-07-04, Umkehr der 058-Entscheidung): auch ein Setreo-Super-Admin sieht fremde
+    // private Ordner NICHT mehr und kann sie nicht löschen — privat ist strikt pro Account.
+    const adminList = await request(app).get("/api/folders").set(admin)
+    expect(adminList.body.folders.find((f) => f.id === priv.body.id)).toBeUndefined()
+    expect((await request(app).delete(`/api/folders/${priv.body.id}`).set(admin)).status).toBe(404)
   })
 
   it("private Projekte (im privaten Ordner) sind nur für den Besitzer sichtbar", async () => {
@@ -130,6 +133,14 @@ describe("Folders API (T-177)", () => {
     const bobList = await request(app).get("/api/projects").set(bob)
     expect(bobList.body.projects.find((p) => p.id === proj.id)).toBeUndefined()
     expect((await request(app).get(`/api/projects/${proj.id}`).set(bob)).status).toBe(404)
+
+    // T-638 (Max' Bug): auch ein Setreo-Super-Admin sieht das fremde private Projekt NICHT (weder in
+    // der Liste noch per Direktzugriff) und kann es nicht löschen — privat = strikt pro Account.
+    const admin = { "X-Auth-Email": "admin@setreo.de", "X-Auth-Roles": "admin" }
+    const adminList = await request(app).get("/api/projects").set(admin)
+    expect(adminList.body.projects.find((p) => p.id === proj.id)).toBeUndefined()
+    expect((await request(app).get(`/api/projects/${proj.id}`).set(admin)).status).toBe(404)
+    expect((await request(app).delete(`/api/projects/${proj.id}`).set(admin)).status).toBe(404)
 
     // Besitzerin schon.
     expect((await request(app).get(`/api/projects/${proj.id}`).set(alice)).status).toBe(200)

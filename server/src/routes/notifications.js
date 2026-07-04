@@ -27,6 +27,18 @@ export function notificationsRouter({ db }) {
       )
     )`
 
+  // T-638: eine Projekt-Meldung ist nur sichtbar, wenn das Projekt für den Nutzer sichtbar ist —
+  // geteilt (owner NULL) ODER eigen-privat (owner = eigene E-Mail). Ohne diese Schranke leakt der
+  // scope='alle'-Zweig oben Meldungen zu PRIVATEN Projekten fremder Nutzer (Titel = Projektname/Straße).
+  const VISIBILITY_FILTER = `
+    AND (
+      n.project_id IS NULL
+      OR EXISTS (
+        SELECT 1 FROM projects p
+         WHERE p.id = n.project_id AND (p.owner_email IS NULL OR p.owner_email = $1)
+      )
+    )`
+
   // Schweregrad-Filter wie bei der E-Mail (mail/notify.js filterEventsForSev): die Glocke zeigt nur
   // Meldungen der in mail_prefs.severities gewählten Schweregrade. Default = alle drei (Migration 030),
   // also ohne gesetzte Präferenz nichts versteckt. System-Mitteilungen (kein Projekt / keine Severity)
@@ -44,7 +56,7 @@ export function notificationsRouter({ db }) {
   r.get("/", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
       `SELECT n.* FROM notifications n
-        WHERE n.tenant_id = $2 ${SCOPE_FILTER} ${SEVERITY_FILTER}
+        WHERE n.tenant_id = $2 ${SCOPE_FILTER} ${VISIBILITY_FILTER} ${SEVERITY_FILTER}
         ORDER BY n.created_at DESC LIMIT 100`,
       [req.ctx.email, req.ctx.tenant.id],
     )
@@ -56,7 +68,7 @@ export function notificationsRouter({ db }) {
   r.get("/unread-count", asyncHandler(async (req, res) => {
     const { rows } = await db.query(
       `SELECT count(*)::int AS n FROM notifications n
-        WHERE n.tenant_id = $2 AND n.read_at IS NULL ${SCOPE_FILTER} ${SEVERITY_FILTER}`,
+        WHERE n.tenant_id = $2 AND n.read_at IS NULL ${SCOPE_FILTER} ${VISIBILITY_FILTER} ${SEVERITY_FILTER}`,
       [req.ctx.email, req.ctx.tenant.id],
     )
     res.json({ count: rows[0]?.n ?? 0 })

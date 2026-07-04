@@ -73,12 +73,16 @@ function normalizeRoutes(routes) {
   })
 }
 
-// Sichtbar: geteilt (owner NULL) ODER eigen-privat ODER Betrachter ist Setreo-Admin (sieht alles).
+// Sichtbar: geteilt (owner NULL) ODER eigen-privat (owner = eigene E-Mail). PRIVAT ist strikt pro
+// Account — auch ein Setreo-Super-Admin sieht KEINE fremden privaten Projekte (T-638, Max 2026-07-04:
+// „privat muss wirklich privat sein, pro Email, nicht Gruppe"). Der frühere Admin-Bypass (OR isAdmin)
+// hat fremde private in die persönliche Sidebar geleakt. Admin-Fähigkeiten (Tenant-Switch, geteilte
+// Projekte) bleiben unberührt; für Support teilt der Owner das Projekt bewusst (owner NULL).
 async function loadProjectRow(db, id, ctx) {
   if (!isUuid(id)) return null
   const { rows } = await db.query(
-    "SELECT * FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
-    [id, ctx.tenant.id, ctx.email ?? "", ctx.isAdmin === true],
+    "SELECT * FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3)",
+    [id, ctx.tenant.id, ctx.email ?? ""],
   )
   return rows[0] ?? null
 }
@@ -141,10 +145,11 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
   }
 
   r.get("/", asyncHandler(async (req, res) => {
-    // Sichtbar: geteilt + eigen-privat (+ alle für Admin). Private fremder Nutzer nie ausliefern.
+    // Sichtbar: geteilt (owner NULL) + eigen-privat (owner = eigene E-Mail). Private fremder Nutzer
+    // werden NIE ausgeliefert — auch nicht an Setreo-Super-Admins (T-638: privat = strikt pro Account).
     const { rows } = await db.query(
-      "SELECT * FROM projects WHERE tenant_id = $1 AND (owner_email IS NULL OR owner_email = $2 OR $3) ORDER BY updated_at DESC",
-      [req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
+      "SELECT * FROM projects WHERE tenant_id = $1 AND (owner_email IS NULL OR owner_email = $2) ORDER BY updated_at DESC",
+      [req.ctx.tenant.id, req.ctx.email ?? ""],
     )
     const findingsBy = new Map()
     const sharesBy = new Map()
@@ -188,16 +193,16 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
   // Schneller Platzhalter-Zähler: NUR die Anzahl (ohne Funde/Geometrie) → das FE rendert sofort die
   // richtige Zahl Lade-Kacheln, bevor die schwere volle Liste da ist. MUSS vor "/:id" stehen.
   r.get("/count", asyncHandler(async (req, res) => {
-    // Zählungen respektieren die Sichtbarkeit (geteilt + eigen-privat + Admin), damit Platzhalter
-    // und Projektzahl nicht private Inhalte fremder Nutzer mitzählen. $2=eigene Mail, $3=isAdmin.
-    const vis = "(owner_email IS NULL OR owner_email = $2 OR $3)"
+    // Zählungen respektieren dieselbe Sichtbarkeit (geteilt + eigen-privat, KEINE fremden privaten —
+    // auch nicht für Admin, T-638), damit Platzhalter/Projektzahl exakt zur gelieferten Liste passen.
+    const vis = "(owner_email IS NULL OR owner_email = $2)"
     const { rows } = await db.query(
       `SELECT
          (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND ${vis})::int AS aktiv,
          (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NOT NULL AND ${vis})::int AS archiviert,
          (SELECT count(*) FROM projects WHERE tenant_id = $1 AND archived_at IS NULL AND folder_id IS NULL AND ${vis})::int AS wurzel_projekte,
          (SELECT count(*) FROM folders WHERE tenant_id = $1 AND parent_id IS NULL AND ${vis})::int AS wurzel_ordner`,
-      [req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
+      [req.ctx.tenant.id, req.ctx.email ?? ""],
     )
     const r0 = rows[0] ?? {}
     res.json({
@@ -271,8 +276,8 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
       if (folderId != null) {
         if (!isUuid(folderId)) throw new ApiError(400, "folderId ungültig")
         const f = await db.query(
-          "SELECT * FROM folders WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
-          [folderId, req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
+          "SELECT * FROM folders WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3)",
+          [folderId, req.ctx.tenant.id, req.ctx.email ?? ""],
         )
         if (!f.rows[0]) throw new ApiError(404, "Ordner nicht gefunden")
         ownerEmail = f.rows[0].owner_email ?? null
@@ -315,10 +320,11 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
 
   r.delete("/:id", asyncHandler(async (req, res) => {
     if (!isUuid(req.params.id)) throw new ApiError(404, "Projekt nicht gefunden")
-    // Sichtbarkeit (058): private Projekte fremder Nutzer darf ein Nicht-Admin nicht löschen.
+    // T-638: private Projekte fremder Nutzer darf NIEMAND löschen (auch kein Setreo-Super-Admin) —
+    // nur der Owner selbst bzw. jeder bei geteilten Projekten (owner NULL). Privat = strikt pro Account.
     const result = await db.query(
-      "DELETE FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3 OR $4)",
-      [req.params.id, req.ctx.tenant.id, req.ctx.email ?? "", req.ctx.isAdmin === true],
+      "DELETE FROM projects WHERE id = $1 AND tenant_id = $2 AND (owner_email IS NULL OR owner_email = $3)",
+      [req.params.id, req.ctx.tenant.id, req.ctx.email ?? ""],
     )
     if (result.rowCount === 0) throw new ApiError(404, "Projekt nicht gefunden")
     res.status(204).end()
