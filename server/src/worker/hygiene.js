@@ -156,6 +156,13 @@ export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
 // (Bewusst NICHT: Churn-Freeze-Heuristik „nichts ändert sich seit N Läufen" — die würde statische
 //  Referenzquellen wie 0153 BASt-Brücken / 0150 fälschlich flaggen. Der 0114-Fall „ok-Läufe, aber
 //  Upstream ein Jahr alt" bleibt daher manuell; er ist ohne Upstream-Frische-Signal nicht sicher erkennbar.)
+// T-626/T-633: verifiziert by-design ertraglose Quellen (Endpoint-Recherche 2026-07-04) — reine
+// Bauwerks-/Netz-Kataster OHNE Restriktionsdaten (0110 GST-Routen HH, 0111 Brücken HH, 0116 Detailnetz
+// Berlin, 0125 NRW-Bauwerke, 0303 WSV-Kreuzungsbauwerke). Sie liefern strukturell 0 verwertbare
+// Hindernisse (der istReineInfrastruktur-Skip ist KORREKT) und sind auf wöchentlich gedrosselt → aus dem
+// Staleness-Monitor ausgeklammert, sonst Dauer-Fehlalarm. Neue 0-aktiv-Quellen werden weiterhin geflaggt.
+const STALE_IGNORE = ["0110", "0111", "0116", "0125", "0303"]
+
 const STALE_SOURCES_SQL = `
   WITH last_run AS (
     SELECT DISTINCT ON (quelle_id) quelle_id, status, started_at
@@ -172,6 +179,8 @@ const STALE_SOURCES_SQL = `
   LEFT JOIN last_run lr ON lr.quelle_id = q.id
   LEFT JOIN aktiv a ON a.quellen_id = q.id
   WHERE q.aktiv = true
+    AND q.typ IS DISTINCT FROM 'manuell'         -- manuelle Kunden-Quelle (0100) hat nie Import-Runs
+    AND NOT (q.id = ANY($2::text[]))             -- by-design ertraglose Kataster (STALE_IGNORE)
     AND (
       lr.started_at IS NULL
       OR lr.started_at < now() - ($1::int * INTERVAL '1 day')
@@ -184,8 +193,8 @@ const STALE_SOURCES_SQL = `
  * Findet Quellen, die veraltet/tot/ertraglos wirken (siehe SQL). Reiner Read + WARN-Log, keine Mutation.
  * @returns {Promise<Array>} auffällige Quellen mit { id, name, last_status, last_run, age_days, aktiv_n, grund }
  */
-export async function detectStaleSources(db, { staleDays = 3, log = () => {} } = {}) {
-  const { rows } = await db.query(STALE_SOURCES_SQL, [staleDays])
+export async function detectStaleSources(db, { staleDays = 3, ignore = STALE_IGNORE, log = () => {} } = {}) {
+  const { rows } = await db.query(STALE_SOURCES_SQL, [staleDays, ignore])
   const flagged = rows.map((r) => {
     const age = r.age_days == null ? null : Math.round(Number(r.age_days))
     let grund

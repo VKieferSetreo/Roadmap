@@ -70,7 +70,7 @@ function refAus(name) {
 export const brueckenbauwerkeHamburgConnector = {
   quelleId: "0111",
   name: QUELLE_NAME,
-  schedule: "0 8,12,18 * * *",
+  schedule: "0 5 * * 1", // T-626: by-design ertraglos (nur Bauwerks-Stammdaten, keine Restriktionen) → wöchentlich statt 3×/Tag
   vollbestand: true,
 
   async fetch({ timeoutMs = 60000, log = () => {} } = {}) {
