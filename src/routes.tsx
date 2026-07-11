@@ -10,6 +10,7 @@ import { routerBasename } from "@/lib/tenantUrl"
 const DashboardHome = lazy(() => import("@/pages/DashboardHome").then((m) => ({ default: m.DashboardHome })))
 const ProjectDetail = lazy(() => import("@/pages/ProjectDetail").then((m) => ({ default: m.ProjectDetail })))
 const DatenbankPage = lazy(() => import("@/pages/DatenbankPage").then((m) => ({ default: m.DatenbankPage })))
+const RoadmapAiPage = lazy(() => import("@/pages/RoadmapAiPage").then((m) => ({ default: m.RoadmapAiPage })))
 const SettingsPage = lazy(() => import("@/pages/SettingsPage").then((m) => ({ default: m.SettingsPage })))
 const AdminTenantsPage = lazy(() => import("@/pages/AdminTenantsPage").then((m) => ({ default: m.AdminTenantsPage })))
 const TenantUsersPage = lazy(() => import("@/pages/TenantUsersPage").then((m) => ({ default: m.TenantUsersPage })))
@@ -45,6 +46,7 @@ export const router = createBrowserRouter(
         { path: "/projekte/:id", element: page(<ProjectDetail />) },
         { path: "/projekte/:id/:tab", element: page(<ProjectDetail />) },
         { path: "/datenbank", element: page(<DatenbankPage />) },
+        { path: "/ai", element: page(<RoadmapAiPage />) },
         { path: "/nutzer", element: page(<TenantUsersPage />) },
         { path: "/news", element: page(<NewsPage />) },
         { path: "/einstellungen", element: page(<SettingsPage />) },

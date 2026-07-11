@@ -14,6 +14,7 @@ import {
   Plus,
   Search,
   Settings,
+  Sparkles,
   Users,
   X,
   type LucideIcon,
@@ -96,6 +97,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const activeId = m?.[1]
   const activeTab = m?.[2] ?? "route"
   const onHome = pathname === "/"
+  const onAi = pathname.startsWith("/ai")
   const onDb = pathname.startsWith("/datenbank")
   const onNews = pathname.startsWith("/news")
   const onSettings = pathname.startsWith("/einstellungen")
@@ -110,8 +112,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <nav className="flex-1 overflow-y-auto p-3">
+      {/* Fixe Kopfzone: Home, Roadmap-AI, Projekte-Überschrift + Suche/Hinzufügen bleiben immer
+          oben stehen. NUR die Ordnerlandschaft darunter scrollt (privat/geteilt). */}
+      <div className="shrink-0 p-3 pb-1.5">
         <NavRow icon={Home} label="Home" active={onHome} onClick={() => go("/")} />
+        <NavRow icon={Sparkles} label="Roadmap-AI" active={onAi} onClick={() => go("/ai")} />
 
         <div className="mb-1.5 mt-5 pl-3 pr-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
@@ -120,7 +125,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </div>
 
         {/* Suchleiste + Plus-Button rechts daneben */}
-        <div className="mb-1.5 flex items-center gap-1.5 px-3">
+        <div className="flex items-center gap-1.5 px-0">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
             <input
@@ -156,7 +161,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </DropdownItem>
           </DropdownMenu>
         </div>
+      </div>
 
+      {/* Scroll-Zone: ausschließlich der Projektbaum (Ordnerlandschaft privat/geteilt). */}
+      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
         {loading ? (
           // YouTube-Stil: ein Lade-Dummy pro Top-Level-Eintrag (Wurzelordner + Wurzelprojekte),
           // Vorab-Zähler vom Server → Anzahl stimmt mit dem späteren eingeklappten Baum überein.
