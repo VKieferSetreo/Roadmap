@@ -52,9 +52,14 @@ export function classifyToken(raw) {
   return { raw: t, typ: "place" }
 }
 
-/** Nur routbare Wegpunkte (Knoten + Orte); Strassennummern + Manoever raus. */
+// Anschlussstellen (AS) sind bewusst KEINE Wegpunkte (Max 2026-07-14): in Bescheiden oft
+// falsch modelliert (falsche Seite/Namensvetter) → Fehl-Geocode zieht die Route weg. Die
+// Autobahn selbst + AK/AD spannen den Korridor eindeutig auf; AS traegt nichts bei.
+const isAnschlussstelle = (t) => t.typ === "junction" && stripManeuver(t.raw).startsWith("Anschlussstelle")
+
+/** Nur routbare Wegpunkte (Kreuze/Dreiecke + Orte); Anschlussstellen, Strassennummern + Manoever raus. */
 export function routableWaypoints(tokens) {
-  return tokens.filter((t) => t && (t.typ === "junction" || t.typ === "place"))
+  return tokens.filter((t) => t && (t.typ === "junction" || t.typ === "place") && !isAnschlussstelle(t))
 }
 
 /** Maße aus dem Bescheid (Länge/Breite/Höhe/Masse + Achslasten) — reine Datenextraktion. */

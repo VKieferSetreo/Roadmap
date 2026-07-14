@@ -37,19 +37,27 @@ describe("VEMAGS-Parser (T-567)", () => {
     expect(strecken[0].name).toBe("Fahrtwegteil 1.1 — Leerfahrt")
   })
 
-  it("Wegpunkte: Knoten+Orte behalten, Straßennummern + Anweisungen raus, Reihenfolge stimmt", () => {
+  it("Wegpunkte: Kreuze/Dreiecke+Orte behalten, AS + Straßennummern + Anweisungen raus, Reihenfolge stimmt", () => {
     const { strecken } = parseVemagsText(TEXT)
     const w = strecken[0].punkte.map((p) => p.raw)
     expect(w[0]).toContain("77743 Altenheim") // Start
     expect(w[w.length - 1]).toContain("26607 Aurich") // Ziel
-    expect(w).toContain("Anschlussstelle Offenburg") // Knoten behalten, Kürzel ausgeschrieben
+    expect(w).not.toContain("Anschlussstelle Offenburg") // AS bewusst ignoriert (oft falsch modelliert)
+    expect(w).toContain("Autobahndreieck Hattenbach") // AK/AD bleiben Wegpunkte
     expect(w).toContain("Hesel") // Ort behalten
     expect(w).not.toContain("A5") // Straßennummer raus
     expect(w).not.toContain("L98")
-    // Lastfahrt: Fahranweisungen + Straßennummern raus
+    // Lastfahrt: Fahranweisungen + Straßennummern + AS raus
     const w2 = strecken[1].punkte.map((p) => p.raw)
     expect(w2.some((x) => /gegenverkehr|rechts B64|K29/i.test(x))).toBe(false)
+    expect(w2).not.toContain("Anschlussstelle Leer-Ost")
     expect(w2).toContain("Autobahnkreuz Bielefeld")
+  })
+
+  it("routableWaypoints: Anschlussstellen fliegen raus, AK/AD bleiben (Klassifikation unverändert junction)", () => {
+    const as = classifyToken("AS Offenburg")
+    expect(as.typ).toBe("junction") // Klassifikation bleibt ehrlich
+    expect(routableWaypoints([as, classifyToken("AK Walldorf"), classifyToken("AD Hattenbach")])).toHaveLength(2)
   })
 
   it("classifyToken: Klassifikation", () => {
