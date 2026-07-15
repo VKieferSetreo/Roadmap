@@ -244,7 +244,10 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
         const testOut = await routeWaypoints(db, testPins, { osrm }, { geocoder: out.provider?.geocoder })
         if (testOut.provider.router === "fallback") continue
         const nochVerletzt = ersteVerletzung(testOut.geometry, [v.zone])
-        if (!nochVerletzt && (!beste || testOut.distanzKm < beste.out.distanzKm)) {
+        // Kandidaten, deren Umweg selbst Schleifen/Stichfahrten erzeugt (Via-Pin auf
+        // Stichstrasse → rein-raus), sind Murks und fliegen raus (Max 2026-07-15) —
+        // lieber die andere Seite / groesserer Abstand als eine zerrissene Route.
+        if (!nochVerletzt && !schleifenCheck(testOut.geometry).length && (!beste || testOut.distanzKm < beste.out.distanzKm)) {
           beste = { out: testOut, pins: testPins }
         }
       } catch {
@@ -277,7 +280,10 @@ export function schleifenCheck(geometry) {
   const cum = cumulativeKm(geometry)
   const totalKm = cum[cum.length - 1]
   if (!Number.isFinite(totalKm) || totalKm < 6) return []
-  const step = Math.max(0.2, totalKm / 400)
+  // Fein sampeln: bei 400 Samples auf 500 km (Step 1,25 km) fiel eine 1-2-km-Stichfahrt
+  // KOMPLETT zwischen zwei Samples (Max 2026-07-15: "macht immer noch Loops").
+  const step = Math.max(0.15, totalKm / 1500)
+  const minGap = Math.max(1.0, 4 * step)
   const samples = []
   let next = 0
   for (let i = 0; i < geometry.length; i++) {
@@ -291,7 +297,7 @@ export function schleifenCheck(geometry) {
     if (samples[i].km < 2) continue
     if (totalKm - samples[i].km < 2) break
     for (let j = i + 1; j < samples.length; j++) {
-      if (samples[j].km - samples[i].km < 1.5) continue
+      if (samples[j].km - samples[i].km < minGap) continue
       if (totalKm - samples[j].km < 2) break
       if (haversineKm(samples[i].p, samples[j].p) < 0.12) {
         nah[i] = true

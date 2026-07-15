@@ -33,6 +33,16 @@ describe("schleifenCheck", () => {
     expect(zonen[0].vonKm).toBeLessThan(40)
   })
 
+  it("erkennt eine kurze Stichfahrt (2,5 km) auch auf einer langen Route (300 km)", () => {
+    // Beim alten 400-Sample-Raster (Step 0,75 km) fiel genau dieser Fall durch.
+    const pts = gerade(150)
+    const basis = pts[pts.length - 1]
+    for (let i = 1; i <= 25; i++) pts.push({ lat: basis.lat + (i / 10) * KM_LAT, lng: basis.lng })
+    for (let i = 24; i >= 0; i--) pts.push({ lat: basis.lat + (i / 10) * KM_LAT, lng: basis.lng })
+    for (let i = 1; i <= 1500; i++) pts.push({ lat: basis.lat, lng: basis.lng + (i / 10) * KM_LNG })
+    expect(schleifenCheck(pts).length).toBeGreaterThan(0)
+  })
+
   it("ignoriert Out-and-back direkt am Ziel (legitime Zufahrt)", () => {
     const pts = gerade(20)
     const basis = pts[pts.length - 1]
