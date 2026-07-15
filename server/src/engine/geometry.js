@@ -290,6 +290,78 @@ export function lineCrossesRoute(
   return transverseKm >= minTransverseKm && transverseKm > alignedKm && alignedKm < maxAlignedKm
 }
 
+/** Teil-Linien einer GeoJSON-Linie/MultiLinie als Array von {lat,lng}-Punktlisten. Anders als das
+ *  geflattete geomPoints bleiben die Teil-Linien getrennt — Distanz-/Richtungs-Maße dürfen NIE über
+ *  die (nicht existente) Verbindung zwischen zwei Teil-Linien akkumulieren (Phantom-Segmente). */
+export function geomLineParts(geom) {
+  if (!geom || typeof geom !== "object") return []
+  const toPart = (line) => (Array.isArray(line) ? line : [])
+    .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+    .map((p) => ({ lat: p[1], lng: p[0] }))
+  const parts = []
+  if (geom.type === "LineString") parts.push(toPart(geom.coordinates))
+  else if (geom.type === "MultiLineString" && Array.isArray(geom.coordinates)) {
+    for (const line of geom.coordinates) parts.push(toPart(line))
+  }
+  return parts.filter((p) => p.length >= 2)
+}
+
+// T-641: eine Linien-Meldung liegt sauber ABSEITS der Route — sie berührt den Match-Korridor nur
+// tangential (Rampe an Anschlussstelle/Autobahnkreuz, benachbarte Fremdstraße), der Transport fährt
+// sie aber nie. Sichtbar am Kreuz Do-Unna: Ausfahrt-/Einfahrt-Sperrungen der NICHT befahrenen Rampen
+// wurden als kritisch gemeldet, obwohl die Quell-Linie klar neben der Strecke liegt.
+// Diskriminator (an 1334 Prod-Linien-Funden kalibriert, adversarial reviewt): fast kein deckungs-
+// gleicher, GLEICHGERICHTETER Lauf im Match-Korridor (< minOnKm) UND ein nennenswertes Stück der
+// Linie verläuft KLAR abseits (> farM, jenseits Mittelstreifen/Gegenfahrbahn-Band; ≥ minFarKm).
+// Beides zusammen gibt es bei echten Funden nicht: auf der Fahrbahn liegende Maßnahmen laufen mit,
+// kurze Linien haben kein Abseits-Stück, teil-befahrene Riesen-Baustellen laufen kilometerweit mit.
+// Befahrene Kreuz-Rampen (z. B. Gambacher Kreuz, Mitlauf 328 m) bleiben ebenfalls sicher drin.
+// Schwellen BEWUSST mit Abstand zu allen echten Prod-Grenzfällen gewählt (im Zweifel behalten):
+// 35 m Mitlauf / 120 m Abseits — beide liegen mittig in Daten-Lücken: Mitlauf-Keeps ab 46 m (OLPE,
+// Bühl 48 m, A28-Versatz 50 m) vs. Drops bis 33 m; Abseits-Keeps bis 102 m (B31a-Ziel-Sperrung 100 m,
+// Hirschstraße 102 m) vs. Drops ab 139 m (AkD-35958-Rampe, Hemelingen-Blockriss 146 m). Ein Band-
+// Mitlauf-Bonus (20–60 m Ring) wurde datengetrieben VERWORFEN — auch nicht befahrene Rampen laufen
+// dort nennenswert gleichgerichtet (AK Walldorf/Heidelberg kämen als Falsch-Funde zurück).
+// Nimmt TEIL-Linien (geomLineParts, nicht geflattete Punkte): Sprung-Segmente zwischen
+// MultiLineString-Teilen sind keine Geometrie und dürfen weder Mitlauf noch Abseits beweisen.
+// Early-Exit: sobald minOnKm Mitlauf erreicht ist, ist die Linie befahren → behalten.
+export function lineOffRoute(
+  parts, geometry, cum, grid = null,
+  { nearM = 20, farM = 60, alignDeg = 40, stepM = 12, minOnKm = 0.035, minFarKm = 0.12 } = {},
+) {
+  if (!Array.isArray(parts) || parts.length === 0) return false
+  const farMin = Math.max(farM, nearM * 3) // Korridor > farM darf die Semantik nie invertieren
+  let onKm = 0
+  let farKm = 0
+  for (const obstaclePts of parts) {
+    if (!Array.isArray(obstaclePts) || obstaclePts.length < 2) continue
+    for (let i = 0; i < obstaclePts.length - 1; i++) {
+      const a = obstaclePts[i]
+      const b = obstaclePts[i + 1]
+      const segKm = haversineKm(a, b)
+      if (segKm === 0) continue
+      const segBear = bearingDeg(a, b)
+      const steps = Math.max(1, Math.round((segKm * 1000) / stepM))
+      const w = segKm / (steps + 1)
+      for (let s = 0; s <= steps; s++) {
+        const t = s / steps
+        const pt = { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) }
+        const near = nearestOnRoute(pt, geometry, cum, grid)
+        if (near.distM > farMin) { farKm += w; continue }
+        if (near.distM > nearM) continue
+        const rb = routeBearingAtKm(geometry, cum, near.km)
+        if (rb == null) continue
+        const d = angleDeltaDeg(segBear, rb)
+        if (Math.min(d, 180 - d) <= alignDeg) {
+          onKm += w
+          if (onKm >= minOnKm) return false // befahren → behalten, Rest sparen
+        }
+      }
+    }
+  }
+  return farKm >= minFarKm // kein Mitlauf: nur droppen, wenn die Linie klar woanders verläuft
+}
+
 /**
  * Clippt die Linien-Geometrie eines Hindernisses auf den Routen-Korridor: behält NUR die
  * Abschnitte, die innerhalb clipM um die Route liegen (= die der Transport tatsächlich

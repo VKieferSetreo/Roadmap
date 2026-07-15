@@ -11,7 +11,7 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { OBSTACLE_COLS } from "../obstaclesRepo.js"
 import { downsample } from "./fallback.js"
 import {
-  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, haversineKm, lineCrossesRoute, nearestOnRoute, obstacleRouteRelation, totalKm,
+  bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, geomLineParts, haversineKm, lineCrossesRoute, lineOffRoute, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef } from "../external/osrm.js"
@@ -40,7 +40,13 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // Titel → Kategorie-Default. 11.668/54.713 Titel verschönert, 0 geleert. EVB/3-Buchstaben-Kürzel geschützt.
 // 2.3.4 (T-611 Beauty): Detail-WERTE großschreiben („gesperrt"→„Gesperrt", „auflagenpflichtig…"→„Auf…");
 // Gültigkeits-Label „unbefristet/ab/bis" groß (FE+Mail). Zahlen/Einheiten unverändert.
-export const ENGINE_VERSION = "2.3.4"
+// 2.4.0 (T-641): Abseits-Filter (lineOffRoute) — Linien-Meldungen, die die Route nur tangential
+// berühren (nicht befahrene AS-/Kreuz-Rampen, benachbarte Fremdstraßen), werden ausgesiebt: kein
+// gleichgerichteter Mitlauf im Korridor (< 35 m) UND ≥ 120 m der Linie klar abseits (> 60 m);
+// je MultiLineString-TEIL-Linie gerechnet (keine Phantom-Sprungsegmente). Kalibriert an allen 1334
+// Prod-Linien-Funden + adversarialer Review (17 Agenten): 54 Drops, Schwellen mittig in den Daten-
+// Lücken zu allen identifizierten echten Grenzfällen (A28-Versatz, B31a-Ziel-Sperrung, AS Bühl).
+export const ENGINE_VERSION = "2.4.0"
 
 // T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
 // geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
@@ -559,6 +565,13 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Straße, nicht uns. Richtungsbasiert (quer vs. längs), damit eine nur durch den Mittelstreifen
       // versetzte, aber GLEICHLAUFENDE Baustelle NICHT mitgedroppt wird (konservativ, im Zweifel behalten).
       if (obstacle.geom && lineCrossesRoute(obstaclePts, geometry, cum, grid, { nearM: corridorM })) continue
+      // T-641: Abseits-Filter — die Quell-Linie berührt den Korridor nur tangential (nicht befahrene
+      // Rampe an AS/Autobahnkreuz, parallele Fremdstraße), läuft aber nirgends gleichgerichtet auf der
+      // Route mit UND verläuft überwiegend klar abseits. Der Kreuzungsfilter greift hier NICHT (die
+      // Rampe liegt am Berührpunkt PARALLEL, nicht quer); erst der fehlende Mitlauf entlarvt sie.
+      // Konservativ: kurze Linien (< 120 m Abseits-Anteil) und alles mit ≥ 35 m Mitlauf bleiben drin.
+      // TEIL-Linien statt obstaclePts: das Flattening würde Phantom-Sprünge zwischen MLS-Teilen messen.
+      if (obstacle.geom && lineOffRoute(geomLineParts(obstacle.geom), geometry, cum, grid, { nearM: corridorM })) continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle

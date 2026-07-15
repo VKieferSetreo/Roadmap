@@ -5,6 +5,7 @@
 
 import { Router } from "express"
 import { analyze } from "../engine/index.js"
+import { haversineKm } from "../engine/geometry.js"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
@@ -136,6 +137,135 @@ async function resolveVemagsPunkte(punkte, geocode) {
   return pts
 }
 
+// ── Sperrzonen-Umfahrung (KI-Strecken-Wizard, Max 2026-07-15) ────────────────────
+// OSRM kann Segmente nicht per Request sperren. Emulation: verletzt die Route eine
+// Sperrzone (Kreis um z.B. eine Vollsperrung), konstruieren wir seitlich versetzte
+// Umgehungs-Pins und lassen OSRM neu routen — iterativ, beide Seiten, wachsender
+// Abstand. Die ENGINE findet den Alternativweg, nicht das Sprachmodell.
+
+/** Erste Zone, die die Geometrie verletzt → {zone, idx des naechsten Punkts} | null. */
+function ersteVerletzung(geometry, zonen) {
+  for (const zone of zonen) {
+    let bestD = Infinity
+    let bestI = -1
+    for (let i = 0; i < geometry.length; i++) {
+      const d = haversineKm(geometry[i], zone)
+      if (d < bestD) {
+        bestD = d
+        bestI = i
+      }
+    }
+    if (bestD < zone.radiusKm) return { zone, idx: bestI }
+  }
+  return null
+}
+
+/** Punkt seitlich der Route (senkrecht zur lokalen Richtung) im Abstand km. */
+function seitlicherPunkt(geometry, idx, km, seite) {
+  const p = geometry[idx]
+  const a = geometry[Math.max(0, idx - 3)]
+  const b = geometry[Math.min(geometry.length - 1, idx + 3)]
+  const cosLat = Math.cos((p.lat * Math.PI) / 180)
+  let dx = (b.lng - a.lng) * cosLat
+  let dy = b.lat - a.lat
+  const len = Math.hypot(dx, dy) || 1
+  // Normale (senkrecht), seite = +1|-1
+  const nx = (-dy / len) * seite
+  const ny = (dx / len) * seite
+  const gradKm = km / 111.32
+  return { lat: p.lat + ny * gradKm, lng: p.lng + (nx * gradKm) / cosLat }
+}
+
+/** Umgehungs-Pin an der richtigen Stelle der Pin-Folge einsortieren (nach dem letzten
+ *  Pin, der auf der Geometrie VOR der Verletzung liegt). */
+function fuegeViaEin(pins, geometry, verletzungsIdx, via) {
+  const idxAufGeom = (pin) => {
+    let best = Infinity
+    let bi = 0
+    for (let i = 0; i < geometry.length; i++) {
+      const d = haversineKm(geometry[i], pin)
+      if (d < best) {
+        best = d
+        bi = i
+      }
+    }
+    return bi
+  }
+  let pos = pins.length - 1
+  for (let k = pins.length - 1; k >= 1; k--) {
+    if (idxAufGeom(pins[k - 1]) <= verletzungsIdx) {
+      pos = k
+      break
+    }
+  }
+  const neu = [...pins]
+  neu.splice(pos, 0, via)
+  return neu
+}
+
+/** Route iterativ um die Sperrzonen fuehren. Liefert {out, status[]}. */
+async function umfahreZonen(db, basisOut, zonen, { osrm }) {
+  let out = basisOut
+  let pins = Array.isArray(out.waypoints) ? [...out.waypoints] : null
+  if (!pins || pins.length < 2 || !osrm) {
+    return { out, status: zonen.map((z) => ({ ...z, umfahren: false, grund: "Routing ohne Wegpunkte/OSRM" })) }
+  }
+  const status = new Map(zonen.map((z) => [z, { ...z, umfahren: true }]))
+  for (let iter = 0; iter < 10; iter++) {
+    const v = ersteVerletzung(out.geometry, zonen)
+    if (!v) break
+    // Kandidaten: beide Seiten, wachsender Abstand je Fehlversuch dieser Zone.
+    const zoneState = status.get(v.zone)
+    zoneState.versuche = (zoneState.versuche ?? 0) + 1
+    if (zoneState.versuche > 3) {
+      zoneState.umfahren = false
+      zoneState.grund = "Keine Umfahrung gefunden (3 Anlaeufe)"
+      break
+    }
+    const abstand = v.zone.radiusKm * (1.6 + 0.8 * (zoneState.versuche - 1))
+    let beste = null
+    for (const seite of [1, -1]) {
+      const via = seitlicherPunkt(out.geometry, v.idx, abstand, seite)
+      const testPins = fuegeViaEin(pins, out.geometry, v.idx, via)
+      try {
+        const testOut = await routeWaypoints(db, testPins, { osrm }, { geocoder: out.provider?.geocoder })
+        if (testOut.provider.router === "fallback") continue
+        const nochVerletzt = ersteVerletzung(testOut.geometry, [v.zone])
+        if (!nochVerletzt && (!beste || testOut.distanzKm < beste.out.distanzKm)) {
+          beste = { out: testOut, pins: testPins }
+        }
+      } catch {
+        /* Kandidat unroutbar — andere Seite/Iteration */
+      }
+    }
+    if (beste) {
+      out = beste.out
+      pins = beste.pins
+    }
+    // Kein Kandidat: naechste Iteration versucht groesseren Abstand (versuche zaehlt hoch).
+  }
+  const rest = ersteVerletzung(out.geometry, zonen)
+  if (rest) {
+    const s = status.get(rest.zone)
+    s.umfahren = false
+    s.grund = s.grund ?? "Route verlaeuft weiterhin durch die Zone"
+  }
+  return { out, status: [...status.values()].map(({ versuche: _v, ...s }) => s) }
+}
+
+/** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 5 Zonen, Radius 0.5-15 km. */
+function parseMeide(raw) {
+  if (!Array.isArray(raw)) return []
+  return raw
+    .slice(0, 5)
+    .map((z) => ({
+      lat: Number(z?.lat),
+      lng: Number(z?.lng),
+      radiusKm: Math.min(Math.max(Number(z?.radiusKm) || 3, 0.5), 15),
+    }))
+    .filter((z) => Number.isFinite(z.lat) && Number.isFinite(z.lng))
+}
+
 export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch, corridorM = 20 }) {
   const r = Router()
 
@@ -176,7 +306,8 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     })
   }))
 
-  /** Start + Ziel (+ optionale Zwischenstopps als string[]) → Strecke. */
+  /** Start + Ziel (+ optionale Zwischenstopps als string[], + optionale Sperrzonen
+   *  meide: [{lat,lng,radiusKm}] — die Engine sucht selbst den Weg aussen herum). */
   r.post("/startziel", asyncHandler(async (req, res) => {
     const start = typeof req.body?.start === "string" ? req.body.start.trim() : ""
     const ziel = typeof req.body?.ziel === "string" ? req.body.ziel.trim() : ""
@@ -184,13 +315,21 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     const vias = Array.isArray(req.body?.vias)
       ? req.body.vias.filter((v) => typeof v === "string" && v.trim())
       : []
-    const out = await resolveRoute(db, { mode: "startziel", start, ziel, vias }, { nominatim, osrm })
+    let out = await resolveRoute(db, { mode: "startziel", start, ziel, vias }, { nominatim, osrm })
+    const zonen = parseMeide(req.body?.meide)
+    let meideStatus = null
+    if (zonen.length) {
+      const ergebnis = await umfahreZonen(db, out, zonen, { osrm })
+      out = ergebnis.out
+      meideStatus = ergebnis.status
+    }
     res.json({
       points: out.geometry,
       waypoints: out.waypoints ?? null, // exakte Start/Ziel/Via-Punkte → statisch mit der Strecke speichern (T-582)
       distanzKm: out.distanzKm,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
+      ...(meideStatus ? { meideStatus } : {}),
     })
   }))
 
