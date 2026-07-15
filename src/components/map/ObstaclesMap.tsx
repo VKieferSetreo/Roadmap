@@ -25,6 +25,7 @@ import {
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
 import { MapFullscreen, MapLayers } from "./MapControls"
+import { ArchivStreckenToggle } from "./ArchivStreckenLayer"
 import { safeHref } from "@/lib/safeHref"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 import { geomMidpoint, geomToLines, hasImplausibleJump } from "@/lib/geom"
@@ -307,6 +308,7 @@ export function ObstaclesMap({
         <MapResize />
         <MapFullscreen />
         <MapLayers className="right-3 top-14" />
+        <ArchivStreckenToggle />
         <FlyTo target={flyTo} />
         <ObstacleLayers obstacles={obstacles} onDelete={onDelete} />
       </MapContainer>

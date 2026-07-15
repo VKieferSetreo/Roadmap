@@ -42,6 +42,7 @@ import { statsRouter } from "./routes/stats.js"
 import { syncRouter } from "./routes/sync.js"
 import { accountRouter } from "./routes/account.js"
 import { routeRouter } from "./routes/route.js"
+import { archivRouter } from "./routes/archiv.js"
 import { analyticsRouter } from "./routes/analytics.js"
 import { getTenantBranding, listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
@@ -261,7 +262,9 @@ export function createApp({
     if (!routeLimiter(key)) throw new ApiError(429, "Zu viele Routen-Anfragen — bitte kurz warten")
     next()
   })
-  app.use("/api/route", requireTenant, routeRouter({ db, nominatim, osrm, fetchImpl }))
+  app.use("/api/route", requireTenant, routeRouter({ db, nominatim, osrm, fetchImpl, corridorM }))
+  // Genehmigungs-Archiv-Proxy (intern-only, Guard im Router) — Archiv-Layer der Datenbank-Karte.
+  app.use("/api/archiv", archivRouter({ fetchImpl }))
   // Sync ("alle Quellen aktualisieren") — Status für jeden Eingeloggten sichtbar; den
   // globalen Voll-Pull-Trigger (POST /) dürfen NUR interne Nutzer auslösen (T-309, im Router).
   app.use("/api/sync", syncRouter({ db, fetchImpl, env: process.env, connectors: syncConnectors }))

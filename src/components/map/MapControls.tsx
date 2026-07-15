@@ -13,7 +13,7 @@ import { cn } from "@/lib/cn"
 import { useSettingsStore, type TileStyle } from "@/store/settings"
 
 /** Map-Events am Control-Root abklemmen (Leaflet greift sonst Klicks/Scroll ab). */
-function useStopMapEvents<T extends HTMLElement>() {
+export function useStopMapEvents<T extends HTMLElement>() {
   const ref = useRef<T>(null)
   useEffect(() => {
     if (ref.current) {

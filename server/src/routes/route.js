@@ -4,6 +4,7 @@
 // Restriktionen prüft anschließend die Auswertung gegen die Hindernis-DB.
 
 import { Router } from "express"
+import { analyze } from "../engine/index.js"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
@@ -135,8 +136,45 @@ async function resolveVemagsPunkte(punkte, geocode) {
   return pts
 }
 
-export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch }) {
+export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch, corridorM = 20 }) {
   const r = Router()
+
+  /** Ad-hoc-Analyse einer GEPLANTEN Strecke (ohne Projekt, ohne Persistenz) — fuer den
+   *  KI-Strecken-Wizard (Setreo-AI): Punkte + optionale Transport-Masse → Funde im Korridor.
+   *  Nutzt dieselbe Engine wie die Projekt-Analyse (analyze, nicht runAnalysis). */
+  r.post("/analyze", asyncHandler(async (req, res) => {
+    const points = Array.isArray(req.body?.points) ? req.body.points : []
+    if (points.length < 2) throw new ApiError(400, "points (>= 2 {lat,lng}) erforderlich")
+    const t = req.body?.transport ?? {}
+    const transport = {
+      laenge: Number(t.laenge) || 24.5,
+      breite: Number(t.breite) || 3.0,
+      hoehe: Number(t.hoehe) || 4.2,
+      gesamtgewicht: Number(t.gesamtgewicht) || 68,
+    }
+    const project = {
+      id: null,
+      routes: [{ id: "adhoc", name: "Geplante Strecke", points, waypoints: Array.isArray(req.body?.waypoints) ? req.body.waypoints : undefined, source: "startziel" }],
+      transport,
+    }
+    const out = await analyze({ db, project, corridorM, osrm })
+    res.json({
+      distanzKm: out.distanzKm,
+      fahrzeitMin: out.fahrzeitMin,
+      stats: out.stats,
+      findings: out.findings.slice(0, 40).map((f) => ({
+        titel: f.titel ?? null,
+        kategorie: f.kategorie ?? null,
+        severity: f.severity ?? null,
+        strassenRef: f.strassenRef ?? null,
+        km: typeof f.km === "number" ? Math.round(f.km * 10) / 10 : null,
+        lat: f.lat ?? null,
+        lng: f.lng ?? null,
+        gueltigVon: f.gueltigVon ?? null,
+        gueltigBis: f.gueltigBis ?? null,
+      })),
+    })
+  }))
 
   /** Start + Ziel (+ optionale Zwischenstopps als string[]) → Strecke. */
   r.post("/startziel", asyncHandler(async (req, res) => {
