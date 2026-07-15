@@ -253,11 +253,11 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
   return { out, status: [...status.values()].map(({ versuche: _v, ...s }) => s) }
 }
 
-/** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 5 Zonen, Radius 0.5-15 km. */
+/** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 8 Zonen, Radius 0.5-15 km. */
 function parseMeide(raw) {
   if (!Array.isArray(raw)) return []
   return raw
-    .slice(0, 5)
+    .slice(0, 8)
     .map((z) => ({
       lat: Number(z?.lat),
       lng: Number(z?.lng),
@@ -288,11 +288,18 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       transport,
     }
     const out = await analyze({ db, project, corridorM, osrm })
+    // ALLE kritischen Funde (Cap 150 defensiv) + Warnungen gleichmaessig ueber die Route
+    // verteilt — ein km-sortierter Kopf-Slice zeigte nur den Routen-Anfang (Max 2026-07-15).
+    const kritische = out.findings.filter((f) => f.severity === "kritisch").slice(0, 150)
+    const andere = out.findings.filter((f) => f.severity !== "kritisch")
+    const budget = Math.max(0, 160 - kritische.length)
+    const step = Math.max(1, Math.ceil(andere.length / budget))
+    const verteilt = andere.filter((_, i) => i % step === 0).slice(0, budget)
     res.json({
       distanzKm: out.distanzKm,
       fahrzeitMin: out.fahrzeitMin,
       stats: out.stats,
-      findings: out.findings.slice(0, 40).map((f) => ({
+      findings: [...kritische, ...verteilt].map((f) => ({
         titel: f.titel ?? null,
         kategorie: f.kategorie ?? null,
         severity: f.severity ?? null,
