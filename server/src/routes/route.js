@@ -5,7 +5,7 @@
 
 import { Router } from "express"
 import { analyze } from "../engine/index.js"
-import { haversineKm } from "../engine/geometry.js"
+import { cumulativeKm, haversineKm } from "../engine/geometry.js"
 import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute.js"
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
@@ -266,6 +266,69 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
   return { out, status: [...status.values()].map(({ versuche: _v, ...s }) => s) }
 }
 
+/** Schleifen-/Stichfahrt-Check: laeuft die Route laengere Zeit dicht an sich selbst
+ *  vorbei (Doppel-Befahrung, Via-Stichfahrt = "Murks-Route", Max 2026-07-15)?
+ *  Einzelne Kreuzungen (Bruecke, Kleeblatt) zaehlen NICHT — erst >= 3 aufeinander-
+ *  folgende nahe Sample-Paare gelten als Schleife. Endbereiche (2 km um Start/Ziel)
+ *  sind ausgenommen, dort ist Out-and-back oft legitime Zufahrt.
+ *  ponytail: O(n^2) auf max ~400 Samples — reicht fuer Ad-hoc-Planungsrouten. */
+export function schleifenCheck(geometry) {
+  if (!Array.isArray(geometry) || geometry.length < 4) return []
+  const cum = cumulativeKm(geometry)
+  const totalKm = cum[cum.length - 1]
+  if (!Number.isFinite(totalKm) || totalKm < 6) return []
+  const step = Math.max(0.2, totalKm / 400)
+  const samples = []
+  let next = 0
+  for (let i = 0; i < geometry.length; i++) {
+    if (cum[i] >= next) {
+      samples.push({ p: geometry[i], km: cum[i] })
+      next = cum[i] + step
+    }
+  }
+  const nah = new Array(samples.length).fill(false)
+  for (let i = 0; i < samples.length; i++) {
+    if (samples[i].km < 2) continue
+    if (totalKm - samples[i].km < 2) break
+    for (let j = i + 1; j < samples.length; j++) {
+      if (samples[j].km - samples[i].km < 1.5) continue
+      if (totalKm - samples[j].km < 2) break
+      if (haversineKm(samples[i].p, samples[j].p) < 0.12) {
+        nah[i] = true
+        nah[j] = true
+      }
+    }
+  }
+  const zonen = []
+  let start = -1
+  for (let i = 0; i <= samples.length; i++) {
+    if (i < samples.length && nah[i]) {
+      if (start < 0) start = i
+      continue
+    }
+    if (start >= 0 && i - start >= 3) {
+      zonen.push({
+        vonKm: Math.round(samples[start].km * 10) / 10,
+        bisKm: Math.round(samples[i - 1].km * 10) / 10,
+      })
+    }
+    start = -1
+  }
+  return zonen
+}
+
+/** Routen-Qualitaet fuer den Planungs-Agenten: Schleifenverdacht + Umwegfaktor
+ *  (Strecke / Luftlinie). Der Agent darf Murks-Routen nicht praesentieren. */
+function routenQualitaet(geometry, distanzKm) {
+  const schleifen = schleifenCheck(geometry)
+  let umwegFaktor = null
+  if (Array.isArray(geometry) && geometry.length >= 2 && Number.isFinite(distanzKm)) {
+    const luft = haversineKm(geometry[0], geometry[geometry.length - 1])
+    if (luft > 1) umwegFaktor = Math.round((distanzKm / luft) * 100) / 100
+  }
+  return { schleifen, umwegFaktor }
+}
+
 /** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 8 Zonen, Radius 0.5-8 km
  *  (harter Deckel — Riesenzonen zerlegen die Route statt sie zu verbessern). */
 function parseMeide(raw) {
@@ -350,6 +413,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       distanzKm: out.distanzKm,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
+      qualitaet: routenQualitaet(out.geometry, out.distanzKm),
       ...(meideStatus ? { meideStatus } : {}),
     })
   }))
