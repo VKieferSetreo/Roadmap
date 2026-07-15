@@ -211,8 +211,21 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
     return { out, status: zonen.map((z) => ({ ...z, umfahren: false, grund: "Routing ohne Wegpunkte/OSRM" })) }
   }
   const status = new Map(zonen.map((z) => [z, { ...z, umfahren: true }]))
+  // Zonen, die Start/Ziel (er sten/letzten Pin) einschliessen oder fast beruehren, sind
+  // strukturell NICHT umfahrbar (die Route MUSS dorthin) — gar nicht erst versuchen,
+  // sonst biegt die Eskalation die Route ab oder laeuft ins Leere (Max 2026-07-15).
+  const start = pins[0]
+  const ziel = pins[pins.length - 1]
+  const unumfahrbar = zonen.filter((z) => haversineKm(z, start) < z.radiusKm + 1 || haversineKm(z, ziel) < z.radiusKm + 1)
+  for (const z of unumfahrbar) {
+    const s = status.get(z)
+    s.umfahren = false
+    s.grund = "Zone liegt am Start/Ziel — die Route muss dorthin, nicht umfahrbar"
+  }
+  const aktiveZonen = zonen.filter((z) => !unumfahrbar.includes(z))
+  if (!aktiveZonen.length) return { out, status: [...status.values()] }
   for (let iter = 0; iter < 10; iter++) {
-    const v = ersteVerletzung(out.geometry, zonen)
+    const v = ersteVerletzung(out.geometry, aktiveZonen)
     if (!v) break
     // Kandidaten: beide Seiten, wachsender Abstand je Fehlversuch dieser Zone.
     const zoneState = status.get(v.zone)
@@ -244,7 +257,7 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
     }
     // Kein Kandidat: naechste Iteration versucht groesseren Abstand (versuche zaehlt hoch).
   }
-  const rest = ersteVerletzung(out.geometry, zonen)
+  const rest = ersteVerletzung(out.geometry, aktiveZonen)
   if (rest) {
     const s = status.get(rest.zone)
     s.umfahren = false
@@ -253,7 +266,8 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
   return { out, status: [...status.values()].map(({ versuche: _v, ...s }) => s) }
 }
 
-/** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 8 Zonen, Radius 0.5-15 km. */
+/** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 8 Zonen, Radius 0.5-8 km
+ *  (harter Deckel — Riesenzonen zerlegen die Route statt sie zu verbessern). */
 function parseMeide(raw) {
   if (!Array.isArray(raw)) return []
   return raw
@@ -261,7 +275,7 @@ function parseMeide(raw) {
     .map((z) => ({
       lat: Number(z?.lat),
       lng: Number(z?.lng),
-      radiusKm: Math.min(Math.max(Number(z?.radiusKm) || 3, 0.5), 15),
+      radiusKm: Math.min(Math.max(Number(z?.radiusKm) || 3, 0.5), 8),
     }))
     .filter((z) => Number.isFinite(z.lat) && Number.isFinite(z.lng))
 }
