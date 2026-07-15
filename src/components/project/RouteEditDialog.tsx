@@ -62,38 +62,18 @@ function bestInsertIndex(cps: RoutePoint[], lat: number, lng: number): number {
   return bestIdx
 }
 
-// Äquirektangulär gewichteter Abstand (lng um cos(lat) gestaucht) — bei reinem Grad-Quadrat würde
-// die Längengrad-Verzerrung in DE die Reihenfolge leicht verfälschen. Reicht fürs Sortieren.
-function dist(a: RoutePoint, b: RoutePoint): number {
-  const k = Math.cos((((a.lat + b.lat) / 2) * Math.PI) / 180)
-  const dx = (a.lat - b.lat)
-  const dy = (a.lng - b.lng) * k
-  return Math.hypot(dx, dy)
-}
-
-// T-#10: Optimale Einfüge-Position für Punkt p zwischen den fixen Endpunkten (Start cps[0] / Ziel
-// cps[last]) — die, die die geringste ZUSATZ-Strecke verursacht (Cheapest-Insertion). So entsteht
-// A-D-B-C statt A-B-D-B-C, egal an welcher Stelle der Nutzer den Punkt greift/hinzieht.
-function cheapestInsertIndex(cps: RoutePoint[], p: RoutePoint): number {
-  let bestIdx = 1
-  let bestCost = Infinity
-  for (let i = 0; i < cps.length - 1; i++) {
-    const cost = dist(cps[i], p) + dist(p, cps[i + 1]) - dist(cps[i], cps[i + 1])
-    if (cost < bestCost) {
-      bestCost = cost
-      bestIdx = i + 1
-    }
-  }
-  return bestIdx
-}
-
-const cpIcon = (kind: "start" | "end" | "via") => {
+// T-643: Wegpunkte tragen sichtbare Nummern und werden EXAKT in dieser Reihenfolge angefahren.
+// Die frühere Cheapest-Insertion-Umsortierung (T-#10) ist bewusst raus: Bei Schwertransporten sind
+// „unlogische" Umwege oft gewollt (Auflagen, gesperrte Brücken) — eine automatische „optimale"
+// Reihenfolge zerstörte genau diese Absicht. Wer die Reihenfolge ändern will, setzt den Punkt an
+// der gewünschten Etappe neu (Linie im Ziel-Segment greifen).
+const cpIcon = (kind: "start" | "end" | "via", nr?: number) => {
   if (kind === "via") {
     return L.divIcon({
       className: "rm-handle",
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-      html: `<div style="width:12px;height:12px;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);background:#2563eb"></div>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      html: `<div style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);background:#2563eb;color:#fff;font:700 10px/1 Inter,system-ui,sans-serif">${nr ?? ""}</div>`,
     })
   }
   const bg = kind === "start" ? "#16a34a" : "#dc2626"
@@ -165,6 +145,36 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
 
   const coordKey = cps.map((c) => `${c.lat.toFixed(6)},${c.lng.toFixed(6)}`).join(";")
 
+  // T-643: ETAPPENWEISES Routing — je Wegpunkt-Paar (n → n+1) eine eigene optimale Teilstrecke,
+  // NICHT ein Gesamt-Request über alle Punkte. So bestimmt allein die Nummern-Reihenfolge den
+  // Verlauf (kein Richtungswechsel/Glätten über Vias hinweg), und beim Ziehen/Einfügen/Löschen
+  // eines Punkts werden nur die berührten Etappen neu gerechnet — alle anderen bleiben IDENTISCH
+  // (Leg-Cache; unveränderte Etappen zucken nicht mehr um).
+  const legCache = useRef(new Map<string, RoutePoint[]>())
+  const routeLegs = async (points: RoutePoint[]): Promise<RoutePoint[]> => {
+    const legs = await Promise.all(
+      points.slice(0, -1).map(async (a, i) => {
+        const b = points[i + 1]
+        const key = `${a.lat.toFixed(6)},${a.lng.toFixed(6)}|${b.lat.toFixed(6)},${b.lng.toFixed(6)}`
+        const cached = legCache.current.get(key)
+        if (cached) return cached
+        const res = await api.route.waypoints([{ lat: a.lat, lng: a.lng }, { lat: b.lat, lng: b.lng }])
+        legCache.current.set(key, res.points)
+        return res.points
+      }),
+    )
+    // Etappen zusammenfügen; identischen Naht-Punkt (Ende Etappe n = Start Etappe n+1) nicht doppeln.
+    const out: RoutePoint[] = []
+    for (const leg of legs) {
+      for (const p of leg) {
+        const last = out[out.length - 1]
+        if (last && last.lat === p.lat && last.lng === p.lng) continue
+        out.push(p)
+      }
+    }
+    return out
+  }
+
   // Live-Routing nach jeder Bewegung (debounced). Erst nach der ersten Nutzer-Aktion, damit
   // eine unangetastet geöffnete Strecke nicht sofort neu gesnappt wird.
   useEffect(() => {
@@ -173,9 +183,9 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
     const t = setTimeout(async () => {
       setRouting(true)
       try {
-        const res = await api.route.waypoints(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
+        const points = await routeLegs(cps)
         if (!cancelled) {
-          setGeometry(res.points)
+          setGeometry(points)
           setRoutingFailed(false)
           failToastRef.current = false
         }
@@ -229,22 +239,6 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
     toast.success("Wegpunkt entfernt.")
   }
 
-  // T-#10: Nach dem Loslassen den (gezogenen/neu eingefügten) Zwischenpunkt an seine optimale
-  // Stelle in der Reihenfolge setzen — Start/Ziel bleiben fix. Verhindert ungewollte Hin-/Rückfahrten
-  // (A-B-D-B-C), egal wo der Punkt gegriffen wurde → die neue Strecke ist A-D-B-C.
-  const reorderCp = (i: number) => {
-    setCps((prev) => {
-      if (i <= 0 || i >= prev.length - 1) return prev // Start/Ziel nie umsortieren
-      const p = prev[i]
-      const rest = prev.filter((_, k) => k !== i)
-      const target = cheapestInsertIndex(rest, p)
-      if (target === i) return prev // schon optimal → keine Änderung
-      const next = [...rest]
-      next.splice(target, 0, p)
-      return next
-    })
-  }
-
   // Drag-Mechanik: Karten-Pan aus, Bewegung via Pointer Events verfolgen (Maus + Touch/Pen),
   // mit setPointerCapture, damit der Finger die Linie verlassen darf. Native Pointer-Koordinaten
   // werden über Leaflet zu latlng konvertiert. (T-229: vorher nur Leaflet-mouse* → auf Touch tot.)
@@ -296,7 +290,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
       },
       () => {
         if (!moved) removeCp(i) // Klick/Tipp ohne Ziehen → entfernen
-        else reorderCp(i) // gezogen → optimale Reihenfolge (kein Backtracking)
+        // T-643: gezogen → Nummer/Position in der Reihenfolge bleibt EXAKT erhalten (kein Auto-Umsortieren)
       },
     )
   }
@@ -320,7 +314,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
         if (dragIdxRef.current == null) return
         moveCp(dragIdxRef.current, lat, lng)
       },
-      () => reorderCp(idx), // nach dem Ziehen an die optimale Stelle setzen
+      // T-643: der neue Punkt behält seine Etappen-Position (Nummer = gegriffenes Segment)
     )
   }
 
@@ -347,9 +341,11 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
     if (touched && cps.length >= 2) {
       setRouting(true)
       try {
-        const res = await api.route.waypoints(cps.map((c) => ({ lat: c.lat, lng: c.lng })))
-        finalGeom = res.points
-        setGeometry(res.points)
+        // T-643: identischer Etappen-Pfad wie das Live-Routing (Leg-Cache) — gespeichert wird
+        // exakt, was angezeigt wird; unveränderte Etappen kommen aus dem Cache.
+        const points = await routeLegs(cps)
+        finalGeom = points
+        setGeometry(points)
         setRoutingFailed(false)
       } catch {
         setRoutingFailed(true)
@@ -446,7 +442,9 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
           <span className="text-neutral-300">·</span>
           <span>Ein Klick auf einen Punkt entfernt ihn</span>
           <span className="text-neutral-300">·</span>
-          <span>Linie greifen setzt einen neuen Punkt</span>
+          <span>Linie greifen setzt einen neuen Punkt in der Etappe</span>
+          <span className="text-neutral-300">·</span>
+          <span className="font-medium text-neutral-600">Anfahrt strikt in Nummern-Reihenfolge, Etappe für Etappe</span>
         </div>
 
         {/* Karte */}
@@ -484,7 +482,8 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
                 <Marker
                   key={i}
                   position={[c.lat, c.lng]}
-                  icon={cpIcon(kind)}
+                  // T-643: Vias tragen ihre Anfahr-Nummer (1..n zwischen S und Z) sichtbar im Pin
+                  icon={cpIcon(kind, i)}
                   zIndexOffset={kind === "via" ? 0 : 1000}
                   eventHandlers={{ mousedown: onPointGrab(i) }}
                 />
