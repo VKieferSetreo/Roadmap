@@ -144,7 +144,7 @@ async function resolveVemagsPunkte(punkte, geocode) {
 // Abstand. Die ENGINE findet den Alternativweg, nicht das Sprachmodell.
 
 /** Erste Zone, die die Geometrie verletzt → {zone, idx des naechsten Punkts} | null. */
-function ersteVerletzung(geometry, zonen) {
+export function ersteVerletzung(geometry, zonen) {
   for (const zone of zonen) {
     let bestD = Infinity
     let bestI = -1
@@ -161,7 +161,7 @@ function ersteVerletzung(geometry, zonen) {
 }
 
 /** Punkt seitlich der Route (senkrecht zur lokalen Richtung) im Abstand km. */
-function seitlicherPunkt(geometry, idx, km, seite) {
+export function seitlicherPunkt(geometry, idx, km, seite) {
   const p = geometry[idx]
   const a = geometry[Math.max(0, idx - 3)]
   const b = geometry[Math.min(geometry.length - 1, idx + 3)]
@@ -178,7 +178,7 @@ function seitlicherPunkt(geometry, idx, km, seite) {
 
 /** Umgehungs-Pin an der richtigen Stelle der Pin-Folge einsortieren (nach dem letzten
  *  Pin, der auf der Geometrie VOR der Verletzung liegt). */
-function fuegeViaEin(pins, geometry, verletzungsIdx, via) {
+export function fuegeViaEin(pins, geometry, verletzungsIdx, via) {
   const idxAufGeom = (pin) => {
     let best = Infinity
     let bi = 0
@@ -325,7 +325,7 @@ export function schleifenCheck(geometry) {
 
 /** Routen-Qualitaet fuer den Planungs-Agenten: Schleifenverdacht + Umwegfaktor
  *  (Strecke / Luftlinie). Der Agent darf Murks-Routen nicht praesentieren. */
-function routenQualitaet(geometry, distanzKm) {
+export function routenQualitaet(geometry, distanzKm) {
   const schleifen = schleifenCheck(geometry)
   let umwegFaktor = null
   if (Array.isArray(geometry) && geometry.length >= 2 && Number.isFinite(distanzKm)) {
@@ -337,16 +337,26 @@ function routenQualitaet(geometry, distanzKm) {
 
 /** meide-Body-Param parsen: [{lat, lng, radiusKm?}], max 8 Zonen, Radius 0.5-8 km
  *  (harter Deckel — Riesenzonen zerlegen die Route statt sie zu verbessern). */
-function parseMeide(raw) {
+export function parseMeide(raw) {
   if (!Array.isArray(raw)) return []
   return raw
     .slice(0, 8)
     .map((z) => ({
-      lat: Number(z?.lat),
-      lng: Number(z?.lng),
+      lat: zahl(z?.lat),
+      lng: zahl(z?.lng),
       radiusKm: Math.min(Math.max(Number(z?.radiusKm) || 3, 0.5), 8),
     }))
     .filter((z) => Number.isFinite(z.lat) && Number.isFinite(z.lng))
+}
+
+/** Koordinate aus dem Request-Body. Nicht Number() direkt: Number(null) und
+ *  Number("") sind 0, eine Zone mit fehlendem Feld laege damit stumm im Atlantik
+ *  statt verworfen zu werden — und der Agent bekaeme "umfahren" fuer eine Sperrung,
+ *  die nie geprueft wurde. Gefunden 09.08.2026 beim Nachziehen der Tests. */
+function zahl(v) {
+  if (typeof v === "number") return v
+  if (typeof v === "string" && v.trim() !== "") return Number(v)
+  return NaN
 }
 
 export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch, corridorM = 20 }) {
