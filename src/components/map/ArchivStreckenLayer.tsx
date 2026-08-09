@@ -8,7 +8,7 @@ import { useMap } from "react-leaflet"
 import { Archive, Loader2 } from "lucide-react"
 import { api } from "@/api/roadmap"
 import { useContextStore } from "@/store/context"
-import { useStopMapEvents } from "./MapControls"
+import { useStopMapEvents } from "./useStopMapEvents"
 import { cn } from "@/lib/cn"
 
 interface ArchivGeo {

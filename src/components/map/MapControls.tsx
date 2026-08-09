@@ -4,25 +4,14 @@
 // Beide unterbinden Click-/Scroll-Propagation, damit Tippen/Scrollen im Control die
 // Karte nicht schwenkt oder zoomt.
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import L from "leaflet"
 import { useMap } from "react-leaflet"
 import { Loader2, Map, Maximize2, Minimize2, Satellite, Search, X } from "lucide-react"
 import { api } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
 import { useSettingsStore, type TileStyle } from "@/store/settings"
-
-/** Map-Events am Control-Root abklemmen (Leaflet greift sonst Klicks/Scroll ab). */
-export function useStopMapEvents<T extends HTMLElement>() {
-  const ref = useRef<T>(null)
-  useEffect(() => {
-    if (ref.current) {
-      L.DomEvent.disableClickPropagation(ref.current)
-      L.DomEvent.disableScrollPropagation(ref.current)
-    }
-  }, [])
-  return ref
-}
+import { useStopMapEvents } from "./useStopMapEvents"
 
 interface NominatimHit {
   place_id: number

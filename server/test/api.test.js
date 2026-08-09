@@ -12,6 +12,15 @@ import {
 
 const round1 = (n) => Math.round(n * 10) / 10
 
+/* Transportfenster, das immer in der Zukunft liegt: gestern bis in zwei Tagen.
+   Muss relativ bleiben — rules.js verwirft Hindernisse, die nach dem Fensterende
+   beginnen, und die Testhindernisse entstehen mit realerStart = jetzt. */
+function zeitfensterAbJetzt() {
+  const tag = 86_400_000
+  const iso = (ms) => new Date(ms).toISOString().slice(0, 16)
+  return { von: iso(Date.now() - tag), bis: iso(Date.now() + 2 * tag) }
+}
+
 describe("health", () => {
   it("ist ungated und meldet db-Status", async () => {
     const { app } = makeApp({ requireAuth: true })
@@ -334,7 +343,11 @@ describe("analysis (multi-route, offline)", () => {
         { id: "r-hin", name: "Hinfahrt", points: HIN },
         { id: "r-rueck", name: "Rückfahrt", points: RUECK, farbe: "#3D5A80" },
       ],
-      zeitraum: { von: "2026-07-01T22:00", bis: "2026-07-03T14:00" },
+      // Relativ zu heute: die Hindernisse unten entstehen mit realerStart = jetzt, und
+      // rules.js verwirft alles, was nach dem Zeitraum-Ende beginnt. Ein festes Fenster
+      // (bis 09.08.2026: 01.-03.07.) laesst die Suite ab dem Tag danach reissen — genau
+      // das hielt den Backend-Job der CI seit dem 04.07.2026 rot.
+      zeitraum: zeitfensterAbJetzt(),
     })
     // je ein Hindernis exakt auf einer der beiden Strecken
     await request(app).post("/api/obstacles").send({
