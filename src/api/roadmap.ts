@@ -80,15 +80,32 @@ export interface ProjectPatch {
   version?: number
 }
 
+/** Sperrzone, die die Route meiden soll (`meide` an POST /api/route/startziel).
+ *  Der Server klemmt den Radius auf 0,5–8 km und nimmt höchstens 8 Zonen (parseMeide). */
+export interface MeideZone {
+  lat: number
+  lng: number
+  radiusKm: number
+}
+
+/** Rückmeldung je Sperrzone: gelang die Umfahrung — und wenn nein, warum nicht. */
+export interface MeideZoneStatus extends MeideZone {
+  umfahren: boolean
+  grund?: string
+}
+
 /** Ergebnis einer Routen-Berechnung (Start/Ziel oder Google-Maps-Link). */
 export interface RouteResult {
   points: RoutePoint[]
-  /** Exakte Kontroll-Wegpunkte (Start/Via/Ziel) — statisch mit der Strecke speichern (T-582). */
+  /** Exakte Kontroll-Wegpunkte (Start/Via/Ziel) — statisch mit der Strecke speichern (T-582).
+   *  Mit Sperrzonen stecken die vom Server gesetzten Umfahrungs-Punkte mit drin. */
   waypoints?: RoutePoint[] | null
   distanzKm: number
   dauerMin: number | null
   provider: { geocoder?: string; router: string; fallback: boolean }
   stops?: number
+  /** Nur bei gesetzten Sperrzonen: je Zone das Umfahrungs-Ergebnis, Reihenfolge wie gesendet. */
+  meideStatus?: MeideZoneStatus[] | null
 }
 
 /** Ergebnis eines VEMAGS-Bescheid-Uploads (POST /api/route/vemags). */
@@ -395,12 +412,18 @@ export const api = {
 
   // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──
   route: {
-    /** Start + Ziel (+ optionale Zwischenstopps) → Strecke (Wegpunkt-Geometrie). */
-    startziel: (start: string, ziel: string, vias?: string[]) =>
+    /** Start + Ziel (+ optionale Zwischenstopps) → Strecke (Wegpunkt-Geometrie).
+     *  `meide`: Sperrzonen, um die der Server die Route selbst herumführt; die Antwort trägt
+     *  dann je Zone einen meideStatus. Start/Ziel/Vias dürfen „lat,lng" sein — reine
+     *  Koordinaten übernimmt der Geocoder unverändert (kein erneutes Geocoding). */
+    startziel: (start: string, ziel: string, vias?: string[], meide?: MeideZone[]) =>
       axiosClient<RouteResult>({
         url: "/route/startziel",
         method: "POST",
-        data: { start, ziel, vias },
+        data: { start, ziel, vias, meide },
+        // Mit Sperrzonen probiert der Server je Zone mehrere Umfahrungen durch (bis zu ~20
+        // Routings) — die 30-s-Standardgrenze des Clients reißt dabei.
+        ...(meide?.length ? { timeout: 90_000 } : {}),
       }),
     /** Google-Maps-Link → Wegpunkte → Strecke. */
     maps: (url: string) =>
