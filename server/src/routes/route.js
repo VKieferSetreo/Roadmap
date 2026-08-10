@@ -423,6 +423,14 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       out = ergebnis.out
       meideStatus = ergebnis.status
     }
+    // Befahrene Strassen (A5, B462, …) aus den OSRM-Steps. Ohne sie plant der
+    // KI-Agent blind: er soll Parallelachsen und andere Auffahrten vorschlagen,
+    // weiss aber nicht, worauf seine eigene Route laeuft, und raet dann Ortsnamen
+    // (Analyse 09.08.2026). Der Wert wird bereits fuer den Ueberfuehrungsfilter
+    // berechnet, war hier aber nie Teil der Antwort. Fehlschlag ist unkritisch.
+    const wpFuerRefs = Array.isArray(out.waypoints) && out.waypoints.length >= 2 ? out.waypoints : out.geometry
+    const refs = osrm ? await osrm.roadRefs(wpFuerRefs).catch(() => null) : null
+
     res.json({
       points: out.geometry,
       waypoints: out.waypoints ?? null, // exakte Start/Ziel/Via-Punkte → statisch mit der Strecke speichern (T-582)
@@ -430,6 +438,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
       qualitaet: routenQualitaet(out.geometry, out.distanzKm),
+      befahreneStrassen: refs ? [...refs].sort() : null,
       ...(meideStatus ? { meideStatus } : {}),
     })
   }))
