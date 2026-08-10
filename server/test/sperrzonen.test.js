@@ -3,9 +3,9 @@
 //
 // Warum es diese Datei gibt: der Strang ging im Juli mit roter CI auf Produktion und
 // war dort vier Wochen ungetestet, obwohl der Setreo-AI-Agent `meide` als sein
-// wichtigstes Umfahrungswerkzeug benutzt. Getestet wird hier die Geometrie- und
-// Eingabeschicht — die OSRM-Iteration in umfahreZonen selbst braucht einen Router
-// und gehoert in einen Integrationstest.
+// wichtigstes Umfahrungswerkzeug benutzt. Getestet wird die Geometrie- und
+// Eingabeschicht plus die Statusmeldung von umfahreZonen — Letztere mit einem
+// Fake-Router (osrm.route), damit die Iteration ohne echtes OSRM laeuft.
 
 import { describe, expect, it } from "vitest"
 import {
@@ -14,8 +14,10 @@ import {
   parseMeide,
   routenQualitaet,
   seitlicherPunkt,
+  umfahreZonen,
 } from "../src/routes/route.js"
 import { haversineKm } from "../src/engine/geometry.js"
+import { createFakeDb } from "./helpers/fakeDb.js"
 
 const KM_LNG_48 = 1 / (111.32 * Math.cos((48 * Math.PI) / 180))
 
@@ -202,5 +204,64 @@ describe("routenQualitaet", () => {
     expect(routenQualitaet([], 10).umwegFaktor).toBeNull()
     expect(routenQualitaet(gerade(50), NaN).umwegFaktor).toBeNull()
     expect(routenQualitaet(gerade(50), undefined).umwegFaktor).toBeNull()
+  })
+})
+
+describe("umfahreZonen — Statusmeldung", () => {
+  const basis = gerade(50)
+  const basisOut = {
+    geometry: basis,
+    waypoints: [basis[0], basis.at(-1)],
+    distanzKm: 50,
+    provider: { geocoder: "test", router: "osrm", fallback: false },
+  }
+  const zoneA = { ...basis[100], radiusKm: 2 } // km 10
+  const zoneB = { ...basis[400], radiusKm: 2 } // km 40
+
+  /** Fake-OSRM: liefert unabhaengig von den Umgehungs-Pins immer dieselbe Geometrie. */
+  const router = (geometry) => ({ route: async () => ({ geometry, distanzKm: 50, dauerMin: 40 }) })
+
+  /** Basisroute mit einem Bogen nach Norden um `idx` — weicht der dortigen Zone aus. */
+  const mitBogen = (idx, hoeheKm = 5, breite = 60) =>
+    basis.map((p, i) => ({ lat: p.lat + (hoeheKm * Math.max(0, 1 - Math.abs(i - idx) / breite)) / 110.6, lng: p.lng }))
+
+  it("meldet JEDE weiterhin durchfahrene Zone, nicht nur die erste", async () => {
+    // Kern des Fehlers: jede Zone startet optimistisch auf umfahren:true, die
+    // Schlusspruefung fragte aber nur ersteVerletzung ab — die zweite durchfahrene
+    // Zone blieb damit als "umfahren" gemeldet.
+    const { status } = await umfahreZonen(createFakeDb(), basisOut, [zoneA, zoneB], { osrm: router(basis) })
+    expect(status.map((s) => s.umfahren)).toEqual([false, false])
+    expect(status[1].grund).toBe("Route verlaeuft weiterhin durch die Zone")
+  })
+
+  it("laesst den bereits gesetzten Grund der aufgegebenen Zone stehen", async () => {
+    const { status } = await umfahreZonen(createFakeDb(), basisOut, [zoneA, zoneB], { osrm: router(basis) })
+    expect(status[0].grund).toBe("Keine Umfahrung gefunden (3 Anlaeufe)")
+    expect(status[0]).not.toHaveProperty("versuche") // interner Zaehler gehoert nicht in die Antwort
+  })
+
+  it("laesst eine tatsaechlich umfahrene Zone auf umfahren:true", async () => {
+    const { out, status } = await umfahreZonen(createFakeDb(), basisOut, [zoneA, zoneB], {
+      osrm: router(mitBogen(100)),
+    })
+    expect(ersteVerletzung(out.geometry, [zoneA])).toBeNull()
+    expect(status[0]).toEqual({ ...zoneA, umfahren: true })
+    expect(status[1].umfahren).toBe(false)
+  })
+
+  it("ruehrt den Start/Ziel-Grund in der Schlusspruefung nicht an", async () => {
+    // Zonen am Start/Ziel laufen gar nicht erst durch die Iteration — ihr Grund darf
+    // nicht vom Sammeltext der Schlusspruefung ueberschrieben werden.
+    const zoneZiel = { ...basis.at(-1), radiusKm: 3 }
+    const { status } = await umfahreZonen(createFakeDb(), basisOut, [zoneZiel, zoneA], { osrm: router(basis) })
+    expect(status[0].umfahren).toBe(false)
+    expect(status[0].grund).toMatch(/Start\/Ziel/)
+    expect(status[1].grund).toBe("Keine Umfahrung gefunden (3 Anlaeufe)")
+  })
+
+  it("meldet ohne Router fuer jede Zone offen ausbleibende Umfahrung", async () => {
+    const { status } = await umfahreZonen(createFakeDb(), basisOut, [zoneA, zoneB], { osrm: null })
+    expect(status.map((s) => s.umfahren)).toEqual([false, false])
+    expect(status[0].grund).toBe("Routing ohne Wegpunkte/OSRM")
   })
 })

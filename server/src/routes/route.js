@@ -204,7 +204,7 @@ export function fuegeViaEin(pins, geometry, verletzungsIdx, via) {
 }
 
 /** Route iterativ um die Sperrzonen fuehren. Liefert {out, status[]}. */
-async function umfahreZonen(db, basisOut, zonen, { osrm }) {
+export async function umfahreZonen(db, basisOut, zonen, { osrm }) {
   let out = basisOut
   let pins = Array.isArray(out.waypoints) ? [...out.waypoints] : null
   if (!pins || pins.length < 2 || !osrm) {
@@ -260,9 +260,13 @@ async function umfahreZonen(db, basisOut, zonen, { osrm }) {
     }
     // Kein Kandidat: naechste Iteration versucht groesseren Abstand (versuche zaehlt hoch).
   }
-  const rest = ersteVerletzung(out.geometry, aktiveZonen)
-  if (rest) {
-    const s = status.get(rest.zone)
+  // Schlusspruefung JEDER Zone einzeln: ersteVerletzung meldet nur die erste
+  // Treffer-Zone. Mit einer Sammelabfrage blieb jede weitere durchfahrene Zone auf
+  // dem anfangs optimistischen umfahren:true stehen — der Agent haette eine nie
+  // umfahrene Sperrung als erledigt gemeldet (gefunden 09.08.2026).
+  for (const z of aktiveZonen) {
+    if (!ersteVerletzung(out.geometry, [z])) continue
+    const s = status.get(z)
     s.umfahren = false
     s.grund = s.grund ?? "Route verlaeuft weiterhin durch die Zone"
   }
