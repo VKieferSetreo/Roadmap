@@ -17,6 +17,8 @@ export function stubRouting(init) {
         distanzKm: init.distanzKm ?? totalKm(init.geometry ?? []),
         kritischeStellen: init.kritischeStellen ?? [],
         harteSperreVorhanden: !!init.harteSperreVorhanden,
+        durchgehend: init.durchgehend,
+        sperrstelle: init.sperrstelle,
         provider: init.provider ?? { router: "stub" },
       }
     },
@@ -60,7 +62,11 @@ export function bogenKandidat(auftrag, { hoeheKm = 3, tier } = {}) {
   }
 }
 
-/** Validierungslayer-Port. Ohne `fn` gibt er immer frei. */
+/**
+ * Validierungslayer-Port. Ohne `fn` gibt er immer frei. Bei Ablehnung kann `fn`
+ * `beanstandeteAbschnitte:[abschnittId]` mitgeben (Regel 24); ohne Angabe gelten
+ * alle Abschnitte der Komposition als beanstandet.
+ */
 export function stubValidator(fn) {
   return {
     async pruefe(eingang) {

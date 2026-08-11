@@ -35,6 +35,17 @@ export const ABBRUCH = Object.freeze({
 // ── Straßenklassen-Modus für den Zeitdeckel-Vergleich der Sub-Agenten ────────
 export const STRASSENKLASSE = Object.freeze({ HART: "hart", WEICH: "weich" })
 
+// ── Klassifikation einer kritischen Stelle (Workflow Phase 2, Regel 6) ───────
+// "sperre"   = physisch/rechtlich unmöglich (harte Sperre)
+// "hindernis"= befahrbar, aber teuer/riskant
+export const KLASSE = Object.freeze({ SPERRE: "sperre", HINDERNIS: "hindernis" })
+
+// ── Pflichtfelder des Fahrzeugprofils (Phase 0, Regel 1) ─────────────────────
+// Achslast ist laut Workflow Pflicht. (Hinweis: die bestehende Karten-Engine hat
+// Achslast zugunsten des Gesamtgewichts entfernt — hier bleibt sie Pflicht, weil
+// der Workflow es verlangt; leicht anpassbar, falls das vereinheitlicht wird.)
+export const FAHRZEUGPROFIL_FELDER = Object.freeze(["hoehe", "breite", "laenge", "gewicht", "achslast"])
+
 // ── Die Runden-Tabelle (Regel 12/13) ─────────────────────────────────────────
 // Jede Runde MUSS mindestens einen Freiheitsgrad gegenüber der vorigen verändern —
 // diese Tabelle garantiert das strukturell. `weichMinProKm` ist nur bei
@@ -165,24 +176,56 @@ export const MALUS_PRO_UNGELOESTE_STELLE = 100_000
 const istKoordinate = (p) =>
   p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng))
 
-/** Wirft mit klarer Meldung, wenn der Eingang unbrauchbar ist. */
+/**
+ * Phase-0-Abbruch (Regel 2): der Auftrag ist unvollständig. Der Harness wirft das,
+ * der Chat-/Main-Orchestrator fängt es und meldet die fehlenden Felder — es werden
+ * KEINE Defaults gesetzt (weder Fahrzeugprofil noch Modus).
+ */
+export class AuftragUnvollstaendig extends Error {
+  constructor(fehlende) {
+    super(`Roadmap-Orchestrator: Auftrag unvollständig — fehlt: ${fehlende.join(", ")}`)
+    this.name = "AuftragUnvollstaendig"
+    this.fehlende = fehlende
+  }
+}
+
+/**
+ * Phase 0 (Regel 1/2) — prüft den Auftrag auf Vollständigkeit. Wirft
+ * `AuftragUnvollstaendig` mit der Liste fehlender Felder. Keine Defaults.
+ */
 export function validiereEingang(auftrag) {
-  if (!auftrag || typeof auftrag !== "object") {
-    throw new Error("Roadmap-Orchestrator: Auftrag fehlt")
-  }
+  if (!auftrag || typeof auftrag !== "object") throw new AuftragUnvollstaendig(["auftrag"])
+  const fehlende = []
   const hatOrt = (v) => (typeof v === "string" && v.trim()) || istKoordinate(v)
-  if (!hatOrt(auftrag.start)) throw new Error("Roadmap-Orchestrator: Start fehlt oder ungültig")
-  if (!hatOrt(auftrag.ziel)) throw new Error("Roadmap-Orchestrator: Ziel fehlt oder ungültig")
-  const modus = auftrag.umfahrungsmodusGlobal
-  if (modus != null && !MODI.includes(modus)) {
-    throw new Error(`Roadmap-Orchestrator: unbekannter Umfahrungsmodus "${modus}"`)
+
+  if (!hatOrt(auftrag.start)) fehlende.push("start")
+  if (!hatOrt(auftrag.ziel)) fehlende.push("ziel")
+
+  const p = auftrag.fahrzeugprofil
+  if (!p || typeof p !== "object") {
+    fehlende.push("fahrzeugprofil")
+  } else {
+    for (const f of FAHRZEUGPROFIL_FELDER) {
+      if (!Number.isFinite(Number(p[f]))) fehlende.push(`fahrzeugprofil.${f}`)
+    }
   }
+
+  if (auftrag.restriktionen == null || typeof auftrag.restriktionen !== "object") fehlende.push("restriktionen")
+  if (auftrag.zeitfenster == null) fehlende.push("zeitfenster")
+
+  const modus = auftrag.umfahrungsmodusGlobal
+  if (modus == null) fehlende.push("umfahrungsmodusGlobal")
+  else if (!MODI.includes(modus)) fehlende.push(`umfahrungsmodusGlobal (unbekannt: "${modus}")`)
+
+  if (fehlende.length) throw new AuftragUnvollstaendig(fehlende)
   return true
 }
 
-/** Modus einer Stelle bestimmen: Stellen-Modus vor globalem Default, sonst "keine". */
+/**
+ * Modus einer Stelle (Regel 7): stellentyp-spezifischer Wert überschreibt den
+ * globalen. Kein "keine"-Default — der globale Modus ist in Phase 0 Pflicht.
+ */
 export function modusVon(stelle, auftrag) {
   if (stelle && MODI.includes(stelle.modus)) return stelle.modus
-  if (auftrag && MODI.includes(auftrag.umfahrungsmodusGlobal)) return auftrag.umfahrungsmodusGlobal
-  return "keine"
+  return auftrag?.umfahrungsmodusGlobal
 }

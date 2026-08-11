@@ -41,10 +41,17 @@ const ergebnis = await orch.plane(planAuftrag)
 
 Ports (alle Objekte mit **einer** async-Methode, Signaturen in `contracts.js`):
 
-- `routing.initialRoute(auftrag)` → `InitialStreckenErgebnis` (Regel 1/2)
-- `subAgent.bearbeite(subAgentAuftrag)` → `SubAgentErgebnis` (Regel 4/5)
-- `validator.pruefe({ route, auftrag, wahl, stellen })` → `ValidierungsUrteil` (Regel 6, bindend)
-- `llm.entscheideZuschnittSync({ stellen, runde, params, ablehnungskontext })` → `{ abschnitte }` (optional, Regel 4)
+- `routing.initialRoute(auftrag)` → `{ geometry, distanzKm, kritischeStellen, harteSperreVorhanden, durchgehend?, sperrstelle? }` (Phase 1/2)
+  - `durchgehend: false` (oder `geometry.length < 2`) → Phase 1 gibt sofort `nicht_befahrbar` mit `sperrstelle`.
+  - `kritischeStellen[]`: `{ ort, typ, klasse?, modus?, idx?, radiusKm? }` — `klasse` = `"sperre"|"hindernis"` (Default hindernis).
+- `subAgent.bearbeite(subAgentAuftrag)` → `{ abschnittId, geloest, grund?, kurvengeprueft?, kandidaten:[{geometry,eintritt,austritt,kosten,distanzKm,tier,hash}] }` (Phase 3, **parallel**)
+  - `kurvengeprueft: false` → der Abschnitt landet in `abschnitte_ohne_kurvenpruefung`.
+- `validator.pruefe({ route, auftrag, wahl, stellen, harteFehlschlaege })` → `{ freigabe, beanstandeteAbschnitte?, grund?, befunde? }` (Phase 5, **bindend**)
+  - Bei Ablehnung: `beanstandeteAbschnitte` bleiben offen, der Rest wird akzeptiert (Regel 12/24); ohne Angabe gilt alles als beanstandet.
+- `llm.entscheideZuschnittSync({ stellen, runde, params, ablehnungskontext })` → `{ abschnitte:[{abschnittId,stellenIdx}] }` (optional, Phase 3)
+
+**Phase 0** wirft `AuftragUnvollstaendig` (mit `.fehlende`), wenn Start/Ziel/Fahrzeugprofil
+(H/B/L/Gewicht/Achslast)/Restriktionen/Zeitfenster/Modus fehlen — **keine Defaults**.
 
 ## Echte Adapter (offen, ersetzen die Stubs 1:1)
 

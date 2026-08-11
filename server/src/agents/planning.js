@@ -193,7 +193,10 @@ export function bewerteVollstaendigeRoute({ wahl, ungeloesteAnzahl }) {
 
 /**
  * Fügt Kandidaten in die rundenübergreifende Abschnitts-Bestenliste ein.
- * Bei Gleichstand (gleiche Kosten) gewinnt die höhere Tier (Regel 15b).
+ * Sortierung nach Workflow Regel 17/32: **Tier absteigend, dann Kosten aufsteigend**
+ * ("Tier vor Kosten"). Das höchste Tier gewinnt immer; die Kosten brechen nur den
+ * Gleichstand innerhalb derselben Tier. (Bewusst anders als die erste Spec, die
+ * kosten-primär rankte — der Workflow ist das maßgebliche, neuere Dokument.)
  */
 export function aktualisiereBestenliste(bestenlisten, abschnittId, kandidaten) {
   const liste = bestenlisten.get(abschnittId) ?? []
@@ -202,8 +205,8 @@ export function aktualisiereBestenliste(bestenlisten, abschnittId, kandidaten) {
     if (!zusammen.some((x) => x.hash === c.hash)) zusammen.push(c)
   }
   zusammen.sort((a, b) => {
-    if (a.kosten !== b.kosten) return a.kosten - b.kosten
-    return tierRang(b.tier) - tierRang(a.tier) // Gleichstand → höhere Tier zuerst
+    if (tierRang(a.tier) !== tierRang(b.tier)) return tierRang(b.tier) - tierRang(a.tier) // höhere Tier zuerst
+    return (a.kosten ?? 0) - (b.kosten ?? 0) // dann billiger zuerst
   })
   bestenlisten.set(abschnittId, zusammen)
   return zusammen
