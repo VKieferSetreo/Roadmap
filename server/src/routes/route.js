@@ -145,6 +145,18 @@ async function resolveVemagsPunkte(punkte, geocode) {
 // Abstand. Die ENGINE findet den Alternativweg, nicht das Sprachmodell.
 
 /** Erste Zone, die die Geometrie verletzt → {zone, idx des naechsten Punkts} | null. */
+/**
+ * Ist die Verortung nur grob? Dann liegt die Route nicht auf der Strasse: OSRM ist
+ * ausgefallen oder der Ort wurde nur ueber die Staedteliste getroffen.
+ *
+ * EINE Definition fuer alle Einstiegspunkte. /startziel prueft das seit dem
+ * Phantomrouten-Gate; als die Suche dazukam, fehlte die Pruefung dort — und lieferte
+ * fuer "Achern → Offenburg" eine 372-km-Strecke ueber Chemnitz, sauber bewertet.
+ */
+export function istGrobeVerortung(provider) {
+  return provider?.router === "fallback" || provider?.geocoder === "cities" || Boolean(provider?.fallback)
+}
+
 export function ersteVerletzung(geometry, zonen) {
   for (const zone of zonen) {
     let bestD = Infinity
@@ -443,6 +455,19 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     // Start/Ziel aufloesen wie bei /startziel — dieselbe Geocoder-Kette, damit eine
     // Suche nicht anders verortet als eine Planung.
     const basis = await resolveRoute(db, { mode: "startziel", start, ziel, vias: [] }, { nominatim, osrm })
+    // EHRLICHKEITS-GATE, dasselbe wie in /startziel: Faellt der Geocoder auf die
+    // Staedteliste zurueck oder OSRM aus, liegen Start/Ziel irgendwo — und die Suche
+    // wuerde einen fremden Korridor durchkaemmen und ihn als Ergebnis ausgeben.
+    // Beim Messlauf 19.08. kam fuer "Achern → Offenburg" (30 km in Baden) eine Strecke
+    // ueber Grosskugel und Chemnitz-Gloesa heraus, 372 km, mit "0 kritisch" bewertet.
+    // Ein falscher Korridor mit sauberem Urteil ist schlimmer als kein Ergebnis.
+    if (istGrobeVerortung(basis.provider)) {
+      throw new ApiError(
+        422,
+        `Start oder Ziel konnte nicht genau verortet werden (geocoder=${basis.provider?.geocoder ?? "?"}, router=${basis.provider?.router ?? "?"}) — ` +
+          "ohne belastbare Endpunkte wird nicht gesucht. Genauere Adresse oder Koordinaten 'lat,lng' angeben.",
+      )
+    }
     const pins = Array.isArray(basis.waypoints) && basis.waypoints.length >= 2 ? basis.waypoints : null
     if (!pins) throw new ApiError(422, "Start oder Ziel konnte nicht aufgeloest werden")
     const von = pins[0]
