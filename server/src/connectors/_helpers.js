@@ -559,10 +559,43 @@ async function fetchRetry(url, { timeoutMs, headers }) {
 }
 
 /** GET → JSON (Timeout, Fehler → null). */
+/**
+ * Antwortet der Anbieter mit einer Wartungs-/Fehlerseite statt mit Daten? Berlin
+ * (gdi.berlin.de, fbinter) liefert dabei HTTP **200** und HTML — fuer jeden Aufruf,
+ * auch GetCapabilities. Ohne diese Erkennung sieht das aus wie ein Fehler bei uns:
+ * die Seite wird dreimal wiederholt und endet als "Seitenabruf fehlgeschlagen",
+ * waehrend die Ursache beim Anbieter liegt und ein Retry nichts aendert.
+ */
+export function istWartungsseite(text) {
+  const kopf = String(text ?? "").slice(0, 2000).toLowerCase()
+  if (!kopf.trimStart().startsWith("<")) return null
+  if (/wartungsarbeiten|maintenance|vor(ue|ü)bergehend nicht verf(ue|ü)gbar/.test(kopf)) {
+    return "Anbieter meldet Wartungsarbeiten (HTTP 200 mit HTML-Seite statt Daten)"
+  }
+  return "Anbieter liefert HTML statt Daten (HTTP 200) — Endpunkt oder Dienst gestoert"
+}
+
+/** Fehler, der KEINEN Retry rechtfertigt: der Dienst ist bewusst aus. */
+export class DienstAusFehler extends Error {
+  constructor(nachricht, url) {
+    super(nachricht)
+    this.name = "DienstAusFehler"
+    this.url = url
+  }
+}
+
 export async function getJson(url, { timeoutMs = 30000, headers = {} } = {}) {
   const r = await fetchRetry(url, { timeoutMs, headers })
   if (!r) return null
   if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
+  // Entscheidung am Content-Type, NICHT am Body: den Body zu lesen wuerde ihn
+  // verbrauchen (r.json() danach leer), und die Test-Doubles im Haus liefern
+  // ohnehin nur .json(). Berlin schickt seine Wartungsseite als text/html.
+  const typ = String(r.headers?.get?.("content-type") ?? "")
+  if (/html/i.test(typ)) {
+    const text = typeof r.text === "function" ? await r.text().catch(() => "") : ""
+    throw new DienstAusFehler(istWartungsseite(text) ?? "Anbieter liefert HTML statt Daten (HTTP 200)", url)
+  }
   try { return await r.json() } catch (err) { warnFetch(url, err?.name ?? "json-parse-fail"); return null }
 }
 
@@ -596,7 +629,14 @@ export async function fetchAllFeatures(baseUrl, { mode = "wfs2", pageSize = 1000
         log(`fetchAllFeatures: Seite startIndex ${page * pageSize} fehlgeschlagen — Retry ${attempt}/2`)
         await new Promise((r) => setTimeout(r, 1000 * attempt))
       }
-      data = await getJson(url, { timeoutMs })
+      try {
+        data = await getJson(url, { timeoutMs })
+      } catch (err) {
+        // Wartungsseite: der Dienst ist aus, ein Retry ist reine Zeitverschwendung.
+        // Die Meldung nennt den Anbieter als Ursache, damit niemand bei uns sucht.
+        if (err instanceof DienstAusFehler) throw new Error(`${err.message} — ${new URL(url).host}, Bestand unveraendert gelassen`)
+        throw err
+      }
     }
     // T-311/T-314: ein (auch nach Retries) fehlgeschlagener Seitenabruf ist KEIN leerer/letzter Feed.
     // Werfen → runImport setzt status='error', der Vollbestand-Reconcile läuft NICHT auf einem
