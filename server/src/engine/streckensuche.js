@@ -122,22 +122,29 @@ export async function sucheKante(von, nach, { blocker, route, alternativen = 3, 
   return beste
 }
 
+/** Schlüssel für den Kanten-Cache: auf ~10 m gerundete Koordinaten. */
+const kantenSchluessel = (a, b) => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}>${b.lat.toFixed(4)},${b.lng.toFixed(4)}`
+
 /**
- * Bidirektionale Korridorsuche.
+ * Bidirektionale Korridorsuche über mehrere Knoten.
  *
  * Von Start UND Ziel wächst je eine Front über Autobahnknoten aufeinander zu. Jeder
- * erreichte Knoten merkt sich, was er gekostet hat und wie viele Blocker auf dem Weg
- * dorthin liegen. Trifft ein Knoten in beiden Fronten zusammen, ist eine durchgehende
- * Strecke gefunden — Start ⇢ Knoten ⇢ Ziel.
+ * erreichte Knoten merkt sich, was der Weg dorthin gekostet hat und welche Blocker
+ * dabei liegen blieben. Am Ende wird jede Kombination „Knoten der Startfront ⇢ Knoten
+ * der Zielfront" verbunden — die Strecke darf also über ZWEI Zwischenknoten laufen,
+ * nicht nur über einen.
  *
  * Warum von beiden Seiten: Ein Blocker sitzt selten in der Mitte. Wer nur von vorne
  * sucht, arbeitet sich durch den halben Korridor, bevor er merkt, dass das Problem am
  * ZIEL liegt. Zwei Fronten halbieren die Tiefe und finden die Engstelle von der Seite,
  * auf der sie liegt.
  *
- * Das Budget ist die Bremse: `maxKanten` begrenzt die OSRM-Aufrufe, `maxMs` die Zeit.
- * Beides wird protokolliert — eine Suche, die ins Budget läuft, sagt das, statt so zu
- * tun, als sei der Korridor erschöpft.
+ * Jede Kante wird höchstens EINMAL gerechnet (Cache) — in einem Netz aus Knoten
+ * tauchen dieselben Verbindungen sonst in jeder Kombination erneut auf.
+ *
+ * Das Budget ist die Bremse: `maxKanten` begrenzt die Routing-Aufrufe, `maxMs` die
+ * Zeit. Beides wird protokolliert — eine Suche, die ins Budget läuft, sagt das, statt
+ * so zu tun, als sei der Korridor erschöpft.
  */
 export async function sucheStrecke(
   start,
@@ -155,18 +162,27 @@ export async function sucheStrecke(
 ) {
   const protokoll = []
   const t0 = jetzt()
+  const cache = new Map()
   let kanten = 0
   const budgetOffen = () => kanten < maxKanten && jetzt() - t0 < maxMs
 
-  const merke = async (von, nach) => {
+  /** Kante holen — aus dem Cache oder frisch gerechnet, solange Budget da ist. */
+  const kante = async (von, nach) => {
+    const key = kantenSchluessel(von, nach)
+    if (cache.has(key)) return cache.get(key)
     if (!budgetOffen()) return null
     kanten++
-    return sucheKante(von, nach, { blocker, route, protokoll })
+    const res = await sucheKante(von, nach, { blocker, route, protokoll })
+    cache.set(key, res)
+    return res
   }
+
+  const S = { ...start, name: "Start" }
+  const Z = { ...ziel, name: "Ziel" }
 
   // 1. Direkt. Ist der Weg frei, ist die Suche hier zu Ende — kein Grund, einen
   //    Korridor zu durchkämmen, für den es keine Frage gibt.
-  const direkt = await merke({ ...start, name: "Start" }, { ...ziel, name: "Ziel" })
+  const direkt = await kante(S, Z)
   if (!direkt) {
     return { gefunden: false, grund: "Für Start und Ziel kam keine Route zurück", protokoll, kanten }
   }
@@ -182,49 +198,73 @@ export async function sucheStrecke(
     return { gefunden: true, beste, protokoll, kanten, budgetErschoepft: false }
   }
 
-  // 2. Kandidatenknoten im Korridor. Nahe an den Blockern zuerst: dort entscheidet
-  //    sich, ob es eine Ausweichachse gibt.
+  // 2. Kandidatenknoten im Korridor, die dem Blocker am nächsten liegen: dort
+  //    entscheidet sich, ob es überhaupt eine Ausweichachse gibt.
   const kandidaten = knotenImKorridor(start, ziel, knoten, { korridorKm })
   const naheAmBlocker = (k) => Math.min(...direkt.blocker.map((b) => haversineKm(k, b)))
   const sortiert = [...kandidaten].sort((a, b) => naheAmBlocker(a) - naheAmBlocker(b))
+  const auswahl = sortiert.slice(0, breite * 2)
   protokoll.push({
     art: "korridor",
     knotenGefunden: kandidaten.length,
     blockerDirekt: direkt.blocker.length,
-    ersteKandidaten: sortiert.slice(0, breite).map((k) => k.name),
+    ersteKandidaten: auswahl.slice(0, breite).map((k) => k.name),
   })
 
-  // 3. Zwei Fronten. Von Start aus vorwärts, vom Ziel aus rückwärts — je Knoten die
-  //    beste bekannte Kante. Ein Knoten, den BEIDE Fronten erreichen, verbindet.
-  const vonStart = new Map()
-  const zumZiel = new Map()
-  for (const k of sortiert.slice(0, breite)) {
-    const hin = await merke({ ...start, name: "Start" }, k)
-    if (hin) vonStart.set(k.name, { knoten: k, kante: hin })
-    const her = await merke(k, { ...ziel, name: "Ziel" })
-    if (her) zumZiel.set(k.name, { knoten: k, kante: her })
+  // 3. Fronten aufbauen: die vordere Hälfte der Kandidaten von Start aus, die hintere
+  //    vom Ziel aus — gemessen am Fortschritt entlang der Achse.
+  const frontS = new Map()
+  const frontZ = new Map()
+  for (const k of auswahl) {
+    if (!budgetOffen()) break
+    if (k.fortschritt <= 0.6) {
+      const hin = await kante(S, k)
+      if (hin) frontS.set(k.name, { knoten: k, kante: hin, kosten: hin.kosten, blocker: hin.blocker })
+    }
+    if (k.fortschritt >= 0.4) {
+      const her = await kante(k, Z)
+      if (her) frontZ.set(k.name, { knoten: k, kante: her, kosten: her.kosten, blocker: her.blocker })
+    }
+  }
+  protokoll.push({ art: "fronten", vonStart: [...frontS.keys()], zumZiel: [...frontZ.keys()] })
+
+  /** Kandidatenstrecke bewerten und ggf. als neue Bestleistung übernehmen. */
+  const pruefe = (teile, ueber) => {
+    const gesamtBlocker = teile.flatMap((t) => t.blocker)
+    const gesamtKm = teile.reduce((a, t) => a + t.distanzKm, 0)
+    const k = kosten(gesamtKm, gesamtBlocker.length)
+    const besser = k < beste.kosten
+    protokoll.push({ art: "verbindung", ueber, km: Math.round(gesamtKm), blocker: gesamtBlocker.length, besserAlsBisher: besser })
+    if (!besser) return
+    beste.geometrie = teile.flatMap((t) => t.geometry)
+    beste.distanzKm = gesamtKm
+    beste.blocker = gesamtBlocker
+    beste.kosten = k
+    beste.ueber = ueber
   }
 
-  for (const [name, a] of vonStart) {
-    const b = zumZiel.get(name)
-    if (!b) continue
-    const gesamtBlocker = [...a.kante.blocker, ...b.kante.blocker]
-    const gesamtKm = a.kante.distanzKm + b.kante.distanzKm
-    const k = kosten(gesamtKm, gesamtBlocker.length)
-    protokoll.push({
-      art: "verbindung",
-      ueber: name,
-      km: Math.round(gesamtKm),
-      blocker: gesamtBlocker.length,
-      besserAlsBisher: k < beste.kosten,
-    })
-    if (k < beste.kosten) {
-      beste.geometrie = [...a.kante.geometry, ...b.kante.geometry]
-      beste.distanzKm = gesamtKm
-      beste.blocker = gesamtBlocker
-      beste.kosten = k
-      beste.ueber = [name]
+  // 4a. Ein Zwischenknoten: derselbe Knoten in beiden Fronten.
+  for (const [name, a] of frontS) {
+    const b = frontZ.get(name)
+    if (b) pruefe([a.kante, b.kante], [name])
+  }
+
+  // 4b. Zwei Zwischenknoten: Startfront-Knoten ⇢ Zielfront-Knoten. Das ist der Fall,
+  //     der eine echte Parallelachse abbildet — auf sie rauf, an der Sperre vorbei,
+  //     wieder runter. Teuer, deshalb nach Aussicht sortiert und budgetgebremst.
+  const paare = []
+  for (const [nameA, a] of frontS) {
+    for (const [nameB, b] of frontZ) {
+      if (nameA === nameB) continue
+      paare.push({ a, b, nameA, nameB, aussicht: a.kosten + b.kosten + haversineKm(a.knoten, b.knoten) })
     }
+  }
+  paare.sort((x, y) => x.aussicht - y.aussicht)
+  for (const { a, b, nameA, nameB } of paare) {
+    if (!budgetOffen()) break
+    const mitte = await kante(a.knoten, b.knoten)
+    if (!mitte) continue
+    pruefe([a.kante, mitte, b.kante], [nameA, nameB])
   }
 
   const budgetErschoepft = !budgetOffen()

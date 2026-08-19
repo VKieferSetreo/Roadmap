@@ -151,3 +151,57 @@ describe("Bidirektionale Suche", () => {
     expect(res.budgetErschoepft).toBe(true)
   })
 })
+
+describe("Mehrstufige Suche", () => {
+  const S2 = { lat: 52.0, lng: 9.0 }
+  const Z2 = { lat: 48.0, lng: 11.0 }
+  const linie2 = (a, b, n = 30) =>
+    Array.from({ length: n }, (_, i) => ({
+      lat: a.lat + ((b.lat - a.lat) * i) / (n - 1),
+      lng: a.lng + ((b.lng - a.lng) * i) / (n - 1),
+    }))
+
+  // Der Fall, um den es fachlich geht: rauf auf die Parallelachse, an der Sperre
+  // vorbei, wieder runter. Das braucht ZWEI Zwischenknoten — mit nur einem bleibt
+  // die Sperre auf der Strecke.
+  it("verbindet zwei Knoten zu einer Parallelachse", async () => {
+    const direkt = linie2(S2, Z2)
+    const sperre = { ...direkt[15], titel: "Vollsperrung" }
+    const A = { name: "AS Auffahrt", lat: 51.0, lng: 8.2 }
+    const B = { name: "AS Abfahrt", lat: 49.0, lng: 9.2 }
+    const route = async (von, nach) => {
+      // Jede Kante, die NICHT Start→Ziel ist, laeuft westlich an der Sperre vorbei.
+      const direktStrecke = von.name === "Start" && nach.name === "Ziel"
+      const geo = direktStrecke ? direkt : linie2({ lat: von.lat, lng: von.lng - 0.6 }, { lat: nach.lat, lng: nach.lng - 0.6 }, 12)
+      return [{ geometry: geo, distanzKm: direktStrecke ? 400 : 160, dauerMin: 120 }]
+    }
+    const res = await sucheStrecke(S2, Z2, { blocker: [sperre], knoten: [A, B], route, breite: 3, korridorKm: 300 })
+    expect(res.beste.blocker).toHaveLength(0)
+    expect(res.beste.ueber).toEqual(["AS Auffahrt", "AS Abfahrt"])
+    expect(res.protokoll.some((p) => p.art === "fronten")).toBe(true)
+  })
+
+  // Dieselbe Verbindung taucht in mehreren Kombinationen auf. Ohne Cache wuerde sie
+  // jedes Mal neu gerechnet und das Budget waere nach der halben Suche weg.
+  it("rechnet jede Kante nur einmal", async () => {
+    const gefragt = []
+    const route = async (von, nach) => {
+      gefragt.push(`${von.name ?? "?"}>${nach.name ?? "?"}`)
+      return [{ geometry: linie2(von, nach, 8), distanzKm: 100, dauerMin: 90 }]
+    }
+    const direktSperre = { lat: 50.0, lng: 10.0, titel: "Sperrung" }
+    const knotenListe = [
+      { name: "AS Eins", lat: 51.0, lng: 9.2 },
+      { name: "AS Zwei", lat: 49.0, lng: 10.4 },
+    ]
+    await sucheStrecke(S2, Z2, {
+      blocker: [direktSperre],
+      knoten: knotenListe,
+      route,
+      breite: 3,
+      korridorKm: 300,
+      maxKanten: 50,
+    })
+    expect(new Set(gefragt).size).toBe(gefragt.length)
+  })
+})
