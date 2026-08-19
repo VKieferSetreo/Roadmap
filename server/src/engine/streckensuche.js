@@ -267,6 +267,30 @@ export async function sucheStrecke(
     pruefe([a.kante, mitte, b.kante], [nameA, nameB])
   }
 
+  // 5. Was jetzt noch auf der besten Strecke liegt, wird Stelle fuer Stelle lokal
+  //    umfahren. Auf 800 km bleiben nach der Korridorwahl immer Einzelstellen liegen —
+  //    sie einzeln abzuarbeiten ist stupide Arbeit und gehoert deshalb hierher.
+  if (beste.blocker.length && budgetOffen()) {
+    const vorher = beste.blocker.length
+    const nachRep = await repariereBlocker(beste, {
+      blocker,
+      route: async (a, b, opt) => {
+        if (!budgetOffen()) return []
+        kanten++
+        return route(a, b, opt)
+      },
+      protokoll,
+      budget: budgetOffen,
+    })
+    if (nachRep.blocker.length < vorher) {
+      beste.geometrie = nachRep.geometrie
+      beste.blocker = nachRep.blocker
+      beste.distanzKm = nachRep.distanzKm
+      beste.kosten = kosten(nachRep.distanzKm, nachRep.blocker.length)
+      protokoll.push({ art: "reparaturen", geloest: vorher - nachRep.blocker.length, offen: nachRep.blocker.length })
+    }
+  }
+
   const budgetErschoepft = !budgetOffen()
   protokoll.push({
     art: "ergebnis",
@@ -321,4 +345,108 @@ export async function ladeBlocker(db, { start, ziel, transport, zeitraum = {}, p
     })
   }
   return blocker
+}
+
+/**
+ * Ankerpunkte auf einer Geometrie: der Punkt `spielraumKm` vor und nach der Stelle.
+ * Wegstrecke, nicht Luftlinie — sonst liegt der Anker bei einer Schleife falsch.
+ */
+export function anker(geometrie, stelle, spielraumKm = 15) {
+  const linie = Array.isArray(geometrie) ? geometrie : []
+  if (linie.length < 3) return null
+  let mitte = 0
+  let bestKm = Infinity
+  for (let i = 0; i < linie.length; i++) {
+    const d = haversineKm(stelle, linie[i])
+    if (d < bestKm) {
+      bestKm = d
+      mitte = i
+    }
+  }
+  let vor = mitte
+  let kmVor = 0
+  while (vor > 0 && kmVor < spielraumKm) {
+    kmVor += haversineKm(linie[vor - 1], linie[vor])
+    vor--
+  }
+  let nach = mitte
+  let kmNach = 0
+  while (nach < linie.length - 1 && kmNach < spielraumKm) {
+    kmNach += haversineKm(linie[nach], linie[nach + 1])
+    nach++
+  }
+  // Am Start oder Ziel gibt es nichts zu umfahren — die Route MUSS dorthin.
+  if (kmVor < 2 || kmNach < 2 || nach - vor < 2) return null
+  return { vor, mitte, nach, vorPunkt: linie[vor], nachPunkt: linie[nach] }
+}
+
+/**
+ * Die verbliebenen Blocker einer Strecke der Reihe nach lokal umfahren.
+ *
+ * Das ist der Teil, der die schweren Fälle bewegt: Die Korridorsuche findet die beste
+ * Achse, aber auf 800 km bleiben Einzelstellen liegen. Sie eine nach der anderen
+ * abzuarbeiten ist stupide Arbeit — also macht sie die Engine, nicht das Modell.
+ *
+ * Je Stelle wird NUR das Stück zwischen den Ankern neu gesucht (mit Alternativen), und
+ * das Ergebnis wird nur übernommen, wenn es den Blocker wirklich loswird UND nicht mehr
+ * neue mitbringt, als es beseitigt. Ein Tausch ist erlaubt — ein schlechter nicht.
+ */
+export async function repariereBlocker(strecke, { blocker, route, maxStellen = 6, spielraeume = [15, 30], protokoll = [], budget = () => true } = {}) {
+  let geo = strecke.geometrie
+  let offen = [...(strecke.blocker ?? [])]
+  let repariert = 0
+
+  for (const stelle of [...offen].slice(0, maxStellen)) {
+    if (!budget()) break
+    let gelungen = false
+    for (const spielraumKm of spielraeume) {
+      if (!budget()) break
+      const a = anker(geo, stelle, spielraumKm)
+      if (!a) {
+        protokoll.push({ art: "reparatur", stelle: stelle.titel ?? null, ergebnis: "am Start/Ziel, nicht umfahrbar" })
+        break
+      }
+      const varianten = await route(a.vorPunkt, a.nachPunkt, { anzahl: 3 })
+      if (!varianten?.length) continue
+
+      const alt = geo.slice(a.vor, a.nach + 1)
+      const altBlocker = blockerAufKante(alt, blocker).length
+      let beste = null
+      for (const v of varianten) {
+        const treffer = blockerAufKante(v.geometry, blocker)
+        // Der Ersatz muss DIESE Stelle loswerden und darf insgesamt nicht schlechter sein.
+        const loestStelle = !treffer.some((t) => t.id === stelle.id || haversineKm(t, stelle) < 0.3)
+        if (!loestStelle) continue
+        if (treffer.length >= altBlocker) continue
+        if (!beste || treffer.length < beste.treffer.length) beste = { ...v, treffer }
+      }
+      if (!beste) continue
+
+      geo = [...geo.slice(0, a.vor), ...beste.geometry, ...geo.slice(a.nach + 1)]
+      offen = blockerAufKante(geo, blocker)
+      repariert++
+      gelungen = true
+      protokoll.push({
+        art: "reparatur",
+        stelle: stelle.titel ?? null,
+        spielraumKm,
+        ergebnis: "umfahren",
+        offenDanach: offen.length,
+      })
+      break
+    }
+    if (!gelungen && budget()) {
+      protokoll.push({ art: "reparatur", stelle: stelle.titel ?? null, ergebnis: "keine Umfahrung gefunden" })
+    }
+  }
+
+  return { geometrie: geo, blocker: offen, repariert, distanzKm: laengeKmVon(geo) }
+}
+
+/** Länge einer Polylinie in km (die Reparatur ändert sie). */
+function laengeKmVon(punkte) {
+  const linie = Array.isArray(punkte) ? punkte : []
+  let summe = 0
+  for (let i = 1; i < linie.length; i++) summe += haversineKm(linie[i - 1], linie[i])
+  return summe
 }

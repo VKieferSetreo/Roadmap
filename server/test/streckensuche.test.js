@@ -5,7 +5,7 @@
 // korrekt zuordnen, tauschen duerfen und im Budget bleiben.
 
 import { describe, it, expect } from "vitest"
-import { blockerAufKante, knotenImKorridor, kosten, sucheKante, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, sucheKante, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
 
 const S = { lat: 52.0, lng: 9.0 }
 const Z = { lat: 48.0, lng: 11.0 }
@@ -203,5 +203,62 @@ describe("Mehrstufige Suche", () => {
       maxKanten: 50,
     })
     expect(new Set(gefragt).size).toBe(gefragt.length)
+  })
+})
+
+describe("Blocker systematisch abarbeiten", () => {
+  const S3 = { lat: 53.0, lng: 9.0 }
+  const Z3 = { lat: 48.0, lng: 11.0 }
+  const linie3 = (a, b, n = 60) =>
+    Array.from({ length: n }, (_, i) => ({
+      lat: a.lat + ((b.lat - a.lat) * i) / (n - 1),
+      lng: a.lng + ((b.lng - a.lng) * i) / (n - 1),
+    }))
+
+  it("umfaehrt eine Stelle lokal und laesst den Rest der Strecke stehen", async () => {
+    const geo = linie3(S3, Z3)
+    const sperre = { id: 1, ...geo[30], titel: "Bruecke gesperrt" }
+    // Der Ersatz weicht nach Westen aus und trifft die Sperre nicht mehr.
+    const route = async (von, nach) => [
+      { geometry: [von, { lat: (von.lat + nach.lat) / 2, lng: von.lng - 0.8 }, nach], distanzKm: 60, dauerMin: 50 },
+    ]
+    const res = await repariereBlocker(
+      { geometrie: geo, blocker: [sperre], distanzKm: 600 },
+      { blocker: [sperre], route },
+    )
+    expect(res.blocker).toHaveLength(0)
+    expect(res.repariert).toBe(1)
+    // Anfang und Ende unveraendert.
+    expect(res.geometrie[0]).toEqual(geo[0])
+    expect(res.geometrie.at(-1)).toEqual(geo.at(-1))
+  })
+
+  it("uebernimmt keinen Ersatz, der mehr Blocker mitbringt als er loest", async () => {
+    const geo = linie3(S3, Z3)
+    const sperre = { id: 1, ...geo[30], titel: "Sperre" }
+    const neueSperren = [
+      { id: 2, lat: 50.6, lng: 8.2, titel: "neu 1" },
+      { id: 3, lat: 50.4, lng: 8.2, titel: "neu 2" },
+      { id: 4, lat: 50.2, lng: 8.2, titel: "neu 3" },
+    ]
+    // Die Ausweichlinie laeuft genau durch die drei neuen Sperren.
+    const route = async () => [{ geometry: [{ lat: 50.8, lng: 8.2 }, { lat: 50.0, lng: 8.2 }], distanzKm: 90, dauerMin: 70 }]
+    const res = await repariereBlocker(
+      { geometrie: geo, blocker: [sperre], distanzKm: 600 },
+      { blocker: [sperre, ...neueSperren], route },
+    )
+    expect(res.repariert).toBe(0)
+    expect(res.blocker).toHaveLength(1)
+  })
+
+  it("sagt es, wenn die Stelle am Start liegt", async () => {
+    const geo = linie3(S3, Z3)
+    const protokoll = []
+    const res = await repariereBlocker(
+      { geometrie: geo, blocker: [{ id: 9, ...geo[0], titel: "direkt am Start" }], distanzKm: 600 },
+      { blocker: [{ id: 9, ...geo[0] }], route: async () => [], protokoll },
+    )
+    expect(res.repariert).toBe(0)
+    expect(protokoll.some((p) => /nicht umfahrbar/.test(p.ergebnis ?? ""))).toBe(true)
   })
 })
