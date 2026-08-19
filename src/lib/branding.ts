@@ -13,6 +13,10 @@ const DELTA_L: Record<Stop, number> = { 50: 51, 100: 44, 200: 32, 300: 18, 400: 
 // Sättigungs-Faktor je Stop relativ zu 500 (helle Stops leicht entsättigt, mittlere kräftiger).
 const SAT_RATIO: Record<Stop, number> = { 50: 0.87, 100: 0.98, 200: 1, 300: 0.95, 400: 0.92, 500: 1, 600: 1.05, 700: 0.92, 800: 0.75, 900: 0.82, 950: 0.88 }
 
+// Grenzen der Ramp: ganz schwarz/weiß sind keine brauchbaren Stufen.
+const L_MIN = 4
+const L_MAX = 97
+
 const HEX6 = /^#[0-9a-fA-F]{6}$/
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 
@@ -57,9 +61,18 @@ export function primaryRampFromHex(hex: string): Record<Stop, string> {
   const [h, s, l] = hexToHsl(hex)
   // 500 = die gewählte Farbe exakt (HSL-Roundtrip würde ±1 driften; Button-Farbe = Marke).
   const exact500 = `${parseInt(hex.slice(1, 3), 16)} ${parseInt(hex.slice(3, 5), 16)} ${parseInt(hex.slice(5, 7), 16)}`
+  // Bei dunklen (oder sehr hellen) Akzentfarben reicht der Platz nicht für die vollen Deltas.
+  // Hartes Klemmen ließ dann mehrere Stufen auf denselben Wert fallen — Enercon-Grün #1b5239
+  // hat L=21 %, damit landeten 800/900/950 alle auf der Untergrenze. Deshalb die Deltas
+  // proportional auf den vorhandenen Platz stauchen: die Abstufung bleibt sichtbar.
+  const raumRunter = Math.max(0, l - L_MIN)
+  const raumHoch = Math.max(0, L_MAX - l)
+  const kRunter = Math.min(1, raumRunter / -DELTA_L[950])
+  const kHoch = Math.min(1, raumHoch / DELTA_L[50])
   const out = {} as Record<Stop, string>
   for (const stop of STOPS) {
-    out[stop] = stop === 500 ? exact500 : hslToChannels(h, clamp(s * SAT_RATIO[stop], 0, 100), clamp(l + DELTA_L[stop], 4, 97))
+    const d = DELTA_L[stop]
+    out[stop] = stop === 500 ? exact500 : hslToChannels(h, clamp(s * SAT_RATIO[stop], 0, 100), clamp(l + d * (d < 0 ? kRunter : kHoch), 0, 100))
   }
   return out
 }
