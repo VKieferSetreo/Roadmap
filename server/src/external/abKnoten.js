@@ -66,6 +66,16 @@ function index() {
 }
 
 /**
+ * ALLE bekannten Autobahnknoten als flache Liste — Knotenmenge der Streckensuche.
+ * Der Index liegt ohnehin im Speicher; hier wird er nur ausgerollt.
+ */
+export function alleKnoten() {
+  const out = []
+  for (const arr of index().values()) out.push(...arr)
+  return out
+}
+
+/**
  * Löst einen VEMAGS-Knotennamen ("AS Offenburg", "AK Bremen", "AD Stuhr") auf {lat,lng,name,matched}.
  * Typ-bewusst: AK bevorzugt Kreuz-Knoten, AD Dreieck-Knoten. null wenn nichts plausibles.
  */

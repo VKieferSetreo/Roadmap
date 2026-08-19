@@ -21,6 +21,9 @@
 // am Ende bezahlen.
 
 import { buildRouteGrid, cumulativeKm, haversineKm, nearestOnRoute } from "./geometry.js"
+import { evaluate, AUSWERTUNG_AUSGESCHLOSSEN } from "./rules.js"
+import { OBSTACLE_COLS } from "../obstaclesRepo.js"
+import { rowToObstacle } from "../map.js"
 
 /**
  * Wie viele Kilometer Umweg ein ungelöster Blocker "wert" ist.
@@ -233,4 +236,49 @@ export async function sucheStrecke(
     budgetErschoepft,
   })
   return { gefunden: true, beste, protokoll, kanten, budgetErschoepft }
+}
+
+/**
+ * Blocker-Karte: alle Hindernisse im Korridor, die für DIESEN Transport in DIESEM
+ * Zeitraum kritisch sind — in einem einzigen Datenbankzugriff.
+ *
+ * Das ist der Trick, der die Suche schnell macht: die Bewertung „liegt das auf meiner
+ * Kante?" ist danach reine Geometrie. Ohne diese Vorablast müsste jede Kandidaten-
+ * Kante einzeln analysiert werden, und eine tiefe Suche wäre unbezahlbar.
+ *
+ * Bewusst nur `kritisch`: Warnungen und Hinweise sind für die Suche kein Kriterium,
+ * sie gehören in die abschließende Analyse der gewählten Strecke.
+ */
+export async function ladeBlocker(db, { start, ziel, transport, zeitraum = {}, puffergrad = 0.7, tenantId = null }) {
+  const latMin = Math.min(start.lat, ziel.lat) - puffergrad
+  const latMax = Math.max(start.lat, ziel.lat) + puffergrad
+  const lngMin = Math.min(start.lng, ziel.lng) - puffergrad
+  const lngMax = Math.max(start.lng, ziel.lng) + puffergrad
+  const { rows } = await db.query(
+    `SELECT ${OBSTACLE_COLS} FROM obstacles
+      WHERE aktiv = true
+        AND (tenant_id IS NULL OR tenant_id = $5::uuid)
+        AND lat BETWEEN $1 AND $2
+        AND lng BETWEEN $3 AND $4
+        AND kategorie <> ALL($6::text[])`,
+    [latMin, latMax, lngMin, lngMax, tenantId, AUSWERTUNG_AUSGESCHLOSSEN],
+  )
+  const blocker = []
+  for (const row of rows) {
+    const o = rowToObstacle(row)
+    const urteil = evaluate(o, transport, zeitraum)
+    if (urteil?.severity !== "kritisch") continue
+    blocker.push({
+      id: o.id,
+      lat: o.lat,
+      lng: o.lng,
+      titel: urteil.titel ?? o.name,
+      kategorie: o.kategorie,
+      strassenRef: o.strassenRef,
+      gueltigVon: o.gueltigVon,
+      gueltigBis: o.gueltigBis,
+      grund: urteil.beschreibung ?? null,
+    })
+  }
+  return blocker
 }

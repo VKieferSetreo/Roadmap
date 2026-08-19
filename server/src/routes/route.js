@@ -10,7 +10,8 @@ import { geocodeOrt, resolveRoute, routeWaypoints } from "../engine/resolveRoute
 import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
-import { resolveKnoten } from "../external/abKnoten.js"
+import { alleKnoten, resolveKnoten } from "../external/abKnoten.js"
+import { ladeBlocker, sucheStrecke } from "../engine/streckensuche.js"
 import { cleanWaypoints } from "../external/vemagsClean.js"
 import { ApiError, asyncHandler } from "../util.js"
 
@@ -407,6 +408,77 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
         gueltigVon: f.gueltigVon ?? null,
         gueltigBis: f.gueltigBis ?? null,
       })),
+    })
+  }))
+
+  /**
+   * STRECKENSUCHE (T-032ff): den Korridor durchsuchen statt eine Route planen.
+   *
+   * Unterschied zu /startziel: dort kommt EIN Weg zurueck, den der Aufrufer dann mit
+   * Sperrzonen nachbessern muss. Hier laeuft die Suche selbst — Blocker-Karte laden,
+   * OSRM-Alternativen bewerten, ueber Autobahnknoten ausweichen, von beiden Seiten
+   * aufeinander zu — und liefert die beste Strecke SAMT Protokoll, wie sie zustande kam.
+   *
+   * Das Protokoll ist kein Beiwerk: es ist der Nachweis, welche Alternativen geprueft
+   * und warum sie verworfen wurden. Genau das braucht ein Genehmigungsantrag.
+   */
+  r.post("/suche", asyncHandler(async (req, res) => {
+    const start = typeof req.body?.start === "string" ? req.body.start.trim() : ""
+    const ziel = typeof req.body?.ziel === "string" ? req.body.ziel.trim() : ""
+    if (!start || !ziel) throw new ApiError(400, "Start und Ziel erforderlich")
+    if (!osrm) throw new ApiError(503, "Router nicht verfuegbar — ohne OSRM keine Suche")
+
+    const t = req.body?.transport ?? {}
+    const transport = {
+      laenge: Number(t.laenge) || 24.5,
+      breite: Number(t.breite) || 3.0,
+      hoehe: Number(t.hoehe) || 4.2,
+      gesamtgewicht: Number(t.gesamtgewicht) || 68,
+    }
+    const zeitraum = {
+      von: typeof req.body?.zeitraum?.von === "string" ? req.body.zeitraum.von.slice(0, 10) : null,
+      bis: typeof req.body?.zeitraum?.bis === "string" ? req.body.zeitraum.bis.slice(0, 10) : null,
+    }
+
+    // Start/Ziel aufloesen wie bei /startziel — dieselbe Geocoder-Kette, damit eine
+    // Suche nicht anders verortet als eine Planung.
+    const basis = await resolveRoute(db, { mode: "startziel", start, ziel, vias: [] }, { nominatim, osrm })
+    const pins = Array.isArray(basis.waypoints) && basis.waypoints.length >= 2 ? basis.waypoints : null
+    if (!pins) throw new ApiError(422, "Start oder Ziel konnte nicht aufgeloest werden")
+    const von = pins[0]
+    const nach = pins[pins.length - 1]
+
+    const blocker = await ladeBlocker(db, { start: von, ziel: nach, transport, zeitraum, tenantId: req.ctx?.tenantId ?? null })
+    const ergebnis = await sucheStrecke(von, nach, {
+      blocker,
+      knoten: alleKnoten(),
+      route: (a, b, opt) => osrm.routeAlternativen(a, b, opt),
+      korridorKm: Math.min(Math.max(Number(req.body?.korridorKm) || 60, 10), 200),
+      maxKanten: Math.min(Math.max(Number(req.body?.maxKanten) || 40, 3), 120),
+      maxMs: Math.min(Math.max(Number(req.body?.maxMs) || 90_000, 5_000), 240_000),
+      breite: Math.min(Math.max(Number(req.body?.breite) || 4, 1), 12),
+    })
+
+    res.json({
+      gefunden: ergebnis.gefunden === true,
+      grund: ergebnis.grund ?? null,
+      blockerImKorridor: blocker.length,
+      strecke: ergebnis.beste
+        ? {
+            points: ergebnis.beste.geometrie,
+            distanzKm: Math.round(ergebnis.beste.distanzKm * 10) / 10,
+            ueber: ergebnis.beste.ueber,
+            offeneBlocker: ergebnis.beste.blocker.map((b) => ({
+              titel: b.titel, kategorie: b.kategorie, strassenRef: b.strassenRef, lat: b.lat, lng: b.lng,
+              km: b.km ?? null, gueltigVon: b.gueltigVon ?? null, gueltigBis: b.gueltigBis ?? null, grund: b.grund ?? null,
+            })),
+          }
+        : null,
+      kanten: ergebnis.kanten,
+      budgetErschoepft: ergebnis.budgetErschoepft === true,
+      protokoll: ergebnis.protokoll,
+      transport,
+      zeitraum,
     })
   }))
 
