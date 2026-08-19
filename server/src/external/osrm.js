@@ -77,6 +77,32 @@ export function createOsrm({
     },
 
     /**
+     * Wie route(), aber mit ALTERNATIVEN: OSRM liefert bis zu `anzahl` echte Varianten
+     * derselben Verbindung (andere Korridore, nicht nur Feinvarianten).
+     *
+     * Fuer die Streckensuche ist das der billigste Weg zu Vielfalt: ein Aufruf, mehrere
+     * Korridore, keine geratenen Via-Punkte. OSRM liefert Alternativen nur ohne
+     * Zwischenpunkte (zwei Wegpunkte) — mit mehr Punkten faellt es still auf eine Route
+     * zurueck, deshalb hier bewusst nur Start und Ziel einer KANTE.
+     * @returns {{geometry:{lat,lng}[],distanzKm:number,dauerMin:number}[]}
+     */
+    async routeAlternativen(von, nach, { anzahl = 3 } = {}) {
+      const coords = `${von.lng},${von.lat};${nach.lng},${nach.lat}`
+      const url =
+        `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}` +
+        `?overview=full&geometries=geojson&alternatives=${Math.max(1, Math.min(Number(anzahl) || 3, 5))}`
+      const data = await fetchJson(url, { timeoutMs, fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
+      if (data?.code !== "Ok" || !Array.isArray(data.routes)) return []
+      return data.routes
+        .map((r) => {
+          const c = r?.geometry?.coordinates
+          if (!Array.isArray(c) || c.length < 2) return null
+          return { geometry: c.map(([lng, lat]) => ({ lat, lng })), distanzKm: r.distance / 1000, dauerMin: r.duration / 60 }
+        })
+        .filter(Boolean)
+    },
+
+    /**
      * Menge der Straßen-Refs (A/B/L/K/St), die die Route tatsächlich befährt — aus den OSRM-Steps.
      * Für den Überführungs-Filter (T-601): ein Punkt-Bauwerk auf einer Straße, die NICHT in dieser
      * Menge ist, wird vom Transport nur gekreuzt, nicht befahren. Null bei Fehler/Timeout (→ Filter
