@@ -11,6 +11,20 @@ export function normRoadRef(s) {
   return m ? `${m[1] === "S" ? "ST" : m[1]}${m[2]}` : null
 }
 
+/** Die einzelnen Schritte mit Strassennummer und Geometrie — {ref, punkte}[]. */
+export function abschnitteAusLegs(legs) {
+  const raus = []
+  for (const leg of legs ?? []) {
+    for (const step of leg.steps ?? []) {
+      const ref = normRoadRef(String(step.ref ?? "").split(/[;,/]/)[0])
+      const c = step?.geometry?.coordinates
+      if (!ref || !Array.isArray(c) || !c.length) continue
+      raus.push({ ref, punkte: c.map(([lng, lat]) => ({ lat, lng })) })
+    }
+  }
+  return raus
+}
+
 /** Strassen-Refs aus OSRM-Legs (A/B/L/K/St). Gemeinsam genutzt von roadRefs und den Alternativen. */
 export function refsAusLegs(legs) {
   const refs = new Set()
@@ -115,7 +129,11 @@ export function createOsrm({
           const c = r?.geometry?.coordinates
           if (!Array.isArray(c) || c.length < 2) return null
           const strassen = mitStrassen ? refsAusLegs(r.legs) : null
-          return { geometry: c.map(([lng, lat]) => ({ lat, lng })), distanzKm: r.distance / 1000, dauerMin: r.duration / 60, strassen }
+          // Abschnitte mit Strassennummer UND eigener Geometrie: nur damit laesst sich
+          // sagen, WO genau eine bestimmte Strasse befahren wird — die Voraussetzung,
+          // um ein Verbot in umfahrbare Punkte zu uebersetzen.
+          const abschnitte = mitStrassen ? abschnitteAusLegs(r.legs) : null
+          return { geometry: c.map(([lng, lat]) => ({ lat, lng })), distanzKm: r.distance / 1000, dauerMin: r.duration / 60, strassen, abschnitte }
         })
         .filter(Boolean)
     },

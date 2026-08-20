@@ -5,7 +5,7 @@
 // korrekt zuordnen, tauschen duerfen und im Budget bleiben.
 
 import { describe, it, expect } from "vitest"
-import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, normalisiereStrassen, sucheKante, sucheKette, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, normalisiereStrassen, sucheKante, sucheKette, sucheStrecke, verbotAlsBlocker, STRAFE_KM } from "../src/engine/streckensuche.js"
 
 const S = { lat: 52.0, lng: 9.0 }
 const Z = { lat: 48.0, lng: 11.0 }
@@ -379,5 +379,28 @@ describe("Verbotene Strassen", () => {
     await sucheKante(S, Z, { blocker: [], route })
     await sucheKante(S, Z, { blocker: [], route, verboteneStrassen: ["A8"] })
     expect(gefragt).toEqual([false, true])
+  })
+})
+
+// Ein Verbot als reine Strafe zu rechnen reicht nicht: der Router liefert von sich aus
+// immer wieder dieselbe Autobahn, und auf der B10 liegt kein Autobahnknoten, ueber den
+// die Suche ausweichen koennte. Also wird die verbotene Strasse zu Punkten, um die
+// herum gesucht wird — wie bei einer Baustelle.
+describe("Verbot als Umfahrungspunkte", () => {
+  it("tastet den verbotenen Abschnitt ab und laesst den Rest liegen", () => {
+    const punkte = Array.from({ length: 40 }, (_, i) => ({ lat: 48.8 + i * 0.02, lng: 9.0 }))
+    const varianten = [
+      { abschnitte: [{ ref: "A8", punkte }, { ref: "B10", punkte: punkte.slice(0, 5) }] },
+    ]
+    const blocker = verbotAlsBlocker(varianten, ["A8"], { abstandKm: 15 })
+    expect(blocker.length).toBeGreaterThan(1)
+    expect(blocker.every((b) => b.vorgabe === "A8")).toBe(true)
+    // Abstand eingehalten: bei ~87 km Laenge und 15 km Raster bleiben eine Handvoll.
+    expect(blocker.length).toBeLessThan(10)
+  })
+
+  it("liefert nichts, wenn die verbotene Strasse gar nicht vorkommt", () => {
+    const varianten = [{ abschnitte: [{ ref: "B10", punkte: [{ lat: 48, lng: 9 }] }] }]
+    expect(verbotAlsBlocker(varianten, ["A8"])).toEqual([])
   })
 })

@@ -147,9 +147,41 @@ export async function sucheKante(von, nach, { blocker, route, alternativen = 3, 
     varianten: bewertet.length,
     gewaehltKm: Math.round(beste.distanzKm),
     blocker: beste.blocker.length,
-    ergebnis: beste.blocker.length ? "mit Blocker" : "frei",
+    verbote: beste.verstoesse?.length ? beste.verstoesse : undefined,
+    ergebnis: beste.verstoesse?.length ? `ueber ${beste.verstoesse.join(", ")}` : beste.blocker.length ? "mit Blocker" : "frei",
   })
-  return beste
+  // Die verworfenen Varianten kommen mit: sie zeigen zusaetzlich, WO eine verbotene
+  // Strasse verlaeuft — und genau daraus werden die Umfahrungspunkte gebildet.
+  return { ...beste, alleVarianten: bewertet }
+}
+
+/**
+ * Ein Strassenverbot in umfahrbare Punkte uebersetzen.
+ *
+ * Ein Verbot als reine Strafe zu rechnen reicht nicht: der Router liefert von sich aus
+ * immer wieder dieselbe Autobahn, und Autobahnknoten koennen eine Bundesstrasse als
+ * Ausweichachse gar nicht ausdruecken (auf der B10 liegt kein AK). Wer die A8 wirklich
+ * meiden will, muss sie behandeln wie eine Baustelle: als Kette von Punkten, um die
+ * herum gesucht wird. Genau das macht diese Funktion — danach greift die vorhandene
+ * Umfahrungsmaschinerie ohne jede Sonderbehandlung.
+ *
+ * Grob abgetastet (Standard alle 15 km): es geht darum, die Achse zu verlassen, nicht
+ * jeden Meter zu treffen.
+ */
+export function verbotAlsBlocker(varianten = [], verboten = [], { abstandKm = 15 } = {}) {
+  const raus = []
+  for (const v of varianten) {
+    for (const ab of v?.abschnitte ?? []) {
+      if (!verboten.includes(ab.ref)) continue
+      let letzter = null
+      for (const p of ab.punkte ?? []) {
+        if (letzter && haversineKm(letzter, p) < abstandKm) continue
+        letzter = p
+        raus.push({ lat: p.lat, lng: p.lng, titel: `Vorgabe: keine ${ab.ref}`, kategorie: "vorgabe", vorgabe: ab.ref })
+      }
+    }
+  }
+  return raus
 }
 
 /** Schlüssel für den Kanten-Cache: auf ~10 m gerundete Koordinaten. */
@@ -291,6 +323,10 @@ export async function sucheStrecke(
   const protokoll = []
   const t0 = jetzt()
   const cache = new Map()
+  const verboten = normalisiereStrassen(verboteneStrassen)
+  // Veraenderlich: sobald bekannt ist, WO die verbotene Strasse liegt, kommen diese
+  // Punkte dazu und gelten fuer jede weitere Kante.
+  let aktiveBlocker = blocker
   let kanten = 0
   const budgetOffen = () => kanten < maxKanten && jetzt() - t0 < maxMs
 
@@ -300,7 +336,7 @@ export async function sucheStrecke(
     if (cache.has(key)) return cache.get(key)
     if (!budgetOffen()) return null
     kanten++
-    const res = await sucheKante(von, nach, { blocker, route, protokoll, verboteneStrassen })
+    const res = await sucheKante(von, nach, { blocker: aktiveBlocker, route, protokoll, verboteneStrassen })
     cache.set(key, res)
     return res
   }
@@ -322,7 +358,21 @@ export async function sucheStrecke(
     kosten: direkt.kosten,
     ueber: [],
   }
-  if (!direkt.blocker.length) {
+  if (verboten.length && direkt.verstoesse?.length) {
+    const punkte = verbotAlsBlocker(direkt.alleVarianten ?? [direkt], verboten)
+    if (punkte.length) {
+      aktiveBlocker = [...aktiveBlocker, ...punkte]
+      // Die direkte Kante traegt diese Punkte jetzt selbst — sonst gilt sie weiter als
+      // guenstigste, und die Suche haette nichts, wovon sie weglaufen soll.
+      const nachVerbot = blockerAufKante(direkt.geometry, punkte)
+      beste.blocker = [...beste.blocker, ...nachVerbot]
+      beste.kosten = kosten(beste.distanzKm, beste.blocker.length) + (beste.verstoesse?.length ?? 0) * VERBOT_STRAFE_KM
+      cache.clear() // die eine gerechnete Kante wird gleich neu bewertet
+      protokoll.push({ art: "vorgabe", strassen: verboten, punkte: punkte.length, ergebnis: "Verbot als Umfahrungspunkte gesetzt" })
+    }
+  }
+
+  if (!direkt.blocker.length && !direkt.verstoesse?.length) {
     protokoll.push({ art: "ergebnis", ergebnis: "direkte Strecke ist frei" })
     return { gefunden: true, beste, protokoll, kanten, budgetErschoepft: false }
   }
@@ -418,7 +468,7 @@ export async function sucheStrecke(
   if (beste.blocker.length && budgetOffen()) {
     const vorher = beste.blocker.length
     const nachRep = await repariereBlocker(beste, {
-      blocker,
+      blocker: aktiveBlocker,
       route: async (a, b, opt) => {
         if (!budgetOffen()) return []
         kanten++
