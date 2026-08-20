@@ -184,6 +184,37 @@ export function verbotAlsBlocker(varianten = [], verboten = [], { abstandKm = 15
   return raus
 }
 
+/**
+ * Ausweichpunkte seitlich der verbotenen Strasse.
+ *
+ * Die Knotenliste besteht aus Autobahnknoten. Wer die A8 meiden will, muss aber auf die
+ * B10 — und dort liegt kein AK. Also werden neben jedem Verbotspunkt zwei kuenstliche
+ * Zwischenziele gesetzt, links und rechts quer zur Achse. Ein Weg ueber ein solches Ziel
+ * zwingt den Router von der Autobahn herunter; ob er damit besser faehrt, entscheidet
+ * danach wie immer die Kostenrechnung.
+ */
+export function ausweichPunkte(verbotsPunkte = [], start, ziel, { abstandKm = 20, maxPunkte = 3 } = {}) {
+  const gesamt = haversineKm(start, ziel)
+  if (!gesamt) return []
+  // Querrichtung zur Achse (grob, in Grad): reicht fuer einen Zwischenpunkt.
+  const dLat = ziel.lat - start.lat
+  const dLng = (ziel.lng - start.lng) * Math.cos((((start.lat + ziel.lat) / 2) * Math.PI) / 180)
+  const laenge = Math.hypot(dLat, dLng) || 1
+  const gradProKm = 1 / 111
+  const quer = { lat: (-dLng / laenge) * abstandKm * gradProKm, lng: ((dLat / laenge) * abstandKm * gradProKm) / Math.cos((((start.lat + ziel.lat) / 2) * Math.PI) / 180) }
+
+  const raus = []
+  for (const [i, p] of verbotsPunkte.slice(0, maxPunkte).entries()) {
+    for (const [seite, vz] of [["West", -1], ["Ost", 1]]) {
+      const k = { lat: p.lat + vz * quer.lat, lng: p.lng + vz * quer.lng, name: `Ausweich ${seite} ${i + 1}`, type: "ausweich" }
+      const dS = haversineKm(start, k)
+      const dZ = haversineKm(ziel, k)
+      raus.push({ ...k, fortschritt: dS / (dS + dZ), umwegKm: Math.round((dS + dZ - gesamt) * 10) / 10 })
+    }
+  }
+  return raus
+}
+
 /** Schlüssel für den Kanten-Cache: auf ~10 m gerundete Koordinaten. */
 const kantenSchluessel = (a, b) => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}>${b.lat.toFixed(4)},${b.lng.toFixed(4)}`
 
@@ -205,7 +236,10 @@ const ROUTEN_MAX = 500
 
 export function mitRoutenCache(route, { jetzt = () => Date.now() } = {}) {
   return async (a, b, opt = {}) => {
-    const key = `${kantenSchluessel(a, b)}|${opt.anzahl ?? 3}`
+    // mitStrassen gehoert in den Schluessel: ein Eintrag aus einer Suche OHNE Verbot
+    // traegt keine Strassennamen — als Treffer fuer eine Suche MIT Verbot waere er
+    // stillschweigend falsch ("keine Verstoesse", weil nichts gemessen wurde).
+    const key = `${kantenSchluessel(a, b)}|${opt.anzahl ?? 3}|${opt.mitStrassen ? "s" : "-"}`
     const treffer = ROUTEN_CACHE.get(key)
     if (treffer && jetzt() - treffer.zeit < ROUTEN_TTL_MS) return treffer.wert
     const wert = await route(a, b, opt)
@@ -238,6 +272,10 @@ export function mitRoutenCache(route, { jetzt = () => Date.now() } = {}) {
  * bekommt. Ohne beides würde der Korridor bei 4408 Knoten jede Zeitschranke sprengen.
  */
 export async function sucheKette(start, ziel, { knoten = [], kante, maxTiefe = 4, verzweigung = 3, protokoll = [] } = {}) {
+  // Wie ueberall: Kilometer + Strafe je offenem Blocker + Strafe je verletzter Vorgabe.
+  // Ohne den dritten Summanden holt die Kette genau die Strecke zurueck, die wegen des
+  // Verbots verworfen wurde (Live-Test 20.08.: die A8-Strecke gewann die Kettensuche).
+  const gesamtkosten = (e) => kosten(e.km, e.blocker.length) + (e.verstoesse?.length ?? 0) * VERBOT_STRAFE_KM
   const nachbarn = (n) => {
     // Nur vorwärts: ein Knoten HINTER dem aktuellen bringt keinen Fortschritt und
     // macht aus der Suche ein Herumirren im Korridor.
@@ -246,16 +284,16 @@ export async function sucheKette(start, ziel, { knoten = [], kante, maxTiefe = 4
     return weiter.slice(0, verzweigung)
   }
 
-  const offen = [{ knoten: start, ueber: [], teile: [], km: 0, blocker: [], schaetzung: haversineKm(start, ziel) }]
+  const offen = [{ knoten: start, ueber: [], teile: [], km: 0, blocker: [], verstoesse: [], schaetzung: haversineKm(start, ziel) }]
   const besucht = new Map() // Knotenname -> guenstigste bekannte Kosten dorthin
   let bestesZiel = null
 
   while (offen.length) {
-    offen.sort((a, b) => kosten(a.km, a.blocker.length) + a.schaetzung - (kosten(b.km, b.blocker.length) + b.schaetzung))
+    offen.sort((a, b) => gesamtkosten(a) + a.schaetzung - (gesamtkosten(b) + b.schaetzung))
     const jetzt = offen.shift()
     // Sobald das Ziel als günstigster Eintrag herauskommt, kann nichts Offenes mehr
     // besser werden — das ist die Abbruchbedingung von A*.
-    if (bestesZiel && kosten(jetzt.km, jetzt.blocker.length) + jetzt.schaetzung >= bestesZiel.kosten) break
+    if (bestesZiel && gesamtkosten(jetzt) + jetzt.schaetzung >= bestesZiel.kosten) break
     // An der Tiefengrenze wird nicht abgebrochen, sondern nur noch der Weg zum Ziel
     // versucht — sonst endet die laengste Kette einen Schritt vor dem Ziel im Nichts.
     const weiter = jetzt.ueber.length >= maxTiefe ? [ziel] : [...nachbarn(jetzt.knoten), ziel]
@@ -265,20 +303,22 @@ export async function sucheKette(start, ziel, { knoten = [], kante, maxTiefe = 4
       if (!k) continue // kein Budget mehr oder keine Route — beides beendet diesen Zweig
       const km = jetzt.km + k.distanzKm
       const blocker = [...jetzt.blocker, ...k.blocker]
+      const verstoesse = [...new Set([...jetzt.verstoesse, ...(k.verstoesse ?? [])])]
       const teile = [...jetzt.teile, k]
+      const stand = { km, blocker, verstoesse }
       if (n === ziel) {
-        const gesamt = kosten(km, blocker.length)
+        const gesamt = gesamtkosten(stand)
         if (!bestesZiel || gesamt < bestesZiel.kosten) {
-          bestesZiel = { kosten: gesamt, km, blocker, teile, ueber: jetzt.ueber }
-          protokoll.push({ art: "kette", ueber: jetzt.ueber, km: Math.round(km), blocker: blocker.length })
+          bestesZiel = { kosten: gesamt, km, blocker, verstoesse, teile, ueber: jetzt.ueber }
+          protokoll.push({ art: "kette", ueber: jetzt.ueber, km: Math.round(km), blocker: blocker.length, verbote: verstoesse })
         }
         continue
       }
       const bisher = besucht.get(n.name)
-      const hier = kosten(km, blocker.length)
+      const hier = gesamtkosten(stand)
       if (bisher != null && bisher <= hier) continue
       besucht.set(n.name, hier)
-      offen.push({ knoten: n, ueber: [...jetzt.ueber, n.name], teile, km, blocker, schaetzung: haversineKm(n, ziel) })
+      offen.push({ knoten: n, ueber: [...jetzt.ueber, n.name], teile, km, blocker, verstoesse, schaetzung: haversineKm(n, ziel) })
     }
   }
   return bestesZiel
@@ -327,6 +367,7 @@ export async function sucheStrecke(
   // Veraenderlich: sobald bekannt ist, WO die verbotene Strasse liegt, kommen diese
   // Punkte dazu und gelten fuer jede weitere Kante.
   let aktiveBlocker = blocker
+  let verbotsPunkte = []
   let kanten = 0
   /**
    * Die Korridorsuche darf nicht das gesamte Kanten-Budget verbrauchen: am Ende steht
@@ -369,6 +410,7 @@ export async function sucheStrecke(
   if (verboten.length && direkt.verstoesse?.length) {
     const punkte = verbotAlsBlocker(direkt.alleVarianten ?? [direkt], verboten)
     if (punkte.length) {
+      verbotsPunkte = punkte
       aktiveBlocker = [...aktiveBlocker, ...punkte]
       // Die direkte Kante traegt diese Punkte jetzt selbst — sonst gilt sie weiter als
       // guenstigste, und die Suche haette nichts, wovon sie weglaufen soll.
@@ -391,6 +433,9 @@ export async function sucheStrecke(
   const naheAmBlocker = (k) => Math.min(...direkt.blocker.map((b) => haversineKm(k, b)))
   const sortiert = [...kandidaten].sort((a, b) => naheAmBlocker(a) - naheAmBlocker(b))
   const auswahl = sortiert.slice(0, breite * 2)
+  // Bei einem Strassenverbot kommen kuenstliche Zwischenziele dazu: sie sind das
+  // einzige Mittel, den Router auf eine Achse ohne Autobahnknoten zu zwingen.
+  if (verbotsPunkte.length) auswahl.unshift(...ausweichPunkte(verbotsPunkte, S, Z))
   protokoll.push({
     art: "korridor",
     knotenGefunden: kandidaten.length,
@@ -470,6 +515,7 @@ export async function sucheStrecke(
       beste.geometrie = kette.teile.flatMap((t) => t.geometry)
       beste.distanzKm = kette.km
       beste.blocker = kette.blocker
+      beste.verstoesse = kette.verstoesse ?? []
       beste.kosten = kette.kosten
       beste.ueber = kette.ueber
       protokoll.push({ art: "verbindung", ueber: kette.ueber, km: Math.round(kette.km), blocker: kette.blocker.length, besserAlsBisher: true })
