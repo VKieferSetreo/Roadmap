@@ -328,7 +328,15 @@ export async function sucheStrecke(
   // Punkte dazu und gelten fuer jede weitere Kante.
   let aktiveBlocker = blocker
   let kanten = 0
-  const budgetOffen = () => kanten < maxKanten && jetzt() - t0 < maxMs
+  /**
+   * Die Korridorsuche darf nicht das gesamte Kanten-Budget verbrauchen: am Ende steht
+   * die lokale Reparatur, und die ist der Schritt, der einzelne Stellen wirklich
+   * wegbekommt. Ohne Reservierung fressen breite Fronten alles auf und die Suche endet
+   * mit "beste Strecke hat noch N Blocker", obwohl das Werkzeug dagegen bereitstand
+   * (Live-Test 20.08.: A8-Verbot, 40 von 40 Kanten in den Fronten).
+   */
+  const RESERVE = Math.ceil(maxKanten * 0.3)
+  const budgetOffen = (reserve = 0) => kanten < maxKanten - reserve && jetzt() - t0 < maxMs
 
   /** Kante holen — aus dem Cache oder frisch gerechnet, solange Budget da ist. */
   const kante = async (von, nach) => {
@@ -395,7 +403,7 @@ export async function sucheStrecke(
   const frontS = new Map()
   const frontZ = new Map()
   for (const k of auswahl) {
-    if (!budgetOffen()) break
+    if (!budgetOffen(RESERVE)) break
     if (k.fortschritt <= 0.6) {
       const hin = await kante(S, k)
       if (hin) frontS.set(k.name, { knoten: k, kante: hin, kosten: hin.kosten, blocker: hin.blocker })
@@ -442,7 +450,7 @@ export async function sucheStrecke(
   }
   paare.sort((x, y) => x.aussicht - y.aussicht)
   for (const { a, b, nameA, nameB } of paare) {
-    if (!budgetOffen()) break
+    if (!budgetOffen(RESERVE)) break
     const mitte = await kante(a.knoten, b.knoten)
     if (!mitte) continue
     pruefe([a.kante, mitte, b.kante], [nameA, nameB])
@@ -451,7 +459,13 @@ export async function sucheStrecke(
   // 4c. Reicht das nicht, ueber KETTEN suchen: drei, vier Zwischenknoten. Die Kanten
   //     der Fronten liegen im Cache, die Kette zahlt also nur fuer das, was neu ist.
   if (beste.blocker.length && budgetOffen()) {
-    const kette = await sucheKette(S, Z, { knoten: auswahl, kante, protokoll })
+    // Auch die Kette teilt sich die Reserve mit der Reparatur — je die Haelfte, damit
+    // nicht ein Schritt den anderen aushungert.
+    const kette = await sucheKette(S, Z, {
+      knoten: auswahl,
+      kante: (a, b) => (budgetOffen(Math.ceil(RESERVE / 2)) ? kante(a, b) : null),
+      protokoll,
+    })
     if (kette && kette.kosten < beste.kosten) {
       beste.geometrie = kette.teile.flatMap((t) => t.geometry)
       beste.distanzKm = kette.km
