@@ -5,7 +5,7 @@
 // korrekt zuordnen, tauschen duerfen und im Budget bleiben.
 
 import { describe, it, expect } from "vitest"
-import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, sucheKante, sucheKette, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, normalisiereStrassen, sucheKante, sucheKette, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
 
 const S = { lat: 52.0, lng: 9.0 }
 const Z = { lat: 48.0, lng: 11.0 }
@@ -337,5 +337,47 @@ describe("Routen-Cache ueber Suchen hinweg", () => {
     await cached({ lat: 51, lng: 7 }, { lat: 50, lng: 7 })
     await cached({ lat: 51, lng: 7 }, { lat: 50, lng: 7 })
     expect(aufrufe).toBe(2)
+  })
+})
+
+// "Auf keinen Fall ueber die A8" war bis zum 20.08.2026 nicht durchsetzbar: Sperrzonen
+// sind Punkte mit Radius, eine ganze Autobahn bekommt man damit nicht weg. Im Eval-Lauf
+// lieferte der Agent deshalb eine A8-Strecke aus, obwohl er in jeder Runde selbst
+// schrieb, dass das ausgeschlossen sei.
+describe("Verbotene Strassen", () => {
+  const S = { lat: 49.0, lng: 8.4 }
+  const Z = { lat: 48.8, lng: 9.2 }
+  const linie = (a, b, n = 10) =>
+    Array.from({ length: n }, (_, i) => ({ lat: a.lat + ((b.lat - a.lat) * i) / (n - 1), lng: a.lng + ((b.lng - a.lng) * i) / (n - 1) }))
+
+  it("liest 'keine A 8' als A8", () => {
+    expect(normalisiereStrassen(["keine A 8", "a8", "B 10", "Unsinn"])).toEqual(["A8", "B10"])
+  })
+
+  it("waehlt die laengere Strecke, wenn die kurze ueber die verbotene Strasse laeuft", async () => {
+    const route = async () => [
+      { geometry: linie(S, Z), distanzKm: 80, dauerMin: 60, strassen: new Set(["A8"]) },
+      { geometry: linie(S, Z, 12), distanzKm: 105, dauerMin: 95, strassen: new Set(["B10", "B14"]) },
+    ]
+    const kante = await sucheKante(S, Z, { blocker: [], route, verboteneStrassen: ["A8"] })
+    expect(kante.distanzKm).toBe(105)
+    expect(kante.verstoesse).toEqual([])
+  })
+
+  it("sagt es, wenn ALLE Varianten die verbotene Strasse nutzen — statt sie stillschweigend zu nehmen", async () => {
+    const route = async () => [{ geometry: linie(S, Z), distanzKm: 80, dauerMin: 60, strassen: new Set(["A8"]) }]
+    const kante = await sucheKante(S, Z, { blocker: [], route, verboteneStrassen: ["A8"] })
+    expect(kante.verstoesse).toEqual(["A8"])
+  })
+
+  it("fragt die Strassen nur ab, wenn es ein Verbot gibt — steps=true kostet Zeit", async () => {
+    const gefragt = []
+    const route = async (_a, _b, opt) => {
+      gefragt.push(opt.mitStrassen)
+      return [{ geometry: linie(S, Z), distanzKm: 80, dauerMin: 60 }]
+    }
+    await sucheKante(S, Z, { blocker: [], route })
+    await sucheKante(S, Z, { blocker: [], route, verboteneStrassen: ["A8"] })
+    expect(gefragt).toEqual([false, true])
   })
 })

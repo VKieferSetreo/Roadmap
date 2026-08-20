@@ -11,7 +11,7 @@ import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
 import { alleKnoten, resolveKnoten } from "../external/abKnoten.js"
-import { ladeBlocker, mitRoutenCache, sucheStrecke } from "../engine/streckensuche.js"
+import { ladeBlocker, mitRoutenCache, normalisiereStrassen, sucheStrecke } from "../engine/streckensuche.js"
 import { cleanWaypoints } from "../external/vemagsClean.js"
 import { ApiError, asyncHandler } from "../util.js"
 
@@ -482,6 +482,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       knoten: alleKnoten(),
       route: mitRoutenCache((a, b, opt) => osrm.routeAlternativen(a, b, opt)),
       korridorKm: Math.min(Math.max(Number(req.body?.korridorKm) || 60, 10), 200),
+      // Harte Vorgabe des Nutzers ("auf keinen Fall ueber die A8"). Hoechstens fuenf —
+      // wer mehr ausschliesst, meint keine Vorgabe mehr, sondern eine andere Strecke.
+      verboteneStrassen: normalisiereStrassen(req.body?.verboteneStrassen).slice(0, 5),
       maxKanten: Math.min(Math.max(Number(req.body?.maxKanten) || 40, 3), 120),
       maxMs: Math.min(Math.max(Number(req.body?.maxMs) || 90_000, 5_000), 240_000),
       breite: Math.min(Math.max(Number(req.body?.breite) || 4, 1), 12),
@@ -496,6 +499,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
             points: ergebnis.beste.geometrie,
             distanzKm: Math.round(ergebnis.beste.distanzKm * 10) / 10,
             ueber: ergebnis.beste.ueber,
+            // Leer heisst: die Vorgabe ist eingehalten — nachgewiesen an den Strassen,
+            // die das Routing tatsaechlich meldet, nicht behauptet.
+            verletzteVorgaben: ergebnis.beste.verstoesse ?? [],
             offeneBlocker: ergebnis.beste.blocker.map((b) => ({
               titel: b.titel, kategorie: b.kategorie, strassenRef: b.strassenRef, lat: b.lat, lng: b.lng,
               km: b.km ?? null, gueltigVon: b.gueltigVon ?? null, gueltigBis: b.gueltigBis ?? null, grund: b.grund ?? null,

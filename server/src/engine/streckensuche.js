@@ -39,6 +39,26 @@ import { rowToObstacle } from "../map.js"
  * was ungelöst übrig bleibt, kostet.
  */
 export const STRAFE_KM = 250
+/**
+ * Was ein Verstoss gegen eine Nutzervorgabe kostet.
+ *
+ * Deutlich hoeher als die Blocker-Strafe: Ein Blocker ist ein Problem, das man loesen
+ * kann; "auf keinen Fall ueber die A8" ist eine Bedingung. Am 20.08.2026 lieferte der
+ * Agent im Eval eine Strecke ueber die A8 aus, obwohl er in jeder Runde selbst
+ * schrieb, dass das ausgeschlossen sei — es fehlte schlicht das Mittel, eine ganze
+ * Strasse zu meiden.
+ */
+export const VERBOT_STRAFE_KM = 5000
+
+/** "keine A8", "a8", "A 8" → "A8". Alles, was keine Strassennummer ist, faellt raus. */
+export function normalisiereStrassen(liste = []) {
+  const raus = []
+  for (const roh of Array.isArray(liste) ? liste : []) {
+    const m = String(roh ?? "").toUpperCase().match(/\b(A|B|L|K|ST|S)\s*0*(\d{1,4})\b/)
+    if (m) raus.push(`${m[1] === "S" ? "ST" : m[1]}${m[2]}`)
+  }
+  return [...new Set(raus)]
+}
 /** Ab diesem Abstand zur Fahrlinie gilt ein Hindernis als NICHT auf der Strecke. */
 export const TREFFER_M = 150
 
@@ -98,15 +118,25 @@ export function knotenImKorridor(start, ziel, knoten, { korridorKm = 60, max = 1
  * Blocker werden mitgegeben, damit die übergeordnete Suche entscheiden kann, ob sie
  * über einen anderen Knoten geht.
  */
-export async function sucheKante(von, nach, { blocker, route, alternativen = 3, protokoll = [] } = {}) {
-  const varianten = await route(von, nach, { anzahl: alternativen })
+export async function sucheKante(von, nach, { blocker, route, alternativen = 3, protokoll = [], verboteneStrassen = [] } = {}) {
+  const verboten = normalisiereStrassen(verboteneStrassen)
+  const varianten = await route(von, nach, { anzahl: alternativen, mitStrassen: verboten.length > 0 })
   if (!varianten?.length) {
     protokoll.push({ art: "kante", von: von.name ?? null, nach: nach.name ?? null, ergebnis: "keine Route" })
     return null
   }
   const bewertet = varianten.map((v) => {
     const treffer = blockerAufKante(v.geometry, blocker)
-    return { ...v, blocker: treffer, kosten: kosten(v.distanzKm, treffer.length) }
+    // Eine Vorgabe des Nutzers ("auf keinen Fall ueber die A8") ist kein Abwaegen:
+    // ein Verstoss wiegt schwerer als jeder Blocker, sonst kauft sich die Suche die
+    // verbotene Strasse mit ein paar gesparten Kilometern zurueck.
+    const verstoesse = verboten.filter((r) => v.strassen?.has?.(r))
+    return {
+      ...v,
+      blocker: treffer,
+      verstoesse,
+      kosten: kosten(v.distanzKm, treffer.length) + verstoesse.length * VERBOT_STRAFE_KM,
+    }
   })
   bewertet.sort((a, b) => a.kosten - b.kosten)
   const beste = bewertet[0]
@@ -251,6 +281,7 @@ export async function sucheStrecke(
     knoten = [],
     route,
     korridorKm = 60,
+    verboteneStrassen = [],
     maxKanten = 40,
     maxMs = 90_000,
     breite = 4,
@@ -269,7 +300,7 @@ export async function sucheStrecke(
     if (cache.has(key)) return cache.get(key)
     if (!budgetOffen()) return null
     kanten++
-    const res = await sucheKante(von, nach, { blocker, route, protokoll })
+    const res = await sucheKante(von, nach, { blocker, route, protokoll, verboteneStrassen })
     cache.set(key, res)
     return res
   }
@@ -287,6 +318,7 @@ export async function sucheStrecke(
     geometrie: direkt.geometry,
     distanzKm: direkt.distanzKm,
     blocker: direkt.blocker,
+    verstoesse: direkt.verstoesse ?? [],
     kosten: direkt.kosten,
     ueber: [],
   }
@@ -328,14 +360,16 @@ export async function sucheStrecke(
   /** Kandidatenstrecke bewerten und ggf. als neue Bestleistung übernehmen. */
   const pruefe = (teile, ueber) => {
     const gesamtBlocker = teile.flatMap((t) => t.blocker)
+    const verstoesse = [...new Set(teile.flatMap((t) => t.verstoesse ?? []))]
     const gesamtKm = teile.reduce((a, t) => a + t.distanzKm, 0)
-    const k = kosten(gesamtKm, gesamtBlocker.length)
+    const k = kosten(gesamtKm, gesamtBlocker.length) + verstoesse.length * VERBOT_STRAFE_KM
     const besser = k < beste.kosten
-    protokoll.push({ art: "verbindung", ueber, km: Math.round(gesamtKm), blocker: gesamtBlocker.length, besserAlsBisher: besser })
+    protokoll.push({ art: "verbindung", ueber, km: Math.round(gesamtKm), blocker: gesamtBlocker.length, verbote: verstoesse, besserAlsBisher: besser })
     if (!besser) return
     beste.geometrie = teile.flatMap((t) => t.geometry)
     beste.distanzKm = gesamtKm
     beste.blocker = gesamtBlocker
+    beste.verstoesse = verstoesse
     beste.kosten = k
     beste.ueber = ueber
   }
@@ -405,7 +439,11 @@ export async function sucheStrecke(
   const budgetErschoepft = !budgetOffen()
   protokoll.push({
     art: "ergebnis",
-    ergebnis: beste.blocker.length ? `beste Strecke hat noch ${beste.blocker.length} Blocker` : "blockerfreie Strecke gefunden",
+    ergebnis: beste.verstoesse?.length
+      ? `keine Strecke ohne ${beste.verstoesse.join(", ")} gefunden — die beste laeuft weiterhin darueber`
+      : beste.blocker.length
+        ? `beste Strecke hat noch ${beste.blocker.length} Blocker`
+        : "blockerfreie Strecke gefunden",
     ueber: beste.ueber,
     kanten,
     budgetErschoepft,
