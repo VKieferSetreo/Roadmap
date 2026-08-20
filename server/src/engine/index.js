@@ -618,6 +618,10 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         // keinen Beschreibungstext liefert.
         beschreibung: (obstacle.beschreibung && obstacle.beschreibung.trim()) || verdict.beschreibung,
         detail: verdict.detail,
+        // T-042: Auflagen-Lage mitfuehren. Ohne sie sieht der Aufrufer nur den
+        // Schweregrad und kann nicht entscheiden, ob die Stelle mit Auflagen fahrbar
+        // ist, ein Verfahren braucht oder ausgeschlossen ist.
+        auflagenLage: verdict.auflagenLage ?? null,
         // T-607: Marker an den Routen-Schnittpunkt (nächster Linien-Stützpunkt im Korridor), nicht an
         // den oft zig km entfernten Anker langer Linien-Hindernisse. Punkt-Hindernisse: = obstacle.
         lat: markerPt.lat,

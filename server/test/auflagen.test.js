@@ -78,3 +78,37 @@ describe("evaluate reicht die Lage durch", () => {
     expect(fund.auflagenLage.vorlauf).toBe(true)
   })
 })
+
+// Die Lage muss die ganze Kette ueberstehen: evaluate -> analyze -> API -> Agent.
+// Beim ersten Anlauf ging sie im Fund-Aufbau der Analyse verloren (undefined beim
+// Agenten), obwohl evaluate sie lieferte.
+describe("Durchreichung", () => {
+  it("analyze traegt die Lage in den Fund", async () => {
+    const { analyze } = await import("../src/engine/index.js")
+    const db = {
+      query: async (text) => {
+        if (text.includes("FROM obstacles")) {
+          return {
+            rows: [
+              {
+                id: "o1", kategorie: "bruecke", name: "Talbruecke Test", beschreibung: null,
+                lat: 50.5, lng: 9.5, strassen_ref: "A7", zustaendig: null, quelle: "0001",
+                attrs: { maxGewichtT: 100 }, gueltig_von: null, gueltig_bis: null, geom: null,
+              },
+            ],
+          }
+        }
+        return { rows: [] }
+      },
+    }
+    const punkte = Array.from({ length: 20 }, (_, i) => ({ lat: 50.4 + i * 0.01, lng: 9.5 }))
+    const out = await analyze({
+      db,
+      project: { id: null, routes: [{ id: "r1", name: "Test", points: punkte, source: "startziel" }], transport: TRANSPORT },
+      corridorM: 500,
+    })
+    const fund = out.findings.find((f) => f.titel?.includes("Talbruecke"))
+    expect(fund).toBeTruthy()
+    expect(fund.auflagenLage?.fahrbarkeit).toBe("einzelfallpruefung")
+  })
+})
