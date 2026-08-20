@@ -562,6 +562,85 @@ export async function sucheStrecke(
 }
 
 /**
+ * Fuehrungsvorgaben: die Suche ueber gesetzte Zwischenpunkte zwingen.
+ *
+ * Max (20.08.): "fahr so und so vorbei" — ein Via ist keine Umfahrung, sondern eine
+ * aktive Vorgabe. Die Einzelplanung kann das laengst (OSRM nimmt Zwischenpunkte
+ * nativ), die Korridorsuche suchte bisher stur start→ziel. Statt Fronten und Ketten
+ * um Zwangspunkte zu erweitern (jede Expansion muesste sie kennen), laeuft die
+ * Vorgabe als AUFEINANDERFOLGENDE Segmente derselben Suche: start→via1→…→ziel.
+ * Jedes Segment darf weiterhin alles, was die Suche kann — ausweichen, tauschen,
+ * reparieren — nur eben zwischen den vorgegebenen Punkten.
+ *
+ * Hoechstens drei Vias: wer mehr Punkte vorgibt, plant die Strecke selbst — dafuer
+ * gibt es die Einzelplanung. Der Rest wird abgeschnitten, nicht abgelehnt.
+ */
+export async function sucheStreckeMitVias(start, ziel, { vias = [], maxKanten = 40, maxMs = 90_000, jetzt = () => Date.now(), ...opts } = {}) {
+  const zwischen = (Array.isArray(vias) ? vias : [])
+    .filter((v) => Number.isFinite(v?.lat) && Number.isFinite(v?.lng))
+    .slice(0, 3)
+  // Ohne Vias keine Huelle: exakt der bisherige Pfad, kein Verhaltensbruch.
+  if (!zwischen.length) return sucheStrecke(start, ziel, { maxKanten, maxMs, jetzt, ...opts })
+
+  const stationen = [
+    { ...start, name: "Start" },
+    ...zwischen.map((v, i) => ({ ...v, name: v.name ?? `Via ${i + 1}` })),
+    { ...ziel, name: "Ziel" },
+  ]
+  const t0 = jetzt()
+  const protokoll = []
+  const teile = []
+  let kanten = 0
+  let budgetErschoepft = false
+
+  for (let i = 0; i < stationen.length - 1; i++) {
+    const von = stationen[i]
+    const nach = stationen[i + 1]
+    // Fairer Anteil am RESTbudget, nicht statisch geteilt: ein Segment, das frueh
+    // fertig ist (direkte Strecke frei, ein Routing-Aufruf), laesst sein ungenutztes
+    // Budget den schwereren Segmenten dahinter — genau dort wird es gebraucht.
+    const restSegmente = stationen.length - 1 - i
+    const segKanten = Math.max(1, Math.ceil((maxKanten - kanten) / restSegmente))
+    const segMs = Math.max(1_000, Math.ceil((maxMs - (jetzt() - t0)) / restSegmente))
+    protokoll.push({ art: "segment", von: von.name, nach: nach.name })
+    const res = await sucheStrecke(von, nach, { ...opts, maxKanten: segKanten, maxMs: segMs, jetzt })
+    kanten += res.kanten ?? 0
+    protokoll.push(...(res.protokoll ?? []))
+    // Ein Segment im Budget-Aus heisst: DIESER Teil des Korridors wurde nicht
+    // erschoepfend durchsucht — das Gesamtergebnis muss das sagen, auch wenn
+    // spaetere Segmente sauber durchlaufen.
+    if (res.budgetErschoepft) budgetErschoepft = true
+    if (!res.gefunden || !res.beste) {
+      // Ehrlich bleiben: ein Segment ohne Route macht die ganze Vorgabe unerfuellbar.
+      // Kein Teilergebnis ausliefern, das den Via stillschweigend auslaesst.
+      return {
+        gefunden: false,
+        grund: `Segment ${von.name} → ${nach.name}: ${res.grund ?? "keine Route"}`,
+        protokoll,
+        kanten,
+        budgetErschoepft,
+      }
+    }
+    teile.push({ nach, beste: res.beste })
+  }
+
+  const gesamtKm = teile.reduce((a, t) => a + t.beste.distanzKm, 0)
+  const gesamtBlocker = teile.flatMap((t) => t.beste.blocker)
+  const verstoesse = [...new Set(teile.flatMap((t) => t.beste.verstoesse ?? []))]
+  const beste = {
+    geometrie: teile.flatMap((t) => t.beste.geometrie),
+    distanzKm: gesamtKm,
+    blocker: gesamtBlocker,
+    verstoesse,
+    kosten: kosten(gesamtKm, gesamtBlocker.length) + verstoesse.length * VERBOT_STRAFE_KM,
+    // Die Vias erscheinen im "ueber"-Pfad wie Knoten: sie SIND der vorgegebene Weg,
+    // und der Nachweis "wie kam die Strecke zustande" muss sie nennen.
+    ueber: teile.flatMap((t, i) => (i < teile.length - 1 ? [...t.beste.ueber, t.nach.name] : t.beste.ueber)),
+  }
+  return { gefunden: true, beste, protokoll, kanten, budgetErschoepft }
+}
+
+/**
  * Blocker-Karte: alle Hindernisse im Korridor, die für DIESEN Transport in DIESEM
  * Zeitraum kritisch sind — in einem einzigen Datenbankzugriff.
  *

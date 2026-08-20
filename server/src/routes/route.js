@@ -11,7 +11,7 @@ import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
 import { alleKnoten, resolveKnoten } from "../external/abKnoten.js"
-import { ladeBlocker, mitRoutenCache, normalisiereStrassen, sucheStrecke } from "../engine/streckensuche.js"
+import { ladeBlocker, mitRoutenCache, normalisiereStrassen, sucheStreckeMitVias } from "../engine/streckensuche.js"
 import { cleanWaypoints } from "../external/vemagsClean.js"
 import { ApiError, asyncHandler } from "../util.js"
 
@@ -455,9 +455,25 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       bis: typeof req.body?.zeitraum?.bis === "string" ? req.body.zeitraum.bis.slice(0, 10) : null,
     }
 
-    // Start/Ziel aufloesen wie bei /startziel — dieselbe Geocoder-Kette, damit eine
+    // Fuehrungsvorgaben (Max 20.08.): "fahr so und so vorbei" — aktive Streckenpins,
+    // keine Umfahrungen. Hoechstens drei, der Rest wird abgeschnitten (mehr ist keine
+    // Vorgabe mehr, sondern eine selbst geplante Strecke — dafuer gibt es /startziel).
+    // "lat,lng"-Strings ODER {lat,lng}-Objekte; Objekte werden zu Strings, damit ALLE
+    // Vias durch DIESELBE Aufloesungskette laufen wie Start und Ziel — ein Via darf
+    // nicht anders verortet werden als die Endpunkte.
+    const viasRoh = Array.isArray(req.body?.vias) ? req.body.vias.slice(0, 3) : []
+    const vias = viasRoh
+      .map((v) => {
+        if (typeof v === "string" && v.trim()) return v.trim()
+        const lat = zahl(v?.lat)
+        const lng = zahl(v?.lng)
+        return Number.isFinite(lat) && Number.isFinite(lng) ? `${lat},${lng}` : null
+      })
+      .filter(Boolean)
+
+    // Start/Ziel/Vias aufloesen wie bei /startziel — dieselbe Geocoder-Kette, damit eine
     // Suche nicht anders verortet als eine Planung.
-    const basis = await resolveRoute(db, { mode: "startziel", start, ziel, vias: [] }, { nominatim, osrm })
+    const basis = await resolveRoute(db, { mode: "startziel", start, ziel, vias }, { nominatim, osrm })
     // EHRLICHKEITS-GATE, dasselbe wie in /startziel: Faellt der Geocoder auf die
     // Staedteliste zurueck oder OSRM aus, liegen Start/Ziel irgendwo — und die Suche
     // wuerde einen fremden Korridor durchkaemmen und ihn als Ergebnis ausgeben.
@@ -475,9 +491,24 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     if (!pins) throw new ApiError(422, "Start oder Ziel konnte nicht aufgeloest werden")
     const von = pins[0]
     const nach = pins[pins.length - 1]
+    // Aufgeloeste Vias in Reihenfolge — sie werden unten in die Antwort geechot, damit
+    // der Aufrufer sieht, WOHIN seine Vorgabe verortet wurde, statt es glauben zu muessen.
+    const viaPins = pins.slice(1, -1)
 
-    const blocker = await ladeBlocker(db, { start: von, ziel: nach, transport, zeitraum, tenantId: req.ctx?.tenantId ?? null })
-    const ergebnis = await sucheStrecke(von, nach, {
+    // Die Blocker-Karte muss den GANZEN Zug abdecken: ein Via kann den Korridor aus der
+    // Start-Ziel-Box herausziehen, und ein Blocker ausserhalb der Karte waere fuer die
+    // Suche unsichtbar — ein "frei", das keines ist.
+    const bboxLat = pins.map((p) => p.lat)
+    const bboxLng = pins.map((p) => p.lng)
+    const blocker = await ladeBlocker(db, {
+      start: { lat: Math.min(...bboxLat), lng: Math.min(...bboxLng) },
+      ziel: { lat: Math.max(...bboxLat), lng: Math.max(...bboxLng) },
+      transport,
+      zeitraum,
+      tenantId: req.ctx?.tenantId ?? null,
+    })
+    const ergebnis = await sucheStreckeMitVias(von, nach, {
+      vias: viaPins,
       blocker,
       knoten: alleKnoten(),
       route: mitRoutenCache((a, b, opt) => osrm.routeAlternativen(a, b, opt)),
@@ -494,6 +525,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       gefunden: ergebnis.gefunden === true,
       grund: ergebnis.grund ?? null,
       blockerImKorridor: blocker.length,
+      // Echo der verorteten Fuehrungsvorgaben (Reihenfolge wie angefragt) — leer,
+      // wenn keine gesetzt waren.
+      viasAufgeloest: viaPins,
       strecke: ergebnis.beste
         ? {
             points: ergebnis.beste.geometrie,

@@ -5,7 +5,8 @@
 // korrekt zuordnen, tauschen duerfen und im Budget bleiben.
 
 import { describe, it, expect } from "vitest"
-import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, normalisiereStrassen, sucheKante, sucheKette, sucheStrecke, verbotAlsBlocker, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, normalisiereStrassen, sucheKante, sucheKette, sucheStrecke, sucheStreckeMitVias, verbotAlsBlocker, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { haversineKm } from "../src/engine/geometry.js"
 
 const S = { lat: 52.0, lng: 9.0 }
 const Z = { lat: 48.0, lng: 11.0 }
@@ -379,6 +380,90 @@ describe("Verbotene Strassen", () => {
     await sucheKante(S, Z, { blocker: [], route })
     await sucheKante(S, Z, { blocker: [], route, verboteneStrassen: ["A8"] })
     expect(gefragt).toEqual([false, true])
+  })
+})
+
+// Fuehrungsvorgaben (Max 20.08.): "fahr so und so vorbei" — ein Via ist eine aktive
+// Vorgabe, keine Umfahrung. Die Korridorsuche laeuft dann als Kette aufeinander-
+// folgender Segmente; jedes Segment behaelt die volle Suche, nur eben zwischen den
+// vorgegebenen Punkten.
+describe("Fuehrungsvorgaben (Vias)", () => {
+  const S = { lat: 52.0, lng: 9.0 }
+  const V = { lat: 50.0, lng: 10.5 } // deutlich seitlich der S→Z-Achse (lng 9.0)
+  const Z = { lat: 48.0, lng: 9.0 }
+
+  it("zwingt die Strecke ueber den Via-Punkt", async () => {
+    const route = async (von, nach) => [{ geometry: linie(von, nach, 12), distanzKm: 200, dauerMin: 150 }]
+    const res = await sucheStreckeMitVias(S, Z, { vias: [V], blocker: [], knoten: [], route })
+    expect(res.gefunden).toBe(true)
+    // Die direkte Achse laeuft auf lng 9.0 — nur die Vorgabe bringt die Geometrie
+    // in die Umgebung des Vias.
+    expect(res.beste.geometrie.some((p) => haversineKm(p, V) < 1)).toBe(true)
+    // Je Segment ein Protokoll-Eintrag: der Nachweis nennt die vorgegebene Kette.
+    const segmente = res.protokoll.filter((p) => p.art === "segment")
+    expect(segmente).toHaveLength(2)
+    expect(segmente.map((s) => `${s.von}>${s.nach}`)).toEqual(["Start>Via 1", "Via 1>Ziel"])
+    expect(res.beste.ueber).toContain("Via 1")
+  })
+
+  it("haelt das Kanten-Budget ueber alle Segmente hinweg ein", async () => {
+    let aufrufe = 0
+    const route = async (von, nach) => {
+      aufrufe++
+      return [{ geometry: linie(von, nach, 10), distanzKm: 300, dauerMin: 200 }]
+    }
+    // Je ein Blocker AUF der direkten Linie beider Segmente: kein Segment darf frueh
+    // fertig sein, beide muessen suchen — und trotzdem bleibt die Summe im Deckel.
+    const b1 = { ...linie(S, V, 10)[5], titel: "Sperre 1" }
+    const b2 = { ...linie(V, Z, 10)[5], titel: "Sperre 2" }
+    const viele = Array.from({ length: 20 }, (_, i) => ({ name: `AS ${i}`, lat: 51.5 - i * 0.1, lng: 9.3 }))
+    const res = await sucheStreckeMitVias(S, Z, {
+      vias: [V],
+      blocker: [b1, b2],
+      knoten: viele,
+      route,
+      maxKanten: 6,
+      breite: 10,
+    })
+    expect(aufrufe).toBeLessThanOrEqual(6)
+    // Eine Suche im Budget-Aus muss das sagen — auch ueber Segmente hinweg.
+    expect(res.budgetErschoepft).toBe(true)
+  })
+
+  it("laesst den bisherigen Pfad ohne Vias unveraendert", async () => {
+    let aufrufe = 0
+    const route = async () => {
+      aufrufe++
+      return [{ geometry: linie(S, Z), distanzKm: 400, dauerMin: 300 }]
+    }
+    const res = await sucheStreckeMitVias(S, Z, { vias: [], blocker: [], knoten: [], route })
+    expect(res.gefunden).toBe(true)
+    // Genau EIN Routing-Aufruf wie bei sucheStrecke direkt — kein Verhaltensbruch.
+    expect(aufrufe).toBe(1)
+    expect(res.protokoll.some((p) => p.art === "segment")).toBe(false)
+  })
+
+  it("sammelt die Blocker beider Segmente im Ergebnis", async () => {
+    const l1 = linie(S, V, 12)
+    const l2 = linie(V, Z, 12)
+    const b1 = { id: 1, ...l1[6], titel: "Sperre vor dem Via" }
+    const b2 = { id: 2, ...l2[6], titel: "Sperre nach dem Via" }
+    // Jede Anfrage liefert stur die gerade Linie — nichts ist umfahrbar, beide
+    // Blocker MUESSEN gesammelt im Ergebnis stehen bleiben.
+    const route = async (von, nach) => [{ geometry: linie(von, nach, 12), distanzKm: 200, dauerMin: 150 }]
+    const res = await sucheStreckeMitVias(S, Z, { vias: [V], blocker: [b1, b2], knoten: [], route })
+    expect(res.gefunden).toBe(true)
+    const titel = res.beste.blocker.map((b) => b.titel)
+    expect(titel).toContain("Sperre vor dem Via")
+    expect(titel).toContain("Sperre nach dem Via")
+  })
+
+  it("schneidet mehr als drei Vias ab", async () => {
+    const route = async (von, nach) => [{ geometry: linie(von, nach, 8), distanzKm: 100, dauerMin: 80 }]
+    const fuenf = Array.from({ length: 5 }, (_, i) => ({ lat: 51.5 - i * 0.7, lng: 9.4 }))
+    const res = await sucheStreckeMitVias(S, Z, { vias: fuenf, blocker: [], knoten: [], route })
+    // Drei Vias = vier Segmente — mehr ist keine Vorgabe mehr, sondern eine Planung.
+    expect(res.protokoll.filter((p) => p.art === "segment")).toHaveLength(4)
   })
 })
 
