@@ -74,14 +74,28 @@ export function bewerteAuflagen({ kategorie, attrs = {}, transport = {} }) {
   }
 
   // ── Breite: die klassische Auflagen-Situation (Begleitung, Gegenfahrbahn, Sperrung).
+  //    Zwei Felder, zwei Bedeutungen — und der Unterschied entscheidet:
+  //      maxBreiteM   dauerhafte bauliche Breite. Zu schmal heisst: Gegenfahrbahn
+  //                   mitbenutzen, begleiten, notfalls kurz sperren = Auflage.
+  //      restbreiteM  was die Verkehrsfuehrung EINER BAUSTELLE uebrig laesst. Genau
+  //                   diese Gegenfahrbahn ist dort verbaut. Passt der Transport nicht
+  //                   durch, muss die Fuehrung geaendert oder die Baustelle beraeumt
+  //                   werden — das ist eine Abstimmung mit Vorlauf, keine Auflage.
   const maxB = zahl(attrs.maxBreiteM)
-  if (maxB != null && breite != null) {
-    const marge = runde2(maxB - breite)
-    if (marge < 0) {
+  const restB = zahl(attrs.restbreiteM)
+  if (breite != null && restB != null && restB < breite) {
+    lage = haerter(lage, "einzelfallpruefung")
+    auflagen.push("Abstimmung mit Baulasttraeger und Baustellenbetreiber", "Anpassung der Verkehrsfuehrung oder Durchfahrt ausserhalb der Bauzeit")
+    gruende.push(`Restbreite der Baustelle ${restB} m unter Transportbreite ${breite} m`)
+  }
+  const engsteB = [maxB, restB].filter((v) => v != null).length ? Math.min(...[maxB, restB].filter((v) => v != null)) : null
+  if (engsteB != null && breite != null) {
+    const marge = runde2(engsteB - breite)
+    if (marge < 0 && maxB != null && maxB < breite) {
       lage = haerter(lage, "mit-auflagen")
       auflagen.push("Begleitfahrzeug BF3", "Mitbenutzung der Gegenfahrbahn", "ggf. kurzzeitige Sperrung durch die Polizei")
-      gruende.push(`Restbreite ${maxB} m unter Transportbreite ${breite} m`)
-    } else if (marge < 0.5) {
+      gruende.push(`zulaessige Breite ${maxB} m unter Transportbreite ${breite} m`)
+    } else if (marge >= 0 && marge < 0.5) {
       lage = haerter(lage, "mit-auflagen")
       auflagen.push("Begleitfahrzeug BF3")
       gruende.push(`nur ${marge} m Seitenabstand`)

@@ -112,3 +112,33 @@ describe("Durchreichung", () => {
     expect(fund.auflagenLage?.fahrbarkeit).toBe("einzelfallpruefung")
   })
 })
+
+// Echte Attribut-Formen aus der Produktion. Beim ersten Anlauf pruefte die Einordnung
+// nur maxBreiteM — die Daten fuehren aber restbreiteM. Eine Baustelle mit 3,25 m
+// Restbreite galt damit fuer einen 4,0-m-Transport als "mit Auflagen fahrbar".
+describe("echte Baustellen-Attribute", () => {
+  const vierMeter = { hoehe: 4.3, breite: 4.0, gesamtgewicht: 220 }
+
+  it("Restbreite unter Transportbreite ist kein Auflagenfall", () => {
+    const l = bewerteAuflagen({ kategorie: "baustelle", attrs: { spurenFrei: 1, restbreiteM: 3.25, sperrlaengeM: 700 }, transport: vierMeter })
+    expect(l.fahrbarkeit).toBe("einzelfallpruefung")
+    expect(l.vorlauf).toBe(true)
+    expect(l.begruendung).toMatch(/Restbreite/)
+  })
+
+  it("breite Baustelle bleibt ein Auflagenfall", () => {
+    const l = bewerteAuflagen({ kategorie: "baustelle", attrs: { spurenFrei: 5, restbreiteM: 11.25 }, transport: vierMeter })
+    expect(l.fahrbarkeit).toBe("mit-auflagen")
+  })
+
+  it("knappe Restbreite verlangt Begleitung", () => {
+    const l = bewerteAuflagen({ kategorie: "baustelle", attrs: { restbreiteM: 4.3 }, transport: vierMeter })
+    expect(l.fahrbarkeit).toBe("mit-auflagen")
+    expect(l.auflagen).toContain("Begleitfahrzeug BF3")
+  })
+
+  it("Bauwerk mit grundsaetzlicher GST-Sperre braucht ein Verfahren", () => {
+    const l = bewerteAuflagen({ kategorie: "bruecke", attrs: { grundsaetzlicheGstSperre: true }, transport: vierMeter })
+    expect(l.fahrbarkeit).toBe("einzelfallpruefung")
+  })
+})
