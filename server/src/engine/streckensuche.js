@@ -126,6 +126,103 @@ export async function sucheKante(von, nach, { blocker, route, alternativen = 3, 
 const kantenSchluessel = (a, b) => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}>${b.lat.toFixed(4)},${b.lng.toFixed(4)}`
 
 /**
+ * Routen-Cache ÜBER Suchen hinweg.
+ *
+ * Der Cache innerhalb einer Suche hilft nur dort. In der Praxis laufen aber mehrere
+ * Suchen kurz hintereinander auf demselben Korridor — der Agent sucht, fragt nach,
+ * sucht erneut. Die Geometrie zwischen zwei Autobahnknoten ändert sich dabei nicht;
+ * bewertet werden die Blocker ohnehin jedes Mal neu, denn die hängen an Transport und
+ * Zeitraum. Zwischengespeichert wird deshalb NUR die Routen-Antwort.
+ *
+ * Klein und kurzlebig gehalten: 500 Kanten, 30 Minuten. Es geht um denselben Vorgang,
+ * nicht um ein Straßennetz im Speicher.
+ */
+const ROUTEN_CACHE = new Map()
+const ROUTEN_TTL_MS = 30 * 60_000
+const ROUTEN_MAX = 500
+
+export function mitRoutenCache(route, { jetzt = () => Date.now() } = {}) {
+  return async (a, b, opt = {}) => {
+    const key = `${kantenSchluessel(a, b)}|${opt.anzahl ?? 3}`
+    const treffer = ROUTEN_CACHE.get(key)
+    if (treffer && jetzt() - treffer.zeit < ROUTEN_TTL_MS) return treffer.wert
+    const wert = await route(a, b, opt)
+    // Nichts Leeres merken: ein Ausfall des Routers wäre sonst eine halbe Stunde lang
+    // die Wahrheit.
+    if (wert?.length) {
+      if (ROUTEN_CACHE.size >= ROUTEN_MAX) ROUTEN_CACHE.delete(ROUTEN_CACHE.keys().next().value)
+      ROUTEN_CACHE.set(key, { zeit: jetzt(), wert })
+    }
+    return wert
+  }
+}
+
+/**
+ * Kette über BELIEBIG VIELE Knoten — A* über den Korridor.
+ *
+ * Zwei Zwischenknoten reichen für eine Parallelachse. Sie reichen NICHT, wenn der
+ * Umweg selbst wieder Stellen hat: rauf auf die Parallele, dort eine Baustelle, also
+ * noch einmal seitlich raus und erst danach zurück. Auf den schweren Fällen (Emden →
+ * Ulm, 45 m / 4,8 m / 140 t) ist genau das der Normalfall.
+ *
+ * Als Graph gedacht: Knoten sind Start, Ziel und die Korridorknoten, eine Kante ist
+ * ein Routing-Aufruf. A* mit der Luftlinie zum Ziel als Schätzung — die ist nie
+ * länger als die Fahrstrecke, die gefundene Kette also die günstigste im aufgespannten
+ * Netz. Als Kosten dient dieselbe Rechnung wie überall: Kilometer plus Strafe je
+ * offenem Blocker.
+ *
+ * Die Bremse ist das Kanten-Budget des Aufrufers: jede Expansion kostet einen
+ * Routing-Aufruf, und `verzweigung` begrenzt, wie viele Nachbarn ein Knoten überhaupt
+ * bekommt. Ohne beides würde der Korridor bei 4408 Knoten jede Zeitschranke sprengen.
+ */
+export async function sucheKette(start, ziel, { knoten = [], kante, maxTiefe = 4, verzweigung = 3, protokoll = [] } = {}) {
+  const nachbarn = (n) => {
+    // Nur vorwärts: ein Knoten HINTER dem aktuellen bringt keinen Fortschritt und
+    // macht aus der Suche ein Herumirren im Korridor.
+    const weiter = knoten.filter((k) => k.name !== n.name && (k.fortschritt ?? 0) > (n.fortschritt ?? 0) + 0.02)
+    weiter.sort((a, b) => haversineKm(n, a) - haversineKm(n, b))
+    return weiter.slice(0, verzweigung)
+  }
+
+  const offen = [{ knoten: start, ueber: [], teile: [], km: 0, blocker: [], schaetzung: haversineKm(start, ziel) }]
+  const besucht = new Map() // Knotenname -> guenstigste bekannte Kosten dorthin
+  let bestesZiel = null
+
+  while (offen.length) {
+    offen.sort((a, b) => kosten(a.km, a.blocker.length) + a.schaetzung - (kosten(b.km, b.blocker.length) + b.schaetzung))
+    const jetzt = offen.shift()
+    // Sobald das Ziel als günstigster Eintrag herauskommt, kann nichts Offenes mehr
+    // besser werden — das ist die Abbruchbedingung von A*.
+    if (bestesZiel && kosten(jetzt.km, jetzt.blocker.length) + jetzt.schaetzung >= bestesZiel.kosten) break
+    // An der Tiefengrenze wird nicht abgebrochen, sondern nur noch der Weg zum Ziel
+    // versucht — sonst endet die laengste Kette einen Schritt vor dem Ziel im Nichts.
+    const weiter = jetzt.ueber.length >= maxTiefe ? [ziel] : [...nachbarn(jetzt.knoten), ziel]
+
+    for (const n of weiter) {
+      const k = await kante(jetzt.knoten, n)
+      if (!k) continue // kein Budget mehr oder keine Route — beides beendet diesen Zweig
+      const km = jetzt.km + k.distanzKm
+      const blocker = [...jetzt.blocker, ...k.blocker]
+      const teile = [...jetzt.teile, k]
+      if (n === ziel) {
+        const gesamt = kosten(km, blocker.length)
+        if (!bestesZiel || gesamt < bestesZiel.kosten) {
+          bestesZiel = { kosten: gesamt, km, blocker, teile, ueber: jetzt.ueber }
+          protokoll.push({ art: "kette", ueber: jetzt.ueber, km: Math.round(km), blocker: blocker.length })
+        }
+        continue
+      }
+      const bisher = besucht.get(n.name)
+      const hier = kosten(km, blocker.length)
+      if (bisher != null && bisher <= hier) continue
+      besucht.set(n.name, hier)
+      offen.push({ knoten: n, ueber: [...jetzt.ueber, n.name], teile, km, blocker, schaetzung: haversineKm(n, ziel) })
+    }
+  }
+  return bestesZiel
+}
+
+/**
  * Bidirektionale Korridorsuche über mehrere Knoten.
  *
  * Von Start UND Ziel wächst je eine Front über Autobahnknoten aufeinander zu. Jeder
@@ -265,6 +362,20 @@ export async function sucheStrecke(
     const mitte = await kante(a.knoten, b.knoten)
     if (!mitte) continue
     pruefe([a.kante, mitte, b.kante], [nameA, nameB])
+  }
+
+  // 4c. Reicht das nicht, ueber KETTEN suchen: drei, vier Zwischenknoten. Die Kanten
+  //     der Fronten liegen im Cache, die Kette zahlt also nur fuer das, was neu ist.
+  if (beste.blocker.length && budgetOffen()) {
+    const kette = await sucheKette(S, Z, { knoten: auswahl, kante, protokoll })
+    if (kette && kette.kosten < beste.kosten) {
+      beste.geometrie = kette.teile.flatMap((t) => t.geometry)
+      beste.distanzKm = kette.km
+      beste.blocker = kette.blocker
+      beste.kosten = kette.kosten
+      beste.ueber = kette.ueber
+      protokoll.push({ art: "verbindung", ueber: kette.ueber, km: Math.round(kette.km), blocker: kette.blocker.length, besserAlsBisher: true })
+    }
   }
 
   // 5. Was jetzt noch auf der besten Strecke liegt, wird Stelle fuer Stelle lokal

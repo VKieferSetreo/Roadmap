@@ -11,7 +11,7 @@ import { extractMapsStops } from "../external/gmaps.js"
 import { extractPdfText } from "../external/pdfText.js"
 import { parseVemagsText } from "../external/vemags.js"
 import { alleKnoten, resolveKnoten } from "../external/abKnoten.js"
-import { ladeBlocker, sucheStrecke } from "../engine/streckensuche.js"
+import { ladeBlocker, mitRoutenCache, sucheStrecke } from "../engine/streckensuche.js"
 import { cleanWaypoints } from "../external/vemagsClean.js"
 import { ApiError, asyncHandler } from "../util.js"
 
@@ -480,7 +480,7 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     const ergebnis = await sucheStrecke(von, nach, {
       blocker,
       knoten: alleKnoten(),
-      route: (a, b, opt) => osrm.routeAlternativen(a, b, opt),
+      route: mitRoutenCache((a, b, opt) => osrm.routeAlternativen(a, b, opt)),
       korridorKm: Math.min(Math.max(Number(req.body?.korridorKm) || 60, 10), 200),
       maxKanten: Math.min(Math.max(Number(req.body?.maxKanten) || 40, 3), 120),
       maxMs: Math.min(Math.max(Number(req.body?.maxMs) || 90_000, 5_000), 240_000),

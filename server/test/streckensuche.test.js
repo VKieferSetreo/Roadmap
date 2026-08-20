@@ -5,7 +5,7 @@
 // korrekt zuordnen, tauschen duerfen und im Budget bleiben.
 
 import { describe, it, expect } from "vitest"
-import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, sucheKante, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
+import { blockerAufKante, knotenImKorridor, kosten, repariereBlocker, mitRoutenCache, sucheKante, sucheKette, sucheStrecke, STRAFE_KM } from "../src/engine/streckensuche.js"
 
 const S = { lat: 52.0, lng: 9.0 }
 const Z = { lat: 48.0, lng: 11.0 }
@@ -260,5 +260,82 @@ describe("Blocker systematisch abarbeiten", () => {
     )
     expect(res.repariert).toBe(0)
     expect(protokoll.some((p) => /nicht umfahrbar/.test(p.ergebnis ?? ""))).toBe(true)
+  })
+})
+
+// Zwei Zwischenknoten reichen fuer eine Parallelachse. Sie reichen nicht, wenn der
+// Umweg selbst wieder eine Stelle hat — dann braucht es drei oder vier.
+describe("Ketten ueber mehr als zwei Knoten", () => {
+  const S = { lat: 53.0, lng: 8.0 }
+  const Z = { lat: 48.0, lng: 10.0 }
+  const linie = (a, b, n = 20) =>
+    Array.from({ length: n }, (_, i) => ({
+      lat: a.lat + ((b.lat - a.lat) * i) / (n - 1),
+      lng: a.lng + ((b.lng - a.lng) * i) / (n - 1),
+    }))
+
+  // Vier Knoten in Reihe. Jede Kante ueber mehr als einen Schritt fuehrt durch die
+  // Sperre — nur die Kette A→B→C→D kommt sauber durch.
+  it("findet eine Kette ueber drei Zwischenknoten", async () => {
+    const knoten = [
+      { name: "A", lat: 52.0, lng: 8.4, fortschritt: 0.2 },
+      { name: "B", lat: 51.0, lng: 8.8, fortschritt: 0.4 },
+      { name: "C", lat: 50.0, lng: 9.2, fortschritt: 0.6 },
+      { name: "D", lat: 49.0, lng: 9.6, fortschritt: 0.8 },
+    ]
+    const reihe = ["Start", "A", "B", "C", "D", "Ziel"]
+    const kante = async (von, nach) => {
+      const i = reihe.indexOf(von.name ?? "Start")
+      const j = reihe.indexOf(nach.name ?? "Ziel")
+      // Ein Schritt in der Reihe ist frei, jeder Sprung darueber traegt einen Blocker.
+      const sprung = j - i > 1
+      return {
+        geometry: linie(von, nach, 6),
+        distanzKm: 120 * (j - i),
+        blocker: sprung ? [{ titel: "Sperrung", lat: 50, lng: 9 }] : [],
+        kosten: 120 * (j - i) + (sprung ? STRAFE_KM : 0),
+      }
+    }
+    const kette = await sucheKette({ ...S, name: "Start" }, { ...Z, name: "Ziel" }, { knoten, kante })
+    expect(kette.blocker).toHaveLength(0)
+    expect(kette.ueber).toEqual(["A", "B", "C", "D"])
+  })
+
+  // Ohne Budget-Grenze wuerde die Suche im Korridor herumirren: eine Kante, die kein
+  // Ergebnis liefert (Budget aus), beendet ihren Zweig.
+  it("bricht ab, wenn keine Kante mehr kommt", async () => {
+    const knoten = [{ name: "A", lat: 51.0, lng: 8.5, fortschritt: 0.3 }]
+    const kette = await sucheKette({ ...S, name: "Start" }, { ...Z, name: "Ziel" }, { knoten, kante: async () => null })
+    expect(kette).toBe(null)
+  })
+})
+
+// Der Agent sucht, fragt nach, sucht erneut — auf demselben Korridor. Ohne Cache
+// ueber Suchen hinweg zahlt jede Runde denselben Routing-Aufruf noch einmal.
+describe("Routen-Cache ueber Suchen hinweg", () => {
+  it("fragt dieselbe Kante nur einmal, auch in einer zweiten Suche", async () => {
+    let aufrufe = 0
+    const roh = async () => {
+      aufrufe++
+      return [{ geometry: [{ lat: 50, lng: 9 }, { lat: 49, lng: 9 }], distanzKm: 100, dauerMin: 80 }]
+    }
+    const a = { lat: 50.1234, lng: 9.1234 }
+    const b = { lat: 49.4321, lng: 9.4321 }
+    const cached = mitRoutenCache(roh)
+    await cached(a, b, { anzahl: 3 })
+    await cached(a, b, { anzahl: 3 })
+    expect(aufrufe).toBe(1)
+  })
+
+  it("merkt sich keine leere Antwort — sonst waere ein Router-Ausfall 30 Minuten lang die Wahrheit", async () => {
+    let aufrufe = 0
+    const roh = async () => {
+      aufrufe++
+      return []
+    }
+    const cached = mitRoutenCache(roh)
+    await cached({ lat: 51, lng: 7 }, { lat: 50, lng: 7 })
+    await cached({ lat: 51, lng: 7 }, { lat: 50, lng: 7 })
+    expect(aufrufe).toBe(2)
   })
 })
