@@ -419,6 +419,9 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
         lng: f.lng ?? null,
         gueltigVon: f.gueltigVon ?? null,
         gueltigBis: f.gueltigBis ?? null,
+        // T-042: reicht der Schweregrad nicht — der Aufrufer muss wissen, ob die
+        // Stelle mit Auflagen fahrbar ist, ein Verfahren braucht oder ausgeschlossen ist.
+        auflagenLage: f.auflagenLage ?? null,
       })),
     })
   }))

@@ -4,6 +4,8 @@
 // Stil-Vorgabe (Max 2026-06-14): in den von UNS generierten Texten KEINE Binde-/
 // Gedankenstriche — vollständige Sätze mit Punkt statt „ — ".
 
+import { bewerteAuflagen } from "./auflagen.js"
+
 export const KATEGORIEN = [
   "bruecke", "engstelle", "baustelle", "sperrung", "gewicht", "bahnuebergang",
   "kreisverkehr", "ampel", "steigung", "tunnel",
@@ -576,5 +578,9 @@ export function evaluate(obstacle, transport, zeitraum = {}) {
     ...result,
     detail: capDetailWerte(withInfoAttrs(result.detail, attrs)), // T-459 Info-Attrs + T-611 Werte großschreiben
     titel: obstacle.name || DEFAULT_TITEL[obstacle.kategorie],
+    // T-042: Aus dem Schweregrad allein laesst sich nicht entscheiden. Die Auflagen-Lage
+    // sagt, ob die Stelle mit Auflagen fahrbar ist, ein Verfahren braucht (und damit
+    // ueber den TERMIN entscheidet) oder ausgeschlossen ist.
+    auflagenLage: bewerteAuflagen({ kategorie: obstacle.kategorie, attrs, transport }),
   }
 }
