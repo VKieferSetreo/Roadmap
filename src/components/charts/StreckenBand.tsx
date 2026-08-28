@@ -87,10 +87,13 @@ export function StreckenBand({
                 stroke="#A1A1AA"
                 strokeWidth={1}
               />
+              {/* Die Randbeschriftungen zentriert zu setzen schiebt ihre halbe Breite aus dem
+                  viewBox heraus — rechts stand deshalb "319 kn" statt "319 km". Also aussen
+                  an der Kante ausrichten, dazwischen wie gehabt zentriert. */}
               <text
                 x={x}
                 y={H - 8}
-                textAnchor="middle"
+                textAnchor={t === 0 ? "start" : t === 1 ? "end" : "middle"}
                 fontSize={11}
                 fill="#A1A1AA"
                 fontFamily="Inter, system-ui, sans-serif"
