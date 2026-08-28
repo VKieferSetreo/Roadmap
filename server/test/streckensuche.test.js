@@ -205,6 +205,38 @@ describe("Mehrstufige Suche", () => {
     })
     expect(new Set(gefragt).size).toBe(gefragt.length)
   })
+
+  // T-046: Die Knotenliste kennt nur Autobahnknoten. Zu einem Windpark in der Uckermark
+  // liegt im ganzen Korridor keiner — vorher hatte die Suche dort nichts, worueber sie
+  // haette ausweichen koennen, und lieferte die gesperrte Strecke zurueck.
+  it("weicht auch ohne Autobahnknoten im Korridor aus", async () => {
+    const direkt = linie2(S2, Z2)
+    const sperre = { ...direkt[15], titel: "Bruecke gesperrt" }
+    const route = async (von, nach) => {
+      const direktStrecke = von.name === "Start" && nach.name === "Ziel"
+      const geo = direktStrecke ? direkt : linie2({ lat: von.lat, lng: von.lng - 0.6 }, { lat: nach.lat, lng: nach.lng - 0.6 }, 12)
+      return [{ geometry: geo, distanzKm: direktStrecke ? 400 : 210, dauerMin: 120 }]
+    }
+    const res = await sucheStrecke(S2, Z2, { blocker: [sperre], knoten: [], route, breite: 3, korridorKm: 300 })
+    expect(res.protokoll.some((p) => p.art === "ausweich" && p.knoten === 0)).toBe(true)
+    expect(res.beste.blocker).toHaveLength(0)
+  })
+
+  // Gegenprobe: solange es echte Knoten gibt, bleibt es bei ihnen — die kuenstlichen
+  // Punkte sind der Notnagel, nicht der Normalfall.
+  it("setzt keine kuenstlichen Punkte, wenn Knoten da sind", async () => {
+    const direkt = linie2(S2, Z2)
+    const sperre = { ...direkt[15], titel: "Vollsperrung" }
+    // Schon EIN Knoten im Korridor ist eine Ausweichachse — dann bleibt es dabei.
+    const knotenListe = [{ name: "AS Eins", lat: 51.0, lng: 8.2 }]
+    const route = async (von, nach) => {
+      const direktStrecke = von.name === "Start" && nach.name === "Ziel"
+      const geo = direktStrecke ? direkt : linie2({ lat: von.lat, lng: von.lng - 0.6 }, { lat: nach.lat, lng: nach.lng - 0.6 }, 12)
+      return [{ geometry: geo, distanzKm: direktStrecke ? 400 : 160, dauerMin: 120 }]
+    }
+    const res = await sucheStrecke(S2, Z2, { blocker: [sperre], knoten: knotenListe, route, breite: 3, korridorKm: 300 })
+    expect(res.protokoll.some((p) => p.art === "ausweich")).toBe(false)
+  })
 })
 
 describe("Blocker systematisch abarbeiten", () => {
@@ -448,9 +480,16 @@ describe("Fuehrungsvorgaben (Vias)", () => {
     const l2 = linie(V, Z, 12)
     const b1 = { id: 1, ...l1[6], titel: "Sperre vor dem Via" }
     const b2 = { id: 2, ...l2[6], titel: "Sperre nach dem Via" }
-    // Jede Anfrage liefert stur die gerade Linie — nichts ist umfahrbar, beide
-    // Blocker MUESSEN gesammelt im Ergebnis stehen bleiben.
-    const route = async (von, nach) => [{ geometry: linie(von, nach, 12), distanzKm: 200, dauerMin: 150 }]
+    // Nichts ist umfahrbar: der Fake legt JEDE Anfrage ueber die Sperre des Abschnitts,
+    // in dem sie liegt. (Eine stur gerade Linie zwischen zwei beliebigen Punkten reicht
+    // dafuer nicht mehr — seit T-046 setzt die Suche ohne Knoten seitliche Ausweichziele,
+    // und zwischen denen ginge die gerade Linie an der Sperre vorbei.) Beide Blocker
+    // MUESSEN gesammelt im Ergebnis stehen bleiben.
+    const route = async (von, nach) => {
+      const mitte = { lat: (von.lat + nach.lat) / 2, lng: (von.lng + nach.lng) / 2 }
+      const b = haversineKm(mitte, b1) <= haversineKm(mitte, b2) ? b1 : b2
+      return [{ geometry: [...linie(von, b, 6), ...linie(b, nach, 6)], distanzKm: 200, dauerMin: 150 }]
+    }
     const res = await sucheStreckeMitVias(S, Z, { vias: [V], blocker: [b1, b2], knoten: [], route })
     expect(res.gefunden).toBe(true)
     const titel = res.beste.blocker.map((b) => b.titel)

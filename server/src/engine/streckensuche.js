@@ -436,6 +436,19 @@ export async function sucheStrecke(
   // Bei einem Strassenverbot kommen kuenstliche Zwischenziele dazu: sie sind das
   // einzige Mittel, den Router auf eine Achse ohne Autobahnknoten zu zwingen.
   if (verbotsPunkte.length) auswahl.unshift(...ausweichPunkte(verbotsPunkte, S, Z))
+  // T-046: dasselbe Mittel, anderer Anlass. Die Knotenliste kennt nur Autobahnknoten;
+  // im laendlichen Raum — und dort liegen die Windparks — findet der Korridor oft
+  // keinen einzigen. Dann hatte die Suche nichts, worueber sie ausweichen konnte, und
+  // gab die direkte Strecke samt Blockern zurueck. Also setzen wir die Zwischenziele
+  // hier neben die Blocker selbst. Ob der Umweg taugt, entscheidet danach wie immer
+  // die Kostenrechnung — geraten wird nichts.
+  else if (!kandidaten.length && direkt.blocker.length) {
+    const ersatz = ausweichPunkte(direkt.blocker, S, Z)
+    if (ersatz.length) {
+      auswahl.unshift(...ersatz)
+      protokoll.push({ art: "ausweich", grund: "zu wenige Knoten im Korridor", knoten: kandidaten.length, punkte: ersatz.length })
+    }
+  }
   protokoll.push({
     art: "korridor",
     knotenGefunden: kandidaten.length,
