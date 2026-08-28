@@ -173,7 +173,12 @@ describe("public share API (/_share, UNGATED)", () => {
 
   it("Rate-Limit: ab dem 11. unlock-Versuch/min → 429", async () => {
     const { app } = makeApp()
-    const p = await analysedProject(app)
+    // T-041: Hier stand `analysedProject` — das faehrt eine ECHTE Engine-Analyse ueber die
+    // ganze Strecke. Der Rate-Limiter interessiert sich nicht fuer Funde, und Freigeben
+    // setzt keine Analyse voraus (POST /:id/share prueft nur das Projekt). Unter Last
+    // brauchte dieser eine Test dadurch die vollen 20 s Timeout und kippte den Gesamtlauf
+    // etwa jedes sechste Mal — isoliert war er immer gruen.
+    const p = await createRoutedProject(app, { name: "Share-Limit", points: POINTS })
     await request(app).post(`/api/projects/${p.id}/share`).send({ password: "geheim" })
 
     for (let i = 0; i < 10; i++) {
