@@ -85,6 +85,27 @@ function tileUrl(x: number, y: number, z: number): string {
   return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`
 }
 
+/** Rueckweg, falls Esri im Netz des Nutzers nicht durchkommt — spiegelbildlich zu Kacheln.tsx. */
+function tileUrlAusweich(x: number, y: number, z: number): string {
+  return `https://${"abc"[(x + y) % 3]}.tile.openstreetmap.de/${z}/${x}/${y}.png`
+}
+
+/** Eine Kachel: faellt sie aus, wird EINMAL der andere Anbieter versucht, danach Ruhe. */
+function Kachel({ x, y, z, style }: { x: number; y: number; z: number; style: React.CSSProperties }) {
+  const [ausweich, setAusweich] = useState(false)
+  return (
+    <img
+      src={ausweich ? tileUrlAusweich(x, y, z) : tileUrl(x, y, z)}
+      onError={() => setAusweich(true)}
+      alt=""
+      loading="lazy"
+      draggable={false}
+      className="absolute select-none"
+      style={style}
+    />
+  )
+}
+
 export function MapPreview({
   routes,
   findings = [],
@@ -150,13 +171,11 @@ export function MapPreview({
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative shrink-0" style={{ width, height, transform: `scale(${scale})` }}>
           {frame.tiles.map((t) => (
-            <img
+            <Kachel
               key={`${t.x}-${t.y}`}
-              src={tileUrl(t.x, t.y, frame.z)}
-              alt=""
-              loading="lazy"
-              draggable={false}
-              className="absolute select-none"
+              x={t.x}
+              y={t.y}
+              z={frame.z}
               style={{ left: t.left, top: t.top, width: TILE, height: TILE }}
             />
           ))}
@@ -222,7 +241,7 @@ export function MapPreview({
         </div>
       </div>
       <span className="absolute bottom-0.5 right-1 text-[8px] leading-none text-neutral-400/80">
-        © Esri, OSM
+        © Esri / OSM
       </span>
     </div>
   )
