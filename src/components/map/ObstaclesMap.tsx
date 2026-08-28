@@ -10,7 +10,7 @@
 
 import { useEffect, type ReactNode } from "react"
 import L from "leaflet"
-import { MapContainer, TileLayer, useMap, ZoomControl } from "react-leaflet"
+import { MapContainer, useMap, ZoomControl } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import "leaflet.markercluster"
 import "leaflet.markercluster/dist/MarkerCluster.css"
@@ -27,7 +27,7 @@ import { MapResize } from "./MapResize"
 import { MapFullscreen, MapLayers } from "./MapControls"
 import { ArchivStreckenToggle } from "./ArchivStreckenLayer"
 import { safeHref } from "@/lib/safeHref"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { Kacheln } from "./Kacheln"
 import { geomMidpoint, geomToLines, hasImplausibleJump } from "@/lib/geom"
 import type { Obstacle } from "@/types/domain"
 import type { OrtTreffer } from "@/components/db/OrtsSuche"
@@ -294,15 +294,11 @@ export function ObstaclesMap({
    *  Geschwister der MapContainer liegen sie zudem außerhalb der Leaflet-Eventfläche. */
   children?: ReactNode
 }) {
-  const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-200">
       <MapContainer center={GERMANY} zoom={6} scrollWheelZoom zoomControl={false} className="h-full w-full">
-        <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
-        {tiles.overlays?.map((u) => (
-          <TileLayer key={u} url={u} zIndex={2} />
-        ))}
+        <Kacheln />
         <DeSpotlight />
         <ZoomControl position="bottomright" />
         <MapResize />

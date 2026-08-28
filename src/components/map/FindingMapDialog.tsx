@@ -2,7 +2,7 @@
 // mit Leaflet-Karte. Gleiches Layout wie das Auswertungs-Popup (gemeinsame FindingCard),
 // die Karte sitzt als Medium zwischen Kopf und Detailtext.
 
-import { MapContainer, Marker, TileLayer } from "react-leaflet"
+import { MapContainer, Marker } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { X } from "lucide-react"
 import { Dialog } from "@/components/ui/Dialog"
@@ -10,7 +10,7 @@ import { katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingCard } from "./FindingCard"
 import { findingPinIcon } from "./pins"
 import { MapResize } from "./MapResize"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { Kacheln } from "./Kacheln"
 import { MapLayers } from "./MapControls"
 import type { DbFinding } from "@/api/roadmap"
 
@@ -20,7 +20,6 @@ interface FindingMapDialogProps {
 }
 
 export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
-  const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
   if (!finding) return null
   const sev = SEVERITY_META[finding.severity]
 
@@ -60,10 +59,7 @@ export function FindingMapDialog({ finding, onClose }: FindingMapDialogProps) {
                 scrollWheelZoom
                 className="h-full w-full"
               >
-                <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
-                {tiles.overlays?.map((u) => (
-                  <TileLayer key={u} url={u} zIndex={2} />
-                ))}
+                <Kacheln />
                 <MapResize />
                 <MapLayers />
                 <Marker

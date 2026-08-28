@@ -4,13 +4,13 @@
 
 import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
+import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Loader2, MapPin, Search, X } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { api } from "@/api/roadmap"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { Kacheln } from "@/components/map/Kacheln"
 import { MapLayers } from "@/components/map/MapControls"
 import { cn } from "@/lib/cn"
 
@@ -73,7 +73,6 @@ export function MapPointPicker({
   onConfirm: (r: Pos & { label: string }) => void
   onClose: () => void
 }) {
-  const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
   const [pos, setPos] = useState<Pos | null>(null)
   const [label, setLabel] = useState("")
   const [flyTo, setFlyTo] = useState<Pos | null>(null)
@@ -238,10 +237,7 @@ export function MapPointPicker({
 
       <div className="relative min-h-0 flex-1">
         <MapContainer center={[(pos ?? DE_CENTER).lat, (pos ?? DE_CENTER).lng]} zoom={pos ? 14 : 6} className="h-full w-full" zoomControl>
-          <TileLayer key={tiles.url} url={tiles.url} attribution={tiles.attribution} />
-          {tiles.overlays?.map((u) => (
-            <TileLayer key={u} url={u} zIndex={2} />
-          ))}
+          <Kacheln />
           <MapLayers />
           <Resizer />
           <FlyTo pos={flyTo} zoom={14} />

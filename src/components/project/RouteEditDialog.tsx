@@ -7,14 +7,14 @@
 // Der Export (Datei/Google-Link) ist aus route.points abgeleitet → bleibt nach Save konsistent.
 import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
-import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap, useMapEvents } from "react-leaflet"
+import { Circle, MapContainer, Marker, Polyline, useMap, useMapEvents } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { AlertTriangle, Ban, Check, Flag, Loader2, Route, RotateCcw, Save, X } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/cn"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { Kacheln } from "@/components/map/Kacheln"
 import { MapLayers } from "@/components/map/MapControls"
 import { useProjectStore } from "@/store/projects"
 import { routeLengthKm } from "@/lib/parseRouteFile"
@@ -147,7 +147,6 @@ interface RouteEditDialogProps {
 export function RouteEditDialog({ open, onClose, projectId, route, verificationMode = false }: RouteEditDialogProps) {
   const updateRoute = useProjectStore((s) => s.updateRoute)
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
-  const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
 
   const [name, setName] = useState("")
   const [cps, setCps] = useState<RoutePoint[]>([])
@@ -582,10 +581,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
         {/* Karte */}
         <div className="relative flex-1">
           <MapContainer ref={mapRef} className="h-full w-full" center={[51.2, 10.4]} zoom={6} zoomControl>
-            <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
-            {tiles.overlays?.map((u) => (
-              <TileLayer key={u} url={u} zIndex={2} />
-            ))}
+            <Kacheln />
             <MapLayers />
             <FitOnce points={initialPoints.current} />
             {geomLatLng.length >= 2 ? (

@@ -1,4 +1,4 @@
-// Statische Karten-Vorschau für Projekt-Karten: echte OSM/CARTO-Tiles als Hintergrund
+// Statische Karten-Vorschau für Projekt-Karten: echte Karten-Kacheln als Hintergrund
 // (geografische Einordnung) + Strecken-Polylines + Fund-Dots als SVG-Overlay.
 // Bewusst KEIN Leaflet — im Projekt-Grid wären das viele schwere Map-Instanzen;
 // hier reichen 2–8 <img>-Tiles + Web-Mercator-Projektion.
@@ -78,9 +78,11 @@ function buildFrame(points: RoutePoint[], w: number, h: number): Frame | null {
   return { z, ox, oy, tiles, toXY: (p) => [worldX(p.lng, z) - ox, worldY(p.lat, z) - oy] }
 }
 
+// T-648: CARTO legt seit Neuestem „API KEY REQUIRED" ueber jede freie Kachel — das stand
+// quer ueber allen Projekt-Vorschauen. Esri liefert dieselbe Rolle schluessellos, ist in
+// der CSP schon frei und kommt auch durch Firmen-Webfilter (Kachel-Schema z/y/x).
 function tileUrl(x: number, y: number, z: number): string {
-  const sub = "abcd"[(x + y) % 4]
-  return `https://${sub}.basemaps.cartocdn.com/light_all/${z}/${x}/${y}@2x.png`
+  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`
 }
 
 export function MapPreview({
@@ -220,7 +222,7 @@ export function MapPreview({
         </div>
       </div>
       <span className="absolute bottom-0.5 right-1 text-[8px] leading-none text-neutral-400/80">
-        © OSM · CARTO
+        © Esri, OSM
       </span>
     </div>
   )

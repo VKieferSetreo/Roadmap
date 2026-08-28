@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip, useMap } from "react-leaflet"
+import { MapContainer, Marker, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
 import { routeFreigegeben, type Finding, type ProjectRoute, type RoutePoint } from "@/types/domain"
@@ -12,7 +12,8 @@ import { FindingMarker } from "./FindingMarker"
 import { LayerSwitcher } from "./MapControls"
 import { MapResize } from "./MapResize"
 import { directionArrowIcon, endPinIcon, startPinIcon } from "./pins"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
+import { useSettingsStore } from "@/store/settings"
+import { Kacheln } from "./Kacheln"
 import { groupFindings } from "@/lib/findingGroups"
 import { geomToLines, hasImplausibleJump, sliceRouteByKm } from "@/lib/geom"
 import { cn } from "@/lib/cn"
@@ -99,9 +100,7 @@ export function RouteMap({
   className,
   children,
 }: RouteMapProps) {
-  const tileStyle = useSettingsStore((s) => s.tileStyle)
   const autoFit = useSettingsStore((s) => s.autoFit)
-  const tiles = TILE_LAYERS[tileStyle]
   // SVG-Renderer mit großzügigem Padding: Leaflets Default (0.1) zeichnet Vektoren nur knapp
   // über den Viewport hinaus → Strecken-Polylines + farbige Fund-Segmente werden beim Zoomen/
   // Pannen am Rand abgeschnitten und „verschwinden", bis moveend neu zeichnet. padding:1 hält
@@ -236,10 +235,7 @@ export function RouteMap({
         className="h-full w-full"
         style={{ height: "100%", width: "100%" }}
       >
-        <TileLayer key={tiles.url} attribution={tiles.attribution} url={tiles.url} />
-        {tiles.overlays?.map((u) => (
-          <TileLayer key={u} url={u} zIndex={2} />
-        ))}
+        <Kacheln />
         <MapResize />
 
         {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21). */}

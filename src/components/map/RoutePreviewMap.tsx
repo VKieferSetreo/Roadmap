@@ -3,11 +3,11 @@
 // fängt jede Extraktions-Macke ab, bevor die Strecke angelegt wird. Bewusst minimal (kein Findings-Layer).
 import { useEffect, useState } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet"
+import { MapContainer, Marker, Polyline, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+import { Kacheln } from "@/components/map/Kacheln"
 import { MapResize } from "@/components/map/MapResize"
 import { cn } from "@/lib/cn"
-import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 
 type Pt = { lat: number; lng: number }
 
@@ -46,7 +46,6 @@ function FitBounds({ points }: { points: Pt[] }) {
 }
 
 export function RoutePreviewMap({ points, className }: { points: Pt[]; className?: string }) {
-  const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
   // T-648: Kacheln können ausbleiben (Netz/Filter/Rate-Limit beim Nutzer). Dann steht hier sonst nur
   // ein stummer grauer Kasten und der Nutzer denkt, die Karte sei kaputt — also sagen wir es.
   const [kachelFehler, setKachelFehler] = useState(false)
@@ -63,18 +62,7 @@ export function RoutePreviewMap({ points, className }: { points: Pt[]; className
         attributionControl={false}
         scrollWheelZoom
       >
-        <TileLayer
-          key={tiles.url}
-          url={tiles.url}
-          attribution={tiles.attribution}
-          eventHandlers={{
-            tileerror: () => setKachelFehler(true),
-            tileload: () => setKachelFehler(false),
-          }}
-        />
-        {tiles.overlays?.map((u) => (
-          <TileLayer key={u} url={u} zIndex={2} />
-        ))}
+        <Kacheln onTotalausfall={() => setKachelFehler(true)} />
         {pos.length >= 2 ? (
           <>
             <Polyline positions={pos} pathOptions={{ color: "#2563eb", weight: 4, opacity: 0.85 }} />
