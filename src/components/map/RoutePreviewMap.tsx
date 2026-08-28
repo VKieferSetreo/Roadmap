@@ -24,11 +24,23 @@ const ZIEL_ICON = dot("#dc2626")
 function FitBounds({ points }: { points: Pt[] }) {
   const map = useMap()
   useEffect(() => {
-    if (points.length < 2) return
-    map.fitBounds(
-      L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number])),
-      { padding: [22, 22] },
-    )
+    const einpassen = () => {
+      if (points.length < 2) return
+      map.fitBounds(
+        L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number])),
+        { padding: [22, 22] },
+      )
+    }
+    einpassen()
+    // T-648: Leaflet merkt sich die Containergröße beim Erzeugen. Der Dialog hängt per Portal ein
+    // und blendet ein — misst Leaflet dabei daneben, lädt der Kachel-Layer für einen Ausschnitt,
+    // den es gar nicht gibt, und der Kasten bleibt grau. Also nachmessen und neu einpassen, wie
+    // es der Karten-Picker und die große Karte längst tun.
+    const id = setTimeout(() => {
+      map.invalidateSize()
+      einpassen()
+    }, 150)
+    return () => clearTimeout(id)
   }, [map, points])
   return null
 }
