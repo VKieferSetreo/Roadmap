@@ -1,10 +1,12 @@
 // T-611: schlanke, read-only Strecken-Vorschau (Polyline + Start/Ziel-Pins, auto-fit). Für die
 // Bestätigungs-Maske beim Anlegen (v.a. Google-Link) — der Nutzer SIEHT die aufgelöste Strecke und
 // fängt jede Extraktions-Macke ab, bevor die Strecke angelegt wird. Bewusst minimal (kein Findings-Layer).
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+import { MapResize } from "@/components/map/MapResize"
+import { cn } from "@/lib/cn"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
 
 type Pt = { lat: number; lng: number }
@@ -33,28 +35,51 @@ function FitBounds({ points }: { points: Pt[] }) {
 
 export function RoutePreviewMap({ points, className }: { points: Pt[]; className?: string }) {
   const tiles = TILE_LAYERS[useSettingsStore((s) => s.tileStyle)]
-  const pos = points.map((p) => [p.lat, p.lng] as [number, number])
+  // T-648: Kacheln können ausbleiben (Netz/Filter/Rate-Limit beim Nutzer). Dann steht hier sonst nur
+  // ein stummer grauer Kasten und der Nutzer denkt, die Karte sei kaputt — also sagen wir es.
+  const [kachelFehler, setKachelFehler] = useState(false)
+  // NaN-Koordinaten kippen fitBounds und die Polyline (T-546) — vor dem Zeichnen aussortieren.
+  const clean = points.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+  const pos = clean.map((p) => [p.lat, p.lng] as [number, number])
   return (
-    <MapContainer
-      center={[51.1, 10.4]}
-      zoom={6}
-      className={className}
-      zoomControl={false}
-      attributionControl={false}
-      scrollWheelZoom
-    >
-      <TileLayer key={tiles.url} url={tiles.url} attribution={tiles.attribution} />
-      {tiles.overlays?.map((u) => (
-        <TileLayer key={u} url={u} zIndex={2} />
-      ))}
-      {pos.length >= 2 ? (
-        <>
-          <Polyline positions={pos} pathOptions={{ color: "#2563eb", weight: 4, opacity: 0.85 }} />
-          <Marker position={pos[0]} icon={START_ICON} />
-          <Marker position={pos[pos.length - 1]} icon={ZIEL_ICON} />
-        </>
+    <div className={cn("relative", className)}>
+      <MapContainer
+        center={[51.1, 10.4]}
+        zoom={6}
+        className="h-full w-full"
+        zoomControl={false}
+        attributionControl={false}
+        scrollWheelZoom
+      >
+        <TileLayer
+          key={tiles.url}
+          url={tiles.url}
+          attribution={tiles.attribution}
+          eventHandlers={{
+            tileerror: () => setKachelFehler(true),
+            tileload: () => setKachelFehler(false),
+          }}
+        />
+        {tiles.overlays?.map((u) => (
+          <TileLayer key={u} url={u} zIndex={2} />
+        ))}
+        {pos.length >= 2 ? (
+          <>
+            <Polyline positions={pos} pathOptions={{ color: "#2563eb", weight: 4, opacity: 0.85 }} />
+            <Marker position={pos[0]} icon={START_ICON} />
+            <Marker position={pos[pos.length - 1]} icon={ZIEL_ICON} />
+          </>
+        ) : null}
+        <FitBounds points={clean} />
+        {/* Der Dialog blendet ein (opacity) — ohne invalidateSize rechnet Leaflet mit einer alten
+            Containergröße weiter und lädt zu wenig Kacheln nach. */}
+        <MapResize />
+      </MapContainer>
+      {kachelFehler ? (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[500] bg-white/85 px-2 py-1 text-center text-[11px] text-neutral-600">
+          Kartenhintergrund konnte nicht geladen werden — der Streckenverlauf stimmt trotzdem.
+        </div>
       ) : null}
-      <FitBounds points={points} />
-    </MapContainer>
+    </div>
   )
 }
