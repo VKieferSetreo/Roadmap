@@ -64,6 +64,17 @@ function routeBearings(wp, rng = 90) {
     .join(";")
 }
 
+// Mittelpunkt eines Step-Polygonzugs (mittlerer Stützpunkt) — für die Meide-Zone einer
+// Ortsdurchfahrt. Fallback: OSRM-maneuver.location [lng,lat]. Null, wenn nichts brauchbar.
+function mittelpunkt(punkte, fallbackLngLat) {
+  if (Array.isArray(punkte) && punkte.length) return punkte[Math.floor(punkte.length / 2)]
+  if (Array.isArray(fallbackLngLat) && fallbackLngLat.length === 2) {
+    const [lng, lat] = fallbackLngLat
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng }
+  }
+  return null
+}
+
 export function createOsrm({
   // T-338: KEINE stille Default-URL auf den öffentlichen OSRM-Demoserver (Routen-/Bewegungsdaten
   // dürfen nicht ungewollt zu einem Dritt-Dienst gehen, und der Demoserver ist nicht produktiv).
@@ -181,6 +192,48 @@ export function createOsrm({
       if (data?.code !== "Ok") return null
       const legs = data.routes?.[0]?.legs
       return { refs: refsAusLegs(legs), abschnitte: abschnitteAusLegs(legs) }
+    },
+
+    /**
+     * Die Route in geordnete Straßen-Abschnitte zerlegt — je OSRM-Step ein Eintrag mit
+     * Ref(s), Name, Länge, km-Bereich und Mittelpunkt. Basis für die Ortsdurchfahrt-
+     * Erkennung (Konzept „Ortschaften umfahren"): ein Abschnitt OHNE klassifizierten Ref
+     * ist ein Kandidat für eine innerörtliche Gemeindestraße. `osmKlasse` bleibt hier null
+     * (OSRM liefert die highway-Klasse nicht) — sie wird im Route-Handler per Nominatim-
+     * Reverse ergänzt. Null bei Fehler/Timeout (→ Aufrufer verzichtet auf die Erkennung).
+     * @returns {Promise<Array<{vonKm:number,bisKm:number,laengeKm:number,ref:string|null,
+     *   refs:string[],name:string|null,osmKlasse:string|null,mitte:{lat:number,lng:number}|null}>|null>}
+     */
+    async roadSegments(waypoints) {
+      const wp = (Array.isArray(waypoints) ? waypoints : []).filter((p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      if (wp.length < 2) return null
+      const coords = wp.map((p) => `${p.lng},${p.lat}`).join(";")
+      const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=false&steps=true&geometries=geojson&continue_straight=true`
+      const data = await fetchJson(url, { timeoutMs: Math.max(timeoutMs, 30000), fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
+      if (data?.code !== "Ok") return null
+      const segmente = []
+      let km = 0
+      for (const leg of data.routes?.[0]?.legs ?? []) {
+        for (const step of leg.steps ?? []) {
+          const laengeKm = (Number(step.distance) || 0) / 1000
+          const vonKm = km
+          const bisKm = km + laengeKm
+          km = bisKm
+          const refs = [...new Set(String(step.ref ?? "").split(/[;,/]/).map(normRoadRef).filter(Boolean))]
+          const punkte = Array.isArray(step.geometry?.coordinates) ? step.geometry.coordinates.map(([lng, lat]) => ({ lat, lng })) : []
+          segmente.push({
+            vonKm,
+            bisKm,
+            laengeKm,
+            ref: refs[0] ?? null,
+            refs,
+            name: (typeof step.name === "string" && step.name) ? step.name : null,
+            osmKlasse: null,
+            mitte: mittelpunkt(punkte, step.maneuver?.location),
+          })
+        }
+      }
+      return segmente.length ? segmente : null
     },
 
     /** Leichter Erreichbarkeits-Ping für /api/health (T-471). Kurzer Timeout, wirft nie. */

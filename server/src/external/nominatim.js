@@ -29,5 +29,29 @@ export function createNominatim({
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
       return { lat, lng, displayName: hit.display_name ?? ort }
     },
+
+    /**
+     * OSM-highway-Klasse am Punkt — z.B. "residential", "living_street", "unclassified",
+     * "tertiary", … oder null. Für die Ortsdurchfahrt-Erkennung (Konzept „Ortschaften
+     * umfahren"): klassifiziert Streckenabschnitte OHNE Straßen-Ref, damit der Agent eine
+     * innerörtliche Gemeindestraße von einer klassifizierten Durchgangsstraße unterscheiden
+     * kann. `zoom=17` trifft die einzelne Straße. Null bei Fehler/Timeout oder wenn das
+     * nächste Objekt keine Straße ist (dann behandelt der Aufrufer das Segment als unklar).
+     * @returns {Promise<string|null>}
+     */
+    async reverseRoadClass(lat, lng) {
+      if (!Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) return null
+      // format=jsonv2: Feld heißt "category" (statt "class" im v1-JSON) — beide abfangen.
+      const url = `${baseUrl.replace(/\/$/, "")}/reverse?format=jsonv2&zoom=17&lat=${lat}&lon=${lng}`
+      const data = await fetchJson(url, {
+        timeoutMs,
+        fetchImpl,
+        headers: { "User-Agent": "setreo-roadmap/1.0" },
+      }).catch(() => null)
+      if (!data || typeof data !== "object") return null
+      const kategorie = data.category ?? data.class
+      if (kategorie !== "highway") return null
+      return typeof data.type === "string" && data.type ? data.type : null
+    },
   }
 }

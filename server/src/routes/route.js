@@ -376,6 +376,29 @@ function zahl(v) {
   return NaN
 }
 
+// No-Ref-Segmente mit der OSM-highway-Klasse anreichern (Nominatim-Reverse am Mittelpunkt).
+// Gedeckelt (maxAufrufe) und dedupliziert (gerundeter Mittelpunkt), damit die Nominatim-Last
+// pro Route klein bleibt. Segmente MIT klassifiziertem Ref brauchen keine Klasse; sehr kurze
+// Verbindungsstücke (< minKm) werden übersprungen. Mutiert die Segmente in place.
+export async function ergaenzeOrtsklassen(segmente, nominatim, { maxAufrufe = 12, minKm = 0.03 } = {}) {
+  if (!Array.isArray(segmente) || typeof nominatim?.reverseRoadClass !== "function") return
+  const cache = new Map()
+  let aufrufe = 0
+  for (const s of segmente) {
+    if (s.ref || !s.mitte || s.laengeKm < minKm) continue
+    const key = `${s.mitte.lat.toFixed(4)},${s.mitte.lng.toFixed(4)}`
+    if (cache.has(key)) {
+      s.osmKlasse = cache.get(key)
+      continue
+    }
+    if (aufrufe >= maxAufrufe) continue
+    aufrufe++
+    const klasse = await nominatim.reverseRoadClass(s.mitte.lat, s.mitte.lng).catch(() => null)
+    cache.set(key, klasse)
+    s.osmKlasse = klasse
+  }
+}
+
 export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch, corridorM = 20 }) {
   const r = Router()
 
@@ -573,7 +596,18 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
     // (Analyse 09.08.2026). Der Wert wird bereits fuer den Ueberfuehrungsfilter
     // berechnet, war hier aber nie Teil der Antwort. Fehlschlag ist unkritisch.
     const wpFuerRefs = Array.isArray(out.waypoints) && out.waypoints.length >= 2 ? out.waypoints : out.geometry
-    const refs = osrm ? await osrm.roadRefs(wpFuerRefs).catch(() => null) : null
+    // Route in geordnete Straßen-Abschnitte zerlegen (Ortsdurchfahrt-Erkennung, Konzept
+    // „Ortschaften umfahren"). Abschnitte OHNE klassifizierten Ref werden per Nominatim-
+    // Reverse mit der OSM-highway-Klasse angereichert (residential/living_street/… → der
+    // Agent erkennt innerörtliche Gemeindestraßen). Fällt das aus, weiter wie bisher nur
+    // mit der flachen Ref-Liste (roadRefs). befahreneStrassen bleibt formgleich.
+    const segmente = osrm ? await osrm.roadSegments(wpFuerRefs).catch(() => null) : null
+    if (segmente && nominatim) await ergaenzeOrtsklassen(segmente, nominatim)
+    const refs = segmente
+      ? [...new Set(segmente.flatMap((s) => s.refs ?? []))].sort()
+      : osrm
+        ? await osrm.roadRefs(wpFuerRefs).catch(() => null).then((r) => (r ? [...r].sort() : null))
+        : null
 
     res.json({
       points: out.geometry,
@@ -582,7 +616,8 @@ export function routeRouter({ db, nominatim, osrm, fetchImpl = globalThis.fetch,
       dauerMin: out.dauerMin ?? null,
       provider: out.provider,
       qualitaet: routenQualitaet(out.geometry, out.distanzKm),
-      befahreneStrassen: refs ? [...refs].sort() : null,
+      befahreneStrassen: refs, // bereits sortiert (aus Segmenten oder roadRefs)
+      ...(segmente ? { segmente } : {}),
       ...(meideStatus ? { meideStatus } : {}),
     })
   }))
