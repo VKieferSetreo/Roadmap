@@ -60,10 +60,14 @@ for (const r of rows) {
   if (!SCHREIBEN) continue
   // Die Leerzeile desselben Felds tragen wir nach — sie ist es, die den Lauf blockiert. Gibt es
   // sie nicht (etwa weil das Feld unter einem Alias kam), legen wir eine an.
+  //
+  // NUR 'leer', NIE 'ok': eine bereits angenommene Angabe darf eine nachtraeglich gerettete nicht
+  // verdraengen. Sie ist durch dieselben Riegel gegangen, und wo beide etwas sagen, gilt die
+  // aeltere. Faengt das UPDATE nichts, verhindert der Eindeutigkeits-Index beim INSERT den Rest.
   const u = await db.query(
     `UPDATE anreicherung SET wert = $1, beleg = $2, stand = 'ok', erstellt_am = now()
       WHERE ziel_typ = 'obstacle' AND ziel_id = $3 AND feld = $4 AND modell = $5
-        AND stand IN ('ok', 'leer')
+        AND stand = 'leer'
       RETURNING id`,
     [p.wert, p.beleg, r.ziel_id, p.feld, r.modell],
   )
