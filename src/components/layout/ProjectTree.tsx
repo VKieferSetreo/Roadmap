@@ -211,7 +211,7 @@ function FolderRow({
     >
       <button
         onClick={() => ctx.hinein(f.id)}
-        className="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pl-2.5 pr-1 text-left text-sm text-neutral-700"
+        className="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pl-2.5 text-left text-sm text-neutral-700"
         title={`„${f.name}" öffnen`}
       >
         <Folder className="h-4 w-4 shrink-0 text-primary-500" />
@@ -229,11 +229,7 @@ function FolderRow({
             className="min-w-0 flex-1 rounded border border-primary-300 px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary-400"
           />
         ) : (
-          <>
-            <span className="min-w-0 flex-1 truncate font-medium">{f.name}</span>
-            {anzahl > 0 ? <span className="shrink-0 text-xs text-neutral-400">{anzahl}</span> : null}
-            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-300" />
-          </>
+          <span className="min-w-0 flex-1 truncate font-medium">{f.name}</span>
         )}
       </button>
       {!isRenaming ? (
@@ -276,6 +272,20 @@ function FolderRow({
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
+      ) : null}
+      {!isRenaming ? (
+        // Zahl und Pfeil stehen NACH den Aktionssymbolen (Max 31.08.2026). Eigener Knopf, damit
+        // die Flaeche rechts weiter in den Ordner fuehrt, statt tot zu sein.
+        <button
+          type="button"
+          onClick={() => ctx.hinein(f.id)}
+          tabIndex={-1}
+          aria-hidden
+          className="flex shrink-0 items-center gap-1 py-2 pl-1 pr-1.5"
+        >
+          {anzahl > 0 ? <span className="text-xs text-neutral-400">{anzahl}</span> : null}
+          <ChevronRight className="h-4 w-4 text-neutral-300" />
+        </button>
       ) : null}
     </div>
   )
