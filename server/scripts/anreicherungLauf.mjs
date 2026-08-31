@@ -18,13 +18,16 @@ import { laufeUeberBestand } from "../src/anreicherung/lauf.js"
 import { createModell, modellKonfig, erreichbar } from "../src/anreicherung/modell.js"
 
 const BLOCK = Number(process.env.BLOCK || 200)
+// So viele Punkte gleichzeitig, wie Ollama Stroeme hat. Mehr bringt nichts, die Anfragen wuerden
+// dort ohnehin in eine Warteschlange laufen.
+const GLEICHZEITIG = Number(process.env.GLEICHZEITIG || 8)
 const konfig = modellKonfig(process.env.ANREICHERUNG_WEG || "lokal")
 const db = createDefaultDb()
 
 const zeit = () => new Date().toISOString().slice(11, 19)
 const sage = (t) => console.log(`[${zeit()}] ${t}`)
 
-sage(`Modell ${konfig.name} über ${konfig.basis}`)
+sage(`Modell ${konfig.name} über ${konfig.basis}, ${GLEICHZEITIG} Punkte gleichzeitig`)
 if (!(await erreichbar(konfig))) {
   sage("Modell nicht erreichbar — Abbruch, bevor irgendetwas geschrieben wird.")
   process.exit(1)
@@ -54,6 +57,7 @@ while (laeuft) {
     rufeModell,
     rollen,
     grenze: BLOCK,
+    gleichzeitig: GLEICHZEITIG,
     beiFortschritt: (z) => {
       if (z.gesehen % 25 === 0) {
         const proMin = Math.round((60000 * (summe.gesehen + z.gesehen)) / (Date.now() - start))

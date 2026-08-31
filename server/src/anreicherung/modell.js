@@ -60,6 +60,11 @@ export function createModell(konfig = modellKonfig(), { fetchImpl = globalThis.f
         body: JSON.stringify({
           model: modellName,
           temperature: 0,
+          // num_ctx klein halten: unsere Prompts liegen bei 1 bis 2k Token, der Standard von
+          // 32k reserviert je parallelem Strom KV-Cache fuer das Zehnfache. Gemessen belegte ein
+          // 7B mit 32k und vier Stroemen 12,3 von 24,6 GB — mit 4k passen deutlich mehr Stroeme
+          // auf dieselbe Karte, und genau die lasten sie aus.
+          options: { num_ctx: Number(process.env.ANREICHERUNG_CTX || 4096) },
           messages: [{ role: "user", content: prompt }],
         }),
       })

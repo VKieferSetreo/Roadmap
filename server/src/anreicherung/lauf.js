@@ -120,7 +120,7 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
  * Der Lauf. `grenze` begrenzt einen Durchgang, damit man ihn erst klein ausprobieren kann.
  * `beiFortschritt` wird nach jedem Punkt gerufen — ein Lauf über Tage muss von außen sichtbar sein.
  */
-export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, kategorien = null, beiFortschritt = null }) {
+export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, gleichzeitig = 1, kategorien = null, beiFortschritt = null }) {
   const wo = kategorien?.length ? `AND o.kategorie = ANY($2)` : ""
   const werte = kategorien?.length ? [modell, kategorien] : [modell]
   // Kandidaten: alles, was noch KEINE Zeile dieses Modells hat. Der Verbund über die
@@ -139,14 +139,29 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
   )
 
   const zahl = { gesehen: 0, geschrieben: 0, verworfen: 0, uebersprungen: 0 }
-  for (const o of rows) {
-    const r = await reichereAn(db, o, { modell, rufeModell, rollen })
-    zahl.gesehen++
-    if (r.uebersprungen) zahl.uebersprungen++
-    zahl.geschrieben += r.geschrieben ?? 0
-    zahl.verworfen += r.verworfen ?? 0
-    if (beiFortschritt) beiFortschritt(zahl, o, r)
-  }
+
+  // MEHRERE PUNKTE GLEICHZEITIG. Bis hierher lief die Schleife streng nacheinander, damit lagen
+  // die parallelen Stroeme von Ollama brach: ein einzelner Punkt beschaeftigt die Karte nur
+  // waehrend seiner drei Aufrufe, dazwischen wartet sie. Mit `gleichzeitig` laufen so viele
+  // Punkte nebeneinander, wie das Modell Stroeme hat.
+  //
+  // Kein Bibliotheks-Pool, sondern feste Arbeiter, die sich aus derselben Liste bedienen: so ist
+  // immer die volle Zahl in Arbeit, auch wenn ein Punkt viel laenger braucht als der naechste.
+  let naechster = 0
+  const arbeiter = Array.from({ length: Math.max(1, gleichzeitig) }, async () => {
+    while (true) {
+      const i = naechster++
+      if (i >= rows.length) return
+      const o = rows[i]
+      const r = await reichereAn(db, o, { modell, rufeModell, rollen }).catch(() => ({ geschrieben: 0, verworfen: 0 }))
+      zahl.gesehen++
+      if (r.uebersprungen) zahl.uebersprungen++
+      zahl.geschrieben += r.geschrieben ?? 0
+      zahl.verworfen += r.verworfen ?? 0
+      if (beiFortschritt) beiFortschritt(zahl, o, r)
+    }
+  })
+  await Promise.all(arbeiter)
   return { ...zahl, rest: rows.length === Number(grenze) }
 }
 
