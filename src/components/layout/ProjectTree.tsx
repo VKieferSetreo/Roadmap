@@ -36,6 +36,7 @@ import {
   FolderPlus,
   Home,
   Pencil,
+  Route as RouteIcon,
   Trash2,
 } from "lucide-react"
 import { useProjectStore } from "@/store/projects"
@@ -101,7 +102,10 @@ function ProjectRow({
         {project.erstelltVon ? (
           <CreatorAvatar email={project.erstelltVon} size={18} />
         ) : (
-          <Folder className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
+          // KEIN Ordnersymbol als Rueckfall: seit die Ansicht flach ist, stehen Ordner und Projekte
+          // in derselben Liste untereinander, und mit gleichem Symbol waeren sie nicht mehr zu
+          // unterscheiden. Im Baum war das egal, dort waren Ordner an der Einrueckung erkennbar.
+          <RouteIcon className={cn("h-4 w-4 shrink-0", active ? "text-primary-600" : "text-neutral-400")} />
         )}
         <span className="truncate">{project.name}</span>
       </button>
