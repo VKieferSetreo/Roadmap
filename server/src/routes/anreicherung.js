@@ -24,7 +24,9 @@ export function anreicherungRouter({ db }) {
         (SELECT count(*)::int FROM obstacles WHERE aktiv = true) AS gesamt,
         (SELECT count(DISTINCT ziel_id)::int FROM anreicherung) AS gesehen,
         (SELECT count(*)::int FROM anreicherung WHERE stand = 'ok') AS gefunden,
-        (SELECT count(*)::int FROM anreicherung WHERE stand = 'leer') AS leer,
+        -- ohne die Fertig-Marke: sie ist ein Vermerk, keine Leermeldung, und wuerde die Zahl je
+        -- durchgelaufenem Punkt um eins aufblaehen
+        (SELECT count(*)::int FROM anreicherung WHERE stand = 'leer' AND feld <> '_fertig') AS leer,
         (SELECT count(*)::int FROM anreicherung WHERE stand = 'verworfen') AS verworfen,
         (SELECT max(erstellt_am) FROM anreicherung) AS zuletzt,
         -- PUNKTE je Minute, nicht Zeilen: die Zeilenzahl haengt daran, wie viele Felder ein Punkt

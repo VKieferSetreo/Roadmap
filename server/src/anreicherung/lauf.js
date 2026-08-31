@@ -63,6 +63,10 @@ export function quelltextVon(o) {
  *  das spart Aufrufe und verhindert, dass ein Modell eine gemeldete Angabe „korrigiert". */
 export const offeneFelder = offeneFelderFuer
 
+/** Kein echtes Feld, sondern der Vermerk "dieser Punkt ist durch". Der Unterstrich hält ihn aus
+ *  dem Katalog heraus: er wird nie gefragt, nie eingespielt, nie angezeigt. */
+export const FERTIG_FELD = "_fertig"
+
 const SQL_MERKEN = `
   INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
   VALUES ('obstacle', $1, $2, $3, $4, $5, $6, $7)
@@ -128,6 +132,22 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
       o.id, feld, g?.wert ?? null, g?.beleg ?? null, modell, hash, g ? "ok" : "leer",
     ])
   }
+  // FERTIG-MARKE — ohne sie dreht der Lauf im Kreis.
+  //
+  // Kandidat ist, wem eines der Katalogfelder fehlt. Geschrieben werden aber nur die OFFENEN
+  // Felder, und die sind fast nie alle: eine Baustelle bekommt nie getrageneStrasse oder
+  // gekreuzteStrasse (die gibt es nur an Bauwerken), ein Punkt mit gemeldetem Gewicht keines der
+  // verwandten Maße. Diese Felder fehlen damit auf ewig — der Punkt blieb Kandidat, wurde beim
+  // nächsten Durchgang erneut gezogen, und der Lauf kam über die ersten paar hundert Punkte nie
+  // hinaus. Gemessen am 31.08.2026: 813 verschiedene Punkte, während das Log 1.875 "gesehene"
+  // zählte und die Karte 4.041 Zeilen in fünf Minuten bekam — alles dieselben Punkte.
+  //
+  // Der Wert ist die GRÖSSE des Katalogs. Wächst er um ein Feld, passt die Marke nicht mehr, und
+  // alle Punkte werden von selbst wieder Kandidaten — genau das Verhalten, das die Kandidatenwahl
+  // ursprünglich erreichen wollte.
+  await db.query(SQL_MERKEN, [
+    o.id, FERTIG_FELD, String(Object.keys(FELDER).length), null, modell, hash, "leer",
+  ])
   return { uebersprungen: false, geschrieben: gueltig.length, verworfen: verworfen.length, verwerfungen: verworfen }
 }
 
@@ -155,6 +175,13 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
               o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
        FROM obstacles o
       WHERE o.aktiv = true ${wo}
+        -- Wer die Fertig-Marke des AKTUELLEN Katalogs traegt, ist durch. Ohne diese Zeile blieben
+        -- Punkte ewig Kandidat, denen ein Feld fehlt, das sie nie bekommen koennen (siehe
+        -- FERTIG_FELD in reichereAn).
+        AND NOT EXISTS (
+          SELECT 1 FROM anreicherung a
+           WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text
+             AND a.modell = $1 AND a.feld = '${FERTIG_FELD}' AND a.wert = $${werte.length + 1})
         AND EXISTS (
           SELECT 1 FROM unnest($2::text[]) AS f(feld)
            WHERE NOT EXISTS (
@@ -163,7 +190,7 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
                 AND a.modell = $1 AND a.feld = f.feld))
       ORDER BY o.id
       LIMIT ${Number(grenze) || 500}`,
-    werte,
+    [...werte, String(felderAlle.length)],
   )
 
   const zahl = { gesehen: 0, geschrieben: 0, verworfen: 0, uebersprungen: 0 }

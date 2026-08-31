@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
-import { quelltextVon, offeneFelder, laufeUeberBestand } from "../src/anreicherung/lauf.js"
+import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
@@ -636,6 +636,37 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
     // Und die Feldliste wird wirklich übergeben.
     expect(Array.isArray(gesehen[0].p[1])).toBe(true)
     expect(gesehen[0].p[1]).toContain("maxHoeheM")
+  })
+
+  // Die Kehrseite derselben Abfrage, und sie hat den Lauf am 31.08.2026 im Kreis drehen lassen:
+  // gefragt wird gegen ALLE Katalogfelder, geschrieben werden nur die OFFENEN. Eine Baustelle
+  // bekommt nie getrageneStrasse — das Feld fehlt ihr also für immer, und sie wurde bei jedem
+  // Durchgang erneut gezogen. Gemessen: 813 verschiedene Punkte, während das Log 1.875 zählte.
+  it("hakt einen fertigen Punkt ab, auch wenn ihm ein unerreichbares Feld fehlt", async () => {
+    const baustelle = { id: "u1", kategorie: "baustelle", name: "Teststraße", beschreibung: "Vollsperrung", attrs: {} }
+    const offen = offeneFelder(baustelle)
+    expect(offen).not.toContain("getrageneStrasse") // die Voraussetzung des Fehlers
+
+    const geschrieben = []
+    const db = { query: async (sql, p) => { if (sql.includes("INSERT INTO anreicherung")) geschrieben.push(p); return { rows: [] } } }
+    await reichereAn(db, baustelle, { modell: "m", rufeModell: async () => '{"angaben": []}' })
+
+    const marke = geschrieben.find((p) => p[1] === "_fertig")
+    expect(marke, "es muss eine Fertig-Marke geschrieben werden").toBeTruthy()
+    // Der Wert ist die Katalogröße: wächst der Katalog, greift die Marke nicht mehr und der
+    // Punkt wird von selbst wieder Kandidat.
+    expect(marke[2]).toBe(String(Object.keys(FELDER).length))
+  })
+
+  it("schließt Punkte mit gültiger Fertig-Marke aus der Kandidatenwahl aus", async () => {
+    const gesehen = []
+    const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
+    await laufeUeberBestand(db, { modell: "m", rufeModell: async () => null, grenze: 10 })
+    const { sql, p } = gesehen[0]
+    expect(sql).toContain("_fertig")
+    expect(sql).toContain("NOT EXISTS")
+    // Die Katalogröße wird als Parameter mitgegeben, nicht fest verdrahtet.
+    expect(p).toContain(String(Object.keys(FELDER).length))
   })
 })
 
