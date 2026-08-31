@@ -22,9 +22,11 @@ export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal") {
   if (weg === "openrouter") {
     const schluessel = process.env.OPENROUTER_API_KEY || ""
     return {
-      // Ein kleines, günstiges Modell reicht: die Aufgabe ist Lesen, nicht Denken, und der
-      // Belegriegel fängt ohnehin ab, was nicht im Text steht.
-      name: process.env.ANREICHERUNG_MODELL || "meta-llama/llama-3.1-8b-instruct",
+      // Gemessen am 31.08.2026 an zwei echten Fällen: von vier freien Modellen liefen zwei
+      // sofort in HTTP 429, eines lieferte kein JSON. minimax-m3 antwortete als einziges
+      // brauchbar (1 von 2 Treffern, 20 s). Freie Modelle sind für einen Dauerlauf zu knapp,
+      // für die wenigen neuen Punkte je Sync reichen sie.
+      name: process.env.ANREICHERUNG_MODELL || "minimax/minimax-m3:free",
       basis: OPENROUTER,
       schluessel,
       verfuegbar: Boolean(schluessel),
