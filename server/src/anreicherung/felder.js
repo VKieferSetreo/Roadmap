@@ -29,9 +29,30 @@ const WORTZAHL = {
   mittlere: 1, mittlerer: 1, mittleren: 1, ueberholspur: 1, überholspur: 1, standspur: 1,
 }
 
+/**
+ * Ziffern, die zu einer KENNUNG gehoeren und nie eine Anzahl oder ein Mass sind.
+ *
+ * Der teuerste Einzelfehler des Belegriegels, gemessen an 786 aufgezeichneten Verwerfungen:
+ * zahl("St2086 Isen … nur ein Fahrstreifen abwechselnd frei") lieferte 2086. Das Modell hatte
+ * "spurenFrei = 1" geantwortet, voellig richtig, und der Riegel verwarf es, weil er die
+ * Strassennummer fuer die Fahrstreifenzahl hielt. Betroffen war jede Meldung, die mit ihrer
+ * Strassennummer beginnt — in Bayern ist das die Regel.
+ */
+// Bewusst eine LISTE echter Strassenklassen und kein allgemeines "Buchstaben vor Ziffern": das
+// traefe auch "Ab 250 t" oder "Bis 12 t" und schluckte die Zahl, um die es gerade geht.
+const KENNUNGEN = [
+  /\bHaus-?\s?Nr\.?\s?\d+/gi,                      // "Haus-Nr. 4" — vor der Strassenregel
+  /\b\d{1,2}\.\d{1,2}\.\d{2,4}\b/g,                // 06.09.2026
+  /\b\d{4}-\d{2}-\d{2}\b/g,                        // 2026-09-06
+  /\b\d{1,2}:\d{2}\b/g,                            // 18:00 — eine Uhrzeit ist keine Anzahl
+  /\bK\s?[A-ZÄÖÜ]{1,3}\s?\d{1,4}\b/g,              // "K BA 10", "KT56" — mit Landkreiskuerzel
+  /\b(?:BAB|St|Sta|EU|FS|NW|LKR|OD|A|B|K|L|S)\s?\d{1,5}\b/g, // St2086, B301, FS16, A7, L5
+]
+
 /** Zahl aus deutscher Schreibweise. "3,80" wie "3.80", "ca. 4 m" wie "4", "ein" wie 1. */
 export function zahl(s) {
-  const roh = String(s ?? "")
+  let roh = String(s ?? "")
+  for (const k of KENNUNGEN) roh = roh.replace(k, " ")
   const t = roh.replace(/(\d),(\d)/g, "$1.$2").match(/-?\d+(?:\.\d+)?/)
   if (t) {
     const n = Number(t[0])
@@ -42,7 +63,10 @@ export function zahl(s) {
   const flach = roh.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
   for (const [wort, n] of Object.entries(WORTZAHL)) {
     const w = wort.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
-    if (new RegExp(`\\b${w}\\b`, "i").test(flach)) return n
+    // Mit Beugung: die Quellen schreiben "Sperrung DREIER Fahrstreifen" und "Sperrung EINES
+    // Fahrstreifens". Ohne die Endungen scheiterte die Wortgrenze, und eine eindeutige Anzahl
+    // ging verloren.
+    if (new RegExp(`\\b${w}(er|en|em|es|e)?\\b`, "i").test(flach)) return n
   }
   return null
 }
@@ -73,11 +97,20 @@ function jaNein(roh) {
  * Statt des Werts muss hier das STICHWORT im Beleg stehen. Damit bleibt der Riegel scharf (der
  * Beleg muss zum Feld passen), ohne die Aussage zu verlangen, die es in Textform nicht gibt.
  */
+/**
+ * "Für beide Richtungen nur ein Fahrstreifen abwechselnd frei" — so meldet Bayern seine
+ * Baustellen, fast wortgleich und tausendfach. Der Satz sagt dreierlei zugleich: die Fahrbahn ist
+ * verengt, die Straße ist teilweise gesperrt, und es ist eine Fahrstreifensperrung. Keines der
+ * Muster kannte die Formulierung, weil keines der Wörter "verengt", "Sperrung" oder "halbseitig"
+ * darin vorkommt. Von 403 Verwerfungen mit einem Beleg AUS DER MELDUNG hingen 94 allein daran.
+ */
+const EINSPURIG = "nur ein(en|e)?\\s+(fahrstreifen|fahrspur|spur)|auf einen fahrstreifen|abwechselnd frei|einspurig"
+
 const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
-  teilsperrung: /teilsperr|teilweise gesperrt|teilw\. gesperrt|halbseit|einseitig/i,
+  teilsperrung: new RegExp(`teilsperr|teilweise gesperrt|teilw\\. gesperrt|halbseit|einseitig|${EINSPURIG}`, "i"),
   halbseitig: /halbseit|einseitig|wechselseitig|(nord|süd|sued|ost|west)seite|eine\s+(fahrbahn|seite)|abwechselnd/i,
-  fahrbahnVerengt: /verengt|verengung|einengung|eingeengt|schmaler|fahrstreifen.*(weg|entf)/i,
+  fahrbahnVerengt: new RegExp(`verengt|verengung|einengung|eingeengt|schmaler|fahrstreifen.*(weg|entf)|${EINSPURIG}`, "i"),
   einbahnstrasse: /einbahn/i,
   sackgasse: /sackgasse|keine durchfahrt/i,
   nurNachts: /nacht|nächtlich|22:|23:|00:|01:|02:|03:|04:|05:/i,
@@ -171,7 +204,9 @@ export const KATALOG = {
     // Ein gesperrter Geh- oder Radweg ist KEINE Fahrbahnsperrung. In Produktion gefunden:
     // "Sperrung des Geh-/Radweges" wurde als Vollsperrung gefuehrt — fuer einen Schwertransport
     // ist das bedeutungslos, als Vollsperrung gelesen aber eine harte Aussage.
-    belegMuster: /^(?!.*(geh-?\s*\/?\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(ä|ae)nger))(?=.*(sperr|closed|closure|gesperrt)).*$/is,
+    // Einspurige Verkehrsfuehrung IST eine Fahrstreifensperrung, auch wenn das Wort "Sperrung"
+    // in der Meldung nicht vorkommt — sonst faellt die haeufigste bayerische Formulierung durch.
+    belegMuster: new RegExp(`^(?!.*(geh-?\\s*\\/?\\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(ä|ae)nger))(?=.*(sperr|closed|closure|gesperrt|${EINSPURIG})).*$`, "is"),
   },
   zeitfenster: {
     // In Produktion gefunden: aus "von 19.08.2026 07:30 Uhr bis 03.09.2026 15:00 Uhr" wurde

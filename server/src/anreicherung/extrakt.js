@@ -72,6 +72,15 @@ export const quelleHash = (text) => createHash("sha256").update(String(text ?? "
 const flach = (s) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim()
 
 /**
+ * Die Zeilen, die lauf.js um die eigentliche Meldung herumbaut. Sie gehoeren zum Quelltext, sind
+ * aber KEINE Quelle: was in "Vorhandene Angaben" steht, wissen wir schon, und "Art: sperrung" ist
+ * unsere eigene Kategorisierung. Ein Beleg, der hier beginnt, belegt nichts.
+ *
+ * Bezeichnung und Beschreibung fehlen mit Absicht — das IST die Meldung.
+ */
+export const RAHMEN_PRAEFIX = /^\s*(Verortet an|Zuständig|Art|Richtung|Gültig|Quelle|Vorhandene Angaben|Ursprungsdaten der Quelle)\s*:/i
+
+/**
  * Prueft EINE Angabe des Modells gegen die drei Riegel.
  * @returns {{ok: true, feld: string, wert: string, beleg: string} | {ok: false, grund: string}}
  */
@@ -95,6 +104,14 @@ export function pruefeAngabe(angabe, quelltext) {
       /^(nicht |kein|unbekannt|k\.?\s?a\.?$|n\/a$|-$|—$)/i.test(String(angabe?.wert ?? ""))) {
     return { ok: false, grund: "Platzhalter statt Angabe" }
   }
+
+  // KEIN BELEG AUS UNSEREM EIGENEN RAHMEN. Der Quelltext ist nicht nur die Meldung, sondern auch
+  // die Zeilen, die wir um sie herumbauen ("Art: sperrung", "Richtung: beide", "Vorhandene
+  // Angaben: {…}"). Zitiert das Modell die, belegt es unsere Frage mit unserer eigenen Antwort:
+  // gemessen 85 von 759 Verwerfungen, darunter "sperrungArt = roadClosed" mit dem Beleg
+  // "Vorhandene Angaben: {"sperrungArt":"roadClosed"}". Riegel 1 kann das nicht fangen — die
+  // Zeile steht ja wirklich im Text.
+  if (RAHMEN_PRAEFIX.test(beleg)) return { ok: false, grund: "Beleg zitiert den Rahmen, nicht die Meldung" }
 
   // Ein ZAHLENWERT braucht die Einheit oder ein Stichwort im Beleg. In der Durchsicht der ersten
   // 1.193 Angaben war genau eine auffaellig, und zwar diese: maxGewichtT = 250 mit dem Beleg

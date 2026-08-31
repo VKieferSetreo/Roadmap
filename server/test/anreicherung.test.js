@@ -10,6 +10,7 @@ import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
 import { nachlauf, nachImport } from "../src/anreicherung/nachlauf.js"
+import { zahl } from "../src/anreicherung/felder.js"
 
 const TEXT = 'Bezeichnung: Brücke K BA 10 über die A70\nBeschreibung: Durchfahrtshöhe 4,20 m, Baujahr 1987'
 
@@ -716,5 +717,51 @@ describe("Aus 242 Verwerfungen abgeleitet", () => {
 
   it("bildet nur bekannte Aliasse ab, nicht beliebige Namen", () => {
     expect(pruefeAngabe({ feld: "baujahr", wert: "1987", beleg: "Baujahr 1987" }, "Baujahr 1987").ok).toBe(false)
+  })
+})
+
+// Gemessen am Replay der 786 aufgezeichneten Rohantworten: 27 kamen mit den obigen Fixes durch,
+// 101 mit diesen hier. Der Unterschied sind drei Fehler auf unserer Seite, keine besseren
+// Modellantworten — dieselben Antworten, schärfer geprüft.
+describe("Aus dem Replay der 786 aufgezeichneten Verwerfungen", () => {
+  // Der teuerste Einzelfehler: die Straßennummer wurde für die Fahrstreifenzahl gehalten.
+  it("hält Kennungen aus der Zahlenlesung heraus", () => {
+    expect(zahl("St2086 Isen, Dorfner Straße … nur ein Fahrstreifen abwechselnd frei")).toBe(1)
+    expect(zahl("KT56 zwischen Rödelsee und Schwanberg, ein Fahrstreifen frei")).toBe(1)
+    expect(zahl("A70 von 05.09.2026 18:00 Uhr bis 06.09.2026 08:00 Uhr, ein Fahrstreifen frei")).toBe(1)
+  })
+
+  // Die Gegenprobe: eine Zahl, die WIRKLICH die Angabe ist, darf nicht mit verschwinden.
+  it("lässt echte Maßzahlen unangetastet", () => {
+    expect(zahl("Höhenbeschränkung 4,20 m")).toBe(4.2)
+    expect(zahl("Lkw-Durchfahrtsverbot über 3,5 t")).toBe(3.5)
+    expect(zahl("Ab 250 t")).toBe(250)
+    expect(zahl("auf 200 m Länge")).toBe(200)
+  })
+
+  it("liest gebeugte Zahlwörter", () => {
+    expect(zahl("Sperrung dreier Fahrstreifen")).toBe(3)
+    expect(zahl("Sperrung eines Fahrstreifens")).toBe(1)
+  })
+
+  // Bayerns Standardformulierung. Sie sagt dreierlei und enthält keines der Wörter, auf die die
+  // Muster bisher horchten.
+  it("versteht einspurige Verkehrsführung", () => {
+    const t = "für beide Richtungen nur ein Fahrstreifen abwechselnd frei"
+    expect(pruefeAngabe({ feld: "fahrbahnVerengt", wert: "ja", beleg: t }, t).ok).toBe(true)
+    expect(pruefeAngabe({ feld: "teilsperrung", wert: "ja", beleg: t }, t).ok).toBe(true)
+    expect(pruefeAngabe({ feld: "sperrungArt", wert: "fahrstreifensperrung", beleg: t }, t).ok).toBe(true)
+  })
+
+  // Der Beleg muss aus der Meldung kommen, nicht aus den Zeilen, die wir selbst darum herumbauen.
+  it("weist Belege aus dem eigenen Rahmen ab", () => {
+    const text = "Bezeichnung: Vollsperrung\nArt: sperrung\nVorhandene Angaben: {\"sperrungArt\":\"roadClosed\"}"
+    for (const beleg of ["Art: sperrung", "Vorhandene Angaben: {\"sperrungArt\":\"roadClosed\"}"]) {
+      const r = pruefeAngabe({ feld: "sperrungArt", wert: "vollsperrung", beleg }, text)
+      expect(r.ok, beleg).toBe(false)
+      expect(r.grund).toBe("Beleg zitiert den Rahmen, nicht die Meldung")
+    }
+    // Die Meldung selbst bleibt ein gültiger Beleg.
+    expect(pruefeAngabe({ feld: "vollsperrung", wert: "ja", beleg: "Bezeichnung: Vollsperrung" }, text).ok).toBe(true)
   })
 })
