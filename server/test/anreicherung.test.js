@@ -7,7 +7,7 @@ import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
 import { quelltextVon, offeneFelder } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
-import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk } from "../src/anreicherung/lesen.js"
+import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
 import { nachlauf, nachImport } from "../src/anreicherung/nachlauf.js"
 
@@ -508,5 +508,32 @@ describe("nachlauf — neue Punkte nach dem Import", () => {
   it("wirft nie", async () => {
     const db = { query: async () => { throw new Error("Datenbank weg") } }
     await expect(nachImport(db, { weg: "lokal" })).resolves.toMatchObject({ gelaufen: false })
+  })
+})
+
+describe("kiZeilen — die Markierung muss die richtige Zeile treffen", () => {
+  // In Produktion beobachtet: markiert wurde "Durchfahrtsbreite", im Detail stand aber
+  // "Restbreite" — die Baustellenregel benennt dieselbe Größe anders als die Brückenregel.
+  // Die Markierung zeigte damit ins Leere und war unsichtbar.
+  it("nennt für Breite BEIDE Schreibweisen der Regeln", () => {
+    const z = kiZeilen(["maxBreiteM"])
+    expect(z).toContain("Durchfahrtsbreite")
+    expect(z).toContain("Restbreite")
+  })
+
+  it("nennt für Gewicht beide Schreibweisen", () => {
+    const z = kiZeilen(["maxGewichtT"])
+    expect(z).toContain("Zul. Brückenlast")
+    expect(z).toContain("Zul. Gesamtlast")
+  })
+
+  it("gibt jede Zeile nur einmal, auch bei überlappenden Feldern", () => {
+    const z = kiZeilen(["maxBreiteM", "restbreiteM"])
+    expect(z.filter((x) => x === "Restbreite")).toHaveLength(1)
+  })
+
+  it("ist leer, wenn nichts ergänzt wurde", () => {
+    expect(kiZeilen([])).toEqual([])
+    expect(kiZeilen(null)).toEqual([])
   })
 })

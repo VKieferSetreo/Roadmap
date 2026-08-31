@@ -67,18 +67,24 @@ const KLAR = {
  * ergänzt wurde, aber nicht wo.
  */
 const DETAIL_ZEILE = {
-  maxHoeheM: "Durchfahrtshöhe",
-  maxBreiteM: "Durchfahrtsbreite",
-  maxGewichtT: "Zul. Brückenlast",
-  restbreiteM: "Restbreite",
-  maxLaengeM: "Zul. Länge",
-  maxAchslastT: "Zul. Achslast",
-  verkehrsverbotLkwT: "Lkw-Verbot ab",
+  // MEHRERE Labels je Feld, weil dieselbe Groesse je nach Regel anders heisst: ruleBauwerk
+  // schreibt "Durchfahrtsbreite", ruleBaustelle "Restbreite". Die erste Fassung kannte nur eines
+  // und markierte deshalb eine Zeile, die es im Detail gar nicht gab — sichtbar wurde nichts.
+  maxHoeheM: ["Durchfahrtshöhe", "Lichte Höhe"],
+  maxBreiteM: ["Durchfahrtsbreite", "Restbreite"],
+  restbreiteM: ["Restbreite", "Durchfahrtsbreite"],
+  maxGewichtT: ["Zul. Brückenlast", "Zul. Gesamtlast"],
+  verkehrsverbotLkwT: ["Zul. Gesamtlast", "Lkw-Verbot ab"],
+  maxLaengeM: ["Zul. Länge"],
+  maxAchslastT: ["Zul. Achslast"],
+  sperrlaengeM: ["Länge der Maßnahme"],
+  anzahlFahrstreifen: ["Fahrstreifen (verbleibend)"],
+  spurenGesperrt: ["Gesperrte Fahrstreifen"],
 }
 
 /** Die Detail-Zeilen, die auf einem abgeleiteten Wert beruhen. Das Frontend markiert genau diese. */
 export const kiZeilen = (ergaenzt) =>
-  (ergaenzt ?? []).map((f) => DETAIL_ZEILE[f]).filter(Boolean)
+  [...new Set((ergaenzt ?? []).flatMap((f) => DETAIL_ZEILE[f] ?? []))]
 
 /** Der Vermerk am Fund. Kurz, weil er neben den Sachangaben steht, und benannt, weil "KI-ergänzt"
  *  ohne Angabe WAS ergänzt wurde niemandem hilft. */
