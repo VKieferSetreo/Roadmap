@@ -57,7 +57,8 @@
 <div class="karte drei">
   <div><div class="zahl marke" id="gefunden">–</div><div class="matt">gefunden</div></div>
   <div><div class="zahl" id="leer">–</div><div class="matt">nichts drin</div></div>
-  <div><div class="zahl" id="verworfen">–</div><div class="matt">abgewiesen</div></div>
+  <!-- Abgewiesenes wird aufgehoben, nicht verworfen — hier kommt es wieder heraus. -->
+  <div><div class="zahl" id="verworfen">–</div><div class="matt"><a href="./verworfen?format=csv" download>abgewiesen ↓</a></div></div>
 </div>
 
 <div class="karte"><h2>Je Angabe</h2><ul id="felder"><li class="matt">–</li></ul></div>
@@ -75,9 +76,31 @@ const dauer = (min) => {
   return `noch ~${h} h ${min % 60} min`
 }
 
+// Wann kam zuletzt eine ECHTE Antwort? Ohne diesen Zeitstempel sieht eine Seite, die seit einer
+// Stunde nichts mehr bekommt, genauso aus wie eine, bei der sich gerade nichts tut.
+let letzteAntwort = null
+setInterval(() => {
+  if (!letzteAntwort) return
+  const s = Math.round((Date.now() - letzteAntwort) / 1000)
+  $("stand").textContent = s < 15 ? "gerade eben" : s < 90 ? `vor ${s} s` : `vor ${Math.round(s / 60)} min`
+  // Antwortet der Server laenger nicht, ist die Anzeige alt — das muss man sehen.
+  $("stand").style.color = s > 30 ? "#c2410c" : ""
+}, 1000)
+
 async function hole() {
   try {
-    const d = await (await fetch("./stand", { cache: "no-store" })).json()
+    const r = await fetch("./stand", { cache: "no-store" })
+    const d = await r.json()
+    // Ein 401 ist KEIN Netzwerkfehler: fetch liefert brav eine gueltige JSON-Antwort, nur eben
+    // {"error":"Nicht angemeldet"}. Ohne diese Abfrage landen lauter undefined in der Anzeige,
+    // sie faellt auf Nullen zurueck und sieht aus, als stehe der Lauf still.
+    if (!r.ok || d.error) {
+      $("zaehler").textContent = r.status === 401 ? "Sitzung abgelaufen — bitte neu anmelden" : `Server meldet: ${d.error ?? r.status}`
+      $("puls").className = "puls aus"
+      $("rest").textContent = ""
+      return
+    }
+    letzteAntwort = Date.now()
     $("anteil").textContent = (d.anteil ?? 0).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " %"
     $("fortschritt").style.width = Math.min(100, d.anteil ?? 0) + "%"
     $("zaehler").textContent = `${zahl(d.gesehen)} von ${zahl(d.gesamt)} Punkten`
@@ -95,9 +118,10 @@ async function hole() {
       ? d.proben.map((p) => `<li><span class="n">${p.name ?? ""}</span><span class="w marke">${p.wert ?? ""}</span></li>`).join("")
       : '<li class="matt">noch nichts</li>'
 
-    $("stand").textContent = d.zuletzt ? new Date(d.zuletzt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : ""
+    // "stand" traegt jetzt das Alter der Antwort (der Sekundentakt oben schreibt es fort) — der
+    // Uhrzeit-Stempel sagte nicht, ob die Seite noch lebt.
   } catch {
-    $("zaehler").textContent = "keine Verbindung"
+    $("zaehler").textContent = "keine Verbindung zum Server"
     $("puls").className = "puls aus"
   }
 }

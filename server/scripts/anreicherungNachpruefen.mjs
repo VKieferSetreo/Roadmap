@@ -158,7 +158,14 @@ sage(`\nLeermeldungen: ${leerZeilen.length}, davon auf veraltetem Quelltext: ${v
 if (SCHREIBEN && veraltet.length) {
   // In Bloecken, damit der Parameter nicht ueber die Postgres-Grenze waechst.
   for (let i = 0; i < veraltet.length; i += 5000) {
-    await db.query("DELETE FROM anreicherung WHERE id = ANY($1::bigint[])", [veraltet.slice(i, i + 5000)])
+    // Das `stand = 'leer'` steht hier ein zweites Mal, obwohl die Auswahl oben schon danach
+    // filtert. Max, 31.08.2026: "alle abgewiesenen behalten — kann sein, dass wir die manuell
+    // später doch noch benutzen." Eine Verwerfung ist Arbeitsergebnis, und die einzige Loeschung
+    // in diesem System soll sie nicht einmal versehentlich treffen koennen.
+    await db.query(
+      "DELETE FROM anreicherung WHERE id = ANY($1::bigint[]) AND stand = 'leer'",
+      [veraltet.slice(i, i + 5000)],
+    )
   }
   sage(`${veraltet.length} veraltete Leermeldungen entfernt — der naechste Lauf sieht diese Punkte wieder an.`)
 }
