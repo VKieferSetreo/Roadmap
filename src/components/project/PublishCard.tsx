@@ -5,7 +5,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Copy, Eye, EyeOff, Globe2, Link2, Lock, LockOpen, PowerOff } from "lucide-react"
+import { Check, Copy, Eye, EyeOff, Globe2, Link2, Lock, LockOpen, PowerOff, Route } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Input, Label } from "@/components/ui/Input"
@@ -13,11 +13,65 @@ import { useProjectStore } from "@/store/projects"
 import { cn } from "@/lib/cn"
 import type { Project } from "@/types/domain"
 
+/**
+ * Die Streckenauswahl (T-650). Eigener Baustein, weil sie an zwei Stellen gebraucht wird:
+ * beim erstmaligen Veroeffentlichen UND danach jederzeit ueber den Knopf in der Live-Karte.
+ * Max 31.08.2026: "damit das auch dynamisch anpassbar ist NACH Online-Schaltung."
+ *
+ * Es gibt keinen Speichern-Knopf: jeder Haken wirkt sofort (updateRoute schreibt optimistisch
+ * und synchronisiert). Eine Freigabe, bei der man erst noch bestaetigen muss, waere genau die
+ * Stelle, an der jemand die Maske schliesst und glaubt, es sei uebernommen.
+ */
+function Streckenauswahl({ project }: { project: Project }) {
+  const updateRoute = useProjectStore((s) => s.updateRoute)
+  const sichtbar = project.routes.filter((r) => r.oeffentlich !== false).length
+  if (project.routes.length === 0) return null
+  return (
+    <div>
+      <Label>Welche Strecken sollen sichtbar sein?</Label>
+      <ul className="mt-1.5 max-h-72 space-y-1 overflow-y-auto rounded-md border border-neutral-200 p-1.5">
+        {project.routes.map((r) => {
+          const an = r.oeffentlich !== false
+          return (
+            <li key={r.id}>
+              <label className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-neutral-50">
+                <input
+                  type="checkbox"
+                  checked={an}
+                  onChange={() => updateRoute(project.id, r.id, { oeffentlich: !an })}
+                  className="h-4 w-4 shrink-0 accent-primary-600"
+                />
+                <span aria-hidden className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: r.farbe }} />
+                <span className={cn("min-w-0 flex-1 truncate", an ? "text-neutral-800" : "text-neutral-400 line-through")}>
+                  {r.name}
+                </span>
+                {an ? (
+                  <Eye className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                ) : (
+                  <EyeOff className="h-3.5 w-3.5 shrink-0 text-neutral-300" />
+                )}
+              </label>
+            </li>
+          )
+        })}
+      </ul>
+      <p className="mt-1.5 text-xs text-neutral-400">
+        {sichtbar === 0
+          ? "Mindestens eine Strecke muss sichtbar bleiben."
+          : sichtbar === project.routes.length
+            ? "Alle Strecken sind sichtbar."
+            : `${sichtbar} von ${project.routes.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
+      </p>
+    </div>
+  )
+}
+
 export function PublishCard({ project }: { project: Project }) {
   const publishProject = useProjectStore((s) => s.publishProject)
   const updateRoute = useProjectStore((s) => s.updateRoute)
   const revokeShare = useProjectStore((s) => s.revokeShare)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [streckenOpen, setStreckenOpen] = useState(false)
   const [password, setPassword] = useState("")
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -109,8 +163,16 @@ export function PublishCard({ project }: { project: Project }) {
             {share.url}
           </code>
 
-          {/* Drei Aktionen über die volle Breite: Passwort ändern (Maske) · Link kopieren · Offline schalten. */}
-          <div className="grid grid-cols-3 gap-2">
+          {/* Vier Aktionen, 2x2. Der Strecken-Knopf steht ZUERST: welche Strecken der Kunde
+              sieht, ist die inhaltliche Frage, alles andere ist Verwaltung des Links. Er zeigt
+              den Stand gleich mit ("3/5"), damit man nicht erst aufmachen muss, um zu sehen,
+              dass etwas ausgeblendet ist. Vor T-650 kam man an die Auswahl nur ueber
+              "Passwort ändern" — dort sucht sie niemand. */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" onClick={() => setStreckenOpen(true)} disabled={busy} className="w-full">
+              <Route className="h-3.5 w-3.5 shrink-0" />
+              Strecken{project.routes.length > 0 ? ` (${sichtbareStrecken}/${project.routes.length})` : ""}
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)} disabled={busy} className="w-full">
               <Lock className="h-3.5 w-3.5 shrink-0" /> Passwort ändern
             </Button>
@@ -161,6 +223,22 @@ export function PublishCard({ project }: { project: Project }) {
         </>
       )}
 
+      {/* Eigene Maske fuer die Streckenauswahl im laufenden Betrieb. Kein Speichern-Knopf:
+          jeder Haken wirkt sofort, auch am bereits geteilten Link. */}
+      <Dialog open={streckenOpen} onClose={() => setStreckenOpen(false)} size="sm">
+        <DialogHeader
+          title="Sichtbare Strecken"
+          subtitle="Änderungen wirken sofort — auch am bereits geteilten Link."
+          onClose={() => setStreckenOpen(false)}
+        />
+        <div className="px-6 py-5">
+          <Streckenauswahl project={project} />
+        </div>
+        <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4">
+          <Button onClick={() => setStreckenOpen(false)}>Fertig</Button>
+        </div>
+      </Dialog>
+
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} size="sm">
         <DialogHeader
           title={share ? "Freigabe bearbeiten" : "Projekt veröffentlichen"}
@@ -168,53 +246,12 @@ export function PublishCard({ project }: { project: Project }) {
           onClose={() => setDialogOpen(false)}
         />
         <div className="px-6 py-5">
-          {/* T-650: welche Strecken der Kunde ueberhaupt zu sehen bekommt. Steht VOR dem
-              Passwort, weil es die inhaltliche Entscheidung ist und das Passwort nur der
-              Zugang. Abgewaehlte Strecken verschwinden beim Kunden spurlos, samt ihren
-              Funden und ihrem Anteil an Laenge und Fahrzeit — siehe
-              server/src/oeffentlicheSicht.js. */}
-          {project.routes.length > 0 && (
-            <div className="mb-5">
-              <Label>Welche Strecken sollen sichtbar sein?</Label>
-              <ul className="mt-1.5 space-y-1 rounded-md border border-neutral-200 p-1.5">
-                {project.routes.map((r) => {
-                  const an = r.oeffentlich !== false
-                  return (
-                    <li key={r.id}>
-                      <label className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-neutral-50">
-                        <input
-                          type="checkbox"
-                          checked={an}
-                          onChange={() => updateRoute(project.id, r.id, { oeffentlich: !an })}
-                          className="h-4 w-4 shrink-0 accent-primary-600"
-                        />
-                        <span
-                          aria-hidden
-                          className="h-3 w-3 shrink-0 rounded-full"
-                          style={{ backgroundColor: r.farbe }}
-                        />
-                        <span className={cn("min-w-0 flex-1 truncate", an ? "text-neutral-800" : "text-neutral-400 line-through")}>
-                          {r.name}
-                        </span>
-                        {an ? (
-                          <Eye className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                        ) : (
-                          <EyeOff className="h-3.5 w-3.5 shrink-0 text-neutral-300" />
-                        )}
-                      </label>
-                    </li>
-                  )
-                })}
-              </ul>
-              <p className="mt-1.5 text-xs text-neutral-400">
-                {sichtbareStrecken === 0
-                  ? "Mindestens eine Strecke muss sichtbar bleiben."
-                  : sichtbareStrecken === project.routes.length
-                    ? "Alle Strecken sind sichtbar."
-                    : `${sichtbareStrecken} von ${project.routes.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
-              </p>
-            </div>
-          )}
+          {/* T-650: die inhaltliche Entscheidung steht VOR dem Passwort — das Passwort ist nur
+              der Zugang. Nach dem Onlineschalten fuehrt der Knopf "Strecken" in der Karte
+              zu derselben Auswahl. */}
+          <div className="mb-5">
+            <Streckenauswahl project={project} />
+          </div>
 
           <Label htmlFor="share-pw">Passwort (optional)</Label>
           <Input
