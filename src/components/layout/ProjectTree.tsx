@@ -59,6 +59,12 @@ interface TreeProps {
 /** Aufklappen beim Ziehen: so lange muss man ueber dem Ordner halten, bevor es hineingeht. */
 const HALTEN_MS = 500
 
+/** Einzug je Ebene (px). Die Liste einer tieferen Ebene rueckt als Ganzes nach rechts, damit man
+ *  auch ohne Blick auf den Pfad sieht, dass man nicht mehr an der Wurzel steht (Max 31.08.2026).
+ *  Gedeckelt: die Leiste ist 280 px breit, und ab drei Ebenen frisst der Einzug sonst die Namen. */
+const EINZUG_PRO_EBENE = 12
+const einzugPx = (tiefe: number) => Math.min(tiefe, 3) * EINZUG_PRO_EBENE
+
 /** Eine Projekt-Zeile — draggable (Drag-n-Drop in Ordner) + Drei-Punkte-Menü. */
 function ProjectRow({
   project,
@@ -606,6 +612,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
         </div>
         <div
           className="flex flex-col gap-0.5"
+          style={{ marginLeft: einzugPx(pfad.length) }}
           onDragOver={(e) => {
             if (!ziehend) return
             e.preventDefault()
