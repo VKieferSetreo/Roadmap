@@ -47,7 +47,7 @@ import { CreatorAvatar } from "@/components/project/CreatorAvatar"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { cn } from "@/lib/cn"
 import type { Folder as FolderT, Project } from "@/types/domain"
-import { anzahlTief as tiefZaehlen, gueltigerPfad } from "@/lib/ordner"
+import { gueltigerPfad } from "@/lib/ordner"
 
 interface TreeProps {
   query: string
@@ -161,15 +161,7 @@ function NewFolderInput({
 }
 
 /** Eine Ordnerzeile in der aktuellen Ebene. Klick geht HINEIN, nicht auf. */
-function FolderRow({
-  f,
-  anzahl,
-  ctx,
-}: {
-  f: FolderT
-  anzahl: number
-  ctx: Ctx
-}) {
+function FolderRow({ f, ctx }: { f: FolderT; ctx: Ctx }) {
   const isRenaming = ctx.renaming === f.id
   const over = ctx.dragOver === f.id
   const accepts = ctx.dragId != null || (ctx.dragFolderId != null && ctx.canDropFolder(ctx.dragFolderId, f.id))
@@ -274,8 +266,8 @@ function FolderRow({
         </div>
       ) : null}
       {!isRenaming ? (
-        // Zahl und Pfeil stehen NACH den Aktionssymbolen (Max 31.08.2026). Eigener Knopf, damit
-        // die Flaeche rechts weiter in den Ordner fuehrt, statt tot zu sein.
+        // Der Pfeil steht NACH den Aktionssymbolen (Max 31.08.2026). Eigener Knopf, damit die
+        // Flaeche rechts weiter in den Ordner fuehrt, statt tot zu sein.
         <button
           type="button"
           onClick={() => ctx.hinein(f.id)}
@@ -283,7 +275,6 @@ function FolderRow({
           aria-hidden
           className="flex shrink-0 items-center gap-1 py-2 pl-1 pr-1.5"
         >
-          {anzahl > 0 ? <span className="text-xs text-neutral-400">{anzahl}</span> : null}
           <ChevronRight className="h-4 w-4 text-neutral-300" />
         </button>
       ) : null}
@@ -400,8 +391,6 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
 
   const projectsIn = (folderId: string | null) => aktive.filter((p) => (p.folderId ?? null) === folderId)
 
-  /** Die geprueften Rechnungen aus lib/ordner.ts — hier nur noch angebunden. */
-  const anzahlTief = (id: string) => tiefZaehlen(id, folders, aktive)
 
   const canDropFolder = (draggedId: string, targetId: string | null) => {
     if (targetId == null) return true
@@ -635,7 +624,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
           }}
         >
           {unterordner.map((f) => (
-            <FolderRow key={f.id} f={f} anzahl={anzahlTief(f.id)} ctx={ctx} />
+            <FolderRow key={f.id} f={f} ctx={ctx} />
           ))}
           {anlegenIn === null ? (
             <NewFolderInput
@@ -738,7 +727,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
             )}
           >
             {z.folders.map((f) => (
-              <FolderRow key={f.id} f={f} anzahl={anzahlTief(f.id)} ctx={ctx} />
+              <FolderRow key={f.id} f={f} ctx={ctx} />
             ))}
             {anlegenIn === null && anlegenPrivat === z.privat ? (
               <NewFolderInput

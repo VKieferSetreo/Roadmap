@@ -1,40 +1,11 @@
-// Die zwei Rechnungen hinter der Ordner-Navigation (T-651).
+// Die Pfadrechnung hinter der Ordner-Navigation (T-651).
 //
-// Sie stehen hier und nicht in der Komponente, weil sie beide auf eine Art falsch sein
-// koennen, die man beim Hinsehen nicht bemerkt — und weil man sie so ohne React pruefen kann.
+// Sie steht hier und nicht in der Komponente, weil sie auf eine Art falsch sein kann, die man
+// beim Hinsehen nicht bemerkt — und weil man sie so ohne React pruefen kann.
 
-// BEWUSST ohne Import aus @/types/domain: die beiden Funktionen brauchen nur zwei bzw. ein
-// Feld, und ohne den Alias laufen sie auch in der Server-Testumgebung, die als einzige im
-// Projekt eingerichtet ist. Strukturelle Typen genuegen dafuer vollstaendig.
+// BEWUSST ohne Import aus @/types/domain: die Funktion braucht zwei Felder, und ohne den Alias
+// laeuft sie auch in der Server-Testumgebung, die als einzige im Projekt eingerichtet ist.
 type Ordner = { id: string; parentId?: string | null }
-type Projekt = { folderId?: string | null }
-
-/**
- * Wie viele Projekte in diesem Ordner UND in allem darunter liegen.
- *
- * WARUM NICHT NUR DIE EIGENEN: die Zahl steht an einer Ordnerzeile, hinter der man nichts
- * mehr sieht — genau das ist der Sinn der neuen Navigation. Zaehlte sie nur die direkten,
- * stuende an CK eine 15, obwohl 40 Projekte darin haengen, und der Ordner saehe leerer aus,
- * als er ist. Bei der alten Baumansicht war das verzeihlich: dort sah man die Unterordner
- * ja aufgeklappt daneben.
- *
- * Zyklen kann es nicht geben (der Server verhindert sie beim Verschieben), aber die Funktion
- * haelt sie trotzdem aus: `gesehen` bricht eine Schleife ab, statt den Aufrufer zu haengen.
- */
-export function anzahlTief(
-  folderId: string,
-  folders: Ordner[],
-  projects: Projekt[],
-  gesehen: Set<string> = new Set(),
-): number {
-  if (gesehen.has(folderId)) return 0
-  gesehen.add(folderId)
-  let n = projects.filter((p) => (p.folderId ?? null) === folderId).length
-  for (const kind of folders.filter((f) => (f.parentId ?? null) === folderId)) {
-    n += anzahlTief(kind.id, folders, projects, gesehen)
-  }
-  return n
-}
 
 /**
  * Den Navigationspfad auf das kuerzen, was es wirklich noch gibt.
