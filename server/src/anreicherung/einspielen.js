@@ -59,6 +59,14 @@ export async function spieleEin(db, { modell = null } = {}) {
  * Gebaut, bevor sie gebraucht wird, und das mit Absicht. Wer Werte aus einem Modell in
  * Produktivdaten schreibt, muss sie auch wieder herausbekommen — sonst ist die Entscheidung
  * unumkehrbar, und unumkehrbare Entscheidungen trifft man nicht auf Verdacht.
+ *
+ * NUR UEBER DIESE FUNKTION zurueckrollen, nie mit einem SQL von Hand ueber `ki_aufbereitet`.
+ * Das Flag ist KEIN Marker fuer diese Anreicherung: mehrere Connectoren setzen es ebenfalls fuer
+ * ihre eigene Feldableitung (autobahn.js, _helpers.js), und die BASt-Bruecken allein tragen es
+ * 2.313 mal. Am 31.08.2026 habe ich genau diesen Fehler gemacht und ueber das Flag geloescht:
+ * 20 gemeldete sperrungArt-Werte gingen dabei verloren. Welche Felder wirklich aus der Ableitung
+ * stammen, steht ausschliesslich in der Anreicherungstabelle — und nur nach der geht diese
+ * Funktion.
  */
 export async function nimmZurueck(db, { modell = null } = {}) {
   const { rows } = await db.query(

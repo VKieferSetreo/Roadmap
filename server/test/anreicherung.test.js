@@ -604,3 +604,16 @@ describe("Zwei Fehler aus dem laufenden Bestandslauf", () => {
     expect(pruefeAngabe({ feld: "sperrungArt", wert: "vollsperrung", beleg: t }, t)).toMatchObject({ ok: true })
   })
 })
+
+describe("nimmZurueck greift nur an, was wirklich abgeleitet ist", () => {
+  // Am 31.08.2026 habe ich von Hand über ki_aufbereitet gelöscht und dabei 20 gemeldete
+  // sperrungArt-Werte verloren. Das Flag setzen auch Connectoren für ihre eigene Ableitung —
+  // welche Felder aus DIESER Anreicherung stammen, weiß nur die Anreicherungstabelle.
+  it("entscheidet über die Anreicherungstabelle, nicht über das Flag", async () => {
+    const gesehen = []
+    const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
+    await nimmZurueck(db)
+    expect(gesehen[0].sql).toContain("FROM anreicherung")
+    expect(gesehen[0].sql).not.toContain("ki_aufbereitet")
+  })
+})
