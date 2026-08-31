@@ -160,10 +160,17 @@ export const KATALOG = {
       const treffer = [...new Set(Object.entries(kern).filter(([k]) => n.includes(k)).map(([, v]) => v))]
       return treffer.length === 1 ? treffer[0] : null
     },
-    belegMuster: /sperr|closed|closure|gesperrt/i,
+    // Ein gesperrter Geh- oder Radweg ist KEINE Fahrbahnsperrung. In Produktion gefunden:
+    // "Sperrung des Geh-/Radweges" wurde als Vollsperrung gefuehrt — fuer einen Schwertransport
+    // ist das bedeutungslos, als Vollsperrung gelesen aber eine harte Aussage.
+    belegMuster: /^(?!.*(geh-?\s*\/?\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(ä|ae)nger))(?=.*(sperr|closed|closure|gesperrt)).*$/is,
   },
   zeitfenster: {
-    frage: "In welchem Tageszeitfenster gilt die Maßnahme? Nur wenn eine Uhrzeitspanne genannt ist, im Format HH:MM-HH:MM.",
+    // In Produktion gefunden: aus "von 19.08.2026 07:30 Uhr bis 03.09.2026 15:00 Uhr" wurde
+    // "07:30-15:00". Das ist aber Beginn und Ende einer ZWEIWOECHIGEN Massnahme, kein taeglich
+    // wiederkehrendes Fenster. Die Frage muss den Unterschied benennen, und der Beleg darf kein
+    // Datum enthalten — steht dort eines, ist es eine Zeitspanne ueber Tage.
+    frage: "Gilt die Maßnahme nur zu bestimmten TAGESZEITEN, die sich täglich wiederholen (etwa nachts oder werktags 8 bis 16 Uhr)? Dann HH:MM-HH:MM. Der Gesamtzeitraum der Maßnahme mit Datum zählt NICHT.",
     pruefe: (roh) => {
       const m = String(roh ?? "").match(/(\d{1,2})[:.]?(\d{2})?\s*(?:h|Uhr)?\s*(?:bis|-|–|—|to)\s*(\d{1,2})[:.]?(\d{2})?/i)
       if (!m) return null
@@ -172,7 +179,9 @@ export const KATALOG = {
       const zp = (h, min) => `${String(h).padStart(2, "0")}:${(min ?? "00").padStart(2, "0")}`
       return `${zp(h1, m[2])}-${zp(h2, m[4])}`
     },
-    belegMuster: /\d{1,2}\s*(?::|\.|h|Uhr)/i,
+    // Kein Datum im Beleg: "von 19.08.2026 07:30 Uhr bis 03.09.2026 15:00" ist ein Zeitraum
+    // ueber Tage, kein Tagesfenster.
+    belegMuster: /^(?!.*\d{1,2}\.\d{1,2}\.\d{2,4})(?=.*\d{1,2}\s*(?::|\.|h|Uhr)).*$/is,
   },
 
   // ── Fahrstreifen ──────────────────────────────────────────────────────────

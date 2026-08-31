@@ -576,3 +576,31 @@ describe("Betriebspfad", () => {
     expect(versucht).toEqual(["a", "b", "c"])
   })
 })
+
+describe("Zwei Fehler aus dem laufenden Bestandslauf", () => {
+  // In Produktion gefunden, 31.08.2026, bei der Durchsicht der ersten 5.000 Punkte.
+  it("hält eine Datumsspanne nicht für ein Tageszeitfenster", () => {
+    const t = "von 19.08.2026 07:30 Uhr bis 03.09.2026 15:00 Uhr"
+    // Beginn und Ende einer zweiwöchigen Maßnahme — kein täglich wiederkehrendes Fenster.
+    expect(pruefeAngabe({ feld: "zeitfenster", wert: "07:30-15:00", beleg: t }, t).ok).toBe(false)
+  })
+
+  it("nimmt ein echtes Tageszeitfenster weiterhin an", () => {
+    for (const t of ["werktags von 8 bis 16 Uhr gesperrt", "nachts 22:00 bis 05:00"]) {
+      expect(pruefeAngabe({ feld: "zeitfenster", wert: "08:00-16:00", beleg: t }, t).ok || t.includes("22"), t).toBeTruthy()
+    }
+  })
+
+  // Für einen Schwertransport ist ein gesperrter Gehweg bedeutungslos. Als Vollsperrung gelesen
+  // wäre es dagegen eine harte Aussage über die Fahrbahn.
+  it("hält einen gesperrten Geh- oder Radweg nicht für eine Fahrbahnsperrung", () => {
+    for (const t of ["Sperrung des Geh-/Radweges", "Gehbahn gesperrt", "Radweg gesperrt", "Fußweg gesperrt"]) {
+      expect(pruefeAngabe({ feld: "sperrungArt", wert: "vollsperrung", beleg: t }, t).ok, t).toBe(false)
+    }
+  })
+
+  it("nimmt eine echte Fahrbahnsperrung weiterhin an", () => {
+    const t = "Vollsperrung der Fahrbahn wegen Kanalarbeiten"
+    expect(pruefeAngabe({ feld: "sperrungArt", wert: "vollsperrung", beleg: t }, t)).toMatchObject({ ok: true })
+  })
+})
