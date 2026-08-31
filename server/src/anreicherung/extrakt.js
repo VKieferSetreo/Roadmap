@@ -24,7 +24,7 @@
 
 import { createHash } from "node:crypto"
 import { normRoadRefWeit } from "../external/osrm.js"
-import { KATALOG, FELD_ALIAS, setzeRefNormalisierer } from "./felder.js"
+import { KATALOG, FELD_ALIAS, FAHRBAHN_FELDER, nurGehweg, setzeRefNormalisierer } from "./felder.js"
 
 // Der Katalog kennt osrm nicht (sonst haetten wir einen Ringschluss), bekommt den Normalisierer
 // also von hier gereicht.
@@ -113,6 +113,11 @@ export function pruefeAngabe(angabe, quelltext) {
   // Zeile steht ja wirklich im Text.
   if (RAHMEN_PRAEFIX.test(beleg)) return { ok: false, grund: "Beleg zitiert den Rahmen, nicht die Meldung" }
 
+  // Ein Beleg, der NUR den Geh- oder Radweg betrifft, sagt ueber die befahrbare Flaeche nichts.
+  if (FAHRBAHN_FELDER.has(feld) && nurGehweg(beleg)) {
+    return { ok: false, grund: "Beleg betrifft nur den Geh-/Radweg" }
+  }
+
   // Ein ZAHLENWERT braucht die Einheit oder ein Stichwort im Beleg. In der Durchsicht der ersten
   // 1.193 Angaben war genau eine auffaellig, und zwar diese: maxGewichtT = 250 mit dem Beleg
   // "Ab 250". 250 was? Ohne Einheit ist die Zahl nicht belegt, sondern nur zitiert.
@@ -166,6 +171,8 @@ Regeln:
 - Findest du nichts, gib {"angaben": []} zurück. Das ist eine richtige Antwort, keine schlechte.
 - Schreibe NIEMALS Platzhalter wie "nicht angegeben", "nicht anwendbar", "unbekannt" oder "-" als
   Wert, und erfinde keinen Beleg wie "nicht im Text vorhanden". Lass das Feld einfach weg.
+- Betrifft eine Angabe NUR den Geh- oder Radweg ("Gehweg eingeengt", "Sperrung des Geh-/Radweges"),
+  dann sagt sie über die Fahrbahn NICHTS. Melde sie nicht als Sperrung oder Verengung der Fahrbahn.
 - Antworte bei Ja/Nein-Fragen NUR, wenn der Text die Sache ausdrücklich nennt. Ein "nein", nur
   weil nichts dasteht, ist keine Angabe und wird verworfen.
 - Die Zeile "Verortet an" nennt nur den Ort und sagt NICHT, ob die Straße getragen oder gekreuzt

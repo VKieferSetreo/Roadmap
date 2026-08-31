@@ -84,6 +84,45 @@ for (const r of rows) {
 sage(`geprueft ${zahl.geprueft}, Quelltext geaendert ${zahl.hashDaneben}`)
 sage(`GERETTET ${zahl.gerettet}, weiterhin verworfen ${zahl.bleibt}, Dubletten ${zahl.dublette}`)
 
+// ── Die Gegenrichtung ────────────────────────────────────────────────────────────────────────
+//
+// Ein schaerferer Riegel wirkt nur auf das, was NOCH KOMMT. Was schon uebernommen ist, bleibt
+// stehen — auch wenn es nach heutigem Stand falsch ist. Gemessen am 31.08.2026: 10 von 200
+// uebernommenen Angaben waren reine Geh-/Radweg-Meldungen, als Fahrbahnverengung gefuehrt.
+//
+// Geprueft wird gegen den BELEG als Quelltext. Das ist zulaessig und sogar genauer: dass der Beleg
+// im Quelltext stand, war beim Lauf wahr und ist nicht die Frage. Die Frage ist, ob der Wert die
+// heutigen Riegel haelt — und die schauen alle auf den Beleg.
+const { rows: bestand } = await db.query(
+  `SELECT id, ziel_id, feld, wert, beleg, modell FROM anreicherung
+    WHERE ziel_typ = 'obstacle' AND stand = 'ok' AND wert IS NOT NULL`,
+)
+const faul = []
+for (const b of bestand) {
+  const p = pruefeAngabe({ feld: b.feld, wert: b.wert, beleg: b.beleg }, b.beleg ?? "")
+  if (!p.ok) faul.push({ ...b, grund: p.grund })
+}
+sage(`\nBestand: ${bestand.length} uebernommene Angaben, ${faul.length} halten die heutigen Riegel nicht.`)
+for (const f of faul.slice(0, 20)) sage(`  ${f.feld} = ${f.wert} — ${f.grund} | "${String(f.beleg).slice(0, 60)}"`)
+
+if (SCHREIBEN && faul.length) {
+  for (const f of faul) {
+    // Erst aus dem Bestand nehmen, dann die Zeile umschreiben: andersherum wuesste der naechste
+    // Lauf nicht mehr, welches Feld er zu entfernen hat.
+    await db.query(
+      `UPDATE obstacles SET attrs = coalesce(attrs, '{}'::jsonb) - $2::text, updated_at = now()
+        WHERE id = $1::uuid`,
+      [f.ziel_id, f.feld],
+    )
+    await db.query(
+      `UPDATE anreicherung SET stand = 'verworfen', wert = NULL, roh_wert = $2, grund = $3
+        WHERE id = $1`,
+      [f.id, f.wert, `nachtraeglich: ${f.grund}`],
+    )
+  }
+  sage(`${faul.length} Angaben zurueckgenommen.`)
+}
+
 if (SCHREIBEN) {
   const ein = await spieleEin(db)
   sage(`in den Bestand gespielt: ${ein.aktualisiert} Punkte aktualisiert.`)

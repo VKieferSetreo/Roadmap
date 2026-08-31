@@ -753,6 +753,35 @@ describe("Aus dem Replay der 786 aufgezeichneten Verwerfungen", () => {
     expect(pruefeAngabe({ feld: "sperrungArt", wert: "fahrstreifensperrung", beleg: t }, t).ok).toBe(true)
   })
 
+  // Ein eingeengter GEHWEG ist keine eingeengte Fahrbahn. Der Ausschluss stand nur bei
+  // sperrungArt; bei fahrbahnVerengt, teilsperrung und halbseitig ging dieselbe Meldung durch —
+  // gemessen 10 von 200 übernommenen Angaben im Bestand waren genau das.
+  it("liest Geh-/Radweg-Meldungen nicht als Fahrbahn-Einschränkung", () => {
+    for (const [feld, beleg] of [
+      ["fahrbahnVerengt", "Gehweg eingeengt"],
+      ["fahrbahnVerengt", "Einengung des Geh-/Radweges"],
+      ["fahrbahnVerengt", "Radweg verengt"],
+      ["teilsperrung", "einseitig Sperrung des Geh-/Radweges"],
+      ["halbseitig", "Halbseitige Gehwegsperrung"],
+      ["sperrungArt", "Sperrung des Geh-/Radweges"],
+    ]) {
+      const r = pruefeAngabe({ feld, wert: feld === "sperrungArt" ? "vollsperrung" : "ja", beleg }, beleg)
+      expect(r.ok, `${feld}: ${beleg}`).toBe(false)
+      expect(r.grund).toBe("Beleg betrifft nur den Geh-/Radweg")
+    }
+  })
+
+  // Kein pauschales Verbot: nennt der Beleg auch die Fahrbahn, ist die Aussage darüber echt und
+  // darf nicht mit verworfen werden.
+  it("verwirft nicht, wenn der Beleg auch die Fahrbahn nennt", () => {
+    for (const [feld, wert, beleg] of [
+      ["vollsperrung", "ja", "Vollsperrung; Einengung des Geh-/Radweges"],
+      ["fahrbahnVerengt", "ja", "Einengung der Fahrbahn; einseitig Sperrung des Geh-/Radweges"],
+    ]) {
+      expect(pruefeAngabe({ feld, wert, beleg }, beleg).ok, beleg).toBe(true)
+    }
+  })
+
   // Der Beleg muss aus der Meldung kommen, nicht aus den Zeilen, die wir selbst darum herumbauen.
   it("weist Belege aus dem eigenen Rahmen ab", () => {
     const text = "Bezeichnung: Vollsperrung\nArt: sperrung\nVorhandene Angaben: {\"sperrungArt\":\"roadClosed\"}"

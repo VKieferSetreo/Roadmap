@@ -106,6 +106,24 @@ function jaNein(roh) {
  */
 const EINSPURIG = "nur ein(en|e)?\\s+(fahrstreifen|fahrspur|spur)|auf einen fahrstreifen|abwechselnd frei|einspurig"
 
+/**
+ * Ein gesperrter oder eingeengter GEH- ODER RADWEG ist fuer einen Schwertransport bedeutungslos.
+ * Als Fahrbahneinschraenkung gelesen ist er eine harte Falschaussage — genau der Fehler, der am
+ * 31.08.2026 in Produktion gefunden wurde ("Sperrung des Geh-/Radweges" als Vollsperrung
+ * gefuehrt, 9.913 Eintraege verworfen). Der Ausschluss stand danach nur bei sperrungArt; bei
+ * fahrbahnVerengt, teilsperrung und halbseitig ging dieselbe Meldung weiter durch.
+ *
+ * Die Pruefung ist bewusst KEIN reines Verbot: nennt der Beleg neben dem Gehweg auch die
+ * Fahrbahn ("Vollsperrung; Einengung des Geh-/Radweges"), ist die Fahrbahnaussage echt und darf
+ * nicht mit verworfen werden. Erst wo der Gehweg das einzige Objekt ist, wird abgewiesen.
+ *
+ * In FAHRBAHN steht mit Absicht kein "straße": Strassennamen kommen in fast jedem Beleg vor und
+ * wuerden den Ausschluss wirkungslos machen.
+ */
+const GEHWEG = /geh-?\s*\/?\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(ä|ae)nger/i
+const FAHRBAHN = /fahrbahn|fahrstreifen|fahrspur|richtungsfahrbahn|vollsperr|durchfahrt/i
+export const nurGehweg = (beleg) => GEHWEG.test(String(beleg ?? "")) && !FAHRBAHN.test(String(beleg ?? ""))
+
 const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
   teilsperrung: new RegExp(`teilsperr|teilweise gesperrt|teilw\\. gesperrt|halbseit|einseitig|${EINSPURIG}`, "i"),
@@ -163,11 +181,15 @@ export const KATALOG = {
 
   // ── Straßen (nur die Lage am Bauwerk, kein Ort) ───────────────────────────
   getrageneStrasse: {
-    frage: "Welche Straße führt ÜBER das Bauwerk, wird also von ihm getragen? Bei \"X über Y\" ist X die getragene, bei \"im Zuge der X\" ebenfalls X.\n  Deutsche Straßenklassen: A = Autobahn, B = Bundesstraße, L = Landesstraße, K = Kreisstraße, St = Staatsstraße (Bayern und Sachsen), S = Staatsstraße (Sachsen). Kreisstraßen tragen oft ein Landkreiskürzel, etwa \"K\" gefolgt von zwei bis drei Buchstaben und einer Zahl.",
+    // Die Abkürzungen stehen hier, weil die Bauwerksverzeichnisse fast nur aus ihnen bestehen:
+    // "UF Naesse Hofbieber, UeF L 3258, UF WiWeg" nennt eine Straße, und das Modell las sie nicht,
+    // weil ihm niemand gesagt hat, was UeF heißt. Gemessen an 1.010 Punkten mit Leermeldung war
+    // das der häufigste Grund, aus dem eine Straße im Namen unerkannt blieb.
+    frage: "Welche Straße führt ÜBER das Bauwerk, wird also von ihm getragen? Bei \"X über Y\" ist X die getragene, bei \"im Zuge der X\" ebenfalls X.\n  Abkürzungen der Bauwerksverzeichnisse: ÜF/UeF/UEF = Überführung (die genannte Straße führt OBEN), UF = Unterführung (die genannte Straße führt UNTEN), BW = Bauwerksnummer (keine Straße), EÜ = Eisenbahnüberführung.\n  Deutsche Straßenklassen: A = Autobahn, B = Bundesstraße, L = Landesstraße, K = Kreisstraße, St = Staatsstraße (Bayern und Sachsen), S = Staatsstraße (Sachsen). Kreisstraßen tragen oft ein Landkreiskürzel, etwa \"K\" gefolgt von zwei bis drei Buchstaben und einer Zahl.",
     pruefe: ref,
   },
   gekreuzteStrasse: {
-    frage: "Welche Straße verläuft UNTER dem Bauwerk, wird also überquert? Bei \"X über Y\" ist Y die gekreuzte, bei \"Überführung der X über Y\" ebenfalls Y.",
+    frage: "Welche Straße verläuft UNTER dem Bauwerk, wird also überquert? Bei \"X über Y\" ist Y die gekreuzte, bei \"Überführung der X über Y\" ebenfalls Y.\n  Bei \"UF X\" (Unterführung) ist X die gekreuzte Straße. Ein Gewässer, ein Weg oder eine Bahnstrecke ist KEINE Straße — dann gibt es hier nichts zu melden.",
     pruefe: ref,
   },
 
@@ -179,7 +201,9 @@ export const KATALOG = {
   einbahnstrasse: { frage: "Ist es eine Einbahnstraße? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.einbahnstrasse },
   sackgasse: { frage: "Ist es eine Sackgasse? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.sackgasse },
   nurNachts: { frage: "Gilt die Maßnahme nur nachts? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.nurNachts },
-  umleitung: { frage: "Ist eine Umleitung eingerichtet? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.umleitung },
+  // "eingerichtet" war zu eng: die Quellen schreiben fast durchgängig "empfohlene Umleitung: über
+  // …". Gemessen 32 Punkte, bei denen die Umleitung wörtlich im Text stand und das Feld leer blieb.
+  umleitung: { frage: "Ist eine Umleitung eingerichtet, ausgewiesen oder empfohlen? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.umleitung },
 
   // ── Art und Zeit ──────────────────────────────────────────────────────────
   // Diese beiden hat das Modell im Test von sich aus geliefert ("sperrungArt=roadClosed",
@@ -201,12 +225,11 @@ export const KATALOG = {
       const treffer = [...new Set(Object.entries(kern).filter(([k]) => n.includes(k)).map(([, v]) => v))]
       return treffer.length === 1 ? treffer[0] : null
     },
-    // Ein gesperrter Geh- oder Radweg ist KEINE Fahrbahnsperrung. In Produktion gefunden:
-    // "Sperrung des Geh-/Radweges" wurde als Vollsperrung gefuehrt — fuer einen Schwertransport
-    // ist das bedeutungslos, als Vollsperrung gelesen aber eine harte Aussage.
     // Einspurige Verkehrsfuehrung IST eine Fahrstreifensperrung, auch wenn das Wort "Sperrung"
     // in der Meldung nicht vorkommt — sonst faellt die haeufigste bayerische Formulierung durch.
-    belegMuster: new RegExp(`^(?!.*(geh-?\\s*\\/?\\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(ä|ae)nger))(?=.*(sperr|closed|closure|gesperrt|${EINSPURIG})).*$`, "is"),
+    // Den Geh-/Radweg-Ausschluss uebernimmt jetzt FAHRBAHN_FELDER, einheitlich fuer alle Felder,
+    // die sich auf die befahrbare Flaeche beziehen.
+    belegMuster: new RegExp(`sperr|closed|closure|gesperrt|${EINSPURIG}`, "i"),
   },
   zeitfenster: {
     // In Produktion gefunden: aus "von 19.08.2026 07:30 Uhr bis 03.09.2026 15:00 Uhr" wurde
@@ -236,6 +259,13 @@ export const KATALOG = {
 /** Felder, die NUR bei Bauwerken sinnvoll sind. Eine Baustelle hat keine getragene Straße, und
  *  danach zu fragen lädt zu Fehlschlüssen ein. */
 export const NUR_BAUWERK = new Set(["getrageneStrasse", "gekreuzteStrasse"])
+
+/** Felder, die sich auf die BEFAHRBARE Fläche beziehen. Für sie gilt `nurGehweg`: eine Meldung,
+ *  die ausschließlich den Geh- oder Radweg betrifft, sagt über sie nichts aus. */
+export const FAHRBAHN_FELDER = new Set([
+  "vollsperrung", "teilsperrung", "halbseitig", "fahrbahnVerengt", "sperrungArt",
+  "spurenGesperrt", "spurenFrei", "anzahlFahrstreifen", "sperrlaengeM", "restbreiteM", "maxBreiteM",
+])
 
 /**
  * Felder, die dieselbe Sache aus verschiedenen Blickwinkeln beschreiben. Steht eines davon schon
