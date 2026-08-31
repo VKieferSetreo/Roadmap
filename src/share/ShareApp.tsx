@@ -229,7 +229,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       <MemoryRouter initialEntries={[`/projekte/${projectId}/karte`]}>
         <Shell projektName={data.name} routes={data.routes}>
           <Routes>
-            <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} />} />
+            <Route path="/projekte/:id/karte" element={<KarteTab project={project} canChat={false} panelsOffen />} />
             <Route
               path="/projekte/:id/dashboard"
               element={

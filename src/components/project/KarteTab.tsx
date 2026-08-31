@@ -72,6 +72,7 @@ export function KarteTab({
   overlayFooter,
   canHide = false,
   canChat = true,
+  panelsOffen = false,
 }: {
   project: Project
   /** Optionales Element unten im linken Overlay-Stack (gap-2 unter "Strecken").
@@ -82,6 +83,11 @@ export function KarteTab({
   canHide?: boolean
   /** Baustellen-Chat anbieten. App = true; öffentliche Freigabe = false (T-224). */
   canChat?: boolean
+  /** „Strecken" und „Kategorien" schon offen zeigen. In der App zu (der Bearbeiter kennt seine
+   *  Strecken und will die Karte frei sehen); in der Freigabe offen, weil der Empfänger die
+   *  Ansicht zum ersten Mal sieht und sonst nicht merkt, dass er darin etwas wählen kann
+   *  (Max 31.08.2026). */
+  panelsOffen?: boolean
 }) {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -93,11 +99,11 @@ export function KarteTab({
   /** ausgeblendete Strecken-IDs (Ebenen-Panel) — T-622 pro Account+Projekt persistiert. Sofort aus dem
    *  localStorage-Cache hydriert (kein Flackern), beim Mount mit dem Backend abgeglichen. */
   const [hidden, setHidden] = useState<Set<string>>(() => new Set(getHiddenPref(accountKey, project.id)))
-  const [layersOpen, setLayersOpen] = useState(false)
+  const [layersOpen, setLayersOpen] = useState(panelsOffen)
   /** Strecke im Editor (T-197), null = geschlossen. */
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
-  /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. Beide standardmäßig EINGEKLAPPT. */
-  const [katOpen, setKatOpen] = useState(false)
+  /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. Startwert siehe `panelsOffen`. */
+  const [katOpen, setKatOpen] = useState(panelsOffen)
   /** ausgeblendete Kategorien (Kategorie-Filter oben rechts). Leer = alle sichtbar. */
   const [katHidden, setKatHidden] = useState<Set<string>>(new Set())
   /** ausgeblendete Severities (Klick auf die Zähler-Marken oben links). Default: „Warnung" +
@@ -174,13 +180,25 @@ export function KarteTab({
   const zeitstrahlAktiv =
     Boolean(project.zeitraum?.von && project.zeitraum?.bis) &&
     Date.parse(project.zeitraum.bis!) > Date.parse(project.zeitraum.von!)
-  const gefilterteFindings = useMemo(() => {
+  // Zwischenstufe: Schweregrad + Zeitfenster angewandt, Kategorie-Filter noch NICHT. Genau das ist
+  // die Menge, auf die sich das Kategorie-Register bezieht (Max 31.08.2026: stand nur „Kritisch" an,
+  // zählten die Kategorien trotzdem alle 158 Funde — die Summe passte zu keiner Zahl auf dem Schirm).
+  // Der Kategorie-Filter darf hier nicht hineinwirken: sonst verschwände eine abgewählte Kategorie
+  // aus ihrer eigenen Liste und wäre nicht mehr zurückzuholen.
+  const findingsNachSchwere = useMemo(() => {
     const base =
-      katHidden.size === 0 && severityHidden.size === 0
+      severityHidden.size === 0
         ? sichtbareFindings
-        : sichtbareFindings.filter((f) => !katHidden.has(f.kategorie) && !severityHidden.has(f.severity))
+        : sichtbareFindings.filter((f) => !severityHidden.has(f.severity))
     return timeWin ? base.filter((f) => findingInTime(f, timeWin.start, timeWin.end)) : base
-  }, [sichtbareFindings, katHidden, severityHidden, timeWin])
+  }, [sichtbareFindings, severityHidden, timeWin])
+  const gefilterteFindings = useMemo(
+    () =>
+      katHidden.size === 0
+        ? findingsNachSchwere
+        : findingsNachSchwere.filter((f) => !katHidden.has(f.kategorie)),
+    [findingsNachSchwere, katHidden],
+  )
 
   // Ausgeblendete Funde (f.hidden) auf sichtbaren Strecken, im Zeitfenster — eigene Achse, NICHT an
   // Severity-/Kategorie-Filter gekoppelt. Zähler fürs „Ausgeblendet"-Chip; bei aktivem Chip als graue
@@ -280,8 +298,9 @@ export function KarteTab({
     : (project.distanzKm ?? 0)
   const streckeKm = mehrereStrecken ? Math.round(avgKm * 10) / 10 : (project.distanzKm ?? 0)
   const fahrzeitMin = mehrereStrecken ? Math.round((avgKm / 50) * 60) : (project.fahrzeitMin ?? 0)
-  // Unique Kategorien auf den sichtbaren Strecken — für die Legende.
-  const kategoriesOnRoute = Array.from(new Set(sichtbareFindings.map((f) => f.kategorie))).sort(
+  // Kategorien, die es in der aktuellen Auswahl WIRKLICH gibt — also nach Schweregrad und Zeitfenster.
+  // Eine Kategorie ohne Fund in dieser Auswahl fällt heraus, statt mit einer 0 dazustehen.
+  const kategoriesOnRoute = Array.from(new Set(findingsNachSchwere.map((f) => f.kategorie))).sort(
     (a, b) => katMeta(a).label.localeCompare(katMeta(b).label),
   )
   const toggleRoute = (routeId: string) => {
@@ -589,7 +608,7 @@ export function KarteTab({
             {katOpen ? (
               <ul className="flex flex-col gap-0.5 border-t border-neutral-200/70 px-2 py-1.5">
                 {kategoriesOnRoute.map((kat) => {
-                  const count = sichtbareFindings.filter((f) => f.kategorie === kat).length
+                  const count = findingsNachSchwere.filter((f) => f.kategorie === kat).length
                   const aus = katHidden.has(kat)
                   return (
                     <li key={kat}>
