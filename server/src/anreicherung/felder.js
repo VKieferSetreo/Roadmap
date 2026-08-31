@@ -194,10 +194,32 @@ export const KATALOG = {
  *  danach zu fragen lädt zu Fehlschlüssen ein. */
 export const NUR_BAUWERK = new Set(["getrageneStrasse", "gekreuzteStrasse"])
 
+/**
+ * Felder, die dieselbe Sache aus verschiedenen Blickwinkeln beschreiben. Steht eines davon schon
+ * in der Quelle, wird nach den anderen nicht mehr gefragt.
+ *
+ * Der Anlass, gemessen am 31.08.2026: 1.063 Punkte mit "Lkw-Durchfahrtsverbot über 3,5 t" tragen
+ * verkehrsverbotLkwT = 3,5 und wurden trotzdem nach maxGewichtT gefragt. Das Modell antwortete
+ * dort — richtig — nichts, denn 3,5 t ist ein Verbot und keine Tragfähigkeit. Die Frage war also
+ * jedes Mal ein verschenkter Aufruf, und sie lädt geradezu dazu ein, dieselbe Zahl ins zweite
+ * Feld zu schreiben.
+ */
+const VERWANDT = [
+  ["maxGewichtT", "verkehrsverbotLkwT", "maxAchslastT"],
+  ["maxBreiteM", "restbreiteM"],
+  ["vollsperrung", "teilsperrung", "sperrungArt"],
+]
+
 /** Welche Felder soll dieser Punkt beantworten? Nur, was die Quelle offen lässt — was sie sagt,
  *  gilt, und ein Modell soll es nicht "korrigieren". */
 export function offeneFelderFuer(o) {
   const attrs = o?.attrs && typeof o.attrs === "object" ? o.attrs : {}
   const bauwerk = o?.kategorie === "bruecke" || o?.kategorie === "tunnel"
-  return Object.keys(KATALOG).filter((f) => attrs[f] == null && (bauwerk || !NUR_BAUWERK.has(f)))
+  // Welche Gruppen die Quelle schon beantwortet hat — danach wird gar nicht mehr gefragt.
+  const beantwortet = new Set(
+    VERWANDT.filter((gruppe) => gruppe.some((f) => attrs[f] != null)).flat(),
+  )
+  return Object.keys(KATALOG).filter(
+    (f) => attrs[f] == null && !beantwortet.has(f) && (bauwerk || !NUR_BAUWERK.has(f)),
+  )
 }

@@ -635,3 +635,38 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
     expect(gesehen[0].p[1]).toContain("maxHoeheM")
   })
 })
+
+describe("Verfeinerungen aus der Auswertung der ersten 5.400 Punkte", () => {
+  // Von 1.193 angenommenen Angaben war genau eine auffällig: maxGewichtT = 250 mit dem Beleg
+  // "Ab 250". 250 was? Ohne Einheit ist die Zahl nicht belegt, sondern nur zitiert.
+  it("verlangt bei Zahlenwerten eine Einheit im Beleg", () => {
+    expect(pruefeAngabe({ feld: "maxGewichtT", wert: "250", beleg: "Ab 250" }, "Ab 250").ok).toBe(false)
+    expect(pruefeAngabe({ feld: "maxHoeheM", wert: "4.2", beleg: "4,2" }, "4,2").ok).toBe(false)
+  })
+
+  it("nimmt einen Beleg mit Einheit weiterhin an", () => {
+    const t = "zulässige Gesamtmasse 44 t"
+    expect(pruefeAngabe({ feld: "maxGewichtT", wert: "44", beleg: "Gesamtmasse 44 t" }, t).ok).toBe(true)
+  })
+
+  // 1.063 Punkte mit "Lkw-Durchfahrtsverbot über 3,5 t" tragen verkehrsverbotLkwT und wurden
+  // trotzdem nach maxGewichtT gefragt. Das Modell schwieg dort zu Recht — 3,5 t ist ein Verbot,
+  // keine Tragfähigkeit. Die Frage war jedes Mal ein verschenkter Aufruf.
+  it("fragt nicht nach einem Feld, das die Quelle über ein verwandtes schon beantwortet", () => {
+    const f = offeneFelder({ kategorie: "gewicht", attrs: { verkehrsverbotLkwT: 3.5 } })
+    expect(f).not.toContain("maxGewichtT")
+    expect(f).not.toContain("maxAchslastT")
+  })
+
+  it("fragt weiter, wo die Quelle wirklich schweigt", () => {
+    const f = offeneFelder({ kategorie: "baustelle", attrs: {} })
+    expect(f).toContain("maxGewichtT")
+    expect(f).toContain("umleitung")
+  })
+
+  it("koppelt Breite und Restbreite, aber nicht mit der Höhe", () => {
+    const f = offeneFelder({ kategorie: "baustelle", attrs: { restbreiteM: 3.5 } })
+    expect(f).not.toContain("maxBreiteM")
+    expect(f).toContain("maxHoeheM")
+  })
+})

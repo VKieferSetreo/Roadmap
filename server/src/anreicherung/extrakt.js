@@ -83,6 +83,13 @@ export function pruefeAngabe(angabe, quelltext) {
   const beleg = String(angabe?.beleg ?? "").trim()
   if (beleg.length < 2) return { ok: false, grund: "kein Beleg angegeben" }
 
+  // Ein ZAHLENWERT braucht die Einheit oder ein Stichwort im Beleg. In der Durchsicht der ersten
+  // 1.193 Angaben war genau eine auffaellig, und zwar diese: maxGewichtT = 250 mit dem Beleg
+  // "Ab 250". 250 was? Ohne Einheit ist die Zahl nicht belegt, sondern nur zitiert.
+  if (/M$|T$|Min$/.test(feld) && /^\D{0,4}[\d.,]+\D{0,2}$/.test(beleg)) {
+    return { ok: false, grund: `Beleg "${beleg}" nennt keine Einheit` }
+  }
+
   // Riegel 1: die Textstelle muss es wirklich geben.
   if (!flach(quelltext).includes(flach(beleg))) return { ok: false, grund: "Beleg steht nicht im Quelltext" }
 
