@@ -42,8 +42,11 @@ export const DEFAULT_ROUTE_FARBE = "#87B52D"
 
 const sanePoint = (p) => isPlainObject(p) && isFiniteNumber(p.lat) && isFiniteNumber(p.lng)
 
-/** Boundary-Validierung für PATCH {routes} — ersetzt das ganze Array. */
-function normalizeRoutes(routes) {
+/** Boundary-Validierung für PATCH {routes} — ersetzt das ganze Array.
+ *  EXPORTIERT, damit die Feldliste pruefbar ist: was hier fehlt, wird beim Speichern still
+ *  weggeworfen, und die Strecke steht beim naechsten Laden wieder mit der Voreinstellung da.
+ *  Genau so ist `verifiziert` einmal verlorengegangen (siehe Kommentar unten). */
+export function normalizeRoutes(routes) {
   if (!Array.isArray(routes)) throw new ApiError(400, "routes muss ein Array sein")
   return routes.map((r, i) => {
     if (!isPlainObject(r)) throw new ApiError(400, `routes[${i}] muss ein Objekt sein`)
@@ -69,6 +72,11 @@ function normalizeRoutes(routes) {
       // speichern; false/undefined = ungeprüft (Gate aktiv, source==='vemags').
       ...(r.verifiziert === true ? { verifiziert: true } : {}),
       ...(typeof r.bereinigt === "number" ? { bereinigt: r.bereinigt } : {}),
+      // T-650: Freigabe je Strecke. Nur FALSE speichern, denn die Voreinstellung ist sichtbar
+      // — bestehende Strecken tragen das Feld nicht und sollen es auch nicht bekommen. Ohne
+      // diese Zeile strippt normalizeRoutes die Auswahl beim naechsten Speichern weg und die
+      // ausgeblendete Strecke stuende wieder beim Kunden. Dieselbe Falle wie bei `verifiziert`.
+      ...(r.oeffentlich === false ? { oeffentlich: false } : {}),
     }
   })
 }

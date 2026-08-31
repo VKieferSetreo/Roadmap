@@ -31,6 +31,10 @@ export interface ProjectRoute {
   verifiziert?: boolean
   /** Anzahl beim Import entfernter Schlenker/Fehl-Geocodes (Transparenz im Prüfen-Hinweis). */
   bereinigt?: number
+  /** Freigabe je Strecke (T-650): false = beim Kunden AUSGEBLENDET, und zwar spurlos — samt
+   *  ihren Funden, ihrem Namen an geteilten Funden und ihrem Anteil an Länge und Fahrzeit.
+   *  Fehlt das Feld, ist die Strecke sichtbar: bestehende Projekte ändern sich nicht. */
+  oeffentlich?: boolean
 }
 
 /** Quelle, über die eine Strecke angelegt wurde (= die Upload-Tabs). */

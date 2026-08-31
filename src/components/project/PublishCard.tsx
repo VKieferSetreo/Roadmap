@@ -5,7 +5,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Copy, Globe2, Link2, Lock, LockOpen, PowerOff } from "lucide-react"
+import { Check, Copy, Eye, EyeOff, Globe2, Link2, Lock, LockOpen, PowerOff } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Input, Label } from "@/components/ui/Input"
@@ -15,6 +15,7 @@ import type { Project } from "@/types/domain"
 
 export function PublishCard({ project }: { project: Project }) {
   const publishProject = useProjectStore((s) => s.publishProject)
+  const updateRoute = useProjectStore((s) => s.updateRoute)
   const revokeShare = useProjectStore((s) => s.revokeShare)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [password, setPassword] = useState("")
@@ -23,6 +24,9 @@ export function PublishCard({ project }: { project: Project }) {
 
   const share = project.share
   const live = Boolean(share)
+  // Eine Freigabe ohne eine einzige sichtbare Strecke waere eine leere Karte beim Kunden —
+  // und die sieht nach einem Fehler aus, nicht nach einer Entscheidung.
+  const sichtbareStrecken = project.routes.filter((r) => r.oeffentlich !== false).length
 
   // Status-Badge (oben rechts, wie die „Tage" beim Transport-Zeitraum): Live = freigegeben.
   const statusBadge = (
@@ -164,6 +168,54 @@ export function PublishCard({ project }: { project: Project }) {
           onClose={() => setDialogOpen(false)}
         />
         <div className="px-6 py-5">
+          {/* T-650: welche Strecken der Kunde ueberhaupt zu sehen bekommt. Steht VOR dem
+              Passwort, weil es die inhaltliche Entscheidung ist und das Passwort nur der
+              Zugang. Abgewaehlte Strecken verschwinden beim Kunden spurlos, samt ihren
+              Funden und ihrem Anteil an Laenge und Fahrzeit — siehe
+              server/src/oeffentlicheSicht.js. */}
+          {project.routes.length > 0 && (
+            <div className="mb-5">
+              <Label>Welche Strecken sollen sichtbar sein?</Label>
+              <ul className="mt-1.5 space-y-1 rounded-md border border-neutral-200 p-1.5">
+                {project.routes.map((r) => {
+                  const an = r.oeffentlich !== false
+                  return (
+                    <li key={r.id}>
+                      <label className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-neutral-50">
+                        <input
+                          type="checkbox"
+                          checked={an}
+                          onChange={() => updateRoute(project.id, r.id, { oeffentlich: !an })}
+                          className="h-4 w-4 shrink-0 accent-primary-600"
+                        />
+                        <span
+                          aria-hidden
+                          className="h-3 w-3 shrink-0 rounded-full"
+                          style={{ backgroundColor: r.farbe }}
+                        />
+                        <span className={cn("min-w-0 flex-1 truncate", an ? "text-neutral-800" : "text-neutral-400 line-through")}>
+                          {r.name}
+                        </span>
+                        {an ? (
+                          <Eye className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                        ) : (
+                          <EyeOff className="h-3.5 w-3.5 shrink-0 text-neutral-300" />
+                        )}
+                      </label>
+                    </li>
+                  )
+                })}
+              </ul>
+              <p className="mt-1.5 text-xs text-neutral-400">
+                {sichtbareStrecken === 0
+                  ? "Mindestens eine Strecke muss sichtbar bleiben."
+                  : sichtbareStrecken === project.routes.length
+                    ? "Alle Strecken sind sichtbar."
+                    : `${sichtbareStrecken} von ${project.routes.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
+              </p>
+            </div>
+          )}
+
           <Label htmlFor="share-pw">Passwort (optional)</Label>
           <Input
             id="share-pw"
@@ -185,7 +237,7 @@ export function PublishCard({ project }: { project: Project }) {
           <Button variant="ghost" onClick={() => setDialogOpen(false)}>
             Abbrechen
           </Button>
-          <Button onClick={() => void submit()} loading={busy}>
+          <Button onClick={() => void submit()} loading={busy} disabled={project.routes.length > 0 && sichtbareStrecken === 0}>
             {share ? "Speichern" : "Veröffentlichen"}
           </Button>
         </div>

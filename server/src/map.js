@@ -2,6 +2,7 @@
 // (SPEC-backend-v2.md — das FE wird parallel 1:1 dagegen gebaut).
 
 import { cleanText, toIso, toIsoDate } from "./util.js"
+import { oeffentlicheFunde, oeffentlicheKennzahlen, oeffentlicheRouten } from "./oeffentlicheSicht.js"
 import { resolveKontakt } from "./engine/zustaendigkeitResolver.js"
 
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
@@ -158,10 +159,25 @@ export function rowToNotification(row) {
  */
 export function rowToShareData(row, findings = []) {
   const t = row.transport ?? {}
+  // NUR die freigegebenen Strecken, und zwar spurlos (T-650, siehe oeffentlicheSicht.js):
+  // die verborgenen verschwinden samt ihren Funden, ihren Namen an geteilten Funden und
+  // ihrem Anteil an Laenge und Fahrzeit. Der Kunde sieht ein kleineres, aber in sich
+  // stimmiges Projekt — keinen Hinweis darauf, dass etwas fehlt.
+  const routen = oeffentlicheRouten(row.routes)
+  const namen = new Map(routen.map((r) => [r.id, r.name]))
+  const funde = oeffentlicheFunde(findings, row.routes).map((f) =>
+    // Der Streckenname des Repraesentanten wird aus der SICHTBAREN Liste neu gesetzt: nach
+    // dem Kuerzen kann ein anderer Repraesentant zustaendig sein als vorher.
+    f.routeName || !f.routeId ? f : { ...f, ...(namen.has(f.routeId) ? { routeName: namen.get(f.routeId) } : {}) },
+  )
+  const kennzahlen = oeffentlicheKennzahlen(row.routes, {
+    distanzKm: row.distanz_km == null ? null : Number(row.distanz_km),
+    fahrzeitMin: row.fahrzeit_min == null ? null : Number(row.fahrzeit_min),
+  })
   return {
     name: row.name,
-    ...(row.distanz_km != null && { distanzKm: Number(row.distanz_km) }),
-    ...(row.fahrzeit_min != null && { fahrzeitMin: Number(row.fahrzeit_min) }),
+    ...(kennzahlen.distanzKm != null && { distanzKm: kennzahlen.distanzKm }),
+    ...(kennzahlen.fahrzeitMin != null && { fahrzeitMin: kennzahlen.fahrzeitMin }),
     updatedAt: toIso(row.updated_at),
     transport: {
       laenge: Number(t.laenge) || 0,
@@ -172,13 +188,14 @@ export function rowToShareData(row, findings = []) {
     // #12b: Transport-Zeitfenster mitliefern → externer Karten-Zeitstrahl (nicht sensibel: das
     // eigene Planungs-Datumsfenster, keine Mandanten-/Bestandsdaten).
     zeitraum: row.zeitraum ?? {},
-    routes: (row.routes ?? []).map((r) => ({
+    routes: routen.map((r) => ({
       id: r.id,
       name: r.name,
       farbe: r.farbe,
       points: r.points ?? [],
+      // `oeffentlich` wird bewusst NICHT mitgegeben: das Feld selbst waere der Abdruck.
     })),
-    findings,
+    findings: funde,
   }
 }
 

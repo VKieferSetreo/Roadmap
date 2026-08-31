@@ -73,7 +73,9 @@ interface ProjectStore {
   removeRoute: (id: string, routeId: string) => void
   renameRoute: (id: string, routeId: string, name: string) => void
   /** Strecke editieren (Name und/oder Geometrie + exakte Wegpunkte) — Strecken-Editor. */
-  updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points" | "waypoints">>) => void
+  /** `oeffentlich` gehoert dazu (T-650): die Freigabe je Strecke laeuft ueber denselben Weg
+   *  wie Umbenennen und Ziehen, inklusive optimistischem Update und Sync. */
+  updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points" | "waypoints" | "oeffentlich">>) => void
 
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
