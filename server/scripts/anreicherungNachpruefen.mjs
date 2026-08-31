@@ -123,6 +123,46 @@ if (SCHREIBEN && faul.length) {
   sage(`${faul.length} Angaben zurueckgenommen.`)
 }
 
+// ── Veraltete Leermeldungen ──────────────────────────────────────────────────────────────────
+//
+// "Aendert die Quelle ihren Text, ist die Ableitung ungueltig und wird neu gerechnet, statt still
+// zu veralten" — so steht es seit dem ersten Tag als Begruendung fuer quelle_hash in
+// migrations/068. Gerechnet wurde nie: der Lauf prueft nur, OB eine Zeile existiert, nicht ob sie
+// noch zum Text passt. Ein Punkt, zu dem das Modell einmal nichts fand, blieb damit fuer immer
+// leer, auch wenn die Quelle inzwischen das Dreifache liefert.
+//
+// Genau das ist jetzt der Fall: seit die Connectoren `roh` mitschicken, haben tausende Punkte
+// deutlich mehr Text. Ohne diesen Schritt saehe sie nie wieder jemand an.
+//
+// NUR LEERMELDUNGEN. Eine uebernommene Angabe bleibt stehen: sie traegt ihren Beleg, und der gilt
+// unabhaengig davon, ob rundherum Text dazugekommen ist.
+const { rows: leerZeilen } = await db.query(
+  `SELECT a.id, a.ziel_id, a.quelle_hash,
+          o.id AS o_id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
+          o.attrs, o.roh, o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
+     FROM anreicherung a
+     JOIN obstacles o ON o.id::text = a.ziel_id
+    WHERE a.ziel_typ = 'obstacle' AND a.stand = 'leer'`,
+)
+// Den Hash je Punkt nur EINMAL rechnen, nicht je Feldzeile — sonst sind es bei 18 Feldern
+// achtzehnmal derselbe Text.
+const aktuell = new Map()
+const veraltet = []
+for (const z of leerZeilen) {
+  if (!aktuell.has(z.ziel_id)) aktuell.set(z.ziel_id, quelleHash(quelltextVon(z)))
+  if (aktuell.get(z.ziel_id) !== z.quelle_hash) veraltet.push(z.id)
+}
+const punkteVeraltet = new Set(leerZeilen.filter((z) => veraltet.includes(z.id)).map((z) => z.ziel_id)).size
+sage(`\nLeermeldungen: ${leerZeilen.length}, davon auf veraltetem Quelltext: ${veraltet.length} (${punkteVeraltet} Punkte)`)
+
+if (SCHREIBEN && veraltet.length) {
+  // In Bloecken, damit der Parameter nicht ueber die Postgres-Grenze waechst.
+  for (let i = 0; i < veraltet.length; i += 5000) {
+    await db.query("DELETE FROM anreicherung WHERE id = ANY($1::bigint[])", [veraltet.slice(i, i + 5000)])
+  }
+  sage(`${veraltet.length} veraltete Leermeldungen entfernt — der naechste Lauf sieht diese Punkte wieder an.`)
+}
+
 if (SCHREIBEN) {
   const ein = await spieleEin(db)
   sage(`in den Bestand gespielt: ${ein.aktualisiert} Punkte aktualisiert.`)
