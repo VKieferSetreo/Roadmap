@@ -16,6 +16,7 @@ import {
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef, normRoadRefWeit, strasseAusName } from "../external/osrm.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../anreicherung/lesen.js"
+import { kiFelderJePunkt } from "../anreicherung/einspielen.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 // 2.1.0 (T-603): SEVAS-Kreuzungsfilter (coincidentRouteKm + Parallelität), Klon-Dedup (identische
@@ -647,6 +648,11 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   // jeder uebernommene Wert wird am Fund vermerkt. Faellt der Abruf aus (Tabelle fehlt, Fehler),
   // laeuft die Analyse ohne Anreicherung weiter — sie ist eine Zugabe, keine Voraussetzung.
   const abgeleitet = await ladeAnreicherung(db, obstacles.map((o) => o.id))
+  // Welche Felder stammen aus der Ableitung — unabhaengig davon, ob sie noch als Luecke offen
+  // sind. Seit die Werte auch nach obstacles.attrs geschrieben werden (T-657), fuellt
+  // mitAnreicherung nichts mehr; die Herkunft steht trotzdem in der Anreicherungstabelle, und
+  // nur sie darf ueber die Kennzeichnung entscheiden.
+  const kiFelder = await kiFelderJePunkt(db, obstacles.map((o) => o.id))
 
   // Event-Loop-Schonung: Das Matching ist reine CPU (nearestOnRoute über die ganze Geometrie je
   // Hindernis, KEIN await im Loop) und lief bei langen Mehr-Strecken-Projekten ~70 s am Stück — das
@@ -751,12 +757,15 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // T-657: hat eine abgeleitete Angabe zu dieser Bewertung beigetragen, steht das am Fund.
       // Die Oberflaeche macht daraus ihr Zeichen; ohne diesen Vermerk saehe ein ergaenzter Wert
       // aus wie ein gemeldeter, und genau das darf er nicht.
-      const vermerk = anreicherungsVermerk(ergaenzt)
+      // Die Kennzeichnung folgt der HERKUNFT, nicht dem Zeitpunkt: ein Wert, der laengst in attrs
+      // steht, bleibt abgeleitet und muss es auch sagen.
+      const ausKi = kiFelder.get(String(rohObstacle.id)) ?? ergaenzt
+      const vermerk = anreicherungsVermerk(ausKi)
       if (vermerk) {
         // __ki traegt die Detail-ZEILEN, die auf einem abgeleiteten Wert beruhen. Die Karte setzt
         // ihr Zeichen genau dort, statt nur pauschal "irgendetwas war KI" zu melden. Der
         // Unterstrich-Name haelt es aus dem sichtbaren Raster heraus.
-        verdict.detail = { ...(verdict.detail ?? {}), Ergänzt: vermerk, __ki: kiZeilen(ergaenzt) }
+        verdict.detail = { ...(verdict.detail ?? {}), Ergänzt: vermerk, __ki: kiZeilen(ausKi) }
       }
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
       // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle

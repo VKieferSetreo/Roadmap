@@ -8,6 +8,8 @@ import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, 
 import { quelltextVon, offeneFelder } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk } from "../src/anreicherung/lesen.js"
+import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
+import { nachlauf, nachImport } from "../src/anreicherung/nachlauf.js"
 
 const TEXT = 'Bezeichnung: Brücke K BA 10 über die A70\nBeschreibung: Durchfahrtshöhe 4,20 m, Baujahr 1987'
 
@@ -440,5 +442,71 @@ describe("Straßenklassen sind dem Modell erklärt", () => {
                                     ["K 4711", "K4711"], ["St 2148", "ST2148"], ["S 177", "ST177"]]) {
       expect(FELDER.getrageneStrasse.pruefe(roh), roh).toBe(erwartet)
     }
+  })
+})
+
+// ── In den Bestand schreiben ────────────────────────────────────────────────
+
+describe("spieleEin — abgeleitete Werte in obstacles.attrs", () => {
+  // Max, 31.08.2026: "gerne in Prod schreiben, aber die KI-Flag behalten."
+  const fangeSql = () => {
+    const gesehen = []
+    return { db: { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }, gesehen }
+  }
+
+  it("überschreibt eine gemeldete Angabe nicht", async () => {
+    const { db, gesehen } = fangeSql()
+    await spieleEin(db)
+    // a.werte || o.attrs — die RECHTE Seite gewinnt in Postgres. Stünde es umgekehrt, überschriebe
+    // die Ableitung die Quelle, und das wäre der teuerste denkbare Fehler dieses Systems.
+    expect(gesehen[0].sql).toContain("a.werte || coalesce(o.attrs, '{}'::jsonb)")
+    expect(gesehen[0].sql).not.toContain("coalesce(o.attrs, '{}'::jsonb) || a.werte")
+  })
+
+  it("setzt das KI-Flag und nimmt nur bestätigte Werte", async () => {
+    const { db, gesehen } = fangeSql()
+    await spieleEin(db)
+    expect(gesehen[0].sql).toContain("ki_aufbereitet = true")
+    expect(gesehen[0].sql).toContain("stand = 'ok'")
+    expect(gesehen[0].sql).toContain("geprueft IS NULL OR geprueft = true")
+  })
+
+  it("fasst nur an, was sich wirklich ändert", async () => {
+    const { db, gesehen } = fangeSql()
+    await spieleEin(db)
+    expect(gesehen[0].sql).toContain("IS DISTINCT FROM")
+  })
+
+  // Wer Modellwerte in Produktivdaten schreibt, muss sie herausbekommen können. Sonst ist die
+  // Entscheidung unumkehrbar, und unumkehrbare Entscheidungen trifft man nicht auf Verdacht.
+  it("lässt sich vollständig zurücknehmen", async () => {
+    const { db, gesehen } = fangeSql()
+    await nimmZurueck(db, { modell: "m" })
+    expect(gesehen[0].sql).toMatch(/UPDATE obstacles/)
+    expect(gesehen[0].sql).toMatch(/NOT \(k = ANY\(a\.felder\)\)/)
+    expect(gesehen[0].p).toEqual(["m"])
+  })
+})
+
+describe("nachlauf — neue Punkte nach dem Import", () => {
+  it("läuft gar nicht erst an, wenn kein Zugang konfiguriert ist", async () => {
+    vi.stubEnv("OPENROUTER_API_KEY", "")
+    const db = { query: async () => { throw new Error("darf nicht gefragt werden") } }
+    await expect(nachlauf(db, { weg: "openrouter" })).resolves.toMatchObject({ gelaufen: false })
+    vi.unstubAllEnvs()
+  })
+
+  it("fragt zuerst, ob es überhaupt etwas Neues gibt", async () => {
+    const gesehen = []
+    const db = { query: async (sql) => { gesehen.push(sql); return { rows: [{ n: 0 }] } } }
+    const r = await nachlauf(db, { weg: "lokal" })
+    expect(r).toMatchObject({ gelaufen: false, grund: "nichts Neues" })
+    expect(gesehen).toHaveLength(1) // kein Modellaufruf, kein Einspielen
+  })
+
+  // Ein fehlgeschlagener Nachlauf darf keinen Sync rückgängig machen, der sonst sauber lief.
+  it("wirft nie", async () => {
+    const db = { query: async () => { throw new Error("Datenbank weg") } }
+    await expect(nachImport(db, { weg: "lokal" })).resolves.toMatchObject({ gelaufen: false })
   })
 })

@@ -12,6 +12,7 @@
 // der Job-Status verloren (der Import selbst ist transaktional und unkritisch).
 
 import { randomUUID } from "node:crypto"
+import { nachImport } from "./anreicherung/nachlauf.js"
 import { allConnectors } from "./connectors/index.js"
 import { rerunAffectedProjects } from "./engine/rerunAll.js"
 import { rowToImportRun } from "./map.js"
@@ -183,6 +184,15 @@ async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
     job.rerun = await withTimeout(
       rerunAffectedProjects({ db, env, fetchImpl }), RERUN_TIMEOUT_MS, "Sync-Rerun",
     )
+
+    // T-657: neue Punkte anreichern und die abgeleiteten Werte zurueck in attrs spielen. Der
+    // Import hat attrs gerade ueberschrieben, auch bei laengst angereicherten Punkten — ohne
+    // diesen Schritt waeren sie nach jedem Sync wieder roh.
+    //
+    // Bewusst NACH "done" in der Wirkung, aber davor im Ablauf: der Nachlauf wirft nie, und ein
+    // Sync, der sonst sauber lief, soll nicht an ihm scheitern.
+    const ki = await nachImport(db, { log: (t) => { job.hinweise = [...(job.hinweise ?? []), t] } })
+    if (ki.gelaufen) job.anreicherung = { punkte: ki.gesehen, angaben: ki.geschrieben, eingespielt: ki.eingespielt }
 
     job.status = "done"
   } catch (err) {
