@@ -155,10 +155,33 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
  * Der Lauf. `grenze` begrenzt einen Durchgang, damit man ihn erst klein ausprobieren kann.
  * `beiFortschritt` wird nach jedem Punkt gerufen — ein Lauf über Tage muss von außen sichtbar sein.
  */
-export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, gleichzeitig = 1, kategorien = null, beiFortschritt = null }) {
+export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, gleichzeitig = 1, kategorien = null, beiFortschritt = null, nurVerwerfungenVon = null }) {
   const felderAlle = Object.keys(FELDER)
-  const wo = kategorien?.length ? `AND o.kategorie = ANY($3)` : ""
-  const werte = kategorien?.length ? [modell, felderAlle, kategorien] : [modell, felderAlle]
+  const werte = [modell, felderAlle]
+  const zusatz = []
+  if (kategorien?.length) { werte.push(kategorien); zusatz.push(`AND o.kategorie = ANY($${werte.length})`) }
+
+  // ZWEITE RUNDE MIT EINEM STAERKEREN MODELL (Max, 31.08.2026: "wir machen auf den abgewiesenen
+  // danach mit 14b noch ne Runde um da noch auszuquetschen").
+  //
+  // Nur die Punkte, an denen ein Riegel etwas abgewiesen hat — dort stand Text, und dort ist etwas
+  // zu holen. Platzhalter zaehlen dabei NICHT als Grund: sie bedeuten, dass der Punkt gar keinen
+  // Text hat, und daran aendert auch ein groesseres Modell nichts. Gemessen sind das rund ein
+  // Drittel aller Verwerfungen, die man sich damit spart.
+  //
+  // Der Lauf laeuft unter EIGENEM Modellnamen, also entstehen eigene Zeilen — das Ergebnis des
+  // kleineren Modells bleibt daneben stehen und vergleichbar.
+  if (nurVerwerfungenVon) {
+    werte.push(nurVerwerfungenVon)
+    zusatz.push(`AND EXISTS (SELECT 1 FROM anreicherung v
+                  WHERE v.ziel_typ = 'obstacle' AND v.ziel_id = o.id::text
+                    AND v.modell = $${werte.length} AND v.stand = 'verworfen'
+                    AND v.grund IS DISTINCT FROM 'Platzhalter statt Angabe')`)
+  }
+  const wo = zusatz.join("\n        ")
+  // Muss als LETZTES dazu: die Abfrage unten verweist ueber werte.length darauf.
+  werte.push(String(felderAlle.length))
+  const katalogGroesse = werte.length
 
   // Kandidat ist, wem MINDESTENS EIN Feld fehlt — nicht nur, wer noch gar keine Zeile hat.
   //
@@ -181,7 +204,7 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
         AND NOT EXISTS (
           SELECT 1 FROM anreicherung a
            WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text
-             AND a.modell = $1 AND a.feld = '${FERTIG_FELD}' AND a.wert = $${werte.length + 1})
+             AND a.modell = $1 AND a.feld = '${FERTIG_FELD}' AND a.wert = $${katalogGroesse})
         AND EXISTS (
           SELECT 1 FROM unnest($2::text[]) AS f(feld)
            WHERE NOT EXISTS (
@@ -190,7 +213,7 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
                 AND a.modell = $1 AND a.feld = f.feld))
       ORDER BY o.id
       LIMIT ${Number(grenze) || 500}`,
-    [...werte, String(felderAlle.length)],
+    werte,
   )
 
   const zahl = { gesehen: 0, geschrieben: 0, verworfen: 0, uebersprungen: 0 }

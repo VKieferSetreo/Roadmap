@@ -658,6 +658,35 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
     expect(marke[2]).toBe(String(Object.keys(FELDER).length))
   })
 
+  // Die zweite Runde mit einem staerkeren Modell laeuft nur ueber die Punkte, an denen etwas
+  // abgewiesen wurde — dort stand Text. Platzhalter zaehlen nicht als Grund: sie bedeuten, dass
+  // der Punkt gar keinen Text hat, und daran aendert auch ein groesseres Modell nichts.
+  it("nimmt für die zweite Runde nur Punkte mit echten Verwerfungen", async () => {
+    const gesehen = []
+    const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
+    await laufeUeberBestand(db, {
+      modell: "gross", rufeModell: async () => null, grenze: 10,
+      nurVerwerfungenVon: "klein",
+    })
+    const { sql, p } = gesehen[0]
+    expect(sql).toContain("v.stand = 'verworfen'")
+    expect(sql).toContain("Platzhalter statt Angabe")
+    expect(p).toContain("klein")
+  })
+
+  // Jeder $N im SQL braucht einen Parameter — sonst wirft Postgres erst im Betrieb, und zwar
+  // mitten in einem Lauf, der Stunden gedauert hat.
+  it("hält Platzhalter und Parameter in jeder Kombination im Gleichgewicht", async () => {
+    for (const opt of [{}, { kategorien: ["baustelle"] }, { nurVerwerfungenVon: "klein" },
+                       { kategorien: ["baustelle"], nurVerwerfungenVon: "klein" }]) {
+      let sql = null, params = null
+      const db = { query: async (s, pp) => { if (!sql) { sql = s; params = pp } ; return { rows: [] } } }
+      await laufeUeberBestand(db, { modell: "m", rufeModell: async () => null, grenze: 5, ...opt })
+      const hoechster = Math.max(...[...sql.matchAll(/\$(\d+)/g)].map((m) => Number(m[1])))
+      expect(hoechster, JSON.stringify(opt)).toBe(params.length)
+    }
+  })
+
   it("schließt Punkte mit gültiger Fertig-Marke aus der Kandidatenwahl aus", async () => {
     const gesehen = []
     const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }

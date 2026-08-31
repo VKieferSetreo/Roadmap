@@ -19,6 +19,15 @@ import { createModell, modellKonfig, erreichbar } from "../src/anreicherung/mode
 import { spieleEin } from "../src/anreicherung/einspielen.js"
 
 const BLOCK = Number(process.env.BLOCK || 200)
+// ZWEITE RUNDE (Max, 31.08.2026: "wir machen auf den abgewiesenen danach mit 14b noch ne Runde,
+// um da noch auszuquetschen"). Gesetzt, laeuft der Durchgang NUR ueber die Punkte, an denen das
+// genannte Modell etwas abgewiesen hat — dort stand Text, dort ist etwas zu holen.
+//
+//   -e ANREICHERUNG_MODELL=qwen2.5:14b-instruct -e NUR_VERWERFUNGEN_VON=qwen2.5:7b-instruct
+//
+// Der eigene Modellname sorgt dafuer, dass eigene Zeilen entstehen: das Ergebnis des kleineren
+// Modells bleibt daneben stehen und laesst sich vergleichen.
+const NUR_VERWERFUNGEN_VON = process.env.NUR_VERWERFUNGEN_VON || null
 // So viele Punkte gleichzeitig, wie Ollama Stroeme hat. Mehr bringt nichts, die Anfragen wuerden
 // dort ohnehin in eine Warteschlange laufen.
 const GLEICHZEITIG = Number(process.env.GLEICHZEITIG || 8)
@@ -29,6 +38,7 @@ const zeit = () => new Date().toISOString().slice(11, 19)
 const sage = (t) => console.log(`[${zeit()}] ${t}`)
 
 sage(`Modell ${konfig.name} über ${konfig.basis}, ${GLEICHZEITIG} Punkte gleichzeitig`)
+if (NUR_VERWERFUNGEN_VON) sage(`Zweite Runde: nur Punkte, an denen ${NUR_VERWERFUNGEN_VON} etwas abgewiesen hat.`)
 if (!(await erreichbar(konfig))) {
   sage("Modell nicht erreichbar — Abbruch, bevor irgendetwas geschrieben wird.")
   process.exit(1)
@@ -59,6 +69,7 @@ while (laeuft) {
     rollen,
     grenze: BLOCK,
     gleichzeitig: GLEICHZEITIG,
+    nurVerwerfungenVon: NUR_VERWERFUNGEN_VON,
     beiFortschritt: (z) => {
       if (z.gesehen % 25 === 0) {
         const proMin = Math.round((60000 * (summe.gesehen + z.gesehen)) / (Date.now() - start))
