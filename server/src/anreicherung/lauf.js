@@ -33,7 +33,12 @@ export function quelltextVon(o) {
   const teile = []
   if (o.name) teile.push(`Bezeichnung: ${o.name}`)
   if (o.beschreibung) teile.push(`Beschreibung: ${o.beschreibung}`)
-  if (o.strassen_ref) teile.push(`Straßenangabe: ${o.strassen_ref}`)
+  // BEWUSST so benannt und nicht "Straßenangabe": das Feld sagt, WO der Punkt liegt, nicht ob
+  // er die Straße traegt oder kreuzt. Als "Straßenangabe: B65" gelesen, schloss das Modell
+  // daraus die getragene Strasse — bei einer Ueberfuehrung UEBER die B65 waere das genau
+  // verkehrt. Der Belegriegel kann das nicht abfangen, weil die Zeile ja wirklich dasteht;
+  // die Formulierung muss den Fehlschluss verhindern.
+  if (o.strassen_ref) teile.push(`Liegt an der Straße (sagt nichts über oben/unten): ${o.strassen_ref}`)
   if (o.zustaendig) teile.push(`Zuständig: ${o.zustaendig}`)
   if (o.kategorie) teile.push(`Art: ${o.kategorie}`)
   const attrs = o.attrs && typeof o.attrs === "object" ? o.attrs : null

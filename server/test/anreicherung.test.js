@@ -294,3 +294,19 @@ describe("Koordinaten sind für das Modell gesperrt", () => {
     }
   })
 })
+
+describe("Ortsangabe verleitet nicht zur Lage", () => {
+  // In der Produktion beobachtet: aus der Zeile "Straßenangabe: B65" schloss das Modell, die
+  // Brücke TRAGE die B65. Bei einer Überführung ÜBER die B65 wäre das genau verkehrt. Der
+  // Belegriegel kann das nicht abfangen — die Zeile steht ja wirklich da. Nur die Formulierung
+  // verhindert den Fehlschluss.
+  it("bezeichnet die Straßenangabe als reine Ortsangabe", () => {
+    const t = quelltextVon({ name: "BW 308A", strassen_ref: "B65" })
+    expect(t).not.toMatch(/^Straßenangabe:/m)
+    expect(t).toMatch(/sagt nichts über oben\/unten/)
+  })
+
+  it("sagt es dem Modell auch im Auftrag", () => {
+    expect(bauePrompt("x")).toMatch(/Leite daraus keine der beiden Angaben ab/)
+  })
+})

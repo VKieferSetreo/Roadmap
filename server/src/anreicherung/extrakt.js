@@ -147,6 +147,8 @@ Regeln:
 - Zu jedem Feld gehört "beleg": die wörtliche Textstelle, aus der es hervorgeht. Kopiere sie
   Zeichen für Zeichen aus dem Text. Ohne Beleg wird die Angabe verworfen.
 - Findest du nichts, gib {"angaben": []} zurück. Das ist eine richtige Antwort, keine schlechte.
+- Eine bloße Ortsangabe ("liegt an der Straße …") sagt NICHT, ob diese Straße getragen oder
+  gekreuzt wird. Leite daraus keine der beiden Angaben ab.
 
 Text:
 """
