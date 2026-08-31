@@ -16,6 +16,7 @@
 import { createDefaultDb } from "../src/db.js"
 import { laufeUeberBestand } from "../src/anreicherung/lauf.js"
 import { createModell, modellKonfig, erreichbar } from "../src/anreicherung/modell.js"
+import { spieleEin } from "../src/anreicherung/einspielen.js"
 
 const BLOCK = Number(process.env.BLOCK || 200)
 // So viele Punkte gleichzeitig, wie Ollama Stroeme hat. Mehr bringt nichts, die Anfragen wuerden
@@ -71,8 +72,12 @@ while (laeuft) {
     verworfen: summe.verworfen + r.verworfen,
     uebersprungen: summe.uebersprungen + r.uebersprungen,
   }
+  // Nach JEDEM Block in den Bestand spielen, nicht erst am Ende. Ein Lauf ueber 73.000 Punkte
+  // dauert Tage, und solange nichts eingespielt ist, sieht auf der Karte niemand ein Ergebnis.
+  // Der Aufruf ist billig: er fasst nur an, was sich wirklich geaendert hat.
+  const ein = await spieleEin(db, { modell: konfig.name }).catch((e) => ({ aktualisiert: 0, fehler: e.message }))
   const min = Math.round((Date.now() - start) / 60000)
-  sage(`Block fertig: ${summe.gesehen} Punkte in ${min} min, ${summe.geschrieben} Angaben, ${summe.verworfen} verworfen`)
+  sage(`Block fertig: ${summe.gesehen} Punkte in ${min} min, ${summe.geschrieben} Angaben, ${summe.verworfen} verworfen, ${ein.aktualisiert} Punkte im Bestand aktualisiert`)
   if (!r.rest) { sage("Bestand durchgelaufen."); break }
 }
 
