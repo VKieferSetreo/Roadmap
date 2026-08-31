@@ -4,7 +4,7 @@
 // steht. Diese Datei prueft genau das, mit einem Modell-Doppel, das absichtlich luegt.
 
 import { describe, it, expect, vi } from "vitest"
-import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash } from "../src/anreicherung/extrakt.js"
+import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
 import { quelltextVon, offeneFelder } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk } from "../src/anreicherung/lesen.js"
@@ -259,5 +259,38 @@ describe("ladeAnreicherung", () => {
     await ladeAnreicherung(db, ["a"])
     expect(gesehen[0]).toMatch(/geprueft IS NULL OR geprueft = true/)
     expect(gesehen[0]).toMatch(/stand = 'ok'/)
+  })
+})
+
+// ── Die Ortssperre ──────────────────────────────────────────────────────────
+
+describe("Koordinaten sind für das Modell gesperrt", () => {
+  // Max, 31.08.2026: "aber Agent darf keine Koordinaten bauen, das darf nur der deterministische
+  // Pull." Eine erfundene Ortsangabe legt ein Hindernis an eine Stelle, an der es nicht ist.
+  it("führt kein einziges Ortsfeld", () => {
+    for (const feld of Object.keys(FELDER)) {
+      expect(istOrtsfeld(feld), `Feld "${feld}" ist ein Ortsfeld`).toBe(false)
+    }
+  })
+
+  it("erkennt Ortsfelder, laesst Massfelder aber in Ruhe", () => {
+    for (const f of ["lat", "lng", "x", "y", "geom", "koordinateX", "rechtswert"]) expect(istOrtsfeld(f)).toBe(true)
+    // Die Falle: "maxHoeheM" enthaelt ein x. Eine Teilstring-Pruefung auf "x" sperrte alle Massfelder.
+    for (const f of ["maxHoeheM", "maxGewichtT", "maxBreiteM", "getrageneStrasse"]) expect(istOrtsfeld(f)).toBe(false)
+  })
+
+  it("nimmt eine Ortsangabe auch dann nicht an, wenn das Modell sie anbietet", () => {
+    for (const feld of ["lat", "lng", "geom", "position"]) {
+      const r = pruefeAngabe({ feld, wert: "49.1234", beleg: "49.1234" }, "49.1234")
+      expect(r.ok).toBe(false)
+      expect(r.grund).toMatch(/unbekanntes Feld/)
+    }
+  })
+
+  it("fragt das Modell gar nicht erst nach einem Ort", () => {
+    const p = bauePrompt("irgendein Text")
+    for (const wort of ["Koordinate", "Breitengrad", "Längengrad", "lat", "lng"]) {
+      expect(p).not.toContain(wort)
+    }
   })
 })

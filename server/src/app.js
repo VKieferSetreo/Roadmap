@@ -28,6 +28,7 @@ import { adminTenantsRouter } from "./routes/adminTenants.js"
 import { bugReportsRouter } from "./routes/bugReports.js"
 import { sourceRequestsRouter } from "./routes/sourceRequests.js"
 import { newsRouter } from "./routes/news.js"
+import { anreicherungRouter } from "./routes/anreicherung.js"
 import { hiddenFindingsRouter } from "./routes/hiddenFindings.js"
 import { internalRouter } from "./routes/internal.js"
 import { foldersRouter } from "./routes/folders.js"
@@ -274,6 +275,9 @@ export function createApp({
   // News-Feed — bewusst für JEDEN Eingeloggten sichtbar (auch No-Seat/extern): Ankündigungen,
   // nicht der verkaufte Datensatz (siehe news.test.js). Anlegen/Löschen nur Admin (im Router).
   app.use("/api/news", newsRouter({ db }))
+  // T-657: Live-Stand des Anreicherungslaufs. Ohne Anmeldung, weil ausschliesslich Zaehlwerte
+  // herausgehen — Max soll die Seite auf dem Handy offen lassen koennen, waehrend der Lauf laeuft.
+  app.use("/api/anreicherung", anreicherungRouter({ db }))
   // Eigenes Konto: Passwortänderung (extern) + Seat-Code-Einlösung (ohne Tenant-Pflicht)
   app.use("/api/account", accountRouter({ db, fetchImpl, authExtern }))
 
@@ -281,6 +285,11 @@ export function createApp({
 
   // ── Share-SPA (NACH allen API-Routen): /<tenantSlug>/<projectId> → index.html
   // Validierung light — der Client zeigt den 404-Screen über die Share-API.
+  // Die Seite liegt neben dem Servercode, nicht im Share-Bundle: sie gehoert zum Betrieb,
+  // nicht zum Produkt.
+  app.get("/anreicherung", (req, res) =>
+    res.sendFile(fileURLToPath(new URL("../public/anreicherung.html", import.meta.url))))
+
   app.get("/:tenantSlug/:projectId", (req, res, next) => {
     const { tenantSlug, projectId } = req.params
     if (!SLUG_RE.test(tenantSlug) || RESERVED_SLUGS.includes(tenantSlug) || !isUuid(projectId)) {

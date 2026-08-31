@@ -40,6 +40,25 @@ function zahl(s) {
  * fuellt irgendwann Felder, die niemand erwartet, und deren Werte nirgends geprueft werden.
  * Jedes Feld hier hat eine Probe, die den Wert in die Form bringt oder ihn verwirft.
  */
+// HARTE SPERRE (Max, 31.08.2026): "aber Agent darf keine Koordinaten bauen, das darf nur der
+// deterministische Pull. Er darf nur Metadaten machen, die wir dann nutzen können."
+//
+// Der Grund ist zwingend: eine Koordinate aus einem Sprachmodell waere eine erfundene Ortsangabe,
+// und eine erfundene Ortsangabe legt ein Hindernis an eine Stelle, an der es nicht ist. Wo etwas
+// LIEGT, entscheidet ausschliesslich der deterministische Weg (Geocoder, OSRM, Quellgeometrie).
+// Das Modell sagt nur, WAS etwas ist.
+//
+// Die Sperre steht hier als Liste und wird beim Modulstart geprueft, damit sie auch dann greift,
+// wenn jemand spaeter ein Feld ergaenzt, ohne diesen Kommentar zu lesen.
+// Zwei Listen, weil "x" als Teilstring jedes "maxHoeheM" trifft: kurze Kuerzel duerfen nur
+// EXAKT greifen, sprechende Woerter auch als Teil eines Namens.
+const NIEMALS_GENAU = ["lat", "lng", "lon", "x", "y", "z", "wgs", "utm"]
+const NIEMALS_ENTHALTEN = ["koordinate", "coordinate", "geom", "position", "rechtswert", "hochwert", "breitengrad", "laengengrad", "längengrad"]
+const istOrtsfeld = (feld) => {
+  const k = String(feld).toLowerCase()
+  return NIEMALS_GENAU.includes(k) || NIEMALS_ENTHALTEN.some((v) => k.includes(v))
+}
+
 export const FELDER = {
   getrageneStrasse: {
     frage: "Welche Straße führt ÜBER dieses Bauwerk, wird also von ihm getragen?",
@@ -64,6 +83,16 @@ export const FELDER = {
     pruefe: (roh) => { const n = zahl(roh); return n != null && n >= 1.5 && n <= 20 ? n : null },
   },
 }
+
+// Die Sperre beim Laden des Moduls durchsetzen: ein Ortsfeld in FELDER laesst den Server gar
+// nicht erst starten, statt still Koordinaten zu erfinden.
+for (const feld of Object.keys(FELDER)) {
+  if (istOrtsfeld(feld)) {
+    throw new Error(`Anreicherung: "${feld}" ist ein Ortsfeld. Wo etwas liegt, entscheidet der deterministische Weg, nie das Modell.`)
+  }
+}
+
+export { istOrtsfeld }
 
 /** Hash des Quelltexts. Aendert die Quelle ihren Wortlaut, ist jede Ableitung daraus hinfaellig. */
 export const quelleHash = (text) => createHash("sha256").update(String(text ?? "")).digest("hex").slice(0, 16)

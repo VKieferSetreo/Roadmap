@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Anreicherung · Setreo Roadmap</title>
+<style>
+  /* Fürs Handy gebaut, nicht am Schreibtisch geschrumpft: eine Spalte, große Zahlen,
+     Sicherheitsabstand zur Notch (env(safe-area-inset-*)), keine Hover-Abhängigkeiten. */
+  :root {
+    --bg: #f6f7f9; --karte: #fff; --rand: #e5e7eb; --text: #111827; --matt: #6b7280;
+    --gruen: #16a34a; --violett: #7c3aed; --amber: #b45309;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b0f14; --karte: #151a21; --rand: #262d38; --text: #e5e7eb; --matt: #9aa4b2; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
+  }
+  header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  .puls { width: 8px; height: 8px; border-radius: 50%; background: var(--gruen); animation: p 1.6s infinite; }
+  .puls.aus { background: var(--matt); animation: none; }
+  @keyframes p { 0%,100% { opacity: 1 } 50% { opacity: .25 } }
+  .karte { background: var(--karte); border: 1px solid var(--rand); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .gross { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .matt { color: var(--matt); font-size: 13px; }
+  .balken { height: 10px; border-radius: 99px; background: var(--rand); overflow: hidden; margin: 10px 0 6px; }
+  .balken > i { display: block; height: 100%; background: var(--gruen); border-radius: 99px; transition: width .6s ease; }
+  .reihe { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .drei { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .drei .zahl { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--matt); margin: 0 0 8px; font-weight: 600; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--rand); font-size: 13px; }
+  li:last-child { border-bottom: 0; }
+  li .n { color: var(--matt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li .w { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .marke { color: var(--violett); font-weight: 600; }
+  footer { text-align: center; color: var(--matt); font-size: 11px; padding: 8px 0 4px; }
+</style>
+</head>
+<body>
+<header><span class="puls aus" id="puls"></span><h1>Anreicherung</h1><span class="matt" id="stand"></span></header>
+
+<div class="karte">
+  <div class="reihe"><span class="gross" id="anteil">–</span><span class="matt" id="rest"></span></div>
+  <div class="balken"><i id="fortschritt" style="width:0"></i></div>
+  <div class="matt" id="zaehler">wird geladen …</div>
+</div>
+
+<div class="karte drei">
+  <div><div class="zahl marke" id="gefunden">–</div><div class="matt">gefunden</div></div>
+  <div><div class="zahl" id="leer">–</div><div class="matt">nichts drin</div></div>
+  <div><div class="zahl" id="verworfen">–</div><div class="matt">abgewiesen</div></div>
+</div>
+
+<div class="karte"><h2>Je Angabe</h2><ul id="felder"><li class="matt">–</li></ul></div>
+<div class="karte"><h2>Zuletzt gefunden</h2><ul id="proben"><li class="matt">–</li></ul></div>
+
+<footer>Aktualisiert sich alle 5 Sekunden · nur Zählwerte</footer>
+
+<script>
+const $ = (id) => document.getElementById(id)
+const zahl = (n) => (n ?? 0).toLocaleString("de-DE")
+const dauer = (min) => {
+  if (min == null) return ""
+  if (min < 60) return `noch ~${min} min`
+  const h = Math.floor(min / 60)
+  return `noch ~${h} h ${min % 60} min`
+}
+
+async function hole() {
+  try {
+    const d = await (await fetch("/api/anreicherung/stand", { cache: "no-store" })).json()
+    $("anteil").textContent = (d.anteil ?? 0).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " %"
+    $("fortschritt").style.width = Math.min(100, d.anteil ?? 0) + "%"
+    $("zaehler").textContent = `${zahl(d.gesehen)} von ${zahl(d.gesamt)} Punkten`
+    $("rest").textContent = d.laeuft ? `${zahl(d.proMin)}/min · ${dauer(d.restMin)}` : "steht still"
+    $("puls").className = "puls" + (d.laeuft ? "" : " aus")
+    $("gefunden").textContent = zahl(d.gefunden)
+    $("leer").textContent = zahl(d.leer)
+    $("verworfen").textContent = zahl(d.verworfen)
+
+    $("felder").innerHTML = (d.jeFeld || []).length
+      ? d.jeFeld.map((f) => `<li><span class="n">${f.feld}</span><span class="w">${zahl(f.gefunden)}</span></li>`).join("")
+      : '<li class="matt">noch nichts</li>'
+
+    $("proben").innerHTML = (d.proben || []).length
+      ? d.proben.map((p) => `<li><span class="n">${p.name ?? ""}</span><span class="w marke">${p.wert ?? ""}</span></li>`).join("")
+      : '<li class="matt">noch nichts</li>'
+
+    $("stand").textContent = d.zuletzt ? new Date(d.zuletzt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : ""
+  } catch {
+    $("zaehler").textContent = "keine Verbindung"
+    $("puls").className = "puls aus"
+  }
+}
+hole()
+setInterval(hole, 5000)
+// Beim Zurückholen aus dem Hintergrund sofort nachladen: sonst zeigt die Seite auf dem Handy
+// nach dem Entsperren minutenlang einen alten Stand.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) hole() })
+</script>
+</body>
+</html>
