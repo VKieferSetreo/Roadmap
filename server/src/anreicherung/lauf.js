@@ -66,9 +66,15 @@ export const offeneFelder = offeneFelderFuer
 const SQL_MERKEN = `
   INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
   VALUES ('obstacle', $1, $2, $3, $4, $5, $6, $7)
-  ON CONFLICT (ziel_typ, ziel_id, feld, modell)
+  ON CONFLICT (ziel_typ, ziel_id, feld, modell) WHERE stand IN ('ok', 'leer')
   DO UPDATE SET wert = EXCLUDED.wert, beleg = EXCLUDED.beleg,
                 quelle_hash = EXCLUDED.quelle_hash, stand = EXCLUDED.stand, erstellt_am = now()`
+
+// Was ein Riegel abgewiesen hat, samt Grund. Ohne diese Zeilen ist jede spaetere Verbesserung
+// Raten: eine faelschlich verworfene Angabe sieht in der Statistik aus wie eine nie gefundene.
+const SQL_VERWORFEN = `
+  INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, roh_wert, grund, modell, quelle_hash, stand)
+  VALUES ('obstacle', $1, $2, NULL, $3, $4, $5, $6, $7, 'verworfen')`
 
 /**
  * Ein Punkt. Schreibt für JEDES offene Feld eine Zeile — auch für die, zu denen das Modell
@@ -84,10 +90,19 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   // Drei Rollen statt einer, sobald mehr als ein Modellzugang da ist. Gemessen an 15 textreichen
   // Baustellen: 14 Angaben einstufig gegen 20 dreistufig, also gut 40 Prozent mehr, bei
   // gleichbleibender Strenge (die Riegel gelten fuer alle Rollen).
-  const { angaben: gueltig, spur } = rollen
+  const { angaben: gueltig, spur, verwerfungen } = rollen
     ? await durchDreiRollen(text, felder, rollen)
-    : await extrahiere(text, { modell, felder, rufeModell }).then((r) => ({ angaben: r.gueltig, spur: { verworfen: r.verworfen.length } }))
+    : await extrahiere(text, { modell, felder, rufeModell }).then((r) => ({ angaben: r.gueltig, spur: { verworfen: r.verworfen.length }, verwerfungen: r.verworfen }))
   const verworfen = { length: spur?.verworfen ?? 0 }
+
+  // Die Verwerfungen festhalten, BEVOR die Uebernahme laeuft: sie sind das Rohmaterial fuer jede
+  // Verbesserung der Fragen und Riegel.
+  for (const v of verwerfungen ?? []) {
+    await db.query(SQL_VERWORFEN, [
+      o.id, v.angabe?.feld ?? "?", String(v.angabe?.beleg ?? "").slice(0, 400),
+      String(v.angabe?.wert ?? "").slice(0, 200), String(v.grund ?? "").slice(0, 300), modell, hash,
+    ]).catch(() => {}) // eine nicht gespeicherte Verwerfung darf den Lauf nicht anhalten
+  }
 
   const gefunden = new Map(gueltig.map((g) => [g.feld, g]))
 

@@ -125,7 +125,7 @@ export async function durchDreiRollen(quelltext, felder, { liest, prueft, nimmtA
   // ── Rolle 1: lesen ────────────────────────────────────────────────────────
   const { gueltig, verworfen } = await extrahiere(quelltext, { felder, rufeModell: liest })
   const spur = { gelesen: gueltig.length, verworfen: verworfen.length, gerettet: 0, korrigiert: 0, abgelehnt: 0, ergaenzt: 0 }
-  if (ohnePruefer) return { angaben: gueltig, spur, hinweise: [] }
+  if (ohnePruefer) return { angaben: gueltig, spur, hinweise: [], verwerfungen: verworfen }
 
   // ── Rolle 3: prüfen — beide Teile PARALLEL, sie hängen nicht voneinander ab ──
   const [urteile, gerettet] = await Promise.all([
@@ -169,7 +169,7 @@ export async function durchDreiRollen(quelltext, felder, { liest, prueft, nimmtA
     if (p.ok) { kandidaten.push(p); schonDa.add(p.feld); spur.gerettet++; hinweise.push(`${p.feld} vom Prüfer zurückgeholt`) }
   }
 
-  if (ohneAbnahme) return { angaben: kandidaten, spur, hinweise }
+  if (ohneAbnahme) return { angaben: kandidaten, spur, hinweise, verwerfungen: uebrig(verworfen, kandidaten) }
 
   // ── Rolle 2: ergänzen ─────────────────────────────────────────────────────
   // Läuft auch dann, wenn bisher NICHTS gefunden wurde — gerade dann lohnt der zweite Blick.
@@ -183,7 +183,13 @@ export async function durchDreiRollen(quelltext, felder, { liest, prueft, nimmtA
     const p = pruefeAngabe(n, quelltext)
     if (p.ok) { kandidaten.push(p); belegt.add(p.feld); spur.ergaenzt = (spur.ergaenzt ?? 0) + 1; hinweise.push(`${p.feld} nachgereicht`) }
   }
-  return { angaben: kandidaten, spur, hinweise }
+  return { angaben: kandidaten, spur, hinweise, verwerfungen: uebrig(verworfen, kandidaten) }
+}
+
+/** Nur die Verwerfungen, die der Pruefer NICHT zurueckgeholt hat — die anderen sind erledigt. */
+function uebrig(verworfen, kandidaten) {
+  const drin = new Set(kandidaten.map((k) => k.feld))
+  return (verworfen ?? []).filter((v) => !drin.has(v.angabe?.feld))
 }
 
 function leseAntwortListe(text, schluessel) {
