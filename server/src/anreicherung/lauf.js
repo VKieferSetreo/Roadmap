@@ -16,6 +16,7 @@
 // `docker run --rm`, das ein Deploy nicht anfasst.
 
 import { extrahiere, quelleHash, FELDER } from "./extrakt.js"
+import { offeneFelderFuer } from "./felder.js"
 
 /**
  * Alles, was wir über einen Punkt wissen, als EIN Text für das Modell.
@@ -41,6 +42,11 @@ export function quelltextVon(o) {
   if (o.strassen_ref) teile.push(`Liegt an der Straße (sagt nichts über oben/unten): ${o.strassen_ref}`)
   if (o.zustaendig) teile.push(`Zuständig: ${o.zustaendig}`)
   if (o.kategorie) teile.push(`Art: ${o.kategorie}`)
+  // Alles weitere, was im Bestand steht und bisher ungenutzt blieb (Max: "gib ihm ALLE Felder").
+  // richtung traegt bei allen 73.152 Punkten einen Wert, gueltig_von bei der Haelfte.
+  if (o.richtung) teile.push(`Richtung: ${o.richtung}`)
+  if (o.gueltig_von || o.gueltig_bis) teile.push(`Gültig: ${o.gueltig_von ?? "?"} bis ${o.gueltig_bis ?? "?"}`)
+  if (o.quelle) teile.push(`Quelle: ${typeof o.quelle === "string" ? o.quelle : JSON.stringify(o.quelle)}`)
   const attrs = o.attrs && typeof o.attrs === "object" ? o.attrs : null
   if (attrs && Object.keys(attrs).length) teile.push(`Vorhandene Angaben: ${JSON.stringify(attrs)}`)
   if (o.roh) teile.push(`Ursprungsdaten der Quelle:\n${typeof o.roh === "string" ? o.roh : JSON.stringify(o.roh, null, 1)}`)
@@ -49,10 +55,7 @@ export function quelltextVon(o) {
 
 /** Welche Felder fehlen an diesem Punkt noch? Was die Quelle schon sagt, wird nicht gefragt —
  *  das spart Aufrufe und verhindert, dass ein Modell eine gemeldete Angabe „korrigiert". */
-export function offeneFelder(o) {
-  const attrs = o.attrs && typeof o.attrs === "object" ? o.attrs : {}
-  return Object.keys(FELDER).filter((f) => attrs[f] == null)
-}
+export const offeneFelder = offeneFelderFuer
 
 const SQL_MERKEN = `
   INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
@@ -94,7 +97,8 @@ export async function laufeUeberBestand(db, { modell, rufeModell, grenze = 500, 
   // Kandidaten: alles, was noch KEINE Zeile dieses Modells hat. Der Verbund über die
   // Anreicherungstabelle macht den Lauf wiederaufnehmbar, ohne dass irgendwo ein Zeiger steht.
   const { rows } = await db.query(
-    `SELECT o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig, o.attrs, o.roh
+    `SELECT o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig, o.attrs, o.roh,
+              o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
        FROM obstacles o
       WHERE o.aktiv = true ${wo}
         AND NOT EXISTS (

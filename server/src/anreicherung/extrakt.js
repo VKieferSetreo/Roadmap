@@ -24,34 +24,29 @@
 
 import { createHash } from "node:crypto"
 import { normRoadRefWeit } from "../external/osrm.js"
+import { KATALOG, setzeRefNormalisierer } from "./felder.js"
 
-/** Zahl aus deutscher Schreibweise ("3,80" wie "3.80"). null, wenn es keine ist. */
-function zahl(s) {
-  const t = String(s ?? "").replace(",", ".").match(/-?\d+(?:\.\d+)?/)
-  if (!t) return null
-  const n = Number(t[0])
-  return Number.isFinite(n) ? n : null
-}
+// Der Katalog kennt osrm nicht (sonst haetten wir einen Ringschluss), bekommt den Normalisierer
+// also von hier gereicht.
+setzeRefNormalisierer(normRoadRefWeit)
 
 /**
- * Die Felder, die abgeleitet werden duerfen, samt ihrer Formprobe.
- *
- * WARUM EINE FESTE LISTE und kein freies Schema: ein Modell, das schreiben darf was es will,
- * fuellt irgendwann Felder, die niemand erwartet, und deren Werte nirgends geprueft werden.
- * Jedes Feld hier hat eine Probe, die den Wert in die Form bringt oder ihn verwirft.
+ * Die Felder, die abgeleitet werden duerfen — der Katalog steht in felder.js, weil er waechst
+ * und die Riegel hier stabil bleiben sollen. Siehe dort auch, warum die Fragen in der Sprache der
+ * QUELLE gestellt sind und nicht in der des Datenmodells.
  */
+export const FELDER = KATALOG
+
+
 // HARTE SPERRE (Max, 31.08.2026): "aber Agent darf keine Koordinaten bauen, das darf nur der
 // deterministische Pull. Er darf nur Metadaten machen, die wir dann nutzen können."
 //
-// Der Grund ist zwingend: eine Koordinate aus einem Sprachmodell waere eine erfundene Ortsangabe,
-// und eine erfundene Ortsangabe legt ein Hindernis an eine Stelle, an der es nicht ist. Wo etwas
-// LIEGT, entscheidet ausschliesslich der deterministische Weg (Geocoder, OSRM, Quellgeometrie).
-// Das Modell sagt nur, WAS etwas ist.
+// Eine Koordinate aus einem Sprachmodell waere eine erfundene Ortsangabe, und die legte ein
+// Hindernis an eine Stelle, an der es nicht ist. Wo etwas LIEGT, entscheidet ausschliesslich der
+// deterministische Weg (Geocoder, OSRM, Quellgeometrie). Das Modell sagt nur, WAS etwas ist.
 //
-// Die Sperre steht hier als Liste und wird beim Modulstart geprueft, damit sie auch dann greift,
-// wenn jemand spaeter ein Feld ergaenzt, ohne diesen Kommentar zu lesen.
-// Zwei Listen, weil "x" als Teilstring jedes "maxHoeheM" trifft: kurze Kuerzel duerfen nur
-// EXAKT greifen, sprechende Woerter auch als Teil eines Namens.
+// Zwei Listen, weil "x" als Teilstring jedes "maxHoeheM" traefe: kurze Kuerzel duerfen nur EXAKT
+// greifen, sprechende Woerter auch als Teil eines Namens.
 const NIEMALS_GENAU = ["lat", "lng", "lon", "x", "y", "z", "wgs", "utm"]
 const NIEMALS_ENTHALTEN = ["koordinate", "coordinate", "geom", "position", "rechtswert", "hochwert", "breitengrad", "laengengrad", "längengrad"]
 const istOrtsfeld = (feld) => {
@@ -59,33 +54,8 @@ const istOrtsfeld = (feld) => {
   return NIEMALS_GENAU.includes(k) || NIEMALS_ENTHALTEN.some((v) => k.includes(v))
 }
 
-export const FELDER = {
-  getrageneStrasse: {
-    frage: "Welche Straße führt ÜBER dieses Bauwerk, wird also von ihm getragen?",
-    pruefe: (roh) => normRoadRefWeit(roh),
-  },
-  gekreuzteStrasse: {
-    frage: "Welche Straße wird von diesem Bauwerk überquert, verläuft also darunter?",
-    pruefe: (roh) => normRoadRefWeit(roh),
-  },
-  maxHoeheM: {
-    frage: "Welche lichte Durchfahrtshöhe in Metern ist genannt?",
-    // Unter 2 m ist keine Durchfahrt mehr, ueber 10 m keine Beschraenkung: beides waere
-    // eine falsch gelesene Zahl (Stationierung, Baujahr, Bauwerksnummer).
-    pruefe: (roh) => { const n = zahl(roh); return n != null && n >= 2 && n <= 10 ? n : null },
-  },
-  maxGewichtT: {
-    frage: "Welche zulässige Gesamtmasse in Tonnen ist genannt?",
-    pruefe: (roh) => { const n = zahl(roh); return n != null && n >= 3 && n <= 1000 ? n : null },
-  },
-  maxBreiteM: {
-    frage: "Welche zulässige Durchfahrtsbreite in Metern ist genannt?",
-    pruefe: (roh) => { const n = zahl(roh); return n != null && n >= 1.5 && n <= 20 ? n : null },
-  },
-}
-
-// Die Sperre beim Laden des Moduls durchsetzen: ein Ortsfeld in FELDER laesst den Server gar
-// nicht erst starten, statt still Koordinaten zu erfinden.
+// Beim Laden des Moduls durchsetzen: ein Ortsfeld im Katalog laesst den Server gar nicht erst
+// starten, statt still Koordinaten zu erfinden.
 for (const feld of Object.keys(FELDER)) {
   if (istOrtsfeld(feld)) {
     throw new Error(`Anreicherung: "${feld}" ist ein Ortsfeld. Wo etwas liegt, entscheidet der deterministische Weg, nie das Modell.`)
@@ -120,11 +90,21 @@ export function pruefeAngabe(angabe, quelltext) {
   const wert = regel.pruefe(angabe?.wert)
   if (wert == null) return { ok: false, grund: `Wert passt nicht zum Feld: ${angabe?.wert}` }
 
-  // Riegel 2: derselbe Wert muss sich aus dem BELEG ergeben, nicht aus dem uebrigen Text. Sonst
+  // Riegel 2: der Wert muss sich aus dem BELEG ergeben, nicht aus dem uebrigen Text. Sonst
   // koennte das Modell eine beliebige Zahl aus dem Dokument an eine beliebige Stelle haengen.
-  const ausBeleg = regel.pruefe(beleg)
-  if (ausBeleg == null || String(ausBeleg) !== String(wert)) {
-    return { ok: false, grund: `Wert ${wert} folgt nicht aus dem Beleg "${beleg}"` }
+  //
+  // Bei Ja/Nein-Feldern greift stattdessen ein STICHWORT: "vollsperrung = ja" hat als Beleg
+  // "Vollsperrung der K 82", und das Wort "ja" steht dort naturgemaess nie. Verlangt wird also,
+  // dass der Beleg zum Feld passt, nicht dass er die Antwort woertlich enthaelt.
+  if (regel.belegMuster) {
+    if (!regel.belegMuster.test(beleg)) {
+      return { ok: false, grund: `Beleg "${beleg}" passt nicht zum Feld ${feld}` }
+    }
+  } else {
+    const ausBeleg = regel.pruefe(beleg)
+    if (ausBeleg == null || String(ausBeleg) !== String(wert)) {
+      return { ok: false, grund: `Wert ${wert} folgt nicht aus dem Beleg "${beleg}"` }
+    }
   }
 
   return { ok: true, feld, wert: String(wert), beleg }
@@ -147,6 +127,8 @@ Regeln:
 - Zu jedem Feld gehört "beleg": die wörtliche Textstelle, aus der es hervorgeht. Kopiere sie
   Zeichen für Zeichen aus dem Text. Ohne Beleg wird die Angabe verworfen.
 - Findest du nichts, gib {"angaben": []} zurück. Das ist eine richtige Antwort, keine schlechte.
+- Antworte bei Ja/Nein-Fragen NUR, wenn der Text die Sache ausdrücklich nennt. Ein "nein", nur
+  weil nichts dasteht, ist keine Angabe und wird verworfen.
 - Eine bloße Ortsangabe ("liegt an der Straße …") sagt NICHT, ob diese Straße getragen oder
   gekreuzt wird. Leite daraus keine der beiden Angaben ab.
 
@@ -155,8 +137,8 @@ Text:
 ${quelltext}
 """
 
-Antwortform:
-{"angaben": [{"feld": "...", "wert": "...", "beleg": "..."}]}`
+Antwortform — "feld" ist IMMER einer der oben genannten Namen, niemals "wert" oder "beleg":
+{"angaben": [{"feld": "<einer der oben genannten Namen>", "wert": "<der Wert>", "beleg": "<Textstelle>"}]}`
 }
 
 /** Das JSON aus der Antwort schaelen. Modelle rahmen es gern in Prosa oder Codeblöcke. */

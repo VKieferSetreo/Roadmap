@@ -162,9 +162,19 @@ describe("quelltextVon / offeneFelder", () => {
   })
 
   it("fragt nur nach dem, was die Quelle nicht schon sagt", () => {
-    expect(offeneFelder(punkt)).not.toContain("maxHoeheM")
+    expect(offeneFelder(punkt)).not.toContain("maxHoeheM") // steht in attrs
     expect(offeneFelder(punkt)).toContain("getrageneStrasse")
-    expect(offeneFelder({ attrs: {} })).toEqual(Object.keys(FELDER))
+    expect(offeneFelder({ kategorie: "bruecke", attrs: {} })).toEqual(Object.keys(FELDER))
+  })
+
+  // Eine Baustelle hat keine getragene Strasse. Danach zu fragen laedt zu Fehlschluessen ein:
+  // das Modell nimmt dann die naechstbeste Nummer aus dem Text.
+  it("fragt Bauwerksfelder nur bei Bauwerken", () => {
+    const baustelle = offeneFelder({ kategorie: "baustelle", attrs: {} })
+    expect(baustelle).not.toContain("getrageneStrasse")
+    expect(baustelle).not.toContain("gekreuzteStrasse")
+    expect(baustelle).toContain("maxHoeheM")
+    expect(offeneFelder({ kategorie: "tunnel", attrs: {} })).toContain("gekreuzteStrasse")
   })
 })
 
@@ -308,5 +318,76 @@ describe("Ortsangabe verleitet nicht zur Lage", () => {
 
   it("sagt es dem Modell auch im Auftrag", () => {
     expect(bauePrompt("x")).toMatch(/Leite daraus keine der beiden Angaben ab/)
+  })
+})
+
+// ── Der erweiterte Katalog ──────────────────────────────────────────────────
+
+describe("Katalog: die Fragen treffen die Sprache der Quelle", () => {
+  // Der Anlass: die erste Fassung fragte nach "zulässiger Gesamtmasse", im Text stand
+  // "Lkw-Durchfahrtsverbot über 3,5 t". Das Modell fand nichts, obwohl die Zahl dastand.
+  // 447 von 2.049 als leer vermerkten Punkten trugen eine Maßzahl.
+  it("nennt bei Gewicht auch die Formulierungen der Quellen", () => {
+    expect(FELDER.maxGewichtT.frage).toMatch(/Durchfahrtsverbot|Gewichtsbeschränkung/)
+    expect(FELDER.maxHoeheM.frage).toMatch(/Höhenbeschränkung|lichte Höhe/)
+  })
+
+  it("liest deutsche Kommazahlen und Beiwerk", () => {
+    expect(FELDER.maxHoeheM.pruefe("4,83")).toBe(4.83)
+    expect(FELDER.maxHoeheM.pruefe("ca. 4,20 m")).toBe(4.2)
+    expect(FELDER.maxGewichtT.pruefe("über 3,5 t")).toBe(3.5)
+  })
+
+  it("weist Zahlen ab, die keine Maße sein können", () => {
+    expect(FELDER.maxHoeheM.pruefe("1987")).toBeNull()      // Baujahr
+    expect(FELDER.maxGewichtT.pruefe("6031578")).toBeNull() // Bauwerksnummer
+    expect(FELDER.maxAchslastT.pruefe("2026")).toBeNull()
+  })
+
+  it("nimmt ja/nein nur bei eindeutigen Wörtern", () => {
+    expect(FELDER.vollsperrung.pruefe("ja")).toBe(true)
+    expect(FELDER.vollsperrung.pruefe("nein")).toBe(false)
+    expect(FELDER.vollsperrung.pruefe("teilweise")).toBeNull()
+    expect(FELDER.vollsperrung.pruefe("")).toBeNull()
+  })
+
+  it("deckt die grossen Luecken des Bestands ab", () => {
+    // Gemessen am 31.08.2026: diese Felder sind zu 80 bis 100 Prozent leer.
+    for (const f of ["maxAchslastT", "maxBreiteM", "maxLaengeM", "restbreiteM",
+                     "verkehrsverbotLkwT", "spurenGesperrt", "vollsperrung"]) {
+      expect(Object.keys(FELDER)).toContain(f)
+    }
+  })
+})
+
+describe("Katalog: die Lücken aus der Handprüfung", () => {
+  // Alle vier stammen aus dem Durchgang vom 31.08.2026 über 20 textreiche Baustellen. Vorher
+  // 4 Treffer bei 17 Verwerfungen, danach 7 bei 9.
+  it("liest ausgeschriebene Zahlen — \"nur ein Fahrstreifen\" ist die häufigste Form", () => {
+    expect(FELDER.anzahlFahrstreifen.pruefe("nur ein Fahrstreifen")).toBe(1)
+    expect(FELDER.spurenFrei.pruefe("zwei Spuren frei")).toBe(2)
+    expect(FELDER.spurenGesperrt.pruefe("keine")).toBe(0)
+  })
+
+  it("erkennt eine gesperrte Seite als halbseitig, egal wie sie heißt", () => {
+    for (const t of ["Südseite gesperrt", "halbseitige Sperrung", "eine Fahrbahn frei", "abwechselnd"]) {
+      expect(FELDER.halbseitig.belegMuster.test(t), t).toBe(true)
+    }
+  })
+
+  it("verzeiht dem Modell Tippfehler in der Sperrungsart", () => {
+    expect(FELDER.sperrungArt.pruefe("fahrenstreifen")).toBe("fahrstreifensperrung")
+    expect(FELDER.sperrungArt.pruefe("roadClosed")).toBe("vollsperrung")
+    expect(FELDER.sperrungArt.pruefe("irgendwas")).toBeNull()
+  })
+
+  it("nimmt null gesperrte Fahrstreifen als Aussage", () => {
+    expect(FELDER.spurenGesperrt.pruefe("0")).toBe(0)
+  })
+
+  it("liest Zeitfenster in den Schreibweisen der Quellen", () => {
+    expect(FELDER.zeitfenster.pruefe("8h bis 15h")).toBe("08:00-15:00")
+    expect(FELDER.zeitfenster.pruefe("07:30 bis 15:00")).toBe("07:30-15:00")
+    expect(FELDER.zeitfenster.pruefe("kein Zeitraum")).toBeNull()
   })
 })
