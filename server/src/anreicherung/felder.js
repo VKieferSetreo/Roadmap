@@ -23,6 +23,10 @@ const WORTZAHL = {
   kein: 0, keine: 0, keinen: 0, null: 0,
   ein: 1, eine: 1, einen: 1, einem: 1, einer: 1, eins: 1,
   zwei: 2, drei: 3, vier: 4, fuenf: 5, fünf: 5, sechs: 6, sieben: 7, acht: 8,
+  // Benennt der Text EINEN bestimmten Fahrstreifen, ist genau einer gemeint. "linker
+  // Fahrstreifen gesperrt" scheiterte sonst am Belegriegel, obwohl die Aussage eindeutig ist.
+  linke: 1, linker: 1, linken: 1, rechte: 1, rechter: 1, rechten: 1,
+  mittlere: 1, mittlerer: 1, mittleren: 1, ueberholspur: 1, überholspur: 1, standspur: 1,
 }
 
 /** Zahl aus deutscher Schreibweise. "3,80" wie "3.80", "ca. 4 m" wie "4", "ein" wie 1. */
@@ -33,8 +37,12 @@ export function zahl(s) {
     const n = Number(t[0])
     if (Number.isFinite(n)) return n
   }
+  // Umlaute vorher aufloesen: "Ueberholspur" und "Überholspur" sind dasselbe Wort, und die
+  // Quellen schreiben beides. Ohne diesen Schritt fand die Wortliste nur die eine Schreibweise.
+  const flach = roh.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
   for (const [wort, n] of Object.entries(WORTZAHL)) {
-    if (new RegExp(`\\b${wort}\\b`, "i").test(roh)) return n
+    const w = wort.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue")
+    if (new RegExp(`\\b${w}\\b`, "i").test(flach)) return n
   }
   return null
 }
@@ -69,7 +77,7 @@ const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
   teilsperrung: /teilsperr|teilweise gesperrt|teilw\. gesperrt|halbseit|einseitig/i,
   halbseitig: /halbseit|einseitig|wechselseitig|(nord|süd|sued|ost|west)seite|eine\s+(fahrbahn|seite)|abwechselnd/i,
-  fahrbahnVerengt: /verengt|verengung|eingeengt|fahrstreifen.*(weg|entf)/i,
+  fahrbahnVerengt: /verengt|verengung|einengung|eingeengt|schmaler|fahrstreifen.*(weg|entf)/i,
   einbahnstrasse: /einbahn/i,
   sackgasse: /sackgasse|keine durchfahrt/i,
   nurNachts: /nacht|nächtlich|22:|23:|00:|01:|02:|03:|04:|05:/i,
@@ -209,6 +217,24 @@ const VERWANDT = [
   ["maxBreiteM", "restbreiteM"],
   ["vollsperrung", "teilsperrung", "sperrungArt"],
 ]
+
+/**
+ * Feldnamen, die das Modell erfindet, auf die echten abbilden. Gemessen: es antwortete mit
+ * "fahrstreifensperrung", was es im Katalog nicht gibt — gemeint war sperrungArt. Die Angabe
+ * wegzuwerfen, nur weil der Name daneben liegt, verschenkt eine richtige Aussage.
+ */
+export const FELD_ALIAS = {
+  fahrstreifensperrung: "sperrungArt",
+  vollsperrungArt: "sperrungArt",
+  sperrung: "sperrungArt",
+  sperrart: "sperrungArt",
+  hoehe: "maxHoeheM",
+  breite: "maxBreiteM",
+  gewicht: "maxGewichtT",
+  laenge: "maxLaengeM",
+  achslast: "maxAchslastT",
+  zeitraum: "zeitfenster",
+}
 
 /** Welche Felder soll dieser Punkt beantworten? Nur, was die Quelle offen lässt — was sie sagt,
  *  gilt, und ein Modell soll es nicht "korrigieren". */

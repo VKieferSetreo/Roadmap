@@ -24,7 +24,7 @@
 
 import { createHash } from "node:crypto"
 import { normRoadRefWeit } from "../external/osrm.js"
-import { KATALOG, setzeRefNormalisierer } from "./felder.js"
+import { KATALOG, FELD_ALIAS, setzeRefNormalisierer } from "./felder.js"
 
 // Der Katalog kennt osrm nicht (sonst haetten wir einen Ringschluss), bekommt den Normalisierer
 // also von hier gereicht.
@@ -76,12 +76,25 @@ const flach = (s) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim()
  * @returns {{ok: true, feld: string, wert: string, beleg: string} | {ok: false, grund: string}}
  */
 export function pruefeAngabe(angabe, quelltext) {
-  const feld = angabe?.feld
+  // Erfundene Feldnamen auf die echten abbilden, bevor geprueft wird: "fahrstreifensperrung"
+  // meint sperrungArt. Eine richtige Aussage wegen eines falschen Namens zu verlieren waere
+  // die teuerste Art von Strenge.
+  const roh = angabe?.feld
+  const feld = FELDER[roh] ? roh : (FELD_ALIAS[String(roh ?? "").toLowerCase()] ?? roh)
   const regel = FELDER[feld]
   if (!regel) return { ok: false, grund: `unbekanntes Feld: ${feld}` }
 
   const beleg = String(angabe?.beleg ?? "").trim()
   if (beleg.length < 2) return { ok: false, grund: "kein Beleg angegeben" }
+
+  // Platzhalter-Antworten frueh abfangen. Gemessen an 242 Verwerfungen war das mit Abstand das
+  // haeufigste Muster: das Modell schreibt "nicht angegeben" oder "nicht anwendbar" und erfindet
+  // dazu den Beleg "nicht im Text vorhanden", statt das Feld wegzulassen. Als eigener Grund
+  // erkennbar, damit die Statistik das nicht mit echten Fehlgriffen vermischt.
+  if (/^(nicht |kein|unbekannt|k\.?\s?a\.?$|n\/a$|-$|—$)/i.test(beleg) ||
+      /^(nicht |kein|unbekannt|k\.?\s?a\.?$|n\/a$|-$|—$)/i.test(String(angabe?.wert ?? ""))) {
+    return { ok: false, grund: "Platzhalter statt Angabe" }
+  }
 
   // Ein ZAHLENWERT braucht die Einheit oder ein Stichwort im Beleg. In der Durchsicht der ersten
   // 1.193 Angaben war genau eine auffaellig, und zwar diese: maxGewichtT = 250 mit dem Beleg
@@ -134,6 +147,8 @@ Regeln:
 - Zu jedem Feld gehört "beleg": die wörtliche Textstelle, aus der es hervorgeht. Kopiere sie
   Zeichen für Zeichen aus dem Text. Ohne Beleg wird die Angabe verworfen.
 - Findest du nichts, gib {"angaben": []} zurück. Das ist eine richtige Antwort, keine schlechte.
+- Schreibe NIEMALS Platzhalter wie "nicht angegeben", "nicht anwendbar", "unbekannt" oder "-" als
+  Wert, und erfinde keinen Beleg wie "nicht im Text vorhanden". Lass das Feld einfach weg.
 - Antworte bei Ja/Nein-Fragen NUR, wenn der Text die Sache ausdrücklich nennt. Ein "nein", nur
   weil nichts dasteht, ist keine Angabe und wird verworfen.
 - Die Zeile "Verortet an" nennt nur den Ort und sagt NICHT, ob die Straße getragen oder gekreuzt

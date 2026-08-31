@@ -301,8 +301,10 @@ describe("Koordinaten sind für das Modell gesperrt", () => {
 
   it("fragt das Modell gar nicht erst nach einem Ort", () => {
     const p = bauePrompt("irgendein Text")
+    // Als WORT prüfen, nicht als Teilstring: "Platzhalter" enthält "lat", und genau daran ist
+    // dieser Test schon einmal falsch angeschlagen (derselbe Fehlertyp wie "x" in "maxHoeheM").
     for (const wort of ["Koordinate", "Breitengrad", "Längengrad", "lat", "lng"]) {
-      expect(p).not.toContain(wort)
+      expect(p, wort).not.toMatch(new RegExp(`\\b${wort}\\b`, "i"))
     }
   })
 })
@@ -668,5 +670,51 @@ describe("Verfeinerungen aus der Auswertung der ersten 5.400 Punkte", () => {
     const f = offeneFelder({ kategorie: "baustelle", attrs: { restbreiteM: 3.5 } })
     expect(f).not.toContain("maxBreiteM")
     expect(f).toContain("maxHoeheM")
+  })
+})
+
+describe("Aus 242 Verwerfungen abgeleitet", () => {
+  // Das mit Abstand häufigste Muster: das Modell schreibt einen Platzhalter, statt das Feld
+  // wegzulassen — und erfindet dazu den Beleg "nicht im Text vorhanden".
+  it("erkennt Platzhalter als eigene Kategorie, nicht als Fehlgriff", () => {
+    for (const [wert, beleg] of [
+      ["nicht anwendbar", "nicht im Text vorhanden"],
+      ["nicht angegeben", "nicht im Text vorhanden"],
+      ["unbekannt", "keine Angabe"],
+    ]) {
+      const r = pruefeAngabe({ feld: "zeitfenster", wert, beleg }, "irgendein Text")
+      expect(r.ok).toBe(false)
+      expect(r.grund).toBe("Platzhalter statt Angabe")
+    }
+  })
+
+  it("sagt es dem Modell auch im Auftrag", () => {
+    expect(bauePrompt("x")).toMatch(/NIEMALS Platzhalter/)
+  })
+
+  // "Einengung der Fahrbahn" kannte das Muster nicht — eine richtige Angabe fiel durch.
+  it("kennt Einengung als Verengung", () => {
+    const t = "Einengung der Fahrbahn"
+    expect(pruefeAngabe({ feld: "fahrbahnVerengt", wert: "ja", beleg: t }, t).ok).toBe(true)
+  })
+
+  // "linker Fahrstreifen gesperrt" heißt genau EIN gesperrter Fahrstreifen. Die Ziffer 1 steht
+  // im Beleg nirgends, die Aussage ist trotzdem eindeutig.
+  it("liest einen benannten Fahrstreifen als Anzahl eins", () => {
+    for (const t of ["linker Fahrstreifen gesperrt", "rechter Fahrstreifen gesperrt", "Überholspur gesperrt"]) {
+      expect(pruefeAngabe({ feld: "spurenGesperrt", wert: "1", beleg: t }, t).ok, t).toBe(true)
+    }
+  })
+
+  // Das Modell erfand den Feldnamen "fahrstreifensperrung". Gemeint war sperrungArt — eine
+  // richtige Aussage wegen eines falschen Namens zu verlieren wäre die teuerste Art von Strenge.
+  it("bildet erfundene Feldnamen auf die echten ab", () => {
+    const t = "Sperrung eines Fahrstreifens"
+    const r = pruefeAngabe({ feld: "fahrstreifensperrung", wert: "fahrstreifensperrung", beleg: t }, t)
+    expect(r).toMatchObject({ ok: true, feld: "sperrungArt" })
+  })
+
+  it("bildet nur bekannte Aliasse ab, nicht beliebige Namen", () => {
+    expect(pruefeAngabe({ feld: "baujahr", wert: "1987", beleg: "Baujahr 1987" }, "Baujahr 1987").ok).toBe(false)
   })
 })
