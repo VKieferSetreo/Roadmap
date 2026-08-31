@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Download, ExternalLink, FileDown, FileText, Flag, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Play, Plus, Route, Upload, X } from "lucide-react"
+import { Copy, Download, ExternalLink, FileDown, FileText, Flag, Link2, Loader2, MapPin, MapPinned, Navigation, Pencil, Play, Plus, Route, Upload, X } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Input, Label } from "@/components/ui/Input"
@@ -14,6 +14,7 @@ import { MapPointPicker } from "./MapPointPicker"
 import { RoutePreview } from "./RoutePreview"
 import { RoutePreviewMap } from "@/components/map/RoutePreviewMap"
 import { RouteEditDialog } from "./RouteEditDialog"
+import { RouteCopyDialog } from "./RouteCopyDialog"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
 import { useProjectStore } from "@/store/projects"
@@ -97,6 +98,8 @@ export function RouteTab({ project }: { project: Project }) {
   const [tab, setTab] = useState<RouteSource>("datei")
   /** Strecke im Editor (T-197), null = geschlossen. */
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
+  /** Strecke, die gerade kopiert wird (T-658), null = kein Dialog. */
+  const [copyRoute, setCopyRoute] = useState<ProjectRoute | null>(null)
   // Prüfen-Gate: dieselbe Maske wie „Anpassen", aber im Verifikations-Modus (rot).
   const [verifyRoute, setVerifyRoute] = useState<ProjectRoute | null>(null)
   const [linkUrl, setLinkUrl] = useState("")
@@ -582,6 +585,18 @@ export function RouteTab({ project }: { project: Project }) {
                   ) : (
                     <>
                       <RouteDownloadMenu route={r} />
+                      {/* Kopieren steht VOR Bearbeiten und Entfernen: es ist die harmlose
+                          Aktion, und die gehört nicht neben das Kreuz, mit dem man löscht. */}
+                      <button
+                        type="button"
+                        onClick={() => setCopyRoute(r)}
+                        aria-label={`Strecke ${r.name} in ein Projekt kopieren`}
+                        title="In ein anderes Projekt kopieren"
+                        disabled={running}
+                        className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </button>
                       <button
                         type="button"
                         onClick={() => setEditRoute(r)}
@@ -656,6 +671,11 @@ export function RouteTab({ project }: { project: Project }) {
           </div>
         </Dialog>
       ) : null}
+
+      {/* T-658: Strecke in ein anderes Projekt kopieren. */}
+      {copyRoute && (
+        <RouteCopyDialog route={copyRoute} quelle={project} onSchliessen={() => setCopyRoute(null)} />
+      )}
 
       {/* Strecken-Editor (T-197): Wegpunkte ziehen/fixieren, live OSRM, Speichern → Re-Auswertung.
           Im Prüfen-Modus (T-593) dieselbe Maske, rot markiert, Speichern gibt die Strecke frei. */}

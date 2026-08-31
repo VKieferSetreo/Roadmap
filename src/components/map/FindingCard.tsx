@@ -136,7 +136,11 @@ export function FindingCard({
           </dd>
         </div>
         {Object.entries(detail ?? {})
-          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung" && !k.startsWith("__"))
+          // "Zeitraum" bleibt draussen (Max 31.08.2026): die Zeile sagt nur, wie der Fund zum
+          // eingestellten TRANSPORTzeitraum steht, und den kennt man aus den eigenen Einstellungen.
+          // Auf der Karte zaehlt, wann die Massnahme selbst gilt — das steht in "Gültig".
+          // Nur die Anzeige, im Fund bleibt der Wert stehen.
+          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung" && k !== "Zeitraum" && !k.startsWith("__"))
           .map(([k, v]) => {
             // Das Zeichen sitzt AN DER GEFUNDENEN STELLE (Max 31.08.2026), nicht nur unten am
             // Fund: wer auf eine Durchfahrtshöhe schaut, muss dort sehen, woher sie kommt.
@@ -146,12 +150,12 @@ export function FindingCard({
                 <dt className="text-neutral-400">{k}</dt>
                 <dd className={cn("flex items-center gap-1 font-medium tabular-nums", ausKi ? "text-violet-700" : "text-neutral-800")}>
                   {v}
+                  {/* Das Zeichen steht hinter dem Wert und traegt kein Wort (Max 31.08.2026):
+                      der Wert ist die Information, die Herkunft eine Fussnote. Der Satz dazu
+                      steht unten am Fund. */}
                   {ausKi ? (
-                    <span title="KI-made — aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet"
-                          className="inline-flex items-center gap-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-600">
-                      <Sparkles className="h-3 w-3" aria-hidden />
-                      KI-made
-                    </span>
+                    <Sparkles className="h-3 w-3 shrink-0 text-violet-600"
+                              aria-label="Durch KI augmentiert" />
                   ) : null}
                 </dd>
               </div>
@@ -167,11 +171,11 @@ export function FindingCard({
         <div className="mt-2 flex flex-col gap-1">
           {detail?.["Ergänzt"] ? (
             <span
-              title={`Diese Angabe stand nicht in den Quelldaten, sie wurde aus dem Beschreibungstext gelesen: ${detail["Ergänzt"]}`}
+              title={`Aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet: ${detail["Ergänzt"]}`}
               className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
             >
               <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
-              Ergänzt: {detail["Ergänzt"]}
+              Durch KI augmentiert
             </span>
           ) : null}
           {detail?.["Zuordnung"] ? (
