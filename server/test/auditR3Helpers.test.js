@@ -3,6 +3,7 @@
 import { describe, it, expect } from "vitest"
 import { decodeEntities, cleanText } from "../src/util.js"
 import { extractStammdaten, stripHtml, tonnageAusText, makeNormalized, schlankeRohdaten } from "../src/connectors/_helpers.js"
+import { validateObstacle } from "../src/obstaclesRepo.js"
 import { humanizeTitel, dedupeDominatedWidth } from "../src/engine/index.js"
 import { evaluate } from "../src/engine/rules.js"
 import { normalizeAutobahn } from "../src/connectors/autobahn.js"
@@ -263,5 +264,31 @@ describe("schlankeRohdaten — Rohantwort der Quelle für die Anreicherung", () 
     expect(o.roh).toEqual({ art: "Bauarbeiten" })
     // Ohne roh bleibt es null — kein leeres Objekt, das der Prompt sonst als Zeile mitschleppt.
     expect(makeNormalized({ externeId: "y", kategorie: "baustelle", name: "n", lat: 50, lng: 8 }).roh).toBeNull()
+  })
+})
+
+// Der Weg vom Connector in die Datenbank fuehrt durch validateObstacle, und das baut das Objekt
+// aus einer WHITELIST neu. Genau daran ist `roh` beim ersten Versuch still gescheitert: der
+// Connector lieferte es bei allen 5.487 Punkten, in der Datenbank kam nichts an, und nichts hat
+// gewarnt. Ein Feld, das die Whitelist nicht kennt, existiert nicht.
+describe("validateObstacle reicht roh durch", () => {
+  const basis = { kategorie: "baustelle", name: "Teststraße 1", lat: 48.1, lng: 11.5 }
+
+  it("übernimmt roh und begrenzt es dabei", () => {
+    const r = validateObstacle({ ...basis, roh: { art: "Bauarbeiten", geometry: { coordinates: [1, 2] } } })
+    expect(r.ok).toBe(true)
+    expect(r.value.roh).toEqual({ art: "Bauarbeiten" })
+  })
+
+  it("ohne roh bleibt es null, statt zu fehlen", () => {
+    const r = validateObstacle(basis)
+    expect(r.value.roh).toBeNull()
+    expect("roh" in r.value).toBe(true)
+  })
+
+  it("ein Blob über die API wird gedeckelt, nicht durchgereicht", () => {
+    const blob = Object.fromEntries(Array.from({ length: 80 }, (_, i) => [`f${i}`, "y".repeat(500)]))
+    const r = validateObstacle({ ...basis, roh: blob })
+    expect(JSON.stringify(r.value.roh).length).toBeLessThanOrEqual(2000)
   })
 })

@@ -9,6 +9,7 @@
 
 import { KATEGORIEN } from "./engine/rules.js"
 import { isFiniteNumber, isPlainObject } from "./util.js"
+import { schlankeRohdaten } from "./connectors/_helpers.js"
 
 /** Quellen-ID für manuelle Kunden-Einträge (Quellen-Register '0100'). */
 export const KUNDEN_QUELLE = "0100"
@@ -169,6 +170,12 @@ export function validateObstacle(input, { strict = false } = {}) {
       demo: input.demo === true,
       kiAufbereitet: input.kiAufbereitet === true,
       geom: isPlainObject(input.geom) ? input.geom : null,
+      // Die Rohantwort der Quelle (T-657). Diese Liste ist eine WHITELIST — was hier nicht steht,
+      // faellt heraus, und genau daran ist `roh` beim ersten Versuch still gescheitert: der
+      // Connector lieferte es bei allen 5.487 Punkten, in der Datenbank kam nichts an.
+      // Durch schlankeRohdaten, damit auch ein Import ueber die API keine Blobs einschleusen kann:
+      // die Funktion wirft Geometrie und Leerwerte weg und deckelt bei 2 KB.
+      roh: schlankeRohdaten(input.roh),
       tenantId: null, // wird vom Aufrufer gesetzt (Route/Importer), nie vom Client
       externeId: null,
     },
