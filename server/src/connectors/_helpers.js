@@ -468,10 +468,44 @@ export function stripHtml(text) {
   return s || null
 }
 
+/**
+ * Die Rohantwort der Quelle für EINEN Datensatz, aufgeräumt und begrenzt.
+ *
+ * Max, 31.08.2026: "der KI immer den gesamten API-Abruf für den Punkt geben, dass sie alles
+ * extrahieren kann, was sie sieht." Die Connectoren picken sich zwei bis drei Felder heraus und
+ * werfen den Rest weg — bei München fließt nicht einmal `art` in den Text ein. Was hier stehen
+ * bleibt, sieht das Modell; was der Connector wegwirft, ist für immer weg.
+ *
+ * DREI GRENZEN, damit das nicht ausufert:
+ *   1. keine Geometrie — die steht in `geom` und wäre als Zahlenwüste im Prompt nur Ballast
+ *   2. keine leeren Werte — sie kosten Kontext und sagen nichts
+ *   3. harte Obergrenze, weil der Prompt in num_ctx passen muss (4096 Token)
+ */
+const ROH_MAX = 2000
+const ROH_RAUS = /^(geom|geometry|the_geom|shape|coordinates|bbox|crs|srs)$/i
+export function schlankeRohdaten(quelle) {
+  if (!quelle || typeof quelle !== "object" || Array.isArray(quelle)) return null
+  const schlank = {}
+  for (const [k, v] of Object.entries(quelle)) {
+    if (ROH_RAUS.test(k)) continue
+    if (v == null || v === "" || (typeof v === "object" && !Object.keys(v).length)) continue
+    schlank[k] = typeof v === "string" ? v.slice(0, 400) : v
+  }
+  if (!Object.keys(schlank).length) return null
+  // Lieber Felder weglassen als den Prompt sprengen: die hinteren Felder fallen zuerst, weil
+  // Quellen die wichtigen nach vorn stellen.
+  while (JSON.stringify(schlank).length > ROH_MAX) {
+    const letzte = Object.keys(schlank).pop()
+    if (!letzte) break
+    delete schlank[letzte]
+  }
+  return schlank
+}
+
 export function makeNormalized({
   externeId, kategorie, name = null, beschreibung = null, lat, lng,
   strassenRef = null, attrs = {}, gueltigVon = null, gueltigBis = null, realerStart = null,
-  quelleName = null, quelleUrl = null, geom = null, refAusBeschreibung = true,
+  quelleName = null, quelleUrl = null, geom = null, refAusBeschreibung = true, roh = null,
 }) {
   let nlat = lat != null ? Number(lat) : null
   let nlng = lng != null ? Number(lng) : null
@@ -533,6 +567,8 @@ export function makeNormalized({
     realerStart: dateOnly(realerStart),
     kiAufbereitet: extrahiert, // Flag: aus Freitext angereichert → FE-Badge "mit KI-Aufbereitung"
     geom: geom && typeof geom === "object" ? geom : null, // GeoJSON-Geometrie (Strecke) für Linien-Render
+    // Was die Quelle sonst noch mitgeliefert hat — Rohstoff für die Anreicherung (T-657).
+    roh: schlankeRohdaten(roh),
     quelle: { name: quelleName, url: quelleUrl, aktualisiertAm: new Date().toISOString() },
   }
 }

@@ -3,6 +3,10 @@
 // damit Drift zwischen App-SQL und Fake sofort sichtbar wird.
 
 import { randomUUID } from "node:crypto"
+// Die Spaltenzahlen aus der QUELLE, nicht abgeschrieben: sie standen hier als 20 und 14 fest und
+// liefen beim Hinzufuegen von `roh` still auseinander — die Params rutschten um eine Stelle, und
+// 15 Tests scheiterten mit "expected 2 to be 3", ohne die Ursache zu nennen.
+import { OBSTACLE_INSERT_COL_COUNT, SACHFELD_COL_COUNT } from "../../src/obstaclesRepo.js"
 
 const J = (v) => (typeof v === "string" ? JSON.parse(v) : v)
 const now = () => new Date().toISOString()
@@ -745,8 +749,8 @@ export function createFakeDb() {
       return ok([{ max_index: indexes.length ? Math.max(...indexes) : 0 }])
     }
     if (sql.startsWith("INSERT INTO obstacles (kategorie,")) {
-      // Single-Row (RETURNING *, manueller Pfad) UND Importer-Multi-Row-Batch (T-329) — Params in 20er-Tupeln.
-      const COLS = 20
+      // Single-Row (RETURNING *, manueller Pfad) UND Importer-Multi-Row-Batch (T-329).
+      const COLS = OBSTACLE_INSERT_COL_COUNT
       const inserted = []
       for (let b = 0; b < params.length; b += COLS) {
         const row = {
@@ -771,6 +775,7 @@ export function createFakeDb() {
           externe_id: params[b + 17] ?? null,
           ki_aufbereitet: params[b + 18] === true,
           geom: params[b + 19] != null ? J(params[b + 19]) : null,
+          roh: params[b + 20] != null ? J(params[b + 20]) : null,
           created_at: now(),
           updated_at: now(),
         }
@@ -786,10 +791,10 @@ export function createFakeDb() {
       }
       return ok(inserted)
     }
-    // Importer-Sachfeld-Batch (T-329): UPDATE … FROM (VALUES …) — Params in 14er-Tupeln,
+    // Importer-Sachfeld-Batch (T-329): UPDATE … FROM (VALUES …),
     // fach_id/realer_start/aktiv/tenant bleiben unberührt, ki_aufbereitet sticky.
     if (sql.startsWith("UPDATE obstacles AS o SET kategorie = v.kategorie")) {
-      const COLS = 14
+      const COLS = SACHFELD_COL_COUNT
       let n = 0
       for (let b = 0; b < params.length; b += COLS) {
         const row = state.obstacles.find((o) => o.id === params[b + 0])
@@ -808,6 +813,8 @@ export function createFakeDb() {
           gueltig_bis: params[b + 11],
           ki_aufbereitet: row.ki_aufbereitet || params[b + 12] === true,
           geom: params[b + 13] != null ? J(params[b + 13]) : null,
+          // coalesce wie im echten SQL: kein roh im Import loescht kein vorhandenes roh.
+          roh: params[b + 14] != null ? J(params[b + 14]) : row.roh ?? null,
           updated_at: now(),
         })
         n += 1
@@ -854,6 +861,9 @@ export function createFakeDb() {
         attrs: J(params[9]),
         gueltig_von: params[10],
         gueltig_bis: params[11],
+        ki_aufbereitet: row.ki_aufbereitet || params[12] === true,
+        geom: params[13] != null ? J(params[13]) : row.geom ?? null,
+        roh: params[14] != null ? J(params[14]) : row.roh ?? null,
         updated_at: now(),
       })
       return ok([row])

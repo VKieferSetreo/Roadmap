@@ -179,11 +179,11 @@ export function validateObstacle(input, { strict = false } = {}) {
 // teilen sie sich, damit Spaltenreihenfolge und insertParams() nie auseinanderdriften.
 export const OBSTACLE_INSERT_COLS = `kategorie, name, beschreibung, lat, lng, strassen_ref,
     zustaendig, quelle, attrs, gueltig_von, gueltig_bis, fach_id, quellen_id, realer_start,
-    aktiv, demo, tenant_id, externe_id, ki_aufbereitet, geom`
-export const OBSTACLE_INSERT_COL_COUNT = 20
+    aktiv, demo, tenant_id, externe_id, ki_aufbereitet, geom, roh`
+export const OBSTACLE_INSERT_COL_COUNT = 21
 
 export const INSERT_SQL = `INSERT INTO obstacles (${OBSTACLE_INSERT_COLS})
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING *`
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING *`
 
 export const insertParams = (o) => [
   o.kategorie, o.name, o.beschreibung, o.lat, o.lng, o.strassenRef, o.zustaendig,
@@ -191,13 +191,18 @@ export const insertParams = (o) => [
   o.gueltigVon, o.gueltigBis, o.fachId, o.quellenId, o.realerStart, o.aktiv, o.demo,
   o.tenantId ?? null, o.externeId ?? null, o.kiAufbereitet === true,
   o.geom != null ? JSON.stringify(o.geom) : null,
+  // Die ungekuerzte Antwort der Quelle. Sie stand seit der ersten Migration in der Tabelle und
+  // wurde von keinem Connector befuellt — 0 von 73.197 Punkten. Damit sah die Anreicherung nur
+  // Name und Beschreibung, obwohl die Quellen ein Vielfaches liefern (T-657).
+  o.roh != null ? JSON.stringify(o.roh) : null,
 ]
 
 /** Sachfeld-Update beim Re-Import: fachId/realerStart/aktiv/tenant bleiben stabil.
  *  ki_aufbereitet ist "sticky" (einmal true bleibt true), damit ein Re-Import ohne Treffer das Flag nicht löscht. */
 export const UPDATE_SACHFELDER_SQL = `UPDATE obstacles SET kategorie = $2, name = $3, beschreibung = $4,
     lat = $5, lng = $6, strassen_ref = $7, zustaendig = $8, quelle = $9, attrs = $10,
-    gueltig_von = $11, gueltig_bis = $12, ki_aufbereitet = (ki_aufbereitet OR $13), geom = $14, updated_at = now()
+    gueltig_von = $11, gueltig_bis = $12, ki_aufbereitet = (ki_aufbereitet OR $13), geom = $14,
+    roh = coalesce($15::jsonb, roh), updated_at = now()
   WHERE id = $1 RETURNING *`
 
 export const sachfeldParams = (id, o) => [
@@ -205,8 +210,11 @@ export const sachfeldParams = (id, o) => [
   o.quelle != null ? JSON.stringify(o.quelle) : null, JSON.stringify(o.attrs),
   o.gueltigVon, o.gueltigBis, o.kiAufbereitet === true,
   o.geom != null ? JSON.stringify(o.geom) : null,
+  // coalesce statt Zuweisung: liefert ein Connector (noch) kein roh, soll ein einmal erfasster
+  // Rohsatz nicht bei jedem Import geloescht werden.
+  o.roh != null ? JSON.stringify(o.roh) : null,
 ]
-export const SACHFELD_COL_COUNT = 14 // sachfeldParams: id + 13 Sachfelder
+export const SACHFELD_COL_COUNT = 15 // sachfeldParams: id + 14 Sachfelder
 
 /** Batch-Sachfeld-Update (T-329): N Updates als EIN `UPDATE … FROM (VALUES …)`-Join statt N Round-Trips.
  *  `valuesSql` = Platzhalter-Tupel aus dbBatch.placeholders(rows, SACHFELD_COL_COUNT), Params = flache
@@ -219,9 +227,9 @@ export const sachfeldBatchSql = (valuesSql) => `UPDATE obstacles AS o SET
     quelle = v.quelle::jsonb, attrs = v.attrs::jsonb,
     gueltig_von = v.gueltig_von::date, gueltig_bis = v.gueltig_bis::date,
     ki_aufbereitet = (o.ki_aufbereitet OR v.ki_aufbereitet::boolean),
-    geom = v.geom::jsonb, updated_at = now()
+    geom = v.geom::jsonb, roh = coalesce(v.roh::jsonb, o.roh), updated_at = now()
   FROM (VALUES ${valuesSql}) AS v(id, kategorie, name, beschreibung, lat, lng, strassen_ref,
-    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom)
+    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom, roh)
   WHERE o.id = v.id::uuid`
 
 // T-262: siehe importer.js — Index = fach_id ohne die letzten 10 Zeichen (QUELLE+DDMMYY), damit

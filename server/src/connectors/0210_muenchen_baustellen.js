@@ -109,6 +109,11 @@ export const muenchenBaustellenConnector = {
         quelleName: QUELLE_NAME,
         quelleUrl: PORTAL,
         geom,
+        // Die vollen WFS-Attribute mitgeben (T-657). Bis hierher floss davon nur `beschreibung`,
+        // `beeintraechtigung` und `weitere_info` in den Text — `art` etwa gar nicht, obwohl es
+        // die Art der Maßnahme benennt. Gemessen: 4.982 Münchner Punkte, attrs im Schnitt LEER,
+        // die Hälfte unter 40 Zeichen Text. Ohne Rohdaten hat die Anreicherung dort nichts zu lesen.
+        roh: p,
       }))
     }
     log(`München: ${feats.length} Features → ${obstacles.length} obstacles`)

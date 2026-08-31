@@ -2,7 +2,7 @@
 // richtungAus (Wortanker), humanizeTitel (Uf/ÜF, Ab/St-Codes, A#/A#-NearDup, //-Mehrsegment).
 import { describe, it, expect } from "vitest"
 import { decodeEntities, cleanText } from "../src/util.js"
-import { extractStammdaten, stripHtml, tonnageAusText, makeNormalized } from "../src/connectors/_helpers.js"
+import { extractStammdaten, stripHtml, tonnageAusText, makeNormalized, schlankeRohdaten } from "../src/connectors/_helpers.js"
 import { humanizeTitel, dedupeDominatedWidth } from "../src/engine/index.js"
 import { evaluate } from "../src/engine/rules.js"
 import { normalizeAutobahn } from "../src/connectors/autobahn.js"
@@ -225,5 +225,43 @@ describe("T-611 Welle C/Engine (geteilte Fixes)", () => {
     const a = { routeId: "r1", kategorie: "baustelle", km: 215.7, gueltigVon: "2026-06-01", gueltigBis: "2026-07-03", severity: "warnung", restbreiteM: 5.0 }
     const b = { ...a, gueltigBis: "2026-08-03", restbreiteM: 6.5 }
     expect(dedupeDominatedWidth([a, b])).toHaveLength(2)
+  })
+})
+
+// Die Rohantwort der Quelle wandert seit T-657 mit in die Datenbank — sie ist der Stoff, aus dem
+// die Anreicherung liest. Ungefiltert waere sie ein Problem: Geometrie-Zahlenwuesten und leere
+// Felder sprengen den Prompt, der in num_ctx (4096 Token) passen muss.
+describe("schlankeRohdaten — Rohantwort der Quelle für die Anreicherung", () => {
+  it("wirft Geometrie und Leerwerte weg, behält den Rest", () => {
+    const r = schlankeRohdaten({
+      art: "Bauarbeiten", beschreibung: "Fahrbahn verengt", leer: "", nix: null,
+      geometry: { type: "Polygon", coordinates: [[[1, 2]]] }, bbox: [1, 2, 3, 4], leeresObjekt: {},
+    })
+    expect(r).toEqual({ art: "Bauarbeiten", beschreibung: "Fahrbahn verengt" })
+  })
+
+  it("gibt null zurück, wenn nichts Brauchbares übrig bleibt", () => {
+    expect(schlankeRohdaten({ geom: { a: 1 }, leer: "", nix: null })).toBeNull()
+    expect(schlankeRohdaten(null)).toBeNull()
+    expect(schlankeRohdaten("kein Objekt")).toBeNull()
+    expect(schlankeRohdaten([1, 2, 3])).toBeNull()
+  })
+
+  it("hält die Obergrenze ein — der Prompt muss in num_ctx passen", () => {
+    const gross = Object.fromEntries(Array.from({ length: 60 }, (_, i) => [`feld${i}`, "x".repeat(300)]))
+    const r = schlankeRohdaten(gross)
+    expect(JSON.stringify(r).length).toBeLessThanOrEqual(2000)
+    // Die vorderen Felder überleben: Quellen stellen die wichtigen nach vorn.
+    expect(r.feld0).toBeTruthy()
+  })
+
+  it("reicht roh durch makeNormalized durch", () => {
+    const o = makeNormalized({
+      externeId: "x", kategorie: "baustelle", name: "Teststr. 1", lat: 50, lng: 8,
+      roh: { art: "Bauarbeiten", geometry: { coordinates: [1, 2] } },
+    })
+    expect(o.roh).toEqual({ art: "Bauarbeiten" })
+    // Ohne roh bleibt es null — kein leeres Objekt, das der Prompt sonst als Zeile mitschleppt.
+    expect(makeNormalized({ externeId: "y", kategorie: "baustelle", name: "n", lat: 50, lng: 8 }).roh).toBeNull()
   })
 })
