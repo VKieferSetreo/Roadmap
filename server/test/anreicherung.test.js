@@ -537,3 +537,42 @@ describe("kiZeilen — die Markierung muss die richtige Zeile treffen", () => {
     expect(kiZeilen(null)).toEqual([])
   })
 })
+
+describe("Betriebspfad", () => {
+  // Max, 31.08.2026: "für Prod keine Workstation, nur OpenRouter." Die Workstation steht unter
+  // dem Schreibtisch und ist meist aus — ein Produktivpfad, der auf sie wartet, fällt still aus.
+  it("greift im Betrieb nicht auf die Workstation zurück", async () => {
+    vi.stubEnv("OPENROUTER_API_KEY", "")
+    const db = { query: async () => ({ rows: [{ n: 5 }] }) }
+    const r = await nachlauf(db)
+    // Ohne OpenRouter-Schlüssel gar kein Weg — statt heimlich lokal zu laufen.
+    expect(r).toMatchObject({ gelaufen: false, grund: "kein Weg erreichbar" })
+    vi.unstubAllEnvs()
+  })
+
+  it("führt die freien Modelle als Kette, damit ein Limit nicht alles stoppt", () => {
+    vi.stubEnv("OPENROUTER_API_KEY", "erfunden")
+    const k = modellKonfig("openrouter")
+    expect(k.kette[0]).toBe("google/gemma-4-31b-it:free")
+    expect(k.kette).toContain("z-ai/glm-5.2:free")
+    expect(k.kette.length).toBeGreaterThan(1)
+    vi.unstubAllEnvs()
+  })
+
+  it("versucht die Kette der Reihe nach, bis eines antwortet", async () => {
+    const versucht = []
+    const fetchImpl = async (_u, o) => {
+      const modell = JSON.parse(o.body).model
+      versucht.push(modell)
+      // Die ersten beiden laufen in ein Limit, wie am 31.08.2026 gemessen.
+      if (versucht.length < 3) return { ok: false, status: 429 }
+      return { ok: true, json: async () => ({ choices: [{ message: { content: "{}" } }] }) }
+    }
+    const rufe = createModell(
+      { name: "a", basis: "https://openrouter.ai/api/v1", schluessel: "x", kette: ["a", "b", "c"] },
+      { fetchImpl },
+    )
+    await expect(rufe("prompt")).resolves.toBe("{}")
+    expect(versucht).toEqual(["a", "b", "c"])
+  })
+})

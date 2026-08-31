@@ -36,11 +36,20 @@ const LIST_WHERE = `FROM obstacles
 // nondeterministisch → Dup/Lücke an Seitengrenzen).
 const LIST_ORDER = ` ORDER BY created_at DESC, id`
 
+// T-657: welche Felder eines Hindernisses aus der Anreicherung stammen. Als Unterabfrage statt
+// als Join, damit die Zeilenzahl unveraendert bleibt und ein fehlender Eintrag schlicht NULL gibt.
+// LEFT-Semantik ohne LEFT JOIN: die Liste laedt bis zu 5.000 Zeilen je Seite, ein Join ueber eine
+// zweite Tabelle waere dort teurer als der korrelierte Aggregat-Ausdruck.
+const KI_FELDER = `(SELECT array_agg(a.feld) FROM anreicherung a
+                     WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = obstacles.id::text
+                       AND a.stand = 'ok' AND a.wert IS NOT NULL
+                       AND (a.geprueft IS NULL OR a.geprueft = true)) AS ki_felder`
+
 // Schlanke Spalten (ohne roh/geom-Blobs) für Tabelle/Listen.
-const LIST_SQL = `SELECT ${OBSTACLE_COLS} ${LIST_WHERE}${LIST_ORDER}`
+const LIST_SQL = `SELECT ${OBSTACLE_COLS}, ${KI_FELDER} ${LIST_WHERE}${LIST_ORDER}`
 // Karten-Variante: zusätzlich geom (Strecken-Linie). Opt-in via ?geom=true, damit nur
 // die Karte den ~3,5-MB-Geometrie-Blob zieht und die Tabelle schlank bleibt.
-const LIST_SQL_GEOM = `SELECT ${OBSTACLE_COLS}, geom ${LIST_WHERE}${LIST_ORDER}`
+const LIST_SQL_GEOM = `SELECT ${OBSTACLE_COLS}, geom, ${KI_FELDER} ${LIST_WHERE}${LIST_ORDER}`
 // T-586: Gesamtzahl für paginiertes Laden (Ladebalken). Gleiche WHERE-Params $1..$5, kein ORDER.
 const COUNT_SQL = `SELECT count(*)::int AS n ${LIST_WHERE}`
 const PAGE_MAX = 5000 // Obergrenze je Seite — hält die Server-Serialisierung pro Request klein.

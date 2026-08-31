@@ -40,12 +40,15 @@ export async function nachlauf(db, { weg = process.env.ANREICHERUNG_WEG || null,
   ).catch(() => ({ rows: [{ n: 0 }] }))
   if (!offenVorab[0]?.n) return { gelaufen: false, grund: "nichts Neues" }
 
-  // REIHENFOLGE: erst die Workstation, dann OpenRouter. Das dreht Max' urspruengliche Aufteilung
-  // um, und zwar aus einer Messung heraus: von vier freien OpenRouter-Modellen liefen zwei sofort
-  // in HTTP 429, eines lieferte kein JSON, nur minimax-m3 antwortete brauchbar. Das lokale Modell
-  // hat kein Limit und kostet nichts — es ist der bessere erste Griff, solange der Rechner laeuft.
-  // OpenRouter bleibt der Rueckfall fuer die Zeiten, in denen er aus ist.
-  const wege = weg ? [weg] : ["lokal", "openrouter"]
+  // IM BETRIEB AUSSCHLIESSLICH OPENROUTER (Max, 31.08.2026: "für Prod keine Workstation, nur
+  // OpenRouter"). Der Grund ist Betriebssicherheit, nicht Qualitaet: die Workstation steht bei
+  // Max unter dem Schreibtisch und ist die meiste Zeit aus. Ein Produktivpfad, der auf einen
+  // Rechner wartet, den niemand eingeschaltet hat, faellt still aus — und still ausfallende
+  // Anreicherung merkt man erst, wenn Wochen spaeter Daten fehlen.
+  //
+  // Die Workstation bleibt fuer den einmaligen Bestandslauf (scripts/anreicherungLauf.mjs), der
+  // laeuft ueberwacht und darf auf sie warten.
+  const wege = weg ? [weg] : ["openrouter"]
   let konfig = null
   for (const w of wege) {
     const k = modellKonfig(w)

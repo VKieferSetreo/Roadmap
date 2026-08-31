@@ -102,13 +102,17 @@ function formatAttrValue(key: string, v: number | string | boolean): string {
   return String(v)
 }
 
-/** Alle Attribute eines Hindernisses → lesbare {label, value}-Zeilen. */
+/** Alle Attribute eines Hindernisses → lesbare {label, value}-Zeilen.
+ *  `kiFelder` markiert die, die nicht gemeldet, sondern aus dem Beschreibungstext gelesen
+ *  wurden (T-657) — die Ansicht setzt daran ihr Zeichen. */
 export function attrEntries(
   attrs: Record<string, number | string> | undefined,
-): { label: string; value: string }[] {
+  kiFelder: string[] = [],
+): { label: string; value: string; ausKi: boolean }[] {
   return Object.entries(attrs ?? {}).map(([k, v]) => ({
     label: attrLabel(k),
     value: formatAttrValue(k, v as number | string | boolean),
+    ausKi: kiFelder.includes(k),
   }))
 }
 

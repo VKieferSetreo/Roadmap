@@ -89,6 +89,9 @@ export function rowToObstacle(row) {
     aktiv: row.aktiv !== false,
     demo: row.demo === true,
     kiAufbereitet: row.ki_aufbereitet === true,
+    // T-657: WELCHE Felder aus der Ableitung stammen. Das Flag allein sagt nur, DASS etwas
+    // ergaenzt wurde — die Datenbankansicht muss aber die einzelne Zeile kennzeichnen koennen.
+    kiFelder: Array.isArray(row.ki_felder) ? row.ki_felder : [],
     geom: row.geom ?? null,
     // v3: tenant_id NULL = globaler Eintrag, gesetzt = Kunden-Eintrag des Mandanten
     tenantId: row.tenant_id ?? null,

@@ -390,6 +390,8 @@ export interface Obstacle {
   herkunft?: "global" | "eigen"
   /** true, wenn strukturierte Felder automatisch aus dem Meldungstext angereichert wurden (KI-Aufbereitung). */
   kiAufbereitet?: boolean
+  /** Welche Attribute aus dem Beschreibungstext gelesen wurden statt gemeldet (T-657). */
+  kiFelder?: string[]
   /** GeoJSON-Geometrie (LineString/MultiLineString = Strecke) für Linien-Darstellung statt nur Punkt. */
   geom?: GeoJSONGeometry | null
   createdAt: string

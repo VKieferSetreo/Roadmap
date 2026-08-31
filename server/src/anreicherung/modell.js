@@ -22,14 +22,18 @@ export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal") {
   if (weg === "openrouter") {
     const schluessel = process.env.OPENROUTER_API_KEY || ""
     return {
-      // Gemessen am 31.08.2026 an zwei echten Fällen: von vier freien Modellen liefen zwei
-      // sofort in HTTP 429, eines lieferte kein JSON. minimax-m3 antwortete als einziges
-      // brauchbar (1 von 2 Treffern, 20 s). Freie Modelle sind für einen Dauerlauf zu knapp,
-      // für die wenigen neuen Punkte je Sync reichen sie.
-      name: process.env.ANREICHERUNG_MODELL || "minimax/minimax-m3:free",
+      // Max' Wahl (31.08.2026): gemma zuerst, glm als Rückfall. Beide kostenlos.
+      // Gemessen liefen beide an diesem Tag in HTTP 429 — freie Modelle sind kontingentiert und
+      // je nach Tageszeit belegt. Deshalb eine KETTE statt eines Modells: läuft das erste in ein
+      // Limit, greift das nächste. minimax steht am Ende, es hat als einziges durchgehend
+      // geantwortet.
+      name: process.env.ANREICHERUNG_MODELL || "google/gemma-4-31b-it:free",
       basis: OPENROUTER,
       schluessel,
       verfuegbar: Boolean(schluessel),
+      // Der Reihe nach, bis eines antwortet. Ein 429 ist kein Fehler des Modells, sondern eine
+      // Tagesform — beim nächsten Aufruf kann dasselbe Modell wieder frei sein.
+      kette: (process.env.ANREICHERUNG_MODELL_KETTE || "google/gemma-4-31b-it:free,z-ai/glm-5.2:free,minimax/minimax-m3:free").split(",").map((m) => m.trim()).filter(Boolean),
     }
   }
   return {
@@ -48,7 +52,19 @@ export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal") {
  * beim zweiten Lauf etwas anderes sagt, wäre als Stammdatum wertlos.
  */
 export function createModell(konfig = modellKonfig(), { fetchImpl = globalThis.fetch, timeoutMs = 120000 } = {}) {
-  return async function rufeModell(prompt, modellName = konfig.name) {
+  const kette = konfig.kette?.length ? konfig.kette : [konfig.name]
+
+  return async function rufeModell(prompt, modellName = null) {
+    // Ein Modell nach dem anderen, bis eines antwortet. Bei einem einzelnen Namen (lokal) ist
+    // das genau ein Durchgang.
+    for (const kandidat of modellName ? [modellName] : kette) {
+      const antwort = await einAufruf(prompt, kandidat)
+      if (antwort != null) return antwort
+    }
+    return null
+  }
+
+  async function einAufruf(prompt, modellName) {
     const kopf = { "Content-Type": "application/json" }
     if (konfig.schluessel) kopf.Authorization = `Bearer ${konfig.schluessel}`
     // OpenRouter verlangt eine Herkunft, sonst antwortet es mit 401.

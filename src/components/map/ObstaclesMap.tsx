@@ -55,9 +55,11 @@ function obstaclePopupHtml(o: Obstacle): string {
   const kontakt = eigen ? o.quelle?.kontakt : undefined
   const rows: string[] = [
     `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">Gültig</span><span class="text-right font-medium text-neutral-700">${esc(formatGueltigkeit(o.gueltigVon, o.gueltigBis))}</span></div>`,
-    ...attrEntries(o.attrs).map(
+    // Abgeleitete Werte tragen ihr Zeichen AN DER ZEILE (Max 31.08.2026), nicht nur als
+    // Sammelvermerk am Fuss: wer auf eine Restbreite schaut, muss dort sehen, woher sie kommt.
+    ...attrEntries(o.attrs, o.kiFelder).map(
       (e) =>
-        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium text-neutral-700">${esc(e.value)}</span></div>`,
+        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium ${e.ausKi ? "text-violet-700" : "text-neutral-700"}">${esc(e.value)}${e.ausKi ? ` <span class="ml-1 text-[9px] font-semibold uppercase tracking-wide text-violet-600" title="KI-made — aus dem Beschreibungstext gelesen">✦ KI-made</span>` : ""}</span></div>`,
     ),
   ]
   if (o.zustaendig)
