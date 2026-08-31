@@ -10,6 +10,7 @@
 // öffentlichen Brückenstatistik.
 
 import { Router } from "express"
+import { fileURLToPath } from "node:url"
 import { asyncHandler } from "../util.js"
 
 export function anreicherungRouter({ db }) {
@@ -61,6 +62,13 @@ export function anreicherungRouter({ db }) {
       proben: proben.rows,
     })
   }))
+
+  // Die Seite liegt UNTER /api, nicht daneben: der Proxy leitet ausschliesslich /roadmap/api/*
+  // an diesen Dienst weiter. Ein eigener Pfad braeuchte eine Proxy-Aenderung; das waere ein
+  // Eingriff in fremdes Terrain fuer eine Betriebsseite.
+  // Erreichbar als https://setreo-intern.com/roadmap/api/anreicherung/viewer
+  r.get("/viewer", (req, res) =>
+    res.sendFile(fileURLToPath(new URL("../../public/anreicherung.html", import.meta.url))))
 
   return r
 }

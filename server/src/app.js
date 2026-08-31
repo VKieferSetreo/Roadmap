@@ -285,11 +285,6 @@ export function createApp({
 
   // ── Share-SPA (NACH allen API-Routen): /<tenantSlug>/<projectId> → index.html
   // Validierung light — der Client zeigt den 404-Screen über die Share-API.
-  // Die Seite liegt neben dem Servercode, nicht im Share-Bundle: sie gehoert zum Betrieb,
-  // nicht zum Produkt.
-  app.get("/anreicherung", (req, res) =>
-    res.sendFile(fileURLToPath(new URL("../public/anreicherung.html", import.meta.url))))
-
   app.get("/:tenantSlug/:projectId", (req, res, next) => {
     const { tenantSlug, projectId } = req.params
     if (!SLUG_RE.test(tenantSlug) || RESERVED_SLUGS.includes(tenantSlug) || !isUuid(projectId)) {
