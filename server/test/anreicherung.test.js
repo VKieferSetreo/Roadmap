@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
-import { quelltextVon, offeneFelder } from "../src/anreicherung/lauf.js"
+import { quelltextVon, offeneFelder, laufeUeberBestand } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
@@ -615,5 +615,23 @@ describe("nimmZurueck greift nur an, was wirklich abgeleitet ist", () => {
     await nimmZurueck(db)
     expect(gesehen[0].sql).toContain("FROM anreicherung")
     expect(gesehen[0].sql).not.toContain("ki_aufbereitet")
+  })
+})
+
+describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
+  // Am 31.08.2026 wurden zwei fehlerhafte Felder verworfen und die Riegel geschärft. Der Lauf
+  // übersprang danach 5.295 bereits gesehene Punkte, weil sie noch Zeilen ANDERER Felder trugen —
+  // die verworfenen wären nie nachgeholt worden.
+  it("sucht Punkte, denen EIN Feld fehlt, nicht nur ganz unbearbeitete", async () => {
+    const gesehen = []
+    const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
+    await laufeUeberBestand(db, { modell: "m", rufeModell: async () => null, grenze: 10 })
+    const sql = gesehen[0].sql
+    // Je Feld einzeln prüfen statt "hat überhaupt eine Zeile".
+    expect(sql).toContain("unnest($2::text[])")
+    expect(sql).toContain("a.feld = f.feld")
+    // Und die Feldliste wird wirklich übergeben.
+    expect(Array.isArray(gesehen[0].p[1])).toBe(true)
+    expect(gesehen[0].p[1]).toContain("maxHoeheM")
   })
 })

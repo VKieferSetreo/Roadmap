@@ -121,18 +121,31 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
  * `beiFortschritt` wird nach jedem Punkt gerufen — ein Lauf über Tage muss von außen sichtbar sein.
  */
 export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, gleichzeitig = 1, kategorien = null, beiFortschritt = null }) {
-  const wo = kategorien?.length ? `AND o.kategorie = ANY($2)` : ""
-  const werte = kategorien?.length ? [modell, kategorien] : [modell]
-  // Kandidaten: alles, was noch KEINE Zeile dieses Modells hat. Der Verbund über die
-  // Anreicherungstabelle macht den Lauf wiederaufnehmbar, ohne dass irgendwo ein Zeiger steht.
+  const felderAlle = Object.keys(FELDER)
+  const wo = kategorien?.length ? `AND o.kategorie = ANY($3)` : ""
+  const werte = kategorien?.length ? [modell, felderAlle, kategorien] : [modell, felderAlle]
+
+  // Kandidat ist, wem MINDESTENS EIN Feld fehlt — nicht nur, wer noch gar keine Zeile hat.
+  //
+  // Der Unterschied wurde am 31.08.2026 teuer: nachdem zwei fehlerhafte Felder verworfen und die
+  // Riegel geschaerft waren, uebersprang der Lauf 5.295 bereits gesehene Punkte, weil sie noch
+  // Zeilen ANDERER Felder trugen. Die verworfenen waeren nie nachgeholt worden.
+  //
+  // So holt der Lauf auch nach, was spaeter dazukommt: waechst der Katalog um ein Feld, sind alle
+  // Altpunkte wieder Kandidaten, ohne dass jemand die Tabelle leeren muesste. Die Leerzeilen
+  // (stand='leer') verhindern dabei das ewige Wiederholen — ein Punkt, zu dem das Modell nichts
+  // fand, traegt trotzdem eine Zeile je Feld und faellt hier heraus.
   const { rows } = await db.query(
     `SELECT o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig, o.attrs, o.roh,
               o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
        FROM obstacles o
       WHERE o.aktiv = true ${wo}
-        AND NOT EXISTS (
-          SELECT 1 FROM anreicherung a
-           WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text AND a.modell = $1)
+        AND EXISTS (
+          SELECT 1 FROM unnest($2::text[]) AS f(feld)
+           WHERE NOT EXISTS (
+             SELECT 1 FROM anreicherung a
+              WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text
+                AND a.modell = $1 AND a.feld = f.feld))
       ORDER BY o.id
       LIMIT ${Number(grenze) || 500}`,
     werte,
