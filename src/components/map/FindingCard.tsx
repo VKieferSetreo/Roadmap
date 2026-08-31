@@ -155,7 +155,7 @@ export function FindingCard({
                       steht unten am Fund. */}
                   {ausKi ? (
                     <Sparkles className="h-3 w-3 shrink-0 text-violet-600"
-                              aria-label="Durch KI augmentiert" />
+                              aria-label="Durch KI extrahiert" />
                   ) : null}
                 </dd>
               </div>
@@ -175,7 +175,7 @@ export function FindingCard({
               className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
             >
               <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
-              Durch KI augmentiert
+              Durch KI extrahiert
             </span>
           ) : null}
           {detail?.["Zuordnung"] ? (

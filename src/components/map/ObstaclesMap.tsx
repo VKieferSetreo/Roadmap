@@ -59,7 +59,7 @@ function obstaclePopupHtml(o: Obstacle): string {
     // Sammelvermerk am Fuss: wer auf eine Restbreite schaut, muss dort sehen, woher sie kommt.
     ...attrEntries(o.attrs, o.kiFelder).map(
       (e) =>
-        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium ${e.ausKi ? "text-violet-700" : "text-neutral-700"}">${esc(e.value)}${e.ausKi ? ` <span class="text-violet-600" title="Durch KI augmentiert">✦</span>` : ""}</span></div>`,
+        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium ${e.ausKi ? "text-violet-700" : "text-neutral-700"}">${esc(e.value)}${e.ausKi ? ` <span class="text-violet-600" title="Durch KI extrahiert">✦</span>` : ""}</span></div>`,
     ),
   ]
   if (o.zustaendig)
@@ -90,7 +90,7 @@ function obstaclePopupHtml(o: Obstacle): string {
   return `<div class="min-w-[230px] max-w-[300px]">
     <p class="font-semibold text-neutral-900">${esc(o.name)}</p>
     <p class="mt-0.5 text-xs text-neutral-500">${esc(katMeta(o.kategorie).label)}${o.strassenRef ? ` · ${esc(o.strassenRef)}` : ""}</p>
-    ${o.kiAufbereitet ? `<span class="mt-1 inline-block rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">✦ Durch KI augmentiert</span>` : ""}
+    ${o.kiAufbereitet ? `<span class="mt-1 inline-block rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-medium text-violet-700">✦ Durch KI extrahiert</span>` : ""}
     ${o.beschreibung ? `<p class="mt-1.5 whitespace-pre-line text-xs leading-relaxed text-neutral-600">${esc(o.beschreibung)}</p>` : ""}
     <div class="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-xs tabular-nums">${rows.join("")}</div>
     ${kontaktZeilen.length ? `<div class="mt-2 flex flex-col gap-1 rounded-lg bg-sky-50/70 px-2.5 py-1.5 text-xs text-neutral-600">${kontaktZeilen.join("")}</div>` : ""}
