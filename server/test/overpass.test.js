@@ -1,15 +1,25 @@
-// T-601 Überführungs-Filter. Maßgeblich = die GETRAGENE Straße (BASt hoechst_sachverhalt_oben →
-// attrs.getrageneStrasse): trägt das Bauwerk die Route-Straße → behalten (echte Restriktion),
-// sonst Überführung → raus. Fehlt das Feld → konservative Namens-Heuristik (nur eindeutige
-// Überführungen raus, sonst behalten — keine echte Gewichts-Sperre verstecken).
+// Ueberfuehrungen: was seit T-653 verworfen wird und was NICHT mehr.
+//
+// Bis T-653 entschied isCrossingStructure() anhand einer GLOBALEN Liste aller Strassen der Route,
+// plus einer Namensheuristik als Rueckfall. Beides ist ersetzt:
+//   - Die Liste ist ortsbezogen geworden (zuordnung() fragt, was wir AN DIESER STELLE fahren).
+//   - Die Namensheuristik loescht nicht mehr. Gemessen ueber 23 Projekte und 4.668 Korridor-
+//     Treffer erzeugte sie 0 richtige und 10 falsche Verwerfungen, Praezision 0.
+//
+// Diese Datei haelt die alten Faelle fest und sagt bei jedem, wie er heute ausgeht. Sie ist damit
+// auch die Dokumentation der Verhaltensaenderung: was frueher still verschwand, steht jetzt als
+// "unbestimmt" da.
 
 import { describe, expect, it } from "vitest"
 import { normRoadRef } from "../src/external/osrm.js"
-import { isCrossingStructure } from "../src/engine/index.js"
+import { zuordnung } from "../src/engine/index.js"
 
-const refs = (...xs) => new Set(xs)
-const ob = (name, extra = {}) => ({ kategorie: "bruecke", name, strassenRef: null, geom: null, ...extra })
+/** Fahrbahn, auf der die Route an dieser Stelle laeuft. Ein Wert genuegt: die Faelle unten
+ *  spielen alle an EINEM Punkt, und genau darum geht es bei der Ortsbezogenheit. */
+const hier = (...xs) => ({ strassenSpannen: [], refs: new Set(xs) })
+const ob = (name, extra = {}) => ({ kategorie: "bruecke", name, strassenRef: null, geom: null, attrs: {}, ...extra })
 const G = (s) => ({ attrs: { getrageneStrasse: s } })
+const urteil = (o, ctx) => zuordnung(o, ctx, 10)
 
 describe("normRoadRef", () => {
   it("normalisiert Straßennummern", () => {
@@ -20,49 +30,74 @@ describe("normRoadRef", () => {
   })
 })
 
-describe("isCrossingStructure — getrageneStrasse autoritativ", () => {
-  it("trägt eine ANDERE Straße über die Route (Route liegt unten) → Überführung → raus", () => {
-    expect(isCrossingStructure(ob("K 47 [Kr. OH] / A 1", G("K47")), refs("A1"))).toBe(true)
-    expect(isCrossingStructure(ob("Üf L815", G("L815")), refs("A28"))).toBe(true)
-  })
-  it("gekreuzte Straße (unten) = Route → Überführung raus, auch wenn oben ein Nebenweg ist", () => {
-    // "Forstweg / A45": oben=Forstweg (kein Ref), unten=A45 → Route A45 fährt DRUNTER → raus
-    expect(isCrossingStructure(ob("Forstweg \"Kalteiche\" / A45", { attrs: { gekreuzteStrasse: "A45" } }), refs("A45"))).toBe(true)
-    // "UF L3071": oben=A5, unten=L3071 → Route A5 fährt DRÜBER → behalten
-    expect(isCrossingStructure(ob("UF L3071", { attrs: { getrageneStrasse: "A5", gekreuzteStrasse: "L3071" } }), refs("A5"))).toBe(false)
+describe("getragene/gekreuzte Straße bleibt autoritativ", () => {
+  it("trägt eine ANDERE Straße über unsere Fahrbahn → Überführung → raus", () => {
+    expect(urteil(ob("K 47 [Kr. OH] / A 1", { attrs: { getrageneStrasse: "K47", gekreuzteStrasse: "A1" } }), hier("A1"))).toBe("widerlegt")
+    expect(urteil(ob("Üf L815", { attrs: { getrageneStrasse: "L815", gekreuzteStrasse: "A28" } }), hier("A28"))).toBe("widerlegt")
   })
 
-  it("trägt die Route-Straße → behalten (echte Restriktion), auch kleine Bauwerke", () => {
-    // BASt-Wahrheit: "UF Lumda" trägt die A5 (A5-Deck über dem Bach) → echte A5-Sperre → behalten
-    expect(isCrossingStructure(ob("UF Lumda/UF Lumda Abschnitt Grünberg Nord", G("A5")), refs("A5"))).toBe(false)
-    expect(isCrossingStructure(ob("UF Wirtschaftsweg", G("A5")), refs("A5"))).toBe(false)
-    expect(isCrossingStructure(ob("A 1 / Wi-Weg (BW 2.02)", G("A1")), refs("A1"))).toBe(false)
+  it("nennt nur die gekreuzte Straße, und die fahren wir → raus", () => {
+    expect(urteil(ob("Forstweg \"Kalteiche\" / A45", { attrs: { gekreuzteStrasse: "A45" } }), hier("A45"))).toBe("widerlegt")
+  })
+
+  it("trägt UNSERE Straße → wir fahren drüber → bleibt", () => {
+    expect(urteil(ob("UF L3071", { attrs: { getrageneStrasse: "A5", gekreuzteStrasse: "L3071" } }), hier("A5"))).toBe("bewiesen")
+    expect(urteil(ob("UF Lumda", G("A5")), hier("A5"))).toBe("bewiesen")
+    expect(urteil(ob("A 1 / Wi-Weg (BW 2.02)", G("A1")), hier("A1"))).toBe("bewiesen")
+  })
+
+  // NEU seit T-653: die getragene Straße allein, ohne dass wir sie hier fahren, beweist nichts.
+  // Vorher galt "trägt eine routenfremde Straße → raus" — das verwarf auf Verdacht.
+  it("verwirft NICHT mehr allein deshalb, weil die getragene Straße fremd ist", () => {
+    expect(urteil(ob("Üf K142", G("K142")), hier("A1"))).toBe("unbestimmt")
   })
 })
 
-describe("isCrossingStructure — konservativer Namens-Fallback (ohne Strukturfeld)", () => {
-  it("eindeutige Überführung im Namen ('X über Route-Autobahn') → raus", () => {
-    expect(isCrossingStructure(ob("BW 138 - Üf K142 über A1"), refs("A1"))).toBe(true)
-    expect(isCrossingStructure(ob("Brücke St 2040 über A6"), refs("A6"))).toBe(true)
-    expect(isCrossingStructure(ob("A 7 über A 2"), refs("A2"))).toBe(true) // Route A2 → A7 kreuzt
+// Diese Fälle wurden früher über den Namen verworfen. Sie bleiben jetzt stehen und tragen den
+// Vermerk "Zuordnung nicht nachweisbar". Der Grund steht oben: die Heuristik lag messbar daneben,
+// unter anderem bei "Überholspur", "Überleitung zur A3" und "zwischen B85 und K…".
+describe("Namensheuristik verwirft nicht mehr", () => {
+  it("lässt eindeutig klingende Überführungen als unbestimmt stehen", () => {
+    expect(urteil(ob("BW 138 - Üf K142 über A1"), hier("A1"))).toBe("unbestimmt")
+    expect(urteil(ob("Brücke St 2040 über A6"), hier("A6"))).toBe("unbestimmt")
   })
-  it("Name trägt die Route-Autobahn → behalten", () => {
-    expect(isCrossingStructure(ob("BW 3052 -Brücke ü.d. Wl Ortshäuser Bach i.Z.d. A 7"), refs("A7"))).toBe(false)
-    expect(isCrossingStructure(ob("Bw 26 - Brücke ü.d. L564 i.Z.d. BAB A7"), refs("A7"))).toBe(false) // BAB-Präfix
-    expect(isCrossingStructure(ob("A 7 über A 2"), refs("A7"))).toBe(false) // A7 getragen
+
+  // Der Fall, an dem die alte GLOBALE Liste scheiterte: eine Route, die A2 UND A7 fährt, hielt
+  // "A 7 über A 2" für befahren, egal an welchem Kilometer die Brücke lag.
+  it("entscheidet ortsbezogen statt über die ganze Route", () => {
+    const nurA2 = { attrs: { getrageneStrasse: "A7", gekreuzteStrasse: "A2" } }
+    expect(urteil(ob("A 7 über A 2", nurA2), hier("A2"))).toBe("widerlegt") // hier fahren wir unten
+    expect(urteil(ob("A 7 über A 2", nurA2), hier("A7"))).toBe("bewiesen") // hier oben
   })
-  it("unklare Bauwerke ohne 'über Route' → BEHALTEN (keine echte Sperre verstecken)", () => {
-    expect(isCrossingStructure(ob("UF Wirtschaftsweg"), refs("A5"))).toBe(false)
-    expect(isCrossingStructure(ob("UF Lumda"), refs("A5"))).toBe(false)
-    expect(isCrossingStructure(ob("Talbrücke Haseltal"), refs("A3"))).toBe(false)
+
+  it("hält harmlose Namen weiterhin für unbestimmt statt sie zu verwerfen", () => {
+    expect(urteil(ob("UF Wirtschaftsweg"), hier("A5"))).toBe("unbestimmt")
+    expect(urteil(ob("Talbrücke Haseltal"), hier("A3"))).toBe("unbestimmt")
+    expect(urteil(ob("BW 3052 - Brücke ü.d. Wl Ortshäuser Bach i.Z.d. A 7"), hier("A7"))).toBe("unbestimmt")
   })
 })
 
-describe("isCrossingStructure — Schutzregeln", () => {
-  it("ohne Route-Refs nichts filtern; Strecken-Bauwerk (geom) nie filtern; nur Brücke/Tunnel", () => {
-    expect(isCrossingStructure(ob("Üf K142 über A1", G("K47")), null)).toBe(false)
-    expect(isCrossingStructure(ob("Üf K142 über A1", G("K47")), refs())).toBe(false)
-    expect(isCrossingStructure(ob("Üf K142 über A1", { ...G("K47"), geom: { type: "LineString", coordinates: [] } }), refs("A1"))).toBe(false)
-    expect(isCrossingStructure(ob("Üf K142 über A1", { ...G("K47"), kategorie: "baustelle" }), refs("A1"))).toBe(false)
+describe("Schutzregeln", () => {
+  it("urteilt nie ohne Auskunft über die eigene Strecke", () => {
+    const o = ob("Üf K142 über A1", { attrs: { getrageneStrasse: "K47", gekreuzteStrasse: "A1" } })
+    expect(urteil(o, { strassenSpannen: [], refs: null })).toBe("unbestimmt")
+    expect(urteil(o, { strassenSpannen: [], refs: new Set() })).toBe("unbestimmt")
+  })
+
+  // Die Geometrie-Bedingung von früher ist ersatzlos weg: sie betraf gemessen 2 von 1.384
+  // Bauwerken und hinderte den autoritativen Pfad nur daran, dort zu arbeiten, wo er richtig liegt.
+  it("gilt jetzt auch für Bauwerke MIT eigener Geometrie", () => {
+    const o = ob("Üf K142 über A1", {
+      attrs: { getrageneStrasse: "K47", gekreuzteStrasse: "A1" },
+      geom: { type: "LineString", coordinates: [[9, 51], [9.001, 51.001]] },
+    })
+    expect(urteil(o, hier("A1"))).toBe("widerlegt")
+  })
+
+  it("fasst Hindernisse auf der Fahrbahn nicht mit der Bauwerksregel an", () => {
+    const baustelle = ob("Baustelle A1", { kategorie: "baustelle", attrs: { getrageneStrasse: "K47", gekreuzteStrasse: "A1" } })
+    expect(urteil(baustelle, hier("A1"))).toBe("widerlegt") // dieselbe Regel, wenn die Angaben da sind
+    const ohneAngabe = ob("Baustelle", { kategorie: "baustelle", strassenRef: "A1" })
+    expect(urteil(ohneAngabe, hier("A1"))).toBe("bewiesen") // eigene Ref zählt hier sehr wohl
   })
 })

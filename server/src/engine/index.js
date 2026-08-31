@@ -48,14 +48,12 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // Lücken zu allen identifizierten echten Grenzfällen (A28-Versatz, B31a-Ziel-Sperrung, AS Bühl).
 export const ENGINE_VERSION = "2.4.0"
 
-// T-601 Überführungs-Filter: BASt-/Last-Brücken sind PUNKTE ohne eigene Geometrie und sitzen
-// geometrisch AUF der Autobahn. Maßgeblich ist die GETRAGENE Straße (BASt hoechst_sachverhalt_oben
-// → attrs.getrageneStrasse): Trägt das Bauwerk die Route-Straße, fährt der Transport DRAUF → echte
-// (oft GST-)Restriktion, BEHALTEN. Trägt es eine andere Straße über/unter die Route (Route-Straße
-// liegt UNTEN = Überführung, z.B. "K47 / A1") → der Transport fährt nur drunter → kein Fund.
-// Fehlt das Strukturfeld (~13%, "Sonstige"/Bahn), greift eine KONSERVATIVE Namens-Heuristik, die
-// nur eindeutige Überführungen aussortiert. SICHER: ohne Route-Refs wird nichts gefiltert;
-// Strecken-Bauwerke (eigene Linien-Geometrie) sind über die Geometrie sauber zugeordnet → nie filtern.
+// Überführungen (T-601, seit T-653 als Zuordnungsnachweis): BASt-/Last-Brücken sind Punkte ohne
+// eigene Geometrie und sitzen geometrisch AUF der Autobahn. Maßgeblich ist, welche Straße das
+// Bauwerk trägt und welche es kreuzt (BASt hoechst_sachverhalt_oben/-unten). Das Urteil fällt
+// jetzt in zuordnung() weiter unten, ortsbezogen statt gegen die ganze Route, und mit drei
+// Ausgängen statt zwei. Die Namensheuristik von T-601 ist aus dem Löschpfad heraus: gemessen
+// 0 richtige und 10 falsche Verwerfungen.
 const ROAD_ALL = /\b(a|b|l|k|st|s)\s?0*(\d{1,4})\b/gi
 function roadRefsIn(s) {
   const out = []
@@ -67,38 +65,146 @@ function roadRefsIn(s) {
 }
 const intersects = (refs, set) => refs.some((r) => set.has(r))
 
-export function isCrossingStructure(obstacle, routeRefs) {
-  if (obstacle.geom) return false
-  if (obstacle.kategorie !== "bruecke" && obstacle.kategorie !== "tunnel") return false
-  if (!routeRefs || routeRefs.size === 0) return false
+/** Wie weit um die Fundstelle herum gilt eine Strassenzuordnung noch (Meter). 400 m deckt einen
+ *  Autobahnknoten samt Rampen ab, ohne dass eine Beruehrung am anderen Ende der Route mitredet. */
+export const LOKAL_FENSTER_M = 400
 
-  // AUTORITATIV: BASt liefert oben (getragene) + unten (gekreuzte) Straße strukturiert.
-  // Fährt die Route auf der GETRAGENEN Straße (oben) → über die Brücke → echte Restriktion (behalten).
-  // Fährt sie auf der GEKREUZTEN Straße (unten) → drunter durch = Überführung → kein Fund.
-  // (jast_lage="O: Bund" = Autobahn oben = behalten; "U: Bund" = Autobahn unten = raus.)
-  const getragen = normRoadRef(obstacle.attrs?.getrageneStrasse)
-  const gekreuzt = normRoadRef(obstacle.attrs?.gekreuzteStrasse)
-  if (getragen != null && routeRefs.has(getragen)) return false // Route fährt oben drüber → behalten
-  if (gekreuzt != null && routeRefs.has(gekreuzt)) return true // Route fährt unten drunter → Überführung
-  if (getragen != null) return true // trägt eine routenfremde Straße → Kreuzungsbauwerk → raus
-
-  // FALLBACK (Bauwerk ohne Strukturfeld, ~13%): KONSERVATIV — nur EINDEUTIGE Überführungen raus,
-  // sonst behalten. Die getragene Straße ist die Wahrheit (oben); fehlt sie, dürfen wir keine
-  // echte Gewichts-Sperre verstecken (Max-Entscheid 2026-06-26: alle echten Sperren zeigen).
-  const name = ` ${String(obstacle.name ?? "").toLowerCase()} `
-  // (a) Name trägt die Route-Straße ("i.Z.(d.) A7" / "A7 (in km …) über …") → behalten.
-  const carried = []
-  for (const m of name.matchAll(/(?:i\.?\s*z\.?\s*d?\.?|im zuge (?:der |des |einer )?)\s*(?:bab\s*)?((?:a|b|l|k|st)\s?\d{1,4})/gi))
-    carried.push(...roadRefsIn(m[1]))
-  for (const m of name.matchAll(/((?:a|b|l|k|st)\s?\d{1,4})\s*(?:in km [\d.,\s]+)?\s*(?:über|ü\.)/gi))
-    carried.push(...roadRefsIn(m[1]))
-  if (intersects(carried, routeRefs)) return false
-  // (b) Name führt eine ANDERE Sache "über" die Route-Straße → eindeutige Überführung → raus.
-  const um = name.match(/(?:über|ü\.\s*d?\.?|ueber)\s*(?:die |der |den |das |dem |einen |einer )?(.*)$/)
-  if (um && intersects(roadRefsIn(um[1].split(/[,;/]|\bkm\b/)[0]), routeRefs)) return true
-  // sonst: im Zweifel BEHALTEN.
-  return false
+/**
+ * Die km-Spannen, in denen die Route auf einer bestimmten Strasse faehrt (T-653).
+ *
+ * WOZU: `refs` ist eine flache Menge ueber die GANZE Route. Faehrt eine Route A7 und A2, gilt damit
+ * die Bruecke "AK Hannover-Ost, A7 ueber A2" als befahren, egal wo sie liegt. Gemessen: 12 solcher
+ * Funde in vier Projekten. Mit Spannen laesst sich stattdessen fragen, was wir HIER fahren.
+ *
+ * Jeder OSRM-Schritt wird auf seinen km-Bereich auf unserer Route projiziert. Es genuegen erster
+ * und letzter Punkt: ein Schritt laeuft entlang der Route, seine Enden spannen ihn also auf.
+ */
+export function strassenSpannenBauen(abschnitte, geometry, cum, grid) {
+  if (!Array.isArray(abschnitte) || !abschnitte.length) return []
+  const raus = []
+  for (const a of abschnitte) {
+    const p = a?.punkte
+    if (!a?.ref || !Array.isArray(p) || p.length === 0) continue
+    const erst = nearestOnRoute(p[0], geometry, cum, grid)
+    const letzt = nearestOnRoute(p[p.length - 1], geometry, cum, grid)
+    if (!Number.isFinite(erst?.km) || !Number.isFinite(letzt?.km)) continue
+    raus.push({ ref: a.ref, vonKm: Math.min(erst.km, letzt.km), bisKm: Math.max(erst.km, letzt.km) })
+  }
+  return raus.sort((x, y) => x.vonKm - y.vonKm)
 }
+
+/**
+ * Welche Strassen faehrt die Route rund um diesen Kilometer? Leeres Set heisst "keine Auskunft",
+ * NICHT "keine Strasse" — der Aufrufer muss beides unterscheiden, sonst wird aus Unwissen ein Urteil.
+ */
+export function strassenBeiKm(spannen, km, fensterM = LOKAL_FENSTER_M) {
+  const raus = new Set()
+  if (!Array.isArray(spannen) || !spannen.length || !Number.isFinite(km)) return raus
+  const rand = fensterM / 1000
+  // Binaersuche auf den ersten Abschnitt, der noch hineinragen kann. Die Spannen sind nach vonKm
+  // sortiert, ab dem ersten Treffer genuegt ein Vorwaertslauf bis der naechste jenseits liegt.
+  let lo = 0
+  let hi = spannen.length
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (spannen[mid].bisKm < km - rand) lo = mid + 1
+    else hi = mid
+  }
+  for (let i = lo; i < spannen.length && spannen[i].vonKm <= km + rand; i++) {
+    if (spannen[i].bisKm >= km - rand) raus.add(spannen[i].ref)
+  }
+  return raus
+}
+
+/**
+ * Was wissen wir ueber die Zuordnung dieses Bauwerks zu DIESER Strecke (T-653)?
+ *
+ * Max, 31.08.2026: "wir bekommen immer Ueberfuehrungen in die Auswertungen, obwohl wir drunter
+ * durchfahren" und "das Kreuzende geht halt nicht immer, weil die Liniengeometrie nicht oder
+ * falsch ist. Da muessen wir uns einen generellen Fix ueberlegen."
+ *
+ * DER UMSCHWUNG: nicht mehr "ist dieses Hindernis quer zu mir" (das braucht seine Geometrie, und
+ * genau die fehlt oder luegt), sondern "fahre ich AN DIESER STELLE auf der Strasse, zu der es
+ * gehoert". Diese Frage beantwortet unsere eigene Route, nicht die Quelle.
+ *
+ * Drei Antworten statt zwei, und nur eine davon loescht:
+ *   "widerlegt"   — belegt, dass es uns nicht gilt. Nur die autoritative BASt-Aussage darf das.
+ *   "bewiesen"    — belegt, dass es uns gilt.
+ *   "unbestimmt"  — wir wissen es nicht. Wird gezeigt und gekennzeichnet, NICHT geloescht.
+ *
+ * WARUM DIE NAMENSHEURISTIK NICHT MEHR LOESCHT: gemessen ueber 23 Projekte und 4.668 Korridor-
+ * Treffer erzeugte sie 0 richtige und 10 falsche Verwerfungen, Praezision 0. Sie fiel auf
+ * "Ueberholspur", "Ueberleitung zur A3" und "zwischen B85 und K...". Sie darf hoechstens noch
+ * "unbestimmt" begruenden.
+ *
+ * WARUM getragen !== gekreuzt: bei 129 Bauwerken und 55 Funden traegt die Quelle in BEIDEN Feldern
+ * dieselbe Strasse ("UEF DER VERBINDUNGSRAMPE UEBER DIE B 90", oben B90, unten B90). Der Grund
+ * liegt im Connector (0153_bast_bruecken.js refAus nimmt den ersten Strassen-Treffer je Feld).
+ * Zwei gleiche Werte sind keine Oben-Unten-Aussage, sondern eine kaputte, und aus einer kaputten
+ * Angabe darf kein Loeschen folgen.
+ */
+/** Nur Bruecken und Tunnel koennen ueber oder unter uns liegen. Alles andere liegt AUF der
+ *  Strasse, dort stellt sich die Frage nicht. */
+export const istBauwerk = (o) => o?.kategorie === "bruecke" || o?.kategorie === "tunnel"
+
+export function zuordnung(obstacle, ctx, km) {
+  const attrs = obstacle?.attrs ?? {}
+  // Das lokale Fenster entscheidet, WENN es etwas weiss. Ist es leer, hat OSRM fuer dieses Stueck
+  // keine Strassennummer geliefert (Ortsdurchfahrt, Rampe, unbenannte Gemeindestrasse), und ein
+  // leeres Fenster heisst "keine Auskunft", nicht "andere Strasse". Dann faellt die Frage auf die
+  // Gesamtliste zurueck, also auf genau das Verhalten von vorher. Gemessen: ohne diesen Rueckfall
+  // rutschten 11 eindeutige Ueberfuehrungen ("Uef K10 ueber A27") von "widerlegt" auf
+  // "unbestimmt" und blieben stehen. Der Ortsbezug soll den globalen Vergleich praezisieren,
+  // nicht ihn dort ersetzen, wo er gar nichts sagen kann.
+  const fenster = strassenBeiKm(ctx?.strassenSpannen, km)
+  const lokal = fenster.size > 0 ? fenster : (ctx?.refs ?? fenster)
+  const getragen = normRoadRef(attrs.getrageneStrasse)
+  const gekreuzt = normRoadRef(attrs.gekreuzteStrasse)
+
+  // Eine reine Durchfahrtshoehe SAGT bereits "du faehrst drunter durch" und ist damit genau dann
+  // richtig, wenn wir drunter durchfahren. Gemessen: 12.335 solcher Bauwerke, und KEIN einziges
+  // traegt gleichzeitig eine getragene Strasse. Die Herkunft trennt die Lage hier also schon, und
+  // wir duerfen sie nicht gegen eine Oben-Unten-Regel laufen lassen, die es gar nicht braucht.
+  if (attrs.maxHoeheM != null && attrs.maxGewichtT == null) return "bewiesen"
+
+  // Sind BEIDE Felder gesetzt und gleich, ist die Angabe kaputt und taugt zu gar nichts (129
+  // Bauwerke im Bestand, Ursache im Connector). Dann wird sie ganz ignoriert, statt daraus ein
+  // Urteil in die eine oder andere Richtung abzuleiten.
+  const brauchbar = getragen == null || gekreuzt == null || getragen !== gekreuzt
+  const obenGefahren = brauchbar && getragen != null && lokal.has(getragen)
+  const untenGefahren = brauchbar && gekreuzt != null && lokal.has(gekreuzt)
+
+  // Fahren wir hier auf der gekreuzten Strasse, liegt das Bauwerk ueber uns, wir belasten es nie.
+  // Die gekreuzte Strasse allein genuegt dafuer: viele Bauwerke nennen NUR sie ("Ueberfuehrung
+  // Wirtschaftsweg ueber die A5"), und wer den Wirtschaftsweg traegt, interessiert uns nicht.
+  // Nachgemessen: ohne diesen Zweig blieben genau solche Ueberfuehrungen stehen.
+  if (untenGefahren && !obenGefahren) return "widerlegt"
+  // Fahren wir auf der getragenen, sind wir oben drauf. Die Tragfaehigkeit gilt uns.
+  if (obenGefahren) return "bewiesen"
+  // Die eigene Strassenangabe taugt als Nachweis nur fuer Hindernisse, die AUF der Strasse liegen.
+  // Bei einem Bauwerk sagt sie lediglich "ich liege an der A5" und laesst offen, ob wir darueber
+  // oder darunter fahren; als Beweis genommen erklaerte sie jede Ueberfuehrung ueber unsere
+  // Fahrbahn zu unserer eigenen. Fuer Bruecken und Tunnel gilt sie deshalb NICHT.
+  // Widerlegen darf sie ohnehin nie: 25 von 34 gemessenen Abweichungen gingen auf Luecken in
+  // unseren eigenen Refs zurueck, nicht auf die Quelle.
+  const eigen = normRoadRef(obstacle?.strassenRef ?? obstacle?.strassen_ref)
+  if (!istBauwerk(obstacle) && eigen != null && lokal.has(eigen)) return "bewiesen"
+
+  return "unbestimmt"
+}
+
+/** @deprecated Ersetzt durch zuordnung() (T-653). Bleibt als Vorab-Sieb in analyze(): es prueft
+ *  ohne km-Bezug, ob ein Verwerfen ueberhaupt moeglich waere, und spart so das teure Matching. */
+export function kannWiderlegtWerden(obstacle, routeRefs) {
+  if (!routeRefs || routeRefs.size === 0) return false
+  const attrs = obstacle?.attrs ?? {}
+  if (attrs.maxHoeheM != null && attrs.maxGewichtT == null) return false
+  const getragen = normRoadRef(attrs.getrageneStrasse)
+  const gekreuzt = normRoadRef(attrs.gekreuzteStrasse)
+  if (gekreuzt == null || !routeRefs.has(gekreuzt)) return false
+  return getragen == null || getragen !== gekreuzt
+}
+
 
 // Findings-Persistenz (T-330): Spalten an einer Stelle für den Multi-Row-INSERT-Batch.
 const FINDING_COLS = `project_id, obstacle_id, kategorie, severity, titel, beschreibung,
@@ -456,19 +562,35 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   // T-601: je Route die tatsächlich befahrenen Straßen-Refs aus OSRM ziehen (Steps) — Grundlage des
   // Überführungs-Filters. Wegpunkte bevorzugt (definieren die Route exakt), sonst die Punktliste
   // ausdünnen. Null bei fehlendem OSRM/Fehler → Filter greift dann nicht (konservativ).
-  const routeRefs = await Promise.all(routes.map((route) => {
+  // T-653: zusaetzlich zu den Refs die SCHRITT-GEOMETRIEN holen. Nur damit laesst sich fragen,
+  // welche Strasse die Route AN EINER STELLE faehrt. Fail-open wie zuvor: null bei jedem Fehler.
+  const routeStrassen = await Promise.all(routes.map((route) => {
     if (!osrm) return null
     const wp = Array.isArray(route.waypoints) && route.waypoints.length >= 2
       ? route.waypoints
       : route.points.filter((_, i) => i % Math.max(1, Math.floor(route.points.length / 100)) === 0)
-    return osrm.roadRefs(wp).catch(() => null)
+    return (osrm.strassenAbschnitte ? osrm.strassenAbschnitte(wp) : osrm.roadRefs(wp).then((r) => (r ? { refs: r, abschnitte: [] } : null)))
+      .catch(() => null)
   }))
 
   const routeCtx = routes.map((route, i) => {
     const geometry = downsample(route.points.map((p) => ({ lat: p.lat, lng: p.lng })))
     // Gitter-Index je Route einmal bauen → nearestOnRoute/clip prüfen nur nahe Segmente statt aller
     // ~2000 (Hauptkost bei langen Routen mit vielen Kandidaten-Hindernissen). Gleiche Treffer.
-    return { route, geometry, cum: cumulativeKm(geometry), bbox: bboxWithBuffer(geometry, corridorM), grid: buildRouteGrid(geometry), refs: routeRefs[i] }
+    const cum = cumulativeKm(geometry)
+    const grid = buildRouteGrid(geometry)
+    return {
+      route,
+      geometry,
+      cum,
+      bbox: bboxWithBuffer(geometry, corridorM),
+      grid,
+      refs: routeStrassen[i]?.refs ?? null,
+      // Sortierte km-Spannen je Strasse. Gebaut wird das einmal je Route; die Abfrage laeuft
+      // danach per Binaersuche, weil sie je Hindernis-Kandidat faellt (bei 4.600 Kandidaten
+      // waere ein linearer Scan ueber alle Abschnittspunkte die neue Hauptkost).
+      strassenSpannen: strassenSpannenBauen(routeStrassen[i]?.abschnitte, geometry, cum, grid),
+    }
   })
 
   let findings = []
@@ -510,7 +632,8 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       lastYield = Date.now()
     }
   }
-  for (const { route, geometry, cum, bbox, grid, refs } of routeCtx) {
+  for (const ctx of routeCtx) {
+    const { route, geometry, cum, bbox, grid, refs } = ctx
     for (const obstacle of obstacles) {
       await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
@@ -518,9 +641,12 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
         obstacle.lng < bbox.minLng || obstacle.lng > bbox.maxLng
       ) continue
-      // T-601: Überführung/Unterführung — Punkt-Bauwerk auf einer Straße, die der Transport gar
-      // nicht befährt (kreuzt sie nur). Vor dem teuren Geometrie-Matching aussortieren.
-      if (isCrossingStructure(obstacle, refs)) continue
+      // T-653: das Urteil ueber die Zuordnung faellt WEITER UNTEN, es braucht die km-Position und
+      // die gibt es erst nach dem Matching. Hier steht nur noch ein billiges Vorab-Sieb: ist ein
+      // Widerlegen ueberhaupt denkbar? Wenn nicht, aendert das spaetere Urteil nichts am Ausgang
+      // und wir sparen uns nichts, indem wir es vorziehen. Die Ersparnis des alten Vorfilters
+      // (teures Matching gar nicht erst starten) bleibt damit erhalten, sein Fehlurteil nicht.
+      const widerlegbar = kannWiderlegtWerden(obstacle, refs)
       const obstaclePts = geomPoints(obstacle.geom)
       // Punkt-Hindernis: Abstand des Punkts zur Route. Strecken-Hindernis (geom = Linie):
       // den Linien-Stützpunkt nehmen, der der Route am NÄCHSTEN ist — so greift eine an der
@@ -535,6 +661,15 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         if (n.distM < near.distM) near = n
       }
       if (near.distM > corridorM) continue
+
+      // T-653: JETZT steht die km-Position fest, also kann die Zuordnung lokal geprueft werden.
+      // Nur "widerlegt" verwirft, und nur die autoritative Oben-Unten-Aussage kann dahin fuehren.
+      // "unbestimmt" bleibt drin und wird am Fund vermerkt: lieber ein gekennzeichneter Zweifel
+      // als eine still geschluckte Sperrung.
+      const zuord = widerlegbar || istBauwerk(obstacle)
+        ? zuordnung(obstacle, ctx, near.km)
+        : "bewiesen"
+      if (zuord === "widerlegt") continue
 
       // Gegenfahrbahn-Filter: Strecken-Meldungen (Linien-Geometrie, faktisch nur Autobahn)
       // laufen je Fahrbahn als eigene Linie in REISERICHTUNG (Daten geprüft: Koordinaten-
@@ -574,6 +709,11 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       if (obstacle.geom && lineOffRoute(geomLineParts(obstacle.geom), geometry, cum, grid, { nearM: corridorM })) continue
       const verdict = evaluate(obstacle, project.transport, project.zeitraum)
       if (!verdict) continue
+      // T-653: den Zweifel sichtbar machen, statt ihn zu verschweigen. detail ist bereits JSONB
+      // (findingParams), es braucht keine Migration. Die Severity bleibt unangetastet: ob ein Fund
+      // uns gilt, ist eine andere Frage als wie schlimm er waere, und die zweite darf die erste
+      // nicht ueberschreiben.
+      if (zuord === "unbestimmt") verdict.detail = { ...(verdict.detail ?? {}), Zuordnung: "nicht nachweisbar" }
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
       // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle
       // Linie, falls der Clip leer ausfällt — nie die Info ganz verlieren.

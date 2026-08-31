@@ -157,6 +157,32 @@ export function createOsrm({
       return refsAusLegs(data.routes?.[0]?.legs)
     },
 
+    /**
+     * Wie roadRefs, aber zusaetzlich MIT der Geometrie je Schritt (T-653).
+     *
+     * WOZU: roadRefs liefert eine flache Menge aller Strassen der ganzen Route, ohne Ortsbezug.
+     * Faehrt eine Route A7 UND A2, gilt damit die Bruecke "AK Hannover-Ost, A7 ueber A2" als
+     * befahren, egal an welchem Kilometer sie liegt. Gemessen: 12 solcher Funde in vier
+     * Projekten. Mit den Schritt-Geometrien laesst sich stattdessen fragen, welche Strasse wir
+     * AN DIESER STELLE fahren, und genau das ist die Frage, auf die es ankommt.
+     *
+     * roadRefs bleibt unangetastet: sie hat zwei weitere Aufrufer, und ein Umbau haette deren
+     * Verhalten stillschweigend mitverschoben.
+     *
+     * @returns {{refs: Set<string>, abschnitte: {ref: string, punkte: {lat,lng}[]}[]}|null}
+     */
+    async strassenAbschnitte(waypoints) {
+      const wp = (Array.isArray(waypoints) ? waypoints : []).filter((p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      if (wp.length < 2) return null
+      const coords = wp.map((p) => `${p.lng},${p.lat}`).join(";")
+      // geometries=geojson zusaetzlich zu steps: nur so tragen die Schritte Koordinaten.
+      const url = `${baseUrl.replace(/\/$/, "")}/route/v1/driving/${coords}?overview=false&steps=true&geometries=geojson&continue_straight=true`
+      const data = await fetchJson(url, { timeoutMs: Math.max(timeoutMs, 30000), fetchImpl, headers: { "User-Agent": "setreo-roadmap/1.0" } }).catch(() => null)
+      if (data?.code !== "Ok") return null
+      const legs = data.routes?.[0]?.legs
+      return { refs: refsAusLegs(legs), abschnitte: abschnitteAusLegs(legs) }
+    },
+
     /** Leichter Erreichbarkeits-Ping für /api/health (T-471). Kurzer Timeout, wirft nie. */
     async ping() {
       // Stuttgart (lng,lat) — liegt sicher im DE-Graph. /nearest ist billiger als /route.
