@@ -35,6 +35,11 @@ const gesamt = await db.query("SELECT count(*)::int AS n FROM obstacles WHERE ak
 sage(`${gesamt.rows[0].n} aktive Hindernisse im Bestand.`)
 
 const rufeModell = createModell(konfig)
+// Drei Rollen auf demselben Modell: gemessen 14 Angaben einstufig gegen 20 dreistufig. Der
+// Prüfer korrigiert und holt zu Unrecht Verworfenes zurück, der Ergänzer sucht nach dem, was der
+// Leser übersehen hat. Ollama läuft mit vier parallelen Strömen, gemessen 12,3 von 24,6 GB bei
+// 91 Prozent Auslastung — ein zweites, größeres Modell daneben wäre zu knapp.
+const rollen = { liest: rufeModell, prueft: rufeModell, nimmtAb: rufeModell }
 let summe = { gesehen: 0, geschrieben: 0, verworfen: 0, uebersprungen: 0 }
 const start = Date.now()
 
@@ -47,6 +52,7 @@ while (laeuft) {
   const r = await laufeUeberBestand(db, {
     modell: konfig.name,
     rufeModell,
+    rollen,
     grenze: BLOCK,
     beiFortschritt: (z) => {
       if (z.gesehen % 25 === 0) {

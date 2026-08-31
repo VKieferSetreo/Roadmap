@@ -58,6 +58,28 @@ const KLAR = {
   maxBreiteM: "Durchfahrtsbreite",
 }
 
+/**
+ * Welche Zeile im Fund-Detail beruht auf welchem abgeleiteten Feld?
+ *
+ * Die Regeln schreiben ihre Werte unter fachlichen Namen ins Detail ("Durchfahrtshöhe" statt
+ * "maxHoeheM", rules.js Zeile 159 ff.). Damit die Karte das Zeichen AN DER GEFUNDENEN STELLE
+ * setzen kann (Max, 31.08.2026), braucht sie diese Zuordnung — sonst wüsste sie nur, DASS etwas
+ * ergänzt wurde, aber nicht wo.
+ */
+const DETAIL_ZEILE = {
+  maxHoeheM: "Durchfahrtshöhe",
+  maxBreiteM: "Durchfahrtsbreite",
+  maxGewichtT: "Zul. Brückenlast",
+  restbreiteM: "Restbreite",
+  maxLaengeM: "Zul. Länge",
+  maxAchslastT: "Zul. Achslast",
+  verkehrsverbotLkwT: "Lkw-Verbot ab",
+}
+
+/** Die Detail-Zeilen, die auf einem abgeleiteten Wert beruhen. Das Frontend markiert genau diese. */
+export const kiZeilen = (ergaenzt) =>
+  (ergaenzt ?? []).map((f) => DETAIL_ZEILE[f]).filter(Boolean)
+
 /** Der Vermerk am Fund. Kurz, weil er neben den Sachangaben steht, und benannt, weil "KI-ergänzt"
  *  ohne Angabe WAS ergänzt wurde niemandem hilft. */
 export const anreicherungsVermerk = (ergaenzt) =>

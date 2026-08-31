@@ -15,7 +15,9 @@
 // das ist in diesem Projekt schon zweimal passiert. Der Lauf gehört in ein eigenes
 // `docker run --rm`, das ein Deploy nicht anfasst.
 
-import { extrahiere, quelleHash, FELDER } from "./extrakt.js"
+import { extrahiere, quelleHash, pruefeAngabe, FELDER } from "./extrakt.js"
+import { durchDreiRollen } from "./pipeline.js"
+import { strasseAusName } from "../external/osrm.js"
 import { offeneFelderFuer } from "./felder.js"
 
 /**
@@ -39,7 +41,11 @@ export function quelltextVon(o) {
   // daraus die getragene Strasse — bei einer Ueberfuehrung UEBER die B65 waere das genau
   // verkehrt. Der Belegriegel kann das nicht abfangen, weil die Zeile ja wirklich dasteht;
   // die Formulierung muss den Fehlschluss verhindern.
-  if (o.strassen_ref) teile.push(`Liegt an der Straße (sagt nichts über oben/unten): ${o.strassen_ref}`)
+  // Die Warnung gilt NUR fuer dieses eine Feld, deshalb steht sie direkt daneben und nicht als
+  // allgemeine Regel im Auftrag: in der ersten Fassung hinderte sie das Modell auch daran, die
+  // Strasse aus dem NAMEN zu lesen ("Bruecke St 2148 BW 6840513" lieferte nichts, obwohl ST2148
+  // dort steht). Der Name bleibt eine gueltige Quelle, nur dieses Feld ist es nicht.
+  if (o.strassen_ref) teile.push(`Verortet an: ${o.strassen_ref} (nur der Ort, keine Aussage über oben/unten)`)
   if (o.zustaendig) teile.push(`Zuständig: ${o.zustaendig}`)
   if (o.kategorie) teile.push(`Art: ${o.kategorie}`)
   // Alles weitere, was im Bestand steht und bisher ungenutzt blieb (Max: "gib ihm ALLE Felder").
@@ -69,15 +75,38 @@ const SQL_MERKEN = `
  * nichts gefunden hat (stand='leer'). Ohne diese Leerzeilen liefe der nächste Durchgang
  * dieselben Datensätze noch einmal an, und ein Lauf über 73.000 Punkte käme nie zum Ende.
  */
-export async function reichereAn(db, o, { modell, rufeModell }) {
+export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   const felder = offeneFelder(o)
   if (!felder.length) return { uebersprungen: true, geschrieben: 0, verworfen: 0 }
 
   const text = quelltextVon(o)
   const hash = quelleHash(text)
-  const { gueltig, verworfen } = await extrahiere(text, { modell, felder, rufeModell })
+  // Drei Rollen statt einer, sobald mehr als ein Modellzugang da ist. Gemessen an 15 textreichen
+  // Baustellen: 14 Angaben einstufig gegen 20 dreistufig, also gut 40 Prozent mehr, bei
+  // gleichbleibender Strenge (die Riegel gelten fuer alle Rollen).
+  const { angaben: gueltig, spur } = rollen
+    ? await durchDreiRollen(text, felder, rollen)
+    : await extrahiere(text, { modell, felder, rufeModell }).then((r) => ({ angaben: r.gueltig, spur: { verworfen: r.verworfen.length } }))
+  const verworfen = { length: spur?.verworfen ?? 0 }
 
   const gefunden = new Map(gueltig.map((g) => [g.feld, g]))
+
+  // REGEL ALS RUECKFALL (Max, 31.08.2026: "wenn die KI nix findet, dann nehmen wir Regel als
+  // Fallback, definitiv"). Bei Bauwerken liest strasseAusName die Lage aus dem Namen, mit
+  // gemessenen 94 Prozent Genauigkeit, und ist dort dem Modell ueberlegen: an 25 Ueberfuehrungen
+  // fand das Modell keine einzige getragene Strasse, obwohl sie im Namen stand.
+  //
+  // Nur wo das Modell schweigt, nie gegen es: hat es geantwortet, hat es den ganzen Datensatz
+  // gesehen und nicht nur den Namen.
+  if (o.kategorie === "bruecke" || o.kategorie === "tunnel") {
+    const ausName = strasseAusName(o.name)
+    for (const [feld, wert] of [["getrageneStrasse", ausName.oben], ["gekreuzteStrasse", ausName.unten]]) {
+      if (wert == null || gefunden.has(feld) || !felder.includes(feld)) continue
+      // Auch die Regel muss belegen: der Name IST der Beleg, und er steht im Quelltext.
+      const p = pruefeAngabe({ feld, wert, beleg: String(o.name ?? "") }, text)
+      if (p.ok) gefunden.set(feld, { ...p, ausRegel: true })
+    }
+  }
   for (const feld of felder) {
     const g = gefunden.get(feld)
     await db.query(SQL_MERKEN, [
@@ -91,7 +120,7 @@ export async function reichereAn(db, o, { modell, rufeModell }) {
  * Der Lauf. `grenze` begrenzt einen Durchgang, damit man ihn erst klein ausprobieren kann.
  * `beiFortschritt` wird nach jedem Punkt gerufen — ein Lauf über Tage muss von außen sichtbar sein.
  */
-export async function laufeUeberBestand(db, { modell, rufeModell, grenze = 500, kategorien = null, beiFortschritt = null }) {
+export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, kategorien = null, beiFortschritt = null }) {
   const wo = kategorien?.length ? `AND o.kategorie = ANY($2)` : ""
   const werte = kategorien?.length ? [modell, kategorien] : [modell]
   // Kandidaten: alles, was noch KEINE Zeile dieses Modells hat. Der Verbund über die
@@ -111,7 +140,7 @@ export async function laufeUeberBestand(db, { modell, rufeModell, grenze = 500, 
 
   const zahl = { gesehen: 0, geschrieben: 0, verworfen: 0, uebersprungen: 0 }
   for (const o of rows) {
-    const r = await reichereAn(db, o, { modell, rufeModell })
+    const r = await reichereAn(db, o, { modell, rufeModell, rollen })
     zahl.gesehen++
     if (r.uebersprungen) zahl.uebersprungen++
     zahl.geschrieben += r.geschrieben ?? 0

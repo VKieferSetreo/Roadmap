@@ -136,13 +136,27 @@ export function FindingCard({
           </dd>
         </div>
         {Object.entries(detail ?? {})
-          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung")
-          .map(([k, v]) => (
-            <div key={k} className="flex flex-col">
-              <dt className="text-neutral-400">{k}</dt>
-              <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
-            </div>
-          ))}
+          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung" && !k.startsWith("__"))
+          .map(([k, v]) => {
+            // Das Zeichen sitzt AN DER GEFUNDENEN STELLE (Max 31.08.2026), nicht nur unten am
+            // Fund: wer auf eine Durchfahrtshöhe schaut, muss dort sehen, woher sie kommt.
+            const ausKi = Array.isArray(detail?.__ki) && detail.__ki.includes(k)
+            return (
+              <div key={k} className="flex flex-col">
+                <dt className="text-neutral-400">{k}</dt>
+                <dd className={cn("flex items-center gap-1 font-medium tabular-nums", ausKi ? "text-violet-700" : "text-neutral-800")}>
+                  {v}
+                  {ausKi ? (
+                    <span title="KI-made — aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet"
+                          className="inline-flex items-center gap-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-600">
+                      <Sparkles className="h-3 w-3" aria-hidden />
+                      KI-made
+                    </span>
+                  ) : null}
+                </dd>
+              </div>
+            )
+          })}
       </dl>
 
       {/* Herkunftsvermerke stehen NICHT im Stammdaten-Raster (Max 31.08.2026: "alle Infos, die

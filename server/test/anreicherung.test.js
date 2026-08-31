@@ -313,11 +313,19 @@ describe("Ortsangabe verleitet nicht zur Lage", () => {
   it("bezeichnet die Straßenangabe als reine Ortsangabe", () => {
     const t = quelltextVon({ name: "BW 308A", strassen_ref: "B65" })
     expect(t).not.toMatch(/^Straßenangabe:/m)
-    expect(t).toMatch(/sagt nichts über oben\/unten/)
+    expect(t).toMatch(/Verortet an: B65/)
+    expect(t).toMatch(/keine Aussage über oben\/unten/)
   })
 
   it("sagt es dem Modell auch im Auftrag", () => {
-    expect(bauePrompt("x")).toMatch(/Leite daraus keine der beiden Angaben ab/)
+    expect(bauePrompt("x")).toMatch(/Verortet an.*nur den Ort/s)
+  })
+
+  // Die Warnung darf NUR dieses Feld betreffen. In der ersten Fassung stand sie als allgemeine
+  // Regel im Auftrag und hinderte das Modell auch daran, die Straße aus dem NAMEN zu lesen:
+  // "Brücke St 2148 BW 6840513" lieferte nichts, obwohl ST2148 dort steht.
+  it("erlaubt ausdrücklich, die Lage aus dem Bezeichnungstext zu lesen", () => {
+    expect(bauePrompt("x")).toMatch(/BEZEICHNUNGSTEXT darfst du die Lage sehr wohl lesen/)
   })
 })
 
@@ -389,5 +397,48 @@ describe("Katalog: die Lücken aus der Handprüfung", () => {
     expect(FELDER.zeitfenster.pruefe("8h bis 15h")).toBe("08:00-15:00")
     expect(FELDER.zeitfenster.pruefe("07:30 bis 15:00")).toBe("07:30-15:00")
     expect(FELDER.zeitfenster.pruefe("kein Zeitraum")).toBeNull()
+  })
+})
+
+describe("Gewicht und Achslast werden nicht verwechselt", () => {
+  // In den Überführungs-Fällen beobachtet: "Fahrverbot über 84t" landete auf maxAchslastT,
+  // wurde von der Spanne (1 bis 30) verworfen — und die Angabe war weg, obwohl sie stimmte.
+  // Sie gehört auf maxGewichtT.
+  it("nennt bei Gewicht auch Fahrverbot, Sperrung und Alleinfahrt", () => {
+    const f = FELDER.maxGewichtT.frage
+    for (const wort of ["Fahrverbot", "Sperrung für Fahrzeuge", "Alleinfahrt"]) expect(f).toContain(wort)
+    expect(f).toMatch(/ganze Fahrzeug/)
+  })
+
+  it("grenzt die Achslast ausdrücklich ab", () => {
+    expect(FELDER.maxAchslastT.frage).toMatch(/nicht des ganzen Fahrzeugs/)
+    expect(FELDER.maxAchslastT.frage).toMatch(/ausdrücklich/)
+  })
+
+  it("lässt 84 t als Gesamtmasse zu, aber nicht als Achslast", () => {
+    expect(FELDER.maxGewichtT.pruefe("84")).toBe(84)
+    expect(FELDER.maxAchslastT.pruefe("84")).toBeNull()
+  })
+})
+
+describe("Straßenklassen sind dem Modell erklärt", () => {
+  // Max, 31.08.2026: "Ist ST ne Straße? Ansonsten dem Agenten solche Beispiele im Prompt
+  // mitgeben, dass er checkt — ich hätte das auch nicht gedacht."
+  // St ist die Staatsstraße in Bayern und Sachsen. Ohne diese Erklärung muss das Modell raten,
+  // ob "St 2148" eine Straßennummer oder eine Abkürzung für irgendetwas anderes ist.
+  it("nennt alle Klassen, aber KEINE konkrete Nummer", () => {
+    const f = FELDER.getrageneStrasse.frage
+    for (const klasse of ["Autobahn", "Bundesstraße", "Landesstraße", "Kreisstraße", "Staatsstraße"]) {
+      expect(f).toContain(klasse)
+    }
+    // Der alte Riegel gilt weiter: eine Beispielnummer im Prompt wird abgeschrieben.
+    expect(f).not.toMatch(/\b[ABLK]\s?\d{1,4}\b/)
+  })
+
+  it("erkennt alle Klassen auch beim Prüfen", () => {
+    for (const [roh, erwartet] of [["A 7", "A7"], ["B 12", "B12"], ["L 87", "L87"],
+                                    ["K 4711", "K4711"], ["St 2148", "ST2148"], ["S 177", "ST177"]]) {
+      expect(FELDER.getrageneStrasse.pruefe(roh), roh).toBe(erwartet)
+    }
   })
 })

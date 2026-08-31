@@ -129,8 +129,8 @@ Regeln:
 - Findest du nichts, gib {"angaben": []} zurück. Das ist eine richtige Antwort, keine schlechte.
 - Antworte bei Ja/Nein-Fragen NUR, wenn der Text die Sache ausdrücklich nennt. Ein "nein", nur
   weil nichts dasteht, ist keine Angabe und wird verworfen.
-- Eine bloße Ortsangabe ("liegt an der Straße …") sagt NICHT, ob diese Straße getragen oder
-  gekreuzt wird. Leite daraus keine der beiden Angaben ab.
+- Die Zeile "Verortet an" nennt nur den Ort und sagt NICHT, ob die Straße getragen oder gekreuzt
+  wird. Aus dem BEZEICHNUNGSTEXT darfst du die Lage sehr wohl lesen.
 
 Text:
 """

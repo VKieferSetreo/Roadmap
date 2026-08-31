@@ -15,7 +15,7 @@ import {
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef, normRoadRefWeit, strasseAusName } from "../external/osrm.js"
-import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk } from "../anreicherung/lesen.js"
+import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../anreicherung/lesen.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 // 2.1.0 (T-603): SEVAS-Kreuzungsfilter (coincidentRouteKm + Parallelität), Klon-Dedup (identische
@@ -752,7 +752,12 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Die Oberflaeche macht daraus ihr Zeichen; ohne diesen Vermerk saehe ein ergaenzter Wert
       // aus wie ein gemeldeter, und genau das darf er nicht.
       const vermerk = anreicherungsVermerk(ergaenzt)
-      if (vermerk) verdict.detail = { ...(verdict.detail ?? {}), Ergänzt: vermerk }
+      if (vermerk) {
+        // __ki traegt die Detail-ZEILEN, die auf einem abgeleiteten Wert beruhen. Die Karte setzt
+        // ihr Zeichen genau dort, statt nur pauschal "irgendetwas war KI" zu melden. Der
+        // Unterstrich-Name haelt es aus dem sichtbaren Raster heraus.
+        verdict.detail = { ...(verdict.detail ?? {}), Ergänzt: vermerk, __ki: kiZeilen(ergaenzt) }
+      }
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
       // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle
       // Linie, falls der Clip leer ausfällt — nie die Info ganz verlieren.

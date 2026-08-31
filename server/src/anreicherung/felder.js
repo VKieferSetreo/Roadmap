@@ -104,7 +104,7 @@ export const KATALOG = {
     pruefe: spanne(5, 200),
   },
   maxGewichtT: {
-    frage: "Zulässige Gesamtmasse oder Tragfähigkeit in Tonnen? JEDE genannte Gewichtsgrenze zählt, auch als \"Durchfahrtsverbot über … t\", \"Gewichtsbeschränkung\", \"beschränkt auf … t\" oder Zeichen 262 formuliert.",
+    frage: "Zulässige Gesamtmasse oder Tragfähigkeit in Tonnen? JEDE genannte Gewichtsgrenze für das ganze Fahrzeug zählt, gleich wie sie formuliert ist: \"Durchfahrtsverbot über … t\", \"Gewichtsbeschränkung\", \"Fahrverbot über … t\", \"Sperrung für Fahrzeuge über … t\", \"beschränkt auf … t\", \"Alleinfahrt ab … t\", Zeichen 262.",
     pruefe: spanne(2, 1000),
   },
   verkehrsverbotLkwT: {
@@ -112,7 +112,7 @@ export const KATALOG = {
     pruefe: spanne(2, 60),
   },
   maxAchslastT: {
-    frage: "Zulässige Achslast in Tonnen? Auch \"Achsdruck\", Zeichen 263.",
+    frage: "Zulässige ACHSLAST in Tonnen (Last je Achse, nicht des ganzen Fahrzeugs)? Nur wenn ausdrücklich von Achslast oder Achsdruck die Rede ist, Zeichen 263.",
     pruefe: spanne(1, 30),
   },
   sperrlaengeM: {
@@ -122,7 +122,7 @@ export const KATALOG = {
 
   // ── Straßen (nur die Lage am Bauwerk, kein Ort) ───────────────────────────
   getrageneStrasse: {
-    frage: "Welche Straße führt ÜBER das Bauwerk, wird also von ihm getragen? Bei \"X über Y\" ist X die getragene, bei \"im Zuge der X\" ebenfalls X.",
+    frage: "Welche Straße führt ÜBER das Bauwerk, wird also von ihm getragen? Bei \"X über Y\" ist X die getragene, bei \"im Zuge der X\" ebenfalls X.\n  Deutsche Straßenklassen: A = Autobahn, B = Bundesstraße, L = Landesstraße, K = Kreisstraße, St = Staatsstraße (Bayern und Sachsen), S = Staatsstraße (Sachsen). Kreisstraßen tragen oft ein Landkreiskürzel, etwa \"K\" gefolgt von zwei bis drei Buchstaben und einer Zahl.",
     pruefe: ref,
   },
   gekreuzteStrasse: {
