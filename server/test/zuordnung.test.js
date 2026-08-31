@@ -96,10 +96,14 @@ describe("zuordnung", () => {
   })
 
   // Genau der Fall, an dem der globale Vergleich scheiterte: die Bruecke liegt am Streckenanfang,
-  // die A44 faehrt die Route erst 80 km spaeter. Ortsbezogen ist das kein Nachweis.
-  it("laesst eine 300 km entfernte Beruehrung nicht mitentscheiden", () => {
+  // die A44 faehrt die Route erst 80 km spaeter. Global galt sie damit als befahren. Ortsbezogen
+  // ist sie es nicht, und weil die getragene Strasse bekannt ist, folgt daraus der Umkehrschluss:
+  // wir fahren hier nicht auf ihr, also nicht ueber das Bauwerk.
+  it("verwirft, wenn die getragene Strasse hier nicht gefahren wird", () => {
     const b = bauwerk({ getrageneStrasse: "A 44", gekreuzteStrasse: "K 12", maxGewichtT: 40 })
-    expect(zuordnung(b, ctx, 10)).toBe("unbestimmt")
+    expect(zuordnung(b, ctx, 10)).toBe("widerlegt")
+    // 80 km weiter faehrt die Route die A44 tatsaechlich — dort bleibt dieselbe Bruecke stehen.
+    expect(zuordnung(b, ctx, 80)).toBe("bewiesen")
   })
 
   // 129 Bauwerke im Bestand tragen in beiden Feldern dieselbe Strasse, weil der Connector den
@@ -150,8 +154,34 @@ describe("zuordnung", () => {
   it("laesst die Gesamtliste NICHT gegen ein gefuelltes Fenster gewinnen", () => {
     const beides = { strassenSpannen: spannen, refs: new Set(["A7", "A44"]) }
     const b = bauwerk({ getrageneStrasse: "A 44", gekreuzteStrasse: "K 12", maxGewichtT: 40 })
-    // Bei km 10 faehrt die Route A7, nicht A44 — global stuende A44 aber drin.
-    expect(zuordnung(b, beides, 10)).toBe("unbestimmt")
+    // Bei km 10 faehrt die Route A7, nicht A44 — global stuende A44 aber drin und haette die
+    // Bruecke damit zu unserer erklaert.
+    expect(zuordnung(b, beides, 10)).toBe("widerlegt")
+  })
+
+  // Der Umkehrschluss ist die scharfe Regel, deshalb greift er NUR bei gefuelltem Fenster. Ist es
+  // leer, wissen wir ueber diese Stelle nichts, und aus Unwissen darf kein Loeschen folgen.
+  it("zieht den Umkehrschluss nicht aus einem leeren Fenster", () => {
+    const nurGlobal = { strassenSpannen: spannen, refs: new Set(["A7"]) }
+    const b = bauwerk({ getrageneStrasse: "A 44", gekreuzteStrasse: "K 12", maxGewichtT: 40 })
+    expect(strassenBeiKm(spannen, 50).size).toBe(0) // km 50 liegt zwischen den Spannen
+    expect(zuordnung(b, nurGlobal, 50)).toBe("unbestimmt")
+  })
+
+  // Aus dem Namen gelesen, wenn kein Strukturfeld da ist. Max' Fall vom 31.08.2026.
+  it("liest die getragene Strasse aus dem Namen, wenn die Quelle schweigt", () => {
+    const b = { kategorie: "bruecke", name: "Brücke K BA 10 BW 6031578", attrs: { grundsaetzlicheGstSperre: true } }
+    expect(zuordnung(b, ctx, 10)).toBe("widerlegt") // wir fahren hier A7, nicht K BA 10
+  })
+
+  // Und die Bremse dazu: widersprechen sich Strukturfeld und Name, wird nicht verworfen.
+  it("verwirft nicht, wenn Strukturfeld und Name sich widersprechen", () => {
+    const b = {
+      kategorie: "bruecke",
+      name: "BW 3180, AK Hannover - Ost, A 7 über A 2",
+      attrs: { getrageneStrasse: "A2", maxGewichtT: 40 },
+    }
+    expect(zuordnung(b, ctx, 10)).toBe("unbestimmt")
   })
 
   it("urteilt ohne Streckenauskunft nie, sondern bleibt unbestimmt", () => {

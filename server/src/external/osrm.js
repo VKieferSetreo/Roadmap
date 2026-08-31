@@ -11,6 +11,61 @@ export function normRoadRef(s) {
   return m ? `${m[1] === "S" ? "ST" : m[1]}${m[2]}` : null
 }
 
+/**
+ * Wie normRoadRef, aber erkennt zusaetzlich Kreis- und Staatsstrassen MIT Landkreiskuerzel
+ * ("K BA 10" in Bamberg, "K-NES 3" in Bad Neustadt, "K AN 7" in Ansbach). T-653.
+ *
+ * WARUM EIGEN und nicht in normRoadRef: dort wuerden "K BA 10" und "K CO 10" beide zu "K10"
+ * zusammenfallen, obwohl es verschiedene Strassen in verschiedenen Landkreisen sind. Hier
+ * bleibt das Kuerzel im Ergebnis ("KBA10"), die Werte sind also NICHT mit denen von normRoadRef
+ * mischbar und dienen nur dem Vergleich untereinander.
+ *
+ * Das Kuerzel MUSS durch Leerzeichen oder Bindestrich getrennt sein. Ohne diese Bedingung liest
+ * der Ausdruck "Stein 2" als ST+EIN+2 und "BSW 3" als B+SW+3 — beides Bauwerksnamen, keine Strassen.
+ */
+const REF_WEIT = /\b(A|B|L|K|ST|S)\s*(?:[- ]\s*([A-ZÄÖÜ]{2,3})\s*)?[- ]?\s*0*(\d{1,4})\b/
+export function normRoadRefWeit(s) {
+  const m = String(s ?? "").toUpperCase().match(REF_WEIT)
+  if (!m) return null
+  const klasse = m[1] === "S" ? "ST" : m[1]
+  return m[2] ? `${klasse}${m[2]}${m[3]}` : `${klasse}${m[3]}`
+}
+
+/**
+ * Die getragene und die gekreuzte Strasse aus dem BAUWERKSNAMEN lesen (T-653).
+ *
+ * WOZU: 12.976 der 16.278 Bauwerke tragen ueberhaupt kein Strukturfeld. Bei ihnen steht die Lage
+ * nur im Namen, und der folgt erstaunlich verlaesslich drei Mustern. Gegen die 2.875 Bauwerke MIT
+ * Strukturfeld nachgemessen: wenn der Name etwas sagt, stimmt es in 94 Prozent der Faelle, und ein
+ * Teil der restlichen 6 Prozent sind gar keine Fehler, sondern Faelle, in denen der Name genauer
+ * ist als die Quelle ("Bruecke K-NES 3" gegen ein Strukturfeld, das daraus "K3" gemacht hat).
+ *
+ * Die Muster, in dieser Reihenfolge, weil das spaetere das fruehere ueberstimmt:
+ *   1. "«unten», UEF «oben»" / "«unten» Ueberfuehrung der «oben»" — nennt die Lage ausdruecklich
+ *   2. "«oben» ueber «unten»" — das haeufigste im Bestand
+ *   3. "Bruecke «oben» BW 1234" — die Strasse gleich am Anfang ist die getragene
+ */
+const NAME_UEF = /(?:ü|ue)f(?:g)?\.?\s+(?:der|des|d\.)?\s*|(?:ü|ue)berf(?:ü|ue)hrung\s+(?:der|des|d\.)\s*/i
+const REF_ROH = String.raw`(?:A|B|L|K|St|S)\s*(?:[- ]\s*[A-ZÄÖÜ]{2,3}\s*)?[- ]?\s*\d{1,4}`
+const NAME_UEBER = new RegExp(String.raw`(${REF_ROH})\s*(?:-Ast|-Aeste|-Äste)?\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der)?\s*(.*)$`, "i")
+const NAME_KOPF = new RegExp(String.raw`^\s*(?:BAB\s*)?(?:Br(?:ü|ue)cke|BW|Talbr(?:ü|ue)cke)?\s*(?:BAB\s*)?(${REF_ROH})\b`, "i")
+
+export function strasseAusName(name) {
+  const t = String(name ?? "")
+  const uef = t.match(NAME_UEF)
+  if (uef) {
+    const oben = normRoadRefWeit(t.slice(uef.index + uef[0].length))
+    if (oben) return { oben, unten: normRoadRefWeit(t.slice(0, uef.index)) }
+  }
+  const ueber = t.match(NAME_UEBER)
+  if (ueber) {
+    const oben = normRoadRefWeit(ueber[1])
+    if (oben) return { oben, unten: normRoadRefWeit(ueber[2]) }
+  }
+  const kopf = t.match(NAME_KOPF)
+  return { oben: kopf ? normRoadRefWeit(kopf[1]) : null, unten: null }
+}
+
 /** Die einzelnen Schritte mit Strassennummer und Geometrie — {ref, punkte}[]. */
 export function abschnitteAusLegs(legs) {
   const raus = []
