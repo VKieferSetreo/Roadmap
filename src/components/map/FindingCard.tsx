@@ -10,7 +10,7 @@
 //   6. Fußzeile: Severity-Pille + Quelle
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Sparkles, HelpCircle } from "lucide-react"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
 import { formatGueltigkeit, SEVERITY_META } from "@/components/project/findingMeta"
 import type { FindingKategorie, FindingSeverity } from "@/types/domain"
@@ -135,13 +135,42 @@ export function FindingCard({
             {formatGueltigkeit(gueltigVon, gueltigBis)}
           </dd>
         </div>
-        {Object.entries(detail ?? {}).map(([k, v]) => (
-          <div key={k} className="flex flex-col">
-            <dt className="text-neutral-400">{k}</dt>
-            <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
-          </div>
-        ))}
+        {Object.entries(detail ?? {})
+          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung")
+          .map(([k, v]) => (
+            <div key={k} className="flex flex-col">
+              <dt className="text-neutral-400">{k}</dt>
+              <dd className="font-medium tabular-nums text-neutral-800">{v}</dd>
+            </div>
+          ))}
       </dl>
+
+      {/* Herkunftsvermerke stehen NICHT im Stammdaten-Raster (Max 31.08.2026: "alle Infos, die
+          potenziell KI-ergänzt sind, brauchen einen kleinen Marker"). Im Raster gingen sie
+          zwischen Höhe und Tonnage unter — sie sagen aber nichts über das Bauwerk, sondern
+          darüber, wie sicher wir uns sind. Das gehört abgesetzt und mit eigenem Zeichen. */}
+      {(detail?.["Ergänzt"] || detail?.["Zuordnung"]) && (
+        <div className="mt-2 flex flex-col gap-1">
+          {detail?.["Ergänzt"] ? (
+            <span
+              title={`Diese Angabe stand nicht in den Quelldaten, sie wurde aus dem Beschreibungstext gelesen: ${detail["Ergänzt"]}`}
+              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
+            >
+              <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
+              Ergänzt: {detail["Ergänzt"]}
+            </span>
+          ) : null}
+          {detail?.["Zuordnung"] ? (
+            <span
+              title="Es ließ sich nicht belegen, ob dieser Fund zur gefahrenen Strecke gehört. Er wird gezeigt, statt still verworfen zu werden."
+              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200"
+            >
+              <HelpCircle className="h-3 w-3 shrink-0" aria-hidden />
+              Zuordnung {detail["Zuordnung"]}
+            </span>
+          ) : null}
+        </div>
+      )}
 
       {/* 4. Zusatz (Kontakt o.ä.) */}
       {extra}

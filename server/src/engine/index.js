@@ -15,6 +15,7 @@ import {
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
 import { normRoadRef, normRoadRefWeit, strasseAusName } from "../external/osrm.js"
+import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk } from "../anreicherung/lesen.js"
 import { ApiError, isFiniteNumber } from "../util.js"
 
 // 2.1.0 (T-603): SEVAS-Kreuzungsfilter (coincidentRouteKm + Parallelität), Klon-Dedup (identische
@@ -642,6 +643,10 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
     params,
   )
   const obstacles = rows.map(rowToObstacle)
+  // T-657: abgeleitete Angaben dazuholen. Sie fuellen nur Luecken, nie gemeldete Werte, und
+  // jeder uebernommene Wert wird am Fund vermerkt. Faellt der Abruf aus (Tabelle fehlt, Fehler),
+  // laeuft die Analyse ohne Anreicherung weiter — sie ist eine Zugabe, keine Voraussetzung.
+  const abgeleitet = await ladeAnreicherung(db, obstacles.map((o) => o.id))
 
   // Event-Loop-Schonung: Das Matching ist reine CPU (nearestOnRoute über die ganze Geometrie je
   // Hindernis, KEIN await im Loop) und lief bei langen Mehr-Strecken-Projekten ~70 s am Stück — das
@@ -662,7 +667,8 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   }
   for (const ctx of routeCtx) {
     const { route, geometry, cum, bbox, grid, refs } = ctx
-    for (const obstacle of obstacles) {
+    for (const rohObstacle of obstacles) {
+      const { obstacle, ergaenzt } = mitAnreicherung(rohObstacle, abgeleitet.get(String(rohObstacle.id)))
       await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
       if (
@@ -742,6 +748,11 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // uns gilt, ist eine andere Frage als wie schlimm er waere, und die zweite darf die erste
       // nicht ueberschreiben.
       if (zuord === "unbestimmt") verdict.detail = { ...(verdict.detail ?? {}), Zuordnung: "nicht nachweisbar" }
+      // T-657: hat eine abgeleitete Angabe zu dieser Bewertung beigetragen, steht das am Fund.
+      // Die Oberflaeche macht daraus ihr Zeichen; ohne diesen Vermerk saehe ein ergaenzter Wert
+      // aus wie ein gemeldeter, und genau das darf er nicht.
+      const vermerk = anreicherungsVermerk(ergaenzt)
+      if (vermerk) verdict.detail = { ...(verdict.detail ?? {}), Ergänzt: vermerk }
       // Linien-Geometrie auf den Routen-Korridor clippen → nur der durchfahrene Teil der Baustelle
       // wird gerendert (nicht die ganze, oft kilometerlange Quell-Linie). Fallback auf die volle
       // Linie, falls der Clip leer ausfällt — nie die Info ganz verlieren.
