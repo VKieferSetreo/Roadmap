@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
+import { MapContainer, Marker, Pane, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
 import { routeFreigegeben, type Finding, type ProjectRoute, type RoutePoint } from "@/types/domain"
@@ -238,16 +238,24 @@ export function RouteMap({
         <Kacheln />
         <MapResize />
 
-        {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21). */}
-        {drawn.map((r) => (
-          <Polyline
-            key={`line-${r.id}`}
-            positions={r.positions}
-            smoothFactor={0}
-            // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
-            pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
-          />
-        ))}
+        {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21).
+            EIGENES PANE, das UNTER dem overlayPane liegt (Max 01.09.2026: "je nach Zoomstufe
+            verstecken sich die Marker komplett oder hinter der Strecke"). Alle Linien lagen bis
+            hierher im selben Pane, und dort entscheidet die DOM-Reihenfolge — die Strecke wurde
+            NACH den Fund-Segmenten gezeichnet und deckte sie damit zu. Über die JSX-Reihenfolge
+            ließe sich das auch lösen, aber nur so lange, bis jemand die Blöcke umsortiert; ein
+            Pane hält die Schichtung fest, egal in welcher Reihenfolge React rendert. */}
+        <Pane name="strecke" style={{ zIndex: 390 }}>
+          {drawn.map((r) => (
+            <Polyline
+              key={`line-${r.id}`}
+              positions={r.positions}
+              smoothFactor={0}
+              // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
+              pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
+            />
+          ))}
+        </Pane>
         {/* Fahrtrichtung: dezente weiße Pfeile entlang der Strecke (Marker im markerPane, nicht
             klickbar). Ab >15 Strecken weggelassen — bei so vielen Linien wäre es nur noch Geflimmer
             (ponytail: Pfeil-Obergrenze ~24/Strecke, statt tausende Marker zu rendern). */}
