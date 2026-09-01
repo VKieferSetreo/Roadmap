@@ -174,15 +174,7 @@ export function RouteMap({
   // ghost = ausgeblendeter Fund → grau + gestrichelt + dezenter (gleiche Geometrie-Logik, wiederverwendet).
   const findingLines = (list: Finding[], ghost: boolean) =>
     list.flatMap((f) => {
-      // NICHT-endliche Punkte RAUS, bevor sie in eine Polyline gehen. T-600 hat das für die
-      // ROUTEN gemacht, nicht für die Fund-Geometrien — und die kommen aus fremden Quellen, wo
-      // ein null in den Koordinaten keine Seltenheit ist. Ein einziger NaN im SVG-Renderer
-      // zerlegt das Zoom-Neuzeichnen, und dann verschwinden ANDERE Marker mit (Max, 01.09.2026:
-      // "wenn ich auf ner Karte drauf war, rausgehe und dann zoome, verschwinden manchmal die
-      // anderen Ticks" — der geöffnete blieb, weil sein Popup ihn am Leben hält).
       let lines = geomToLines(f.geom)
-        .map((linie) => linie.filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng)))
-        .filter((linie) => linie.length >= 2)
       // Kaputte Sprung-Geometrie verwerfen → auf das plausible Streckensegment zurückfallen (T-559).
       if (lines.length === 0 || hasImplausibleJump(lines)) {
         lines = []
@@ -194,6 +186,19 @@ export function RouteMap({
           if (seg.length >= 2) lines = [seg]
         }
       }
+      // NICHT-ENDLICHE PUNKTE RAUS — und zwar GANZ AM ENDE, nach dem Rückfall.
+      //
+      // T-600 hat das für die ROUTEN getan, nicht für die Fund-Geometrien; die kommen aus fremden
+      // Quellen, wo ein null in den Koordinaten keine Seltenheit ist. Ein einziger NaN im
+      // SVG-Renderer zerlegt das Neuzeichnen beim Zoomen, und dann verschwinden ANDERE Marker mit
+      // (Max, 01.09.2026: "je nach Zoomstufe keine Ticker mehr").
+      //
+      // Beim ersten Anlauf stand der Filter VOR dem Rückfall und ließ damit genau den Pfad
+      // ungeprüft, der ihn am nötigsten hat: sliceRouteByKm rechnet mit f.km, und fehlt der,
+      // kommt NaN heraus.
+      lines = lines
+        .map((linie) => linie.filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng)))
+        .filter((linie) => linie.length >= 2)
       if (lines.length === 0) return []
       const meta = SEVERITY_META[f.severity]
       const eigen = istEigenerEintrag(f.quelle)
@@ -326,10 +331,12 @@ export function RouteMap({
         ))}
         {allPoints.length >= 2 ? <FitBounds points={allPoints} enabled={autoFit} /> : null}
 
-        {/* Strecke, auf der ein Fund GREIFT (geom = Linie/MultiLineString), in der Severity-Farbe —
-            weißes Casing + Klick wählt den Fund. Ausgeblendete (Geister-)Funde grau gestrichelt. */}
-        {findingLines(findings, false)}
-        {ghostFindings ? findingLines(ghostFindings, true) : null}
+        {/* MARKER ZUERST, Linien danach — die Reihenfolge ist Absicht.
+            Marker liegen im markerPane und damit ohnehin ueber allen Linien; fuer die Schichtung
+            ist die Reihenfolge also egal. Fuer die AUSFALLSICHERHEIT nicht: wirft eine Polyline
+            beim Aufbau (Leaflet: "Invalid LatLng object"), rendert React nichts mehr, was danach
+            kommt. Standen die Marker hinter den Linien, riss ein einziger kaputter Fund sie alle
+            mit — genau Max' "je nach Zoomstufe keine Ticker mehr" (01.09.2026). */}
 
         {/* Fund-Marker, gruppiert: mehrere Funde am selben Ort (z.B. beide Fahrtrichtungen
             derselben Maßnahme) werden EIN Marker mit Tabs zum Aufsplitten — keiner geht verloren. */}
@@ -357,6 +364,12 @@ export function RouteMap({
             canChat={false}
           />
         ))}
+
+        {/* Strecke, auf der ein Fund GREIFT (geom = Linie/MultiLineString), in der Severity-Farbe —
+            weißes Casing + Klick wählt den Fund. Ausgeblendete (Geister-)Funde grau gestrichelt.
+            Steht NACH den Markern, damit ein kaputter Fund sie nicht mitreisst (siehe oben). */}
+        {findingLines(findings, false)}
+        {ghostFindings ? findingLines(ghostFindings, true) : null}
       </MapContainer>
 
       {/* Map-Controls unten links: Ebene + Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}

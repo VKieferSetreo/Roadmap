@@ -355,4 +355,31 @@ function FindingMarkerImpl({
   )
 }
 
-export const FindingMarker = memo(FindingMarkerImpl)
+/**
+ * MIT EIGENEM VERGLEICH, sonst ist das memo wirkungslos.
+ *
+ * `group` ist bei jedem Lauf von groupFindings ein NEUES Array — der Standardvergleich von memo
+ * sieht darin eine Aenderung und baut den Marker neu auf. Beim Ziehen der Karte passiert das
+ * laufend, und ein Marker, der gerade neu entsteht, ist fuer einen Moment nicht da (Max,
+ * 01.09.2026: "bei Drag and Drop despawnen manchmal wieder die Ticks — mach die gerne persistent,
+ * dass die nicht immer neu gerendert werden").
+ *
+ * Verglichen wird deshalb der INHALT, nicht die Identitaet des Arrays: dieselben Funde in
+ * derselben Reihenfolge, derselbe ausgewaehlte, dieselben Schalter. Aendert sich davon nichts,
+ * bleibt der Marker unangetastet stehen.
+ */
+export const FindingMarker = memo(FindingMarkerImpl, (alt, neu) => {
+  if (alt.group.length !== neu.group.length) return false
+  for (let i = 0; i < alt.group.length; i++) {
+    const a = alt.group[i]
+    const b = neu.group[i]
+    // severity und geom bestimmen Farbe und Position — aendern sie sich, muss neu gezeichnet werden.
+    if (a.id !== b.id || a.severity !== b.severity || a.geom !== b.geom) return false
+  }
+  // Der ausgewaehlte Zustand faerbt den Pin und hebt ihn an; er muss durchschlagen, aber NUR fuer
+  // die Marker, die es betrifft.
+  const warAktiv = alt.group.some((f) => f.id === alt.selectedId)
+  const istAktiv = neu.group.some((f) => f.id === neu.selectedId)
+  if (warAktiv !== istAktiv) return false
+  return alt.ghost === neu.ghost && alt.canChat === neu.canChat
+})
