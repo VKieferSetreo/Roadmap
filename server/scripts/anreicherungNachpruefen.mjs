@@ -119,6 +119,12 @@ if (SCHREIBEN && faul.length) {
         WHERE id = $1`,
       [f.id, f.wert, `nachtraeglich: ${f.grund}`],
     )
+    // Und die Fertig-Marke des Punktes weg, sonst sieht der Lauf ihn nie wieder an. Seit die
+    // Kandidatenwahl nur noch auf die Marke schaut (lauf.js), ist das der einzige Weg zurueck.
+    await db.query(
+      "DELETE FROM anreicherung WHERE ziel_typ = 'obstacle' AND ziel_id = $1 AND feld = '_fertig' AND modell = $2",
+      [f.ziel_id, f.modell],
+    )
   }
   sage(`${faul.length} Angaben zurueckgenommen.`)
 }

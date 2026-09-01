@@ -625,17 +625,21 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
   // Am 31.08.2026 wurden zwei fehlerhafte Felder verworfen und die Riegel geschärft. Der Lauf
   // übersprang danach 5.295 bereits gesehene Punkte, weil sie noch Zeilen ANDERER Felder trugen —
   // die verworfenen wären nie nachgeholt worden.
-  it("sucht Punkte, denen EIN Feld fehlt, nicht nur ganz unbearbeitete", async () => {
+  // Bis zum 01.09.2026 stand dafür eine Feldprüfung in der Abfrage: ein NOT EXISTS je
+  // Katalogfeld. Die kostete bei 703.908 Zeilen 25 Sekunden je Aufruf und hat den Lauf nach
+  // 8,8 Stunden in einen Query-Timeout laufen lassen. Die Zusage ist dieselbe geblieben, sie
+  // hängt jetzt am WERT der Fertig-Marke: er trägt die Katalogversion.
+  it("holt alle Punkte zurück, sobald der Katalog wächst", async () => {
     const gesehen = []
     const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
     await laufeUeberBestand(db, { modell: "m", rufeModell: async () => null, grenze: 10 })
-    const sql = gesehen[0].sql
-    // Je Feld einzeln prüfen statt "hat überhaupt eine Zeile".
-    expect(sql).toContain("unnest($2::text[])")
-    expect(sql).toContain("a.feld = f.feld")
-    // Und die Feldliste wird wirklich übergeben.
-    expect(Array.isArray(gesehen[0].p[1])).toBe(true)
-    expect(gesehen[0].p[1]).toContain("maxHoeheM")
+    const { sql, p } = gesehen[0]
+    // Die Katalogröße steht als Parameter in der Abfrage — ändert sie sich, passt keine
+    // bestehende Marke mehr, und jeder Punkt wird wieder Kandidat.
+    expect(sql).toContain(`a.feld = '_fertig'`)
+    expect(p).toContain(String(Object.keys(FELDER).length))
+    // Und die teure Feldprüfung ist wirklich draußen.
+    expect(sql).not.toContain("unnest")
   })
 
   // Die Kehrseite derselben Abfrage, und sie hat den Lauf am 31.08.2026 im Kreis drehen lassen:

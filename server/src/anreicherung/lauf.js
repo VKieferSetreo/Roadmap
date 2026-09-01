@@ -157,7 +157,7 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
  */
 export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null, grenze = 500, gleichzeitig = 1, kategorien = null, beiFortschritt = null, nurVerwerfungenVon = null }) {
   const felderAlle = Object.keys(FELDER)
-  const werte = [modell, felderAlle]
+  const werte = [modell]
   const zusatz = []
   if (kategorien?.length) { werte.push(kategorien); zusatz.push(`AND o.kategorie = ANY($${werte.length})`) }
 
@@ -183,34 +183,31 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
   werte.push(String(felderAlle.length))
   const katalogGroesse = werte.length
 
-  // Kandidat ist, wem MINDESTENS EIN Feld fehlt — nicht nur, wer noch gar keine Zeile hat.
+  // Kandidat ist, wer die Fertig-Marke des AKTUELLEN Katalogs nicht traegt. Mehr braucht es
+  // nicht — und mehr ist bei dieser Tabellengroesse auch nicht bezahlbar.
   //
-  // Der Unterschied wurde am 31.08.2026 teuer: nachdem zwei fehlerhafte Felder verworfen und die
-  // Riegel geschaerft waren, uebersprang der Lauf 5.295 bereits gesehene Punkte, weil sie noch
-  // Zeilen ANDERER Felder trugen. Die verworfenen waeren nie nachgeholt worden.
+  // Bis zum 01.09.2026 stand hier zusaetzlich eine Feldpruefung: ein NOT EXISTS je Katalogfeld,
+  // um nachzuholen, was einem Punkt fehlt. Das kostete bei 703.908 Zeilen 25 Sekunden je Aufruf
+  // (gemessen, mit Index; ohne Index lief es in den Timeout, an dem der Lauf nach 8,8 Stunden und
+  // 33.200 Punkten starb). Ohne sie sind es 0,33 Sekunden.
   //
-  // So holt der Lauf auch nach, was spaeter dazukommt: waechst der Katalog um ein Feld, sind alle
-  // Altpunkte wieder Kandidaten, ohne dass jemand die Tabelle leeren muesste. Die Leerzeilen
-  // (stand='leer') verhindern dabei das ewige Wiederholen — ein Punkt, zu dem das Modell nichts
-  // fand, traegt trotzdem eine Zeile je Feld und faellt hier heraus.
+  // Sie ist verzichtbar, weil die Marke dasselbe leistet und ihr WERT die Katalogversion traegt:
+  //   - Katalog waechst um ein Feld  -> Marke passt nicht mehr    -> Kandidat
+  //   - Quelltext geaendert          -> Marke wird mitgeloescht   -> Kandidat
+  //   - Angabe zurueckgenommen       -> Marke wird mitgeloescht   -> Kandidat
+  // Der letzte Fall ist der einzige, der eigens dafuer sorgen muss: anreicherungNachpruefen.mjs
+  // loescht beim Zuruecknehmen einer Angabe die Marke des Punktes mit.
   const { rows } = await db.query(
     `SELECT o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig, o.attrs, o.roh,
               o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
        FROM obstacles o
       WHERE o.aktiv = true ${wo}
-        -- Wer die Fertig-Marke des AKTUELLEN Katalogs traegt, ist durch. Ohne diese Zeile blieben
-        -- Punkte ewig Kandidat, denen ein Feld fehlt, das sie nie bekommen koennen (siehe
-        -- FERTIG_FELD in reichereAn).
+        -- Diese eine Bedingung ist die ganze Kandidatenwahl. Der partielle Index
+        -- anreicherung_fertig_idx (migrations/070) macht daraus einen Index-Lookup je Punkt.
         AND NOT EXISTS (
           SELECT 1 FROM anreicherung a
-           WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text
-             AND a.modell = $1 AND a.feld = '${FERTIG_FELD}' AND a.wert = $${katalogGroesse})
-        AND EXISTS (
-          SELECT 1 FROM unnest($2::text[]) AS f(feld)
-           WHERE NOT EXISTS (
-             SELECT 1 FROM anreicherung a
-              WHERE a.ziel_typ = 'obstacle' AND a.ziel_id = o.id::text
-                AND a.modell = $1 AND a.feld = f.feld))
+           WHERE a.ziel_id = o.id::text AND a.feld = '${FERTIG_FELD}'
+             AND a.modell = $1 AND a.wert = $${katalogGroesse})
       ORDER BY o.id
       LIMIT ${Number(grenze) || 500}`,
     werte,
