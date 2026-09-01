@@ -18,27 +18,30 @@ const OPENROUTER = "https://openrouter.ai/api/v1"
  * @param {"lokal"|"openrouter"} weg
  * @returns {{name: string, basis: string, schluessel: string|null, verfuegbar: boolean}}
  */
-export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal") {
+// `env` ist ausdruecklich ein Parameter und kein process.env-Zugriff im Rumpf: sync.js und die
+// Admin-Route reichen eine eigene Umgebung durch, und die wurde hier bis 01.09.2026 still
+// ignoriert — das Gate waere dort nie angesprungen.
+export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal", env = process.env) {
   if (weg === "openrouter") {
-    const schluessel = process.env.OPENROUTER_API_KEY || ""
+    const schluessel = env.OPENROUTER_API_KEY || ""
     return {
       // Max' Wahl (31.08.2026): gemma zuerst, glm als Rückfall. Beide kostenlos.
       // Gemessen liefen beide an diesem Tag in HTTP 429 — freie Modelle sind kontingentiert und
       // je nach Tageszeit belegt. Deshalb eine KETTE statt eines Modells: läuft das erste in ein
       // Limit, greift das nächste. minimax steht am Ende, es hat als einziges durchgehend
       // geantwortet.
-      name: process.env.ANREICHERUNG_MODELL || "google/gemma-4-31b-it:free",
+      name: env.ANREICHERUNG_MODELL || "google/gemma-4-31b-it:free",
       basis: OPENROUTER,
       schluessel,
       verfuegbar: Boolean(schluessel),
       // Der Reihe nach, bis eines antwortet. Ein 429 ist kein Fehler des Modells, sondern eine
       // Tagesform — beim nächsten Aufruf kann dasselbe Modell wieder frei sein.
-      kette: (process.env.ANREICHERUNG_MODELL_KETTE || "google/gemma-4-31b-it:free,z-ai/glm-5.2:free,minimax/minimax-m3:free").split(",").map((m) => m.trim()).filter(Boolean),
+      kette: (env.ANREICHERUNG_MODELL_KETTE || "google/gemma-4-31b-it:free,z-ai/glm-5.2:free,minimax/minimax-m3:free").split(",").map((m) => m.trim()).filter(Boolean),
     }
   }
   return {
-    name: process.env.ANREICHERUNG_MODELL || "qwen2.5:7b-instruct",
-    basis: process.env.OLLAMA_URL || OLLAMA,
+    name: env.ANREICHERUNG_MODELL || "qwen2.5:7b-instruct",
+    basis: env.OLLAMA_URL || OLLAMA,
     schluessel: null,
     verfuegbar: true, // Erreichbarkeit zeigt sich beim ersten Aufruf, nicht an einer Variablen
   }

@@ -7,6 +7,7 @@ import { getConnector } from "../connectors/index.js"
 import { rowToImportRun, rowToQuelle } from "../map.js"
 import { runImport } from "../worker/importer.js"
 import { ApiError, asyncHandler } from "../util.js"
+import { gateKonfig } from "../anreicherung/gateKonfig.js"
 
 export function adminImportRouter({ db, fetchImpl = globalThis.fetch, env = process.env }) {
   const r = Router()
@@ -31,7 +32,7 @@ export function adminImportRouter({ db, fetchImpl = globalThis.fetch, env = proc
     if (!connector) {
       throw new ApiError(404, `Kein Connector für Quelle ${req.params.quelleId} registriert`)
     }
-    const run = await runImport({ db, connector, fetchImpl, env })
+    const run = await runImport({ db, connector, fetchImpl, env, gate: gateKonfig({ env }) })
     res.json(rowToImportRun(run))
   }))
 

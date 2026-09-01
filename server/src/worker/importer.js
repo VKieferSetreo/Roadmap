@@ -12,6 +12,7 @@
 
 import { dedupeObstacles, restriktionsProfil } from "../connectors/_helpers.js"
 import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
+import { durchsGate, schreibeBelege } from "../anreicherung/gate.js"
 import {
   buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
   OBSTACLE_COLS, OBSTACLE_INSERT_COLS, OBSTACLE_INSERT_COL_COUNT,
@@ -53,6 +54,9 @@ const RECONCILE_SQL = `UPDATE obstacles
  */
 export async function runImport({
   db, connector, fetchImpl = globalThis.fetch, env = process.env, log = console.log,
+  // Das KI-Gate vor dem Schreiben (T-660). Ohne dieses Objekt laeuft der Import wie bisher —
+  // Tests und Altpfade bleiben damit unveraendert.
+  gate = null,
 }) {
   const { rows: startRows } = await db.query(
     "INSERT INTO import_runs (quelle_id, status) VALUES ($1, 'running') RETURNING *",
@@ -211,6 +215,25 @@ export async function runImport({
         }
       }
 
+      // ── DAS KI-GATE, vor dem Schreiben (T-660) ──────────────────────────────────────────
+      //
+      // Max, 01.09.2026: "dass Datenpunkte von den APIs nur geschrieben werden, WENN sie durch
+      // das KI-Gate durch sind und enhanced wurden."
+      //
+      // NUR NEUE Punkte. Ein Update traegt seine Anreicherung schon in der Tabelle; sie hier
+      // erneut zu rechnen kostete bei jedem der 140 taeglichen Laeufe das Vielfache.
+      //
+      // Die Stelle ist mit Absicht HIER und nicht frueher: erst nach der Schleife steht fest, wer
+      // wirklich neu ist. Vorher wuerde das Gate ueber tausende Punkte laufen, die es laengst
+      // gesehen hat.
+      const gateBelege = []
+      if (gate && pendingInserts.size) {
+        const r = await durchsGate([...pendingInserts.values()], { ...gate, log: note })
+        gateBelege.push(...r.belege)
+        stats.gateGesehen = r.gesehen
+        stats.gateGefunden = r.gefunden
+      }
+
       // Gesammelte Writes als wenige Multi-Row-Statements absetzen (T-329). Reihenfolge zwischen
       // Insert/Update/Reactivate ist beliebig (disjunkte bzw. idempotente Effekte auf je eine Zeile).
       for (const part of chunk([...pendingInserts.values()], BATCH_ROWS)) {
@@ -230,6 +253,14 @@ export async function runImport({
           "UPDATE obstacles SET aktiv = true, updated_at = now() WHERE id = ANY($1::uuid[])",
           [[...pendingReactivate]],
         )
+      }
+
+      // Die Belege des Gates — erst jetzt, denn vorher hatten die Punkte keine ID. Zugeordnet
+      // ueber (quellen_id, externe_id), dasselbe Paar, mit dem der Import sie wiedererkennt.
+      if (gateBelege.length) {
+        const b = await schreibeBelege(q, gateBelege, { modell: gate.modell, quellenId: connector.quelleId })
+          .catch((e) => { note(`Gate: Belege nicht gespeichert (${e.message})`); return { geschrieben: 0 } })
+        stats.gateBelege = b.geschrieben
       }
 
       // Reconcile: bei Vollbestand-Feeds Fehlende deaktivieren. Nur wenn wir

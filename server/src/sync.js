@@ -19,6 +19,7 @@ import { rowToImportRun } from "./map.js"
 import { withTimeout } from "./util.js"
 import { expireObstacles } from "./worker/hygiene.js"
 import { runImport } from "./worker/importer.js"
+import { gateKonfig } from "./anreicherung/gateKonfig.js"
 
 /** @type {Map<string, object>} jobId → Job-Status */
 const jobs = new Map()
@@ -134,7 +135,7 @@ async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
       job.etaSeconds = restDauer() // inkl. aktueller Quelle
       if (paceMs > 0) await sleep(paceMs)
       try {
-        const run = await runImport({ db, connector, fetchImpl, env })
+        const run = await runImport({ db, connector, fetchImpl, env, gate: gateKonfig({ env }) })
         job.runs.push(rowToImportRun(run))
       } catch (err) {
         job.runs.push({

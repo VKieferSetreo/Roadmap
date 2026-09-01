@@ -18,6 +18,7 @@ import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
 import { detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
+import { gateKonfig } from "../anreicherung/gateKonfig.js"
 
 loadEnv()
 initSentry("worker") // T-468/469: GlitchTip-Error-Tracking (no-op ohne SENTRY_DSN)
@@ -281,7 +282,7 @@ async function execute(connector) {
     withConnectorLock(connector, async () => {
       log(`${connector.quelleId} (${connector.name}): Run startet`)
       try {
-        const run = await runImport({ db, connector, log: (m) => log(m) })
+        const run = await runImport({ db, connector, log: (m) => log(m), gate: gateKonfig() })
         log(`${connector.quelleId}: Run ${run.status} — ${JSON.stringify(run.stats)}`)
         if (run.status === "ok" && changed(run.stats)) scheduleRerun()
       } catch (err) {
