@@ -269,6 +269,28 @@ describe("Benannte Strassen: was zu einer anderen Strasse gehoert, faellt weg", 
   })
 })
 
+// Das Sieb ist die schaerfste Stelle der Kette: was hier durchfaellt, wird ohne Nachfrage als
+// "bewiesen" behandelt und zuordnung() sieht es nie. Genau daran scheiterte der Sandbochumer Weg
+// am 01.09.2026 — der Namensvergleich war fertig, getestet und ausgerollt, und der Fund stand
+// nach einer neuen Auswertung trotzdem noch da.
+describe("kannWiderlegtWerden laesst durch, was zuordnung() beurteilen muss", () => {
+  const refs = new Set(["A1", "A7"])
+
+  it("laesst eine Sperrung mit benannter Strasse zur Pruefung durch", () => {
+    expect(kannWiderlegtWerden({ kategorie: "sperrung", strassenRef: "Sandbochumer Weg", attrs: {} }, refs)).toBe(true)
+    expect(kannWiderlegtWerden({ kategorie: "gewicht", strassenRef: "Corneliusstraße", attrs: {} }, refs)).toBe(true)
+  })
+
+  it("siebt weiter aus, was ohnehin nicht zu widerlegen ist", () => {
+    // Nummer statt Name: darueber entscheidet der Ref-Vergleich, nicht der Namensvergleich.
+    expect(kannWiderlegtWerden({ kategorie: "sperrung", strassenRef: "A1", attrs: {} }, refs)).toBe(false)
+    // Gar keine Strassenangabe.
+    expect(kannWiderlegtWerden({ kategorie: "sperrung", attrs: {} }, refs)).toBe(false)
+    // Reine Durchfahrtshoehe sagt schon "du faehrst drunter durch".
+    expect(kannWiderlegtWerden({ kategorie: "bruecke", strassenRef: "Am Weg", attrs: { maxHoeheM: 4.2 } }, refs)).toBe(false)
+  })
+})
+
 describe("istBauwerk", () => {
   it("gilt nur fuer Bruecke und Tunnel", () => {
     expect(istBauwerk({ kategorie: "bruecke" })).toBe(true)

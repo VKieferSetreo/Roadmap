@@ -275,12 +275,29 @@ export function zuordnung(obstacle, ctx, km) {
   return "unbestimmt"
 }
 
-/** @deprecated Ersetzt durch zuordnung() (T-653). Bleibt als Vorab-Sieb in analyze(): es prueft
- *  ohne km-Bezug, ob ein Verwerfen ueberhaupt moeglich waere, und spart so das teure Matching. */
+/**
+ * Vorab-Sieb in analyze(): kann dieses Hindernis ueberhaupt verworfen werden? Es prueft ohne
+ * km-Bezug und spart so das teure ortsbezogene Matching fuer die grosse Mehrheit.
+ *
+ * ACHTUNG, das ist die schaerfste Stelle der ganzen Kette: was hier "false" bekommt, wird in
+ * analyze() OHNE Nachfrage als "bewiesen" behandelt — zuordnung() sieht es nie. Am 01.09.2026 lief
+ * genau das schief: der Namensvergleich fuer benannte Strassen war in zuordnung() fertig gebaut,
+ * getestet und ausgerollt, und der Fund "Durchfahrt verboten · Sandbochumer Weg" stand nach einer
+ * neuen Auswertung trotzdem noch da. Das Sieb kannte nur den Bauwerks-Fall (getragene/gekreuzte
+ * Strasse) und liess eine Sperrung mit benannter Strasse gar nicht erst durch.
+ */
 export function kannWiderlegtWerden(obstacle, routeRefs) {
   if (!routeRefs || routeRefs.size === 0) return false
   const attrs = obstacle?.attrs ?? {}
   if (attrs.maxHoeheM != null && attrs.maxGewichtT == null) return false
+
+  // Ein Hindernis AUF einer benannten Strasse ohne Nummer: ob es uns gilt, entscheidet
+  // zuordnung() ortsbezogen. Hier genuegt, dass es moeglich ist.
+  const eigenRoh = obstacle?.strassenRef ?? obstacle?.strassen_ref
+  if (!istBauwerk(obstacle) && normRoadRef(eigenRoh) == null && normStrassenName(eigenRoh) != null) {
+    return true
+  }
+
   const getragen = normRoadRef(attrs.getrageneStrasse)
   const gekreuzt = normRoadRef(attrs.gekreuzteStrasse)
   if (gekreuzt == null || !routeRefs.has(gekreuzt)) return false
