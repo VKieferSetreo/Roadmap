@@ -2,8 +2,7 @@
 // derselben Maßnahme) werden zu EINEM Marker zusammengefasst, der beim Öffnen Tabs
 // zeigt — so geht keiner verloren, die Karte bleibt aber aufgeräumt.
 
-import { memo, useRef, useState } from "react"
-import type L from "leaflet"
+import { memo, useState } from "react"
 import { Marker, Popup, useMap } from "react-leaflet"
 import { Eye, EyeOff, Plus, Phone, Trash2, User } from "lucide-react"
 import type { Finding } from "@/types/domain"
@@ -163,10 +162,6 @@ function FindingMarkerImpl({
   // Pop-out-Chat-Panel (Gerüst): rechts ausfahrbar, ohne das Leaflet-Popup zu verschieben.
   const [chatOpen, setChatOpen] = useState(false)
   const map = useMap()
-  // Der Schwenk, den wir beim Öffnen gemacht haben — und die Mitte, die danach galt. Beides nur
-  // für den Rückweg beim Schließen; ein Ref, weil es kein Rendern auslösen soll.
-  const gepannt = useRef<[number, number] | null>(null)
-  const merker = useRef<L.LatLng | null>(null)
   // schwerster Fund bestimmt Pin-Farbe + Position
   const primary = [...group].sort((a, b) => (SEV_RANK[b.severity] ?? 0) - (SEV_RANK[a.severity] ?? 0))[0]
   const active = group.some((f) => f.id === selectedId)
@@ -204,37 +199,20 @@ function FindingMarkerImpl({
           // damit das Ticket maximal sichtbar ist. (Leaflet-autoPan ist am Popup aus.)
           const p = map.latLngToContainerPoint(pos)
           const size = map.getSize()
-          const versatz: [number, number] = [
-            Math.round(p.x - size.x * 0.3),
-            Math.round(p.y - size.y * 0.8),
-          ]
-          // Für den Rückweg merken. Ohne ihn blieb die Karte nach dem Schließen verschoben, und
-          // der Fund, den man gerade angesehen hatte, lag am unteren Rand oder ganz außerhalb —
-          // Max, 01.09.2026: "vor allem wenn ich auf einer Karte drauf war und dann weggehe".
-          gepannt.current = versatz
-          map.panBy(versatz, { animate: true })
-          // Nach der Animation die erreichte Mitte festhalten: nur gegen sie lässt sich beim
-          // Schließen prüfen, ob der Nutzer zwischendurch selbst weitergescrollt ist.
-          map.once("moveend", () => { merker.current = map.getCenter() })
+          map.panBy(
+            [Math.round(p.x - size.x * 0.3), Math.round(p.y - size.y * 0.8)],
+            { animate: true },
+          )
         },
         // Wegklicken (Popup schließt) → Bubbles einfahren, damit der Marker beim nächsten
         // Öffnen wieder eingeklappt startet (nicht ausgefahren).
-        popupclose: () => {
-          setChatOpen(false)
-          const v = gepannt.current
-          gepannt.current = null
-          if (!v) return
-          // NUR zurück, wenn die Karte seither niemand selbst bewegt hat: wer nach dem Öffnen
-          // weitergescrollt ist, will dort bleiben und nicht zurückgerissen werden. Die Prüfung
-          // vergleicht die Mitte mit der, die nach unserem Schwenk galt.
-          const jetzt = map.getCenter()
-          const erwartet = merker.current
-          // OHNE Animation: der Nutzer zoomt oft direkt nach dem Schliessen, und zwei laufende
-          // Leaflet-Animationen gleichzeitig lassen Marker verschwinden (Max, 01.09.2026:
-          // "wenn ich auf ner Karte drauf war, rausgehe und dann zoome, verschwinden manchmal die
-          // anderen Ticks"). Der Sprung ist kurz genug, dass er nicht stoert.
-          if (erwartet && map.distance(jetzt, erwartet) < 50) map.panBy([-v[0], -v[1]], { animate: false })
-        },
+        // Wegklicken schliesst das Popup — die Karte bleibt, wo sie ist.
+        //
+        // Kurzzeitig sprang sie hier an die Ausgangsstelle zurueck (Max, 01.09.2026: "das
+        // Zurückspringen nach Rausgehen bitte wieder rausnehmen"). Der Gedanke war, den Schwenk
+        // vom Oeffnen rueckgaengig zu machen; in der Hand fuehlt es sich aber an, als reisse die
+        // Karte einem den Blick weg, sobald man ein Ticket zumacht.
+        popupclose: () => setChatOpen(false),
       }}
       zIndexOffset={active ? 1000 : 0}
     >
