@@ -121,9 +121,12 @@ Regeln:
  * @param {object} rollen      {liest, prueft, nimmtAb} — je ein rufeModell. Dürfen dasselbe
  *                             Modell sein; getrennt, damit man dem Prüfer ein größeres geben kann.
  */
-export async function durchDreiRollen(quelltext, felder, { liest, prueft, nimmtAb, ohnePruefer = false, ohneAbnahme = false }) {
+export async function durchDreiRollen(quelltext, felder, { liest, prueft, nimmtAb, ohnePruefer = false, ohneAbnahme = false, schwierig = null }) {
   // ── Rolle 1: lesen ────────────────────────────────────────────────────────
-  const { gueltig, verworfen } = await extrahiere(quelltext, { felder, rufeModell: liest })
+  // `schwierig` nur hier: der Leser soll gezielter hinsehen. Pruefer und Ergaenzer bekommen den
+  // Hinweis NICHT — sie sollen unvoreingenommen urteilen, sonst begruenden alle drei denselben
+  // Fehlgriff.
+  const { gueltig, verworfen } = await extrahiere(quelltext, { felder, rufeModell: liest, schwierig })
   const spur = { gelesen: gueltig.length, verworfen: verworfen.length, gerettet: 0, korrigiert: 0, abgelehnt: 0, ergaenzt: 0 }
   if (ohnePruefer) return { angaben: gueltig, spur, hinweise: [], verwerfungen: verworfen }
 

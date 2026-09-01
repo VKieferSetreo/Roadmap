@@ -67,6 +67,10 @@ export const offeneFelder = offeneFelderFuer
  *  dem Katalog heraus: er wird nie gefragt, nie eingespielt, nie angezeigt. */
 export const FERTIG_FELD = "_fertig"
 
+/** Verwerfungsgruende, an denen auch ein groesseres Modell nichts aendert — sie beschreiben den
+ *  TEXT, nicht das Modell. Siehe docs/T-659-zweite-runde.md. */
+export const AUSSICHTSLOS = ["Platzhalter statt Angabe", "Beleg betrifft nur den Geh-/Radweg"]
+
 const SQL_MERKEN = `
   INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
   VALUES ('obstacle', $1, $2, $3, $4, $5, $6, $7)
@@ -94,9 +98,13 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   // Drei Rollen statt einer, sobald mehr als ein Modellzugang da ist. Gemessen an 15 textreichen
   // Baustellen: 14 Angaben einstufig gegen 20 dreistufig, also gut 40 Prozent mehr, bei
   // gleichbleibender Strenge (die Riegel gelten fuer alle Rollen).
+  // Woran ein frueherer Leseversuch gescheitert ist — nur bei der zweiten Runde gesetzt, und nur
+  // die Feldnamen. Siehe bauePrompt: der damalige WERT bleibt aussen vor, sonst waere er eine
+  // Vorlage zum Abschreiben.
+  const schwierig = o.schwierige_felder?.filter((f) => felder.includes(f)) ?? null
   const { angaben: gueltig, spur, verwerfungen } = rollen
-    ? await durchDreiRollen(text, felder, rollen)
-    : await extrahiere(text, { modell, felder, rufeModell }).then((r) => ({ angaben: r.gueltig, spur: { verworfen: r.verworfen.length }, verwerfungen: r.verworfen }))
+    ? await durchDreiRollen(text, felder, { ...rollen, schwierig })
+    : await extrahiere(text, { modell, felder, rufeModell, schwierig }).then((r) => ({ angaben: r.gueltig, spur: { verworfen: r.verworfen.length }, verwerfungen: r.verworfen }))
   const verworfen = { length: spur?.verworfen ?? 0 }
 
   // Die Verwerfungen festhalten, BEVOR die Uebernahme laeuft: sie sind das Rohmaterial fuer jede
@@ -162,21 +170,30 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
   if (kategorien?.length) { werte.push(kategorien); zusatz.push(`AND o.kategorie = ANY($${werte.length})`) }
 
   // ZWEITE RUNDE MIT EINEM STAERKEREN MODELL (Max, 31.08.2026: "wir machen auf den abgewiesenen
-  // danach mit 14b noch ne Runde um da noch auszuquetschen").
+  // danach mit 14b noch ne Runde um da noch auszuquetschen"). Plan: docs/T-659-zweite-runde.md.
   //
   // Nur die Punkte, an denen ein Riegel etwas abgewiesen hat — dort stand Text, und dort ist etwas
-  // zu holen. Platzhalter zaehlen dabei NICHT als Grund: sie bedeuten, dass der Punkt gar keinen
-  // Text hat, und daran aendert auch ein groesseres Modell nichts. Gemessen sind das rund ein
-  // Drittel aller Verwerfungen, die man sich damit spart.
+  // zu holen. Zwei Gruende sind dabei AUSSICHTSLOS und fallen heraus:
+  //
+  //   Platzhalter statt Angabe        18.391 Zeilen — der Punkt hat gar keinen Text
+  //   Beleg betrifft nur den Geh-/Radweg  1.088 Zeilen — die Aussage wurde richtig erkannt und
+  //                                                     ist fuer einen Schwertransport belanglos
+  //
+  // Zusammen rund die Haelfte aller Verwerfungen. Ein groesseres Modell wuerde daran nichts
+  // aendern, es wuerde nur dieselbe Antwort teurer geben.
   //
   // Der Lauf laeuft unter EIGENEM Modellnamen, also entstehen eigene Zeilen — das Ergebnis des
   // kleineren Modells bleibt daneben stehen und vergleichbar.
+  let posVormodell = null
   if (nurVerwerfungenVon) {
     werte.push(nurVerwerfungenVon)
+    // Position festhalten: weiter unten kommen noch Parameter dazu, und $-Nummern aus
+    // werte.length zu lesen zeigt dann auf den falschen Wert.
+    posVormodell = werte.length
     zusatz.push(`AND EXISTS (SELECT 1 FROM anreicherung v
                   WHERE v.ziel_typ = 'obstacle' AND v.ziel_id = o.id::text
-                    AND v.modell = $${werte.length} AND v.stand = 'verworfen'
-                    AND v.grund IS DISTINCT FROM 'Platzhalter statt Angabe')`)
+                    AND v.modell = $${posVormodell} AND v.stand = 'verworfen'
+                    AND v.grund NOT IN (${AUSSICHTSLOS.map((g) => `'${g}'`).join(", ")}))`)
   }
   const wo = zusatz.join("\n        ")
   // Muss als LETZTES dazu: die Abfrage unten verweist ueber werte.length darauf.
@@ -199,7 +216,13 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
   // loescht beim Zuruecknehmen einer Angabe die Marke des Punktes mit.
   const { rows } = await db.query(
     `SELECT o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig, o.attrs, o.roh,
-              o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
+              o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle${nurVerwerfungenVon ? `,
+              -- An welchen Feldern ist der erste Versuch gescheitert? Kommt aus DIESER Abfrage,
+              -- damit die zweite Runde keinen zusaetzlichen Rundlauf je Punkt braucht.
+              (SELECT array_agg(DISTINCT v.feld) FROM anreicherung v
+                WHERE v.ziel_typ = 'obstacle' AND v.ziel_id = o.id::text
+                  AND v.modell = $${posVormodell} AND v.stand = 'verworfen'
+                  AND v.grund NOT IN (${AUSSICHTSLOS.map((g) => `'${g}'`).join(", ")})) AS schwierige_felder` : ""}
        FROM obstacles o
       WHERE o.aktiv = true ${wo}
         -- Diese eine Bedingung ist die ganze Kandidatenwahl. Der partielle Index

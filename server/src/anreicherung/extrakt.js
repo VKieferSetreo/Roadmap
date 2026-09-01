@@ -157,9 +157,22 @@ export function pruefeAngabe(angabe, quelltext) {
  * Beispiele in einem Extraktions-Prompt werden erfahrungsgemaess mit abgeschrieben, wenn das
  * Modell im echten Text nichts findet, und genau das soll hier nicht passieren.
  */
-export function bauePrompt(quelltext, felder = Object.keys(FELDER)) {
+/**
+ * @param {string[]|null} schwierig  Felder, an denen ein frueherer Leseversuch am Beleg
+ *   gescheitert ist. NUR die Namen, nie die damaligen Werte: stuende der Wert dabei, waere er
+ *   eine Vorlage zum Abschreiben, und das Modell suchte sich einen Beleg dazu. Genau diese
+ *   Reihenfolge — erst Antwort, dann Begruendung — soll die Belegpflicht verhindern.
+ */
+export function bauePrompt(quelltext, felder = Object.keys(FELDER), schwierig = null) {
   const liste = felder.map((f) => `- ${f}: ${FELDER[f].frage}`).join("\n")
+  const hinweis = schwierig?.length
+    ? `\nBei diesem Datensatz ist ein erster Leseversuch an diesen Feldern gescheitert, weil der
+Beleg nicht zum Text passte: ${schwierig.join(", ")}.
+Sieh dort besonders genau hin und kopiere die Textstelle Zeichen für Zeichen. Findest du auch
+jetzt nichts Belegbares, lass das Feld weg — eine erzwungene Antwort ist schlechter als keine.\n`
+    : ""
   return `Du liest Stammdaten aus einer Bauwerksbeschreibung. Antworte NUR mit JSON.
+${hinweis}
 
 Gesuchte Angaben:
 ${liste}
@@ -206,8 +219,8 @@ export function leseAntwort(text) {
  * Ein Datensatz durch das Modell, mit allen Riegeln.
  * @returns {{gueltig: Array, verworfen: Array, rohAntwort: string|null}}
  */
-export async function extrahiere(quelltext, { modell, felder, rufeModell }) {
-  const antwort = await rufeModell(bauePrompt(quelltext, felder), modell).catch(() => null)
+export async function extrahiere(quelltext, { modell, felder, rufeModell, schwierig = null }) {
+  const antwort = await rufeModell(bauePrompt(quelltext, felder, schwierig), modell).catch(() => null)
   const angaben = leseAntwort(antwort)
   if (!angaben) return { gueltig: [], verworfen: [], rohAntwort: antwort }
 

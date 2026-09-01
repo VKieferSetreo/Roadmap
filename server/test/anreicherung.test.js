@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
-import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn } from "../src/anreicherung/lauf.js"
+import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn, AUSSICHTSLOS } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
@@ -680,6 +680,43 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
 
   // Jeder $N im SQL braucht einen Parameter — sonst wirft Postgres erst im Betrieb, und zwar
   // mitten in einem Lauf, der Stunden gedauert hat.
+  // Der Kniff der zweiten Runde: das Modell erfährt, WO der erste Versuch gescheitert ist —
+  // aber nur die Feldnamen. Stünde der damalige Wert dabei, wäre er eine Vorlage zum Abschreiben,
+  // und das Modell suchte sich einen Beleg dazu. Genau diese Reihenfolge (erst Antwort, dann
+  // Begründung) soll die Belegpflicht verhindern.
+  it("nennt im Auftrag die gescheiterten Felder, nie deren Werte", () => {
+    const p = bauePrompt("Irgendein Text", ["spurenGesperrt", "zeitfenster"], ["spurenGesperrt"])
+    expect(p).toMatch(/erster Leseversuch an diesen Feldern gescheitert/)
+    expect(p).toContain("spurenGesperrt")
+    // Ohne Fokusliste bleibt der Auftrag unverändert — der erste Durchgang sieht ihn nicht.
+    expect(bauePrompt("Irgendein Text", ["spurenGesperrt"])).not.toMatch(/Leseversuch/)
+  })
+
+  it("reicht die gescheiterten Felder nur an den Leser, nicht an Prüfer und Ergänzer", async () => {
+    const gesehen = []
+    const merker = (rolle) => async (prompt) => { gesehen.push({ rolle, prompt }); return '{"angaben": []}' }
+    await reichereAn({ query: async () => ({ rows: [] }) },
+      { id: "u1", kategorie: "baustelle", name: "Teststraße", beschreibung: "Vollsperrung", attrs: {},
+        schwierige_felder: ["spurenGesperrt"] },
+      { modell: "m", rufeModell: merker("einzeln"),
+        rollen: { liest: merker("liest"), prueft: merker("prueft"), nimmtAb: merker("nimmtAb") } })
+    const leser = gesehen.filter((g) => g.rolle === "liest")
+    expect(leser.length).toBeGreaterThan(0)
+    expect(leser[0].prompt).toMatch(/Leseversuch/)
+    for (const g of gesehen.filter((g) => g.rolle !== "liest")) {
+      expect(g.prompt, `${g.rolle} darf den Hinweis nicht sehen`).not.toMatch(/Leseversuch/)
+    }
+  })
+
+  it("schließt aussichtslose Verwerfungsgründe aus der zweiten Runde aus", async () => {
+    const gesehen = []
+    const db = { query: async (sql, p) => { gesehen.push({ sql, p }); return { rows: [] } } }
+    await laufeUeberBestand(db, { modell: "gross", rufeModell: async () => null, grenze: 10, nurVerwerfungenVon: "klein" })
+    // Wo kein Text ist, findet auch ein größeres Modell nichts; ein Gehweg bleibt ein Gehweg.
+    for (const grund of AUSSICHTSLOS) expect(gesehen[0].sql).toContain(grund)
+    expect(gesehen[0].sql).toContain("schwierige_felder")
+  })
+
   it("hält Platzhalter und Parameter in jeder Kombination im Gleichgewicht", async () => {
     for (const opt of [{}, { kategorien: ["baustelle"] }, { nurVerwerfungenVon: "klein" },
                        { kategorien: ["baustelle"], nurVerwerfungenVon: "klein" }]) {
