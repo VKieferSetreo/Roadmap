@@ -57,6 +57,15 @@ describe("durchsGate — anreichern, bevor geschrieben wird", () => {
     }
   })
 
+  // Ein Import darf nie haengen: ist das Budget aufgebraucht, gehen die restlichen Punkte roh
+  // durch, und der Nachlauf holt sie.
+  it("bricht nach dem Zeitbudget ab, ohne Punkte zu verlieren", async () => {
+    const p = Array.from({ length: 20 }, (_, i) => punkt({ externeId: `e${i}` }))
+    const langsam = () => new Promise((r) => setTimeout(() => r('{"angaben": []}'), 60))
+    const r = await durchsGate(p, { modell: "t", rufeModell: langsam, gleichzeitig: 1, budgetMs: 120 })
+    expect(r.punkte).toHaveLength(20)
+  })
+
   it("läuft ohne Modellzugang einfach durch", async () => {
     const p = [punkt()]
     const r = await durchsGate(p, { modell: "t", rufeModell: null })
@@ -101,7 +110,15 @@ describe("gateKonfig — eine Stelle entscheidet", () => {
   it("nimmt im Betrieb OpenRouter, nicht die Workstation", () => {
     const k = gateKonfig({ env: { OPENROUTER_API_KEY: "x" } })
     expect(k).toBeTruthy()
-    expect(k.rollen.liest).toBeTypeOf("function")
-    expect(k.gleichzeitig).toBe(4)
+    expect(k.rufeModell).toBeTypeOf("function")
+  })
+
+  // Einstufig, nicht dreistufig wie der Bestandslauf: an diesem Aufruf haengt ein Import, der 66
+  // Quellen nacheinander abarbeitet, und die dreifache Zeit liess das Aktualisieren stocken.
+  it("laeuft einstufig und mit Zeitbudget, damit ein Import nie haengt", () => {
+    const k = gateKonfig({ env: { OPENROUTER_API_KEY: "x" } })
+    expect(k.rollen).toBeNull()
+    expect(k.budgetMs).toBeGreaterThan(0)
+    expect(k.gleichzeitig).toBeGreaterThanOrEqual(8)
   })
 })

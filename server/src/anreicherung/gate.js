@@ -57,7 +57,7 @@ export function alsZeile(o) {
  *   Anreicherungstabelle — sie können erst nach dem Insert geschrieben werden, weil die Punkte
  *   vorher keine ID haben.
  */
-export async function durchsGate(punkte, { modell, rufeModell, rollen = null, gleichzeitig = 4, grenze = 500, log = () => {} } = {}) {
+export async function durchsGate(punkte, { modell, rufeModell, rollen = null, gleichzeitig = 8, grenze = 500, budgetMs = 45000, log = () => {} } = {}) {
   const belege = []
   let gefunden = 0
   if (!punkte?.length || !rufeModell) return { punkte: punkte ?? [], belege, gesehen: 0, gefunden: 0, fehler: null }
@@ -70,10 +70,21 @@ export async function durchsGate(punkte, { modell, rufeModell, rollen = null, gl
 
   let fehler = null
   let naechster = 0
+  // ZEITBUDGET. Max, 01.09.2026: "der braucht jetzt auch ewig, fix das bitte" — das Update ueber
+  // 66 Quellen stockte, weil eine einzige Quelle mit vielen neuen Punkten das Gate minutenlang
+  // beschaeftigte und der naechste Import erst danach dran war.
+  //
+  // Ein Import darf NIE haengen. Ist das Budget aufgebraucht, gehen die restlichen Punkte roh
+  // durch und der Nachlauf holt sie — genau wie bei einer Stoerung des Anbieters. Lieber ein
+  // Punkt, der eine Stunde spaeter angereichert wird, als ein Datenbestand, der nicht aktualisiert
+  // wird.
+  const ende = Date.now() + budgetMs
+  let abgebrochen = 0
   const arbeiter = Array.from({ length: Math.max(1, gleichzeitig) }, async () => {
     while (true) {
       const i = naechster++
       if (i >= zuTun.length) return
+      if (Date.now() > ende) { abgebrochen++; continue }
       const o = zuTun[i]
       try {
         const zeile = alsZeile(o)
@@ -102,7 +113,8 @@ export async function durchsGate(punkte, { modell, rufeModell, rollen = null, gl
   await Promise.all(arbeiter)
 
   if (fehler) log(`Gate: mindestens ein Aufruf fehlgeschlagen (${fehler}) — die Punkte gehen trotzdem in den Bestand`)
-  log(`Gate: ${zuTun.length} neue Punkte gesehen, ${gefunden} Angaben ergaenzt`)
+  if (abgebrochen) log(`Gate: Zeitbudget erreicht, ${abgebrochen} Punkte gehen roh durch — der Nachlauf holt sie`)
+  log(`Gate: ${zuTun.length - abgebrochen} neue Punkte gesehen, ${gefunden} Angaben ergaenzt`)
   return { punkte, belege, gesehen: zuTun.length, gefunden, fehler }
 }
 

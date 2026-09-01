@@ -26,13 +26,19 @@ export function gateKonfig({ env = process.env } = {}) {
   // niemand darauf wartete. Hier haengt ein Import daran, und der laeuft 140 mal am Tag.
   const rufeModell = createModell(konfig, { timeoutMs: Number(env.ANREICHERUNG_GATE_TIMEOUT_MS || 30000) })
 
-  // Drei Rollen wie im Bestandslauf: gemessen 14 Angaben einstufig gegen 20 dreistufig. Bei neun
-  // bis zwoelf neuen Punkten je Lauf ist der dreifache Aufwand keine spuerbare Groesse.
+  // EINSTUFIG, anders als im Bestandslauf. Dort bringen drei Rollen gemessen 20 statt 14 Angaben,
+  // kosten aber die dreifache Zeit — und hier haengt ein Import daran, der 66 Quellen nacheinander
+  // abarbeitet. Vierzig Prozent mehr Ausbeute sind das nicht wert, wenn dafuer das Aktualisieren
+  // stockt; was das Gate liegen laesst, holt der naechste Nachlauf mit der vollen Pipeline.
   return {
     modell: konfig.name,
     rufeModell,
-    rollen: { liest: rufeModell, prueft: rufeModell, nimmtAb: rufeModell },
-    gleichzeitig: Number(env.ANREICHERUNG_GATE_PARALLEL || 4),
+    rollen: null,
+    // Hoeher als beim Bestandslauf: OpenRouter ist ein fremder Dienst, kein VRAM-Limit. Die
+    // Grenze ist dort das Kontingent, nicht unsere Grafikkarte.
+    gleichzeitig: Number(env.ANREICHERUNG_GATE_PARALLEL || 8),
+    // Nach dieser Zeit gehen die restlichen Punkte roh durch. Ein Import darf nie haengen.
+    budgetMs: Number(env.ANREICHERUNG_GATE_BUDGET_MS || 45000),
     // Bremse gegen den Fall, dass eine Quelle einmal ihren gesamten Bestand als "neu" meldet
     // (erster Lauf, Formatwechsel, geaenderte externe_id). Der Rest geht roh durch und wird vom
     // Nachlauf geholt — gemessener Normalfall sind 9 bis 12 neue Punkte je Lauf, groesster
