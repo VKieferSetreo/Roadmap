@@ -83,7 +83,7 @@ function buildFrame(points: RoutePoint[], w: number, h: number): Frame | null {
 // „API KEY REQUIRED" ueber jede freie Kachel, und OSM weist Anfragen ohne Referer mit
 // einer Ersatzkachel bei Status 200 ab.
 function tileUrl(x: number, y: number, z: number): string {
-  return `https://setreo-cloud.com/tiles/styles/basemap/${z}/${x}/${y}.png`
+  return `https://setreo-cloud.com/tiles/v2/styles/basemap/${z}/${x}/${y}.png`
 }
 
 /** Eine Kachel. Kein Ausweich-Anbieter mehr (Max, 01.09.2026): die Vorschau zeigt

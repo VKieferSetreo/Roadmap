@@ -229,7 +229,11 @@ function FindingMarkerImpl({
           // vergleicht die Mitte mit der, die nach unserem Schwenk galt.
           const jetzt = map.getCenter()
           const erwartet = merker.current
-          if (erwartet && map.distance(jetzt, erwartet) < 50) map.panBy([-v[0], -v[1]], { animate: true })
+          // OHNE Animation: der Nutzer zoomt oft direkt nach dem Schliessen, und zwei laufende
+          // Leaflet-Animationen gleichzeitig lassen Marker verschwinden (Max, 01.09.2026:
+          // "wenn ich auf ner Karte drauf war, rausgehe und dann zoome, verschwinden manchmal die
+          // anderen Ticks"). Der Sprung ist kurz genug, dass er nicht stoert.
+          if (erwartet && map.distance(jetzt, erwartet) < 50) map.panBy([-v[0], -v[1]], { animate: false })
         },
       }}
       zIndexOffset={active ? 1000 : 0}

@@ -174,7 +174,15 @@ export function RouteMap({
   // ghost = ausgeblendeter Fund → grau + gestrichelt + dezenter (gleiche Geometrie-Logik, wiederverwendet).
   const findingLines = (list: Finding[], ghost: boolean) =>
     list.flatMap((f) => {
+      // NICHT-endliche Punkte RAUS, bevor sie in eine Polyline gehen. T-600 hat das für die
+      // ROUTEN gemacht, nicht für die Fund-Geometrien — und die kommen aus fremden Quellen, wo
+      // ein null in den Koordinaten keine Seltenheit ist. Ein einziger NaN im SVG-Renderer
+      // zerlegt das Zoom-Neuzeichnen, und dann verschwinden ANDERE Marker mit (Max, 01.09.2026:
+      // "wenn ich auf ner Karte drauf war, rausgehe und dann zoome, verschwinden manchmal die
+      // anderen Ticks" — der geöffnete blieb, weil sein Popup ihn am Leben hält).
       let lines = geomToLines(f.geom)
+        .map((linie) => linie.filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng)))
+        .filter((linie) => linie.length >= 2)
       // Kaputte Sprung-Geometrie verwerfen → auf das plausible Streckensegment zurückfallen (T-559).
       if (lines.length === 0 || hasImplausibleJump(lines)) {
         lines = []

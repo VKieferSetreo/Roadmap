@@ -44,7 +44,7 @@ export const SIDEBAR_DEFAULT = 288 // = bisheriges w-72
  * ueber die Herkunft. Fremde Software nutzt `?key=`, siehe Endpunkt-Anleitung.
  * Weiterhin OSM-Daten, nur eben von unserem Server: Namensnennung bleibt Pflicht.
  */
-export const SETREO_TILES = "https://setreo-cloud.com/tiles/styles/basemap/{z}/{x}/{y}.png"
+export const SETREO_TILES = "https://setreo-cloud.com/tiles/v2/styles/basemap/{z}/{x}/{y}.png"
 
 /** Namensnennung. Nennt bewusst den eigenen Endpunkt, damit in jeder Karte sichtbar
  *  ist, woher die Kacheln kommen und wo man sie selbst abholen kann. */
