@@ -12,59 +12,83 @@
 import { Router } from "express"
 import { fileURLToPath } from "node:url"
 import { asyncHandler } from "../util.js"
+import { AUSSICHTSLOS } from "../anreicherung/lauf.js"
 
 export function anreicherungRouter({ db }) {
   const r = Router()
 
   r.get("/stand", asyncHandler(async (req, res) => {
-    // Alles in EINER Abfrage: die Seite lädt im Sekundentakt nach, und drei Rundläufe zur
-    // Datenbank je Aufruf wären an einem Lauf über 73.000 Punkte spürbar.
-    const { rows } = await db.query(`
-      SELECT
-        (SELECT count(*)::int FROM obstacles WHERE aktiv = true) AS gesamt,
-        (SELECT count(DISTINCT ziel_id)::int FROM anreicherung) AS gesehen,
-        (SELECT count(*)::int FROM anreicherung WHERE stand = 'ok') AS gefunden,
-        -- ohne die Fertig-Marke: sie ist ein Vermerk, keine Leermeldung, und wuerde die Zahl je
-        -- durchgelaufenem Punkt um eins aufblaehen
-        (SELECT count(*)::int FROM anreicherung WHERE stand = 'leer' AND feld <> '_fertig') AS leer,
-        (SELECT count(*)::int FROM anreicherung WHERE stand = 'verworfen') AS verworfen,
-        (SELECT max(erstellt_am) FROM anreicherung) AS zuletzt,
-        -- PUNKTE je Minute, nicht Zeilen: die Zeilenzahl haengt daran, wie viele Felder ein Punkt
-        -- offen hat, und das schwankt zwischen 1 und 18. Die alte Rechnung teilte pauschal durch
-        -- 5 und war damit um das Dreifache zu optimistisch — sie versprach 228 Minuten Restzeit,
-        -- wo es knapp 14 Stunden sind.
-        (SELECT count(DISTINCT ziel_id)::int FROM anreicherung
-          WHERE erstellt_am > now() - interval '1 minute') AS punkte_letzte_minute
-    `).catch(() => ({ rows: [{}] }))
+    // JE LAUF, nicht mehr in einer Summe. Seit dem 01.09.2026 laufen zwei Modelle nacheinander
+    // über denselben Bestand (7B über alles, danach 14B über die abgewiesenen Punkte). Eine
+    // gemeinsame Zahl mischt sie und misst den zweiten Lauf gegen die falsche Grundmenge: er hat
+    // nicht 73.000 Punkte vor sich, sondern die rund 9.400 mit behebbaren Verwerfungen.
+    const { rows: laeufe } = await db.query(`
+      SELECT modell,
+             count(*) FILTER (WHERE feld = '_fertig')::int AS punkte,
+             count(*) FILTER (WHERE stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig')::int AS angaben,
+             count(*) FILTER (WHERE stand = 'leer' AND feld <> '_fertig')::int AS leer,
+             count(*) FILTER (WHERE stand = 'verworfen')::int AS verworfen,
+             max(erstellt_am) AS zuletzt,
+             count(DISTINCT ziel_id) FILTER (WHERE erstellt_am > now() - interval '1 minute')::int AS pro_min
+        FROM anreicherung
+       GROUP BY modell ORDER BY max(erstellt_am) DESC`,
+    ).catch(() => ({ rows: [] }))
 
-    const s = rows[0] ?? {}
+    // Der aktive Lauf ist der, der in der letzten Minute geschrieben hat.
+    const aktiv = laeufe.find((l) => l.pro_min > 0) ?? null
+    const { rows: [g] } = await db.query(
+      "SELECT count(*)::int AS n FROM obstacles WHERE aktiv = true",
+    ).catch(() => ({ rows: [{ n: 0 }] }))
+
+    // Wie viele Punkte hat der aktive Lauf VOR sich? Für den ersten Durchgang ist das der ganze
+    // Bestand. Für eine zweite Runde nur die Punkte mit behebbaren Verwerfungen des Vormodells —
+    // dieselbe Bedingung, nach der lauf.js seine Kandidaten wählt, sonst zeigt der Balken Unsinn.
+    let grundmenge = g?.n ?? 0
+    const vormodell = aktiv ? laeufe.find((l) => l.modell !== aktiv.modell && l.punkte > aktiv.punkte) : null
+    if (aktiv && vormodell) {
+      const { rows: [m] } = await db.query(
+        `SELECT count(DISTINCT v.ziel_id)::int AS n FROM anreicherung v
+          WHERE v.ziel_typ = 'obstacle' AND v.modell = $1 AND v.stand = 'verworfen'
+            AND v.grund <> ALL($2::text[])`,
+        [vormodell.modell, AUSSICHTSLOS],
+      ).catch(() => ({ rows: [{ n: 0 }] }))
+      if (m?.n) grundmenge = m.n
+    }
+
     const jeFeld = await db.query(
-      `SELECT feld, count(*) FILTER (WHERE stand = 'ok')::int AS gefunden
-         FROM anreicherung GROUP BY feld ORDER BY 2 DESC`,
+      `SELECT feld, count(*) FILTER (WHERE stand = 'ok' AND wert IS NOT NULL)::int AS gefunden
+         FROM anreicherung WHERE feld <> '_fertig' GROUP BY feld ORDER BY 2 DESC`,
     ).catch(() => ({ rows: [] }))
 
     const proben = await db.query(
       `SELECT a.feld, a.wert, left(o.name, 60) AS name
          FROM anreicherung a JOIN obstacles o ON o.id::text = a.ziel_id
-        WHERE a.stand = 'ok' ORDER BY a.erstellt_am DESC LIMIT 8`,
+        WHERE a.stand = 'ok' AND a.wert IS NOT NULL AND a.feld <> '_fertig'
+        ORDER BY a.erstellt_am DESC LIMIT 8`,
     ).catch(() => ({ rows: [] }))
 
-    const gesehen = s.gesehen ?? 0
-    const gesamt = s.gesamt ?? 0
-    // Rest hochrechnen aus dem, was in der letzten Minute wirklich passiert ist. Ein Mittelwert
-    // über den ganzen Lauf wäre nach einem Neustart tagelang falsch.
-    const proMin = s.punkte_letzte_minute ?? 0
+    const punkte = aktiv?.punkte ?? 0
+    const proMin = aktiv?.pro_min ?? 0
     res.json({
-      gesamt,
-      gesehen,
-      anteil: gesamt ? Math.round((1000 * gesehen) / gesamt) / 10 : 0,
-      gefunden: s.gefunden ?? 0,
-      leer: s.leer ?? 0,
-      verworfen: s.verworfen ?? 0,
+      // Der aktive Lauf, prominent
+      modell: aktiv?.modell ?? null,
+      runde: aktiv && vormodell ? 2 : 1,
+      gesamt: grundmenge,
+      gesehen: punkte,
+      anteil: grundmenge ? Math.round((1000 * Math.min(punkte, grundmenge)) / grundmenge) / 10 : 0,
+      gefunden: aktiv?.angaben ?? 0,
+      leer: aktiv?.leer ?? 0,
+      verworfen: aktiv?.verworfen ?? 0,
       proMin,
-      restMin: proMin > 0 ? Math.round((gesamt - gesehen) / proMin) : null,
+      restMin: proMin > 0 ? Math.max(0, Math.round((grundmenge - punkte) / proMin)) : null,
       laeuft: proMin > 0,
-      zuletzt: s.zuletzt ?? null,
+      zuletzt: aktiv?.zuletzt ?? laeufe[0]?.zuletzt ?? null,
+      // Alle Laeufe, damit der abgeschlossene nicht aus dem Blick faellt
+      laeufe: laeufe.map((l) => ({
+        modell: l.modell, punkte: l.punkte, angaben: l.angaben, verworfen: l.verworfen,
+        laeuft: l.pro_min > 0,
+      })),
+      bestand: g?.n ?? 0,
       jeFeld: jeFeld.rows,
       proben: proben.rows,
     })

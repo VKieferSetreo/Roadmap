@@ -52,7 +52,12 @@
   <div class="reihe"><span class="gross" id="anteil">–</span><span class="matt" id="rest"></span></div>
   <div class="balken"><i id="fortschritt" style="width:0"></i></div>
   <div class="matt" id="zaehler">wird geladen …</div>
+  <!-- Welcher Lauf gerade misst. Ohne diese Zeile stand der Fortschritt der zweiten Runde
+       kommentarlos neben dem der ersten und sah nach einem Rückschritt aus. -->
+  <div class="matt" id="lauf" style="margin-top:6px"></div>
 </div>
+
+<div class="karte"><h2>Läufe</h2><ul id="laeufe"><li class="matt">–</li></ul></div>
 
 <div class="karte drei">
   <div><div class="zahl marke" id="gefunden">–</div><div class="matt">gefunden</div></div>
@@ -101,6 +106,14 @@ async function hole() {
       return
     }
     letzteAntwort = Date.now()
+    // Welche Runde, gegen welche Grundmenge. Die zweite läuft nicht über den ganzen Bestand,
+    // sondern nur über die Punkte mit behebbaren Verwerfungen.
+    $("lauf").textContent = d.modell
+      ? (d.runde === 2 ? `Runde 2 · ${d.modell} · nur Punkte mit abgewiesenen Angaben` : `Runde 1 · ${d.modell} · ganzer Bestand`)
+      : "kein Lauf aktiv"
+    $("laeufe").innerHTML = (d.laeufe || []).length
+      ? d.laeufe.map((l) => `<li><span class="n">${l.laeuft ? "▶ " : ""}${l.modell}</span><span class="w">${zahl(l.punkte)} Punkte · <span class="marke">${zahl(l.angaben)}</span> Angaben</span></li>`).join("")
+      : '<li class="matt">noch nichts</li>'
     $("anteil").textContent = (d.anteil ?? 0).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " %"
     $("fortschritt").style.width = Math.min(100, d.anteil ?? 0) + "%"
     $("zaehler").textContent = `${zahl(d.gesehen)} von ${zahl(d.gesamt)} Punkten`
