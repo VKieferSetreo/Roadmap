@@ -86,19 +86,12 @@ function tileUrl(x: number, y: number, z: number): string {
   return `https://setreo-cloud.com/tiles/styles/basemap/${z}/${x}/${y}.png`
 }
 
-/** Rueckweg, falls der eigene Dienst nicht antwortet — spiegelbildlich zu Kacheln.tsx.
- *  Esri ist schluessellos und in der CSP frei (Kachel-Schema z/y/x, nicht z/x/y). */
-function tileUrlAusweich(x: number, y: number, z: number): string {
-  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`
-}
-
-/** Eine Kachel: faellt sie aus, wird EINMAL der andere Anbieter versucht, danach Ruhe. */
+/** Eine Kachel. Kein Ausweich-Anbieter mehr (Max, 01.09.2026): die Vorschau zeigt
+ *  ausschliesslich den eigenen Dienst, spiegelbildlich zu Kacheln.tsx. */
 function Kachel({ x, y, z, style }: { x: number; y: number; z: number; style: React.CSSProperties }) {
-  const [ausweich, setAusweich] = useState(false)
   return (
     <img
-      src={ausweich ? tileUrlAusweich(x, y, z) : tileUrl(x, y, z)}
-      onError={() => setAusweich(true)}
+      src={tileUrl(x, y, z)}
       alt=""
       loading="lazy"
       draggable={false}

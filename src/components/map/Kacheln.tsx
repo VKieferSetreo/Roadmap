@@ -14,50 +14,32 @@
 // die Sitzung um. Nur die Straßenkarte ist betroffen, der Satellit nicht.
 
 import { useRef } from "react"
-import { create } from "zustand"
 import { TileLayer } from "react-leaflet"
 import { TILE_LAYERS, useSettingsStore } from "@/store/settings"
-
-/**
- * Ausweich-Straßenkarte: Esri World Street Map — bewusst derselbe Host wie der Satellit.
- * Der kommt bei Setreo nachweislich durch, steht schon in der CSP und braucht keinen
- * Schlüssel. (CARTO wäre der naheliegendere Kandidat gewesen, legt aber seit Neuestem
- * ein „API KEY REQUIRED" über jede Kachel — geprüft am 28.08.2026.)
- */
-const AUSWEICH = {
-  url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-  attribution: "&copy; Esri, HERE, Garmin, OpenStreetMap-Mitwirkende",
-  overlays: undefined as string[] | undefined,
-}
 
 /** Ein paar Fehler sind normal (einzelne Kachel am Rand); erst eine Serie ist ein Ausfall. */
 const SCHWELLE = 4
 
-/** Nicht persistiert: schaltet die IT frei, ist beim nächsten Laden wieder alles normal. */
-const useAusweich = create<{ aktiv: boolean; einschalten: () => void }>((set) => ({
-  aktiv: false,
-  einschalten: () => set({ aktiv: true }),
-}))
-
 /**
- * @param onTotalausfall wird gerufen, wenn auch der Ausweich-Anbieter nicht liefert —
- *        dann liegt es am Netz des Nutzers und die Karte sollte das sagen dürfen.
+ * Kein Ausweich-Anbieter mehr (Max, 01.09.2026): die Straßenkarte kommt ausschließlich
+ * aus dem eigenen Dienst. Ein stiller Wechsel auf Esri hat zwei Nachteile, die den
+ * Nutzen überwiegen: die Karte sieht plötzlich anders aus, und ein Ausfall des eigenen
+ * Dienstes bleibt unbemerkt, statt aufzufallen und behoben zu werden.
+ *
+ * @param onTotalausfall wird gerufen, wenn die Kacheln nicht ankommen — die Karte darf
+ *        das dann sagen, statt einfach grau zu bleiben.
  */
 export function Kacheln({ onTotalausfall }: { onTotalausfall?: () => void } = {}) {
   const stil = useSettingsStore((s) => s.tileStyle)
-  const aktiv = useAusweich((s) => s.aktiv)
-  const einschalten = useAusweich((s) => s.einschalten)
   const fehler = useRef(0)
 
-  const ausweichend = aktiv && stil === "standard"
-  const tiles = ausweichend ? AUSWEICH : TILE_LAYERS[stil]
+  const tiles = TILE_LAYERS[stil]
 
   const beiFehler = () => {
     fehler.current += 1
     if (fehler.current < SCHWELLE) return
     fehler.current = 0
-    if (ausweichend || stil !== "standard") onTotalausfall?.()
-    else einschalten()
+    onTotalausfall?.()
   }
 
   return (
