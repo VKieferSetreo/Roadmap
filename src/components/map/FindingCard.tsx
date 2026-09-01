@@ -108,7 +108,19 @@ export function FindingCard({
         {/* gap statt p-margin: Leaflet überschreibt p-margins im Popup (höhere Spezifität),
             der Flex-gap nicht — so bleibt der Mini-Abstand zuverlässig erhalten. */}
         <div className="flex min-w-0 flex-col gap-0.5 text-left">
-          <p className="text-[15px] font-semibold leading-tight text-neutral-900">{titel}</p>
+          <p className="text-[15px] font-semibold leading-tight text-neutral-900">
+            {titel}
+            {/* EIN Zeichen am Titel sagt "an diesem Fund war KI beteiligt" (Max 01.09.2026).
+                Welche Angabe es betrifft, zeigen die lila Werte im Raster darunter — und wo es
+                keine gibt (die getragene Straße etwa steht im Untertitel), nennt der Hover sie.
+                Ein Schild unter der Karte hat dafür zu viel Platz gekostet und stand auch dann
+                da, wenn die Markierung im Raster die Frage längst beantwortet hatte. */}
+            {detail?.["Ergänzt"] ? (
+              <span title={`Durch KI ergänzt: ${detail["Ergänzt"]}`} className="ml-1 inline-block align-[-2px]">
+                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-label={`Durch KI ergänzt: ${detail["Ergänzt"]}`} />
+              </span>
+            ) : null}
+          </p>
           <p className="text-xs leading-tight text-neutral-500">{subtitle}</p>
         </div>
       </div>
@@ -169,29 +181,11 @@ export function FindingCard({
           })}
       </dl>
 
-      {/* Herkunftsvermerke stehen NICHT im Stammdaten-Raster (Max 31.08.2026: "alle Infos, die
-          potenziell KI-ergänzt sind, brauchen einen kleinen Marker"). Im Raster gingen sie
-          zwischen Höhe und Tonnage unter — sie sagen aber nichts über das Bauwerk, sondern
-          darüber, wie sicher wir uns sind. Das gehört abgesetzt und mit eigenem Zeichen. */}
-      {(detail?.["Ergänzt"] || detail?.["Zuordnung"]) && (
+      {/* Der KI-Hinweis sitzt am TITEL, nicht mehr als Schild hier unten (Max 01.09.2026: "dieser
+          lila Badge soll raus"). Die Zuordnungs-Warnung bleibt: sie sagt etwas ganz anderes —
+          nicht woher ein Wert kommt, sondern ob der Fund überhaupt zur Strecke gehört. */}
+      {detail?.["Zuordnung"] && (
         <div className="mt-2 flex flex-col gap-1">
-          {/* Das Schild erscheint nur noch als RUECKFALL: wenn eine abgeleitete Angabe zu keiner
-              sichtbaren Detailzeile gehoert, gibt es nichts zu markieren, und ohne diesen Hinweis
-              waere die Herkunft gar nicht mehr zu sehen. Steht dagegen ein Sternchen am Wert,
-              sagt der Hover dort alles — dann waere das Schild nur Wiederholung. */}
-          {detail?.["Ergänzt"] && !(Array.isArray(detail?.__ki) && detail.__ki.length) ? (
-            <span
-              title={`Aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet: ${detail["Ergänzt"]}`}
-              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
-            >
-              <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
-              {/* Der Vermerk NENNT die Angabe (und ihren Wert), statt nur "Durch KI extrahiert"
-                  zu sagen. Er erscheint ja gerade dann, wenn im Raster nichts zu markieren war —
-                  etwa bei der getragenen Straße, die oben im Kopf steht. Ohne den Namen bliebe
-                  die Frage offen, welcher Wert gemeint ist. */}
-              {detail["Ergänzt"]}
-            </span>
-          ) : null}
           {detail?.["Zuordnung"] ? (
             <span
               title="Es ließ sich nicht belegen, ob dieser Fund zur gefahrenen Strecke gehört. Er wird gezeigt, statt still verworfen zu werden."

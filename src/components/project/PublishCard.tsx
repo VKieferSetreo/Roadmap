@@ -68,7 +68,6 @@ function Streckenauswahl({ project }: { project: Project }) {
 
 export function PublishCard({ project }: { project: Project }) {
   const publishProject = useProjectStore((s) => s.publishProject)
-  const updateRoute = useProjectStore((s) => s.updateRoute)
   const revokeShare = useProjectStore((s) => s.revokeShare)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [streckenOpen, setStreckenOpen] = useState(false)
