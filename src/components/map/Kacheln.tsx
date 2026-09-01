@@ -1,16 +1,17 @@
 // Der Kartenhintergrund für ALLE Karten — mit Ausweich-Anbieter.
 //
-// T-648: Bei Setreo blieb die Straßenkarte grau, während der Satellit lief. Der Grund
-// liegt nicht in der App: `tile.openstreetmap.de` läuft auf zwei einzelnen
-// Hetzner-Servern (168.119.11.226 / 65.108.14.58), und Firmen-Webfilter sortieren so
-// etwas als „unkategorisiert" aus. Satellit (CloudFront) und die Projekt-Vorschau
-// (Fastly) laufen über große CDNs und kommen durch — vom Setreo-Server aus antworten
-// übrigens alle drei mit 200, der Filter sitzt also vor den Arbeitsplätzen.
+// T-648 / T-172: Bei Setreo blieb die Straßenkarte grau, während der Satellit lief.
+// Gemessen am 01.09.2026 war die eigentliche Ursache nicht der Hostingweg, sondern die
+// Art, wie OSM sperrt: Anfragen ohne Referer werden nicht mit einem Fehlercode
+// abgewiesen, sondern mit einer Ersatzkachel bei Status 200 (6987 statt ~39000 Bytes,
+// erkennbar nur am Header `x-blocked`). Deshalb sah niemand einen Fehler, weder im
+// Browser noch im Log, sondern nur eine graue Fläche.
 //
-// Statt darauf zu warten, dass eine fremde IT eine Adresse freischaltet: Kommen die
-// Kacheln mehrfach nicht an, schaltet die App auf den Anbieter um, der nachweislich
-// durchkommt. Das gilt für die Sitzung und nur für die Straßenkarte — der Satellit ist
-// nicht betroffen.
+// Konsequenz: Wir liefern die Kacheln selbst aus, über setreo-cloud.com/tiles
+// (tileserver-gl auf einem PMTiles-Extrakt Europa). Damit hängen weder Referer-Politik
+// noch fremde IT dazwischen. Esri bleibt als Rückfallebene, falls der eigene Dienst
+// einmal nicht antwortet: Kommen die Kacheln mehrfach nicht an, schaltet die App für
+// die Sitzung um. Nur die Straßenkarte ist betroffen, der Satellit nicht.
 
 import { useRef } from "react"
 import { create } from "zustand"

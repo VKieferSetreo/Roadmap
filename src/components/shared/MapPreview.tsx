@@ -78,16 +78,18 @@ function buildFrame(points: RoutePoint[], w: number, h: number): Frame | null {
   return { z, ox, oy, tiles, toXY: (p) => [worldX(p.lng, z) - ox, worldY(p.lat, z) - oy] }
 }
 
-// T-648: CARTO legt seit Neuestem „API KEY REQUIRED" ueber jede freie Kachel — das stand
-// quer ueber allen Projekt-Vorschauen. Esri liefert dieselbe Rolle schluessellos, ist in
-// der CSP schon frei und kommt auch durch Firmen-Webfilter (Kachel-Schema z/y/x).
+// T-172: Kacheln kommen aus dem eigenen Dienst (setreo-cloud.com/tiles). Damit faellt
+// die Ursache weg, die frueher CARTO und OSM nacheinander unbrauchbar machte: CARTO legt
+// „API KEY REQUIRED" ueber jede freie Kachel, und OSM weist Anfragen ohne Referer mit
+// einer Ersatzkachel bei Status 200 ab.
 function tileUrl(x: number, y: number, z: number): string {
-  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`
+  return `https://setreo-cloud.com/tiles/styles/basemap/${z}/${x}/${y}.png`
 }
 
-/** Rueckweg, falls Esri im Netz des Nutzers nicht durchkommt — spiegelbildlich zu Kacheln.tsx. */
+/** Rueckweg, falls der eigene Dienst nicht antwortet — spiegelbildlich zu Kacheln.tsx.
+ *  Esri ist schluessellos und in der CSP frei (Kachel-Schema z/y/x, nicht z/x/y). */
 function tileUrlAusweich(x: number, y: number, z: number): string {
-  return `https://${"abc"[(x + y) % 3]}.tile.openstreetmap.de/${z}/${x}/${y}.png`
+  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`
 }
 
 /** Eine Kachel: faellt sie aus, wird EINMAL der andere Anbieter versucht, danach Ruhe. */

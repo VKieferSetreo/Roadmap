@@ -32,17 +32,35 @@ export const SIDEBAR_MIN = 240
 export const SIDEBAR_MAX = 560
 export const SIDEBAR_DEFAULT = 288 // = bisheriges w-72
 
+/**
+ * Eigener Kachel-Dienst (T-172), loest `tile.openstreetmap.de` ab.
+ *
+ * Grund: OSM weist Anfragen ohne Referer nicht mit einem Fehlercode ab, sondern mit
+ * einer Ersatzkachel bei Status 200. Im Setreo-Netz kam das als graue Karte an, ohne
+ * eine Spur im Log. Statt auf eine fremde IT zu warten, liefern wir selbst aus:
+ * tileserver-gl auf einem PMTiles-Extrakt Europa, gehostet auf unserer VM.
+ *
+ * Von unseren eigenen Seiten aus braucht es keinen Schluessel, die Freigabe laeuft
+ * ueber die Herkunft. Fremde Software nutzt `?key=`, siehe Endpunkt-Anleitung.
+ * Weiterhin OSM-Daten, nur eben von unserem Server: Namensnennung bleibt Pflicht.
+ */
+export const SETREO_TILES = "https://setreo-cloud.com/tiles/styles/basemap/{z}/{x}/{y}.png"
+
+/** Namensnennung. Nennt bewusst den eigenen Endpunkt, damit in jeder Karte sichtbar
+ *  ist, woher die Kacheln kommen und wo man sie selbst abholen kann. */
+export const SETREO_TILES_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Kacheln: setreo-cloud.com/tiles'
+
 export const TILE_LAYERS: Record<
   TileStyle,
   { url: string; attribution: string; label: string; overlays?: string[] }
 > = {
   standard: {
-    // openstreetmap.de liefert OSM-Tiles mit deutschsprachigen Beschriftungen
-    // (Nordsee, Ostsee, Bodensee usw. statt „North Sea", „Baltic Sea").
+    // Deutschsprachige Beschriftungen (Nordsee, Ostsee, Bodensee statt „North Sea")
+    // kommen aus dem Stil des eigenen Dienstes, nicht mehr von openstreetmap.de.
     label: "Straßenkarte",
-    url: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Tiles: openstreetmap.de',
+    url: SETREO_TILES,
+    attribution: SETREO_TILES_ATTRIBUTION,
   },
   satellit: {
     // Esri World Imagery (Luftbild, kein API-Key, Schema {z}/{y}/{x}). Das Luftbild allein
