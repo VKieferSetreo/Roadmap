@@ -26,14 +26,25 @@ export function gateKonfig({ env = process.env } = {}) {
   // niemand darauf wartete. Hier haengt ein Import daran, und der laeuft 140 mal am Tag.
   const rufeModell = createModell(konfig, { timeoutMs: Number(env.ANREICHERUNG_GATE_TIMEOUT_MS || 30000) })
 
-  // EINSTUFIG, anders als im Bestandslauf. Dort bringen drei Rollen gemessen 20 statt 14 Angaben,
-  // kosten aber die dreifache Zeit — und hier haengt ein Import daran, der 66 Quellen nacheinander
-  // abarbeitet. Vierzig Prozent mehr Ausbeute sind das nicht wert, wenn dafuer das Aktualisieren
-  // stockt; was das Gate liegen laesst, holt der naechste Nachlauf mit der vollen Pipeline.
+  // ZWEISTUFIG: Leser und PRUEFER, ohne den Ergaenzer.
+  //
+  // Max, 01.09.2026: "auch immer mit Doppelcheck, dass wir keinen Murks der Agenten mitnehmen,
+  // das ist wichtig." Zurecht — ich hatte die Pruefer-Rolle kurz zuvor gestrichen, um den Import
+  // zu beschleunigen, und damit die einzige Instanz entfernt, die eine Angabe des Lesers noch
+  // einmal in Frage stellt. Die Riegel bleiben zwar davor und sind hart (von 13.086 uebernommenen
+  // Angaben hielten am 01.09. ALLE die verschaerften Riegel), aber sie pruefen die FORM, nicht die
+  // Aussage: ob "Vollsperrung" wirklich diese Strasse meint, sieht nur ein zweiter Blick.
+  //
+  // Der Ergaenzer faellt weg, nicht der Pruefer. Er SUCHT zusaetzliche Angaben und erhoeht damit
+  // die Menge, nicht die Verlaesslichkeit — hier zaehlt das Gegenteil. Was er gefunden haette,
+  // holt der Nachlauf mit der vollen dreistufigen Pipeline.
+  //
+  // Kosten: der zweifache statt dreifache Aufwand je Punkt. Das Zeitbudget unten schuetzt den
+  // Import davor, dass daraus ein Stillstand wird.
   return {
     modell: konfig.name,
     rufeModell,
-    rollen: null,
+    rollen: { liest: rufeModell, prueft: rufeModell, nimmtAb: rufeModell, ohneAbnahme: true },
     // Hoeher als beim Bestandslauf: OpenRouter ist ein fremder Dienst, kein VRAM-Limit. Die
     // Grenze ist dort das Kontingent, nicht unsere Grafikkarte.
     gleichzeitig: Number(env.ANREICHERUNG_GATE_PARALLEL || 8),

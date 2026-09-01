@@ -113,11 +113,18 @@ describe("gateKonfig — eine Stelle entscheidet", () => {
     expect(k.rufeModell).toBeTypeOf("function")
   })
 
-  // Einstufig, nicht dreistufig wie der Bestandslauf: an diesem Aufruf haengt ein Import, der 66
-  // Quellen nacheinander abarbeitet, und die dreifache Zeit liess das Aktualisieren stocken.
-  it("laeuft einstufig und mit Zeitbudget, damit ein Import nie haengt", () => {
+  // Der Doppelcheck ist nicht verhandelbar (Max, 01.09.2026: "auch immer mit Doppelcheck, dass
+  // wir keinen Murks der Agenten mitnehmen"). Gespart wird am ERGAENZER, der zusaetzliche Angaben
+  // sucht — nie am Pruefer, der die vorhandenen in Frage stellt.
+  it("prueft jede Angabe ein zweites Mal, bevor sie in den Bestand geht", () => {
     const k = gateKonfig({ env: { OPENROUTER_API_KEY: "x" } })
-    expect(k.rollen).toBeNull()
+    expect(k.rollen, "ohne Rollen liefe nur der Leser — kein Doppelcheck").not.toBeNull()
+    expect(k.rollen.prueft).toBeTypeOf("function")
+    expect(k.rollen.ohneAbnahme, "der Ergaenzer faellt weg, nicht der Pruefer").toBe(true)
+  })
+
+  it("haelt trotzdem ein Zeitbudget, damit ein Import nie haengt", () => {
+    const k = gateKonfig({ env: { OPENROUTER_API_KEY: "x" } })
     expect(k.budgetMs).toBeGreaterThan(0)
     expect(k.gleichzeitig).toBeGreaterThanOrEqual(8)
   })
