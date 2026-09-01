@@ -185,7 +185,11 @@ export function FindingCard({
               className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
             >
               <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
-              Durch KI extrahiert
+              {/* Der Vermerk NENNT die Angabe (und ihren Wert), statt nur "Durch KI extrahiert"
+                  zu sagen. Er erscheint ja gerade dann, wenn im Raster nichts zu markieren war —
+                  etwa bei der getragenen Straße, die oben im Kopf steht. Ohne den Namen bliebe
+                  die Frage offen, welcher Wert gemeint ist. */}
+              {detail["Ergänzt"]}
             </span>
           ) : null}
           {detail?.["Zuordnung"] ? (

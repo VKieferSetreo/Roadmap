@@ -56,6 +56,26 @@ const KLAR = {
   maxHoeheM: "Durchfahrtshöhe",
   maxGewichtT: "Tragfähigkeit",
   maxBreiteM: "Durchfahrtsbreite",
+  // Ohne Eintrag stand hier der rohe Feldname aus dem Katalog — "sperrungArt" statt "Art der
+  // Sperrung". Der Vermerk steht am Fund und wird gelesen, nicht geparst.
+  restbreiteM: "Restbreite",
+  maxLaengeM: "zulässige Länge",
+  maxAchslastT: "zulässige Achslast",
+  verkehrsverbotLkwT: "Lkw-Verbot",
+  sperrlaengeM: "Länge der Maßnahme",
+  vollsperrung: "Vollsperrung",
+  teilsperrung: "Teilsperrung",
+  halbseitig: "halbseitige Sperrung",
+  fahrbahnVerengt: "verengte Fahrbahn",
+  einbahnstrasse: "Einbahnstraße",
+  sackgasse: "Sackgasse",
+  nurNachts: "nur nachts",
+  umleitung: "Umleitung",
+  sperrungArt: "Art der Sperrung",
+  zeitfenster: "Sperrzeitfenster",
+  anzahlFahrstreifen: "Fahrstreifen gesamt",
+  spurenGesperrt: "gesperrte Fahrstreifen",
+  spurenFrei: "freie Fahrstreifen",
 }
 
 /**
@@ -97,7 +117,22 @@ const DETAIL_ZEILE = {
 export const kiZeilen = (ergaenzt) =>
   [...new Set((ergaenzt ?? []).flatMap((f) => DETAIL_ZEILE[f] ?? []))]
 
-/** Der Vermerk am Fund. Kurz, weil er neben den Sachangaben steht, und benannt, weil "KI-ergänzt"
- *  ohne Angabe WAS ergänzt wurde niemandem hilft. */
-export const anreicherungsVermerk = (ergaenzt) =>
-  ergaenzt.length ? ergaenzt.map((f) => KLAR[f] ?? f).join(", ") : null
+/**
+ * Der Vermerk am Fund. Kurz, weil er neben den Sachangaben steht, und benannt, weil "KI-ergänzt"
+ * ohne Angabe WAS ergänzt wurde niemandem hilft.
+ *
+ * MIT DEM WERT, sobald er bekannt ist. Am 01.09.2026 an einer A1-Brücke aufgefallen: der Vermerk
+ * sagte "Durch KI extrahiert", und im Fund war kein einziger Wert markiert — weil das abgeleitete
+ * Feld die getragene Straße war, und die steht nicht im Detailraster, sondern oben im Kopf
+ * ("Brücke · km 187,8 · A1"). Dort kann die Karte nichts markieren. Also muss der Vermerk selbst
+ * sagen, worum es geht: "getragene Straße: A1".
+ */
+export const anreicherungsVermerk = (ergaenzt, attrs = null) =>
+  ergaenzt.length
+    ? ergaenzt.map((f) => {
+        const name = KLAR[f] ?? f
+        const wert = attrs?.[f]
+        if (wert == null || wert === "") return name
+        return `${name}: ${wert === true ? "ja" : wert === false ? "nein" : wert}`
+      }).join(", ")
+    : null

@@ -760,7 +760,7 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Die Kennzeichnung folgt der HERKUNFT, nicht dem Zeitpunkt: ein Wert, der laengst in attrs
       // steht, bleibt abgeleitet und muss es auch sagen.
       const ausKi = kiFelder.get(String(rohObstacle.id)) ?? ergaenzt
-      const vermerk = anreicherungsVermerk(ausKi)
+      const vermerk = anreicherungsVermerk(ausKi, rohObstacle?.attrs)
       if (vermerk) {
         // __ki traegt die Detail-ZEILEN, die auf einem abgeleiteten Wert beruhen. Die Karte setzt
         // ihr Zeichen genau dort, statt nur pauschal "irgendetwas war KI" zu melden. Der

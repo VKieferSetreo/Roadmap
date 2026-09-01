@@ -514,6 +514,33 @@ describe("nachlauf — neue Punkte nach dem Import", () => {
   })
 })
 
+describe("Der Vermerk nennt die Angabe, nicht nur dass es eine gab", () => {
+  // Am 01.09.2026 an einer A1-Brücke: der Fund sagte "Durch KI extrahiert", markiert war kein
+  // Wert. Das abgeleitete Feld war die getragene Straße — und die steht nicht im Detailraster,
+  // sondern oben im Kopf ("Brücke · km 187,8 · A1"). Dort kann die Karte nichts markieren, also
+  // muss der Vermerk selbst sagen, worum es geht.
+  it("nennt Feld und Wert im Klartext", () => {
+    expect(anreicherungsVermerk(["getrageneStrasse"], { getrageneStrasse: "A1" }))
+      .toBe("getragene Straße: A1")
+    expect(anreicherungsVermerk(["vollsperrung"], { vollsperrung: true }))
+      .toBe("Vollsperrung: ja")
+  })
+
+  it("kommt ohne Werte aus, wenn keine da sind", () => {
+    expect(anreicherungsVermerk(["maxHoeheM"])).toBe("Durchfahrtshöhe")
+    expect(anreicherungsVermerk([])).toBeNull()
+  })
+
+  // Ohne Eintrag in KLAR stand der rohe Katalogname am Fund — "sperrungArt" statt "Art der
+  // Sperrung". Der Vermerk wird gelesen, nicht geparst.
+  it("kennt jedes Katalogfeld im Klartext", () => {
+    for (const feld of Object.keys(FELDER)) {
+      const v = anreicherungsVermerk([feld])
+      expect(v, feld).not.toBe(feld) // roher Feldname wäre ein fehlender KLAR-Eintrag
+    }
+  })
+})
+
 describe("kiZeilen — die Markierung muss die richtige Zeile treffen", () => {
   // In Produktion beobachtet: markiert wurde "Durchfahrtsbreite", im Detail stand aber
   // "Restbreite" — die Baustellenregel benennt dieselbe Größe anders als die Brückenregel.
