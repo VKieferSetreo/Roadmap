@@ -25,18 +25,21 @@ export function modellKonfig(weg = process.env.ANREICHERUNG_WEG || "lokal", env 
   if (weg === "openrouter") {
     const schluessel = env.OPENROUTER_API_KEY || ""
     return {
-      // Max' Wahl (31.08.2026): gemma zuerst, glm als Rückfall. Beide kostenlos.
-      // Gemessen liefen beide an diesem Tag in HTTP 429 — freie Modelle sind kontingentiert und
-      // je nach Tageszeit belegt. Deshalb eine KETTE statt eines Modells: läuft das erste in ein
-      // Limit, greift das nächste. minimax steht am Ende, es hat als einziges durchgehend
-      // geantwortet.
-      name: env.ANREICHERUNG_MODELL || "google/gemma-4-31b-it:free",
+      // Max' Wahl (31.08.2026) waren gemma und glm, beide kostenlos. Gemessen liefen beide
+      // dauerhaft in HTTP 429 — freie Modelle sind kontingentiert. Deshalb eine KETTE statt
+      // eines Modells, und die Reihenfolge folgt der Messung (siehe unten), nicht der Vorliebe.
+      name: env.ANREICHERUNG_MODELL || "minimax/minimax-m3:free",
       basis: OPENROUTER,
       schluessel,
       verfuegbar: Boolean(schluessel),
       // Der Reihe nach, bis eines antwortet. Ein 429 ist kein Fehler des Modells, sondern eine
       // Tagesform — beim nächsten Aufruf kann dasselbe Modell wieder frei sein.
-      kette: (env.ANREICHERUNG_MODELL_KETTE || "google/gemma-4-31b-it:free,z-ai/glm-5.2:free,minimax/minimax-m3:free").split(",").map((m) => m.trim()).filter(Boolean),
+      // REIHENFOLGE NACH MESSUNG, nicht nach Vorliebe. Am 01.09.2026 gegen den Produktivschluessel
+      // geprueft: gemma und glm antworteten nicht (Rate-Limit), minimax lieferte in 1,1 Sekunden.
+      // Standen die beiden vorn, kostete jeder Aufruf 400 ms Anlauf, bevor das tragende Modell
+      // ueberhaupt drankam — bei drei Rollen je Punkt summiert sich das.
+      // Sie bleiben als Rueckfall in der Kette: welches freie Modell traegt, ist Tagesform.
+      kette: (env.ANREICHERUNG_MODELL_KETTE || "minimax/minimax-m3:free,google/gemma-4-31b-it:free,z-ai/glm-5.2:free").split(",").map((m) => m.trim()).filter(Boolean),
     }
   }
   return {

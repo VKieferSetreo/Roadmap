@@ -556,9 +556,20 @@ describe("Betriebspfad", () => {
   it("führt die freien Modelle als Kette, damit ein Limit nicht alles stoppt", () => {
     vi.stubEnv("OPENROUTER_API_KEY", "erfunden")
     const k = modellKonfig("openrouter")
-    expect(k.kette[0]).toBe("google/gemma-4-31b-it:free")
-    expect(k.kette).toContain("z-ai/glm-5.2:free")
+    // Welches Modell VORNE steht, ist Messsache und darf sich ändern (am 01.09.2026 antworteten
+    // gemma und glm nicht, minimax lieferte). Der Test hält deshalb fest, was wirklich zählt:
+    // es ist eine Kette, das voreingestellte Modell ist ihr erstes Glied, und ein Rückfall
+    // existiert.
     expect(k.kette.length).toBeGreaterThan(1)
+    expect(k.kette[0]).toBe(k.name)
+    expect(new Set(k.kette).size).toBe(k.kette.length) // kein Modell doppelt
+    vi.unstubAllEnvs()
+  })
+
+  it("nimmt die Kette aus der Umgebung, wenn sie dort steht", () => {
+    vi.stubEnv("OPENROUTER_API_KEY", "erfunden")
+    vi.stubEnv("ANREICHERUNG_MODELL_KETTE", "a/eins:free, b/zwei:free")
+    expect(modellKonfig("openrouter").kette).toEqual(["a/eins:free", "b/zwei:free"])
     vi.unstubAllEnvs()
   })
 
