@@ -106,6 +106,16 @@ export function RouteMap({
   // Pannen am Rand abgeschnitten und „verschwinden", bis moveend neu zeichnet. padding:1 hält
   // ein volles Viewport ringsum gezeichnet (deckt einen Zoom-Schritt + Pan ab) → kein Despawn.
   const renderer = useMemo(() => L.svg({ padding: 1 }), [])
+  // EIGENER Renderer für die Strecke, sonst ist das eigene Pane wirkungslos.
+  //
+  // Leaflet legt einen Pfad nicht in das Pane des LAYERS, sondern in den Container seines
+  // RENDERERS. Weil auf der Karte ein gemeinsamer Renderer gesetzt ist, landeten alle Linien
+  // trotzdem in demselben SVG — die Strecke also weiterhin ueber den Fund-Segmenten, entschieden
+  // allein durch die Reihenfolge im DOM. Genau deshalb hat das Pane von heute Mittag nichts
+  // bewirkt (Max, 01.09.2026: "teilweise liegen die Dinger noch hinter den Strecken").
+  //
+  // Der zweite Renderer zeichnet in das tiefere Pane, und erst damit greift die Schichtung.
+  const streckenRenderer = useMemo(() => L.svg({ padding: 1, pane: "strecke" }), [])
   const drawn = useMemo(
     () =>
       routes
@@ -259,6 +269,7 @@ export function RouteMap({
               key={`line-${r.id}`}
               positions={r.positions}
               smoothFactor={0}
+              renderer={streckenRenderer}
               // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
               pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
             />
