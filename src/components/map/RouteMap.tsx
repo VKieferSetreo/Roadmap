@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import L from "leaflet"
-import { MapContainer, Marker, Pane, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
+import { MapContainer, Marker, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
 import { routeFreigegeben, type Finding, type ProjectRoute, type RoutePoint } from "@/types/domain"
@@ -106,16 +106,6 @@ export function RouteMap({
   // Pannen am Rand abgeschnitten und „verschwinden", bis moveend neu zeichnet. padding:1 hält
   // ein volles Viewport ringsum gezeichnet (deckt einen Zoom-Schritt + Pan ab) → kein Despawn.
   const renderer = useMemo(() => L.svg({ padding: 1 }), [])
-  // EIGENER Renderer für die Strecke, sonst ist das eigene Pane wirkungslos.
-  //
-  // Leaflet legt einen Pfad nicht in das Pane des LAYERS, sondern in den Container seines
-  // RENDERERS. Weil auf der Karte ein gemeinsamer Renderer gesetzt ist, landeten alle Linien
-  // trotzdem in demselben SVG — die Strecke also weiterhin ueber den Fund-Segmenten, entschieden
-  // allein durch die Reihenfolge im DOM. Genau deshalb hat das Pane von heute Mittag nichts
-  // bewirkt (Max, 01.09.2026: "teilweise liegen die Dinger noch hinter den Strecken").
-  //
-  // Der zweite Renderer zeichnet in das tiefere Pane, und erst damit greift die Schichtung.
-  const streckenRenderer = useMemo(() => L.svg({ padding: 1, pane: "strecke" }), [])
   const drawn = useMemo(
     () =>
       routes
@@ -214,7 +204,9 @@ export function RouteMap({
           key={`fgeom-bg-${f.id}`}
           positions={lines}
           pathOptions={{ color: "#ffffff", weight: active ? 11 : 8, opacity: ghost ? 0.5 : 0.85 }}
-          eventHandlers={{ click: () => onSelect?.(f.id) }}
+          // Nach vorn, sobald die Linie hinzukommt — sonst entscheidet die Reihenfolge, in der
+          // React die Layer nachzieht, und die ist bei Filterwechseln nicht stabil.
+          eventHandlers={{ click: () => onSelect?.(f.id), add: (e) => e.target.bringToFront() }}
         />,
         <Polyline
           key={`fgeom-${f.id}`}
@@ -227,7 +219,7 @@ export function RouteMap({
             lineJoin: "round",
             ...(ghost ? { dashArray: "6 7" } : {}),
           }}
-          eventHandlers={{ click: () => onSelect?.(f.id) }}
+          eventHandlers={{ click: () => onSelect?.(f.id), add: (e) => e.target.bringToFront() }}
         >
           {/* Tag der markierten Strecke: WAS ist hier — Kategorie + Severity/Status + Bezeichnung */}
           <Tooltip sticky direction="top">
@@ -257,24 +249,25 @@ export function RouteMap({
         <MapResize />
 
         {/* Strecke in ihrer Farbe — KEINE weiße Umrandung (Max 2026-06-21).
-            EIGENES PANE, das UNTER dem overlayPane liegt (Max 01.09.2026: "je nach Zoomstufe
-            verstecken sich die Marker komplett oder hinter der Strecke"). Alle Linien lagen bis
-            hierher im selben Pane, und dort entscheidet die DOM-Reihenfolge — die Strecke wurde
-            NACH den Fund-Segmenten gezeichnet und deckte sie damit zu. Über die JSX-Reihenfolge
-            ließe sich das auch lösen, aber nur so lange, bis jemand die Blöcke umsortiert; ein
-            Pane hält die Schichtung fest, egal in welcher Reihenfolge React rendert. */}
-        <Pane name="strecke" style={{ zIndex: 390 }}>
-          {drawn.map((r) => (
-            <Polyline
-              key={`line-${r.id}`}
-              positions={r.positions}
-              smoothFactor={0}
-              renderer={streckenRenderer}
-              // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
-              pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
-            />
-          ))}
-        </Pane>
+            IMMER GANZ NACH HINTEN. Die Fund-Markierungen müssen darauf liegen, nicht darunter
+            (Max, 01.09.2026, dreimal gemeldet: "teilweise liegen die Markierungen noch HINTER der
+            Strecke").
+            Zwei Anläufe davor gingen daneben und stehen hier als Warnung: ein eigenes PANE blieb
+            wirkungslos, weil Leaflet einen Pfad in den Container seines RENDERERS legt und nicht
+            in das Pane des Layers. Ein eigener Renderer für dieses Pane wiederum erzeugt ein
+            zweites SVG — und das landet im DOM NACH dem ersten, lag also erst recht oben.
+            bringToBack() ist Leaflets eigener Weg dafür, wirkt innerhalb des Panes und überlebt
+            jedes Neuzeichnen, weil es am add-Ereignis hängt. */}
+        {drawn.map((r) => (
+          <Polyline
+            key={`line-${r.id}`}
+            positions={r.positions}
+            smoothFactor={0}
+            eventHandlers={{ add: (e) => e.target.bringToBack() }}
+            // T-480: grobe Schätzung (OSRM-Fallback) gestrichelt → kein echter Straßenweg vorgetäuscht.
+            pathOptions={{ color: r.farbe, weight: 5, opacity: 1, ...(r.grob ? { dashArray: "10 8" } : {}) }}
+          />
+        ))}
         {/* Fahrtrichtung: dezente weiße Pfeile entlang der Strecke (Marker im markerPane, nicht
             klickbar). Ab >15 Strecken weggelassen — bei so vielen Linien wäre es nur noch Geflimmer
             (ponytail: Pfeil-Obergrenze ~24/Strecke, statt tausende Marker zu rendern). */}
