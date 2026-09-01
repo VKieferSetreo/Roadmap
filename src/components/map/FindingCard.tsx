@@ -116,8 +116,8 @@ export function FindingCard({
                 Ein Schild unter der Karte hat dafür zu viel Platz gekostet und stand auch dann
                 da, wenn die Markierung im Raster die Frage längst beantwortet hatte. */}
             {detail?.["Ergänzt"] ? (
-              <span title={`Durch KI ergänzt: ${detail["Ergänzt"]}`} className="ml-1 inline-block align-[-2px]">
-                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-label={`Durch KI ergänzt: ${detail["Ergänzt"]}`} />
+              <span title="Durch Setreo-AI aufbereitet" className="ml-1 inline-block align-[-2px]">
+                <Sparkles className="h-3.5 w-3.5 text-violet-600" aria-label="Durch Setreo-AI aufbereitet" />
               </span>
             ) : null}
           </p>
@@ -166,14 +166,14 @@ export function FindingCard({
                      Fund (Max 01.09.2026: "brauchen nicht 'Durch KI extrahiert' immer, sondern
                      nur wenn ich per Hover drüber gehe"). Wer wissen will, woher die Zahl kommt,
                      zeigt auf sie — und sieht dann auch, WELCHE Angabe gemeint war. */
-                  title={ausKi ? `Aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet${detail?.["Ergänzt"] ? `: ${detail["Ergänzt"]}` : ""}` : undefined}
+                  title={ausKi ? "Durch Setreo-AI aufbereitet" : undefined}
                 >
                   {v}
                   {/* Das Zeichen steht hinter dem Wert und traegt kein Wort (Max 31.08.2026):
                       der Wert ist die Information, die Herkunft eine Fussnote. */}
                   {ausKi ? (
                     <Sparkles className="h-3 w-3 shrink-0 text-violet-600"
-                              aria-label="Durch KI extrahiert" />
+                              aria-label="Durch Setreo-AI aufbereitet" />
                   ) : null}
                 </dd>
               </div>

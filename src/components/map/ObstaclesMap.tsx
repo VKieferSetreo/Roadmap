@@ -59,7 +59,7 @@ function obstaclePopupHtml(o: Obstacle): string {
     // Sammelvermerk am Fuss: wer auf eine Restbreite schaut, muss dort sehen, woher sie kommt.
     ...attrEntries(o.attrs, o.kiFelder).map(
       (e) =>
-        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium ${e.ausKi ? "text-violet-700" : "text-neutral-700"}">${esc(e.value)}${e.ausKi ? ` <span class="text-violet-600" title="Durch KI extrahiert">✦</span>` : ""}</span></div>`,
+        `<div class="flex justify-between gap-3"><span class="shrink-0 text-neutral-400">${esc(e.label)}</span><span class="text-right font-medium ${e.ausKi ? "text-violet-700" : "text-neutral-700"}">${esc(e.value)}${e.ausKi ? ` <span class="text-violet-600" title="Durch Setreo-AI aufbereitet">✦</span>` : ""}</span></div>`,
     ),
   ]
   if (o.zustaendig)
@@ -91,7 +91,7 @@ function obstaclePopupHtml(o: Obstacle): string {
     <p class="font-semibold text-neutral-900">${esc(o.name)}${
       // Ein Zeichen am Titel statt eines Schilds darunter (Max 01.09.2026) — dieselbe Sprache wie
       // in der Fundkarte. Welcher Wert gemeint ist, zeigen die lila Zeilen im Raster.
-      o.kiAufbereitet ? ` <span class="text-violet-600" title="An diesem Punkt hat KI Angaben ergänzt">✦</span>` : ""
+      o.kiAufbereitet ? ` <span class="text-violet-600" title="Durch Setreo-AI aufbereitet">✦</span>` : ""
     }</p>
     <p class="mt-0.5 text-xs text-neutral-500">${esc(katMeta(o.kategorie).label)}${o.strassenRef ? ` · ${esc(o.strassenRef)}` : ""}</p>
     ${o.beschreibung ? `<p class="mt-1.5 whitespace-pre-line text-xs leading-relaxed text-neutral-600">${esc(o.beschreibung)}</p>` : ""}
