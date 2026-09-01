@@ -55,16 +55,29 @@ export function anreicherungRouter({ db }) {
       if (m?.n) grundmenge = m.n
     }
 
+    // NUR DER AKTIVE LAUF, und nur Felder, zu denen wirklich etwas gefunden wurde.
+    //
+    // Die erste Fassung gruppierte ueber die ganze Tabelle. Damit standen dort auch die
+    // Feldnamen, die das Modell ERFUNDEN hat und die nur in Verwerfungen vorkommen — "parkbucht",
+    // "gehwegGesperrt", "gegengasse", jeweils mit einer Null daneben. Rund siebzig Zeilen Rauschen
+    // vor den zwanzig, die zaehlen.
+    const nurAktiv = aktiv ? "AND a.modell = $1" : ""
+    const werte = aktiv ? [aktiv.modell] : []
     const jeFeld = await db.query(
-      `SELECT feld, count(*) FILTER (WHERE stand = 'ok' AND wert IS NOT NULL)::int AS gefunden
-         FROM anreicherung WHERE feld <> '_fertig' GROUP BY feld ORDER BY 2 DESC`,
+      `SELECT a.feld, count(*)::int AS gefunden
+         FROM anreicherung a
+        WHERE a.stand = 'ok' AND a.wert IS NOT NULL AND a.feld <> '_fertig' ${nurAktiv}
+        GROUP BY a.feld HAVING count(*) > 0 ORDER BY 2 DESC`,
+      werte,
     ).catch(() => ({ rows: [] }))
 
+    // Mit Feldnamen: "false" oder "10" allein sagt niemandem, was gefunden wurde.
     const proben = await db.query(
-      `SELECT a.feld, a.wert, left(o.name, 60) AS name
+      `SELECT a.feld, a.wert, left(o.name, 55) AS name
          FROM anreicherung a JOIN obstacles o ON o.id::text = a.ziel_id
-        WHERE a.stand = 'ok' AND a.wert IS NOT NULL AND a.feld <> '_fertig'
+        WHERE a.stand = 'ok' AND a.wert IS NOT NULL AND a.feld <> '_fertig' ${nurAktiv}
         ORDER BY a.erstellt_am DESC LIMIT 8`,
+      werte,
     ).catch(() => ({ rows: [] }))
 
     const punkte = aktiv?.punkte ?? 0

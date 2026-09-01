@@ -127,8 +127,9 @@ async function hole() {
       ? d.jeFeld.map((f) => `<li><span class="n">${f.feld}</span><span class="w">${zahl(f.gefunden)}</span></li>`).join("")
       : '<li class="matt">noch nichts</li>'
 
+    // Feldname MIT Wert: "false" oder "10" allein sagt nicht, was gefunden wurde.
     $("proben").innerHTML = (d.proben || []).length
-      ? d.proben.map((p) => `<li><span class="n">${p.name ?? ""}</span><span class="w marke">${p.wert ?? ""}</span></li>`).join("")
+      ? d.proben.map((p) => `<li><span class="n">${p.name ?? ""}</span><span class="w"><span class="matt">${p.feld ?? ""}</span> <span class="marke">${p.wert ?? ""}</span></span></li>`).join("")
       : '<li class="matt">noch nichts</li>'
 
     // "stand" traegt jetzt das Alter der Antwort (der Sekundentakt oben schreibt es fort) — der

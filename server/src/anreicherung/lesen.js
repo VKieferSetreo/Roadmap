@@ -80,6 +80,17 @@ const DETAIL_ZEILE = {
   sperrlaengeM: ["Länge der Maßnahme"],
   anzahlFahrstreifen: ["Fahrstreifen (verbleibend)"],
   spurenGesperrt: ["Gesperrte Fahrstreifen"],
+  // Am 01.09.2026 an einem Fund auf der A62 aufgefallen: der Vermerk "Durch KI extrahiert" stand
+  // am Fund, aber KEIN Wert war markiert. Grund war diese Tabelle — sie kannte zehn der
+  // dreiundzwanzig Felder, und ausgerechnet zeitfenster fehlte, obwohl "Sperrzeitfenster" gross
+  // im Detail steht. Ohne Eintrag hier findet die Oberflaeche keine Zeile zum Markieren, und der
+  // Vermerk haengt in der Luft.
+  zeitfenster: ["Sperrzeitfenster"],
+  nurNachts: ["Sperrzeitfenster"],
+  vollsperrung: ["Sperrung"],
+  teilsperrung: ["Sperrung"],
+  sperrungArt: ["Sperrung"],
+  spurenFrei: ["Fahrstreifen (verbleibend)"],
 }
 
 /** Die Detail-Zeilen, die auf einem abgeleiteten Wert beruhen. Das Frontend markiert genau diese. */

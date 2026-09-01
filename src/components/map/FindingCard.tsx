@@ -148,11 +148,17 @@ export function FindingCard({
             return (
               <div key={k} className="flex flex-col">
                 <dt className="text-neutral-400">{k}</dt>
-                <dd className={cn("flex items-center gap-1 font-medium tabular-nums", ausKi ? "text-violet-700" : "text-neutral-800")}>
+                <dd
+                  className={cn("flex items-center gap-1 font-medium tabular-nums", ausKi ? "text-violet-700" : "text-neutral-800")}
+                  /* Der Satz zur Herkunft haengt AM WERT, nicht mehr als Dauer-Schild unter dem
+                     Fund (Max 01.09.2026: "brauchen nicht 'Durch KI extrahiert' immer, sondern
+                     nur wenn ich per Hover drüber gehe"). Wer wissen will, woher die Zahl kommt,
+                     zeigt auf sie — und sieht dann auch, WELCHE Angabe gemeint war. */
+                  title={ausKi ? `Aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet${detail?.["Ergänzt"] ? `: ${detail["Ergänzt"]}` : ""}` : undefined}
+                >
                   {v}
                   {/* Das Zeichen steht hinter dem Wert und traegt kein Wort (Max 31.08.2026):
-                      der Wert ist die Information, die Herkunft eine Fussnote. Der Satz dazu
-                      steht unten am Fund. */}
+                      der Wert ist die Information, die Herkunft eine Fussnote. */}
                   {ausKi ? (
                     <Sparkles className="h-3 w-3 shrink-0 text-violet-600"
                               aria-label="Durch KI extrahiert" />
@@ -169,7 +175,11 @@ export function FindingCard({
           darüber, wie sicher wir uns sind. Das gehört abgesetzt und mit eigenem Zeichen. */}
       {(detail?.["Ergänzt"] || detail?.["Zuordnung"]) && (
         <div className="mt-2 flex flex-col gap-1">
-          {detail?.["Ergänzt"] ? (
+          {/* Das Schild erscheint nur noch als RUECKFALL: wenn eine abgeleitete Angabe zu keiner
+              sichtbaren Detailzeile gehoert, gibt es nichts zu markieren, und ohne diesen Hinweis
+              waere die Herkunft gar nicht mehr zu sehen. Steht dagegen ein Sternchen am Wert,
+              sagt der Hover dort alles — dann waere das Schild nur Wiederholung. */}
+          {detail?.["Ergänzt"] && !(Array.isArray(detail?.__ki) && detail.__ki.length) ? (
             <span
               title={`Aus dem Beschreibungstext gelesen, nicht von der Behörde gemeldet: ${detail["Ergänzt"]}`}
               className="inline-flex w-fit items-center gap-1.5 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-violet-200"
