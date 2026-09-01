@@ -67,14 +67,43 @@ export function strasseAusName(name) {
 }
 
 /** Die einzelnen Schritte mit Strassennummer und Geometrie — {ref, punkte}[]. */
+/**
+ * Normalform eines Strassennamens fuer den Vergleich. "Sandbochumer Weg" und "Sandbochumer  weg"
+ * sind dieselbe Strasse, "Hauptstr." und "Hauptstraße" auch.
+ *
+ * Die Abkuerzungen sind der Grund, warum hier ueberhaupt normalisiert wird: OSM schreibt mal
+ * "Straße", mal "Str.", und ein Vergleich, der daran scheitert, wuerde eine Strasse fuer eine
+ * andere halten — mit dem Namensvergleich in zuordnung() waere das ein zu Unrecht verworfener Fund.
+ */
+export const normStrassenName = (s) => {
+  const roh = String(s ?? "").toLowerCase().trim()
+  if (!roh) return null
+  const n = roh
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/\bstr\.?\b/g, "strasse")
+    .replace(/[^a-z0-9]+/g, "")
+  return n.length >= 4 ? n : null // "b1", "am see" — zu kurz, um damit zu urteilen
+}
+
+/**
+ * Die Route in Abschnitte, MIT Strassenname.
+ *
+ * Bis zum 01.09.2026 flog hier jeder Abschnitt ohne klassifizierte Nummer heraus (`if (!ref)
+ * continue`), und der Name wurde gar nicht erst mitgenommen. Folge: die Engine wusste von
+ * Gemeindestrassen nichts, und ein Fund auf dem "Sandbochumer Weg" liess sich nie widerlegen,
+ * obwohl die Route dort gar nicht entlangfuehrt. Genau solche Funde standen dann in der
+ * Auswertung.
+ */
 export function abschnitteAusLegs(legs) {
   const raus = []
   for (const leg of legs ?? []) {
     for (const step of leg.steps ?? []) {
       const ref = normRoadRef(String(step.ref ?? "").split(/[;,/]/)[0])
+      const name = normStrassenName(step.name)
       const c = step?.geometry?.coordinates
-      if (!ref || !Array.isArray(c) || !c.length) continue
-      raus.push({ ref, punkte: c.map(([lng, lat]) => ({ lat, lng })) })
+      // Ohne beides ist der Abschnitt stumm — eine unbenannte Rampe etwa.
+      if ((!ref && !name) || !Array.isArray(c) || !c.length) continue
+      raus.push({ ref, name, punkte: c.map(([lng, lat]) => ({ lat, lng })) })
     }
   }
   return raus

@@ -14,7 +14,7 @@ import {
   bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, geomLineParts, haversineKm, lineCrossesRoute, lineOffRoute, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
-import { normRoadRef, normRoadRefWeit, strasseAusName } from "../external/osrm.js"
+import { normRoadRef, normRoadRefWeit, normStrassenName, strasseAusName } from "../external/osrm.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../anreicherung/lesen.js"
 import { kiFelderJePunkt } from "../anreicherung/einspielen.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -86,11 +86,13 @@ export function strassenSpannenBauen(abschnitte, geometry, cum, grid) {
   const raus = []
   for (const a of abschnitte) {
     const p = a?.punkte
-    if (!a?.ref || !Array.isArray(p) || p.length === 0) continue
+    // Ref ODER Name: seit dem 01.09.2026 fuehren die Spannen auch benannte Gemeindestrassen mit,
+    // sonst kann die Zuordnung ueber sie nichts sagen (siehe abschnitteAusLegs).
+    if ((!a?.ref && !a?.name) || !Array.isArray(p) || p.length === 0) continue
     const erst = nearestOnRoute(p[0], geometry, cum, grid)
     const letzt = nearestOnRoute(p[p.length - 1], geometry, cum, grid)
     if (!Number.isFinite(erst?.km) || !Number.isFinite(letzt?.km)) continue
-    raus.push({ ref: a.ref, vonKm: Math.min(erst.km, letzt.km), bisKm: Math.max(erst.km, letzt.km) })
+    raus.push({ ref: a.ref ?? null, name: a.name ?? null, vonKm: Math.min(erst.km, letzt.km), bisKm: Math.max(erst.km, letzt.km) })
   }
   return raus.sort((x, y) => x.vonKm - y.vonKm)
 }
@@ -113,7 +115,24 @@ export function strassenBeiKm(spannen, km, fensterM = LOKAL_FENSTER_M) {
     else hi = mid
   }
   for (let i = lo; i < spannen.length && spannen[i].vonKm <= km + rand; i++) {
-    if (spannen[i].bisKm >= km - rand) raus.add(spannen[i].ref)
+    // Nur Refs. Abschnitte ohne Nummer tragen seit dem 01.09.2026 einen Namen und wuerden hier
+    // sonst ein null ins Set legen — und null im Set hiesse "wir kennen eine Strasse namens null".
+    if (spannen[i].bisKm >= km - rand && spannen[i].ref) raus.add(spannen[i].ref)
+  }
+  return raus
+}
+
+/**
+ * Dasselbe fuer benannte Strassen. Getrennt von den Refs, weil beide Vergleiche verschieden
+ * verlaesslich sind: eine Strassennummer ist eindeutig, ein Name kann in zwei Orten derselbe sein.
+ * Wer beides in einen Topf wirft, kann hinterher nicht mehr sagen, worauf ein Urteil beruhte.
+ */
+export function namenBeiKm(spannen, km, fensterM = LOKAL_FENSTER_M) {
+  const raus = new Set()
+  if (!Array.isArray(spannen) || !spannen.length || !Number.isFinite(km)) return raus
+  const rand = fensterM / 1000
+  for (const s of spannen) {
+    if (s.name && s.vonKm <= km + rand && s.bisKm >= km - rand) raus.add(s.name)
   }
   return raus
 }
@@ -219,6 +238,26 @@ export function zuordnung(obstacle, ctx, km) {
   // unseren eigenen Refs zurueck, nicht auf die Quelle.
   const eigen = normRoadRef(obstacle?.strassenRef ?? obstacle?.strassen_ref)
   if (!istBauwerk(obstacle) && eigen != null && lokal.has(eigen)) return "bewiesen"
+
+  // BENANNTE STRASSEN (01.09.2026). Max an einem Fund "Durchfahrt verboten · Sandbochumer Weg",
+  // der mitten in einer Auswertung stand, obwohl die Route dort nicht entlangfuehrt: "muesste doch
+  // klar sein, dass es auf dem Sandbochumer Weg liegt und damit ausgeblendet sein."
+  //
+  // Bis hierher konnte die Engine dazu nichts sagen: sie kannte nur klassifizierte Nummern, und
+  // "Sandbochumer Weg" ist keine. Der Fund blieb "unbestimmt" und damit stehen.
+  //
+  // VIER BEDINGUNGEN, weil ein Name weniger wert ist als eine Nummer:
+  //  - nur fuer Hindernisse AUF der Strasse, nie fuer Bauwerke (dort sagt die Strassenangabe
+  //    nichts darueber, ob wir oben oder unten fahren)
+  //  - das Hindernis darf KEINE verwertbare Nummer tragen; hat es eine, ist sie das bessere
+  //    Kriterium und wurde oben schon geprueft
+  //  - die Route muss an dieser Stelle ueberhaupt Namen kennen, sonst ist Schweigen kein Urteil
+  //  - der Name muss lang genug sein, um zu unterscheiden (normStrassenName verwirft Kurzformen)
+  const eigenName = normStrassenName(obstacle?.strassenRef ?? obstacle?.strassen_ref)
+  if (!istBauwerk(obstacle) && eigen == null && eigenName != null) {
+    const namen = namenBeiKm(ctx?.strassenSpannen, km)
+    if (namen.size > 0) return namen.has(eigenName) ? "bewiesen" : "widerlegt"
+  }
 
   return "unbestimmt"
 }

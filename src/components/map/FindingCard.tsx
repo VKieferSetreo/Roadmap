@@ -42,7 +42,9 @@ function ReadMore({ text }: { text: string }) {
         ref={ref}
         className={cn(
           "whitespace-pre-line text-xs leading-relaxed text-neutral-700",
-          !open && "line-clamp-4",
+          // Max, 01.09.2026: drei Zeilen, dann "mehr lesen". Bei vier stand die Karte auf
+          // dem Handy zur Haelfte voll Fliesstext, bevor die Sachangaben ueberhaupt kamen.
+          !open && "line-clamp-3",
         )}
       >
         {text}
