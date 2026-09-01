@@ -225,6 +225,50 @@ describe("kannWiderlegtWerden (Vorab-Sieb)", () => {
   })
 })
 
+// Max, 01.09.2026, an einem "Durchfahrt verboten · Sandbochumer Weg" mitten in einer
+// Autobahn-Auswertung: "auch wenn ich nicht Hausnummer und so weiss, weiss ich ja, dass wenn es
+// auf dem Sandbochumer Weg liegt, es NICHT auf der AUTOBAHN liegt."
+describe("Benannte Strassen: was zu einer anderen Strasse gehoert, faellt weg", () => {
+  const ctx = { strassenSpannen: spannen, refs: new Set(["A7", "A44"]) }
+  const verbot = (strassenRef) => ({ kategorie: "gewicht", strassenRef, attrs: {} })
+
+  it("verwirft ein Verbot auf einer Gemeindestrasse, wenn wir dort Autobahn fahren", () => {
+    expect(zuordnung(verbot("Sandbochumer Weg"), ctx, 10)).toBe("widerlegt")
+  })
+
+  it("bestaetigt es, wenn die Route genau diese Strasse faehrt", () => {
+    const mitNamen = strassenSpannenBauen(
+      [{ ref: null, name: "sandbochumerweg", punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.3, lng: 9.5 }] }],
+      route, cum, null,
+    )
+    expect(zuordnung(verbot("Sandbochumer Weg"), { strassenSpannen: mitNamen }, 10)).toBe("bewiesen")
+  })
+
+  it("schweigt, wo die Route ihre eigene Strasse nicht kennt", () => {
+    // Leeres Fenster heisst Unwissen, nicht Gegenbeweis — dieselbe Lehre wie bei den Nummern.
+    expect(zuordnung(verbot("Sandbochumer Weg"), { strassenSpannen: [] }, 10)).toBe("unbestimmt")
+  })
+
+  it("fasst Bauwerke nicht an: dort sagt die Strassenangabe nichts ueber oben oder unten", () => {
+    const bruecke = { kategorie: "bruecke", strassenRef: "Sandbochumer Weg", attrs: {}, name: "Bruecke" }
+    expect(zuordnung(bruecke, ctx, 10)).toBe("unbestimmt")
+  })
+
+  it("laesst zu kurze Namen in Ruhe — sie unterscheiden nicht", () => {
+    expect(zuordnung(verbot("Am"), ctx, 10)).toBe("unbestimmt")
+  })
+
+  // Innerorts heisst eine Bundesstrasse oft zusaetzlich wie eine Gemeindestrasse. Kennt die Route
+  // den Namen, muss er gewinnen — sonst faellt ein Fund weg, der uns wirklich gilt.
+  it("erkennt eine Strasse, die Nummer UND Name traegt", () => {
+    const beides = strassenSpannenBauen(
+      [{ ref: "B54", name: "hauptstrasse", punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.3, lng: 9.5 }] }],
+      route, cum, null,
+    )
+    expect(zuordnung(verbot("Hauptstraße"), { strassenSpannen: beides }, 10)).toBe("bewiesen")
+  })
+})
+
 describe("istBauwerk", () => {
   it("gilt nur fuer Bruecke und Tunnel", () => {
     expect(istBauwerk({ kategorie: "bruecke" })).toBe(true)

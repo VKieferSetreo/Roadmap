@@ -256,7 +256,20 @@ export function zuordnung(obstacle, ctx, km) {
   const eigenName = normStrassenName(obstacle?.strassenRef ?? obstacle?.strassen_ref)
   if (!istBauwerk(obstacle) && eigen == null && eigenName != null) {
     const namen = namenBeiKm(ctx?.strassenSpannen, km)
-    if (namen.size > 0) return namen.has(eigenName) ? "bewiesen" : "widerlegt"
+    if (namen.has(eigenName)) return "bewiesen"
+    // Max, 01.09.2026: "auch wenn ich nicht Hausnummer und so weiss, weiss ich ja, dass wenn es
+    // auf dem Sandbochumer Weg liegt, es NICHT auf der AUTOBAHN liegt."
+    //
+    // Das ist der schaerfere Schluss, und er stimmt: WISSEN wir, worauf die Strecke hier laeuft —
+    // sei es ueber eine Nummer (A1) oder einen Namen —, und das Hindernis gehoert zu einer
+    // benannten Strasse, die nicht dabei ist, dann fahren wir sie an dieser Stelle nicht.
+    // Es genuegt also, dass die Route ihre eigene Strasse kennt; sie muss nicht ausgerechnet
+    // Namen kennen.
+    //
+    // Das leere Fenster bleibt stumm: kennt die Route hier WEDER Nummer NOCH Name, ist das
+    // Unwissen und kein Gegenbeweis — dieselbe Regel wie oben bei den Nummern, und dieselbe
+    // Lehre aus den 25 von 34 Fehlverwerfungen im August.
+    if (fenster.size > 0 || namen.size > 0) return "widerlegt"
   }
 
   return "unbestimmt"
