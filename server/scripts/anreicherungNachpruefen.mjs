@@ -21,7 +21,7 @@
 
 import { createDefaultDb } from "../src/db.js"
 import { pruefeAngabe, quelleHash } from "../src/anreicherung/extrakt.js"
-import { quelltextVon, quellHashVon } from "../src/anreicherung/lauf.js"
+import { quelltextVon, quellHashVon, FERTIG_FELD } from "../src/anreicherung/lauf.js"
 import { spieleEin } from "../src/anreicherung/einspielen.js"
 
 const SCHREIBEN = process.argv.includes("--schreiben")
@@ -124,7 +124,7 @@ if (SCHREIBEN && faul.length) {
     await db.query(
       "DELETE FROM anreicherung WHERE ziel_typ = 'obstacle' AND ziel_id = $1 AND feld = '_fertig' AND modell = $2",
       [f.ziel_id, f.modell],
-    )
+    ) // hier IST die Marke gemeint: die Angabe wurde zurueckgenommen, der Punkt gehoert neu gesehen
   }
   sage(`${faul.length} Angaben zurueckgenommen.`)
 }
@@ -166,7 +166,11 @@ if (SCHREIBEN && veraltetePunkte.length) {
     // später doch noch benutzen." Eine Verwerfung ist Arbeitsergebnis, und die einzige Loeschung
     // in diesem System soll sie nicht einmal versehentlich treffen koennen.
     const r = await db.query(
-      "DELETE FROM anreicherung WHERE ziel_typ = 'obstacle' AND stand = 'leer' AND ziel_id = ANY($1::text[])",
+      // stand='leer' trifft die Fertig-Marke seit migrations/071 nicht mehr — sie traegt
+      // 'marke'. Das feld-Kriterium steht trotzdem daneben: doppelt haelt, und wer die Zeile
+      // spaeter liest, sieht sofort, was hier NICHT geloescht werden darf.
+      `DELETE FROM anreicherung WHERE ziel_typ = 'obstacle' AND stand = 'leer'
+         AND feld <> '${FERTIG_FELD}' AND ziel_id = ANY($1::text[])`,
       [veraltetePunkte.slice(i, i + 2000)],
     )
     weg += r.rowCount ?? 0

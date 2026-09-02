@@ -97,7 +97,7 @@ export const AUSSICHTSLOS = ["Platzhalter statt Angabe", "Beleg betrifft nur den
 const SQL_MERKEN = `
   INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
   VALUES ('obstacle', $1, $2, $3, $4, $5, $6, $7)
-  ON CONFLICT (ziel_typ, ziel_id, feld, modell) WHERE stand IN ('ok', 'leer')
+  ON CONFLICT (ziel_typ, ziel_id, feld, modell) WHERE stand IN ('ok', 'leer', 'marke')
   DO UPDATE SET wert = EXCLUDED.wert, beleg = EXCLUDED.beleg,
                 quelle_hash = EXCLUDED.quelle_hash, stand = EXCLUDED.stand, erstellt_am = now()`
 
@@ -177,8 +177,10 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   // Der Wert ist die GRÖSSE des Katalogs. Wächst er um ein Feld, passt die Marke nicht mehr, und
   // alle Punkte werden von selbst wieder Kandidaten — genau das Verhalten, das die Kandidatenwahl
   // ursprünglich erreichen wollte.
+  // stand='marke', NICHT 'leer' (migrations/071): eine Aufraeumroutine fuer Leermeldungen hat am
+  // 02.09.2026 61.271 dieser Marken mitgeloescht, weil sie denselben Zustand trugen.
   await db.query(SQL_MERKEN, [
-    o.id, FERTIG_FELD, String(Object.keys(FELDER).length), null, modell, hash, "leer",
+    o.id, FERTIG_FELD, String(Object.keys(FELDER).length), null, modell, hash, "marke",
   ])
   return { uebersprungen: false, geschrieben: gueltig.length, verworfen: verworfen.length, verwerfungen: verworfen }
 }

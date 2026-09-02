@@ -29,20 +29,46 @@ const db = createDefaultDb()
 const sage = (t) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${t}`)
 const KATALOG_GROESSE = String(Object.keys(FELDER).length)
 
-// Punkte, die Spuren eines Modells tragen, aber keine Fertig-Marke davon.
-const { rows } = await db.query(
-  `SELECT DISTINCT a.ziel_id, a.modell,
-          o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
-          o.roh, o.richtung, o.gueltig_von, o.gueltig_bis
-     FROM anreicherung a
-     JOIN obstacles o ON o.id::text = a.ziel_id
-    WHERE a.ziel_typ = 'obstacle' AND a.feld <> $1
-      AND NOT EXISTS (
-        SELECT 1 FROM anreicherung m
-         WHERE m.ziel_typ = 'obstacle' AND m.ziel_id = a.ziel_id
-           AND m.modell = a.modell AND m.feld = $1)`,
-  [FERTIG_FELD],
-)
+// --basis: den GESAMTEN aktiven Bestand als bearbeitet markieren, nicht nur die mit Spuren.
+//
+// Max, 02.09.2026: "der aktuelle Stand ist jetzt BASE und da haben wir alles raus. Nicht von
+// vorne. Aber jetzt kann man den einmal daily nachts auf den neuen Punkten scharf schalten."
+//
+// Das ist eine ENTSCHEIDUNG, keine Rekonstruktion: fuer 45.305 Punkte gibt es keine Spur mehr,
+// dass sie schon gesehen wurden — ihre Leermeldungen sind geloescht. Sie erneut zu rechnen kostet
+// neun Stunden fuer Ergebnisse, die schon einmal leer waren. Der Bestand gilt deshalb als
+// abgearbeitet, und der Nachtlauf kuemmert sich um das, was NEU dazukommt.
+const BASIS = process.argv.includes("--basis")
+const MODELL_BASIS = process.env.BASIS_MODELL || "qwen2.5:7b-instruct"
+
+const { rows } = BASIS
+  ? await db.query(
+      `SELECT o.id::text AS ziel_id, $2::text AS modell,
+              o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
+              o.roh, o.richtung, o.gueltig_von, o.gueltig_bis
+         FROM obstacles o
+        WHERE o.aktiv = true
+          AND NOT EXISTS (
+            SELECT 1 FROM anreicherung m
+             WHERE m.ziel_typ = 'obstacle' AND m.ziel_id = o.id::text
+               AND m.modell = $2 AND m.feld = $1)`,
+      [FERTIG_FELD, MODELL_BASIS],
+    )
+  // Ohne --basis nur die Punkte, die Spuren eines Modells tragen: dort ist die Marke belegt.
+  : await db.query(
+      `SELECT DISTINCT a.ziel_id, a.modell,
+              o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
+              o.roh, o.richtung, o.gueltig_von, o.gueltig_bis
+         FROM anreicherung a
+         JOIN obstacles o ON o.id::text = a.ziel_id
+        WHERE a.ziel_typ = 'obstacle' AND a.feld <> $1
+          AND NOT EXISTS (
+            SELECT 1 FROM anreicherung m
+             WHERE m.ziel_typ = 'obstacle' AND m.ziel_id = a.ziel_id
+               AND m.modell = a.modell AND m.feld = $1)`,
+      [FERTIG_FELD],
+    )
+if (BASIS) sage(`--basis: der aktive Bestand gilt als abgearbeitet (Modell ${MODELL_BASIS}).`)
 sage(`${rows.length} Punkt/Modell-Paare ohne Fertig-Marke, aber mit Spuren.`)
 
 const jeModell = new Map()
@@ -62,12 +88,12 @@ for (let i = 0; i < rows.length; i += 500) {
   for (const r of teil) {
     const p = params.length
     params.push(r.ziel_id, r.modell, quellHashVon(r))
-    werte.push(`('obstacle', $${p + 1}, '${FERTIG_FELD}', '${KATALOG_GROESSE}', NULL, $${p + 2}, $${p + 3}, 'leer')`)
+    werte.push(`('obstacle', $${p + 1}, '${FERTIG_FELD}', '${KATALOG_GROESSE}', NULL, $${p + 2}, $${p + 3}, 'marke')`)
   }
   const r = await db.query(
     `INSERT INTO anreicherung (ziel_typ, ziel_id, feld, wert, beleg, modell, quelle_hash, stand)
      VALUES ${werte.join(", ")}
-     ON CONFLICT (ziel_typ, ziel_id, feld, modell) WHERE stand IN ('ok', 'leer') DO NOTHING`,
+     ON CONFLICT (ziel_typ, ziel_id, feld, modell) WHERE stand IN ('ok', 'leer', 'marke') DO NOTHING`,
     params,
   )
   gesetzt += r.rowCount ?? 0

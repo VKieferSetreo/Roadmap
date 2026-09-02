@@ -1015,3 +1015,22 @@ describe("Der Hash haengt an der Quelle, nicht an dem, was wir daraus machen", (
     expect(quellHashVon({ name: "ab", beschreibung: "c" })).not.toBe(quellHashVon({ name: "a", beschreibung: "bc" }))
   })
 })
+
+// Am 02.09.2026 hat eine Aufraeumroutine fuer Leermeldungen 61.271 Fertig-Marken mitgeloescht,
+// weil beide denselben Zustand trugen. Der Loeschbefehl hatte sogar ein `AND stand = 'leer'` als
+// Schutz — es half nicht, weil die Marke genau das war. Seit migrations/071 traegt sie 'marke'.
+describe("Die Fertig-Marke ist keine Leermeldung", () => {
+  it("wird mit eigenem Zustand geschrieben", async () => {
+    const geschrieben = []
+    const db = { query: async (sql, p) => { if (sql.includes("INSERT INTO anreicherung")) geschrieben.push(p); return { rows: [] } } }
+    await reichereAn(db, { id: "u1", kategorie: "baustelle", name: "Teststraße", beschreibung: "Vollsperrung", attrs: {} },
+      { modell: "m", rufeModell: async () => '{"angaben": []}' })
+    const marke = geschrieben.find((p) => p[1] === "_fertig")
+    expect(marke, "es muss eine Marke geschrieben werden").toBeTruthy()
+    // Der Zustand steht an letzter Stelle von SQL_MERKEN.
+    expect(marke[marke.length - 1], "die Marke darf NICHT 'leer' sein").toBe("marke")
+    // Und die Feldzeilen bleiben, was sie sind.
+    const feldzeile = geschrieben.find((p) => p[1] !== "_fertig")
+    expect(feldzeile[feldzeile.length - 1]).toBe("leer")
+  })
+})

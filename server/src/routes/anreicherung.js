@@ -24,9 +24,9 @@ export function anreicherungRouter({ db }) {
     // nicht 73.000 Punkte vor sich, sondern die rund 9.400 mit behebbaren Verwerfungen.
     const { rows: laeufe } = await db.query(`
       SELECT modell,
-             count(*) FILTER (WHERE feld = '_fertig')::int AS punkte,
+             count(*) FILTER (WHERE stand = 'marke')::int AS punkte,
              count(*) FILTER (WHERE stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig')::int AS angaben,
-             count(*) FILTER (WHERE stand = 'leer' AND feld <> '_fertig')::int AS leer,
+             count(*) FILTER (WHERE stand = 'leer')::int AS leer,  -- Marken tragen 'marke' (migrations/071)
              count(*) FILTER (WHERE stand = 'verworfen')::int AS verworfen,
              max(erstellt_am) AS zuletzt,
              count(DISTINCT ziel_id) FILTER (WHERE erstellt_am > now() - interval '1 minute')::int AS pro_min
