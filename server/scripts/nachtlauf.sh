@@ -54,9 +54,26 @@ SSH="ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-n
 
 sage() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 
+# EIN LAUF ZUR ZEIT, und zwar bevor irgendetwas anderes passiert. Weiter unten steht zwar noch
+# eine Pruefung auf einen laufenden Container, aber die hat ein Zeitfenster: zwischen "kein
+# Container da" und "Container gestartet" liegen Minuten Weckzeit, in denen ein zweiter Aufruf
+# genauso zu dem Schluss kaeme, es sei nichts zu tun. Zwei Laeufe auf einer Karte halbieren nicht
+# nur das Tempo — der eine schaltet dem anderen am Ende die Maschine ab.
+exec 9>"${NACHTLAUF_LOCK:-/tmp/roadmap-nachtlauf.lock}"
+if ! flock -n 9; then
+  echo "[$(date '+%F %T')] Ein Nachtlauf laeuft bereits (Sperre belegt) — dieser Aufruf endet." | tee -a "$LOG"
+  exit 0
+fi
+
 WIR_HABEN_GEWECKT=0
 IMAGE=""
 DB=""
+UMGEBUNG=""
+# Sammelt, was schiefging. Ist es am Ende nicht leer, geht eine Mail raus — und zwar nur dann.
+PROBLEM=""
+
+# Abbrechen und den Grund merken, statt ihn nur ins Logfile zu schreiben, das keiner liest.
+abbruch() { PROBLEM="$1"; sage "ABBRUCH: $1"; exit 1; }
 
 # ERST SICHERN, DANN AUSMACHEN — und beides im trap, damit es auch bei Abbruch passiert.
 #
@@ -73,13 +90,13 @@ DB=""
 # waere der teuerste Bug dieses Skripts" — ist keiner: das Einspielen laeuft auf der VM gegen
 # Postgres und braucht die Workstation ueberhaupt nicht. Es kostet Sekunden, nicht Stunden.
 sichern() {
-  [ -n "$IMAGE" ] && [ -n "$DB" ] || { sage "Nichts einzuspielen (kein App-Container ermittelt)."; return 0; }
+  [ -n "$IMAGE" ] && [ -n "$UMGEBUNG" ] || { sage "Nichts einzuspielen (kein App-Container ermittelt)."; return 0; }
   for versuch in 1 2 3; do
-    sudo -n docker run --rm --network setreo-net -e DATABASE_URL="$DB" "$IMAGE" \
+    sudo -n docker run --rm --network setreo-net --env-file "$UMGEBUNG" "$IMAGE" \
       node scripts/anreicherungNachpruefen.mjs --schreiben >>"$LOG" 2>&1
     # NACHZAEHLEN statt dem Einspielen glauben: die Zahl der angefassten Zeilen sagt nicht, ob
     # danach nichts mehr offen ist. Nur diese Abfrage sagt es.
-    AUSKUNFT=$(sudo -n docker run --rm --network setreo-net -e DATABASE_URL="$DB" "$IMAGE" \
+    AUSKUNFT=$(sudo -n docker run --rm --network setreo-net --env-file "$UMGEBUNG" "$IMAGE" \
                  node scripts/anreicherungOffen.mjs 2>&1)
     case "$?" in
       0) sage "Bestand vollstaendig: $AUSKUNFT"; return 0 ;;
@@ -92,18 +109,48 @@ sichern() {
   # gerechneten Angaben sind deshalb NICHT verloren: sie stehen in der Anreicherungstabelle, und
   # der naechste Lauf spielt sie ein. Verloren waere nur die Sichtbarkeit auf der Karte.
   sage "ACHTUNG: Einspielen dreimal nicht bestaetigt. Die Angaben liegen in der Anreicherungstabelle"
-  sage "         und gehen nicht verloren, sind aber noch nicht auf der Karte. Bitte nachsehen."
+  sage "         und gehen nicht verloren, sind aber noch nicht auf der Karte."
+  PROBLEM="${PROBLEM:+$PROBLEM; }Einspielen dreimal nicht bestaetigt"
   return 1
+}
+
+# Die einzige Stelle, an der dieses Skript jemanden erreicht. Alles andere landet in einem Logfile
+# auf einer VM, in das niemand sieht — und ein Automat, dessen Ausfall unbemerkt bleibt, ist
+# gefaehrlicher als gar keiner: er sieht wochenlang so aus, als taete er seine Arbeit.
+melden() {
+  [ -n "$IMAGE" ] && [ -n "$UMGEBUNG" ] || return 0
+  sudo -n docker run --rm --network setreo-net --env-file "$UMGEBUNG" "$IMAGE" \
+    node scripts/nachtlaufMelden.mjs "$1" "$2" >>"$LOG" 2>&1 \
+    || sage "Auch die Meldung ging nicht raus — bitte $LOG ansehen."
 }
 
 aufraeumen() {
   sichern
   if [ "$WIR_HABEN_GEWECKT" = "1" ]; then
     sage "Fahre die Workstation herunter (wir hatten sie geweckt)."
-    $SSH "$GPU" "sudo -n shutdown -h now" >/dev/null 2>&1 || sage "Herunterfahren fehlgeschlagen — bitte nachsehen."
+    $SSH "$GPU" "sudo -n shutdown -h now" >/dev/null 2>&1 \
+      || { sage "Herunterfahren fehlgeschlagen — bitte nachsehen."
+           PROBLEM="${PROBLEM:+$PROBLEM; }Workstation liess sich nicht herunterfahren"; }
   else
     sage "Workstation war vorher schon an — bleibt an."
   fi
+
+  # NUR BEI PROBLEMEN. Eine Mail, die jede Nacht kommt, liest nach einer Woche niemand mehr.
+  if [ -n "$PROBLEM" ]; then
+    melden "Roadmap-Nachtlauf: $PROBLEM" \
+"Der naechtliche Anreicherungslauf hatte ein Problem:
+
+    $PROBLEM
+
+Was das bedeutet: die betroffenen Punkte behalten keine Fertig-Marke und kommen in der
+naechsten Nacht automatisch erneut dran. Es geht nichts verloren, und die Karte zeigt sie
+solange ohne die abgeleiteten Angaben — also mit dem, was die Behoerde selbst gemeldet hat.
+
+Die letzten Zeilen aus dem Log:
+
+$(tail -12 "$LOG")"
+  fi
+  [ -n "$UMGEBUNG" ] && rm -f "$UMGEBUNG"
   sage "=== Nachtlauf fertig ==="
 }
 trap aufraeumen EXIT
