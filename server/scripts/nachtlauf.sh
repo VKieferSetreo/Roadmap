@@ -31,7 +31,14 @@ set -uo pipefail
 HELFER="admin@100.117.146.46"          # haengt im selben LAN wie die Workstation und ist immer an
 MAC="24:4b:fe:4b:79:e0"
 GPU="max@100.85.216.95"
+# ZWEI SICHTEN AUF DENSELBEN DIENST, und sie sind nicht austauschbar:
+#   OLLAMA       — wie der Anreicherungs-Container auf der VM ihn erreicht (ueber Tailscale)
+#   OLLAMA_LOKAL — wie die Workstation ihn SELBST sieht
+# Am 02.09.2026 im End-to-End-Test aufgefallen: der Bereitschaftstest lief per ssh AUF der
+# Workstation, fragte aber ihre eigene Tailscale-Adresse ab. Kurz nach dem Booten antwortet die
+# noch nicht (Tailscale ist da erst am Kommen), und der Lauf brach ab, obwohl Ollama laengst lief.
 OLLAMA="http://100.85.216.95:11434"
+OLLAMA_LOKAL="http://localhost:11434"
 # Das GROESSERE Modell (Max, 01.09.2026: "nachts auch auf 14b laufen lassen"). Nachts zaehlt
 # Genauigkeit, nicht Durchsatz — gemessen an den vorselektierten Punkten der zweiten Runde lieferte
 # es 90 Prozent Ausbeute gegen 18 Prozent des 7B. Es ist dafuer rund fuenfmal langsamer, und genau
@@ -82,16 +89,33 @@ else
 fi
 
 # ── 2. Ollama und Modell bereitmachen ────────────────────────────────────────────────────────
-$SSH "$GPU" "docker start ollama" >/dev/null 2>&1
-for i in $(seq 1 24); do
-  $SSH "$GPU" "curl -sf -m 5 $OLLAMA/api/tags -o /dev/null" && break
+# Erst der Docker-Daemon: direkt nach dem Booten laeuft er noch nicht, und "docker start" scheitert
+# dann still. Ohne dieses Warten bleibt der Container aus, und der Bereitschaftstest sucht einen
+# Dienst, den nie jemand gestartet hat.
+for i in $(seq 1 18); do
+  $SSH "$GPU" "docker info" >/dev/null 2>&1 && break
   sleep 5
-  [ "$i" = "24" ] && { sage "ABBRUCH: Ollama antwortet nicht."; exit 1; }
+  [ "$i" = "18" ] && { sage "ABBRUCH: Docker auf der Workstation kommt nicht hoch."; exit 1; }
+done
+$SSH "$GPU" "docker start ollama" >/dev/null 2>&1
+# Bereitschaft AUS SICHT DER WORKSTATION pruefen (localhost), nicht ueber ihre Tailscale-Adresse.
+for i in $(seq 1 36); do
+  $SSH "$GPU" "curl -sf -m 5 $OLLAMA_LOKAL/api/tags -o /dev/null" && break
+  sleep 5
+  [ "$i" = "36" ] && { sage "ABBRUCH: Ollama antwortet nicht."; exit 1; }
+done
+# Und jetzt die Sicht, auf die es fuer den Lauf ankommt: von der VM aus ueber Tailscale. Steht
+# Ollama zwar, ist aber von aussen nicht erreichbar, wuerde der Lauf gleich wieder abbrechen —
+# besser hier feststellen, wo die Meldung noch etwas erklaert.
+for i in $(seq 1 12); do
+  curl -sf -m 5 "$OLLAMA/api/tags" -o /dev/null && break
+  sleep 5
+  [ "$i" = "12" ] && { sage "ABBRUCH: Ollama laeuft, ist aber von der VM aus nicht erreichbar."; exit 1; }
 done
 # Vorwaermen: das Laden eines Modells dauert laenger als der Erreichbarkeitstest des Laufs wartet
 # (20 s), und der bricht dann ab, bevor ueberhaupt etwas passiert ist.
 sage "Waerme $MODELL vor …"
-$SSH "$GPU" "curl -s -m 600 $OLLAMA/api/generate -d '{\"model\":\"$MODELL\",\"prompt\":\"hi\",\"stream\":false,\"keep_alive\":\"6h\"}' -o /dev/null" \
+$SSH "$GPU" "curl -s -m 600 $OLLAMA_LOKAL/api/generate -d '{\"model\":\"$MODELL\",\"prompt\":\"hi\",\"stream\":false,\"keep_alive\":\"6h\"}' -o /dev/null" \
   || { sage "ABBRUCH: Modell laesst sich nicht laden."; exit 1; }
 
 # ── 3. Der Lauf ──────────────────────────────────────────────────────────────────────────────
