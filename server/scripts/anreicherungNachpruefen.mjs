@@ -142,38 +142,36 @@ if (SCHREIBEN && faul.length) {
 //
 // NUR LEERMELDUNGEN. Eine uebernommene Angabe bleibt stehen: sie traegt ihren Beleg, und der gilt
 // unabhaengig davon, ob rundherum Text dazugekommen ist.
-const { rows: leerZeilen } = await db.query(
-  `SELECT a.id, a.ziel_id, a.quelle_hash,
-          o.id AS o_id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
+// JE PUNKT, nicht je Zeile. Die erste Fassung lud jede einzelne Leermeldung samt Punktdaten —
+// bei 1,4 Millionen Zeilen lief das Skript in sein Zeitlimit, ohne je fertig zu werden. Der
+// Quelltext haengt aber am PUNKT, nicht am Feld: einmal rechnen genuegt, und aus 1,4 Millionen
+// Zeilen werden rund 74.000 Punkte.
+const { rows: punkte } = await db.query(
+  `SELECT DISTINCT ON (a.ziel_id) a.ziel_id, a.quelle_hash,
+          o.id, o.kategorie, o.name, o.beschreibung, o.strassen_ref, o.zustaendig,
           o.attrs, o.roh, o.richtung, o.gueltig_von, o.gueltig_bis, o.quelle
      FROM anreicherung a
      JOIN obstacles o ON o.id::text = a.ziel_id
     WHERE a.ziel_typ = 'obstacle' AND a.stand = 'leer'`,
 )
-// Den Hash je Punkt nur EINMAL rechnen, nicht je Feldzeile — sonst sind es bei 18 Feldern
-// achtzehnmal derselbe Text.
-const aktuell = new Map()
-const veraltet = []
-for (const z of leerZeilen) {
-  if (!aktuell.has(z.ziel_id)) aktuell.set(z.ziel_id, quelleHash(quelltextVon(z)))
-  if (aktuell.get(z.ziel_id) !== z.quelle_hash) veraltet.push(z.id)
-}
-const punkteVeraltet = new Set(leerZeilen.filter((z) => veraltet.includes(z.id)).map((z) => z.ziel_id)).size
-sage(`\nLeermeldungen: ${leerZeilen.length}, davon auf veraltetem Quelltext: ${veraltet.length} (${punkteVeraltet} Punkte)`)
+const veraltetePunkte = punkte.filter((z) => quelleHash(quelltextVon(z)) !== z.quelle_hash).map((z) => z.ziel_id)
+sage(`\nPunkte mit Leermeldungen: ${punkte.length}, davon auf veraltetem Quelltext: ${veraltetePunkte.length}`)
 
-if (SCHREIBEN && veraltet.length) {
+if (SCHREIBEN && veraltetePunkte.length) {
+  let weg = 0
   // In Bloecken, damit der Parameter nicht ueber die Postgres-Grenze waechst.
-  for (let i = 0; i < veraltet.length; i += 5000) {
+  for (let i = 0; i < veraltetePunkte.length; i += 2000) {
     // Das `stand = 'leer'` steht hier ein zweites Mal, obwohl die Auswahl oben schon danach
     // filtert. Max, 31.08.2026: "alle abgewiesenen behalten — kann sein, dass wir die manuell
     // später doch noch benutzen." Eine Verwerfung ist Arbeitsergebnis, und die einzige Loeschung
     // in diesem System soll sie nicht einmal versehentlich treffen koennen.
-    await db.query(
-      "DELETE FROM anreicherung WHERE id = ANY($1::bigint[]) AND stand = 'leer'",
-      [veraltet.slice(i, i + 5000)],
+    const r = await db.query(
+      "DELETE FROM anreicherung WHERE ziel_typ = 'obstacle' AND stand = 'leer' AND ziel_id = ANY($1::text[])",
+      [veraltetePunkte.slice(i, i + 2000)],
     )
+    weg += r.rowCount ?? 0
   }
-  sage(`${veraltet.length} veraltete Leermeldungen entfernt — der naechste Lauf sieht diese Punkte wieder an.`)
+  sage(`${weg} veraltete Leermeldungen entfernt — der naechste Lauf sieht diese Punkte wieder an.`)
 }
 
 if (SCHREIBEN) {
