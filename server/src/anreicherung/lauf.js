@@ -158,11 +158,20 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
       if (p.ok) gefunden.set(feld, { ...p, ausRegel: true })
     }
   }
+  // MITZAEHLEN, WAS WIRKLICH GESCHRIEBEN WIRD. Frueher meldete der Lauf gueltig.length, also
+  // alles, was das Modell lieferte und die Riegel bestand. Geschrieben wird aber nur, was in
+  // `felder` steht — und das sind die OFFENEN Felder. Was die Quelle schon gefuellt hat, faellt
+  // still heraus. Gemessen am 02.09.2026: das Log meldete "158 Angaben geschrieben", in der
+  // Tabelle standen 22. Beide Zahlen waren fuer sich richtig, nur beschrieb die groessere nicht
+  // das, was ihr Name behauptete — und an solchen Zahlen misst man spaeter, ob ein Lauf etwas
+  // gebracht hat.
+  let geschrieben = 0
   for (const feld of felder) {
     const g = gefunden.get(feld)
     await db.query(SQL_MERKEN, [
       o.id, feld, g?.wert ?? null, g?.beleg ?? null, modell, hash, g ? "ok" : "leer",
     ])
+    if (g) geschrieben++
   }
   // FERTIG-MARKE — ohne sie dreht der Lauf im Kreis.
   //
@@ -182,7 +191,7 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   await db.query(SQL_MERKEN, [
     o.id, FERTIG_FELD, String(Object.keys(FELDER).length), null, modell, hash, "marke",
   ])
-  return { uebersprungen: false, geschrieben: gueltig.length, verworfen: verworfen.length, verwerfungen: verworfen }
+  return { uebersprungen: false, geschrieben, verworfen: verworfen.length, verwerfungen: verworfen }
 }
 
 /**

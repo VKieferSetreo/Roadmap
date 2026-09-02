@@ -700,6 +700,40 @@ describe("Der Lauf holt nach, was einem Punkt fehlt", () => {
     expect(marke[2]).toBe(String(Object.keys(FELDER).length))
   })
 
+  // Der Nachtlauf meldete am 02.09.2026 "158 Angaben geschrieben", in der Anreicherungstabelle
+  // standen 22 neue ok-Zeilen. Gemeldet wurde gueltig.length — also was die Pipeline zurueckgab,
+  // nicht was in die Tabelle ging. Die beiden koennen auseinanderlaufen (geschrieben wird nur fuer
+  // OFFENE Felder, und die Map darunter fasst zwei Angaben zum selben Feld zusammen).
+  //
+  // Geprueft wird deshalb die Invariante, nicht ein einzelner Weg dorthin: was der Lauf meldet,
+  // muss zaehlbar in der Tabelle stehen. An dieser Zahl misst man spaeter, ob ein Lauf etwas
+  // gebracht hat — sie darf nicht groesser sein als die Wahrheit.
+  it("meldet als geschrieben genau so viele Angaben, wie ok-Zeilen entstehen", async () => {
+    // Eine Baustelle, keine Bruecke: an Bauwerken setzt strasseAusName zusaetzliche Felder aus
+    // dem Namen, und die wuerden hier nur die Zahlen verrauschen.
+    const baustelle = {
+      id: "u9", kategorie: "baustelle", name: "Teststraße",
+      beschreibung: "Restbreite 3,20 m", attrs: {},
+    }
+    const zeilen = []
+    const db = { query: async (sql, p) => { if (sql.includes("INSERT INTO anreicherung")) zeilen.push(p); return { rows: [] } } }
+    const r = await reichereAn(db, baustelle, {
+      modell: "m",
+      // Zweimal dasselbe Feld: die Map darunter behaelt eine Angabe, also darf auch nur eine
+      // gezaehlt werden. Genau hier lief die gemeldete Zahl frueher davon.
+      rufeModell: async () => JSON.stringify({ angaben: [
+        { feld: "restbreiteM", wert: "3.20", beleg: "Restbreite 3,20 m" },
+        { feld: "restbreiteM", wert: "3.20", beleg: "Restbreite 3,20 m" },
+      ] }),
+    })
+
+    // SQL_MERKEN hat sieben Parameter, der Zustand steht an Position 7; die Fertig-Marke traegt
+    // 'marke' und faellt damit von selbst heraus.
+    const okZeilen = zeilen.filter((p) => p.length === 7 && p[6] === "ok").length
+    expect(r.geschrieben, "gemeldet muss sein, was zaehlbar in der Tabelle steht").toBe(okZeilen)
+    expect(okZeilen, "und zwei Meldungen zum selben Feld ergeben eine Zeile").toBe(1)
+  })
+
   // Die zweite Runde mit einem staerkeren Modell laeuft nur ueber die Punkte, an denen etwas
   // abgewiesen wurde — dort stand Text. Platzhalter zaehlen nicht als Grund: sie bedeuten, dass
   // der Punkt gar keinen Text hat, und daran aendert auch ein groesseres Modell nichts.
