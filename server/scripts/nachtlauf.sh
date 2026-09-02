@@ -89,13 +89,20 @@ else
 fi
 
 # ── 2. Ollama und Modell bereitmachen ────────────────────────────────────────────────────────
-# Erst der Docker-Daemon: direkt nach dem Booten laeuft er noch nicht, und "docker start" scheitert
-# dann still. Ohne dieses Warten bleibt der Container aus, und der Bereitschaftstest sucht einen
-# Dienst, den nie jemand gestartet hat.
-for i in $(seq 1 18); do
+# Den Docker-Daemon STARTEN, nicht auf ihn warten. Auf der Workstation sind docker.service und
+# docker.socket abgeschaltet (`systemctl is-enabled docker` sagt disabled) — nach einem Kaltstart
+# gibt es /var/run/docker.sock deshalb ueberhaupt nicht, und keine Wartezeit der Welt aendert das.
+# Am 02.09.2026 gemessen: auch nach 643 s war der Socket nicht da. Der Vorgaenger dieser Zeilen
+# wartete 90 s und meldete "Docker kommt nicht hoch" — richtig beobachtet, falsche Schlussfolgerung.
+#
+# Bewusst kein `systemctl enable`: das ist Max' Arbeitsrechner, und ob dort ein Daemon beim Booten
+# mitlaeuft, entscheidet nicht dieses Skript. Wir starten, was wir brauchen, und lassen den
+# Dauerzustand der Maschine in Ruhe.
+$SSH "$GPU" "sudo -n systemctl start docker" >/dev/null 2>&1
+for i in $(seq 1 24); do
   $SSH "$GPU" "docker info" >/dev/null 2>&1 && break
   sleep 5
-  [ "$i" = "18" ] && { sage "ABBRUCH: Docker auf der Workstation kommt nicht hoch."; exit 1; }
+  [ "$i" = "24" ] && { sage "ABBRUCH: Docker auf der Workstation kommt nicht hoch."; exit 1; }
 done
 $SSH "$GPU" "docker start ollama" >/dev/null 2>&1
 # Bereitschaft AUS SICHT DER WORKSTATION pruefen (localhost), nicht ueber ihre Tailscale-Adresse.
