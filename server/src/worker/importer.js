@@ -13,6 +13,7 @@
 import { dedupeObstacles, restriktionsProfil } from "../connectors/_helpers.js"
 import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { durchsGate, schreibeBelege } from "../anreicherung/gate.js"
+import { spieleEin } from "../anreicherung/einspielen.js"
 import {
   buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
   OBSTACLE_COLS, OBSTACLE_INSERT_COLS, OBSTACLE_INSERT_COL_COUNT,
@@ -254,6 +255,23 @@ export async function runImport({
           [[...pendingReactivate]],
         )
       }
+
+      // ANGEREICHERTE WERTE WIEDERHERSTELLEN — nach JEDEM Import, ohne Ausnahme.
+      //
+      // Der Import hat obstacles.attrs gerade vollstaendig ueberschrieben (UPDATE_SACHFELDER_SQL:
+      // `attrs = $10`). Alles, was die Anreicherung dort eingetragen hatte, ist damit weg. Die
+      // Werte selbst stehen in der Anreicherungstabelle und sind nicht verloren — sie muessen nur
+      // zurueck.
+      //
+      // Am 02.09.2026 gemessen, und es war der teuerste Fehler dieser zwei Tage: von 21.407
+      // bestaetigten Angaben standen noch 773 im Bestand. Zwei Tage Rechenzeit waren auf der
+      // Karte unsichtbar. Der Grund: spieleEin lief ausschliesslich in sync.js, und dort nur,
+      // wenn OpenRouter erreichbar war — mit dem abgeschalteten Gate lief es also NIRGENDS mehr.
+      //
+      // Deshalb steht es jetzt HIER, im Importer selbst: es gibt keinen Importpfad, der daran
+      // vorbeikommt. Die Abfrage fasst nur an, was sich wirklich aendert (1 s fuer 9.352 Punkte),
+      // und ein Fehlschlag darf den Import nicht scheitern lassen.
+      await spieleEin(q).catch((e) => note(`Anreicherung nicht zurueckgespielt: ${e.message}`))
 
       // Die Belege des Gates — erst jetzt, denn vorher hatten die Punkte keine ID. Zugeordnet
       // ueber (quellen_id, externe_id), dasselbe Paar, mit dem der Import sie wiedererkennt.

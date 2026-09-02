@@ -129,3 +129,18 @@ describe("gateKonfig — eine Stelle entscheidet", () => {
     expect(k.gleichzeitig).toBeGreaterThanOrEqual(8)
   })
 })
+
+// Der teuerste Fehler dieser zwei Tage, deshalb ein eigener Test: der Import ueberschreibt
+// obstacles.attrs vollstaendig, und was die Anreicherung dort eingetragen hatte, ist danach weg.
+// Am 02.09.2026 standen von 21.407 bestaetigten Angaben noch 773 im Bestand — zwei Tage
+// Rechenzeit, auf der Karte unsichtbar.
+describe("Der Import spielt die Anreicherung zurueck", () => {
+  it("ruft spieleEin auf, ohne Gate und ohne Bedingung", async () => {
+    const { readFileSync } = await import("node:fs")
+    const quelle = readFileSync(new URL("../src/worker/importer.js", import.meta.url), "utf8")
+    expect(quelle, "spieleEin muss im Importer stehen, nicht nur in sync.js").toMatch(/await spieleEin\(/)
+    // NICHT hinter einer Gate-Bedingung: mit abgeschaltetem Gate liefe es sonst nirgends.
+    const zeile = quelle.split("\n").find((z) => z.includes("await spieleEin("))
+    expect(zeile).not.toMatch(/gate/)
+  })
+})
