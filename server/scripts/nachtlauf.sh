@@ -29,7 +29,9 @@
 set -uo pipefail
 
 HELFER="admin@100.117.146.46"          # haengt im selben LAN wie die Workstation und ist immer an
-MAC="24:4b:fe:4b:79:e0"
+# Die MAC 24:4b:fe:4b:79:e0 steht NICHT hier, sondern im forced command des Schluessels auf dem Pi.
+# Deshalb reicht unten ein blankes `ssh $HELFER true`: der Pi kann mit diesem Schluessel nichts
+# anderes tun, als genau dieses eine Magic Packet zu senden.
 GPU="max@100.85.216.95"
 # ZWEI SICHTEN AUF DENSELBEN DIENST, und sie sind nicht austauschbar:
 #   OLLAMA       — wie der Anreicherungs-Container auf der VM ihn erreicht (ueber Tailscale)
@@ -53,13 +55,56 @@ SSH="ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-n
 sage() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 
 WIR_HABEN_GEWECKT=0
+IMAGE=""
+DB=""
+
+# ERST SICHERN, DANN AUSMACHEN — und beides im trap, damit es auch bei Abbruch passiert.
+#
+# Max, 02.09.2026: "sicherstellen, dass wenn fertig alles sauber abgelegt und gespeichert wird,
+# und wenn's dann sauber auf Prod ist, erst Workstation runtergefahren wird, bevor Daten verloren
+# gehen."
+#
+# Vorher stand das Einspielen im normalen Ablauf und der Shutdown im trap. Das ist die falsche
+# Reihenfolge fuer jeden Weg, der nicht bis zum Ende laeuft: bricht der Lauf im Zeitlimit ab oder
+# faengt das Skript ein Signal, fuhr die Workstation herunter und die gerechneten Angaben blieben
+# in der Anreicherungstabelle liegen, ohne je im Bestand anzukommen.
+#
+# Der frueher hier notierte Zielkonflikt — "eine Karte, die nach einem Fehler bis zum Morgen heizt,
+# waere der teuerste Bug dieses Skripts" — ist keiner: das Einspielen laeuft auf der VM gegen
+# Postgres und braucht die Workstation ueberhaupt nicht. Es kostet Sekunden, nicht Stunden.
+sichern() {
+  [ -n "$IMAGE" ] && [ -n "$DB" ] || { sage "Nichts einzuspielen (kein App-Container ermittelt)."; return 0; }
+  for versuch in 1 2 3; do
+    sudo -n docker run --rm --network setreo-net -e DATABASE_URL="$DB" "$IMAGE" \
+      node scripts/anreicherungNachpruefen.mjs --schreiben >>"$LOG" 2>&1
+    # NACHZAEHLEN statt dem Einspielen glauben: die Zahl der angefassten Zeilen sagt nicht, ob
+    # danach nichts mehr offen ist. Nur diese Abfrage sagt es.
+    AUSKUNFT=$(sudo -n docker run --rm --network setreo-net -e DATABASE_URL="$DB" "$IMAGE" \
+                 node scripts/anreicherungOffen.mjs 2>&1)
+    case "$?" in
+      0) sage "Bestand vollstaendig: $AUSKUNFT"; return 0 ;;
+      1) sage "Versuch $versuch: $AUSKUNFT — spiele erneut ein." ;;
+      *) sage "Versuch $versuch: konnte nicht nachzaehlen ($AUSKUNFT)." ;;
+    esac
+    sleep 10
+  done
+  # Nach drei Versuchen ist das Einspielen nicht das Problem, sondern etwas darunter. Die
+  # gerechneten Angaben sind deshalb NICHT verloren: sie stehen in der Anreicherungstabelle, und
+  # der naechste Lauf spielt sie ein. Verloren waere nur die Sichtbarkeit auf der Karte.
+  sage "ACHTUNG: Einspielen dreimal nicht bestaetigt. Die Angaben liegen in der Anreicherungstabelle"
+  sage "         und gehen nicht verloren, sind aber noch nicht auf der Karte. Bitte nachsehen."
+  return 1
+}
+
 aufraeumen() {
+  sichern
   if [ "$WIR_HABEN_GEWECKT" = "1" ]; then
     sage "Fahre die Workstation herunter (wir hatten sie geweckt)."
     $SSH "$GPU" "sudo -n shutdown -h now" >/dev/null 2>&1 || sage "Herunterfahren fehlgeschlagen — bitte nachsehen."
   else
     sage "Workstation war vorher schon an — bleibt an."
   fi
+  sage "=== Nachtlauf fertig ==="
 }
 trap aufraeumen EXIT
 
@@ -70,9 +115,19 @@ sage "=== Nachtlauf startet ==="
 # Workstation unter den Fuessen ausschalten.
 if sudo -n docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^anreicherung'; then
   sage "Es laeuft bereits eine Anreicherung — heute Nacht nichts zu tun."
-  WIR_HABEN_GEWECKT=0
+  # Ohne trap raus: der andere Lauf spielt selbst ein und macht selbst aus. Wer sich hier
+  # einmischt, nimmt ihm die Arbeit unter den Haenden weg.
+  trap - EXIT
   exit 0
 fi
+
+# DEN APP-CONTAINER ZUERST, vor dem Wecken. Ohne Image und Datenbank gibt es nichts zu rechnen —
+# dann muss auch niemand eine Grafikkarte aufwecken, um das drei Minuten spaeter festzustellen.
+APP=$(sudo -n docker ps -q --filter name=g13a8380 | head -1)
+IMAGE=$(sudo -n docker inspect -f '{{.Config.Image}}' "$APP" 2>/dev/null)
+DB=$(sudo -n docker inspect "$APP" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null \
+      | grep '^DATABASE_URL=' | cut -d= -f2-)
+if [ -z "${IMAGE:-}" ] || [ -z "${DB:-}" ]; then sage "ABBRUCH: App-Container nicht gefunden."; exit 1; fi
 
 # ── 1. Wecken ────────────────────────────────────────────────────────────────────────────────
 if $SSH "$GPU" "true" >/dev/null 2>&1; then
@@ -126,10 +181,6 @@ $SSH "$GPU" "curl -s -m 600 $OLLAMA_LOKAL/api/generate -d '{\"model\":\"$MODELL\
   || { sage "ABBRUCH: Modell laesst sich nicht laden."; exit 1; }
 
 # ── 3. Der Lauf ──────────────────────────────────────────────────────────────────────────────
-IMAGE=$(sudo -n docker inspect -f '{{.Config.Image}}' "$(sudo -n docker ps -q --filter name=g13a8380 | head -1)" 2>/dev/null)
-DB=$(sudo -n docker inspect "$(sudo -n docker ps -q --filter name=g13a8380 | head -1)" \
-      --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null | grep '^DATABASE_URL=' | cut -d= -f2-)
-if [ -z "${IMAGE:-}" ] || [ -z "${DB:-}" ]; then sage "ABBRUCH: App-Container nicht gefunden."; exit 1; fi
 sage "Starte Anreicherung mit $IMAGE"
 
 sudo -n docker rm -f anreicherung-nacht >/dev/null 2>&1
@@ -141,9 +192,7 @@ ERGEBNIS=$?
 sage "Anreicherung beendet (Code $ERGEBNIS)."
 tail -3 "$LOG" | sed 's/^/    /'
 
-# ── 4. In den Bestand, damit die Karte es zeigt ──────────────────────────────────────────────
-sudo -n docker run --rm --network setreo-net -e DATABASE_URL="$DB" "$IMAGE" \
-  node scripts/anreicherungNachpruefen.mjs --schreiben >>"$LOG" 2>&1 \
-  && sage "In den Bestand eingespielt." || sage "Einspielen fehlgeschlagen (der naechste Lauf holt es)."
-
-sage "=== Nachtlauf fertig ==="
+# Schritt 4 (in den Bestand einspielen und nachzaehlen) und Schritt 5 (herunterfahren) stehen
+# oben in aufraeumen(). Sie gehoeren dorthin, weil sie auch dann laufen muessen, wenn dieses
+# Skript den Weg bis hierher gar nicht schafft — und weil das Ausschalten auf das Einspielen
+# warten soll, nicht umgekehrt.
