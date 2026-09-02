@@ -16,7 +16,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
+import { detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, purgeVerwaisteAnreicherung, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 import { gateKonfig } from "../anreicherung/gateKonfig.js"
 
@@ -202,7 +202,10 @@ async function runPrune() {
     const an = await pruneAnalytics(db)
     const shots = await pruneBugReportScreenshots(db)
     const notif = await pruneNotifications(db) // T-277: gelesene Glocken-Meldungen >120d
-    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events, ${shots} bug-report-screenshots, ${notif} notifications bereinigt`)
+    // T-662: Ableitungen zu Punkten, die purgeStaleInactive laengst hart geloescht hat. Ohne FK
+    // bleiben sie sonst fuer immer liegen — rund 15 Zeilen je verschwundenem Hindernis.
+    const waisen = await purgeVerwaisteAnreicherung(db)
+    log(`Retention: ${ir} import_runs, ${an.sessions} analytics_sessions, ${an.events} analytics_events, ${shots} bug-report-screenshots, ${notif} notifications, ${waisen} verwaiste Anreicherungszeilen bereinigt`)
     // T-277: nach den Deletes Bloat zurückgewinnen (VACUUM ANALYZE, non-blocking).
     const vac = await vacuumChurnedTables(db, { log })
     log(`VACUUM ANALYZE auf ${vac}/${5} churn-Tabellen`)

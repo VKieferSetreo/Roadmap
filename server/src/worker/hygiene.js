@@ -50,6 +50,40 @@ export async function purgeStaleInactive(db, { days = 30 } = {}) {
   return rows
 }
 
+// T-662: die Anreicherungstabelle folgt dem Punkt nicht ins Grab. purgeStaleInactive loescht
+// importierte Hindernisse 30 Tage nach ihrer Deaktivierung HART — und anreicherung.ziel_id ist
+// bewusst ohne Fremdschluessel (dieselbe Entscheidung wie bei findings/notifications, damit
+// Snapshots ueberleben). Fuer die Anreicherung stimmt diese Begruendung aber nicht: ihre Zeilen
+// sind kein Schnappschuss, sondern Ableitungen AUS einem Punkt. Ist der Punkt weg, beziehen sie
+// sich auf nichts mehr, und sie kommen auch nie wieder zu ihm zurueck — eine geloeschte Zeile
+// bekommt beim Reimport eine neue UUID.
+//
+// Gemessen am 02.09.2026: 0 Waisen. Die Luecke ist noch nicht aufgegangen, weil die Anreicherung
+// erst seit Ende August laeuft und die 30-Tage-Uhr fuer die ersten Punkte noch nicht abgelaufen
+// ist. Bei rund 15 Zeilen je Punkt und dem taeglichen Ablauf von Baustellen waeren es sonst
+// schnell Millionen — genau die Sorte Ballast, gegen die purgeStaleInactive ueberhaupt gebaut
+// wurde.
+//
+// BATCHWEISE, weil der Vergleich o.id::text = a.ziel_id keinen Index nutzen kann: lieber jede
+// Nacht ein begrenztes Stueck als ein Lauf, der eine 235.000-Zeilen-Tabelle minutenlang haelt.
+// Was heute nicht drankommt, kommt morgen dran.
+const PURGE_VERWAISTE_ANREICHERUNG_SQL = `DELETE FROM anreicherung
+   WHERE ctid IN (
+     SELECT a.ctid FROM anreicherung a
+      LEFT JOIN obstacles o ON o.id::text = a.ziel_id
+      WHERE a.ziel_typ = 'obstacle' AND o.id IS NULL
+      LIMIT $1)
+   RETURNING id`
+
+/**
+ * Loescht Anreicherungszeilen, deren Hindernis es nicht mehr gibt.
+ * @returns {Promise<number>} Anzahl geloeschter Zeilen.
+ */
+export async function purgeVerwaisteAnreicherung(db, { batch = 20000 } = {}) {
+  const { rows } = await db.query(PURGE_VERWAISTE_ANREICHERUNG_SQL, [batch])
+  return rows.length
+}
+
 // T-603 (Daten-Audit 2026-06-27): Funde werden persistent zum Projekt gespeichert; eine Re-Analyse
 // überschreibt/bereinigt sie. Werden aber die Routen eines Projekts gelöscht/ersetzt OHNE Re-Analyse,
 // bleiben die Fund-Zeilen als eingefrorener Geister-Snapshot zurück (Bsp. Borgentreich: 0 Routen, 679
@@ -130,7 +164,10 @@ export async function pruneNotifications(db, { keepDays = 120 } = {}) {
 // non-blocking (KEIN VACUUM FULL — das nähme ACCESS EXCLUSIVE). Tabellennamen hartcodiert (keine
 // Injection). VACUUM läuft NICHT in einer Transaktion → eigene db.query (autocommit), pro Tabelle
 // fehlertolerant. Autovacuum reicht meist; dies ist die explizite Absicherung nach dem Retention-Lauf.
-const VACUUM_TABLES = ["obstacles", "findings", "notifications", "import_runs", "analytics_events"]
+// anreicherung steht seit T-662 mit dabei: seit der Waisen-Lauf dort loescht, entsteht auch dort
+// Churn. Ohne den Eintrag waere die groesste Tabelle des Systems (413 MB) die einzige, um die sich
+// nach einem Retention-Lauf niemand kuemmert.
+const VACUUM_TABLES = ["obstacles", "findings", "notifications", "import_runs", "analytics_events", "anreicherung"]
 export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
   let ok = 0
   for (const t of VACUUM_TABLES) {
