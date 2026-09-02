@@ -78,6 +78,29 @@ const flach = (s) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim()
  *
  * Bezeichnung und Beschreibung fehlen mit Absicht — das IST die Meldung.
  */
+/**
+ * Antworten, die keine sind: sie sagen etwas ueber unsere Frage, nicht ueber den Text.
+ *
+ * Die Nachsaetze sind der Unterschied zur echten Verneinung — "keine ANGABE" ist ein Platzhalter,
+ * "keine UMLEITUNG eingerichtet" eine Aussage ueber die Baustelle. Dazu die reinen Kurzformen,
+ * die fuer sich stehen ("k.A.", "n/a", "-").
+ */
+const PLATZHALTER_WORT = "im text|vorhanden|angegeben|angaben?|genannt|erw(?:ä|ae)hnt|" +
+  "verf(?:ü|ue)gbar|anwendbar|bekannt|ermittelbar|ersichtlich|spezifiziert|definiert|" +
+  "zutreffend|relevant|extrahierbar|auslesbar"
+const PLATZHALTER = new RegExp(
+  // beginnt mit einer Verneinung UND traegt irgendwo einen dieser Nachsaetze — dazwischen darf
+  // stehen, was will ("nicht im Text VORHANDEN", "keine naeheren ANGABEN")
+  `^(?:(?:nicht|kein[a-z]*|unbekannt)\\b.*\\b(?:${PLATZHALTER_WORT})\\b` +
+  // oder die reinen Kurzformen, die fuer sich allein stehen
+  `|(?:nicht anwendbar|unbekannt|k\\.?\\s?a\\.?|n/a|-|—))\\s*$`,
+  "i",
+)
+
+/** Ausdrueckliche Verneinung im Beleg. Nur damit ist ein "nein" haltbar, wenn der Beleg sonst
+ *  das Stichwort des Feldes traegt ("KEINE Umleitung eingerichtet"). */
+const VERNEINT = /\b(kein|keine|keinen|keiner|nicht|ohne|entfällt|entfaellt|aufgehoben|beendet)\b/i
+
 export const RAHMEN_PRAEFIX = /^\s*(Verortet an|Zuständig|Art|Richtung|Gültig|Quelle|Vorhandene Angaben|Ursprungsdaten der Quelle)\s*:/i
 
 /**
@@ -100,8 +123,11 @@ export function pruefeAngabe(angabe, quelltext) {
   // haeufigste Muster: das Modell schreibt "nicht angegeben" oder "nicht anwendbar" und erfindet
   // dazu den Beleg "nicht im Text vorhanden", statt das Feld wegzulassen. Als eigener Grund
   // erkennbar, damit die Statistik das nicht mit echten Fehlgriffen vermischt.
-  if (/^(nicht |kein|unbekannt|k\.?\s?a\.?$|n\/a$|-$|—$)/i.test(beleg) ||
-      /^(nicht |kein|unbekannt|k\.?\s?a\.?$|n\/a$|-$|—$)/i.test(String(angabe?.wert ?? ""))) {
+  // Ein Platzhalter verweist auf UNS ("nicht im Text vorhanden"), eine Verneinung auf die SACHE
+  // ("keine Umleitung eingerichtet"). Die erste Fassung sah nur den Anfang und warf beides in
+  // einen Topf — damit war ein belegtes Nein grundsaetzlich nicht mehr moeglich, und genau das
+  // brauchte der Riegel gegen unbelegte Verneinungen ein paar Zeilen weiter unten.
+  if (PLATZHALTER.test(beleg) || PLATZHALTER.test(String(angabe?.wert ?? ""))) {
     return { ok: false, grund: "Platzhalter statt Angabe" }
   }
 
@@ -141,6 +167,19 @@ export function pruefeAngabe(angabe, quelltext) {
   if (regel.belegMuster) {
     if (!regel.belegMuster.test(beleg)) {
       return { ok: false, grund: `Beleg "${beleg}" passt nicht zum Feld ${feld}` }
+    }
+    // EIN "NEIN" KANN DAS STICHWORT NICHT ALS BELEG NEHMEN.
+    //
+    // Das belegMuster prueft, ob der Beleg zum FELD passt — nicht, ob er die AUSSAGE stuetzt. Ein
+    // Beleg "halbseitige Sperrung" liess damit auch "halbseitig = nein" durch, und das ist keine
+    // Feinheit: am 02.09.2026 standen 227 solcher Angaben im Bestand, darunter 166 von 167 bei
+    // halbseitig und 27 von 27 bei fahrbahnVerengt. Also praktisch jedes "nein" dieser Felder war
+    // falsch, belegt ausgerechnet mit dem Satz, der das Gegenteil sagt.
+    //
+    // Ausnahme ist die ausdrueckliche Verneinung: "keine Umleitung eingerichtet" nennt das
+    // Stichwort und meint trotzdem nein. Nur dann bleibt ein "nein" stehen.
+    if (wert === false && !VERNEINT.test(beleg)) {
+      return { ok: false, grund: `Beleg "${beleg}" belegt ein Ja, nicht das gemeldete Nein` }
     }
   } else {
     const ausBeleg = regel.pruefe(beleg)

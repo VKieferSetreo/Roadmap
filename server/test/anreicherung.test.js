@@ -933,3 +933,57 @@ describe("Aus dem Replay der 786 aufgezeichneten Verwerfungen", () => {
     expect(pruefeAngabe({ feld: "vollsperrung", wert: "ja", beleg: "Bezeichnung: Vollsperrung" }, text).ok).toBe(true)
   })
 })
+
+// Am 02.09.2026 im Bestand gemessen: 227 "nein"-Angaben, deren Beleg genau das Gegenteil sagt —
+// darunter 166 von 167 bei halbseitig und 27 von 27 bei fahrbahnVerengt. Praktisch jedes "nein"
+// dieser Felder war falsch. Das belegMuster prueft, ob der Beleg zum FELD passt; dass er die
+// AUSSAGE stuetzt, hat bis dahin niemand verlangt.
+describe("Ein Nein braucht einen Beleg, der auch Nein sagt", () => {
+  it("verwirft ein Nein, das mit dem Ja-Stichwort belegt ist", () => {
+    for (const [feld, beleg] of [
+      ["halbseitig", "halbseitige Sperrung der Fahrbahn"],
+      ["fahrbahnVerengt", "Fahrbahn verengt"],
+      ["einbahnstrasse", "Einbahnstraße"],
+      ["vollsperrung", "Vollsperrung der K 82"],
+    ]) {
+      const r = pruefeAngabe({ feld, wert: "nein", beleg }, beleg)
+      expect(r.ok, `${feld}: ${beleg}`).toBe(false)
+      expect(r.grund).toMatch(/belegt ein Ja/)
+    }
+  })
+
+  it("laesst die ausdrueckliche Verneinung durch", () => {
+    for (const [feld, beleg] of [
+      ["umleitung", "keine Umleitung eingerichtet"],
+      ["vollsperrung", "die Vollsperrung ist aufgehoben"],
+    ]) {
+      expect(pruefeAngabe({ feld, wert: "nein", beleg }, beleg).ok, beleg).toBe(true)
+    }
+  })
+
+  it("laesst jedes belegte Ja unangetastet", () => {
+    const b = "halbseitige Sperrung der Fahrbahn"
+    expect(pruefeAngabe({ feld: "halbseitig", wert: "ja", beleg: b }, b).ok).toBe(true)
+  })
+})
+
+// Ein Platzhalter verweist auf UNSERE Frage, eine Verneinung auf die Sache. Die erste Fassung sah
+// nur den Wortanfang und warf beides in einen Topf — damit war ein belegtes Nein unmoeglich.
+describe("Platzhalter und Verneinung sind nicht dasselbe", () => {
+  it("erkennt Platzhalter weiterhin", () => {
+    for (const beleg of ["nicht im Text vorhanden", "keine Angabe", "k.A.", "n/a", "unbekannt",
+                         "keine naeheren Angaben", "nicht ermittelbar"]) {
+      const r = pruefeAngabe({ feld: "umleitung", wert: "nein", beleg }, beleg)
+      expect(r.ok, beleg).toBe(false)
+      expect(r.grund, beleg).toBe("Platzhalter statt Angabe")
+    }
+    // Ein einzelnes "-" faellt schon vorher durch: als Beleg ist es zu kurz. Auch richtig,
+    // nur mit anderem Grund.
+    expect(pruefeAngabe({ feld: "umleitung", wert: "nein", beleg: "-" }, "-").grund).toBe("kein Beleg angegeben")
+  })
+
+  it("haelt eine Aussage ueber die Sache NICHT fuer einen Platzhalter", () => {
+    const b = "keine Umleitung eingerichtet"
+    expect(pruefeAngabe({ feld: "umleitung", wert: "nein", beleg: b }, b).ok).toBe(true)
+  })
+})
