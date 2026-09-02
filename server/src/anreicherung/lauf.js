@@ -59,6 +59,29 @@ export function quelltextVon(o) {
   return teile.join("\n")
 }
 
+/**
+ * Der Hash, an dem haengt, ob eine Ableitung noch gilt — gebildet ueber die QUELLE, nicht ueber
+ * den fertigen Prompt.
+ *
+ * Am 02.09.2026 fiel auf, dass sich das System selbst im Kreis dreht: quelltextVon nimmt attrs mit
+ * in den Text ("Vorhandene Angaben: {…}"), spieleEin schreibt die abgeleiteten Werte GENAU DORT
+ * hinein, und damit aendert sich der Hash — durch unseren eigenen Eintrag. Die Leermeldungen des
+ * Punktes galten daraufhin als veraltet, der Punkt wurde neu gerechnet, spieleEin schrieb wieder,
+ * und so fort. Gemessen: 61.274 von 74.175 Punkten standen nach einem einzigen Einspiel-Lauf als
+ * "veraltet" da, 1,4 Millionen Leermeldungen wurden geloescht und waeren neu zu rechnen gewesen.
+ *
+ * Der Hash geht deshalb NUR ueber das, was die Quelle liefert. Aendert die Behoerde ihren Text,
+ * greift er weiterhin — und genau dafuer ist er da. Was WIR aus diesem Text ableiten, darf ihn
+ * nicht bewegen.
+ */
+export function quellHashVon(o) {
+  return quelleHash([
+    o?.name ?? "", o?.beschreibung ?? "", o?.strassen_ref ?? "", o?.zustaendig ?? "",
+    o?.kategorie ?? "", o?.richtung ?? "", o?.gueltig_von ?? "", o?.gueltig_bis ?? "",
+    o?.roh ? (typeof o.roh === "string" ? o.roh : JSON.stringify(o.roh)) : "",
+  ].join("\u0000"))
+}
+
 /** Welche Felder fehlen an diesem Punkt noch? Was die Quelle schon sagt, wird nicht gefragt —
  *  das spart Aufrufe und verhindert, dass ein Modell eine gemeldete Angabe „korrigiert". */
 export const offeneFelder = offeneFelderFuer
@@ -94,7 +117,8 @@ export async function reichereAn(db, o, { modell, rufeModell, rollen = null }) {
   if (!felder.length) return { uebersprungen: true, geschrieben: 0, verworfen: 0 }
 
   const text = quelltextVon(o)
-  const hash = quelleHash(text)
+  // NICHT ueber den Prompt hashen, sonst dreht sich das System im Kreis (siehe quellHashVon).
+  const hash = quellHashVon(o)
   // Drei Rollen statt einer, sobald mehr als ein Modellzugang da ist. Gemessen an 15 textreichen
   // Baustellen: 14 Angaben einstufig gegen 20 dreistufig, also gut 40 Prozent mehr, bei
   // gleichbleibender Strenge (die Riegel gelten fuer alle Rollen).

@@ -21,7 +21,7 @@
 
 import { createDefaultDb } from "../src/db.js"
 import { pruefeAngabe, quelleHash } from "../src/anreicherung/extrakt.js"
-import { quelltextVon } from "../src/anreicherung/lauf.js"
+import { quelltextVon, quellHashVon } from "../src/anreicherung/lauf.js"
 import { spieleEin } from "../src/anreicherung/einspielen.js"
 
 const SCHREIBEN = process.argv.includes("--schreiben")
@@ -46,7 +46,7 @@ const schonGerettet = new Set()
 
 for (const r of rows) {
   const text = quelltextVon(r)
-  if (quelleHash(text) !== r.quelle_hash) { zahl.hashDaneben++; continue }
+  if (quellHashVon(r) !== r.quelle_hash) { zahl.hashDaneben++; continue }
   zahl.geprueft++
 
   const p = pruefeAngabe({ feld: r.feld, wert: r.roh_wert, beleg: r.beleg }, text)
@@ -154,7 +154,7 @@ const { rows: punkte } = await db.query(
      JOIN obstacles o ON o.id::text = a.ziel_id
     WHERE a.ziel_typ = 'obstacle' AND a.stand = 'leer'`,
 )
-const veraltetePunkte = punkte.filter((z) => quelleHash(quelltextVon(z)) !== z.quelle_hash).map((z) => z.ziel_id)
+const veraltetePunkte = punkte.filter((z) => quellHashVon(z) !== z.quelle_hash).map((z) => z.ziel_id)
 sage(`\nPunkte mit Leermeldungen: ${punkte.length}, davon auf veraltetem Quelltext: ${veraltetePunkte.length}`)
 
 if (SCHREIBEN && veraltetePunkte.length) {

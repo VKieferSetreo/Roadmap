@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
-import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn, AUSSICHTSLOS } from "../src/anreicherung/lauf.js"
+import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn, AUSSICHTSLOS, quellHashVon } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
@@ -985,5 +985,33 @@ describe("Platzhalter und Verneinung sind nicht dasselbe", () => {
   it("haelt eine Aussage ueber die Sache NICHT fuer einen Platzhalter", () => {
     const b = "keine Umleitung eingerichtet"
     expect(pruefeAngabe({ feld: "umleitung", wert: "nein", beleg: b }, b).ok).toBe(true)
+  })
+})
+
+// Am 02.09.2026 drehte sich das System im Kreis: der Hash lief ueber den fertigen Prompt, und der
+// enthaelt attrs — genau dort, wo spieleEin die abgeleiteten Werte eintraegt. Ein Einspiel-Lauf
+// liess damit 61.274 von 74.175 Punkten als "veraltet" gelten und 1,4 Millionen Leermeldungen
+// loeschen, die alle neu zu rechnen gewesen waeren.
+describe("Der Hash haengt an der Quelle, nicht an dem, was wir daraus machen", () => {
+  const punkt = {
+    kategorie: "baustelle", name: "B12 Vollsperrung", beschreibung: "wegen Bauarbeiten",
+    strassen_ref: "B12", attrs: {}, gueltig_von: "2026-09-01",
+  }
+
+  it("bleibt gleich, wenn WIR etwas in attrs eintragen", () => {
+    const vorher = quellHashVon(punkt)
+    const nachher = quellHashVon({ ...punkt, attrs: { vollsperrung: true, umleitung: true } })
+    expect(nachher).toBe(vorher)
+  })
+
+  it("aendert sich, wenn die QUELLE ihren Text aendert", () => {
+    expect(quellHashVon({ ...punkt, beschreibung: "jetzt doch nur halbseitig" })).not.toBe(quellHashVon(punkt))
+    expect(quellHashVon({ ...punkt, name: "B12 Teilsperrung" })).not.toBe(quellHashVon(punkt))
+    expect(quellHashVon({ ...punkt, roh: { art: "neu" } })).not.toBe(quellHashVon(punkt))
+  })
+
+  it("unterscheidet Felder, statt sie aneinanderzuhaengen", () => {
+    // "ab" + "c" darf nicht denselben Hash geben wie "a" + "bc".
+    expect(quellHashVon({ name: "ab", beschreibung: "c" })).not.toBe(quellHashVon({ name: "a", beschreibung: "bc" }))
   })
 })
