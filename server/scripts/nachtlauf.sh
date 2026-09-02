@@ -90,7 +90,16 @@ abbruch() { PROBLEM="$1"; sage "ABBRUCH: $1"; exit 1; }
 # waere der teuerste Bug dieses Skripts" — ist keiner: das Einspielen laeuft auf der VM gegen
 # Postgres und braucht die Workstation ueberhaupt nicht. Es kostet Sekunden, nicht Stunden.
 sichern() {
-  [ -n "$IMAGE" ] && [ -n "$UMGEBUNG" ] || { sage "Nichts einzuspielen (kein App-Container ermittelt)."; return 0; }
+  # FEHLENDE VORAUSSETZUNGEN SIND EIN PROBLEM, KEIN NORMALFALL. Die erste Fassung gab hier still
+  # `return 0` zurueck — und am 02.09.2026 lief genau das: UMGEBUNG war nie befuellt worden, also
+  # meldete das Skript "nichts einzuspielen", vermerkte kein Problem, verschickte keine Mail und
+  # fuhr die Workstation herunter. Ein Waechter, der bei eigener Blindheit Entwarnung gibt, ist
+  # schlimmer als keiner: er sieht aus, als haette er geprueft.
+  if [ -z "$IMAGE" ] || [ -z "$UMGEBUNG" ]; then
+    sage "ACHTUNG: kann nicht einspielen — App-Container oder Umgebung fehlen."
+    PROBLEM="${PROBLEM:+$PROBLEM; }Einspielen nicht moeglich (App-Container/Umgebung fehlen)"
+    return 1
+  fi
   for versuch in 1 2 3; do
     sudo -n docker run --rm --network setreo-net --env-file "$UMGEBUNG" "$IMAGE" \
       node scripts/anreicherungNachpruefen.mjs --schreiben >>"$LOG" 2>&1
@@ -174,7 +183,16 @@ APP=$(sudo -n docker ps -q --filter name=g13a8380 | head -1)
 IMAGE=$(sudo -n docker inspect -f '{{.Config.Image}}' "$APP" 2>/dev/null)
 DB=$(sudo -n docker inspect "$APP" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null \
       | grep '^DATABASE_URL=' | cut -d= -f2-)
-if [ -z "${IMAGE:-}" ] || [ -z "${DB:-}" ]; then sage "ABBRUCH: App-Container nicht gefunden."; exit 1; fi
+if [ -z "${IMAGE:-}" ] || [ -z "${DB:-}" ]; then abbruch "App-Container nicht gefunden"; fi
+
+# Die Umgebung fuer unsere eigenen Container: Datenbank fuers Einspielen, Mailjet fuer die Meldung.
+# Als Datei statt als -e, weil die Werte Sonderzeichen enthalten und eine env-file sie nicht durch
+# die Shell schleift. mktemp gehoert nur dem Aufrufer (0600) — dieselben Werte stehen ohnehin in
+# jedem `docker inspect` dieses Hosts.
+UMGEBUNG=$(mktemp)
+sudo -n docker inspect "$APP" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null \
+  | grep -E '^(DATABASE_URL|MAILJET_[A-Z_]+|ROADMAP_ADMIN_EMAILS)=' > "$UMGEBUNG"
+if ! grep -q '^DATABASE_URL=' "$UMGEBUNG"; then abbruch "Umgebung des App-Containers nicht lesbar"; fi
 
 # ── 1. Wecken ────────────────────────────────────────────────────────────────────────────────
 if $SSH "$GPU" "true" >/dev/null 2>&1; then
@@ -186,7 +204,7 @@ else
   for i in $(seq 1 40); do   # bis zu 200 s
     sleep 5
     if $SSH "$GPU" "true" >/dev/null 2>&1; then sage "Workstation ist nach $((i * 5)) s da."; break; fi
-    [ "$i" = "40" ] && { sage "ABBRUCH: Workstation kam nicht hoch."; exit 1; }
+    [ "$i" = "40" ] && abbruch "Workstation kam nach dem Weckruf nicht hoch"
   done
 fi
 
@@ -204,14 +222,14 @@ $SSH "$GPU" "sudo -n systemctl start docker" >/dev/null 2>&1
 for i in $(seq 1 24); do
   $SSH "$GPU" "docker info" >/dev/null 2>&1 && break
   sleep 5
-  [ "$i" = "24" ] && { sage "ABBRUCH: Docker auf der Workstation kommt nicht hoch."; exit 1; }
+  [ "$i" = "24" ] && abbruch "Docker auf der Workstation kommt nicht hoch"
 done
 $SSH "$GPU" "docker start ollama" >/dev/null 2>&1
 # Bereitschaft AUS SICHT DER WORKSTATION pruefen (localhost), nicht ueber ihre Tailscale-Adresse.
 for i in $(seq 1 36); do
   $SSH "$GPU" "curl -sf -m 5 $OLLAMA_LOKAL/api/tags -o /dev/null" && break
   sleep 5
-  [ "$i" = "36" ] && { sage "ABBRUCH: Ollama antwortet nicht."; exit 1; }
+  [ "$i" = "36" ] && abbruch "Ollama antwortet nicht"
 done
 # Und jetzt die Sicht, auf die es fuer den Lauf ankommt: von der VM aus ueber Tailscale. Steht
 # Ollama zwar, ist aber von aussen nicht erreichbar, wuerde der Lauf gleich wieder abbrechen —
@@ -219,13 +237,13 @@ done
 for i in $(seq 1 12); do
   curl -sf -m 5 "$OLLAMA/api/tags" -o /dev/null && break
   sleep 5
-  [ "$i" = "12" ] && { sage "ABBRUCH: Ollama laeuft, ist aber von der VM aus nicht erreichbar."; exit 1; }
+  [ "$i" = "12" ] && abbruch "Ollama laeuft, ist aber von der VM aus nicht erreichbar"
 done
 # Vorwaermen: das Laden eines Modells dauert laenger als der Erreichbarkeitstest des Laufs wartet
 # (20 s), und der bricht dann ab, bevor ueberhaupt etwas passiert ist.
 sage "Waerme $MODELL vor …"
 $SSH "$GPU" "curl -s -m 600 $OLLAMA_LOKAL/api/generate -d '{\"model\":\"$MODELL\",\"prompt\":\"hi\",\"stream\":false,\"keep_alive\":\"6h\"}' -o /dev/null" \
-  || { sage "ABBRUCH: Modell laesst sich nicht laden."; exit 1; }
+  || abbruch "Modell laesst sich nicht laden"
 
 # ── 3. Der Lauf ──────────────────────────────────────────────────────────────────────────────
 sage "Starte Anreicherung mit $IMAGE"
