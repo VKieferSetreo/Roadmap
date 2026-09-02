@@ -13,8 +13,17 @@
 //   WIDERSPRUCH  Felder, die beide beantwortet haben, mit verschiedenen Werten. Jeder davon ist
 //                ein Fall zum Ansehen: zwei Modelle, die dieselbe Stelle verschieden lesen, sind
 //                ein Hinweis auf eine unklare Frage, nicht auf ein schlechtes Modell.
-//   RUECKSTAND   Felder, die nur das ALTE Modell belegt hat. Haeuft sich das, lenkt der
-//                Fokus-Hinweis vom Rest ab und der Prompt gehoert zurueckgebaut.
+//   RUECKSTAND   Felder, die nur das ALTE Modell belegt hat. VORSICHT bei der Deutung: das ist
+//                meistens KEIN Verlust. Was das alte Modell gefunden hat, steht laengst in
+//                obstacles.attrs, und offeneFelderFuer fragt nicht nach Feldern, die schon
+//                gefuellt sind — das neue Modell bekam sie also gar nicht vorgelegt.
+//                Alarmierend waere es nur, wenn das neue Modell ein Feld verweigert, das ihm
+//                WIRKLICH gestellt wurde.
+//
+// UND NUR AUF DER SCHNITTMENGE. Die erste Fassung verglich ueber alle Punkte und wies dadurch
+// 9.491 "Rueckstand" aus — in Wahrheit die Punkte, die das zweite Modell nie zu sehen bekam, weil
+// es nur ueber die abgewiesenen lief. Ein Vergleich, der den Unterschied im AUFTRAG als
+// Qualitaetsunterschied ausgibt, ist schlimmer als keiner.
 
 import { createDefaultDb } from "../src/db.js"
 
@@ -39,10 +48,17 @@ console.log(`${neu}: ${zahl(k.neu_angaben)} Angaben auf ${zahl(k.neu_punkte)} Pu
 
 // Der Vergleich laeuft ueber (Ziel, Feld) — die Einheit, in der beide Modelle antworten.
 const { rows: [v] } = await db.query(
-  `WITH a AS (SELECT ziel_id, feld, wert FROM anreicherung
-               WHERE modell = $1 AND stand = 'ok' AND wert IS NOT NULL),
+  `WITH gemeinsam AS (
+          SELECT DISTINCT x.ziel_id FROM anreicherung x
+           WHERE x.modell = $1 AND x.feld = '_fertig'
+             AND EXISTS (SELECT 1 FROM anreicherung y
+                          WHERE y.ziel_id = x.ziel_id AND y.modell = $2 AND y.feld = '_fertig')),
+        a AS (SELECT ziel_id, feld, wert FROM anreicherung
+               WHERE modell = $1 AND stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig'
+                 AND ziel_id IN (SELECT ziel_id FROM gemeinsam)),
         n AS (SELECT ziel_id, feld, wert FROM anreicherung
-               WHERE modell = $2 AND stand = 'ok' AND wert IS NOT NULL)
+               WHERE modell = $2 AND stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig'
+                 AND ziel_id IN (SELECT ziel_id FROM gemeinsam))
    SELECT count(*) FILTER (WHERE a.wert IS NULL) AS zugewinn,
           count(*) FILTER (WHERE n.wert IS NULL) AS rueckstand,
           count(*) FILTER (WHERE a.wert IS NOT NULL AND n.wert IS NOT NULL AND a.wert <> n.wert) AS widerspruch,
@@ -53,13 +69,20 @@ const { rows: [v] } = await db.query(
 console.log(`\n  ZUGEWINN     ${zahl(v.zugewinn).padStart(7)}  nur ${neu} konnte belegen`)
 console.log(`  einig        ${zahl(v.einig).padStart(7)}  beide, gleicher Wert`)
 console.log(`  WIDERSPRUCH  ${zahl(v.widerspruch).padStart(7)}  beide, VERSCHIEDENER Wert — ansehen`)
-console.log(`  RUECKSTAND   ${zahl(v.rueckstand).padStart(7)}  nur ${alt} konnte belegen`)
+console.log(`  RUECKSTAND   ${zahl(v.rueckstand).padStart(7)}  nur ${alt} konnte belegen — meist, weil das Feld schon gefuellt war und gar nicht gefragt wurde`)
 
 const { rows: felder } = await db.query(
-  `WITH a AS (SELECT ziel_id, feld, wert FROM anreicherung
-               WHERE modell = $1 AND stand = 'ok' AND wert IS NOT NULL),
+  `WITH gemeinsam AS (
+          SELECT DISTINCT x.ziel_id FROM anreicherung x
+           WHERE x.modell = $1 AND x.feld = '_fertig'
+             AND EXISTS (SELECT 1 FROM anreicherung y
+                          WHERE y.ziel_id = x.ziel_id AND y.modell = $2 AND y.feld = '_fertig')),
+        a AS (SELECT ziel_id, feld, wert FROM anreicherung
+               WHERE modell = $1 AND stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig'
+                 AND ziel_id IN (SELECT ziel_id FROM gemeinsam)),
         n AS (SELECT ziel_id, feld, wert FROM anreicherung
-               WHERE modell = $2 AND stand = 'ok' AND wert IS NOT NULL)
+               WHERE modell = $2 AND stand = 'ok' AND wert IS NOT NULL AND feld <> '_fertig'
+                 AND ziel_id IN (SELECT ziel_id FROM gemeinsam))
    SELECT feld,
           count(*) FILTER (WHERE a.wert IS NULL) AS zugewinn,
           count(*) FILTER (WHERE n.wert IS NULL) AS rueckstand,
