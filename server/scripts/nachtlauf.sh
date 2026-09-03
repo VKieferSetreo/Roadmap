@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
-# Naechtliche Anreicherung auf der eigenen GPU (T-662).
+# Taegliche Anreicherung auf der eigenen GPU, 12:00 Ortszeit (T-662).
 #
 # Max, 01.09.2026: "aktuell haben wir noch keinen KI-Server, ueber den wir das laufen lassen
-# koennen. Mach einen Cronjob, der um 12:00 nachts die Workstation ueber WoL anhaut, alle neuen
-# Befunde durch unsere Loops jagt wie bei der Retro, speichert und dann wieder ausmacht. Im
-# Livebetrieb keine KI, nur dieser Job, der das einmal am Tag fuer alle macht."
+# koennen. Mach einen Cronjob, der die Workstation ueber WoL anhaut, alle neuen Befunde durch
+# unsere Loops jagt wie bei der Retro, speichert und dann wieder ausmacht. Im Livebetrieb keine
+# KI, nur dieser Job, der das einmal am Tag fuer alle macht."
 #
-# WARUM NACHTS UND NICHT IM IMPORT: das Gate im Importpfad hing an OpenRouter, und dessen freie
-# Modelle sind kontingentiert — gemessen antworteten zwei von drei gar nicht. Ausserdem verzoegerte
-# es jeden Sync. Die eigene Karte kostet nur Strom, ist ungedrosselt und faehrt die volle
-# dreistufige Pipeline statt der abgespeckten.
+# DER NAME sagt noch "Nacht", die Uhr sagt Mittag: bis zum 03.09.2026 lief der Job um 22:00.
+# Max hat ihn auf 12:00 gelegt, "zum Pull, wenn der durch is" — die Import-Slots um 12 Uhr sind
+# gemessen nach spaetestens 15 Sekunden fertig, und dieses Skript rechnet ohnehin erst nach rund
+# zwei Minuten Weck- und Aufwaermzeit. Die frischen Punkte des Tages sind also drin. Umbenannt
+# wurde nichts, weil der Name in Cron, Kanban und Brain steht.
+#
+# WARUM NICHT IM IMPORT: das Gate im Importpfad hing an OpenRouter, und dessen freie Modelle sind
+# kontingentiert — gemessen antworteten zwei von drei gar nicht. Ausserdem verzoegerte es jeden
+# Sync. Die eigene Karte kostet nur Strom, ist ungedrosselt und faehrt die volle dreistufige
+# Pipeline statt der abgespeckten.
 #
 # ABLAUF, und jeder Schritt kann fehlschlagen, ohne den naechsten zu verhindern:
 #   1. Workstation wecken (nur wenn sie schlaeft) und warten, bis Ollama antwortet
@@ -41,14 +47,14 @@ GPU="max@100.85.216.95"
 # noch nicht (Tailscale ist da erst am Kommen), und der Lauf brach ab, obwohl Ollama laengst lief.
 OLLAMA="http://100.85.216.95:11434"
 OLLAMA_LOKAL="http://localhost:11434"
-# Das GROESSERE Modell (Max, 01.09.2026: "nachts auch auf 14b laufen lassen"). Nachts zaehlt
-# Genauigkeit, nicht Durchsatz — gemessen an den vorselektierten Punkten der zweiten Runde lieferte
-# es 90 Prozent Ausbeute gegen 18 Prozent des 7B. Es ist dafuer rund fuenfmal langsamer, und genau
-# dafuer ist die Nacht da.
+# Das GROESSERE Modell (Max, 01.09.2026: "auch auf 14b laufen lassen"). Hier zaehlt Genauigkeit,
+# nicht Durchsatz — gemessen an den vorselektierten Punkten der zweiten Runde lieferte es 90 Prozent
+# Ausbeute gegen 18 Prozent des 7B. Es ist dafuer rund fuenfmal langsamer, und das ist es wert:
+# der Lauf hat einen ganzen Nachmittag Zeit, niemand wartet auf ihn.
 MODELL="${NACHTLAUF_MODELL:-qwen2.5:14b-instruct}"
 LOG="${NACHTLAUF_LOG:-$HOME/roadmap-nachtlauf.log}"
 # Harte Obergrenze. Laeuft der Lauf laenger, ist etwas faul — dann lieber abbrechen und die Karte
-# ausmachen, als sie bis mittags heizen zu lassen. Der naechste Lauf macht ohnehin dort weiter.
+# ausmachen, als sie bis in die Nacht heizen zu lassen. Der naechste Lauf macht dort weiter.
 MAX_MIN="${NACHTLAUF_MAX_MIN:-300}"
 SSH="ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 
