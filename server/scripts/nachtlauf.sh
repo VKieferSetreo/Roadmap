@@ -224,7 +224,19 @@ for i in $(seq 1 24); do
   sleep 5
   [ "$i" = "24" ] && abbruch "Docker auf der Workstation kommt nicht hoch"
 done
-$SSH "$GPU" "docker start ollama" >/dev/null 2>&1
+# DEN RUECKGABEWERT LESEN. In der Nacht zum 03.09.2026 stand hier ein `>/dev/null 2>&1` ohne
+# Pruefung — der Container `ollama` existierte gar nicht mehr (die gesamte Docker-Datenwurzel war
+# leer, 212 KB), `docker start` sagte "No such container", und das Skript wartete danach drei
+# Minuten auf einen Dienst, den niemand gestartet hatte. Gemeldet wurde "Ollama antwortet nicht":
+# richtig beobachtet, und wieder die falsche Ursache. Zum zweiten Mal in dieser Datei derselbe
+# Fehler — ein weggeworfener Fehlertext kostet den naechsten Leser eine Stunde.
+FEHLER=$($SSH "$GPU" "docker start ollama" 2>&1)
+if [ $? -ne 0 ]; then
+  case "$FEHLER" in
+    *"No such container"*) abbruch "Der Container 'ollama' existiert auf der Workstation nicht mehr" ;;
+    *) abbruch "Ollama-Container laesst sich nicht starten: $(echo "$FEHLER" | head -1)" ;;
+  esac
+fi
 # Bereitschaft AUS SICHT DER WORKSTATION pruefen (localhost), nicht ueber ihre Tailscale-Adresse.
 for i in $(seq 1 36); do
   $SSH "$GPU" "curl -sf -m 5 $OLLAMA_LOKAL/api/tags -o /dev/null" && break
