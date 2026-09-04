@@ -203,6 +203,26 @@ if ! grep -q '^DATABASE_URL=' "$UMGEBUNG"; then abbruch "Umgebung des App-Contai
 # ── 1. Wecken ────────────────────────────────────────────────────────────────────────────────
 if $SSH "$GPU" "true" >/dev/null 2>&1; then
   sage "Workstation ist bereits an."
+  # WENN SIE SCHON LAEUFT, ARBEITET WAHRSCHEINLICH JEMAND DARAN (Max, 04.09.2026: "kann auch
+  # sein, dass die Workstation schon an ist, das gerne mal mitdenken"). Dass sie anbleibt, war
+  # schon geregelt — dass wir ihr niemandem das VRAM wegnehmen, noch nicht. Das 14B belegt 15 der
+  # 24 GB; ein laufendes Training daneben stirbt daran mit OOM.
+  #
+  # Gemessen wird VOR dem Start des Ollama-Containers: laeuft der schon, ist er selbst der
+  # Belegende und die Zahl saegt nichts mehr aus — dann ist die Karte ohnehin fuer uns in Betrieb.
+  # Im Leerlauf zeigt die 3090 rund 1 MiB, die Schwelle von 2 GB trifft also nur echte Nutzung.
+  if ! $SSH "$GPU" "docker ps --format '{{.Names}}' 2>/dev/null | grep -qx ollama"; then
+    VRAM=$($SSH "$GPU" "nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits" 2>/dev/null | tr -cd '0-9')
+    if [ -n "${VRAM:-}" ] && [ "$VRAM" -gt "${GPU_BELEGT_AB_MIB:-2000}" ]; then
+      sage "Die Karte haelt bereits $VRAM MiB — da arbeitet jemand. Heute kein Lauf."
+      sage "Die offenen Punkte bleiben offen und kommen morgen dran. Mit GPU_BELEGT_AB_MIB"
+      sage "laesst sich die Schwelle verschieben, mit einem sehr hohen Wert abschalten."
+      # Kein PROBLEM und keine Mail: das ist gewolltes Verhalten, kein Fehler. Der trap laeuft
+      # trotzdem — er spielt ein (findet nichts Neues) und laesst die Workstation an, weil wir
+      # sie nicht geweckt haben.
+      exit 0
+    fi
+  fi
 else
   sage "Workstation schlaeft — sende Magic Packet ueber $HELFER."
   $SSH "$HELFER" "true" >>"$LOG" 2>&1   # der Schluessel ist dort auf genau diesen Weckbefehl festgelegt
