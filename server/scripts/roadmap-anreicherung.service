@@ -1,0 +1,14 @@
+[Unit]
+Description=Roadmap: taegliche KI-Anreicherung auf der GPU-Workstation (T-662)
+Documentation=https://github.com/VKieferSetreo/Roadmap server/scripts/nachtlauf.sh
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=tradmin
+ExecStart=/home/tradmin/roadmap-nachtlauf.sh
+# KEIN systemd-Timeout. Das Skript bringt seine eigene Obergrenze mit (NACHTLAUF_MAX_MIN,
+# voreingestellt 300 Minuten) und raeumt ueber einen EXIT-trap auf: einspielen, nachzaehlen,
+# Workstation abschalten. Ein systemd-Timeout daneben wuerde genau dazwischen hart killen.
+TimeoutStartSec=infinity

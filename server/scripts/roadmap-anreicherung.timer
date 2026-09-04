@@ -1,0 +1,15 @@
+[Unit]
+Description=Roadmap-Anreicherung, taeglich 12:10 ORTSZEIT
+
+[Timer]
+# MIT ZEITZONE, und das ist der ganze Punkt dieser Datei. Der Vorgaenger war ein Cron-Eintrag
+# mit CRON_TZ=Europe/Berlin — das ignoriert cron 3.0pl1 auf dieser VM stillschweigend, die
+# Systemzeitzone ist Etc/UTC. Der als "22:00" gedachte Lauf feuerte dadurch um 00:00 Ortszeit.
+# Eine feste UTC-Zeit waere auch keine Loesung: sie verrutscht bei jeder Zeitumstellung.
+OnCalendar=*-*-* 12:10:00 Europe/Berlin
+# Nachholen, wenn die VM zur Zeit aus war. Der Lauf ist idempotent, und die flock-Sperre im
+# Skript verhindert, dass ein Nachholer einem laufenden ins Gehege kommt.
+Persistent=true
+
+[Install]
+WantedBy=timers.target
