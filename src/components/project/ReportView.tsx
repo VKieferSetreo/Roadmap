@@ -16,7 +16,7 @@ import {
   visibleFindings,
 } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
-import { formatDateDE } from "@/lib/format"
+import { formatDateDE, fundeText } from "@/lib/format"
 import type { Finding, FindingSeverity, Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
@@ -220,7 +220,7 @@ export function ReportView({
                 />
                 {r.name}
                 <span className="font-normal text-neutral-400">
-                  · {routeLengthKm(r.points).toLocaleString("de-DE")} km · {findings.length} Funde
+                  · {routeLengthKm(r.points).toLocaleString("de-DE")} km · {fundeText(findings.length)}
                 </span>
               </h2>
               {findings.length === 0 ? (
@@ -238,7 +238,7 @@ export function ReportView({
             <h2 className="flex items-center gap-2 border-b border-neutral-200 pb-1.5 text-sm font-bold text-neutral-900">
               <span className="h-2.5 w-2.5 rounded-full bg-neutral-400" aria-hidden />
               Ohne eindeutige Streckenzuordnung
-              <span className="font-normal text-neutral-400">· {ohneStrecke.length} Funde</span>
+              <span className="font-normal text-neutral-400">· {fundeText(ohneStrecke.length)}</span>
             </h2>
             <FundTabelle findings={ohneStrecke} />
           </section>
@@ -315,7 +315,9 @@ function FundTabelle({ findings }: { findings: Finding[] }) {
               {f.quelle?.name ? (
                 <p className="text-[10px] text-neutral-400">
                   Quelle: {f.quelle.name}
-                  {f.quelle.url ? <span className="font-mono"> · {f.quelle.url}</span> : null}
+                  {/* T-688: ohne break-all bricht eine lange Quellen-URL nicht um und schiebt die Tabelle
+                      ueber den Blattrand — im gedruckten PDF ist der Text dann abgeschnitten. */}
+                  {f.quelle.url ? <span className="break-all font-mono"> · {f.quelle.url}</span> : null}
                   {f.quelle.aktualisiertAm
                     ? ` · Stand ${/^\d{4}-\d{2}-\d{2}/.test(f.quelle.aktualisiertAm) ? formatDateDE(f.quelle.aktualisiertAm.slice(0, 10)) : f.quelle.aktualisiertAm}`
                     : null}

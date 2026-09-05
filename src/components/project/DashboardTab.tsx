@@ -242,18 +242,23 @@ export function DashboardTab({
           </CardHeader>
           <CardContent className="pt-1">
             <Suspense fallback={<ChartSkeleton />}>
-              <KategorieBar findings={filtered} />
+              {/* hoehenBasis = ungefiltert, damit die Karte beim Filtern nicht die Höhe wechselt (T-688) */}
+              <KategorieBar findings={filtered} hoehenBasis={sichtbar} />
             </Suspense>
           </CardContent>
         </Card>
       </div>
 
-      {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse). T-219: aus dem gefilterten Set. */}
-      {filtered.length > 0 ? (
+      {/* Streckenprofil — ein Band pro Strecke (eigene km-Achse). T-219: aus dem gefilterten Set.
+          T-688: die Bedingung stand auf `filtered`, die Karte fiel damit beim Tippen im Suchfeld
+          komplett aus dem Fluss, sobald ein Anschlag keine Treffer mehr ergab — rund 180 px, und
+          Suchfeld und Filterleiste darunter sprangen mit. Jetzt entscheidet die UNGEFILTERTE
+          Menge über das Vorhandensein der Karte, der Filter nur noch über ihren Inhalt. */}
+      {sichtbar.length > 0 ? (
         <Card className="print-hidden animate-rise-in" style={{ animationDelay: "200ms" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              Streckenprofil: Funde entlang der {project.routes.length > 1 ? "Strecken" : "Route"}
+              Streckenprofil: Funde entlang der {project.routes.length > 1 ? "Strecken" : "Strecke"}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 pt-1">
@@ -264,6 +269,16 @@ export function DashboardTab({
                 .filter((r) => r.points.length >= 2)
                 .map((r) => ({ r, rf: filtered.filter((f) => f.routeId === r.id) }))
                 .filter((x) => x.rf.length > 0)
+              // T-688: trifft der Filter nichts, bleibt die Karte stehen und sagt es. Die feste
+              // Höhe entspricht einem Band, damit der Wechsel zwischen „Treffer" und „kein
+              // Treffer" die Filterleiste darunter nicht verschiebt.
+              if (mitFunden.length === 0) {
+                return (
+                  <div className="flex h-[109px] items-center justify-center text-sm text-neutral-400">
+                    Keine Funde im aktuellen Filter
+                  </div>
+                )
+              }
               const sichtbar = mitFunden.slice(0, shownProfiles)
               const teaser = mitFunden[shownProfiles] // nächstes Band, ausgegraut
               const rest = mitFunden.length - shownProfiles
@@ -361,14 +376,25 @@ export function DashboardTab({
             </option>
           ))}
         </Select>
-        {/* Download (nur nach abgeschlossener Auswertung): PDF oder CSV → Export-Dialog. */}
-        {project.status === "fertig" ? (
+        {/* Download (nur nach abgeschlossener Auswertung): PDF oder CSV → Export-Dialog.
+            T-688: bei einer ERNEUTEN Auswertung wechselt der Status auf „analyse", der Knopf fiel
+            damit aus der Filterzeile und alles daneben rutschte. Wo schon Funde vorliegen, bleibt
+            er jetzt stehen und ist für die Dauer des Laufs nur stummgeschaltet — der Bericht wäre
+            in dem Moment ohnehin ein Zwischenstand. Beim allerersten Lauf gibt es weder Knopf noch
+            Sprung, weil vorher auch keiner da war. */}
+        {project.status === "fertig" || (running && project.findings.length > 0) ? (
           <DropdownMenu
             triggerLabel="Herunterladen: PDF oder CSV"
             trigger={
               <span
-                title="Herunterladen"
-                className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+                title={running ? "Auswertung läuft — Download gleich wieder verfügbar" : "Herunterladen"}
+                aria-disabled={running || undefined}
+                className={cn(
+                  "inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors",
+                  running
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer hover:bg-neutral-50 hover:text-neutral-900",
+                )}
               >
                 <Download className="h-4 w-4" /> Download
               </span>

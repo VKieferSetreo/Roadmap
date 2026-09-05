@@ -147,7 +147,14 @@ export function DropZone({
         type="file"
         accept={accept}
         className="sr-only"
-        onChange={(e) => validateAndEmit(e.target.files?.[0] ?? undefined)}
+        // T-688: den Input nach dem Auslesen leeren. Ohne das feuert `change` nicht noch einmal,
+        // wenn jemand DIESELBE Datei erneut waehlt — der Browser sieht keinen Wertwechsel. Genau
+        // das passiert nach einem fehlgeschlagenen Upload oder wenn die Datei zwischendurch
+        // korrigiert wurde: der Nutzer klickt, waehlt aus, und es geschieht nichts.
+        onChange={(e) => {
+          validateAndEmit(e.target.files?.[0] ?? undefined)
+          e.target.value = ""
+        }}
       />
     </div>
   )

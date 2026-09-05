@@ -405,7 +405,9 @@ export function KarteTab({
       >
 
       {/* Ticket-Suche — oben links, durchsucht alle sichtbaren Funde (Titel/Text/km/Quelle/Details). */}
-      <div className="absolute left-3 top-3 z-[1100] w-[min(92%,520px)]">
+      {/* T-688: ab lg rutscht der rechte Overlay-Stapel auf dieselbe Hoehe. Ohne die halbe Breite
+          hier schiebt sich die Suchleiste darueber und verdeckt die Kennzahlen. */}
+      <div className="absolute left-3 top-3 z-[1100] w-[min(92%,520px)] lg:w-[min(50%,520px)]">
         <div className="glass flex items-center gap-2 rounded-lg px-3 py-2.5 shadow-lg">
           <Search className="h-[18px] w-[18px] shrink-0 text-neutral-400" />
           <input
@@ -493,20 +495,31 @@ export function KarteTab({
             </span>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
-            {counts.filter(({ n }) => n > 0).map(({ sev, n }) => {
+            {/* T-688: die Marken standen unter `n > 0` und verschwanden beim Ziehen des
+                Zeitstrahls einzeln aus der umbrechenden Zeile — der Stapel darunter sprang mit.
+                Jetzt bleiben alle drei stehen, eine leere Stufe ist nur nicht mehr klickbar. */}
+            {counts.map(({ sev, n }) => {
               const aus = severityHidden.has(sev)
-              // counts ist auf n>0 gefiltert → jede gerenderte Stufe ist klickbar.
+              const leer = n === 0
               // Klick blendet diese Funde auf der Karte aus und dimmt die Marke grau.
-              const aktiv = !aus
+              const aktiv = !aus && !leer
               return (
                 <button
                   key={sev}
                   type="button"
-                  onClick={() => toggleSeverity(sev)}
+                  onClick={() => (leer ? undefined : toggleSeverity(sev))}
+                  disabled={leer}
                   aria-pressed={!aus}
-                  title={aus ? `${SEVERITY_META[sev].label} einblenden` : `${SEVERITY_META[sev].label} ausblenden`}
+                  title={
+                    leer
+                      ? `Keine ${SEVERITY_META[sev].label} im gewählten Zeitraum`
+                      : aus
+                        ? `${SEVERITY_META[sev].label} einblenden`
+                        : `${SEVERITY_META[sev].label} ausblenden`
+                  }
                   className={cn(
-                    "inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition hover:opacity-80",
+                    "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition",
+                    leer ? "cursor-default opacity-45" : "cursor-pointer hover:opacity-80",
                     aktiv ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
                     aus && "line-through",
                   )}
@@ -572,7 +585,8 @@ export function KarteTab({
             />
           </button>
           {layersOpen ? (
-            <ul className="border-t border-neutral-200/70 px-2 py-1.5">
+            // T-688: ohne Deckel schiebt eine lange Streckenliste den Kategorien-Filter aus dem Bild
+            <ul className="max-h-[40vh] overflow-y-auto border-t border-neutral-200/70 px-2 py-1.5">
               {freigegebeneRouten.map((r) => {
                 const sichtbar = !hidden.has(r.id)
                 return (

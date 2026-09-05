@@ -1,7 +1,7 @@
 // Einstellungen — Datenquelle, Anmeldung, Passwort, Kartendarstellung, Demo-Daten.
 
 import { useEffect, useState } from "react"
-import { Database, Download, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal, Trash2 } from "lucide-react"
+import { Database, Download, FlaskConical, KeyRound, LogOut, Mail, ShieldAlert, Signal, Trash2, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 import { formatDateDE } from "@/lib/format"
 import { PageContainer } from "@/components/layout/PageContainer"
@@ -126,7 +126,9 @@ function MailNotificationCard() {
     }
   }
 
-  if (!available || !pref) return null
+  // T-688: laedt noch ist nicht leer — sonst klappt die Karte nachtraeglich in die Spalte.
+  if (!available) return null
+  if (!pref) return <KartenPlatzhalter titel="Benachrichtigungen" icon={Mail} />
   const toggleSev = (s: FindingSeverity) =>
     void save({
       ...pref,
@@ -251,7 +253,9 @@ function LicenseCard() {
     }
   }, [])
 
-  if (!available || !lic) return null
+  // T-688: siehe oben, gleiches Muster.
+  if (!available) return null
+  if (!lic) return <KartenPlatzhalter titel="Lizenz" icon={KeyRound} />
 
   const expiry = (() => {
     if (!lic.validUntil) return { cls: "bg-neutral-100 text-neutral-600", text: "unbefristet" }
@@ -372,6 +376,30 @@ function DangerZoneCard() {
             </Button>
           </div>
         </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+/**
+ * Platzhalter fuer eine Karte, deren Inhalt noch geladen wird (T-688).
+ *
+ * Die Lizenz- und die Benachrichtigungs-Karte gaben waehrend ihres Requests `null` zurueck und
+ * klappten danach in die Spalte — alles darunter sprang. Der Unterschied, auf den es ankommt:
+ * „laedt noch" ist nicht dasselbe wie „gibt es hier nicht". Nur der zweite Fall darf leer bleiben.
+ */
+function KartenPlatzhalter({ titel, icon: Icon }: { titel: string; icon: LucideIcon }) {
+  return (
+    <Card aria-busy>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Icon className="h-4 w-4 text-neutral-400" />
+          {titel}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <div className="skeleton h-8 w-2/3 rounded-md" />
+        <div className="skeleton h-4 w-full rounded-md" />
       </CardContent>
     </Card>
   )

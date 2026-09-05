@@ -1,6 +1,7 @@
 // Donut der Schweregrad-Verteilung mit Gesamtzahl im Zentrum (recharts).
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+import { fundeText } from "@/lib/format"
 import type { Finding, FindingSeverity } from "@/types/domain"
 import { SEVERITY_META, SEVERITY_ORDER } from "@/components/project/findingMeta"
 
@@ -49,7 +50,7 @@ export function SeverityDonut({ findings }: { findings: Finding[] }) {
               fontSize: 12,
               fontFamily: "Inter, system-ui, sans-serif",
             }}
-            formatter={(value, name) => [`${Number(value ?? 0)} Funde`, String(name)]}
+            formatter={(value, name) => [fundeText(Number(value ?? 0)), String(name)]}
           />
         </PieChart>
       </ResponsiveContainer>

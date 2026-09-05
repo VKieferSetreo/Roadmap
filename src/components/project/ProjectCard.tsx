@@ -2,6 +2,7 @@
 // Strecken) und kompakte Listen-Zeile — umschaltbar über den Ansicht-Toggle.
 
 import { useNavigate } from "react-router-dom"
+import { fundeText } from "@/lib/format"
 import { ArrowRight, Route as RouteIcon, TriangleAlert } from "lucide-react"
 import { Badge } from "@/components/ui/Badge"
 import { MapPreview } from "@/components/shared/MapPreview"
@@ -90,7 +91,7 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           {project.status === "fertig" ? (
             <div className="flex items-center gap-3 text-xs text-neutral-600">
               <span className="tabular-nums">{project.distanzKm?.toLocaleString("de-DE")} km</span>
-              <span className="tabular-nums">{sichtbar.length} Funde</span>
+              <span className="tabular-nums">{fundeText(sichtbar.length)}</span>
               {kritisch > 0 ? (
                 <span className="flex items-center gap-1 font-medium text-severity-kritisch">
                   <TriangleAlert className="h-3.5 w-3.5" /> {kritisch} kritisch
@@ -139,7 +140,7 @@ export function ProjectListRow({ project, index = 0 }: { project: Project; index
         {project.status === "fertig" ? (
           <div className="hidden items-center gap-3 text-xs text-neutral-600 sm:flex">
             <span className="tabular-nums">{project.distanzKm?.toLocaleString("de-DE")} km</span>
-            <span className="tabular-nums">{sichtbar.length} Funde</span>
+            <span className="tabular-nums">{fundeText(sichtbar.length)}</span>
             {kritisch > 0 ? (
               <span className="flex items-center gap-1 font-medium text-severity-kritisch">
                 <TriangleAlert className="h-3.5 w-3.5" /> {kritisch}

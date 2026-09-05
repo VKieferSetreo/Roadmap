@@ -462,9 +462,11 @@ export function RouteTab({ project }: { project: Project }) {
                       ) : null}
                     </div>
                     {!isZiel ? (
-                      // Lücke standardmäßig zusammengezogen; beim Überfahren öffnet sie sich, ein Trenner-
-                      // Strich erscheint und das Plus zum Einfügen eines Zwischenpunkts wird sichtbar.
-                      <div className="group relative flex h-2 items-center justify-center transition-all duration-150 hover:h-9">
+                      // Lücke mit fester Höhe; beim Überfahren erscheinen Trennstrich und das Plus zum
+                      // Einfügen eines Zwischenpunkts. T-688: vorher wuchs sie beim Überfahren von 8 auf
+                      // 36 px und schob alles darunter weg, auch das Ziel-Feld. Sichtbar wird der Knopf
+                      // jetzt nur noch per opacity, die Höhe bleibt konstant.
+                      <div className="group relative flex h-9 items-center justify-center">
                         <span
                           aria-hidden
                           className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-neutral-200 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
@@ -691,14 +693,19 @@ export function RouteTab({ project }: { project: Project }) {
       />
 
       {/* #15: GeoPackage-Streckenauswahl. */}
-      <GpkgRouteSelectDialog
-        open={!!gpkg}
-        fileName={gpkg?.fileName ?? ""}
-        routes={gpkg?.routes ?? []}
-        busy={gpkgBusy}
-        onClose={() => setGpkg(null)}
-        onConfirm={loadGpkgRoutes}
-      />
+      {/* T-688: bedingt mounten wie die VEMAGS-Maske daneben. Dauerhaft gemountet behält der
+          Dialog seinen inneren Zustand, und die zweite GeoPackage-Datei öffnete sich mit den
+          Haken der ersten — sichtbar falsch, sobald die neue Datei andere Strecken enthält. */}
+      {gpkg ? (
+        <GpkgRouteSelectDialog
+          open
+          fileName={gpkg.fileName}
+          routes={gpkg.routes}
+          busy={gpkgBusy}
+          onClose={() => setGpkg(null)}
+          onConfirm={loadGpkgRoutes}
+        />
+      ) : null}
 
       {/* T-567: VEMAGS-Fahrtwegteil-Auswahl. Bedingt gemountet → frischer State (Vorauswahl) je Upload. */}
       {vemags ? (

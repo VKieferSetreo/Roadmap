@@ -70,3 +70,6 @@ export function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`
   return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`
 }
+
+/** „1 Fund", „3 Funde" (T-688). Stand an sieben Stellen fest als „Funde", auch bei genau einem. */
+export const fundeText = (n: number): string => `${n} ${n === 1 ? "Fund" : "Funde"}`

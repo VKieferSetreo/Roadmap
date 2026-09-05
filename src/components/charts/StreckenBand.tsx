@@ -52,7 +52,7 @@ export function StreckenBand({
         preserveAspectRatio="none"
         className="h-[84px] w-full"
         role="img"
-        aria-label={`Streckenprofil mit ${items.length} Funden auf ${Math.round(distanzKm).toLocaleString("de-DE")} km`}
+        aria-label={`Streckenprofil mit ${items.length} ${items.length === 1 ? "Fund" : "Funden"} auf ${Math.round(distanzKm).toLocaleString("de-DE")} km`}
       >
         {/* Basislinie = Strecke */}
         <line

@@ -3,6 +3,7 @@
 // nur einen Datumsabschnitt einer Teilstrecke betreffen. Bestätigen → Export läuft im Parent.
 
 import { useMemo, useState } from "react"
+import { fundeText } from "@/lib/format"
 import { FileDown, FileSpreadsheet } from "lucide-react"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Button } from "@/components/ui/Button"
@@ -152,7 +153,7 @@ export function ExportDialog({
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.farbe }} aria-hidden />
                 <span className="min-w-0 flex-1 truncate text-neutral-800">{r.name}</span>
                 <span className="shrink-0 text-xs tabular-nums text-neutral-400">
-                  {countFor(r.id)} Funde
+                  {fundeText(countFor(r.id))}
                 </span>
               </label>
             ))}
