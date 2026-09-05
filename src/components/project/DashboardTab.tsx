@@ -195,7 +195,11 @@ export function DashboardTab({
           index={0}
         />
         <StatCard
-          label={mehrereStrecken ? "Ø Fahrzeit" : "Fahrzeit"}
+          // T-664/F12: die Zahl ist km geteilt durch 50, keine Routing-Dauer. Das gehört ans
+          // Label, sonst liest der Kunde sie als berechnete Fahrzeit. Der bessere Fix wäre, die
+          // echte OSRM-Dauer zu verwenden (osrm.js dauerMin, sogar in dauer_min gecacht) — das
+          // ist ein Eingriff in den Analysepfad und steckt in T-678.
+          label={mehrereStrecken ? "Ø Fahrzeit (Schätzung)" : "Fahrzeit (Schätzung)"}
           text={`${Math.floor(fahrzeitMin / 60)} h ${fahrzeitMin % 60} min`}
           icon={<Clock className="h-4 w-4" />}
           index={1}

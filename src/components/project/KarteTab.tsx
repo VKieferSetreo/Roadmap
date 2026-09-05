@@ -476,7 +476,16 @@ export function KarteTab({
                 {mehrereStrecken ? "Ø " : ""}{streckeKm.toLocaleString("de-DE")} km
               </strong>
             </span>
-            <span className="flex items-center gap-1.5 text-neutral-700" title={mehrereStrecken ? "Durchschnitt je Strecke" : undefined}>
+            {/* T-664/F12: im engen Overlay ist kein Platz für ein Label, der Vorbehalt gehört
+                trotzdem hin — die Zahl ist km durch 50, keine Routing-Dauer. */}
+            <span
+              className="flex items-center gap-1.5 text-neutral-700"
+              title={
+                mehrereStrecken
+                  ? "Durchschnitt je Strecke, geschätzt mit 50 km/h"
+                  : "Schätzung, gerechnet mit 50 km/h"
+              }
+            >
               <Clock className="h-4 w-4 text-primary-600" />
               <strong className="tabular-nums">
                 {mehrereStrecken ? "Ø " : ""}{Math.floor(fahrzeitMin / 60)} h {fahrzeitMin % 60} min

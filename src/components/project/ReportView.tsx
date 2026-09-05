@@ -121,6 +121,7 @@ export function ReportView({
               {routen.length === 1 ? "Strecke" : "Strecken"} ·{" "}
               {project.distanzKm?.toLocaleString("de-DE")} km gesamt ·{" "}
               {Math.floor((project.fahrzeitMin ?? 0) / 60)} h {(project.fahrzeitMin ?? 0) % 60} min
+              {" "}(geschätzt)
             </p>
             {/* T-492: Daten-Stand getrennt vom Berichtsdatum — der echte Aktualitäts-Anker der Funde. */}
             {datenStand ? (
@@ -243,9 +244,20 @@ export function ReportView({
           </section>
         ) : null}
 
-        <footer className="mt-8 flex items-center justify-between border-t border-neutral-200 pt-3 text-[10px] text-neutral-400">
-          <span>Erstellt mit Setreo Roadmap. Routenanalyse für Schwertransporte</span>
-          <span>{formatDateDE(new Date())}</span>
+        {/* T-664/F16: Der Bericht verlässt das Haus und wird weitergereicht. Ohne Vorbehalt liest
+            er sich wie eine Freigabe. Der Wortlaut ist die Kurzform des versionierten Textes aus
+            DisclaimerContent, den jeder Nutzer beim Erstlogin bestätigt — kein neuer Rechtstext,
+            nur derselbe an der Stelle, an der er gebraucht wird. */}
+        <footer className="mt-8 border-t border-neutral-200 pt-3 text-[10px] leading-relaxed text-neutral-400">
+          <p>
+            Planungshilfe ohne Gewähr für Vollständigkeit, Richtigkeit und Aktualität. Ersetzt keine
+            verbindliche behördliche Genehmigung. Verbindliche Auflagen und Streckenfreigaben sind
+            ausschließlich bei den zuständigen Behörden einzuholen.
+          </p>
+          <p className="mt-1.5 flex items-center justify-between">
+            <span>Erstellt mit Setreo Roadmap. Routenanalyse für Schwertransporte</span>
+            <span>{formatDateDE(new Date())}</span>
+          </p>
         </footer>
       </div>
     </div>,
