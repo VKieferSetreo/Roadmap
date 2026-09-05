@@ -214,13 +214,16 @@ export function AnlageTab({ project }: { project: Project }) {
       {/* ── Für Externe freigeben (neben dem Zeitraum) — immer anzeigen (auch vor der Auswertung
           und im Demo-Modus), sonst klafft hier eine Lücke. Freigeben ist jederzeit möglich; der
           Link aktualisiert sich mit der nächsten Auswertung. ── */}
-      {!running ? (
-        <Card className="h-full">
-          <CardContent className="flex h-full flex-col p-4">
-            <PublishCard project={project} />
-          </CardContent>
-        </Card>
-      ) : null}
+      {/* T-686: stand bis 05.09.2026 unter `!running` und verschwand damit für die Dauer der
+          Auswertung — genau das, was der Kommentar darüber ausschließen wollte. Nebenwirkung war
+          ein Layout-Sprung: die Karte belegt eine Grid-Zelle, fällt sie weg, rutscht der
+          Auswertungs-Block eine Zeile hoch und beim Fertigwerden wieder zurück. Freigeben ist
+          laut Kommentar ohnehin jederzeit möglich, es gab also auch fachlich keinen Grund. */}
+      <Card className="h-full">
+        <CardContent className="flex h-full flex-col p-4">
+          <PublishCard project={project} />
+        </CardContent>
+      </Card>
 
       {/* ── Auswertung-Block (Status + Aktionen) — volle Breite ── */}
       <Card className="lg:col-span-2">
