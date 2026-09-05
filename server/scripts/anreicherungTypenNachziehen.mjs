@@ -57,14 +57,23 @@ if (!SCHREIBEN) {
   process.exit(0)
 }
 
+// ALLE Felder eines Punktes in EINEM Zug. `UPDATE ... FROM` verbindet jede Zielzeile mit
+// hoechstens einer Quellzeile: ein Hindernis mit fuenf Textwerten bekaeme sonst nur einen davon
+// typisiert, und man muesste das Skript so oft aufrufen, bis nichts mehr uebrig ist. Beim ersten
+// Versuch blieben dadurch 7.709 von 18.503 liegen.
 const { rows } = await db.query(
-  `UPDATE obstacles o
-      SET attrs = o.attrs || jsonb_build_object(a.feld, ${TYPISIERT}),
-          updated_at = now()
-     FROM anreicherung a
-    WHERE o.id::text = a.ziel_id AND ${BEDINGUNG}
+  `WITH korrekt AS (
+     SELECT a.ziel_id::uuid AS id, jsonb_object_agg(a.feld, ${TYPISIERT}) AS werte
+       FROM anreicherung a JOIN obstacles o ON o.id::text = a.ziel_id
+      WHERE ${BEDINGUNG}
+      GROUP BY a.ziel_id
+   )
+   UPDATE obstacles o
+      SET attrs = o.attrs || k.werte, updated_at = now()
+     FROM korrekt k
+    WHERE o.id = k.id
     RETURNING o.id`,
   p,
 )
-sage(`${rows.length} Werte auf ihren Typ gezogen.`)
+sage(`${rows.length} Punkte angefasst, alle ihre Textwerte in einem Zug.`)
 process.exit(0)
