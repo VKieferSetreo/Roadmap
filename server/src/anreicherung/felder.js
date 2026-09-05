@@ -73,10 +73,17 @@ export function zahl(s) {
 
 /** Zahl in einem Bereich, sonst null. Die Grenzen sind der Schutz gegen falsch gelesene Zahlen:
  *  Baujahr, Stationierung und Bauwerksnummer stehen in denselben Texten. */
-const spanne = (von, bis) => (roh) => {
-  const n = zahl(roh)
-  return n != null && n >= von && n <= bis ? n : null
-}
+const spanne = (von, bis) =>
+  Object.assign(
+    (roh) => {
+      const n = zahl(roh)
+      return n != null && n >= von && n <= bis ? n : null
+    },
+    // T-664/F1: die Formprobe weiss als Einzige, welchen TYP ein Feld hat. Ohne diese Marke
+    // muesste das Einspielen ihn aus dem Feldnamen raten, und dann wuerde aus der Strassenangabe
+    // getrageneStrasse = "471" die Zahl 471. Neue Felder erben den Typ automatisch.
+    { typ: "zahl" },
+  )
 
 /** Ja/Nein aus einem Text. Nur eindeutige Wörter, alles andere ist keine Aussage. */
 function jaNein(roh) {
@@ -85,6 +92,7 @@ function jaNein(roh) {
   if (/^(nein|false|0|nicht vorhanden|keine)$/.test(t)) return false
   return null
 }
+jaNein.typ = "boolean" // siehe spanne(): der Typ haengt an der Formprobe, nicht am Feldnamen
 
 /**
  * Ein Ja/Nein-Feld braucht eine ANDERE Ableitbarkeitsprobe als ein Maß.
@@ -390,3 +398,20 @@ export function offeneFelderFuer(o) {
     (f) => attrs[f] == null && !beantwortet.has(f) && (bauwerk || !NUR_BAUWERK.has(f)),
   )
 }
+
+/**
+ * Welchen TYP traegt ein Feld in obstacles.attrs (T-664/F1)?
+ *
+ * Die Anreicherungstabelle haelt jeden Wert als Text — sie muss, es sind Modellantworten. In
+ * attrs braucht die Engine dagegen echte Typen: rules.js pruefe strikt `=== true` und
+ * `typeof number`, ein "true" als Zeichenkette ist fuer sie schlicht nicht da.
+ *
+ * Der Typ kommt aus der FORMPROBE, nicht aus dem Feldnamen. Ein Name wie "getrageneStrasse"
+ * kann "471" enthalten, und geraten wuerde daraus die Zahl 471. Neue Felder erben ihren Typ
+ * automatisch, sobald sie spanne() oder jaNein() benutzen.
+ */
+export const FELD_TYP = Object.fromEntries(
+  Object.entries(KATALOG).map(([feld, regel]) => [feld, regel?.pruefe?.typ ?? "text"]),
+)
+export const ZAHL_FELDER = Object.keys(FELD_TYP).filter((f) => FELD_TYP[f] === "zahl")
+export const BOOL_FELDER = Object.keys(FELD_TYP).filter((f) => FELD_TYP[f] === "boolean")

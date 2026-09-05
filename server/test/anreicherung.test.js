@@ -8,7 +8,7 @@ import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, 
 import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn, AUSSICHTSLOS, quellHashVon } from "../src/anreicherung/lauf.js"
 import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
-import { spieleEin, nimmZurueck } from "../src/anreicherung/einspielen.js"
+import { spieleEin, nimmZurueck, typisiere } from "../src/anreicherung/einspielen.js"
 import { nachlauf, nachImport } from "../src/anreicherung/nachlauf.js"
 import { zahl } from "../src/anreicherung/felder.js"
 
@@ -660,6 +660,35 @@ describe("Zwei Fehler aus dem laufenden Bestandslauf", () => {
     for (const t of nein) {
       expect(pruefeAngabe({ feld: "vollsperrung", wert: true, beleg: t }, t).ok, t).toBe(false)
     }
+  })
+
+  // T-664/F1: die Anreicherungstabelle haelt alles als Text, die Engine prueft strikt auf Zahl
+  // und Boolean. Ohne Typisierung war die gesamte Anreicherung fuer die Bewertung unsichtbar.
+  it("gibt Ja/Nein-Feldern einen echten Boolean (T-664/F1)", () => {
+    expect(typisiere("vollsperrung", "true")).toBe(true)
+    expect(typisiere("halbseitig", "false")).toBe(false)
+    expect(typisiere("umleitung", "true")).toBe(true)
+  })
+
+  it("gibt Massfeldern eine echte Zahl (T-664/F1)", () => {
+    expect(typisiere("maxHoeheM", "4.2")).toBe(4.2)
+    expect(typisiere("maxGewichtT", "16")).toBe(16)
+    expect(typisiere("spurenGesperrt", "0")).toBe(0)
+  })
+
+  it("laesst Textfelder Text, auch wenn der Wert wie eine Zahl aussieht (T-664/F1)", () => {
+    // Der wichtigste Fall: eine Strassenangabe darf nicht zur Zahl werden. Genau deshalb kommt
+    // der Typ aus dem Katalog und nicht aus dem Aussehen des Werts.
+    expect(typisiere("getrageneStrasse", "471")).toBe("471")
+    expect(typisiere("gekreuzteStrasse", "5")).toBe("5")
+    expect(typisiere("sperrungArt", "roadClosed")).toBe("roadClosed")
+    expect(typisiere("zeitfenster", "08:00-16:00")).toBe("08:00-16:00")
+  })
+
+  it("laesst unbekannte Felder und krumme Werte unangetastet (T-664/F1)", () => {
+    expect(typisiere("gibtsNicht", "true")).toBe("true")
+    expect(typisiere("maxHoeheM", "ca. 4")).toBe("ca. 4")
+    expect(typisiere("vollsperrung", "vielleicht")).toBe("vielleicht")
   })
 
   // T-664/F5: der Wertabgleich allein liess jede Zahl durch, die zufaellig im Beleg stand.

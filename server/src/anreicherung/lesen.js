@@ -11,6 +11,8 @@
 // Und: jeder übernommene Wert hinterlässt eine Spur. Ein Fund, dessen Bewertung auf einem
 // abgeleiteten Wert beruht, sagt das im Detail — die Oberfläche macht daraus ihr Zeichen.
 
+import { typisiere } from "./einspielen.js"
+
 /** Welche Angaben stammen aus der Anreicherung? Map von obstacle-id auf {feld: {wert, beleg}}. */
 export async function ladeAnreicherung(db, obstacleIds, { modell = null } = {}) {
   const ids = [...new Set((obstacleIds ?? []).filter(Boolean).map(String))]
@@ -43,7 +45,11 @@ export function mitAnreicherung(obstacle, eintrag) {
   const ergaenzt = []
   for (const [feld, a] of Object.entries(eintrag)) {
     if (attrs[feld] != null) continue // gemeldete Angabe gewinnt, immer
-    attrs[feld] = a.wert
+    // T-664/F1: derselbe Typ wie beim Einspielen. Dieser Pfad baut die Ansicht zur Laufzeit auf,
+    // ohne in attrs zu schreiben — kaeme der Wert hier als Text durch, saehe die Anzeige etwas
+    // anderes als die Bewertung. Zwei Wahrheiten fuer denselben Punkt sind schlimmer als eine
+    // falsche.
+    attrs[feld] = typisiere(feld, a.wert)
     ergaenzt.push(feld)
   }
   return ergaenzt.length ? { obstacle: { ...obstacle, attrs }, ergaenzt } : { obstacle, ergaenzt: [] }

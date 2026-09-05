@@ -11,12 +11,35 @@
 // sich sein Beitrag zurücknehmen, ohne die Quelldaten zu beschädigen. Stünde er nur in attrs,
 // wäre er von einer gemeldeten Angabe nicht mehr zu unterscheiden.
 
-/** Nur diese Formen dürfen in attrs landen — dieselben Typen, die die Regeln dort erwarten. */
-function typisiere(feld, wert) {
-  if (wert === "true") return true
-  if (wert === "false") return false
-  const n = Number(wert)
-  return Number.isFinite(n) && String(n) === String(wert).trim() ? n : wert
+import { FELD_TYP, BOOL_FELDER, ZAHL_FELDER } from "./felder.js"
+
+/**
+ * Nur diese Formen dürfen in attrs landen — dieselben Typen, die die Regeln dort erwarten.
+ *
+ * T-664/F1: diese Funktion stand seit dem ersten Tag da und wurde im Schreibpfad NIE aufgerufen.
+ * `spieleEin` aggregierte roh aus der Textspalte, und damit landete "true" als Zeichenkette in
+ * attrs. Die Engine prüft strikt (`rules.js` `num()` nimmt nur `typeof number`, die Sperr-Regeln
+ * vergleichen `=== true`), sah dort also nichts. Gemessen vor dem Fix: 2.056 Hindernisse mit
+ * `vollsperrung: "true"`, dazu 9.294 `sperrungArt`, 1.794 `fahrbahnVerengt`, 1.104
+ * `spurenGesperrt` — die gesamte Anreicherung war für die Bewertung unsichtbar.
+ *
+ * DER TYP KOMMT AUS DEM KATALOG, nicht aus dem Wert. Sonst würde aus der Straßenangabe
+ * `getrageneStrasse: "471"` die Zahl 471, und aus `zeitfenster` und `sperrungArt` ebenfalls
+ * Unsinn, sobald sie einmal rein numerisch daherkommen.
+ */
+export function typisiere(feld, wert) {
+  if (FELD_TYP[feld] === "boolean") {
+    if (wert === "true") return true
+    if (wert === "false") return false
+    return wert
+  }
+  if (FELD_TYP[feld] === "zahl") {
+    const s = String(wert ?? "").trim()
+    if (!/^-?\d+(?:\.\d+)?$/.test(s)) return wert
+    const n = Number(s)
+    return Number.isFinite(n) ? n : wert
+  }
+  return wert
 }
 
 /**
@@ -29,13 +52,21 @@ function typisiere(feld, wert) {
  * ist sticky (der Import löscht es nicht), die Feldliste steht in der Anreicherungstabelle.
  */
 export async function spieleEin(db, { modell = null } = {}) {
+  // Die Typisierung passiert in SQL, weil auch die Aggregation dort passiert — ein Lauf über
+  // 73.000 Punkte soll eine Abfrage bleiben. Die Feldlisten kommen aus dem Katalog (FELD_TYP),
+  // damit hier nichts geraten wird und ein neues Feld seinen Typ automatisch mitbringt.
+  // Die Regex ist dieselbe wie in typisiere(): nur eine saubere Dezimalzahl wird zur Zahl.
   const { rows } = await db.query(
     `WITH abgeleitet AS (
-       SELECT ziel_id::uuid AS id, jsonb_object_agg(feld, wert) AS werte
+       SELECT ziel_id::uuid AS id, jsonb_object_agg(feld, CASE
+                WHEN feld = ANY($1::text[]) AND wert IN ('true', 'false') THEN to_jsonb(wert::boolean)
+                WHEN feld = ANY($2::text[]) AND wert ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN to_jsonb(wert::numeric)
+                ELSE to_jsonb(wert)
+              END) AS werte
          FROM anreicherung
         WHERE ziel_typ = 'obstacle' AND stand = 'ok' AND wert IS NOT NULL
           AND (geprueft IS NULL OR geprueft = true)
-          ${modell ? "AND modell = $1" : ""}
+          ${modell ? "AND modell = $3" : ""}
         GROUP BY ziel_id
      )
      UPDATE obstacles o
@@ -48,7 +79,7 @@ export async function spieleEin(db, { modell = null } = {}) {
         -- updated_at verliert seine Aussage.
         AND (a.werte || coalesce(o.attrs, '{}'::jsonb)) IS DISTINCT FROM coalesce(o.attrs, '{}'::jsonb)
       RETURNING o.id`,
-    modell ? [modell] : [],
+    modell ? [BOOL_FELDER, ZAHL_FELDER, modell] : [BOOL_FELDER, ZAHL_FELDER],
   )
   return { aktualisiert: rows.length }
 }
@@ -103,5 +134,3 @@ export async function kiFelderJePunkt(db, obstacleIds) {
   ).catch(() => ({ rows: [] }))
   return new Map(rows.map((r) => [r.ziel_id, r.felder]))
 }
-
-export { typisiere }
