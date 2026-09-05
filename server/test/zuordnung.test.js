@@ -184,6 +184,42 @@ describe("zuordnung", () => {
     expect(zuordnung(b, ctx, 10)).toBe("unbestimmt")
   })
 
+  // "Ueberfuehrung X ueber UNSERE Strasse" — der Name allein reicht, auch wenn die Quelle in
+  // beide Felder dasselbe geschrieben hat. Am 05.09.2026 gegen die Produktion gemessen: genau
+  // 43 der 1.593 Bruecken-Warnungen, ALLE mit dieser kaputten Feldangabe.
+  it("widerlegt die Ueberfuehrung aus dem Namen, wenn beide Felder dasselbe sagen", () => {
+    const b = {
+      kategorie: "bruecke",
+      name: "BW 165 - Üf Gemeindestr. über A7, Ab 250, St 1255",
+      attrs: { getrageneStrasse: "A7", gekreuzteStrasse: "A7", grundsaetzlicheGstSperre: true },
+    }
+    expect(zuordnung(b, ctx, 10)).toBe("widerlegt")
+  })
+
+  it("liest auch den Fall ohne klassifizierte Strasse oben", () => {
+    const b = { kategorie: "bruecke", name: "ÜF EINES WANDERWEGES ÜBER DIE A 7", attrs: { grundsaetzlicheGstSperre: true } }
+    expect(zuordnung(b, ctx, 10)).toBe("widerlegt")
+  })
+
+  // Die teure Gegenrichtung: wir fahren OBEN. Ein Loeschen waere hier der schlimmere Fehler,
+  // deshalb steht die Probe hier und nicht nur im Kommentar. Gemessen blieben 558 solche
+  // Bauwerke stehen.
+  it("verwirft NICHT, wenn wir ueber das Bauwerk fahren", () => {
+    const b = { kategorie: "bruecke", name: "Brücke A7 über den Entlesbach", attrs: { grundsaetzlicheGstSperre: true } }
+    expect(zuordnung(b, ctx, 10)).not.toBe("widerlegt")
+  })
+
+  // Am Autobahnkreuz sind beide Strassen unsere. Dann sagt der Name nichts Eindeutiges mehr.
+  it("verwirft nicht, wenn wir die obere Strasse hier auch fahren", () => {
+    const beides = { strassenSpannen: spannen, refs: new Set(["A7", "A44"]) }
+    const b = { kategorie: "bruecke", name: "ÜF der A44 über die A7", attrs: { grundsaetzlicheGstSperre: true } }
+    // Bei km 10 kennt das Fenster nur die A7 — dort ist es eindeutig.
+    expect(zuordnung(b, beides, 10)).toBe("widerlegt")
+    // Von Hand ein Fenster, das beide fuehrt: kein Urteil.
+    const kreuz = { strassenSpannen: [{ ref: "A7", vonKm: 0, bisKm: 100 }, { ref: "A44", vonKm: 0, bisKm: 100 }] }
+    expect(zuordnung(b, kreuz, 10)).not.toBe("widerlegt")
+  })
+
   it("urteilt ohne Streckenauskunft nie, sondern bleibt unbestimmt", () => {
     const b = bauwerk({ getrageneStrasse: "K 12", gekreuzteStrasse: "A 7", maxGewichtT: 40 })
     expect(zuordnung(b, { strassenSpannen: [] }, 10)).toBe("unbestimmt")

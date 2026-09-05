@@ -213,6 +213,29 @@ export function zuordnung(obstacle, ctx, km) {
   // Wirtschaftsweg ueber die A5"), und wer den Wirtschaftsweg traegt, interessiert uns nicht.
   // Nachgemessen: ohne diesen Zweig blieben genau solche Ueberfuehrungen stehen.
   if (untenGefahren && !obenGefahren) return "widerlegt"
+
+  // DASSELBE URTEIL AUS DEM NAMEN, wenn das Strukturfeld nichts hergibt. Sagt der Name
+  // "Ueberfuehrung X ueber A1" und wir fahren hier die A1, liegt das Bauwerk ueber uns —
+  // unabhaengig davon, was die Quelle in ihre beiden Felder geschrieben hat.
+  //
+  // Der Zweig oben erreicht diese Faelle nicht: bei ihnen ist getragen == gekreuzt, also
+  // `brauchbar` false und `untenGefahren` damit immer false. Gemessen am 05.09.2026 gegen die
+  // 1.593 Bruecken-Warnungen der Produktion: 43 Treffer, ALLE mit genau dieser kaputten
+  // Feldangabe ("Uef Gemeindestr. ueber A1", "UEF eines Wanderweges ueber die A9").
+  //
+  // Die Gegenprobe ist die teure Richtung und deshalb Bedingung: nennt der Name oben eine
+  // Strasse, die wir hier AUCH fahren (Autobahnkreuz), bleibt der Fund. Gemessen blieben so
+  // 558 Bauwerke stehen, ueber die wir tatsaechlich fahren ("Bruecke A73 ueber den Entlesbach").
+  //
+  // `fenster` und NICHT `lokal`: der globale Rueckfall darf hier so wenig einspringen wie beim
+  // Umkehrschluss weiter unten. Sonst wuerde aus einer Luecke in unseren eigenen Streckendaten
+  // ein Loeschurteil, und genau dagegen steht der Grundsatz aus T-653, dass die Namenslesung
+  // allein nichts verwerfen darf. Mit dem Ortsbezug davor darf sie es, ohne ihn nicht.
+  if (
+    fenster.size > 0 && ausName.unten != null && fenster.has(ausName.unten) &&
+    !(ausName.oben != null && fenster.has(ausName.oben))
+  ) return "widerlegt"
+
   // Fahren wir auf der getragenen, sind wir oben drauf. Die Tragfaehigkeit gilt uns.
   if (obenGefahren) return "bewiesen"
 

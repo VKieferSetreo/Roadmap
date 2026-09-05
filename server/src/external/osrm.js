@@ -49,12 +49,29 @@ const NAME_UEF = /(?:ü|ue)f(?:g)?\.?\s+(?:der|des|d\.)?\s*|(?:ü|ue)berf(?:ü|u
 const REF_ROH = String.raw`(?:A|B|L|K|St|S)\s*(?:[- ]\s*[A-ZÄÖÜ]{2,3}\s*)?[- ]?\s*\d{1,4}`
 const NAME_UEBER = new RegExp(String.raw`(${REF_ROH})\s*(?:-Ast|-Aeste|-Äste)?\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der)?\s*(.*)$`, "i")
 const NAME_KOPF = new RegExp(String.raw`^\s*(?:BAB\s*)?(?:Br(?:ü|ue)cke|BW|Talbr(?:ü|ue)cke)?\s*(?:BAB\s*)?(${REF_ROH})\b`, "i")
+// Was hinter dem Ueberfuehrungswort steht, noch einmal an "ueber" geteilt: davor liegt oben,
+// dahinter unten. Nicht gierig, damit ein zweites "ueber" im Namen die Teilung nicht verschiebt.
+const NAME_UEF_UEBER = /^(.*?)\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der|d\.)?\s*(.*)$/i
 
 export function strasseAusName(name) {
   const t = String(name ?? "")
   const uef = t.match(NAME_UEF)
   if (uef) {
-    const oben = normRoadRefWeit(t.slice(uef.index + uef[0].length))
+    const rest = t.slice(uef.index + uef[0].length)
+    // "UEF «oben» ueber «unten»" — beide Muster in einem Namen, und dann gewinnt "ueber".
+    // Ohne diese Teilung nahm die Zeile darunter die ERSTE Nummer im Rest, und die steht bei
+    // diesem Muster hinter "ueber", ist also gerade die untere: aus "Uef Gemeindestr. ueber A1"
+    // wurde oben = A1. Auf einer A1-Route hiess das "wir fahren oben drauf", obwohl wir
+    // darunter durchfahren. Gemessen am 05.09.2026 an 1.593 Bruecken-Warnungen: 43 Faelle,
+    // alle mit unbrauchbarem Strukturfeld (getragen == gekreuzt), also ohne anderen Auswegs.
+    const geteilt = rest.match(NAME_UEF_UEBER)
+    if (geteilt) {
+      const unten = normRoadRefWeit(geteilt[2])
+      // «oben» darf leer bleiben: "Uef eines Wanderweges ueber die A9" nennt oben gar keine
+      // klassifizierte Strasse, und genau das ist die Aussage — dort faehrt niemand von uns.
+      if (unten) return { oben: normRoadRefWeit(geteilt[1]), unten }
+    }
+    const oben = normRoadRefWeit(rest)
     if (oben) return { oben, unten: normRoadRefWeit(t.slice(0, uef.index)) }
   }
   const ueber = t.match(NAME_UEBER)
