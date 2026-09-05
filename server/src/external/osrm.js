@@ -45,7 +45,11 @@ export function normRoadRefWeit(s) {
  *   2. "«oben» ueber «unten»" — das haeufigste im Bestand
  *   3. "Bruecke «oben» BW 1234" — die Strasse gleich am Anfang ist die getragene
  */
-const NAME_UEF = /(?:ü|ue)f(?:g)?\.?\s+(?:der|des|d\.)?\s*|(?:ü|ue)berf(?:ü|ue)hrung\s+(?:der|des|d\.)\s*/i
+// T-676: der Artikel ist auch im ausgeschriebenen Zweig OPTIONAL. Mit Pflichtartikel fiel
+// "A5; Überführung Wirtschaftsweg" durch dieses Muster und landete bei NAME_KOPF, das die A5 am
+// Zeilenanfang als getragene Strasse las — dabei liegt dort der Wirtschaftsweg oben und wir
+// fahren auf der A5 darunter durch.
+const NAME_UEF = /(?:ü|ue)f(?:g)?\.?\s+(?:der|des|d\.)?\s*|(?:ü|ue)berf(?:ü|ue)hrung\s+(?:der|des|d\.)?\s*/i
 const REF_ROH = String.raw`(?:A|B|L|K|St|S)\s*(?:[- ]\s*[A-ZÄÖÜ]{2,3}\s*)?[- ]?\s*\d{1,4}`
 const NAME_UEBER = new RegExp(String.raw`(${REF_ROH})\s*(?:-Ast|-Aeste|-Äste)?\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der)?\s*(.*)$`, "i")
 const NAME_KOPF = new RegExp(String.raw`^\s*(?:BAB\s*)?(?:Br(?:ü|ue)cke|BW|Talbr(?:ü|ue)cke)?\s*(?:BAB\s*)?(${REF_ROH})\b`, "i")
@@ -72,7 +76,19 @@ export function strasseAusName(name) {
       if (unten) return { oben: normRoadRefWeit(geteilt[1]), unten }
     }
     const oben = normRoadRefWeit(rest)
-    if (oben) return { oben, unten: normRoadRefWeit(t.slice(0, uef.index)) }
+    const unten = normRoadRefWeit(t.slice(0, uef.index))
+    // T-676: auch dann antworten, wenn NUR die untere Strasse bekannt ist. Der Fall ist im
+    // Bestand der haeufigste: "A5; Üfg WiWeg Marienhof" nennt hinter dem Ueberfuehrungswort
+    // einen Wirtschaftsweg, also keine klassifizierte Nummer. Vorher gab die Zeile mangels
+    // `oben` gar nichts zurueck, der Name lief weiter bis NAME_KOPF, und das las die A5 am
+    // Zeilenanfang als GETRAGENE Strasse. Auf einer A5-Route hiess das "wir fahren drueber",
+    // obwohl wir darunter durchfahren. Gemessen: 85 von 157 Bauwerken mit Ueberfuehrungswort
+    // trugen ein falsches `oben`.
+    //
+    // Die Reihenfolge im Namen entscheidet, und sie bleibt unangetastet: steht die Nummer HINTER
+    // dem Ueberfuehrungswort ("Üf. BAB A 2 ü. Gemeindestr."), traegt das Bauwerk sie, und `oben`
+    // gewinnt wie bisher. Steht sie DAVOR, ist sie die gekreuzte.
+    if (oben || unten) return { oben, unten }
   }
   const ueber = t.match(NAME_UEBER)
   if (ueber) {

@@ -17,6 +17,7 @@ import {
   istMassRestriktion,
 } from "../src/engine/index.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
+import { strasseAusName } from "../src/external/osrm.js"
 
 // Eine gerade Nord-Sued-Route bei Kassel, rund 111 km lang (1 Grad Breite).
 const route = Array.from({ length: 101 }, (_, i) => ({ lat: 51.0 + i * 0.01, lng: 9.5 }))
@@ -357,5 +358,20 @@ describe("istMassRestriktion", () => {
     expect(istMassRestriktion({ vollsperrung: true })).toBe(false)
     expect(istMassRestriktion({})).toBe(false)
     expect(istMassRestriktion(null)).toBe(false)
+  })
+})
+
+describe("strasseAusName — Ueberfuehrung (T-676)", () => {
+  // Alle Namen woertlich aus dem Produktionsbestand.
+  it("liest die Nummer VOR dem Ueberfuehrungswort als gekreuzte Strasse", () => {
+    // Der Wirtschaftsweg liegt oben, die A5 unten — wir fahren darunter durch.
+    expect(strasseAusName('A5; Üfg WiWeg Marienhof')).toMatchObject({ oben: null, unten: "A5" })
+    expect(strasseAusName('A5; Überführung Wirtschaftsweg "Rittmatte"')).toMatchObject({ oben: null, unten: "A5" })
+    expect(strasseAusName("A24, ÜF Gemeindestraße von Lehsen nach Ziggelmark/Brücke")).toMatchObject({ oben: null, unten: "A24" })
+  })
+
+  it("laesst die Nummer HINTER dem Ueberfuehrungswort die getragene bleiben", () => {
+    // Hier traegt das Bauwerk die A2 selbst, die Reihenfolge im Namen sagt es.
+    expect(strasseAusName("BW 657, Üf. BAB A 2 ü. Gemeindestr. in km 260,883/")).toMatchObject({ oben: "A2" })
   })
 })
