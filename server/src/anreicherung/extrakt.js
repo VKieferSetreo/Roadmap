@@ -181,6 +181,12 @@ export function pruefeAngabe(angabe, quelltext) {
     if (wert === false && !VERNEINT.test(beleg)) {
       return { ok: false, grund: `Beleg "${beleg}" belegt ein Ja, nicht das gemeldete Nein` }
     }
+    // Das belegMuster sagt, ob der Beleg zum Feld gehoert. Es sagt nicht, ob er das GANZE Objekt
+    // meint. "Ausfahrt gesperrt" passt zum Feld vollsperrung und meint trotzdem nur die Rampe.
+    // Das Veto haengt am Feld, weil nur dort bekannt ist, welche Teilobjekte es aushebeln.
+    if (wert === true && regel.belegVeto?.(beleg)) {
+      return { ok: false, grund: `Beleg "${beleg}" sperrt nur ein Teilobjekt, nicht die Strecke` }
+    }
   } else {
     const ausBeleg = regel.pruefe(beleg)
     if (ausBeleg == null || String(ausBeleg) !== String(wert)) {

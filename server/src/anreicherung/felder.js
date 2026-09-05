@@ -124,6 +124,38 @@ const GEHWEG = /geh-?\s*\/?\s*rad|gehweg|gehbahn|radweg|fu(ß|ss)weg|fu(ß|ss)g(
 const FAHRBAHN = /fahrbahn|fahrstreifen|fahrspur|richtungsfahrbahn|vollsperr|durchfahrt/i
 export const nurGehweg = (beleg) => GEHWEG.test(String(beleg ?? "")) && !FAHRBAHN.test(String(beleg ?? ""))
 
+/**
+ * VETO gegen „vollsperrung = ja", wenn der Beleg ein TEILOBJEKT sperrt (T-664/F6).
+ *
+ * `stichwort.vollsperrung` endet auf dem blanken „gesperrt", und das ist der Türöffner: „Ausfahrt
+ * gesperrt", „Verbindungsfahrbahn gesperrt", „Parkbucht gesperrt" stützten damit eine Vollsperrung
+ * der ganzen Straße. Gemessen am Bestand: von 2.900 Zeilen mit vollsperrung=true nennen nur 279
+ * ausdrücklich eine Vollsperrung, die übrigen 2.621 tragen nur „gesperrt".
+ *
+ * Das blanke „gesperrt" darf trotzdem NICHT weg: „KU6 zwischen Willmersreuth und Heinersreuth
+ * gesperrt" ist eine echte Vollsperrung, und solche Sätze sind die Mehrheit. Verworfen wird
+ * deshalb nur, wo ein Teilobjekt das Sperrobjekt IST.
+ *
+ * STRECKE schlägt TEILOBJEKT, und das ist der Kern: in „B8 Passau Richtung Plattling zwischen
+ * Passau und Ausfahrt Gaisbruck gesperrt" ist „Ausfahrt" ein Ortsname an der Abschnittsgrenze,
+ * nicht das gesperrte Objekt. Ohne diesen Vorrang wären 41 echte Streckensperrungen mit
+ * weggefallen. Geh-/Radweg steht bewusst NICHT in TEILOBJEKT (dafür gibt es `nurGehweg`), sonst
+ * fiele „Richtungsfahrbahn gesperrt … Gehweg gesperrt, Radweg gesperrt" wegen des Gehwegs.
+ *
+ * Wirkung gemessen: 179 von 2.900 fallen (6,2 Prozent), Gegenprobe auf Streckensperrungen null.
+ */
+const TEILOBJEKT_GESPERRT =
+  /ausfahrt|einfahrt|auffahrt|abfahrt|zufahrt|rampe|verbindungsfahrbahn|(ü|ue)berfahrt|(ü|ue)berleitung|anschlussstelle|fahrstreifen|fahrspur|\bspur\b|(ü|ue)berholspur|standstreifen|seitenstreifen|parkpl|rastpl|\bpwc\b|parkstreifen|parkbucht|rastanlage/i
+const STRECKENBEZUG = /zwischen .{2,60} und |ortsdurchfahrt|richtungsfahrbahn|\bin h(ö|oe)he\b/i
+const AUSDRUECKLICH_VOLL = /vollsperr|voll gesperrt|komplett gesperrt|gesamte.{0,20}gesperrt/i
+
+export const nurTeilobjektGesperrt = (beleg) => {
+  const b = String(beleg ?? "")
+  if (AUSDRUECKLICH_VOLL.test(b)) return false // die Quelle sagt es selbst
+  if (STRECKENBEZUG.test(b)) return false // „zwischen X und Y" — Teilobjekt ist Ortsangabe
+  return TEILOBJEKT_GESPERRT.test(b)
+}
+
 const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
   teilsperrung: new RegExp(`teilsperr|teilweise gesperrt|teilw\\. gesperrt|halbseit|einseitig|${EINSPURIG}`, "i"),
@@ -194,7 +226,7 @@ export const KATALOG = {
   },
 
   // ── Art der Behinderung ───────────────────────────────────────────────────
-  vollsperrung: { frage: "Ist die Straße voll gesperrt? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.vollsperrung },
+  vollsperrung: { frage: "Ist die Straße voll gesperrt? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.vollsperrung, belegVeto: nurTeilobjektGesperrt },
   teilsperrung: { frage: "Ist die Straße nur teilweise gesperrt? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.teilsperrung },
   halbseitig: { frage: "Wird halbseitig gesperrt oder im Einbahnverkehr geführt? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.halbseitig },
   fahrbahnVerengt: { frage: "Ist die Fahrbahn verengt? (ja/nein)", pruefe: jaNein, belegMuster: stichwort.fahrbahnVerengt },

@@ -644,6 +644,40 @@ describe("Zwei Fehler aus dem laufenden Bestandslauf", () => {
     const t = "Vollsperrung der Fahrbahn wegen Kanalarbeiten"
     expect(pruefeAngabe({ feld: "sperrungArt", wert: "vollsperrung", beleg: t }, t)).toMatchObject({ ok: true })
   })
+
+  // T-664/F6: das blanke "gesperrt" im Stichwort machte jede Rampensperrung zur Vollsperrung.
+  // Alle Belege hier stammen woertlich aus dem Produktionsbestand.
+  it("haelt ein gesperrtes Teilobjekt nicht fuer eine Vollsperrung (T-664/F6)", () => {
+    const nein = [
+      "Verbindungsfahrbahn gesperrt",
+      "Ausfahrt gesperrt, Baustelle",
+      "Einfahrt u. Ausfahrt gesperrt",
+      "Parkbucht gesperrt",
+      "Standstreifen gesperrt",
+      "A7 Ulm Richtung Würzburg Kreuz Biebelried Überleitung zur A3 Richtung Nürnberg gesperrt",
+      "Die Zufahrt zur K7020 von der B103 ist bis zum 14.08.2026 vollgesperrt",
+    ]
+    for (const t of nein) {
+      expect(pruefeAngabe({ feld: "vollsperrung", wert: true, beleg: t }, t).ok, t).toBe(false)
+    }
+  })
+
+  it("laesst echte Streckensperrungen stehen, auch mit Ortsnamen wie Ausfahrt (T-664/F6)", () => {
+    const ja = [
+      // Der wichtigste Fall: "Ausfahrt" ist hier die Abschnittsgrenze, nicht das Sperrobjekt.
+      // Ohne den Streckenbezug-Vorrang waeren 41 solcher Meldungen mit weggefallen.
+      "B8 Passau Richtung Plattling zwischen Passau und Ausfahrt Gaisbruck gesperrt",
+      "B286 Schweinfurt Richtung Bad Brückenau zwischen Auffahrt Stralsbach und Poppenroth gesperrt",
+      "KU6 zwischen Willmersreuth und Abzweig nach Heinersreuth gesperrt, Baustelle",
+      "gesperrt, Baustelle",
+      "Für genehmigungspflichtige Schwertransporte gesperrt",
+      // Gehweg darf eine danebenstehende Fahrbahnsperrung nicht aushebeln.
+      "Richtungsfahrbahn gesperrt, Bauarbeiten, Gehweg gesperrt, Radweg gesperrt",
+    ]
+    for (const t of ja) {
+      expect(pruefeAngabe({ feld: "vollsperrung", wert: true, beleg: t }, t).ok, t).toBe(true)
+    }
+  })
 })
 
 describe("nimmZurueck greift nur an, was wirklich abgeleitet ist", () => {
