@@ -400,7 +400,19 @@ const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " "
 // Geom). Diskriminator: läuft die Restriktionslinie DECKUNGSGLEICH (≤ SAME_LANE_M) auf der Route?
 // >0 ⇒ Transport fährt auf der Straße → echte Auflage, behalten. ≈0 ⇒ nur gekreuzt → verwerfen.
 const CROSS_MIN_KM = Number(process.env.SEVAS_CROSS_MIN_KM ?? 0.02) // 20 m deckungsgleicher Mindestlauf
-const istMassRestriktion = (a) => !!a && (a.maxHoeheM != null || a.maxGewichtT != null || a.maxBreiteM != null)
+// `verkehrsverbotLkwT` gehoert dazu und fehlte bis zum 05.09.2026 (T-654). Es ist dasselbe in
+// gruen: ein Gewichtslimit an einer konkreten Strasse, nur aus dem Zeichen 253 statt aus einer
+// Bruecken-Traglast. Ohne es lief dieser Filter bei 14.453 von 19.662 Gewichts-Hindernissen
+// (73,5 Prozent) gar nicht erst an.
+//
+// Vor dem Einbau an den 42 betroffenen Funden der Produktion nachgerechnet, mit den echten
+// Geometrien und diesem Code: 16 fallen weg, davon 13 mit EXAKT NULL Metern deckungsgleichem
+// Mitlauf (die Linie beruehrt unsere Route nirgends, zwei nimmt der Kreuzungsfilter ohnehin).
+// Drei liegen mit 15 bis 18 m knapp unter der Schwelle. Die 26 bleibenden laufen 23 m bis
+// 2.445 m mit. Zwischen 0 m und 15 m klafft eine saubere Luecke, die Schwelle trennt hier also
+// nicht willkuerlich. Kein Fall mit nennenswertem Mitlauf faellt weg.
+export const istMassRestriktion = (a) =>
+  !!a && (a.maxHoeheM != null || a.maxGewichtT != null || a.maxBreiteM != null || a.verkehrsverbotLkwT != null)
 
 // Zwei Linien-Geometrien sind IDENTISCH (byte-gleiche Koordinaten) — kommt vom Re-Import-Churn:
 // dieselbe Quell-Restriktion landet als zwei Obstacle-Zeilen mit verschiedener obstacle_id, aber

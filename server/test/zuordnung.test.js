@@ -14,6 +14,7 @@ import {
   zuordnung,
   kannWiderlegtWerden,
   istBauwerk,
+  istMassRestriktion,
 } from "../src/engine/index.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
 
@@ -333,5 +334,28 @@ describe("istBauwerk", () => {
     expect(istBauwerk({ kategorie: "tunnel" })).toBe(true)
     expect(istBauwerk({ kategorie: "baustelle" })).toBe(false)
     expect(istBauwerk(null)).toBe(false)
+  })
+})
+
+// T-654: das Zeichen-253-Verbot ist eine Massbeschraenkung wie jede andere, und ohne diese Zeile
+// lief der Kreuzungsfilter bei 73,5 Prozent der Gewichts-Hindernisse gar nicht erst an.
+describe("istMassRestriktion", () => {
+  it("kennt das Lkw-Durchfahrtsverbot", () => {
+    expect(istMassRestriktion({ verkehrsverbotLkwT: 3.5 })).toBe(true)
+  })
+
+  it("kennt weiterhin Hoehe, Breite und Bruecken-Traglast", () => {
+    expect(istMassRestriktion({ maxHoeheM: 4.2 })).toBe(true)
+    expect(istMassRestriktion({ maxBreiteM: 3 })).toBe(true)
+    expect(istMassRestriktion({ maxGewichtT: 40 })).toBe(true)
+  })
+
+  // Die Gegenrichtung ist die wichtige: was KEIN Mass traegt, darf der Filter nicht anfassen.
+  // Eine Baustelle ohne Massangabe laeuft in den allgemeinen Kreuzungsfilter (T-611), nicht in
+  // diesen hier — der ist strenger und verlangt deckungsgleichen Mitlauf.
+  it("greift nicht ohne Massangabe", () => {
+    expect(istMassRestriktion({ vollsperrung: true })).toBe(false)
+    expect(istMassRestriktion({})).toBe(false)
+    expect(istMassRestriktion(null)).toBe(false)
   })
 })
