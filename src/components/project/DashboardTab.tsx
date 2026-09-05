@@ -66,8 +66,14 @@ function ChartSkeleton() {
 
 export function DashboardTab({
   project,
+  // T-664/F15: im oeffentlichen Share-Viewer gibt es keine Projektverwaltung — der Knopf
+  // „Ausblenden" oeffnete dort die Gruende-Maske, und Bestaetigen tat nachweislich nichts
+  // (kein Netzwerk-Call, kein Toast, weil s.projects im Share leer bleibt). Gleiches Gate wie
+  // bei KarteTab, gleicher Default: aus, und die App schaltet es ein.
+  canHide = false,
 }: {
   project: Project
+  canHide?: boolean
 }) {
   const navigate = useNavigate()
   const [sevFilter, setSevFilter] = useState<FindingSeverity | "alle">("alle")
@@ -406,7 +412,7 @@ export function DashboardTab({
                   zeigeStrecke={project.routes.length > 1}
                   open={expanded === f.id}
                   onToggle={() => setExpanded(expanded === f.id ? null : f.id)}
-                  onHide={() => setHideTarget(f)}
+                  onHide={canHide ? () => setHideTarget(f) : undefined}
                 />
               ))}
             </ul>
@@ -432,7 +438,6 @@ export function DashboardTab({
                     zeigeStrecke={project.routes.length > 1}
                     open={false}
                     onToggle={() => {}}
-                    onHide={() => {}}
                   />
                 ))}
               </ul>
@@ -644,7 +649,8 @@ function FindingRow({
   zeigeStrecke?: boolean
   open: boolean
   onToggle: () => void
-  onHide: () => void
+  /** fehlt im Share-Viewer — dann wird der Knopf gar nicht erst gerendert (T-664/F15). */
+  onHide?: () => void
 }) {
   const kat = katMeta(finding.kategorie)
   const sev = SEVERITY_META[finding.severity]
@@ -688,14 +694,16 @@ function FindingRow({
             )}
           />
         </button>
-        <button
-          onClick={onHide}
-          aria-label="Fund ausblenden"
-          title="Ausblenden (zählt nicht mehr in die Auswertung)"
-          className="flex shrink-0 cursor-pointer items-center px-3 text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-severity-kritisch"
-        >
-          <EyeOff className="h-4 w-4" />
-        </button>
+        {onHide ? (
+          <button
+            onClick={onHide}
+            aria-label="Fund ausblenden"
+            title="Ausblenden (zählt nicht mehr in die Auswertung)"
+            className="flex shrink-0 cursor-pointer items-center px-3 text-neutral-300 transition-colors hover:bg-neutral-50 hover:text-severity-kritisch"
+          >
+            <EyeOff className="h-4 w-4" />
+          </button>
+        ) : null}
       </div>
       {open ? (
         <div

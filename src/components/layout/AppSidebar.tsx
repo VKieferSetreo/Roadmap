@@ -2,7 +2,7 @@
 // Modul-Reitern auf) · unten Datenbank/Einstellungen/Abmelden.
 // Desktop: permanent. Mobil: Overlay-Drawer.
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Database,
@@ -27,6 +27,7 @@ import { useContextStore } from "@/store/context"
 import { ProjectTree } from "@/components/layout/ProjectTree"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { handleLogout } from "@/lib/auth"
+import { aiVerfuegbar } from "@/lib/aiVerfuegbar"
 import { useSourceHealth } from "@/lib/sourceHealth"
 import { cn } from "@/lib/cn"
 
@@ -109,6 +110,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   const [suche, setSuche] = useState("")
+  // T-664/F3: auf der Kundendomain gibt es fuer /ai keinen Upstream, der Eintrag lud dort eine
+  // Express-Fehlerseite in den Rahmen. Startwert true, damit der Punkt nicht kurz aufblitzt und
+  // wieder verschwindet, wo er hingehoert.
+  const [zeigeAi, setZeigeAi] = useState(true)
+  useEffect(() => {
+    let aktiv = true
+    aiVerfuegbar().then((da) => {
+      if (aktiv) setZeigeAi(da)
+    })
+    return () => {
+      aktiv = false
+    }
+  }, [])
 
   return (
     <div className="flex h-full flex-col">
@@ -116,7 +130,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           oben stehen. NUR die Ordnerlandschaft darunter scrollt (privat/geteilt). */}
       <div className="shrink-0 p-3 pb-1.5">
         <NavRow icon={Home} label="Home" active={onHome} onClick={() => go("/")} />
-        <NavRow icon={Sparkles} label="Roadmap-AI" active={onAi} onClick={() => go("/ai")} />
+        {zeigeAi ? (
+          <NavRow icon={Sparkles} label="Roadmap-AI" active={onAi} onClick={() => go("/ai")} />
+        ) : null}
 
         <div className="mb-1.5 mt-5 pl-3 pr-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">

@@ -94,7 +94,7 @@ export function ProjectDetail() {
                 <AnlageTab project={project} />
               </div>
             ) : (
-              <DashboardTab project={project} />
+              <DashboardTab project={project} canHide />
             )}
           </div>
         )}
