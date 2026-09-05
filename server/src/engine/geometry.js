@@ -287,6 +287,19 @@ export function lineCrossesRoute(
   }
   // Kreuzung nur, wenn nennenswert quer UND praktisch kein Längslauf im Korridor (sonst echte,
   // teils mitlaufende Meldung → behalten). Konservativ: im Zweifel behalten.
+  //
+  // ZWISCHEN alignDeg UND transverseDeg LIEGT EIN TOTES BAND (40 bis 50 Grad): was dort landet,
+  // zählt weder längs noch quer. Das sieht nach Konstruktionsfehler aus und wurde am 05.09.2026
+  // gegen den vollen Prod-Bestand nachgemessen, bevor jemand daran dreht (T-654):
+  //   1.521 Linien-Funde, alle mit Korridor-Berührung. Band auf eine einzige Schwelle bei 45 Grad
+  //   zusammengezogen (alignDeg = transverseDeg = 45): NULL Funde ändern ihr Urteil.
+  //   Nur 90 Funde haben überhaupt Kilometer im Band, der größte Anteil sind 160 m.
+  //   Kein einziger Fund liegt überwiegend quer (transverseKm > alignedKm bei ≥ 30 m quer: 0).
+  //   Längslauf-Verteilung: 1.211 von 1.521 über 200 m, nur 8 bei exakt 0 m.
+  // Das Band ist an echten Daten also folgenlos, weil die Meldungen, die es überhaupt berührt,
+  // ohnehin hunderte Meter mitlaufen und damit an alignedKm < maxAlignedKm scheitern. Die Schwellen
+  // bleiben, wo sie sind. Wer sie ändern will, misst vorher neu — die Skripte dazu sind in T-654
+  // verlinkt. NICHT auf Verdacht kalibrieren.
   return transverseKm >= minTransverseKm && transverseKm > alignedKm && alignedKm < maxAlignedKm
 }
 
