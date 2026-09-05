@@ -147,6 +147,15 @@ aufraeumen() {
       || { sage "Herunterfahren fehlgeschlagen — bitte nachsehen."
            PROBLEM="${PROBLEM:+$PROBLEM; }Workstation liess sich nicht herunterfahren"; }
   else
+    # Sie bleibt an, also muessen WIR das Modell wieder aus der Karte nehmen. Der Vorwaermschritt
+    # setzt keep_alive auf 6h, damit ein langer Lauf sein Modell nicht mitten drin verliert; ohne
+    # diese Zeile blieben danach 14,9 von 24,6 GB VRAM noch sechs Stunden belegt, bei 0 Prozent
+    # Auslastung. Gemessen am 05.09.2026: Lauf endete 16:10, expires_at stand auf 22:10.
+    # keep_alive 0 laedt sofort aus. Fehler hier sind kein PROBLEM: die Karte ist dann nur belegt,
+    # der Bestand stimmt trotzdem.
+    $SSH "$GPU" "curl -s -m 30 $OLLAMA_LOKAL/api/generate -d '{\"model\":\"$MODELL\",\"keep_alive\":0}' -o /dev/null" \
+      && sage "Modell aus der Karte genommen (keep_alive 0)." \
+      || sage "Modell liess sich nicht ausladen — die Karte bleibt bis zum Ablauf belegt."
     sage "Workstation war vorher schon an — bleibt an."
   fi
 
