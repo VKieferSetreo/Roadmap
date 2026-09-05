@@ -12,6 +12,7 @@ import {
   katMeta,
   SEVERITY_META,
   SEVERITY_ORDER,
+  sichtbaresDetail,
   visibleFindings,
 } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
@@ -284,13 +285,13 @@ function FundTabelle({ findings }: { findings: Finding[] }) {
               {f.beschreibung && f.beschreibung.trim() !== f.titel.trim() ? (
                 <p className="text-xs leading-snug text-neutral-600">{f.beschreibung}</p>
               ) : null}
-              {Object.keys(f.detail).length || f.gueltigBis ? (
+              {sichtbaresDetail(f.detail).length || f.gueltigBis ? (
                 <p className="text-xs tabular-nums text-neutral-500">
-                  {Object.entries(f.detail)
+                  {sichtbaresDetail(f.detail)
                     .map(([k, v]) => `${k}: ${v}`)
                     .join(" · ")}
                   {f.gueltigBis
-                    ? `${Object.keys(f.detail).length ? " · " : ""}gültig bis ${f.gueltigBis
+                    ? `${sichtbaresDetail(f.detail).length ? " · " : ""}gültig bis ${f.gueltigBis
                         .slice(0, 10)
                         .split("-")
                         .reverse()

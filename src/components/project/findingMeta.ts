@@ -95,6 +95,27 @@ export function attrLabel(key: string): string {
   return ATTR_LABEL[key]?.label ?? key
 }
 
+/** Detail-Zeilen eines Funds ohne die INTERNEN Schlüssel (T-664/F2).
+ *
+ *  Die Karte filterte diese Schlüssel bisher als Einzige (FindingCard), PDF, CSV und die
+ *  aufgeklappte Fundliste serialisierten `Object.entries(f.detail)` roh. Gemessen: 344 Funde in
+ *  45 von 67 Projekten trugen `__ki` im Bericht, davon 177 mit leerem Array — die rendern als
+ *  „__ki: " ganz ohne Wert.
+ *
+ *  Bewusst NUR die internen Schlüssel: `__*` sind Marker für die Anzeige, und „Ergänzt" ist die
+ *  Rohauflistung der KI-Ergänzungen in Entwicklersprache („Vollsperrung: true"). „Zeitraum" und
+ *  „Zuordnung" bleiben stehen — das sind fachliche Aussagen, die im weitergegebenen Bericht
+ *  gehören, auch wenn die Karte sie zusätzlich ausblendet (dort sind sie redundant, siehe
+ *  FindingCard). Wer im Bericht filtert, nimmt dem Leser den Vorbehalt „Zuordnung nicht
+ *  nachweisbar" weg, und genau der ist die ehrliche Stelle. */
+export const INTERNE_DETAIL_SCHLUESSEL = (k: string): boolean => k === "Ergänzt" || k.startsWith("__")
+
+export function sichtbaresDetail<T>(
+  detail: Record<string, T> | undefined | null,
+): [string, T][] {
+  return Object.entries(detail ?? {}).filter(([k]) => !INTERNE_DETAIL_SCHLUESSEL(k))
+}
+
 function formatAttrValue(key: string, v: number | string | boolean): string {
   const meta = ATTR_LABEL[key]
   if (typeof v === "boolean") return v ? "ja" : "nein"

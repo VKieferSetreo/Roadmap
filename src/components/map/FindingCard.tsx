@@ -12,7 +12,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react"
 import { ExternalLink, Sparkles, HelpCircle } from "lucide-react"
 import { KategorieGlyph } from "@/components/project/KategorieGlyph"
-import { formatGueltigkeit, SEVERITY_META } from "@/components/project/findingMeta"
+import { formatGueltigkeit, SEVERITY_META, sichtbaresDetail } from "@/components/project/findingMeta"
 import type { FindingKategorie, FindingSeverity } from "@/types/domain"
 import { cn } from "@/lib/cn"
 import { safeHref } from "@/lib/safeHref"
@@ -149,12 +149,15 @@ export function FindingCard({
             {formatGueltigkeit(gueltigVon, gueltigBis)}
           </dd>
         </div>
-        {Object.entries(detail ?? {})
+        {sichtbaresDetail(detail)
+          // Die internen Schlüssel nimmt sichtbaresDetail (T-664/F2, gemeinsam mit PDF und CSV).
+          // Hier kommen nur die zwei dazu, die AUF DER KARTE redundant sind:
           // "Zeitraum" bleibt draussen (Max 31.08.2026): die Zeile sagt nur, wie der Fund zum
           // eingestellten TRANSPORTzeitraum steht, und den kennt man aus den eigenen Einstellungen.
           // Auf der Karte zaehlt, wann die Massnahme selbst gilt — das steht in "Gültig".
-          // Nur die Anzeige, im Fund bleibt der Wert stehen.
-          .filter(([k]) => k !== "Ergänzt" && k !== "Zuordnung" && k !== "Zeitraum" && !k.startsWith("__"))
+          // "Zuordnung" steht daneben als eigenes Badge. Im BERICHT bleiben beide stehen, dort
+          // kennt der Leser die Einstellungen nicht. Nur die Anzeige, im Fund bleibt der Wert.
+          .filter(([k]) => k !== "Zuordnung" && k !== "Zeitraum")
           .map(([k, v]) => {
             // Das Zeichen sitzt AN DER GEFUNDENEN STELLE (Max 31.08.2026), nicht nur unten am
             // Fund: wer auf eine Durchfahrtshöhe schaut, muss dort sehen, woher sie kommt.

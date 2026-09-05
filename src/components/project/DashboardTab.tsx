@@ -44,6 +44,7 @@ import {
   KATEGORIE_META,
   SEVERITY_META,
   SEVERITY_ORDER,
+  sichtbaresDetail,
   visibleFindings,
 } from "./findingMeta"
 import { KategorieGlyph } from "./KategorieGlyph"
@@ -551,7 +552,8 @@ function exportCsv(project: Project, findings: Finding[]) {
         f.gueltigVon,
         f.gueltigBis,
         // T-461: Grenzwerte-Spalte analog zur PDF-Serialisierung (ReportView) — vorher fehlte f.detail im CSV.
-        Object.entries(f.detail ?? {})
+        // T-664/F2: ohne die internen Schlüssel, sonst steht "__ki: " in der Kundendatei.
+        sichtbaresDetail(f.detail)
           .map(([k, v]) => `${k}: ${v}`)
           .join(" · "),
         f.zustaendig,
@@ -710,7 +712,7 @@ function FindingRow({
                 </dd>
               </div>
             ) : null}
-            {Object.entries(finding.detail).map(([k, v]) => (
+            {sichtbaresDetail(finding.detail).map(([k, v]) => (
               <div key={k} className="flex flex-col">
                 <dt className="text-xs text-neutral-400">{k}</dt>
                 <dd className="text-sm font-medium tabular-nums text-neutral-800">{v}</dd>
