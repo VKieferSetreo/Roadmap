@@ -89,6 +89,45 @@ const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   richtung: { label: "Richtung" }, // T-255: Freitext-Richtung als Ortskontext
   grundsaetzlicheGstSperre: { label: "Grundsätzliche GST-Sperre" }, // T-463
   gesperrtKomplett: { label: "Für Schwertransport gesperrt" }, // T-463
+  // T-664/F8: die 14 Schlüssel, die im Bestand vorkommen, aber bisher als Rohname im Popup
+  // standen. Gemessen an der Produktion: 28.869 von 72.746 aktiven Hindernissen (39,7 Prozent)
+  // hatten mindestens ein Attribut ohne Label. Bedeutungen sind am erzeugenden Connector belegt,
+  // nicht geraten — die Herkunft steht jeweils dahinter.
+  verkehrsverbotLkwT: { label: "LKW-Verbot ab", unit: "t" }, // 0157 SEVAS NRW, rechtliches Verbot
+  maxAchslastT: { label: "Zul. Achslast", unit: "t" },
+  bezugsgewichtT: { label: "Bezugsgewicht", unit: "t" }, // 0121 GST-Negativkarte Sachsen
+  sperrungArt: { label: "Art der Sperrung" },
+  teilsperrung: { label: "Teilsperrung" },
+  nurNachts: { label: "Nur nachts" },
+  getrageneStrasse: { label: "Getragene Straße" }, // 0153 BASt, die Straße ÜBER dem Bauwerk
+  gekreuzteStrasse: { label: "Gekreuzte Straße" },
+  richtungEinseitig: { label: "Nur eine Richtung" },
+  richtungBeidseitig: { label: "Beide Richtungen" },
+  mehrwegKm: { label: "Mehrweg", unit: "km" }, // 0118 Umleitungsstrecken SH, Feld Mehrweg_in_km
+  zusatzzeitMin: { label: "Zusätzlicher Zeitbedarf", unit: "min" }, // 0118, ZUSÄTZLICHER_ZEITBEDARF_IN_MIN
+  brueckenbau: { label: "Brückenbau" },
+  typ: { label: "Typ" },
+}
+
+/** Rohwerte von `sperrungArt` in Klartext (T-664/F8). Der Bestand führt zwei Vokabulare
+ *  nebeneinander: DATEX2-Englisch aus den Bundes- und Landesfeeds und deutsche Werte aus
+ *  eigenen Connectoren. Gemessen sind 13 verschiedene Werte auf 9.294 Hindernissen, angeführt
+ *  von roadClosed mit 4.679. Der Kunde las bisher „roadClosed" im Popup.
+ *  Das ist NUR die Anzeige — die Engine bewertet weiter am Rohwert. */
+const SPERRUNG_ART_TEXT: Record<string, string> = {
+  roadClosed: "Straße gesperrt",
+  carriagewayClosures: "Fahrbahn gesperrt",
+  laneClosures: "Fahrstreifen gesperrt",
+  lanesDeviated: "Fahrstreifen verschwenkt",
+  narrowLanes: "Verengte Fahrstreifen",
+  singleAlternateLineTraffic: "Einspuriger Wechselverkehr",
+  newRoadworksLayout: "Neue Verkehrsführung",
+  other: "Sonstige",
+  vollsperrung: "Vollsperrung",
+  teilsperrung: "Teilsperrung",
+  richtungssperrung: "Richtungssperrung",
+  fahrstreifensperrung: "Fahrstreifensperrung",
+  rampensperrung: "Rampensperrung",
 }
 
 export function attrLabel(key: string): string {
@@ -118,8 +157,26 @@ export function sichtbaresDetail<T>(
 
 function formatAttrValue(key: string, v: number | string | boolean): string {
   const meta = ATTR_LABEL[key]
+  const mitEinheit = (n: number) =>
+    `${n.toLocaleString("de-DE")}${meta?.unit ? ` ${meta.unit}` : ""}`
   if (typeof v === "boolean") return v ? "ja" : "nein"
-  if (typeof v === "number") return `${v.toLocaleString("de-DE")}${meta?.unit ? ` ${meta.unit}` : ""}`
+  if (typeof v === "number") return mitEinheit(v)
+  if (key === "sperrungArt") return SPERRUNG_ART_TEXT[v] ?? v
+  // T-664/F8: die KI-Anreicherung legt ihre Werte als Text ab, deshalb steht im Popup „true"
+  // statt „ja" und „3.5" ohne Einheit. Gemessen: 3.377 mal umleitung als String, 2.056 mal
+  // vollsperrung, 1.794 mal fahrbahnVerengt. Hier wird nur die ANZEIGE geradegezogen; dass die
+  // Engine diese Werte gar nicht erst bewertet, ist ein eigener Fehler und steckt in T-667.
+  // Die Typkorrektur dort macht diesen Zweig nicht überflüssig: Altbestand bleibt bis zum
+  // nächsten spieleEin() als Text liegen.
+  if (v === "true") return "ja"
+  if (v === "false") return "nein"
+  // Zahlpfad NUR bei Feldern mit bekannter Einheit. Sonst würde eine Straßennummer aus
+  // getrageneStrasse („1234") als „1.234" mit Tausendertrennzeichen erscheinen. Alle als Text
+  // abgelegten Maßwerte tragen eine Einheit, der Zweig verliert dadurch nichts.
+  if (meta?.unit && /^-?\d+(?:[.,]\d+)?$/.test(v)) {
+    const n = Number(v.replace(",", "."))
+    if (Number.isFinite(n)) return mitEinheit(n)
+  }
   return String(v)
 }
 
