@@ -298,6 +298,35 @@ describe("baustelle", () => {
     })
     expect(evaluate(queich, TR, {}).severity).not.toBe("kritisch")
   })
+  // T-664/F4, Belege wörtlich aus der Produktion. Der Guard hing an spurenGesperrt === 0, und
+  // das Feld ist bei 10.356 von 11.919 Vollsperrungen gar nicht gesetzt.
+  it("gesperrte Ausfahrt oder Rampe blockiert die Strecke nicht (T-664/F4)", () => {
+    const rampen = [
+      "A70 Bamberg Richtung Schweinfurt/Werneck Ausfahrt Hallstadt Ausfahrt gesperrt, Baustelle",
+      "A3 Frankfurt Richtung Würzburg Einfahrt Goldbach Einfahrt gesperrt, Fahrbahnerneuerung",
+      "A9 Halle/Leipzig Richtung Nürnberg Dreieck Bayreuth Überleitung zur A70 Richtung Bamberg gesperrt",
+      "AD Bad Neuenahr-Ahrweiler Abfahrtsast für genehmigungspflichtige Schwertransporte gesperrt",
+    ]
+    for (const name of rampen) {
+      const r = evaluate(ob("baustelle", { vollsperrung: true }, { name }), TR, {})
+      expect(r?.severity, name).not.toBe("kritisch")
+    }
+  })
+
+  it("meldet die Quelle gesperrte Fahrstreifen, bleibt es kritisch (T-664/F4-Grenze)", () => {
+    // 590 der 939 Teilobjekt-Faelle tragen spurenGesperrt > 0 — dort sagt die Quelle
+    // ausdruecklich, dass die Fahrbahn betroffen ist, und der Guard darf nicht greifen.
+    const name = "A3 Würzburg Richtung Frankfurt Ausfahrt Aschaffenburg-Ost Ausfahrt gesperrt"
+    const r = evaluate(ob("baustelle", { vollsperrung: true, spurenGesperrt: 2 }, { name }), TR, {})
+    expect(r.severity).toBe("kritisch")
+  })
+
+  it("Streckensperrung mit Ausfahrt als Ortsangabe bleibt kritisch (T-664/F4-Grenze)", () => {
+    const name = "B8 Passau Richtung Plattling zwischen Passau und Ausfahrt Gaisbruck gesperrt"
+    const r = evaluate(ob("baustelle", { vollsperrung: true }, { name }), TR, {})
+    expect(r.severity).toBe("kritisch")
+  })
+
   it("Vollsperrung der Straße mit beiläufiger Radweg-Erwähnung bleibt kritisch (T-611-Grenze)", () => {
     const echt = ob("sperrung", { vollsperrung: true, sperrungArt: "roadClosed" }, {
       name: "Vollsperrung der B75, der parallele Radweg bleibt frei",

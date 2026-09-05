@@ -354,9 +354,27 @@ function nurNichtFahrbahnSperre(attrs, obstacle) {
   if (!/^(roadclosed|carriagewayclosed)$/i.test(String(attrs?.sperrungArt ?? "")) &&
       /geh-?\s*\/?\s*radweg|\bradweg|\bgehweg|veloroute|radverkehr|fu(?:ß|ss)weg/i.test(t) &&
       !hatFahrbahnBezug) return true
-  // (b) 0 gesperrte Fahrstreifen + Parkplatz/Rampe/Überfahrt-Kontext → keine Fahrbahn-Sperrung
-  if (num(attrs?.spurenGesperrt) === 0 &&
-      /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast|[üu]berfahrt|\beinfahrt|\bauffahrt|\babfahrt|\bausfahrt|rampe|verbindungsfahrbahn/i.test(t)) return true
+  // (b) Parkplatz-/Rampen-/Überfahrt-Kontext → keine Fahrbahn-Sperrung.
+  //
+  // T-664/F4: die Bedingung hing an spurenGesperrt === 0, und dieses Feld ist fast nie gesetzt.
+  // Gemessen: von 11.919 aktiven Hindernissen mit vollsperrung tragen nur 1.563 das Feld
+  // überhaupt und nur 42 den Wert 0. Der Guard griff damit praktisch nie, und gesperrte
+  // Autobahn-Ausfahrten standen als kritischer Streckenblocker in der Liste („A70 Bamberg
+  // Richtung Schweinfurt Ausfahrt Hallstadt Ausfahrt gesperrt" mit 5 kritischen Funden).
+  //
+  // Ein FEHLENDES Feld zählt jetzt wie eine 0, ein gesetztes nicht: 590 der 939 Teilobjekt-Fälle
+  // tragen spurenGesperrt > 0, dort sagt die Quelle ausdrücklich, dass Fahrstreifen gesperrt
+  // sind, und die bleiben unangetastet. Kandidaten sind die 336 ohne Feld, sie tragen heute
+  // 16 kritische Funde auf 9 Hindernissen.
+  //
+  // STRECKENBEZUG schlägt Teilobjekt, dieselbe Regel wie im Beleg-Riegel der Anreicherung: in
+  // „zwischen Passau und Ausfahrt Gaisbruck gesperrt" ist die Ausfahrt eine Ortsangabe, und eine
+  // gesperrte Richtungsfahrbahn ist ohnehin ernst. Entschärft wird auf „warnung", nicht gelöscht:
+  // der Disponent sieht die Meldung weiter, sie blockiert nur nicht mehr die Strecke.
+  const spuren = num(attrs?.spurenGesperrt)
+  if ((spuren === 0 || spuren == null) &&
+      /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast|[üu]berfahrt|[üu]berleitung|\beinfahrt|\bauffahrt|\babfahrt|\bausfahrt|abfahrtsast|rampe|verbindungsfahrbahn|anschlussstelle/i.test(t) &&
+      !/zwischen .{2,60} und |ortsdurchfahrt|richtungsfahrbahn|\bin h(ö|oe)he\b/i.test(t)) return true
   return false
 }
 
