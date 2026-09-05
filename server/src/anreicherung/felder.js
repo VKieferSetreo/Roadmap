@@ -149,12 +149,47 @@ const TEILOBJEKT_GESPERRT =
 const STRECKENBEZUG = /zwischen .{2,60} und |ortsdurchfahrt|richtungsfahrbahn|\bin h(ö|oe)he\b/i
 const AUSDRUECKLICH_VOLL = /vollsperr|voll gesperrt|komplett gesperrt|gesamte.{0,20}gesperrt/i
 
-export const nurTeilobjektGesperrt = (beleg) => {
+export const nurTeilobjektGesperrt = (beleg, wert) => {
+  if (wert !== true) return false // ein „nein" ist von Teilobjekten nicht betroffen
   const b = String(beleg ?? "")
   if (AUSDRUECKLICH_VOLL.test(b)) return false // die Quelle sagt es selbst
   if (STRECKENBEZUG.test(b)) return false // „zwischen X und Y" — Teilobjekt ist Ortsangabe
   return TEILOBJEKT_GESPERRT.test(b)
 }
+
+/**
+ * PFLICHT-STICHWORT je Maßfeld (T-664/F5): der Beleg muss das Maß benennen, um das es geht.
+ *
+ * Der Wert-Abgleich allein reicht nicht. `zahl()` nimmt die erste Zahl im Beleg, und damit stützte
+ * „Maximale Durchfahrtsbreite: 3,75 m" eine Achslast von 3,75 Tonnen. Gemessen am Bestand, und
+ * zwar an den ANGENOMMENEN Angaben, nicht an den verworfenen:
+ *   maxAchslastT   98 von 98 stammen aus einem Breitenbeleg. Ausnahmslos alle.
+ *   maxLaengeM     38 von 41 falsch: „Länge: 19,08 km" ist die Strecke, nicht das Fahrzeug,
+ *                  dazu Breiten und „Max. 80 km/h".
+ *   sperrlaengeM   70 von 169 aus Straßennummern (FRG16, PAN30, PA50), Hausnummern
+ *                  („Klenzestr. 35 - 49"), Kilometrierung („km 264+100"), Verkehrszeichen
+ *                  („264/2,2 m") und einmal aus 55 STUNDEN („Sep 55-h-A7-VSp").
+ *
+ * Die Stichworte sind bewusst weit: „Verbot fuer ueber 3,5t" nennt das Wort Gewicht nicht und ist
+ * trotzdem eine echte Gewichtsangabe, deshalb zählt auch eine Zahl mit angehängtem t. Verworfen
+ * wird nur, wo der Beleg von etwas ANDEREM redet als das Feld.
+ */
+const TONNE_AM_WERT = String.raw`\d\s*(?:t|to)\b|tonn`
+export const BELEG_NENNT = {
+  maxHoeheM: /h(ö|oe)he|hoch|lichte|durchfahrtsh|265/i,
+  maxBreiteM: /breite|breit|264/i,
+  restbreiteM: /breite|breit|verengt|verengung|einengung|eingeengt/i,
+  // „Länge: 9,76 km" ist die Streckenlänge. Eine Fahrzeuglängenbeschränkung heißt anders.
+  maxLaengeM: /l(ä|ae)ngenbeschr|max\.?\s*l(ä|ae)nge|zul\.?\s*l(ä|ae)nge|fahrzeugl(ä|ae)nge|durchfahrtsl(ä|ae)nge|gespann|266/i,
+  maxGewichtT: new RegExp(`gewicht|masse|traglast|tragf(ä|ae)hig|262|zul\\.?\\s?ges|${TONNE_AM_WERT}`, "i"),
+  verkehrsverbotLkwT: new RegExp(`lkw|lastkraft|g(ü|ue)terkraft|253|${TONNE_AM_WERT}`, "i"),
+  maxAchslastT: /achslast|achsdruck|achse|263/i,
+  // „Haltverbot auf 17,50 m" nennt keine „Länge" und ist trotzdem eine, daher das Muster „auf N m".
+  sperrlaengeM: /l(ä|ae)nge|lang|abschnitt|auf\s+[\d.,]+\s*m\b/i,
+}
+
+/** Eine in Kilometern genannte Zahl ist keine Fahrzeuglänge in Metern. */
+export const laengeInKm = (beleg) => /\d\s*km\b/i.test(String(beleg ?? ""))
 
 const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
@@ -179,34 +214,43 @@ const ref = (roh) => (normRef ? normRef(roh) : null)
 export const KATALOG = {
   // ── Maße ──────────────────────────────────────────────────────────────────
   maxHoeheM: {
+    belegNennt: BELEG_NENNT.maxHoeheM,
     frage: "Lichte Durchfahrtshöhe in Metern? Auch als \"Höhenbeschränkung\", \"lichte Höhe\", \"max. Höhe\" oder Verkehrszeichen 265 formuliert.",
     pruefe: spanne(2, 10),
   },
   maxBreiteM: {
+    belegNennt: BELEG_NENNT.maxBreiteM,
     frage: "Zulässige Durchfahrtsbreite in Metern? Auch \"Breitenbeschränkung\", \"max. Breite\", Zeichen 264.",
     pruefe: spanne(1.5, 25),
   },
   restbreiteM: {
+    belegNennt: BELEG_NENNT.restbreiteM,
     frage: "Verbleibende befahrbare Restbreite in Metern, etwa an einer Baustelle?",
     pruefe: spanne(1.5, 25),
   },
   maxLaengeM: {
+    belegNennt: BELEG_NENNT.maxLaengeM,
+    belegVeto: laengeInKm,
     frage: "Zulässige Fahrzeuglänge in Metern? Auch \"Längenbeschränkung\", Zeichen 266.",
     pruefe: spanne(5, 200),
   },
   maxGewichtT: {
+    belegNennt: BELEG_NENNT.maxGewichtT,
     frage: "Zulässige Gesamtmasse oder Tragfähigkeit in Tonnen? JEDE genannte Gewichtsgrenze für das ganze Fahrzeug zählt, gleich wie sie formuliert ist: \"Durchfahrtsverbot über … t\", \"Gewichtsbeschränkung\", \"Fahrverbot über … t\", \"Sperrung für Fahrzeuge über … t\", \"beschränkt auf … t\", \"Alleinfahrt ab … t\", Zeichen 262.",
     pruefe: spanne(2, 1000),
   },
   verkehrsverbotLkwT: {
+    belegNennt: BELEG_NENNT.verkehrsverbotLkwT,
     frage: "Lkw-Durchfahrtsverbot ab wie vielen Tonnen? Etwa \"Lkw-Durchfahrtsverbot über 3,5 t\", Zeichen 253.",
     pruefe: spanne(2, 60),
   },
   maxAchslastT: {
+    belegNennt: BELEG_NENNT.maxAchslastT,
     frage: "Zulässige ACHSLAST in Tonnen (Last je Achse, nicht des ganzen Fahrzeugs)? Nur wenn ausdrücklich von Achslast oder Achsdruck die Rede ist, Zeichen 263.",
     pruefe: spanne(1, 30),
   },
   sperrlaengeM: {
+    belegNennt: BELEG_NENNT.sperrlaengeM,
     frage: "Länge des gesperrten oder eingeengten Abschnitts in Metern?",
     pruefe: spanne(5, 50000),
   },

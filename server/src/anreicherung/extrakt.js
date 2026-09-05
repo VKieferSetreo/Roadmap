@@ -184,14 +184,27 @@ export function pruefeAngabe(angabe, quelltext) {
     // Das belegMuster sagt, ob der Beleg zum Feld gehoert. Es sagt nicht, ob er das GANZE Objekt
     // meint. "Ausfahrt gesperrt" passt zum Feld vollsperrung und meint trotzdem nur die Rampe.
     // Das Veto haengt am Feld, weil nur dort bekannt ist, welche Teilobjekte es aushebeln.
-    if (wert === true && regel.belegVeto?.(beleg)) {
-      return { ok: false, grund: `Beleg "${beleg}" sperrt nur ein Teilobjekt, nicht die Strecke` }
-    }
   } else {
+    // Riegel 2b (T-664/F5): der Beleg muss DIESES Mass benennen. Der Wertabgleich unten allein
+    // reicht nicht — zahl() nimmt die erste Zahl im Beleg, und so stuetzte "Maximale
+    // Durchfahrtsbreite: 3,75 m" eine Achslast von 3,75 Tonnen. Gemessen an den angenommenen
+    // Angaben: 98 von 98 maxAchslastT kamen aus einem Breitenbeleg, 38 von 41 maxLaengeM aus
+    // Streckenlaengen in km und Breiten, 70 von 169 sperrlaengeM aus Strassennummern,
+    // Hausnummern, Kilometrierung und einmal aus 55 Stunden.
+    if (regel.belegNennt && !regel.belegNennt.test(beleg)) {
+      return { ok: false, grund: `Beleg "${beleg}" nennt nicht das Mass ${feld}` }
+    }
     const ausBeleg = regel.pruefe(beleg)
     if (ausBeleg == null || String(ausBeleg) !== String(wert)) {
       return { ok: false, grund: `Wert ${wert} folgt nicht aus dem Beleg "${beleg}"` }
     }
+  }
+
+  // Das Veto gilt fuer BEIDE Zweige und kennt den Wert, damit ein Ja/Nein-Feld nur sein "ja"
+  // pruefen laesst. Es sagt nicht, ob der Beleg zum Feld passt, sondern ob er trotz passendem
+  // Feld etwas anderes meint: ein gesperrtes Teilobjekt, eine Laenge in Kilometern.
+  if (regel.belegVeto?.(beleg, wert)) {
+    return { ok: false, grund: `Beleg "${beleg}" traegt die Angabe ${feld} nicht` }
   }
 
   return { ok: true, feld, wert: String(wert), beleg }

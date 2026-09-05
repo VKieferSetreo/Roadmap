@@ -662,6 +662,51 @@ describe("Zwei Fehler aus dem laufenden Bestandslauf", () => {
     }
   })
 
+  // T-664/F5: der Wertabgleich allein liess jede Zahl durch, die zufaellig im Beleg stand.
+  // Alle Belege hier stammen woertlich aus dem Produktionsbestand.
+  it("nimmt eine Breite nicht als Achslast, Gewicht oder Laenge (T-664/F5)", () => {
+    const b = "Maximale Durchfahrtsbreite: 3.75 m"
+    for (const feld of ["maxAchslastT", "maxGewichtT", "maxLaengeM"]) {
+      expect(pruefeAngabe({ feld, wert: 3.75, beleg: b }, b).ok, feld).toBe(false)
+    }
+    // dieselbe Zahl im richtigen Feld bleibt richtig
+    expect(pruefeAngabe({ feld: "maxBreiteM", wert: 3.75, beleg: b }, b)).toMatchObject({ ok: true })
+  })
+
+  it("haelt eine Streckenlaenge in km nicht fuer eine Fahrzeuglaenge (T-664/F5)", () => {
+    const b = "Länge: 19.08 km"
+    expect(pruefeAngabe({ feld: "maxLaengeM", wert: 19.08, beleg: b }, b).ok).toBe(false)
+    const echt = "Durchfahrtslänge: Maximal 65,00 m"
+    expect(pruefeAngabe({ feld: "maxLaengeM", wert: 65, beleg: echt }, echt)).toMatchObject({ ok: true })
+  })
+
+  it("liest keine Sperrlaenge aus Strassennummer, Hausnummer oder Kilometrierung (T-664/F5)", () => {
+    const nein = [
+      ["FRG16 zwischen Kirchl und B533 gesperrt, Baustelle", 16],
+      ["Klenzestr. 35 - 49", 35],
+      ["FR H km 264+100 - 261+500", 264],
+      ["Überspannung mit 19 Masten", 19],
+    ]
+    for (const [b, w] of nein) {
+      expect(pruefeAngabe({ feld: "sperrlaengeM", wert: w, beleg: b }, b).ok, b).toBe(false)
+    }
+    // eine echte Laengenangabe ohne das Wort "Länge" bleibt
+    const ja = "Haltverbot auf 17,50 m"
+    expect(pruefeAngabe({ feld: "sperrlaengeM", wert: 17.5, beleg: ja }, ja)).toMatchObject({ ok: true })
+  })
+
+  it("nimmt eine Gewichtsangabe an, die das Wort Gewicht nicht nennt (T-664/F5)", () => {
+    // Das Pflicht-Stichwort darf nicht zu eng sein: diese Formulierungen sind die haeufigsten
+    // im Bestand und tragen die Tonnage nur am Zahlwert.
+    for (const b of ["Verbot fuer ueber 3,5t", "für Schwerverkehr über 16 t", "Vollsperrung für LKW über 3,5 t."]) {
+      const w = b.includes("16") ? 16 : 3.5
+      expect(pruefeAngabe({ feld: "maxGewichtT", wert: w, beleg: b }, b).ok, b).toBe(true)
+    }
+    // eine Geschwindigkeit ist keine Tonnage
+    const kmh = "Für Fahrzeuge über 60km/h"
+    expect(pruefeAngabe({ feld: "verkehrsverbotLkwT", wert: 60, beleg: kmh }, kmh).ok).toBe(false)
+  })
+
   it("laesst echte Streckensperrungen stehen, auch mit Ortsnamen wie Ausfahrt (T-664/F6)", () => {
     const ja = [
       // Der wichtigste Fall: "Ausfahrt" ist hier die Abschnittsgrenze, nicht das Sperrobjekt.
