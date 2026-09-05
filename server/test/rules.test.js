@@ -286,6 +286,24 @@ describe("baustelle", () => {
   it("Zukunfts-Ereignis (Beginn 2099) ohne Zeitraum → komplett raus (null)", () => {
     expect(evaluate(ob("baustelle", { restbreiteM: 3.6 }, { gueltigVon: "2099-01-01" }), TR, {})).toBeNull()
   })
+
+  // T-625, gemessen an Prod: der Queichtalradweg laeuft als Unterfuehrung UNTER der B10, wir fahren
+  // oben drueber. Die Meldung kam trotzdem als kritisch durch, weil sperrungArt=roadClosed die
+  // Geh-/Radweg-Entschaerfung abschaltet. Gegenprobe am Bestand: von 98 roadClosed-Vollsperrungen
+  // tragen nur diese 2 ueberhaupt eine Radweg-Erwaehnung, es wird also nichts Echtes mit entschaerft.
+  it("Vollsperrung DES Radwegs → nicht kritisch, auch bei roadClosed (T-625)", () => {
+    const queich = ob("sperrung", { vollsperrung: true, sperrungArt: "roadClosed", umleitung: "true" }, {
+      name: "Vollsperrung des Queichtalradweges im Bereich Unterführung B10 bei Landau-Godramstein " +
+            "zur Herstellung des Neubau Überführung Queich im Zuge des 4-streifigen Ausbaus der B10.",
+    })
+    expect(evaluate(queich, TR, {}).severity).not.toBe("kritisch")
+  })
+  it("Vollsperrung der Straße mit beiläufiger Radweg-Erwähnung bleibt kritisch (T-611-Grenze)", () => {
+    const echt = ob("sperrung", { vollsperrung: true, sperrungArt: "roadClosed" }, {
+      name: "Vollsperrung der B75, der parallele Radweg bleibt frei",
+    })
+    expect(evaluate(echt, TR, {}).severity).toBe("kritisch")
+  })
   it("Brücke mit altem gueltigBis ohne Zeitraum → bleibt sichtbar (Datenstand, kein Lebensende)", () => {
     expect(evaluate(ob("bruecke", { maxHoeheM: 3.0 }, { gueltigBis: "2020-01-01" }), TR, {})).not.toBeNull()
   })

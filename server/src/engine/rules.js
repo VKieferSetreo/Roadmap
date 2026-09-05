@@ -332,6 +332,12 @@ function ruleKreisverkehr(attrs, transport) {
 // frei, kein Fahrbahn-/Straßen-/Spur-Bezug) und (b) Vollsperrung mit 0 Fahrstreifen + Rampen-/Überfahrt-
 // Kontext (0145/0152 — „Überfahrt A14→A2"/„Einfahrt", die durchgehende Fahrbahn bleibt). Beides war
 // fälschlich kritisch. Konservativ: nur mit positiver Evidenz, echte Fahrbahn-Vollsperrungen bleiben kritisch.
+// T-625: der Weg ist das SPERROBJEKT, nicht der Nebensatz — „Vollsperrung DES Queichtalradweges".
+// Dann meint die Quelle wirklich den Radweg, und die roadClosed-Ausnahme unten darf nicht greifen.
+// Der Unterschied ist grammatikalisch: Sperrbegriff, Artikel, dann ein Wort, das auf einen Weg endet.
+// „Vollsperrung der B75, Radweg frei" trifft das Muster nicht und bleibt damit kritisch.
+const WEG_IST_SPERROBJEKT = /(?:voll)?sperrung\s+(?:des|der)\s+[\wäöüÄÖÜß-]*(?:rad-?\s?weg|geh-?\s?weg|fu(?:ß|ss)-?\s?weg|veloroute)/i
+
 function nurNichtFahrbahnSperre(attrs, obstacle) {
   if (attrs?.vollsperrung !== true) return false
   const t = `${obstacle?.name ?? ""} ${obstacle?.beschreibung ?? ""}`
@@ -339,9 +345,15 @@ function nurNichtFahrbahnSperre(attrs, obstacle) {
   // Quelle die Maßnahme strukturiert als echte Fahrbahn-/Straßensperre kennzeichnet (DATEX
   // sperrungArt=roadClosed/carriagewayClosed) — sonst würde eine echte roadClosed-Vollsperrung, deren
   // Freitext nur nebenbei einen Radweg erwähnt, fälschlich auf Warnung gedrückt (0142 Bremen).
+  const hatFahrbahnBezug = /fahrbahn|fahrstreifen|\bstra(?:ß|ss)e\b|\bfahrspur|\bspur\b/i.test(t)
+  // Der Weg ist selbst das Sperrobjekt: das ist der STÄRKERE Nachweis und trägt allein, auch bei
+  // roadClosed. Die Wortgrenzen-Prüfung unten würde hier versagen — „Queichtalradweges" hat vor
+  // „radweg" keine Wortgrenze, der Prod-Fund kam nur durch, weil sein Beschreibungstext zufällig
+  // noch einen zweiten Satz mit freistehendem „Radweg" trug.
+  if (WEG_IST_SPERROBJEKT.test(t) && !hatFahrbahnBezug) return true
   if (!/^(roadclosed|carriagewayclosed)$/i.test(String(attrs?.sperrungArt ?? "")) &&
       /geh-?\s*\/?\s*radweg|\bradweg|\bgehweg|veloroute|radverkehr|fu(?:ß|ss)weg/i.test(t) &&
-      !/fahrbahn|fahrstreifen|\bstra(?:ß|ss)e\b|\bfahrspur|\bspur\b/i.test(t)) return true
+      !hatFahrbahnBezug) return true
   // (b) 0 gesperrte Fahrstreifen + Parkplatz/Rampe/Überfahrt-Kontext → keine Fahrbahn-Sperrung
   if (num(attrs?.spurenGesperrt) === 0 &&
       /parkpl|rastpl|\bpwc\b|parkstreifen|rastanlage|park-?\s*und\s*rast|[üu]berfahrt|\beinfahrt|\bauffahrt|\babfahrt|\bausfahrt|rampe|verbindungsfahrbahn/i.test(t)) return true
