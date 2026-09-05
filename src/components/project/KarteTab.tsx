@@ -185,13 +185,27 @@ export function KarteTab({
   // zählten die Kategorien trotzdem alle 158 Funde — die Summe passte zu keiner Zahl auf dem Schirm).
   // Der Kategorie-Filter darf hier nicht hineinwirken: sonst verschwände eine abgewählte Kategorie
   // aus ihrer eigenen Liste und wäre nicht mehr zurückzuholen.
-  const findingsNachSchwere = useMemo(() => {
-    const base =
+  // T-664/F11: die Zwischenmenge NUR mit Zeitfilter, ohne Severity. Sie ist die Basis für die
+  // Schweregrad-Chips: die zählten vorher aus `sichtbareFindings` und damit am Zeitstrahl vorbei,
+  // während Kategorien, Marker und das „Ausgeblendet"-Chip die Zeit berücksichtigten. Gemessen:
+  // Projekt 23736_Eggensee zeigte „6 Kritisch" bei null roten Nadeln auf der Karte, 26 von 82
+  // Projekten betroffen. Fällt erst auf, sobald jemand den Zeitregler bewegt — also in der
+  // Vorführung. Der Severity-Filter darf hier nicht hineinwirken, sonst zählte jedes Chip sich
+  // selbst auf null und wäre nicht mehr zurückzuholen.
+  const findingsImZeitfenster = useMemo(
+    () =>
+      timeWin
+        ? sichtbareFindings.filter((f) => findingInTime(f, timeWin.start, timeWin.end))
+        : sichtbareFindings,
+    [sichtbareFindings, timeWin],
+  )
+  const findingsNachSchwere = useMemo(
+    () =>
       severityHidden.size === 0
-        ? sichtbareFindings
-        : sichtbareFindings.filter((f) => !severityHidden.has(f.severity))
-    return timeWin ? base.filter((f) => findingInTime(f, timeWin.start, timeWin.end)) : base
-  }, [sichtbareFindings, severityHidden, timeWin])
+        ? findingsImZeitfenster
+        : findingsImZeitfenster.filter((f) => !severityHidden.has(f.severity)),
+    [findingsImZeitfenster, severityHidden],
+  )
   const gefilterteFindings = useMemo(
     () =>
       katHidden.size === 0
@@ -232,6 +246,15 @@ export function KarteTab({
     if (f && Number.isFinite(f.lat) && Number.isFinite(f.lng)) {
       focusedRef.current = true
       setSelectedId(f.id)
+      // T-664/F9: sonst springt die Karte zu einem Fund, für den gar kein Marker gerendert wird —
+      // der Default versteckt „Warnung" und „Hinweis". Wer gezielt auf einen Fund verlinkt, will
+      // ihn sehen, also blenden wir genau dessen Schweregrad ein.
+      setSeverityHidden((prev) => {
+        if (!prev.has(f.severity)) return prev
+        const next = new Set(prev)
+        next.delete(f.severity)
+        return next
+      })
       nonceRef.current += 1
       setFocusPoint({ lat: f.lat, lng: f.lng, nonce: nonceRef.current })
       const next = new URLSearchParams(searchParams)
@@ -240,17 +263,31 @@ export function KarteTab({
     }
   }, [searchParams, project.findings, setSearchParams])
 
+  const passtZurSuche = (f: Finding, s: string) => {
+    const text = [
+      f.titel, f.beschreibung, f.strassenRef, f.routeName, f.quelle?.name,
+      ...Object.values(f.detail ?? {}),
+    ].filter(Boolean).join(" ").toLowerCase()
+    return text.includes(s)
+  }
+
   const treffer = useMemo(() => {
     const s = suche.trim().toLowerCase()
     if (!s) return []
-    return gefilterteFindings.filter((f) => {
-      const text = [
-        f.titel, f.beschreibung, f.strassenRef, f.routeName, f.quelle?.name,
-        ...Object.values(f.detail ?? {}),
-      ].filter(Boolean).join(" ").toLowerCase()
-      return text.includes(s)
-    })
+    return gefilterteFindings.filter((f) => passtZurSuche(f, s))
   }, [suche, gefilterteFindings])
+
+  // T-664/F9: die Suche läuft über die AKTUELLE Auswahl, und die versteckt per Default „Warnung"
+  // und „Hinweis" (Max 2026-06-29). Am Live-Projekt waren dadurch 175 von 196 Funden nicht
+  // auffindbar, und die Anzeige sagte dazu nur „0". Das liest sich wie „gibt es nicht", ist aber
+  // „gerade ausgeblendet". Wir zählen deshalb mit, was der Severity- und Kategorie-Filter
+  // wegnimmt, und schreiben die Zahl daneben.
+  const trefferAusgeblendet = useMemo(() => {
+    const s = suche.trim().toLowerCase()
+    if (!s) return 0
+    const sichtbar = new Set(gefilterteFindings.map((f) => f.id))
+    return findingsImZeitfenster.filter((f) => !sichtbar.has(f.id) && passtZurSuche(f, s)).length
+  }, [suche, gefilterteFindings, findingsImZeitfenster])
 
   const springeZu = (idx: number) => {
     if (treffer.length === 0) return
@@ -288,7 +325,7 @@ export function KarteTab({
 
   const counts = SEVERITY_ORDER.map((sev) => ({
     sev,
-    n: sichtbareFindings.filter((f) => f.severity === sev).length,
+    n: findingsImZeitfenster.filter((f) => f.severity === sev).length,
   }))
   // #5 (Max 2026-06-21): bei vielen Strecken Durchschnitt je Strecke statt sinnloser Gesamtsumme.
   const usableRoutes = freigegebeneRouten.filter((r) => r.points.length >= 2)
@@ -392,6 +429,9 @@ export function KarteTab({
           {suche ? (
             <span className="shrink-0 text-xs tabular-nums text-neutral-500">
               {treffer.length === 0 ? "0" : trefferIdx < 0 ? `${treffer.length} Treffer` : `${trefferIdx + 1}/${treffer.length}`}
+              {trefferAusgeblendet > 0 ? (
+                <span className="text-neutral-400"> · {trefferAusgeblendet} ausgeblendet</span>
+              ) : null}
             </span>
           ) : null}
           {treffer.length > 0 ? (
