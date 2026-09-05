@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, Database, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
+import { OHNE_FRISCHE_DATEN } from "@/lib/sourceHealth"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { useContextStore } from "@/store/context"
@@ -139,8 +140,10 @@ export function SyncBar() {
   const { pct, phaseLabel } = progress(job.data)
   const quellen = status.data?.quellen ?? []
   const aktiveQuellen = quellen.filter((q) => q.connector)
-  // Import-abgeleitetes Warnsignal: beim letzten automatischen Abruf (3×/Tag) nicht erreichbar.
-  const autoFehler = aktiveQuellen.filter((q) => q.letzterStatus === "error")
+  // Import-abgeleitetes Warnsignal: beim letzten automatischen Abruf (3×/Tag) ohne frische Daten.
+  // T-679: zählte nur "error" und blieb deshalb still, während sechs Quellen seit Wochen nichts
+  // lieferten — die endeten auf "warn" und "partial", nicht auf "error".
+  const autoFehler = aktiveQuellen.filter((q) => OHNE_FRISCHE_DATEN.has(String(q.letzterStatus)))
 
   // Laufende Summe der bereits geschriebenen Einträge (neu + aktualisiert) über
   // die abgeschlossenen Quellen — macht sichtbar, dass wirklich geschrieben wird.
