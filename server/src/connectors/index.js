@@ -39,7 +39,7 @@ import { dortmundBaustellenConnector } from "./0216_dortmund_baustellen.js"
 // 0217 (Düsseldorf — Verkehrsmeldungen, DATEX-II) ENTFERNT (Max 2026-06-14): reine Live-/Ad-hoc-
 // Verkehrsmeldungen ("Gefahrenstelle …", ohne Enddatum), für die Transport-PLANUNG wertlos.
 // import { duesseldorfVerkehrsmeldungenConnector } from "./0217_duesseldorf_verkehrsmeldungen.js"
-import { bonnBaustellenConnector } from "./0218_bonn_baustellen.js"
+import { bonnBaustellenGdiConnector } from "./0218_bonn_baustellen_gdi.js"
 import { karlsruheTrkBaustellenConnector } from "./0219_karlsruhe_trk_baustellen.js"
 import { leipzigVerkehrsraumeinschraenkungenConnector } from "./0220_leipzig_verkehrsraumeinschraenkungen.js"
 import { leipzigVerkehrszeichenConnector } from "./0221_leipzig_verkehrszeichen.js"
@@ -61,6 +61,7 @@ import { dortmundGeplantConnector } from "./0229_dortmund_geplant.js"
 import { autobahnLastbeschraenkteBrueckenConnector } from "./0150_autobahn_lastbeschraenkte_bruecken.js"
 import { berlinDurchfahrtshoehenConnector } from "./0133_berlin_durchfahrtshoehe.js"
 import { hamburgVerkehrszeichenConnector } from "./0134_hamburg_verkehrszeichen.js"
+import { berlinVerkehrszeichenVerboteConnector } from "./0135_berlin_verkehrszeichen_verbote.js"
 import { babAldVorschauConnector } from "./0152_bab_ald_vorschau.js"
 import { bastBrueckenConnector } from "./0153_bast_bruecken.js"
 import { lsbbStFahrauflagenConnector } from "./0154_lsbb_st_fahrauflagen.js"
@@ -69,6 +70,7 @@ import { vipnrwBaustellenConnector } from "./0156_vipnrw_baustellen.js"
 import { sevasNrwRestriktionenConnector } from "./0157_sevas_nrw_restriktionen.js"
 import { vmzNiBaustellenConnector } from "./0158_vmz_ni_baustellen.js"
 import { koelnLkwStreckeninfoConnector } from "./0230_koeln_lkw_streckeninfo.js"
+import { freiburgVerkehrszeichenConnector } from "./0233_freiburg_verkehrszeichen.js"
 
 export const CONNECTORS = [
   autobahnConnector,
@@ -96,7 +98,7 @@ export const CONNECTORS = [
   stuttgartBaustellenConnector,
   muensterBaustellenConnector,
   dortmundBaustellenConnector,
-  bonnBaustellenConnector,
+  bonnBaustellenGdiConnector,
   karlsruheTrkBaustellenConnector,
   leipzigVerkehrsraumeinschraenkungenConnector,
   leipzigVerkehrszeichenConnector,
@@ -117,6 +119,8 @@ export const CONNECTORS = [
   autobahnLastbeschraenkteBrueckenConnector,
   berlinDurchfahrtshoehenConnector,
   hamburgVerkehrszeichenConnector,
+  berlinVerkehrszeichenVerboteConnector,
+  freiburgVerkehrszeichenConnector,
   babAldVorschauConnector,
   bastBrueckenConnector,
   lsbbStFahrauflagenConnector,

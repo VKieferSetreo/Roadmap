@@ -249,7 +249,9 @@ describe("Sync-API", () => {
     const { app } = makeApp()
     const res = await request(app).get("/api/sync/status")
     expect(res.status).toBe(200)
-    expect(res.body.connectorAnzahl).toBe(54) // … +0157 (SEVAS NRW) +0158 (VMZ-NI innerorts) +0230 (Köln LKW-Streckeninfo)
+    // T-695: +0135 (Berlin Verkehrszeichen-Verbote) +0233 (Freiburg Verkehrszeichenkataster).
+    // 0218 Bonn wurde ERSETZT (gdi.bonn.de statt des abgeschalteten stadtplan.bonn.de), zaehlt also nicht neu.
+    expect(res.body.connectorAnzahl).toBe(56)
     const autobahn = res.body.quellen.find((q) => q.id === "0001")
     expect(autobahn.connector).toBe(true)
     expect(autobahn.vollbestand).toBe(true)
