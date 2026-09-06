@@ -37,7 +37,7 @@
 import { makeNormalized, getJson, dateOnly, num } from "./_helpers.js"
 
 const QUELLE = "0232"
-const QUELLE_NAME = "VMZ Bremen — Durchfahrtshöhen und Baustellen (ASV Bremen)"
+const QUELLE_NAME = "VMZ Bremen — Durchfahrtshöhen (ASV Bremen)"
 const QUELLE_URL = "https://vmz.bremen.de/"
 const FEED_HOEHEN = "https://vmz.bremen.de/geojson/pois-vertical-clearance.geojson"
 // Der Vorschau-Feed ist eine echte Obermenge des Aktuell-Feeds (gemessen 06.09.2026: alle 214 IDs
@@ -191,26 +191,28 @@ export const vmzBremenConnector = {
   schedule: "0 7,13 * * *", // Baustellenbestand aendert sich taeglich, die Hoehen-POIs praktisch nie
   vollbestand: true, // beide Feeds sind Voll-Bestaende → Reconcile raeumt beendete Massnahmen
 
+  // NUR DIE DURCHFAHRTSHOEHEN. Der Baustellen-Feed dieser Quelle waere eine Dublette: dieselben
+  // Bremer Baustellen kommen bereits ueber 0142 (VMZ Bremen, Mobilithek, 448 Eintraege im
+  // Bestand, taeglicher Lauf). Zwei Quellen fuer dieselbe Meldung erzeugen zwei Funde an
+  // derselben Stelle, und der Fund-Dedup greift nur innerhalb einer Quelle.
+  //
+  // Die Hoehen sind dagegen der eigentliche Gewinn: Bremen hat 567 Eintraege im Bestand und
+  // davon nur 22 mit einer Massangabe. 31 Durchfahrtshoehen zwischen 3,0 und 4,0 m sind fuer
+  // einen Schwertransport genau die Zahl, auf die es ankommt.
+  //
+  // parseBaustellen und FEED_BAUSTELLEN bleiben absichtlich im Code stehen: faellt 0142 einmal
+  // aus, ist der Ersatz eine Zeile entfernt.
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
-    const [hoehenFeed, bauFeed] = await Promise.all([
-      getJson(FEED_HOEHEN, { timeoutMs }),
-      getJson(FEED_BAUSTELLEN, { timeoutMs }),
-    ])
-    // vollbestand: true — ein halber Abruf darf NICHT als geschrumpfter Bestand durchgehen, sonst
-    // deaktiviert der Reconcile die Gegenseite ("Strecke frei"). complete:false ueberspringt ihn.
-    if (!hoehenFeed || !bauFeed) {
-      const tot = [!hoehenFeed && "Durchfahrtshöhen", !bauFeed && "Baustellen"].filter(Boolean).join(" + ")
-      log(`${QUELLE}: Feed nicht erreichbar (${tot}) — Teilbestand, Reconcile übersprungen`)
+    const hoehenFeed = await getJson(FEED_HOEHEN, { timeoutMs })
+    // vollbestand: true — ein gescheiterter Abruf darf NICHT als geschrumpfter Bestand
+    // durchgehen, sonst deaktiviert der Reconcile die Gegenseite ("Strecke frei").
+    if (!hoehenFeed) {
+      log(`${QUELLE}: Höhen-Feed nicht erreichbar — Teilbestand, Reconcile übersprungen`)
       return { obstacles: [], complete: false }
     }
     const hoehenFeats = hoehenFeed.features ?? []
-    const bauFeats = bauFeed.features ?? []
     const hoehen = parseHoehen(hoehenFeats)
-    const baustellen = parseBaustellen(bauFeats)
-    log(
-      `${QUELLE}: ${hoehen.length} Durchfahrtshöhen aus ${hoehenFeats.length} POIs · ` +
-      `${baustellen.length} Baustellen aus ${bauFeats.length} Features (Meldung/Veranstaltung raus)`,
-    )
-    return { obstacles: [...hoehen, ...baustellen] }
+    log(`${QUELLE}: ${hoehen.length} Durchfahrtshöhen aus ${hoehenFeats.length} POIs`)
+    return { obstacles: hoehen }
   },
 }

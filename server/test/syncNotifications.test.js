@@ -251,7 +251,7 @@ describe("Sync-API", () => {
     expect(res.status).toBe(200)
     // T-695: +0135 (Berlin Verkehrszeichen-Verbote) +0233 (Freiburg Verkehrszeichenkataster).
     // 0218 Bonn wurde ERSETZT (gdi.bonn.de statt des abgeschalteten stadtplan.bonn.de), zaehlt also nicht neu.
-    expect(res.body.connectorAnzahl).toBe(56)
+    expect(res.body.connectorAnzahl).toBe(58) // +0231 Saarbruecken +0232 Bremen-Hoehen (T-696)
     const autobahn = res.body.quellen.find((q) => q.id === "0001")
     expect(autobahn.connector).toBe(true)
     expect(autobahn.vollbestand).toBe(true)
