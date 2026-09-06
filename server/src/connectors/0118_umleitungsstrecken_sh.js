@@ -1,7 +1,11 @@
 // Connector Quelle 0118: Umleitungsstrecken Schleswig-Holstein (LBV.SH / GDI-SH).
 // Port aus API/Länder/Schleswig-Holstein/OpenData-SH-Umleitungsstrecken-WFS/umleitungsstrecken-sh.cron.mjs.
-// ArcGIS-WFS 2.0, GeoJSON, EPSG:4326 nativ. ~173 Umleitungsstrecken. GST-Ausweichkorridor →
-// kategorie sperrung (neutraler Träger) + umleitung=true.
+// ArcGIS-WFS 2.0, GeoJSON, EPSG:4326 nativ. GST-Ausweichkorridor → kategorie sperrung
+// (neutraler Träger) + umleitung=true.
+// Der Dienst führt ausschliesslich LAUFENDE Umleitungen und entfernt abgelaufene sofort
+// (06.09.2026: 178 Features, kein einziges mit Enddatum in der Vergangenheit). Er liefert
+// dieselbe Strecke mehrfach (2× bis 10×, meist geometrisch identisch) — 178 Features sind
+// 88 echte Strecken, die der Dedup des Importers über den Namen zusammenfasst.
 
 import { makeNormalized, fetchAllFeatures, dateOnly, num } from "./_helpers.js"
 
