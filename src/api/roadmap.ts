@@ -437,14 +437,6 @@ export const api = {
       axiosClient<VemagsResult>({ url: "/route/vemags", method: "POST", data: { pdfBase64 }, timeout: 60_000 }),
   },
 
-  /** Genehmigungs-Archiv (Archive-App, intern-only): Grob-Geometrien aller genehmigten
-   *  Strecken fuer den schaltbaren Karten-Layer. Grosser Payload → nur lazy laden. */
-  archivStreckenGeo: () =>
-    axiosClient<{ strecken: { id: string; abschnitte: { pts: [number, number][] }[] }[] }>({
-      url: "/archiv/strecken-geo",
-      method: "GET",
-      timeout: 60_000,
-    }),
 
   // ── Nachrichtenzentrum / Glocke ────────────────────────────────────────────
   notifications: {

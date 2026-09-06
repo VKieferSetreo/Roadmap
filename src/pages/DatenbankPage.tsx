@@ -127,7 +127,11 @@ function ObstacleKarte({ live }: { live: boolean }) {
         })
         if (seite.obstacles.length < SEITE || alle.length >= gesamt) break
       }
-      setLadefortschritt(null)
+      // T-691: hier stand `setLadefortschritt(null)`. Das feuerte VOR dem Umschalten von
+      // isLoading, der Balken fiel dadurch auf der Zielgeraden auf "Wird vorbereitet …" und 8 %
+      // zurueck — genau der Eindruck "erst bereite vor, dann ist es direkt da". Der Zustand wird
+      // nicht mehr gebraucht: die Ladeansicht verschwindet ohnehin, sobald die Query fertig ist,
+      // und beim naechsten Laden setzt die erste Seite ihn neu.
       return alle
     },
     enabled: live,
@@ -207,7 +211,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
             <span>
               {lp
                 ? `${lp.mb.toLocaleString("de-DE", { maximumFractionDigits: 1 })} / ${lp.gesamtMb.toLocaleString("de-DE", { maximumFractionDigits: 1 })} MB`
-                : "Wird vorbereitet …"}
+                : "Erste Pakete werden angefordert …"}
             </span>
             <span>
               {lp ? `${lp.geladen.toLocaleString("de-DE")} / ${lp.gesamt.toLocaleString("de-DE")} · ${prozent} %` : ""}
