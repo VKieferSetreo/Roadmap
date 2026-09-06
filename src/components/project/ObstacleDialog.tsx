@@ -128,8 +128,10 @@ export function ObstacleDialog({ position, onClose, onCreated }: ObstacleDialogP
         title="Eintrag auf der Strecke erstellen"
         subtitle={
           <>
+            {/* T-725: „Mandant" raus — der Disponent kennt das Wort vom Steuerberater, nicht aus
+                seinem Arbeitsalltag. Gemeint ist die eigene Firma. */}
             Position {position.lat.toFixed(5)}° N · {position.lng.toFixed(5)}° E, gilt für alle
-            Projekte Ihres Mandanten und fließt in künftige Auswertungen ein.
+            Projekte Ihres Unternehmens und fließt in künftige Auswertungen ein.
           </>
         }
         onClose={onClose}

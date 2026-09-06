@@ -4,6 +4,14 @@
 // Die geparste Liste liegt als 0126_hessen_bruecken.data.json neben diesem Modul und wird
 // pfadunabhängig über import.meta.url gelesen. Ohne Geokoordinaten (lat/lng=null) — Anker ist
 // der ASB-Netzbezug (VNK/NNK). PDF-Stand-Snapshot, kein Live-Vollbestand → vollbestand=false.
+//
+// SCHNAPPSCHUSS, UND DAS MUSS MAN SEHEN (T-716). Diese Quelle liest eine Datei von der Platte:
+// sie kann nicht ausfallen, nicht warnen und ist nach jedem Lauf „erfolgreich". Bis zum 05.09.2026
+// verkaufte sie deshalb einen Auszug vom 27.02.2026 als tagesfrisch — 133 aktive Punkte, ältester
+// Datensatz 83,9 Tage alt, im Register „zuletzt aktualisiert vor 30 Minuten", auf der Fundkarte
+// „Stand: heute". Beide Zahlen kamen aus der Laufzeit, keine aus den Daten.
+// Deshalb trägt jeder Punkt jetzt den PDF-Stand als Quellen-Stand, und der Lauf meldet ihn als
+// `standAm` an den Importer (der datiert damit quellen.letzter_abruf, siehe importer.js).
 
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
@@ -47,7 +55,7 @@ export const hessenBrueckenConnector = {
       // Anfang) anhängen; er ist pro Segment eindeutig, sonst gingen Segmente beim Upsert verloren.
       const externeId = [b.bauwerksnummer, teil !== "0" ? teil : null, b.von_nk]
         .filter(Boolean).join("-")
-      return makeNormalized({
+      const punkt = makeNormalized({
         externeId,
         kategorie: "bruecke",
         name: b.bauwerksname || `Brücke ${b.bauwerksnummer}`,
@@ -60,7 +68,15 @@ export const hessenBrueckenConnector = {
         attrs: { grundsaetzlicheGstSperre: true },
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,
       })
+      // makeNormalized stempelt quelle.aktualisiertAm auf JETZT — für einen Live-Feed richtig, für
+      // eine Datei von der Platte falsch. Genau dieses Feld zeigen Fundkarte („Stand: …") und
+      // Bericht („Daten-Stand", ReportView T-492) an. Ohne diese Zeile behauptet ein Bericht über
+      // eine Hessen-Brücke Tagesaktualität für einen Auszug, der ein halbes Jahr alt ist.
+      if (stand) punkt.quelle.aktualisiertAm = stand
+      return punkt
     })
-    return { obstacles }
+    // standAm: der Importer datiert quellen.letzter_abruf danach, statt nach der Laufzeit —
+    // sonst steht im Quellenregister der Zeitpunkt des Dateilesens statt der Stand der Daten.
+    return { obstacles, standAm: stand }
   },
 }

@@ -933,6 +933,17 @@ export function createFakeDb() {
       row.letzter_abruf = now()
       return ok([], 1)
     }
+    // T-716: zweite Form desselben UPDATEs — Schnappschuss-Quellen schreiben den Stand ihrer Daten
+    // ($2::date) statt now(). Der Fake kannte nur die now()-Form; unbekanntes SQL wirft hier
+    // absichtlich (siehe Kopf), ein Test dieses Zweigs wäre also an der Test-Infrastruktur
+    // gescheitert statt an der Sache. Datum als String übernehmen, nicht als Date: die Spalte ist
+    // DATE, und ein new Date(...) würde beim Vergleich eine Uhrzeit erfinden.
+    if (sql.startsWith("UPDATE quellen SET letzter_abruf = $2::date WHERE id = $1")) {
+      const row = state.quellen.find((q) => q.id === params[0])
+      if (!row) return ok([], 0)
+      row.letzter_abruf = params[1]
+      return ok([], 1)
+    }
     if (sql.startsWith("INSERT INTO import_runs (quelle_id, status)")) {
       const row = {
         id: randomUUID(),

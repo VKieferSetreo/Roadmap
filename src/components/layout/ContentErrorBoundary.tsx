@@ -64,9 +64,12 @@ export class ContentErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="h-6 w-6 text-severity-warnung" />
           </div>
           <h1 className="text-lg font-bold text-neutral-900">Diese Ansicht konnte nicht geladen werden</h1>
+          {/* T-728a: durchgehend Sie (der Satz kippte mitten drin auf „versuche"), und kein
+              Mandantenwechsel mehr versprochen — den Switcher sehen laut SetreoHeader nur
+              Setreo-Admins, ein normaler Kunde sucht ihn vergebens. */}
           <p className="mt-2 text-sm text-neutral-500">
-            Navigation und Mandantenwechsel funktionieren weiter. Wählen Sie links eine andere Ansicht
-            oder versuche es erneut.
+            Die Navigation funktioniert weiter. Wählen Sie links eine andere Ansicht oder versuchen
+            Sie es erneut.
           </p>
           <button
             type="button"

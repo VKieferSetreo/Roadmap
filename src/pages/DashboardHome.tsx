@@ -185,11 +185,13 @@ export function DashboardHome() {
           ) : null
         ) : loadError && sorted.length === 0 ? (
           // T-228: Backend-Fehler NICHT als „erstes Projekt"-Onboarding tarnen (zahlender Bestandskunde).
+          // T-725: aus demselben Grund kein „Backend" im Text — der Bestandskunde ist Disponent,
+          // kein Entwickler, und kann mit dem Wort nichts anfangen.
           <div className="mt-6">
             <EmptyState
               icon={WifiOff}
               title="Projekte konnten nicht geladen werden"
-              description="Das Backend ist gerade nicht erreichbar. Bitte Verbindung prüfen und erneut laden."
+              description="Die Verbindung zu Setreo Roadmap steht gerade nicht. Bitte Ihre Internetverbindung prüfen und erneut laden."
               cta={
                 <Button onClick={() => void loadProjects()}>
                   <RefreshCcw className="h-4 w-4" /> Erneut laden

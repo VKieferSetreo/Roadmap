@@ -206,9 +206,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           active={onDb}
           onClick={() => go("/datenbank")}
           warn={unreachable > 0}
+          // T-728c: „mit Fehler" versprach eine Härte, die die Zahl nicht deckt — useSourceHealth
+          // zählt OHNE_FRISCHE_DATEN = error + warn + partial (sourceHealth.ts, T-679; gemessen am
+          // 05.09.2026: 0 error, aber 6 Quellen ohne frische Daten). Wortgleich mit dem Tooltip am
+          // Ansicht-Reiter der Datenbank-Seite, der aus derselben Zahl kommt; diese Stelle sieht der
+          // Disponent auf JEDER Seite, der andere Tooltip nur im Datenbank-Tab.
           warnTitle={
             unreachable > 0
-              ? `${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} mit Fehler beim letzten Abruf`
+              ? `${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} ohne frische Daten beim letzten automatischen Abruf`
               : undefined
           }
         />

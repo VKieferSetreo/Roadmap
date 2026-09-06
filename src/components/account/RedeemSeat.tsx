@@ -11,11 +11,14 @@ import { ApiError } from "@/api/client"
 
 // Backend-Fehlertexte reicht der API-Client nicht durch (er erwartet {code,message},
 // das Backend sendet {error}). Wir mappen daher den HTTP-Status auf eine klare Meldung.
+// T-725: „Mandant" raus wie in AppLayout, ObstacleDialog und FindingChatPanel — im Code bleibt der
+// Begriff (Datenmodell), in Nutzertexten heißt es durchgehend „Unternehmen". Diese Maske sieht ein
+// externer Neukunde als ALLERERSTEN Bildschirm; ein Fremdwort im Fehlertext kostet hier den Support-Anruf.
 const FEHLER: Record<number, string> = {
   400: "Das ist kein gültiger Seat-Code. Bitte prüfen Sie die Eingabe.",
-  403: "Die Lizenz dieses Mandanten ist abgelaufen. Bitte wenden Sie sich an Setreo.",
+  403: "Die Lizenz Ihres Unternehmens ist abgelaufen. Bitte wenden Sie sich an Setreo.",
   404: "Dieser Seat-Code ist unbekannt.",
-  409: "Dieser Seat-Code wurde bereits eingelöst, oder Ihr Konto ist bereits einem Mandanten zugeordnet.",
+  409: "Dieser Seat-Code wurde bereits eingelöst, oder Ihr Konto ist bereits einem Unternehmen zugeordnet.",
 }
 
 export function RedeemSeat({ email }: { email: string }) {
@@ -56,7 +59,7 @@ export function RedeemSeat({ email }: { email: string }) {
         <h1 className="text-center text-lg font-bold text-neutral-900">Zugang freischalten</h1>
         <p className="mt-2 text-center text-sm text-neutral-500">
           Geben Sie Ihren Seat-Code ein, um Ihr Konto{" "}
-          <span className="font-medium text-neutral-700">{email}</span> Ihrem Mandanten zuzuordnen.
+          <span className="font-medium text-neutral-700">{email}</span> Ihrem Unternehmen zuzuordnen.
         </p>
         <form onSubmit={submit} className="mt-6">
           <Label htmlFor="seatcode">Seat-Code</Label>

@@ -179,7 +179,13 @@ export function QuellenRegister() {
                       <Detail label="Typ" value={qq.typ ?? "—"} />
                       <Detail label="Abruf-Intervall" value={qq.abrufIntervall ?? "—"} />
                       <Detail label="Vollbestand" value={qq.vollbestand ? "ja (Reconcile)" : "nein"} />
-                      <Detail label="Letzter Abruf" value={qq.letzterAbruf ? formatRelativeDE(qq.letzterAbruf) : "noch nie"} />
+                      {/* „Datenstand" statt „Letzter Abruf" (T-731). Seit T-716 trägt das Feld bei
+                          Schnappschuss-Quellen den Stand des Auszugs, nicht den Zeitpunkt des Abrufs:
+                          Hessen (0126) liest eine Datei vom 27.02. und lief trotzdem dreimal täglich
+                          erfolgreich — „Letzter Abruf: vor 30 Minuten" war dort schlicht falsch.
+                          „Datenstand" stimmt für beide Fälle und ist ohnehin die Frage, die der
+                          Disponent hat: wie alt sind die Daten, nicht wann hat der Server angeklopft. */}
+                      <Detail label="Datenstand" value={qq.letzterAbruf ? formatRelativeDE(qq.letzterAbruf) : "noch nie"} />
                       <Detail label="Status" value={qq.connector ? "Connector aktiv" : "nur im Register (kein Abruf)"} />
                       <div className="col-span-2 sm:col-span-4">
                         <dt className="text-neutral-400">Was wir ziehen</dt>

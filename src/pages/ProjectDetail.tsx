@@ -1,4 +1,4 @@
-// Projekt-Detail mit 3 Reitern: Eingabe (Strecke + Stammdaten) · Karte · Dashboard.
+// Projekt-Detail mit 3 Reitern: Eingabe (Strecke + Stammdaten) · Karte · Auswertung.
 // Tab steckt in der URL (/projekte/:id/:tab). Karte rendert vollflächig.
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
@@ -12,10 +12,14 @@ import { AnlageTab } from "@/components/project/AnlageTab"
 import { KarteTab } from "@/components/project/KarteTab"
 import { DashboardTab } from "@/components/project/DashboardTab"
 
+// T-728e: Der Reiter hieß in der App „Dashboard", im geteilten Link aber „Auswertung"
+// (share/ShareApp.tsx) — derselbe Inhalt unter zwei Namen. „Auswertung" gewinnt, weil die App
+// sonst durchgehend so spricht („Auswertung starten", „Auswertung fehlgeschlagen", „Für die
+// Auswertung ausblenden"). Der Slug bleibt „dashboard": er steckt in geteilten Links.
 const TABS: { slug: string; label: string; icon: LucideIcon }[] = [
   { slug: "route", label: "Eingabe", icon: MapPin },
   { slug: "karte", label: "Karte", icon: MapPinned },
-  { slug: "dashboard", label: "Dashboard", icon: ClipboardList },
+  { slug: "dashboard", label: "Auswertung", icon: ClipboardList },
 ]
 const VALID = new Set(TABS.map((t) => t.slug))
 

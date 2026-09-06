@@ -12,6 +12,27 @@ export function inDeBbox(lat, lng) {
   return lat != null && lng != null && lat >= 47.2 && lat <= 55.1 && lng >= 5.8 && lng <= 15.1
 }
 
+// T-713c: Obergrenze fuer eine im Strassenkontext plausible Tonnage. Gemessen ueber den gesamten
+// Bestand: EIN einziger Wert liegt ueber 180 t — 222 t auf einer Baustelle der Autobahn-API, ohne
+// jeden Beleg im Beschreibungstext. Alle uebrigen Limits liegen zwischen 1,5 t und 180 t und tragen
+// ihren Beleg im Text ("max. 180t Gesamtgewicht"). Ueber dieser Grenze ist die Zahl praktisch immer
+// eine Kilometrierung oder eine Projektnummer, die zufaellig neben einem "t" steht. Lieber gar kein
+// Limit als ein erfundenes: ein zu hohes Gewichtslimit spricht eine Strecke faelschlich frei.
+// 200 statt 180 als Grenze, damit ein echter, nur knapp ueber dem Bestand liegender Wert (Schwerlast-
+// Bruecke) nicht mit verworfen wird — der Fehlerfall liegt um Zehnerpotenzen darueber.
+//
+// NUR AUF DEM FREITEXT-PFAD. Der Deckel sass zuerst auf allen Rueckgabepfaden und traf damit auch
+// { requireKontext: false } — und das ist kein Freitext-Raten, sondern das dedizierte Gewichtsfeld
+// der Quelle: 0124 GST-Schwertransportkarte NRW (Gewichtsfeld), 0150 Autobahn lastbeschraenkte
+// Bruecken (p.Beschraenkung IST das Lastlimit) und 0221 Leipzig (Standort-Spec des Verkehrszeichens).
+// Dort steht die Zahl allein und ohne Kontext, weil die Behoerde genau dieses eine Limit meldet;
+// ein hoher Wert ist da echt und darf nicht verschwinden. Und ehrlich zur Reichweite: null spricht
+// die Strecke genauso frei wie ein zu hoher Wert — der Deckel verhindert keine Falsch-Freigabe,
+// er verhindert nur, dass eine erratene Zahl als Grenzwert im Fund steht. Deshalb gilt er dort,
+// wo geraten wird, und nirgends sonst.
+const MAX_TONNAGE_T = 200
+const tonnageWennPlausibel = (n) => (n <= MAX_TONNAGE_T ? n : null)
+
 /** Tonnage-Zahl aus Freitext — NUR wenn sie an einem Gewichts-Limit-Kontext hängt (T-253),
  *  sonst wird "40-t-Kran" / "25 t Asphalt" fälschlich zum Fahrzeug-Gewichtslimit und führt zu
  *  einer falschen Routen-Freigabe. Bei dedizierten Gewichts-Feldern (Brücken-/Lastfeeds) per
@@ -20,6 +41,7 @@ export function tonnageAusText(text, { requireKontext = true } = {}) {
   if (!text) return null
   const s = String(text).replaceAll(",", ".")
   if (!requireKontext) {
+    // Dediziertes Gewichtsfeld der Quelle — die Zahl ist gemeldet, nicht geraten. Kein Deckel.
     const m = s.match(/(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
     return m ? Number(m[1]) : null
   }
@@ -33,28 +55,62 @@ export function tonnageAusText(text, { requireKontext = true } = {}) {
   const vor = s.match(
     /(?:gesamtgewicht|zul[.\s]*ges|zgg|tragf[äa]hig\w*|tragkraft|tragl\w*|lastbe\w*|gewichtsbe\w*|gewichtsl\w*|zul[äa]ssig|\bmax\.?|gesperrt)[^.\d]{0,25}(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i,
   )
-  if (vor) return Number(vor[1])
+  if (vor) return tonnageWennPlausibel(Number(vor[1]))
   // Kontext NACH der Zahl: "7,5 t zul. Gesamtgewicht", "16 t zGG", "30 t Tragfähigkeit", "7,5 t gesperrt".
   const nach = s.match(
     /(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)[^.\d]{0,20}(?:zul|gesamtgewicht|zgg|gewichtsbe|tragf|lastbe|gesperrt)/i,
   )
-  if (nach) return Number(nach[1])
+  if (nach) return tonnageWennPlausibel(Number(nach[1]))
   // T-611: „Verbot für (Kraft)fahrzeuge über X t" IST ein echtes Limit (0127/0130) — aber „Überholverbot
   // über X t" / „Abstandsgebot" NICHT (0112 Norderelbbrücke). Das bare „über X t" wurde in Welle B ganz
   // entfernt; hier gezielt am „Verbot"-Kontext (ohne Überhol/Abstand) wieder zulassen.
   if (!/(?:überhol|abstandsgebot)/i.test(s)) {
     const verbot = s.match(/\bverbot\b[^.\d]{0,30}?[üu]ber\s*(\d+(?:\.\d+)?)\s*(?:t\b|to\b|tonnen)/i)
-    if (verbot) return Number(verbot[1])
+    if (verbot) return tonnageWennPlausibel(Number(verbot[1]))
   }
   return null
 }
 
-/** Erste Höhen-/Breiten-Meterzahl aus Freitext. */
-export function meterAusText(text, schluessel = /(?:höhe|hoehe|breite|durchfahrt)/i) {
+// T-707: Trenner zwischen zwei Sachverhalten in einem Freitext. Dieselbe Fehlerklasse wie
+// bisZumTrenner in external/osrm.js (T-699): die erste Meterzahl im GANZEN Text gehoert
+// regelmaessig zu einer anderen Aussage als das Schluesselwort. Gemessen an 0132 Brandenburg:
+// 13 aktive Hindernisse tragen restbreiteM, bei 9 ist der Wert EXAKT die Sperrlaenge
+// (140, 200, 257, 312, 1236, 1493 m) — "Restbreite 1.493,0 m" stand so im Fund.
+//
+// NUR WAS WIRKLICH ZWEI AUSSAGEN TRENNT. Die erste Fassung trennte zusaetzlich an ':', an '(' und
+// ')', an JEDEM Punkt ohne folgende Ziffer und an ' - '. Damit riss sie genau die Label-Formen
+// auseinander, in denen die echte Restbreite steht — Doppelpunkt und Abkuerzungspunkt stehen dort
+// ZWISCHEN Schluesselwort und Zahl, nicht zwischen zwei Aussagen. Gemessen an 16 Beispieltexten
+// (11 mit echter Restbreite in gaengigen Label-Formen, 5 Fallen, in denen die Meterzahl die
+// Sperr-/Bauabschnittslaenge ist): alte Liste 12/16, diese Liste 16/16. Die vier Ausfaelle der
+// alten Liste waren "Restbreite: 3,25 m", "Fahrbahnverengung, Restbreite: 3,50 m",
+// "Restbreite ca. 3,5 m" und "Fahrbahnbreite (verbleibend): 5,5 m" — alle vier verworfen, keine
+// einzige Falle dafuer zusaetzlich abgefangen.
+// Es bleiben: Semikolon und Zeilenumbruch (unstrittige Aufzaehlungs-/Absatzgrenzen), '!'/'?' und
+// der SATZ-Punkt. Satz-Punkt heisst: ein Punkt, dem Leerraum und ein Grossbuchstabe folgen. Das
+// trifft "Sperrlaenge 257 m. Einengung der Fahrbahn" und laesst "ca. 3,5 m" / "max. 3,10 m"
+// (Ziffer statt Grossbuchstabe) zusammen — deutsche Abkuerzungen stehen im Fliesstext fast immer
+// vor einem Kleinbuchstaben oder einer Zahl.
+const FRAGMENT_TRENNER = /[;\n]+|[!?]+|\.(?=\s+[A-ZÄÖÜ])/
+
+/** Erste Höhen-/Breiten-Meterzahl aus Freitext.
+ *  Mit { imFragment: true } zählt nur eine Zahl aus demselben Satzfragment wie das Schlüsselwort —
+ *  ohne die Option (Bestandsverhalten aller übrigen Connectoren) genügt es, dass das Schlüsselwort
+ *  irgendwo im Text vorkommt. */
+export function meterAusText(text, schluessel = /(?:höhe|hoehe|breite|durchfahrt)/i, { imFragment = false } = {}) {
   if (!text) return null
   const s = String(text).replaceAll(",", ".")
   if (schluessel && !schluessel.test(s)) return null
-  const m = s.match(/(\d+(?:\.\d+)?)\s*m\b/)
+  const ZAHL = /(\d+(?:\.\d+)?)\s*m\b/
+  if (imFragment && schluessel) {
+    for (const teil of s.split(FRAGMENT_TRENNER)) {
+      if (!teil || !schluessel.test(teil)) continue
+      const t = teil.match(ZAHL)
+      if (t) return Number(t[1])
+    }
+    return null
+  }
+  const m = s.match(ZAHL)
   return m ? Number(m[1]) : null
 }
 
@@ -72,6 +128,25 @@ export function dateOnly(v) {
     return `${yyyy}-${d[2]}-${d[1]}`
   }
   return null
+}
+
+// T-713b: Ein Enddatum weit in der Zukunft ist kein Enddatum, sondern ein Quell-Artefakt. Im
+// Bestand: 6 aktive Hindernisse mit gueltig_bis nach 2050, das aeusserste am 07.10.2204 (ein
+// Zahlendreher aus 2024) — im Fund stand woertlich "bis 07.10.2204", daneben 2999 als Sentinel
+// fuer "unbefristet". 15 Jahre als Grenze: laenger plant keine Strassenbaubehoerde eine EINZELNE
+// Massnahme; selbst mehrstufige Ersatzneubauten und A-Modell-Projekte bleiben darunter, und die
+// laengsten echten Zeitraeume im Bestand liegen weit davor. Fachlich aendert null nichts: ein
+// gueltig_bis IS NULL heisst "offen" und bleibt genauso unbegrenzt aktiv wie das Jahr 2204
+// (worker/hygiene.js deaktiviert nur bei GESETZTEM, abgelaufenem Ende) — es liest sich nur ehrlich
+// als unbefristet statt als falsche Praezision. Bewusst NUR fuer das Ende: ein weit in der Zukunft
+// liegender BEGINN (246 Eintraege, max 01.03.2038) auf null zu setzen wuerde eine noch gar nicht
+// existierende Baustelle als bereits laufend ausweisen — das waere schlimmer als der Anzeigefehler.
+const UNBEFRISTET_AB_JAHREN = 15
+export function endeWennBefristet(v, heute = new Date()) {
+  const d = dateOnly(v)
+  if (!d) return null
+  const grenze = new Date(Date.UTC(heute.getUTCFullYear() + UNBEFRISTET_AB_JAHREN, heute.getUTCMonth(), heute.getUTCDate()))
+  return d > grenze.toISOString().slice(0, 10) ? null : d
 }
 
 // T-452: deutscher Monatsname → 0-basierter Index (voll, 3-Buchstaben, mit/ohne Punkt, ä/ae).
@@ -468,6 +543,45 @@ export function stripHtml(text) {
   return s || null
 }
 
+// T-713a (Nachbesserung): Der NAME verträgt stripHtml nicht.
+// stripHtml ersetzt jedes /<[^>]+>/ durch ein Leerzeichen. In einer Beschreibung ist das richtig
+// (Autobahn-Meldungen liefern echtes Markup), im Namen frisst es Fachinformation: „A1 FR Bremen
+// <-> FR Hamburg" verliert die Richtungsangabe, und eine in spitze Klammern gesetzte Maßzahl
+// („Engstelle <3,5 m>") ist weg, BEVOR die Extraktion sie sehen kann — der Disponent verliert
+// damit genau die Zahl, wegen der er das Hindernis liest. Belegt war nur der Entity-Fall (10 aktive
+// Zeilen „… Tangente A44-&gt; A4 FR NL"); der wird behoben, ohne den Rest mitzunehmen.
+// Das Tag-Muster verlangt darum einen Buchstaben direkt hinter „<" bzw. „</": das trifft <br>,
+// <b>, </p> — aber weder „<->" noch „<3,5 m>".
+const HTML_TAG = /<\/?[a-zA-Z][^<>]*>/g
+function bereinigeName(text) {
+  if (text == null) return null
+  const s = decodeEntities(String(text).replace(HTML_TAG, " "))
+    .replace(/[ \t]{2,}/g, " ").replace(/[ \t]+\n/g, "\n").trim()
+  return s || null
+}
+
+// T-706: Namen wurden hart auf 200 bzw. 240 Zeichen geschnitten — mitten im Wort. Gemessen:
+// 5.078 aktive Hindernisse enden auf exakt 200 oder 240 Zeichen, 4.156 davon mitten im Wort;
+// Quelle 0147 Bayern allein 4.638 von 7.282 Eintraegen (64 %), und 44 von 3.366 Fund-Titeln
+// tragen den Schnitt bereits sichtbar: "… Fahrbahn auf 2 Fahrstreifen verengt, V". Der Disponent
+// kann an so einem Titel nicht erkennen, ob dahinter noch eine Restbreite stand.
+// Jetzt an der letzten Wortgrenze schneiden und mit "…" kenntlich machen, dass Text fehlt.
+// Das "…" zaehlt gegen die Grenze (max-1 Zeichen Text) — sonst laeuft genau das eine Zeichen
+// ueber die Spaltenbreite, um die es hier geht.
+// WORT_MIN_ANTEIL ist die Notbremse: bei einem einzigen ueberlangen Token (URL, durchgekoppelte
+// Kette ohne Leerzeichen) wuerde die Wortgrenze fast den ganzen Namen wegwerfen. Dann lieber hart
+// schneiden — ein abgeschnittenes Wort ist besser als ein leerer Name.
+const WORT_MIN_ANTEIL = 0.6
+const NAME_MAX = 240 // Laengengrenze der Namensspalte (unveraendert, nur die Art des Schnitts aendert sich)
+export function kuerzeAufWortgrenze(text, max) {
+  if (text == null) return null
+  const s = String(text)
+  if (s.length <= max) return s
+  const hart = s.slice(0, max - 1)
+  const anWort = hart.replace(/\s+\S*$/, "").replace(/[\s,;:.\-–—/]+$/, "")
+  return (anWort.length >= max * WORT_MIN_ANTEIL ? anWort : hart) + "…"
+}
+
 /**
  * Die Rohantwort der Quelle für EINEN Datensatz, aufgeräumt und begrenzt.
  *
@@ -506,6 +620,7 @@ export function makeNormalized({
   externeId, kategorie, name = null, beschreibung = null, lat, lng,
   strassenRef = null, attrs = {}, gueltigVon = null, gueltigBis = null, realerStart = null,
   quelleName = null, quelleUrl = null, geom = null, refAusBeschreibung = true, roh = null,
+  verworfeneAttrs = null,
 }) {
   let nlat = lat != null ? Number(lat) : null
   let nlng = lng != null ? Number(lng) : null
@@ -517,6 +632,24 @@ export function makeNormalized({
     Object.entries(attrs || {}).filter(([k, v]) => attrErlaubt(k, v)),
   )
   beschreibung = stripHtml(beschreibung)
+  // T-713a: Säuberung auch für den Namen. Sie lief bisher NUR auf der Beschreibung, darum tragen
+  // 10 aktive Hindernisse HTML-Entities im Namen ("… Tangente A44-&gt; A4 FR NL"). Vor dem Kürzen
+  // (T-706), sonst zählt eine 5-Zeichen-Entity als 5 Zeichen gegen die Längengrenze; und vor der
+  // Extraktion, damit "A44-&gt;" dem Straßen-/Richtungs-Regex nicht als Fremdtext dazwischenfällt.
+  // NICHT stripHtml, sondern bereinigeName — Begründung dort.
+  name = bereinigeName(name)
+
+  // T-707 (Nachbesserung): Eine LÜCKE und ein VERWORFENER Wert sind zweierlei. Der Gap-Fill unten
+  // sieht beides gleich — der Connector kann einen Wert nur weglassen, nicht „nein" sagen. Damit hob
+  // er jede Connector-Prüfung sofort wieder auf: 0132 verwirft eine Restbreite, die exakt der
+  // Sperrlänge entspricht, und der Gap-Fill schrieb denselben Wert aus demselben Freitext erneut
+  // hinein — inklusive kiAufbereitet=true, das die erfundene Zahl auch noch als angereichert
+  // auszeichnete. Der 3-m-Wert, der den falsch-kritischen Fund für jeden Großraumtransport erzeugt,
+  // war danach wieder da.
+  // Optionaler Parameter statt Sentinel-Wert in attrs: `null`/`undefined` in attrs heißt bei allen
+  // rund 40 Connectoren bereits „habe ich nicht", das umzudeuten wäre eine stille Verhaltensänderung
+  // für alle. So ändert sich die Schnittstelle nur für den, der den Parameter setzt.
+  const verworfen = new Set(Array.isArray(verworfeneAttrs) ? verworfeneAttrs : [])
 
   // Strip-down: fehlende Grenzwerte/Zeiträume aus dem Freitext (Name + Beschreibung) nachziehen.
   // Nur Lücken füllen — vom Connector explizit gesetzte Werte bleiben unangetastet.
@@ -525,6 +658,7 @@ export function makeNormalized({
   // Alle extrahierten attrs generisch übernehmen (außer den Nicht-attr-Feldern) — nur Lücken füllen.
   for (const [k, v] of Object.entries(ex)) {
     if (EX_NICHT_ATTR.has(k)) continue
+    if (verworfen.has(k)) continue // der Connector hat diesen Wert geprüft und abgelehnt — nicht zurückholen
     // T-611 (Voll-Bestand): sich ausschließende Maß-Keys NICHT quer aus dem Freitext gap-fillen — ein
     // Achslast-Schild (maxAchslastT gesetzt) darf KEIN maxGewichtT aus dem Text ziehen (sonst wird die
     // Achslast als Gesamtgewicht gewertet → Falsch-Kritisch, 0221 VZ263); eine Breitenbeschränkung
@@ -554,7 +688,7 @@ export function makeNormalized({
   return {
     externeId: externeId != null ? String(externeId) : null,
     kategorie,
-    name: name != null ? String(name).slice(0, 240) : null,
+    name: kuerzeAufWortgrenze(name, NAME_MAX), // T-706: Wortgrenze + "…" statt hartem Schnitt
     // Beschreibung = PURER Quelltext (was die Behörde/Quelle liefert), keine eigenen Notizen.
     // Dass strukturierte Felder abgeleitet wurden, markiert separat das kiAufbereitet-Flag/Badge.
     beschreibung: besch,
@@ -563,7 +697,7 @@ export function makeNormalized({
     strassenRef: refFinal != null ? String(refFinal) : null,
     attrs: cleanAttrs,
     gueltigVon: dateOnly(vonFinal),
-    gueltigBis: dateOnly(bisFinal),
+    gueltigBis: endeWennBefristet(bisFinal), // T-713b: Ende jenseits des Planungshorizonts = unbefristet
     realerStart: dateOnly(realerStart),
     kiAufbereitet: extrahiert, // Flag: aus Freitext angereichert → FE-Badge "mit KI-Aufbereitung"
     geom: geom && typeof geom === "object" ? geom : null, // GeoJSON-Geometrie (Strecke) für Linien-Render

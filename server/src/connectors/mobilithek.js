@@ -123,7 +123,11 @@ export function makeMobilithekConnector({ quelleId, name, url, schedule = DEFAUL
       })
       if (res.status === 304 || res.status === 204) {
         log(`${quelleId}: ${res.status === 304 ? "nichts Neues (304)" : "kein Paket im Puffer (204)"} — Bestand unverändert`)
-        return { obstacles: [], unveraendert: true } // Importer macht ohne Items keinen destruktiven Reconcile
+        // unveraendert: der Importer hält den Lauf dadurch auf 'ok' und zieht letzter_abruf hoch
+        // (T-718) — ohne Items macht er ohnehin keinen destruktiven Reconcile. Bis zum 05.09.2026
+        // las das Feld niemand, und ein korrekt antwortender Delta-Feed lief in die
+        // „Vollbestand mit 0 Einträgen"-Warnung: 0140 in 139 von 289 Läufen.
+        return { obstacles: [], unveraendert: true }
       }
       if (res.status >= 400 || !res.xml) {
         log(`${quelleId}: Fehler/leer (HTTP ${res.status}) — Endpunkt/Zertifikat/Subskription prüfen`)

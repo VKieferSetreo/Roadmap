@@ -8,6 +8,7 @@
 //   strassenRef?, attrs, gueltigVon?, gueltigBis?, realerStart?, quelle:{name,url,aktualisiertAm} }
 
 import { cleanText } from "../util.js"
+import { kuerzeAufWortgrenze, endeWennBefristet } from "./_helpers.js"
 
 const tag = (xml, name) => {
   // erstes <name ...>…</name> (namespace-tolerant), non-greedy
@@ -49,6 +50,10 @@ const dateOnly = (s) => {
   const m = String(s).match(/\d{4}-\d{2}-\d{2}/)
   return m ? m[0] : null
 }
+// Hier gilt 200, nicht die 240 aus makeNormalized: parseDatex2 baut den NormalizedObstacle selbst
+// und laeuft NICHT durch makeNormalized. Beide Grenzen bleiben unveraendert, nur die Art des
+// Schnitts aendert sich (T-706).
+const NAME_MAX = 200
 
 /** xsi:type / Element-Typ → unsere Kategorie. Best-effort über bekannte DATEX-Typen + Stichworte. */
 function kategorieAusTyp(recordOpenTag, recordXml) {
@@ -265,7 +270,10 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
 
       const kategorie = kategorieAusTyp(openTag, rec)
       const von = dateOnly(tag(rec, "overallStartTime") || tag(rec, "validityStartTime"))
-      const bis = dateOnly(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
+      // T-713b: Enddatum jenseits jedes Planungshorizonts (2204, 2999) verwerfen statt es als
+      // "bis 07.10.2204" in den Fund zu schreiben. Auch hier noetig, weil dieser Parser an
+      // makeNormalized vorbeilaeuft, wo derselbe Deckel sitzt.
+      const bis = endeWennBefristet(tag(rec, "overallEndTime") || tag(rec, "validityEndTime"))
       const { lat, lng, geom } = koordAusRecord(rec, resolveTmc)
       // Beschreibender Text: Record-Kommentar, sonst Situations-Kommentar (0144). Verdopplung
       // mancher Quellen ("X - X - Y", BAB-AkD 0145) über dedupeName glätten.
@@ -293,7 +301,11 @@ export function parseDatex2(xml, { quelleName = "DATEX II", quelleUrl = null, re
       obstacles.push({
         externeId: String(externeId),
         kategorie,
-        name: String(name).slice(0, 200),
+        // T-706: an der Wortgrenze kuerzen statt hart zu kappen. Diese Quelle ist der Hauptbetroffene —
+        // 0147 Bayern schreibt die ganze Lagebeschreibung in den Namen, 4.638 von 7.282 Eintraegen
+        // endeten auf exakt 200 Zeichen, meist mitten im Wort ("… Fahrbahn auf 2 Fahrstreifen
+        // verengt, V"). Die 200 bleiben die Grenze, das "…" zaehlt mit hinein.
+        name: kuerzeAufWortgrenze(String(name), NAME_MAX),
         beschreibung: dedupeName(beschr),
         lat,
         lng,

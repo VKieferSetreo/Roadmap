@@ -232,6 +232,16 @@
     overflow: visible !important;
     background: white !important;
   }
+  /* T-726: Browser drucken Hintergrundflächen standardmäßig NICHT — die farbigen
+     Schweregrad-Marken und der grüne Freigabekasten kämen als leere Kästen aus dem Drucker.
+     Das weitergereichte PDF sähe damit anders aus als das, was der Kunde freigegeben hat.
+     Nur der Berichtsbereich, nicht global: der Rest der App soll weiter tintenschonend drucken.
+     Die Eigenschaft vererbt sich auf alle Kinder, ein eigener *-Selektor ist unnötig.
+     -webkit-Präfix bleibt für ältere Chrome/Safari, die nur diese Schreibweise kennen. */
+  #report-print-root {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .break-inside-avoid {
     break-inside: avoid;
   }

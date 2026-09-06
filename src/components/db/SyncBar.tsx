@@ -139,7 +139,11 @@ export function SyncBar() {
   const running = job.data?.status === "running" || start.isPending
   const { pct, phaseLabel } = progress(job.data)
   const quellen = status.data?.quellen ?? []
-  const aktiveQuellen = quellen.filter((q) => q.connector)
+  // T-715: „aktiv" heißt Connector UND im Register nicht stillgelegt. Stillgelegte Quellen plant
+  // der Worker seit T-694 nicht mehr ein, ihr letzter Status friert ein — sie gehören weder in den
+  // Warn-Zähler noch in den Nenner. Gemessen am 05.09.2026: 3 der 4 gemeldeten „nicht erreichbar"
+  // (0121, 0151, 0159) waren stillgelegt und hingen dauerhaft auf „warn".
+  const aktiveQuellen = quellen.filter((q) => q.connector && q.aktiv)
   // Import-abgeleitetes Warnsignal: beim letzten automatischen Abruf (3×/Tag) ohne frische Daten.
   // T-679: zählte nur "error" und blieb deshalb still, während sechs Quellen seit Wochen nichts
   // lieferten — die endeten auf "warn" und "partial", nicht auf "error".

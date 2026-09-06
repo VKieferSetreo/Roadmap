@@ -13,6 +13,32 @@ const LAYERS = [
   { typ: "TBA:baustellen_vorschau", phase: "vorschau" },
 ]
 
+// T-710: Das TRK-Portal liefert bewusst auch die elsässischen Partner mit ("+ Alsace", siehe Kopf).
+// Im Bestand sind das 67 französischsprachige Einträge, 41 davon westlich von 7,5 Grad Ost bis in
+// die Vogesen (Ballon d'Alsace, Col de la Schlucht, Col du Bonhomme) — rund 150 km von Karlsruhe.
+// Für einen deutschen Schwertransport sind sie nicht nur nutzlos, sondern schädlich: 8 davon tragen
+// "B13", das französische Schild-Kürzel für ein Gewichtsverbot, das extractStammdaten als deutsche
+// Bundesstraße B13 liest ("Col de Ste Marie : interdiction PL", 3,5 t, 48,243/7,170). Die echte B13
+// hat 92 Einträge in Bayern — ein bayerischer Fund mit einer Vogesen-Auflage ist der Demo-Unfall.
+// Der DE-Bbox-Filter in makeNormalized greift nicht: das Elsass liegt mit 7,17 Grad innerhalb
+// dieser groben Deutschland-Box (ab 5,8 Grad Ost).
+//
+// Warum die Westgrenze bei genau 8,0 Grad liegt: alle deutschen Zulieferer dieses Feeds liegen
+// rechts des Rheins, und der Rhein verläuft auf dieser Breite zwischen 7,8 (Kehl) und 8,3 Grad
+// (Karlsruhe-Maxau). Weiter östlich darf die Grenze nicht liegen, weil der Landkreis Rastatt mit
+// Rheinmünster (8,06) und Iffezheim (8,14) selbst bis dicht an den Strom reicht — 8,2 Grad würde
+// echte deutsche Baustellen wegwerfen. Die übrigen drei Kanten sind bewusst weit gefasst; sie
+// fangen nur grobe Ausreißer ab und schneiden das Einzugsgebiet nirgends an (südlichster Punkt
+// Landkreis Rastatt ≈ 48,6, nördlichster Landkreis Karlsruhe ≈ 49,3, östlichster ≈ 8,9).
+//
+// Verworfen wird ganz, nicht nur die Straßen-Ref: die Ref entsteht erst in makeNormalized aus dem
+// Freitext, ließe sich hier also gar nicht auf null zwingen — und ein Vogesenpass im Ergebnis
+// bleibt auch ohne Ref ein falscher Fund.
+const EINZUGSGEBIET = { latMin: 48.4, latMax: 49.5, lngMin: 8.0, lngMax: 9.2 }
+const imEinzugsgebiet = (lat, lng) =>
+  lat >= EINZUGSGEBIET.latMin && lat <= EINZUGSGEBIET.latMax &&
+  lng >= EINZUGSGEBIET.lngMin && lng <= EINZUGSGEBIET.lngMax
+
 function ersterPunktUtm32(geom) {
   if (!geom) return [null, null]
   let c = geom.coordinates
@@ -33,9 +59,13 @@ export const karlsruheTrkBaustellenConnector = {
     for (const L of LAYERS) {
       const data = await getJson(`${WS}&typeName=${encodeURIComponent(L.typ)}&maxFeatures=10000`, { timeoutMs })
       const feats = data?.features ?? []
+      let elsass = 0
       for (const f of feats) {
         const p = f.properties ?? {}
         const [lng, lat] = ersterPunktUtm32(f.geometry)
+        // T-710: Elsass raus. Nur Features MIT Koordinate prüfen — ohne Koordinate scheitert der
+        // Eintrag ohnehin am Importer-Gate, und er soll nicht als Elsass gezählt werden.
+        if (lat != null && lng != null && !imEinzugsgebiet(lat, lng)) { elsass++; continue }
         const text = [p.art, p.lage, p.zusatzinfo, p.sperrung].filter(Boolean).join(" ")
         const sperrung = String(p.sperrung ?? "")
         // T-611: bare „gesperrt" raus (matchte Geh-/Radweg-/Spur-/Richtungssperren → Falsch-Kritisch).
@@ -62,7 +92,7 @@ export const karlsruheTrkBaustellenConnector = {
           quelleUrl: PORTAL,
         }))
       }
-      log(`Karlsruhe/${L.phase}: ${feats.length} Features`)
+      log(`Karlsruhe/${L.phase}: ${feats.length} Features${elsass ? `, ${elsass} ausserhalb des Einzugsgebiets verworfen (Elsass)` : ""}`)
     }
     return { obstacles }
   },

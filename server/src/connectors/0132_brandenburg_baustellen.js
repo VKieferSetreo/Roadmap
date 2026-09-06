@@ -36,6 +36,36 @@ export const brandenburgBaustellenConnector = {
       const statusFs = String(p.Status_Fahrstreifen ?? p.status_fahrstreifen ?? "")
       const gesperrt = Number(p.Anzahl_Fahrstreifen_gesperrt ?? p.anzahl_fahrstreifen_gesperrt)
       const laengeM = Number(p.Laenge_m ?? p.laenge_m)
+      const sperrlaengeM = Number.isFinite(laengeM) && laengeM > 0 ? laengeM : undefined
+      // T-707: Die Restbreite kam hier als Sperrlänge herein. meterAusText prüfte nur, OB irgendwo
+      // "breite"/"einengung" steht, und nahm dann die erste Meterzahl aus dem GANZEN Freitext —
+      // das war regelmäßig die Länge der Maßnahme. Gemessen: von 13 aktiven Hindernissen dieser
+      // Quelle mit restbreiteM war der Wert bei 9 exakt gleich sperrlaengeM (140, 200, 257, 312,
+      // 1236, 1493 m). "Restbreite 1.493,0 m" stand so im Fund; die beiden 3-m-Werte bei einer
+      // Sperrlänge von 320 m erzeugten obendrein falsch-kritische Funde für jeden Großraumtransport.
+      // Zwei Sicherungen: die Zahl muss im selben Satzfragment wie das Schlüsselwort stehen
+      // (imFragment, dieselbe Fehlerklasse wie bisZumTrenner in external/osrm.js, T-699), und ein
+      // Wert, der exakt der Sperrlänge entspricht, ist keine Breite — er wird verworfen.
+      const restbreiteRoh = meterAusText(text, /breite|einengung/i, { imFragment: true })
+      // Die Gegenprobe stand hier zuerst als exakte Gleichheit `restbreiteRoh === sperrlaengeM`.
+      // Das ist zu schwach: sie versagt bei jeder Rundung und greift gar nicht, wenn die Quelle
+      // keine Sperrlänge liefert. Deshalb zusätzlich eine Plausibilitätsgrenze, die ohne jedes
+      // zweite Feld auskommt — eine Fahrbahn-Restbreite über 25 m gibt es nicht, die gemessenen
+      // Fehlwerte lagen bei 140, 200, 257, 312, 1236 und 1493 m. Die Grenze ist bewusst weit über
+      // dem, was als Restbreite je vorkommt (Median im Gesamtbestand 4,5 m, Ausreißer bis 20 m aus
+      // der Autobahn-API, siehe T-711): sie soll Längen fangen, nicht großzügige Breiten.
+      const UNPLAUSIBEL_M = 25
+      const laengeStattBreite =
+        restbreiteRoh != null &&
+        (restbreiteRoh > UNPLAUSIBEL_M ||
+          (sperrlaengeM != null && Math.abs(restbreiteRoh - sperrlaengeM) < 0.5))
+      const restbreiteM = laengeStattBreite ? undefined : restbreiteRoh
+      // Verworfen heißt: gar keine Restbreite — und zwar endgültig. Hier stand, makeNormalized dürfe
+      // die Lücke danach „über den strengeren Weg" füllen. Das war falsch: der Gap-Fill liest
+      // DENSELBEN Freitext (Name + Beschreibung) und holte den verworfenen Wert postwendend zurück,
+      // dazu kiAufbereitet=true. Nur wenn wir tatsächlich etwas abgelehnt haben — sonst darf der
+      // Gap-Fill wie bei jeder anderen Quelle arbeiten.
+      const verworfeneAttrs = laengeStattBreite ? ["restbreiteM"] : null
       // Vollsperrung: Freitext ODER strukturierter Status (konservativ — nur explizites 'vollsperr').
       const vollsperrung = /vollsperr/i.test(text) || /vollsperr/i.test(statusFs) || undefined
       return makeNormalized({
@@ -47,12 +77,13 @@ export const brandenburgBaustellenConnector = {
         strassenRef: refAus(strasse) ?? (strasse || null),
         attrs: {
           maxGewichtT: tonnage,
-          restbreiteM: meterAusText(text, /breite|einengung/i),
+          restbreiteM,
           vollsperrung,
           // Anzeige-attrs (T-459 rendert sie in Fund/PDF/CSV); treiben keine Severity.
           spurenGesperrt: Number.isFinite(gesperrt) && gesperrt > 0 ? gesperrt : undefined,
-          sperrlaengeM: Number.isFinite(laengeM) && laengeM > 0 ? laengeM : undefined,
+          sperrlaengeM,
         },
+        verworfeneAttrs,
         gueltigVon: dateOnly(p.Baustellen_Beginn), gueltigBis: dateOnly(p.Baustellen_Ende), realerStart: dateOnly(p.Baustellen_Beginn),
         geom: istLinie ? geom : null,
         quelleName: QUELLE_NAME, quelleUrl: QUELLE_URL,

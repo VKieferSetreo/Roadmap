@@ -424,12 +424,19 @@ export function RouteMap({
         </div>
       </div>
 
-      {/* T-480: Hinweis, dass mindestens eine Strecke nur grob geschätzt ist (gestrichelt gezeichnet). */}
+      {/* T-480: Hinweis, dass mindestens eine Strecke nur grob geschätzt ist (gestrichelt gezeichnet).
+          T-725: ohne Werkzeugnamen — „Router" verstand der Disponent als den Kasten an der Wand.
+          T-728i: Kurzform statt des vollen Satzes. Der Chip klebt dauerhaft über der Karte, während
+          Tooltip und Toast im Reiter „Route" die lange Begründung tragen; die tragende Aussage
+          (Luftlinie · vor der Fahrt prüfen) steht hier vollständig. Dazu die Breite deckeln und
+          umbrechen lassen: inline-flex ohne max-w sized auf max-content, der alte 156-Zeichen-Satz
+          lief deshalb auf schmalen Karten (Projekt-Splitview ~360 px) seitlich aus der Karte heraus.
+          Der Wrapper begrenzt auf 26rem bzw. Kartenbreite minus Rand, der Chip erbt das per max-w-full. */}
       {drawn.some((r) => r.grob) ? (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[500] -translate-x-1/2">
-          <span className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50/95 px-3 py-1.5 text-xs font-medium text-amber-800 shadow-sm backdrop-blur-sm">
-            <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-            Gestrichelte Strecke = grobe Schätzung (Router war nicht erreichbar), kein exakter Straßenweg.
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[500] flex w-[min(26rem,calc(100%-1.5rem))] -translate-x-1/2 justify-center">
+          <span className="pointer-events-auto inline-flex max-w-full items-start gap-1.5 rounded-2xl border border-amber-200 bg-amber-50/95 px-3 py-1.5 text-xs font-medium leading-snug text-amber-800 shadow-sm backdrop-blur-sm">
+            <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            Gestrichelt: Luftlinie statt berechnetem Straßenverlauf — vor der Fahrt prüfen.
           </span>
         </div>
       ) : null}

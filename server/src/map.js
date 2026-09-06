@@ -155,6 +155,15 @@ export function rowToNotification(row) {
   }
 }
 
+/** Ein Transport-Mass fuer die oeffentliche Sicht, oder undefined wenn keins da ist.
+ *  0 zaehlt als fehlend: einen Transport mit 0 m Laenge oder 0 t gibt es nicht, die 0 kommt nur
+ *  aus einem geleerten Eingabefeld oder einem Altdatensatz. Dieselbe Lesart wie im Frontend
+ *  (DashboardTab.tsx, ReportView.tsx#masszahl) — sonst haette der Empfaenger "0 m" gedruckt. */
+const oeffentlichesMass = (v) => {
+  const n = Number(v)
+  return Number.isFinite(n) && n > 0 ? n : undefined
+}
+
 /**
  * Gestrippte Public-Share-Sicht: NUR die Transport-Abmessungen (Länge/Breite/Höhe/Gewicht —
  * T-223: der Empfänger braucht sie zur Einordnung der Funde), KEINE weiteren Stammdaten
@@ -182,12 +191,20 @@ export function rowToShareData(row, findings = []) {
     ...(kennzahlen.distanzKm != null && { distanzKm: kennzahlen.distanzKm }),
     ...(kennzahlen.fahrzeitMin != null && { fahrzeitMin: kennzahlen.fahrzeitMin }),
     updatedAt: toIso(row.updated_at),
-    transport: {
-      laenge: Number(t.laenge) || 0,
-      breite: Number(t.breite) || 0,
-      hoehe: Number(t.hoehe) || 0,
-      gesamtgewicht: Number(t.gesamtgewicht) || 0,
-    },
+    // T-721: fehlende Masse werden WEGGELASSEN, nicht auf 0 gesetzt. `Number(t.laenge) || 0` hat
+    // aus einer Luecke eine Tatsache gemacht: im geteilten Bericht stand beim externen Empfaenger
+    // "0 m x 0 m x 0 m" und "0 t" — eine erfundene Zahl ist im weitergereichten Dokument
+    // schlimmer als eine sichtbare Luecke. Ohne den Schluessel zeigen ShareApp/DashboardTab/
+    // ReportView "—". Die Whitelist-Zusicherung (T-223, share.test.js) bleibt: es koennen nur
+    // diese vier Schluessel entstehen, nie mehr.
+    transport: Object.fromEntries(
+      Object.entries({
+        laenge: oeffentlichesMass(t.laenge),
+        breite: oeffentlichesMass(t.breite),
+        hoehe: oeffentlichesMass(t.hoehe),
+        gesamtgewicht: oeffentlichesMass(t.gesamtgewicht),
+      }).filter(([, v]) => v !== undefined),
+    ),
     // #12b: Transport-Zeitfenster mitliefern → externer Karten-Zeitstrahl (nicht sensibel: das
     // eigene Planungs-Datumsfenster, keine Mandanten-/Bestandsdaten).
     zeitraum: row.zeitraum ?? {},

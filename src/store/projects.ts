@@ -80,6 +80,10 @@ interface ProjectStore {
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
   runAnalysis: (id: string) => void
+  /** Den gemerkten Fehler eines Laufs vergessen (T-731). Nötig für den Kollisionsfall: dort hilft
+   *  kein zweiter Start, sondern nur neu laden — und ohne diese Aktion bliebe die Meldung
+   *  „Auswertung läuft bereits" stehen, auch wenn der fremde Lauf längst fertig ist. */
+  clearAnalysisError: (id: string) => void
 
   /** Veröffentlichen / Share-Link verwalten (nur live). */
   publishProject: (id: string, password?: string) => Promise<void>
@@ -487,6 +491,16 @@ export const useProjectStore = create<ProjectStore>()(
         }))
         scheduleSync(id, get, set)
       },
+
+      // T-731: siehe Typdeklaration. Nur den Fehler löschen, nicht den ganzen Eintrag — läuft
+      // gerade ein Lauf, bliebe sonst der Fortschritt auf der Strecke.
+      clearAnalysisError: (id) =>
+        set((s) => {
+          const cur = s.analysis[id]
+          if (!cur?.error) return s
+          const { error: _weg, ...rest } = cur
+          return { analysis: { ...s.analysis, [id]: rest } }
+        }),
 
       runAnalysis: (id) => {
         const project = get().getProject(id)

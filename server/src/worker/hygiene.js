@@ -26,6 +26,51 @@ export async function expireObstacles(db, { graceDays = 7 } = {}) {
   return rows
 }
 
+// T-717: eine stillgelegte Quelle nimmt ihren Bestand mit.
+//
+// Seit T-694 plant der Worker Quellen mit quellen.aktiv = false nicht mehr ein. Die Läufe hören auf
+// — die Daten bleiben, und zwar aktiv. Gemessen am 05.09.2026 an Quelle 0121 (an diesem Tag
+// stillgelegt): 24 aktive Hindernisse, alle mit gueltig_bis IS NULL, der jüngste neue Punkt 84 Tage
+// alt. Die fallen durch JEDES bestehende Netz: expireObstacles greift nur bei gesetztem gueltig_bis,
+// der Vollbestand-Reconcile bräuchte einen Lauf (den es nicht mehr gibt), und detectStaleSources
+// filtert q.aktiv = true. In der Auswertung standen damit 24 Brückensperrungen aus dem Juni als
+// tagesaktuell — schlimmer als gar keine Daten, weil sie eine Antwort vortäuschen.
+//
+// LAUFENDER SWEEP STATT SEITENEFFEKT AM SCHREIBPFAD: stillgelegt wird per Migration (066 für 0002/
+// 0009/0122/0151/0217, 073 für 0121 und 0159) — es gibt gar keinen Code-Pfad, an den sich ein Seiteneffekt
+// hängen ließe, und die Stilllegungen sind längst passiert. Ein Trigger auf dem Schreibweg würde nur
+// künftige Fälle erwischen und die bestehenden 24 Punkte liegen lassen; dieser Sweep wirkt
+// rückwirkend und greift auch bei der nächsten Migration, die jemand von Hand schreibt.
+//
+// Scope wie purgeStaleInactive: nur globale Importe (tenant_id IS NULL). Kunden-Einträge hängen an
+// der manuellen Quelle 0100 und gehen das hier nichts an — die zusätzliche typ-Bedingung ist der
+// Gürtel zum Hosenträger, falls jemand 0100 versehentlich stilllegt.
+//
+// ZURÜCK GEHT ES ÜBER DEN REIMPORT, aber nicht umsonst: wird die Quelle wieder aktiviert, reaktiviert
+// ein Vollbestand-Lauf die wiedergefundenen Zeilen (importer.js, pendingReactivate); bei den übrigen
+// Quellen bleiben sie inaktiv, bis purgeStaleInactive sie nach 30 Tagen räumt und der Import sie neu
+// anlegt — dann mit neuer fach_id. Wer eine Quelle stilllegt und zwei Wochen später zurückholt,
+// zahlt also mit neuen Aktenzeichen. Das ist der Preis dafür, dass „stillgelegt" wirklich
+// stillgelegt heißt.
+const STILLGELEGTE_QUELLEN_SQL = `UPDATE obstacles o
+     SET aktiv = false, updated_at = now()
+    FROM quellen q
+   WHERE q.id = o.quellen_id
+     AND q.aktiv = false
+     AND q.typ IS DISTINCT FROM 'manuell'
+     AND o.aktiv = true
+     AND o.tenant_id IS NULL
+   RETURNING o.id, o.quellen_id`
+
+/**
+ * Deaktiviert die Hindernisse aller stillgelegten (quellen.aktiv = false) Import-Quellen.
+ * @returns {Promise<Array>} die deaktivierten Rows (für Logging/Statistik)
+ */
+export async function deaktiviereBestandStillgelegterQuellen(db) {
+  const { rows } = await db.query(STILLGELEGTE_QUELLEN_SQL)
+  return rows
+}
+
 // Hard-Purge lang-inaktiver IMPORTIERTER Hindernisse (Audit 2026-06-22, FIX-4).
 // Reconcile/Hygiene setzt nicht mehr im Feed vorhandene bzw. abgelaufene Importe auf aktiv=false
 // (Soft-Delete). Bleiben sie ewig liegen, sammelt sich toter Ballast (z.B. 9.606 Zeilen aus einer
@@ -185,8 +230,10 @@ export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
 // erzeugt dauerhaft grüne Sync-Runs, sodass eine ausgefallene Quelle (0124 NRW-Schwertransportkarte:
 // ArcGIS verlangt seit 2026-06-29 Token; 0122/0217 aus dem Schedule gefallen; 0121 Sachsen viewer-tot)
 // unbemerkt veraltet und das Tool jahrealte Daten als „aktuell" zeigt. Dieser Job MUTIERT NICHTS — er
-// prüft je Quelle den jüngsten import_run + den aktiven Bestand und liefert die auffälligen Quellen für
-// eine WARN-Zeile im täglichen Cleanup (durabler Breadcrumb im Worker-Log). Drei eindeutige Signale:
+// prüft je Quelle den jüngsten import_run + den aktiven Bestand und liefert die auffälligen Quellen
+// zurück. T-719: hier stand „durabler Breadcrumb im Worker-Log" — das war er nie, der Container-Log
+// beginnt bei jedem Deploy von vorn. Das Ergebnis geht deshalb zusätzlich an die Meldestrecke
+// (worker/index.js, meldeStaleness). Drei eindeutige Signale:
 //   - kein_lauf_seit: jüngster Run älter als staleDays → Quelle synct gar nicht mehr
 //   - letzter_lauf_fehlgeschlagen: jüngster Run status warn/error → Feed tot/kaputt/leer
 //   - keine_aktiven_daten: Quelle aktiv, hat gelaufen, aber 0 aktive obstacles → No-Op/Pipeline-Bruch
@@ -228,18 +275,25 @@ const STALE_SOURCES_SQL = `
 
 /**
  * Findet Quellen, die veraltet/tot/ertraglos wirken (siehe SQL). Reiner Read + WARN-Log, keine Mutation.
- * @returns {Promise<Array>} auffällige Quellen mit { id, name, last_status, last_run, age_days, aktiv_n, grund }
+ * @returns {Promise<Array>} auffällige Quellen mit { id, name, last_status, last_run, age_days, aktiv_n, art, grund }
  */
 export async function detectStaleSources(db, { staleDays = 3, ignore = STALE_IGNORE, log = () => {} } = {}) {
   const { rows } = await db.query(STALE_SOURCES_SQL, [staleDays, ignore])
   const flagged = rows.map((r) => {
     const age = r.age_days == null ? null : Math.round(Number(r.age_days))
-    let grund
-    if (r.last_run == null) grund = "nie gelaufen"
-    else if (r.last_status === "error" || r.last_status === "warn") grund = `letzter Lauf ${r.last_status}`
-    else if (Number(r.aktiv_n) === 0) grund = "0 aktive Hindernisse"
-    else grund = `kein Lauf seit ${age} Tagen`
-    return { ...r, aktiv_n: Number(r.aktiv_n), age_days: age, grund }
+    // `art` ist der Befund OHNE Messwert, `grund` derselbe Befund für Menschen MIT Messwert.
+    // Getrennt, weil `grund` als Wiedererkennungsmerkmal untauglich ist: „kein Lauf seit N Tagen"
+    // zählt jede Nacht um eins hoch, eine Anti-Spam-Signatur darüber ist damit jeden Tag neu und
+    // meldet dieselbe tote Quelle täglich erneut (worker/index.js, meldeStaleness). Die drei Namen
+    // sind die aus dem Kopfkommentar oben.
+    let art, grund
+    if (r.last_run == null) { art = "nie_gelaufen"; grund = "nie gelaufen" }
+    else if (r.last_status === "error" || r.last_status === "warn") {
+      art = `letzter_lauf_${r.last_status}` // warn/error unterscheiden: der Wechsel ist eine echte Lageänderung
+      grund = `letzter Lauf ${r.last_status}`
+    } else if (Number(r.aktiv_n) === 0) { art = "keine_aktiven_daten"; grund = "0 aktive Hindernisse" }
+    else { art = "kein_lauf_seit"; grund = `kein Lauf seit ${age} Tagen` }
+    return { ...r, aktiv_n: Number(r.aktiv_n), age_days: age, art, grund }
   })
   if (flagged.length) {
     log(`WARN Staleness (T-626): ${flagged.length} auffällige Quellen — ` +

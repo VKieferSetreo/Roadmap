@@ -52,10 +52,13 @@ export function FindingChatPanel({
         ))}
       </div>
 
-      {/* T-448: bei „Öffentlich" deutlich machen, dass dies DB-weit (alle Mandanten) sichtbar ist. */}
+      {/* T-448: bei „Öffentlich" deutlich machen, dass dies DB-weit (alle Mandanten) sichtbar ist.
+          T-725: im Text steht „Unternehmen"/„Firma" statt „Mandant" — die Warnung wirkt nur, wenn
+          der Disponent auf Anhieb versteht, wer da mitliest. */}
       {scope === "public" ? (
         <p className="mx-2 mb-1 rounded bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-700">
-          Öffentlich: sichtbar für alle Mandanten, inkl. Ihrer Organisation. Intern bleibt nur in Ihrem Mandanten.
+          Öffentlich: sichtbar für alle Firmen in der Datenbank, zusammen mit dem Namen Ihres
+          Unternehmens. Intern bleibt nur in Ihrem Unternehmen.
         </p>
       ) : null}
 

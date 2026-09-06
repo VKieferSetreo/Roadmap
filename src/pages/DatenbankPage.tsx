@@ -59,8 +59,11 @@ export function DatenbankPage() {
               <TabsTrigger value="ansicht">
                 <MapIcon className="h-4 w-4" /> Ansicht
                 {unreachable > 0 ? (
+                  // T-728c: der Tooltip sagte „mit Fehler", gezählt wird aber OHNE_FRISCHE_DATEN
+                  // (sourceHealth.ts) = error + warn + partial. „Fehler" versprach eine Härte, die
+                  // die Zahl nicht deckt — der Text nennt jetzt das, was tatsächlich gezählt wird.
                   <span
-                    title={`${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} mit Fehler beim letzten Abruf`}
+                    title={`${unreachable} Datenquelle${unreachable === 1 ? "" : "n"} ohne frische Daten beim letzten automatischen Abruf`}
                     className="ml-1 inline-flex items-center text-severity-kritisch"
                   >
                     <AlertTriangle className="h-3.5 w-3.5" />

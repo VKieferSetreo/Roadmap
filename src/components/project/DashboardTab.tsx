@@ -3,7 +3,9 @@
 
 import { Suspense, lazy, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import {
+  AlertTriangle,
   Building2,
   CalendarRange,
   ChevronDown,
@@ -15,7 +17,9 @@ import {
   FileDown,
   FileSpreadsheet,
   CheckCircle2,
+  Loader2,
   MapPin,
+  Play,
   Radio,
   RotateCcw,
   Route as RouteIcon,
@@ -64,6 +68,58 @@ function ChartSkeleton() {
   return <div className="skeleton h-44 w-full rounded-lg" />
 }
 
+/** T-723: `fail()` im Store (projects.ts) legt ZWEI verschiedene Faelle in dasselbe `error`-Feld —
+ *  den echten Fehlschlag (Engine/Server) und die T-467-Kollision (HTTP 409: fuer dieses Projekt
+ *  laeuft bereits eine Auswertung, z.B. Doppelklick, zweiter Disponent, Nachtlauf). Nur der erste
+ *  ist ein Fehlschlag; die Kollision heisst warten. Da der Store den Fall nicht markiert und uns
+ *  nicht gehoert, erkennen wir ihn am Wortlaut. Aendert sich der dort, greift schlimmstenfalls
+ *  wieder der Fehlschlag-Zweig — also der Zustand vor diesem Fix, kein neuer Schaden. */
+const istKollision = (fehler?: string) => Boolean(fehler?.includes("läuft bereits eine Auswertung"))
+
+/** Platzhalter an der Stelle des Positiv-Befunds, solange der Lauf noch nichts geliefert hat.
+ *
+ *  Eigene Komponente, weil sie als EINZIGE die tickenden Werte abonniert: der Store schreibt
+ *  analysis[id] alle 420 ms neu (projects.ts, setInterval). Haengen Schritt und Prozent am
+ *  DashboardTab selbst, rendert der ganze Reiter — Charts, Streckenbaender, Fund-Liste — rund
+ *  2,4x pro Sekunde ueber die volle Laufdauer neu. So tickt nur diese Box.
+ *
+ *  Neutral, nicht gruen: an genau dieser Stelle stand die falsche gruene Entwarnung (T-239-Kachel).
+ *  Wer aus zwei Metern auf den Schirm sieht, liest die Farbe, nicht den Text — und Gruen heisst in
+ *  diesem Produkt „keine Hindernisse". Gruen bleibt deshalb dem abgeschlossenen Lauf vorbehalten,
+ *  „laeuft" ist grau. */
+function AuswertungLaeuft({ projectId }: { projectId: string }) {
+  const step = useProjectStore((s) => s.analysis[projectId]?.step ?? "")
+  const progress = useProjectStore((s) => s.analysis[projectId]?.progress ?? 0)
+  return (
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-6 py-10 text-center">
+      <Loader2 className="mx-auto h-9 w-9 animate-spin text-neutral-500" />
+      {/* Live-Region NUR um diesen Satz: er steht vom Start bis zum Ende unveraendert und wird
+          damit genau einmal vorgelesen. Schritt, Balken und Prozent darunter ticken alle 420 ms —
+          in einer aria-live-Region liest ein Screenreader die komplette Laufzeit durch. Der
+          Fortschrittsbalken im Reiter Anlage verzichtet aus demselben Grund ganz darauf; das Ende
+          des Laufs meldet ohnehin der Abschluss-Toast (T-234). */}
+      <p role="status" className="mt-3 text-base font-semibold text-neutral-800">
+        Auswertung läuft …
+      </p>
+      <p className="mx-auto mt-1 max-w-md text-sm text-neutral-600">{step}</p>
+      <div className="mx-auto mt-4 flex max-w-xs items-center gap-2">
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-200">
+          <div
+            className="h-full rounded-full bg-neutral-400 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <span className="shrink-0 text-xs tabular-nums text-neutral-500">
+          {Math.round(progress)}%
+        </span>
+      </div>
+      <p className="mx-auto mt-3 max-w-md text-xs text-neutral-500">
+        Die Funde erscheinen, sobald der Lauf abgeschlossen ist.
+      </p>
+    </div>
+  )
+}
+
 export function DashboardTab({
   project,
   // T-664/F15: im oeffentlichen Share-Viewer gibt es keine Projektverwaltung — der Knopf
@@ -91,12 +147,27 @@ export function DashboardTab({
   const listRef = useRef<HTMLDivElement>(null)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
+  const runAnalysis = useProjectStore((s) => s.runAnalysis)
+  const loadProjects = useProjectStore((s) => s.loadProjects)
+  const clearAnalysisError = useProjectStore((s) => s.clearAnalysisError)
   // T-220: läuft gerade eine (Re-)Auswertung? Dann fertigen Inhalt behalten statt Empty-Flash.
+  // T-722/T-723: hier NUR die beiden primitiven Felder selektieren, nie das analysis-Objekt. Der
+  // Store ersetzt analysis[id] waehrend des Laufs alle 420 ms (projects.ts, setInterval) — ein
+  // Objekt-Selector bekaeme bei jedem Tick eine neue Referenz und wuerde dieses Dashboard mit
+  // Charts, Streckenbaendern und Fund-Liste rund 2,4x pro Sekunde ueber die volle Laufdauer neu
+  // rendern. running und error wechseln dagegen nur bei Start und Ende des Laufs.
+  // Schritt und Prozent ticken zwangslaeufig — die abonniert allein <AuswertungLaeuft/> unten.
   const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
+  const laufFehler = useProjectStore((s) => s.analysis[project.id]?.error)
 
   // Ausgeblendete Funde fließen NIE in Aggregate/Liste/Charts — nur separat als "Ausgeblendet".
   const sichtbar = useMemo(() => visibleFindings(project.findings), [project.findings])
   const ausgeblendet = useMemo(() => selectHidden(project.findings), [project.findings])
+  // T-722: Der Lauf hat noch nichts geliefert (typisch: erster Lauf, Auto-Auswertung nach dem
+  // Streckenimport). Solange darf KEINE Flaeche eine Aussage ueber das Ergebnis machen — die Leere
+  // ist der Zwischenstand, nicht der Befund. Bei der ERNEUTEN Auswertung ist das anders: da stehen
+  // die Zahlen des letzten Laufs, und die bleiben bewusst stehen (T-220).
+  const laeuftOhneErgebnis = running && sichtbar.length === 0
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -116,17 +187,79 @@ export function DashboardTab({
       )
   }, [sichtbar, sevFilter, katFilter, routeFilter, query])
 
+  /** Start wie im Reiter Anlage (AnlageTab.onRun), nicht nackt. T-222: fehlt Hoehe oder
+   *  Gesamtgewicht, prueft die Engine weder Durchfahrtshoehen noch Traglastgrenzen — der Lauf
+   *  laeuft trotzdem, das Ergebnis ist aber unvollstaendig. Wer den Knopf hier drueckt, muss
+   *  denselben Vorbehalt zu sehen bekommen wie im Reiter Anlage, sonst haelt er ein halb
+   *  geprueftes Ergebnis fuer das ganze. Die Strecken-Pruefung (routeReady) steckt schon im
+   *  `auswertbar`-Gate unten, deshalb hier nur die Mass-Warnung. */
+  const starteAuswertung = () => {
+    runAnalysis(project.id)
+    const t = project.transport
+    const fehltHoehe = !Number.isFinite(t?.hoehe) || (t?.hoehe ?? 0) <= 0
+    const fehltGewicht = !Number.isFinite(t?.gesamtgewicht) || (t?.gesamtgewicht ?? 0) <= 0
+    if (fehltHoehe || fehltGewicht) {
+      toast.warning("Auswertung gestartet. Ohne Höhe/Gewicht bleiben Brücken-/Traglastgrenzen ungeprüft.")
+    } else {
+      toast.info("Auswertung gestartet …")
+    }
+  }
+
   // T-220: Empty-State nur wenn wirklich nichts da ist — während des Re-Auswertens (running) oder
   // bei vorhandenen Funden (z.B. server-seitig status='analyse' ohne Client-Timer) Inhalt behalten.
   if (project.status !== "fertig" && !running && project.findings.length === 0) {
+    // T-723: ein fehlgeschlagener Lauf setzt den Status zurueck auf "entwurf"
+    // (store/projects.ts, fail()) — der Reiter sah damit aus wie „noch nie gestartet", obwohl der
+    // Disponent Strecke UND Auswertung hinter sich hat. Der Fehler stand nur im Reiter Eingabe und
+    // in einem Toast, der laengst weg ist; die Folge war ein zweiter Upload derselben Strecke.
+    // Der Knopf startet den Lauf hier direkt, statt auf die Eingabe zu verweisen.
+    // Gate auf eine auswertbare Strecke: ungeprüfte VEMAGS-Strecken sind serverseitig vom Lauf
+    // ausgeschlossen (T-593), ein „Erneut auswerten" wuerde damit sofort wieder scheitern.
+    const auswertbar = project.routes.some((r) => r.points.length >= 2 && routeFreigegeben(r))
+    const kollision = auswertbar && istKollision(laufFehler)
+    const fehlgeschlagen = auswertbar && Boolean(laufFehler) && !kollision
     return (
       <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
         <EmptyState
-          icon={ClipboardList}
-          title="Noch keine Auswertung"
-          description="Sobald die Auswertung gefahren wurde, erscheinen hier alle Funde mit Details."
+          icon={kollision ? Clock : fehlgeschlagen ? AlertTriangle : ClipboardList}
+          title={
+            kollision
+              ? "Auswertung läuft bereits"
+              : fehlgeschlagen
+                ? "Letzte Auswertung fehlgeschlagen"
+                : "Noch keine Auswertung"
+          }
+          description={
+            kollision
+              ? "Für dieses Projekt rechnet gerade ein anderer Lauf — ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
+              : fehlgeschlagen
+                ? `${laufFehler} Ihre Strecken sind gespeichert — ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
+                : "Sobald die Auswertung gefahren wurde, erscheinen hier alle Funde mit Details."
+          }
           cta={
-            <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
+            // Kollision: ein zweites runAnalysis() liefe sofort in denselben 409. Was hilft, ist der
+            // Ergebnis-Stand des fremden Laufs — also neu laden statt neu starten.
+            // Der gemerkte Fehler MUSS dabei mit weg (T-731): er hängt am Store und überlebt das
+            // Neuladen. Ohne clearAnalysisError bliebe „Auswertung läuft bereits" auch dann stehen,
+            // wenn der fremde Lauf längst fertig ist und ebenfalls nichts gefunden hat — der Knopf
+            // wäre eine Sackgasse, die auf sich selbst zeigt.
+            kollision ? (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  clearAnalysisError(project.id)
+                  void loadProjects()
+                }}
+              >
+                <RotateCcw className="h-4 w-4" /> Aktualisieren
+              </Button>
+            ) : fehlgeschlagen ? (
+              <Button onClick={starteAuswertung}>
+                <Play className="h-4 w-4" /> Erneut auswerten
+              </Button>
+            ) : (
+              <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
+            )
           }
         />
       </div>
@@ -181,13 +314,21 @@ export function DashboardTab({
   const fahrzeitMin = mehrereStrecken ? Math.round((avgKm / 50) * 60) : (project.fahrzeitMin ?? 0)
 
   // Transport-Profil für die Eckdaten (keine Daten/Uhrzeiten).
+  //
+  // T-721: JEDES Maß einzeln, und ein fehlendes bleibt fehlend. Vorher machte `num` aus jedem
+  // fehlenden Wert eine 0, und die Bedingung prüfte nur, ob MINDESTENS eines der drei da ist —
+  // fehlte allein die Höhe, stand hier „24,5 m × 3 m × 0 m". Das ist die Stelle, an der ein
+  // EXTERNER die Maße sieht: der geteilte Link rendert genau diese Kachel (ShareApp routet nur
+  // Karte und Dashboard, nicht den Bericht). Eine erfundene 0 in einem Dokument, das das Haus
+  // verlässt, ist schlimmer als ein sichtbarer Strich.
   const t = project.transport
-  const num = (v?: number) => (v ?? 0).toLocaleString("de-DE")
+  const mass = (v?: number) =>
+    typeof v === "number" && Number.isFinite(v) && v > 0 ? v.toLocaleString("de-DE") : "—"
   const abmessung =
     t?.laenge || t?.breite || t?.hoehe
-      ? `${num(t?.laenge)} m × ${num(t?.breite)} m × ${num(t?.hoehe)} m`
+      ? `${mass(t?.laenge)} m × ${mass(t?.breite)} m × ${mass(t?.hoehe)} m`
       : "—"
-  const gewicht = t?.gesamtgewicht ? `${num(t.gesamtgewicht)} t` : "—"
+  const gewicht = t?.gesamtgewicht ? `${mass(t.gesamtgewicht)} t` : "—"
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
@@ -231,9 +372,17 @@ export function DashboardTab({
             <CardTitle className="text-sm">Schweregrade</CardTitle>
           </CardHeader>
           <CardContent className="pt-1">
-            <Suspense fallback={<ChartSkeleton />}>
-              <SeverityDonut findings={filtered} />
-            </Suspense>
+            {/* T-722: beide Diagramme schreiben bei leerer Menge „Keine Funde" (SeverityDonut,
+                KategorieBar) — waehrend des ersten Laufs ist das dieselbe falsche Entwarnung wie
+                der Positiv-Befund unten in der Liste. Solange nichts vorliegt, steht hier der
+                Lade-Platzhalter, den es fuer den Chart-Nachladevorgang ohnehin schon gibt. */}
+            {laeuftOhneErgebnis ? (
+              <ChartSkeleton />
+            ) : (
+              <Suspense fallback={<ChartSkeleton />}>
+                <SeverityDonut findings={filtered} />
+              </Suspense>
+            )}
           </CardContent>
         </Card>
         <Card className="animate-rise-in" style={{ animationDelay: "160ms" }}>
@@ -241,10 +390,15 @@ export function DashboardTab({
             <CardTitle className="text-sm">Funde nach Kategorie</CardTitle>
           </CardHeader>
           <CardContent className="pt-1">
-            <Suspense fallback={<ChartSkeleton />}>
-              {/* hoehenBasis = ungefiltert, damit die Karte beim Filtern nicht die Höhe wechselt (T-688) */}
-              <KategorieBar findings={filtered} hoehenBasis={sichtbar} />
-            </Suspense>
+            {/* T-722: siehe Schweregrade-Karte — waehrend des ersten Laufs kein „Keine Funde". */}
+            {laeuftOhneErgebnis ? (
+              <ChartSkeleton />
+            ) : (
+              <Suspense fallback={<ChartSkeleton />}>
+                {/* hoehenBasis = ungefiltert, damit die Karte beim Filtern nicht die Höhe wechselt (T-688) */}
+                <KategorieBar findings={filtered} hoehenBasis={sichtbar} />
+              </Suspense>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -414,14 +568,22 @@ export function DashboardTab({
           Teaser hinter „Mehr anzeigen", damit die Liste nicht überlädt. */}
       {filtered.length === 0 ? (
         sichtbar.length === 0 ? (
-          // T-239: gar keine Funde = bestes Ergebnis → Positiv-Befund (grün) statt grauer Leere/Fehloptik.
-          <div className="rounded-xl border border-primary-200 bg-primary-50/60 px-6 py-10 text-center">
-            <CheckCircle2 className="mx-auto h-9 w-9 text-primary-600" />
-            <p className="mt-3 text-base font-semibold text-primary-800">Keine Hindernisse gefunden</p>
-            <p className="mx-auto mt-1 max-w-md text-sm text-primary-700/80">
-              Auf der ausgewerteten Strecke wurden keine relevanten Restriktionen gefunden.
-            </p>
-          </div>
+          laeuftOhneErgebnis ? (
+            // T-722: waehrend der Lauf laeuft, ist „keine Hindernisse" noch keine Aussage, sondern
+            // nur der leere Zwischenstand. Beim ersten Lauf (Strecke geladen → Auto-Auswertung,
+            // store/projects.ts addRoute) stand hier Sekunden vor 40 Funden die gruene Entwarnung.
+            // Der Positiv-Befund aus T-239 bleibt, gilt aber nur noch fuer den ABGESCHLOSSENEN Lauf.
+            <AuswertungLaeuft projectId={project.id} />
+          ) : (
+            // T-239: gar keine Funde = bestes Ergebnis → Positiv-Befund (grün) statt grauer Leere/Fehloptik.
+            <div className="rounded-xl border border-primary-200 bg-primary-50/60 px-6 py-10 text-center">
+              <CheckCircle2 className="mx-auto h-9 w-9 text-primary-600" />
+              <p className="mt-3 text-base font-semibold text-primary-800">Keine Hindernisse gefunden</p>
+              <p className="mx-auto mt-1 max-w-md text-sm text-primary-700/80">
+                Auf der ausgewerteten Strecke wurden keine relevanten Restriktionen gefunden.
+              </p>
+            </div>
+          )
         ) : (
           // Funde vorhanden, aber der Filter blendet alle aus → neutral (kein Positiv-Befund).
           <EmptyState title="Keine Funde für diesen Filter" />
@@ -784,8 +946,12 @@ function FindingRow({
           {/* Geo */}
           <div className="flex items-start gap-2 text-xs">
             <MapPin className="mt-0.5 h-3.5 w-3.5 text-neutral-400" />
+            {/* T-728d: deutsches Dezimalkomma (wie im CSV-Export) und „O" fuer Ost — „E" ist die
+                englische Himmelsrichtung und stand als einziger Fremdkoerper in einer sonst
+                durchgehend deutschen Oberflaeche. N/O sind fest: die Daten liegen in Deutschland. */}
             <span className="tabular-nums text-neutral-500">
-              {finding.lat.toFixed(5)}° N · {finding.lng.toFixed(5)}° E
+              {finding.lat.toFixed(5).replace(".", ",")}° N ·{" "}
+              {finding.lng.toFixed(5).replace(".", ",")}° O
             </span>
           </div>
 

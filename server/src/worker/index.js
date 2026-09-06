@@ -16,7 +16,7 @@ import { loadEnv } from "../env.js"
 import { withTimeout } from "../util.js"
 import { initSentry, captureException } from "../sentry.js"
 import { mailEnabled, sendMail } from "../mail/mailer.js"
-import { detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, purgeVerwaisteAnreicherung, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
+import { deaktiviereBestandStillgelegterQuellen, detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, purgeVerwaisteAnreicherung, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 import { gateKonfig } from "../anreicherung/gateKonfig.js"
 
@@ -174,6 +174,25 @@ async function runRerun(grund) {
   try {
     const expired = await expireObstacles(db)
     if (expired.length) log(`Hygiene: ${expired.length} abgelaufene Hindernisse deaktiviert`)
+    // T-717: der Bestand einer stillgelegten Quelle geht mit ihr. Er hat sonst kein Ablaufdatum
+    // (gueltig_bis IS NULL), keinen Reconcile (die Quelle läuft nicht mehr) und keine
+    // Staleness-Meldung (die greift nur für aktive Quellen) — siehe hygiene.js.
+    //
+    // EIGENES try, obwohl der ganze Block schon eines hat: dieser Schritt sitzt an Position 2 von
+    // sechs, und der äußere catch bricht die Kette ab. Wirft er, fielen purgeStaleInactive,
+    // reconcileFachIdDupes, purgeOrphanFindings UND vor allem rerunAffectedProjects mit aus — die
+    // Neuauswertung aller Projekte, an der die Funde des Disponenten hängen. Ein Aufräumschritt darf
+    // nie die Auswertung mitreißen; dieselbe Regel wie bei der Einbruch-Prüfung in importer.js.
+    // Kosten des Fehlschlags: die Punkte bleiben einen Tag länger aktiv, der nächste Rerun holt es nach.
+    try {
+      const stillgelegt = await deaktiviereBestandStillgelegterQuellen(db)
+      if (stillgelegt.length) {
+        const quellen = [...new Set(stillgelegt.map((r) => r.quellen_id))].join(", ")
+        log(`Hygiene: ${stillgelegt.length} Hindernisse stillgelegter Quellen deaktiviert (${quellen})`)
+      }
+    } catch (err) {
+      log(`Hygiene: Sweep stillgelegter Quellen übersprungen: ${err?.message ?? err}`)
+    }
     const purged = await purgeStaleInactive(db) // FIX-4: toten Ballast (lang-inaktive Importe) hart entfernen
     if (purged.length) log(`Hygiene: ${purged.length} lang-inaktive Importe endgültig gelöscht`)
     // T-262: fachId-Dubletten selbstheilen (sollte nach dem Präventions-Fix leer bleiben → Warnung wenn nicht).
@@ -193,6 +212,80 @@ async function runRerun(grund) {
   }
 }
 
+// T-719: der Staleness-Befund muss einen Deploy überleben.
+//
+// detectStaleSources gab sein Ergebnis ausschließlich an log(). Der Kommentar dort nannte das einen
+// „durablen Breadcrumb im Worker-Log" — durabel ist daran nichts: der Container-Log fängt bei jedem
+// Deploy von vorn an, und bei mehreren Deploys am Tag überlebt die Zeile von 03:45 selten bis zum
+// Morgen. Damit war der einzige Melder für tote Quellen selbst der am schlechtesten sichtbare Teil
+// des Systems.
+//
+// OHNE SCHEMAÄNDERUNG gibt es genau eine Ablage, die einen Deploy überlebt und die jemand liest:
+// die Mail, mit der sich auch der Nachtlauf meldet (scripts/nachtlaufMelden.mjs), an denselben
+// Verteiler ROADMAP_ADMIN_EMAILS. Die saubere Alternative wäre eine Tabelle für Systembefunde —
+// nicht gebaut, im Ergebnis beschrieben.
+//
+// NUR BEI ÄNDERUNG DER LAGE. Eine tote Quelle bleibt wochenlang tot, und eine Mail, die das jeden
+// Morgen wiederholt, liest nach einer Woche niemand mehr (dieselbe Regel wie im Nachtlauf). Die
+// Merkliste liegt im Prozess und ist damit selbst nicht deploy-fest — das ist hier die richtige
+// Richtung: nach einem Neustart geht die Meldung höchstens einmal zu viel raus (der Job läuft
+// einmal täglich), nie eine zu wenig.
+let gemeldeteStaleness = ""
+
+async function meldeStaleness(stale) {
+  if (!stale.length) {
+    gemeldeteStaleness = "" // Lage bereinigt → die nächste Auffälligkeit meldet sich wieder
+    return
+  }
+  // Signatur aus Quellen-Id + ART des Befunds, NICHT aus f.grund: dessen häufigste Ausprägung ist
+  // „kein Lauf seit N Tagen", und N wächst bei einem 03:45-Lauf jede Nacht um 1. Über den Grund
+  // gebildet wäre die Signatur täglich neu, die Anti-Spam-Regel wirkungslos und dieselbe seit
+  // Wochen tote Quelle stünde jeden Morgen erneut im Postfach — nach einer Woche liest das niemand
+  // mehr. `art` (hygiene.js) trägt nur den Befundtyp und ändert sich erst, wenn sich die Lage
+  // wirklich ändert: neue Quelle dazu, Quelle raus, oder Wechsel des Befundtyps.
+  const signatur = stale.map((f) => `${f.id}:${f.art}`).sort().join("|")
+  if (signatur === gemeldeteStaleness) return
+  const empfaenger = String(process.env.ROADMAP_ADMIN_EMAILS ?? "")
+    .split(",").map((e) => e.trim()).filter((e) => e.includes("@")).map((email) => ({ email }))
+  // Nicht stumm aussteigen: ohne Verteiler oder ohne Mail-Konfiguration im Worker-Container tut
+  // dieses Feature nichts, und genau das würde sonst nirgends stehen. Der Betreiber sähe eine
+  // Meldestrecke, die es nicht gibt. Eine Zeile je Prune-Lauf (1×/Tag) ist dafür billig.
+  if (!empfaenger.length || !mailEnabled(process.env)) {
+    log(`Staleness: ${stale.length} auffällige Quellen, aber keine Meldung möglich ` +
+        `(${!empfaenger.length ? "ROADMAP_ADMIN_EMAILS leer/ungesetzt" : "Mailversand nicht konfiguriert"}) — ` +
+        `nur im Log: ${stale.map((f) => `${f.id} (${f.grund})`).join("; ")}`)
+    return
+  }
+  const zeilen = stale.map((f) =>
+    `${[f.id, f.name].filter(Boolean).join(" ")} — ${f.grund}, ` +
+    `${f.aktiv_n} aktive Hindernisse, letzter Lauf ${f.last_run ?? "—"}`)
+  const text = `Die tägliche Quellenprüfung hat ${stale.length} auffällige Datenquelle(n) gefunden:
+
+${zeilen.join("\n")}
+
+Was das bedeutet: diese Quellen liefern nichts Neues mehr. Ihre Hindernisse stehen weiter in der
+Auswertung, sind aber nicht mehr auf dem Stand der Behörde. Bitte prüfen, ob der Abruf repariert
+oder die Quelle stillgelegt gehört.`
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  try {
+    const r = await sendMail(
+      {
+        recipients: empfaenger,
+        subject: `Roadmap: ${stale.length} auffällige Datenquelle${stale.length === 1 ? "" : "n"}`,
+        text,
+        html: `<p>${esc(text).replace(/\n/g, "<br>")}</p>`,
+      },
+      { env: process.env, log },
+    )
+    // Merkliste NUR nach zugestellter Mail: sendMail wirft nicht, es meldet einen Fehlschlag im
+    // Rückgabewert. Wer hier blind quittiert, verschluckt genau die Meldung, die niemand bekam.
+    if (r?.sent > 0) gemeldeteStaleness = signatur
+    else log(`Staleness-Meldung nicht zugestellt (${r?.error ?? "unbekannt"}) — nächster Lauf versucht erneut`)
+  } catch (err) {
+    log(`Staleness-Meldung fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  }
+}
+
 // T-372: täglicher Retention-/Pruning-Lauf (eigener Cron, NICHT in den Rerun gemischt — Rerun
 // läuft auch import-getrieben, Pruning soll nur 1×/Tag). Löscht alte import_runs (je Quelle bleibt
 // der jüngste) + Analytics-Sessions/-Events älter als 365 Tage. Fire-and-forget, robust.
@@ -209,9 +302,11 @@ async function runPrune() {
     // T-277: nach den Deletes Bloat zurückgewinnen (VACUUM ANALYZE, non-blocking).
     const vac = await vacuumChurnedTables(db, { log })
     log(`VACUUM ANALYZE auf ${vac}/${5} churn-Tabellen`)
-    // T-626: Staleness-Monitor — tote/eingefrorene/ertraglose Quellen sichtbar machen (nur WARN-Log).
+    // T-626: Staleness-Monitor — tote/eingefrorene/ertraglose Quellen sichtbar machen.
     const stale = await detectStaleSources(db, { log })
     if (!stale.length) log("Staleness (T-626): alle aktiven Quellen frisch")
+    // T-719: und zwar so, dass der Befund den nächsten Deploy überlebt.
+    await meldeStaleness(stale)
   } catch (err) {
     log(`Retention-Lauf fehlgeschlagen: ${err?.message ?? err}`)
   }
@@ -344,6 +439,17 @@ try {
     log(`Aktiv-Abfrage fehlgeschlagen (plane alle): ${err?.message ?? err}`)
   }
   const alleGeplanten = enabledConnectors(process.env)
+  // T-720: CONNECTORS ist eine handgepflegte CSV, und enabledConnectors wirft Ids ohne Connector
+  // still per .filter(Boolean) weg. Gemessen am 05.09.2026 standen dort zwei solche Ids (0122 und
+  // 0217, beide am 14.06.2026 bewusst entfernt) — nichts im Log sagte das. Ein Tippfehler sieht
+  // genauso aus: die Quelle läuft einfach nie, und niemand sucht danach, weil sie ja „eingetragen
+  // ist". Eine Zeile beim Start reicht, um den Unterschied sichtbar zu machen.
+  const bekannteIds = new Set(alleGeplanten.map((c) => String(c.quelleId)))
+  const unbekannteIds = String(process.env.CONNECTORS ?? "")
+    .split(",").map((s) => s.trim()).filter(Boolean).filter((id) => !bekannteIds.has(id))
+  if (unbekannteIds.length) {
+    log(`unbekannte CONNECTORS-Id: ${unbekannteIds.join(", ")} — kein Connector registriert, wird nicht geplant`)
+  }
   const connectors = alleGeplanten.filter((c) => !inaktiv.has(String(c.quelleId)))
   for (const c of alleGeplanten.filter((c) => inaktiv.has(String(c.quelleId)))) {
     log(`NICHT geplant: ${c.quelleId} (${c.name}) — im Register auf aktiv=false gesetzt`)

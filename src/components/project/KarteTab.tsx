@@ -5,14 +5,17 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 import {
+  AlertTriangle,
   ChevronDown,
   ChevronUp,
   Clock,
   EyeOff,
   Filter,
   Layers,
+  Loader2,
   MapPinned,
   Pencil,
+  Play,
   Route as RouteIcon,
   Search,
   X,
@@ -25,7 +28,7 @@ import { KategorieGlyph } from "./KategorieGlyph"
 import { ObstacleDialog } from "./ObstacleDialog"
 import { HideReasonDialog } from "./HideReasonDialog"
 import { RouteEditDialog } from "./RouteEditDialog"
-import { katMeta, SEVERITY_META, SEVERITY_ORDER } from "./findingMeta"
+import { katMeta, SEVERITY_META, SEVERITY_ORDER, visibleFindings } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { useDataSourceStore } from "@/store/datasource"
 import { useProjectStore } from "@/store/projects"
@@ -44,6 +47,41 @@ function findingInTime(f: Finding, start: number, end: number): boolean {
   const von = f.gueltigVon ? Date.parse(f.gueltigVon) : -Infinity
   const bis = f.gueltigBis ? Date.parse(f.gueltigBis) + 86_399_000 : Infinity
   return von <= end && bis >= start
+}
+
+/** T-723: `fail()` im Store (projects.ts) legt ZWEI verschiedene Faelle in dasselbe `error`-Feld —
+ *  den echten Fehlschlag (Engine/Server) und die T-467-Kollision (HTTP 409: fuer dieses Projekt
+ *  laeuft bereits eine Auswertung, z.B. Doppelklick, zweiter Disponent, Nachtlauf). Nur der erste
+ *  ist ein Fehlschlag; die Kollision heisst warten. Da der Store den Fall nicht markiert und uns
+ *  nicht gehoert, erkennen wir ihn am Wortlaut. Aendert sich der dort, greift schlimmstenfalls
+ *  wieder der Fehlschlag-Zweig — also der Zustand vor diesem Fix, kein neuer Schaden. */
+const istKollision = (fehler?: string) => Boolean(fehler?.includes("läuft bereits eine Auswertung"))
+
+/** Fortschrittszeile im Eckdaten-Overlay der Karte.
+ *
+ *  Eigene Komponente, weil sie als EINZIGE die tickenden Werte abonniert: der Store schreibt
+ *  analysis[id] alle 420 ms neu (projects.ts, setInterval). Haengen Schritt und Prozent am
+ *  KarteTab selbst, rendert die gesamte Karte samt Markern, Ebenen- und Kategorie-Panel rund
+ *  2,4x pro Sekunde ueber die volle Laufdauer neu. So tickt nur diese Zeile. */
+function AuswertungLaeuftZeile({ projectId }: { projectId: string }) {
+  const step = useProjectStore((s) => s.analysis[projectId]?.step ?? "")
+  const progress = useProjectStore((s) => s.analysis[projectId]?.progress ?? 0)
+  return (
+    <div className="flex items-center gap-1.5">
+      {/* Live-Region NUR um diesen unveraenderlichen Satz (nicht sichtbar, die Zeile daneben sagt
+          dasselbe optisch): so wird der Zustandswechsel genau einmal angesagt. Schritt und Prozent
+          ticken alle 420 ms — in einer aria-live-Region liest ein Screenreader die komplette
+          Laufzeit durch. Der Balken im Reiter Anlage verzichtet aus demselben Grund darauf. */}
+      <span role="status" className="sr-only">
+        Auswertung läuft
+      </span>
+      <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-neutral-500" />
+      <span className="min-w-0 flex-1 truncate text-[11px] text-neutral-600">{step}</span>
+      <span className="shrink-0 text-[11px] tabular-nums text-neutral-500">
+        {Math.round(progress)}%
+      </span>
+    </div>
+  )
 }
 
 /** Snap des Karten-Klicks auf den nächstgelegenen Streckenpunkt (Haversine, km). */
@@ -116,7 +154,15 @@ export function KarteTab({
   const [addPosition, setAddPosition] = useState<RoutePoint | null>(null)
   const live = useDataSourceStore((s) => s.mode) === "live"
   const runAnalysis = useProjectStore((s) => s.runAnalysis)
-  const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false) // T-220
+  const loadProjects = useProjectStore((s) => s.loadProjects)
+  // T-220 (running) plus T-722/T-723: hier NUR die beiden primitiven Felder selektieren, nie das
+  // analysis-Objekt. Der Store ersetzt analysis[id] waehrend des Laufs alle 420 ms (projects.ts,
+  // setInterval) — ein Objekt-Selector bekaeme bei jedem Tick eine neue Referenz und wuerde die
+  // ganze Karte samt Markern und Panels rund 2,4x pro Sekunde ueber die volle Laufdauer neu
+  // rendern. running und error wechseln dagegen nur bei Start und Ende des Laufs. Schritt und
+  // Prozent ticken zwangslaeufig — die abonniert allein <AuswertungLaeuftZeile/> unten.
+  const running = useProjectStore((s) => s.analysis[project.id]?.running ?? false)
+  const laufFehler = useProjectStore((s) => s.analysis[project.id]?.error)
   const hideFinding = useProjectStore((s) => s.hideFinding)
   const unhideFinding = useProjectStore((s) => s.unhideFinding)
   /** Fund, der gerade ausgeblendet wird (öffnet die Grund-Abfrage). */
@@ -305,18 +351,69 @@ export function KarteTab({
     setTrefferIdx(-1)
   }
 
+  /** Start wie im Reiter Anlage (AnlageTab.onRun), nicht nackt. T-222: fehlt Hoehe oder
+   *  Gesamtgewicht, prueft die Engine weder Durchfahrtshoehen noch Traglastgrenzen — der Lauf
+   *  laeuft trotzdem, das Ergebnis ist aber unvollstaendig. Wer den Knopf hier drueckt, muss
+   *  denselben Vorbehalt zu sehen bekommen wie im Reiter Anlage, sonst haelt er ein halb
+   *  geprueftes Ergebnis fuer das ganze. Die Strecken-Pruefung (routeReady) steckt schon im
+   *  `hatRouten`-Gate unten, deshalb hier nur die Mass-Warnung. */
+  const starteAuswertung = () => {
+    runAnalysis(project.id)
+    const t = project.transport
+    const fehltHoehe = !Number.isFinite(t?.hoehe) || (t?.hoehe ?? 0) <= 0
+    const fehltGewicht = !Number.isFinite(t?.gesamtgewicht) || (t?.gesamtgewicht ?? 0) <= 0
+    if (fehltHoehe || fehltGewicht) {
+      toast.warning("Auswertung gestartet. Ohne Höhe/Gewicht bleiben Brücken-/Traglastgrenzen ungeprüft.")
+    } else {
+      toast.info("Auswertung gestartet …")
+    }
+  }
+
   // T-220: Karte während (Re-)Auswertung sichtbar lassen (running/vorhandene Funde) statt Empty-Flash;
   // ohne Strecken-Punkte gibt es nichts zu zeigen.
   const hatRouten = freigegebeneRouten.some((r) => r.points.length >= 2)
   if (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0)) {
+    // T-723: ein fehlgeschlagener Lauf setzt den Status zurueck auf "entwurf"
+    // (store/projects.ts, fail()) — die Karte sagte danach „Laden Sie die Strecke(n) hoch und
+    // starten Sie die Auswertung", obwohl der Disponent genau das getan hatte. Der Fehler stand nur
+    // im Reiter Eingabe und in einem Toast, der laengst weg ist; die Folge war ein zweiter Upload
+    // derselben Strecke. Der Knopf startet den Lauf hier direkt, statt auf die Eingabe zu verweisen.
+    // Ohne auswertbare Strecke (!hatRouten) bleibt es beim alten Text: ein erneuter Lauf haette
+    // nichts zu rechnen und wuerde sofort wieder scheitern (T-593).
+    const kollision = hatRouten && istKollision(laufFehler)
+    const fehlgeschlagen = hatRouten && Boolean(laufFehler) && !kollision
     return (
       <div className="mx-auto flex h-full max-w-2xl items-center px-4 py-10">
         <EmptyState
-          icon={MapPinned}
-          title="Noch keine Auswertung"
-          description="Laden Sie die Strecke(n) hoch und starten Sie die Auswertung. Die Funde erscheinen dann hier auf der Karte."
+          icon={kollision ? Clock : fehlgeschlagen ? AlertTriangle : MapPinned}
+          title={
+            kollision
+              ? "Auswertung läuft bereits"
+              : fehlgeschlagen
+                ? "Letzte Auswertung fehlgeschlagen"
+                : "Noch keine Auswertung"
+          }
+          description={
+            kollision
+              ? "Für dieses Projekt rechnet gerade ein anderer Lauf — ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
+              : fehlgeschlagen
+                ? `${laufFehler} Ihre Strecken sind gespeichert — ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
+                : "Laden Sie die Strecke(n) hoch und starten Sie die Auswertung. Die Funde erscheinen dann hier auf der Karte."
+          }
           cta={
-            <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
+            // Kollision: ein zweites runAnalysis() liefe sofort in denselben 409. Was hilft, ist der
+            // Ergebnis-Stand des fremden Laufs — also neu laden statt neu starten.
+            kollision ? (
+              <Button variant="outline" onClick={() => void loadProjects()}>
+                Aktualisieren
+              </Button>
+            ) : fehlgeschlagen ? (
+              <Button onClick={starteAuswertung}>
+                <Play className="h-4 w-4" /> Erneut auswerten
+              </Button>
+            ) : (
+              <Button onClick={() => navigate(`/projekte/${project.id}/route`)}>Zur Eingabe</Button>
+            )
           }
         />
       </div>
@@ -327,6 +424,15 @@ export function KarteTab({
     sev,
     n: findingsImZeitfenster.filter((f) => f.severity === sev).length,
   }))
+  // T-722: „Der Lauf hat noch nichts geliefert" — dieselbe Entscheidung wie im Dashboard und
+  // ausdruecklich auf derselben Grundlage: `visibleFindings`, also die NICHT ausgeblendeten Funde.
+  // Vorher stand hier `project.findings.length`, das die ausgeblendeten mitzaehlte. Hat der
+  // Disponent alle Funde ausgeblendet und startet eine erneute Auswertung, hielt die Karte die
+  // Marken auf „0 Kritisch · 0 Warnung · 0 Hinweis" fuer einen echten Stand und zeigte sie —
+  // genau die Entwarnung, die T-722 abstellt — waehrend das Dashboard sie korrekt zurueckhielt.
+  // Bewusst NICHT `sichtbareFindings`: dort wirken Ebenen-Panel und Zeitstrahl mit hinein, das
+  // sind Ansichts-Filter des Nutzers und keine Aussage darueber, ob ein Ergebnis vorliegt.
+  const laeuftOhneErgebnis = running && visibleFindings(project.findings).length === 0
   // #5 (Max 2026-06-21): bei vielen Strecken Durchschnitt je Strecke statt sinnloser Gesamtsumme.
   const usableRoutes = freigegebeneRouten.filter((r) => r.points.length >= 2)
   const mehrereStrecken = usableRoutes.length > 1
@@ -494,69 +600,83 @@ export function KarteTab({
               </strong>
             </span>
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-neutral-200/70 pt-2">
-            {/* T-688: die Marken standen unter `n > 0` und verschwanden beim Ziehen des
-                Zeitstrahls einzeln aus der umbrechenden Zeile — der Stapel darunter sprang mit.
-                Jetzt bleiben alle drei stehen, eine leere Stufe ist nur nicht mehr klickbar. */}
-            {counts.map(({ sev, n }) => {
-              const aus = severityHidden.has(sev)
-              const leer = n === 0
-              // Klick blendet diese Funde auf der Karte aus und dimmt die Marke grau.
-              const aktiv = !aus && !leer
-              return (
-                <button
-                  key={sev}
-                  type="button"
-                  onClick={() => (leer ? undefined : toggleSeverity(sev))}
-                  disabled={leer}
-                  aria-pressed={!aus}
-                  title={
-                    leer
-                      ? `Keine ${SEVERITY_META[sev].label} im gewählten Zeitraum`
-                      : aus
-                        ? `${SEVERITY_META[sev].label} einblenden`
-                        : `${SEVERITY_META[sev].label} ausblenden`
-                  }
-                  className={cn(
-                    "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition",
-                    leer ? "cursor-default opacity-45" : "cursor-pointer hover:opacity-80",
-                    aktiv ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
-                    aus && "line-through",
-                  )}
-                >
-                  <span
+          <div className="mt-2 border-t border-neutral-200/70 pt-2">
+            {/* T-722: laeuft die Auswertung, sagt es die Karte hier — vorher gab es dafuer im
+                Kartenbild kein Zeichen. */}
+            {running ? <AuswertungLaeuftZeile projectId={project.id} /> : null}
+            {/* T-722: beim ERSTEN Lauf gibt es noch keine Funde — die Marken stuenden zwangslaeufig
+                auf „0 Kritisch · 0 Warnung · 0 Hinweis", und genau das liest der Disponent als
+                Entwarnung, Sekunden bevor die Funde eintreffen. Dann traegt die Fortschrittszeile
+                darueber die Aussage allein. Bei einer ERNEUTEN Auswertung bleiben die Zahlen des
+                letzten Laufs stehen (T-220: waehrend des Laufs Inhalt behalten statt Empty-Flash);
+                sie sind ein echter, wenn auch alter Stand, und der Fortschritt daneben sagt, dass
+                gerade neu gerechnet wird. */}
+            {!laeuftOhneErgebnis ? (
+              <div className={cn("flex flex-wrap items-center gap-1.5", running && "mt-2")}>
+                {/* T-688: die Marken standen unter `n > 0` und verschwanden beim Ziehen des
+                    Zeitstrahls einzeln aus der umbrechenden Zeile — der Stapel darunter sprang mit.
+                    Jetzt bleiben alle drei stehen, eine leere Stufe ist nur nicht mehr klickbar. */}
+                {counts.map(({ sev, n }) => {
+                  const aus = severityHidden.has(sev)
+                  const leer = n === 0
+                  // Klick blendet diese Funde auf der Karte aus und dimmt die Marke grau.
+                  const aktiv = !aus && !leer
+                  return (
+                    <button
+                      key={sev}
+                      type="button"
+                      onClick={() => (leer ? undefined : toggleSeverity(sev))}
+                      disabled={leer}
+                      aria-pressed={!aus}
+                      title={
+                        leer
+                          ? `Keine ${SEVERITY_META[sev].label} im gewählten Zeitraum`
+                          : aus
+                            ? `${SEVERITY_META[sev].label} einblenden`
+                            : `${SEVERITY_META[sev].label} ausblenden`
+                      }
+                      className={cn(
+                        "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition",
+                        leer ? "cursor-default opacity-45" : "cursor-pointer hover:opacity-80",
+                        aktiv ? SEVERITY_META[sev].soft : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                        aus && "line-through",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "inline-block h-2 w-2 shrink-0 rounded-full",
+                          aktiv ? SEVERITY_META[sev].dot : "bg-neutral-300",
+                        )}
+                      />
+                      {n} {SEVERITY_META[sev].label}
+                    </button>
+                  )
+                })}
+                {/* Kein „Alle"-Reset (Max 2026-06-23): ein erneuter Klick auf eine durchgestrichene
+                    Schweregrad-Marke blendet sie wieder ein — der separate Reset-Button entfällt. */}
+                {/* „Ausgeblendet"-Marke (nur App, nur wenn es ausgeblendete Funde gibt): eigene Achse neben
+                    den Schweregraden. Default AUS; an → graue Geister-Marker, Klick darauf blendet wieder ein. */}
+                {canHide && ausgeblendeteFindings.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setZeigeAusgeblendet((v) => !v)}
+                    aria-pressed={zeigeAusgeblendet}
+                    title={zeigeAusgeblendet ? "Ausgeblendete verbergen" : "Ausgeblendete grau anzeigen (zum Wieder-Einblenden)"}
                     className={cn(
-                      "inline-block h-2 w-2 shrink-0 rounded-full",
-                      aktiv ? SEVERITY_META[sev].dot : "bg-neutral-300",
+                      "inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition hover:opacity-80",
+                      zeigeAusgeblendet
+                        ? "border-neutral-300 bg-neutral-100 text-neutral-700"
+                        : "border-neutral-200 bg-neutral-50 text-neutral-400",
+                      !zeigeAusgeblendet && "line-through",
                     )}
-                  />
-                  {n} {SEVERITY_META[sev].label}
-                </button>
-              )
-            })}
-            {/* Kein „Alle"-Reset (Max 2026-06-23): ein erneuter Klick auf eine durchgestrichene
-                Schweregrad-Marke blendet sie wieder ein — der separate Reset-Button entfällt. */}
-            {/* „Ausgeblendet"-Marke (nur App, nur wenn es ausgeblendete Funde gibt): eigene Achse neben
-                den Schweregraden. Default AUS; an → graue Geister-Marker, Klick darauf blendet wieder ein. */}
-            {canHide && ausgeblendeteFindings.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => setZeigeAusgeblendet((v) => !v)}
-                aria-pressed={zeigeAusgeblendet}
-                title={zeigeAusgeblendet ? "Ausgeblendete verbergen" : "Ausgeblendete grau anzeigen (zum Wieder-Einblenden)"}
-                className={cn(
-                  "inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 text-[11px] font-medium tabular-nums transition hover:opacity-80",
-                  zeigeAusgeblendet
-                    ? "border-neutral-300 bg-neutral-100 text-neutral-700"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-400",
-                  !zeigeAusgeblendet && "line-through",
-                )}
-              >
-                <EyeOff
-                  className={cn("h-3 w-3 shrink-0", zeigeAusgeblendet ? "text-neutral-500" : "text-neutral-400")}
-                />
-                {ausgeblendeteFindings.length} Ausgeblendet
-              </button>
+                  >
+                    <EyeOff
+                      className={cn("h-3 w-3 shrink-0", zeigeAusgeblendet ? "text-neutral-500" : "text-neutral-400")}
+                    />
+                    {ausgeblendeteFindings.length} Ausgeblendet
+                  </button>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </div>

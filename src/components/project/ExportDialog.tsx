@@ -194,8 +194,10 @@ export function ExportDialog({
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-neutral-200 px-6 py-4">
+        {/* T-728b: fundeText (T-688) statt fest „Funde" — bei genau einem Treffer stand hier „1 Funde".
+            Gesamte Wendung im hervorgehobenen Span, genau wie bei der Streckenliste oben. */}
         <span className="text-sm text-neutral-500">
-          <span className="font-semibold tabular-nums text-neutral-800">{gesamt}</span> Funde im Export
+          <span className="font-semibold tabular-nums text-neutral-800">{fundeText(gesamt)}</span> im Export
         </span>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={onClose}>

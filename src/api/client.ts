@@ -144,13 +144,51 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // T-724: Hier stand bis zuletzt error.message — und das ist die englische axios-Zeile
+    // ("Network Error", "timeout of 30000ms exceeded", "Request failed with status code 502").
+    // Da die Aufrufer `err instanceof ApiError ? err.message : "<deutscher Fallback>"` schreiben,
+    // gewann genau diese Zeile über den guten Fallback: der Disponent klickte „Route berechnen"
+    // und bekam „timeout of 30000ms exceeded" als Toast. Deshalb feste deutsche Texte statt
+    // Durchreichen; die Original-Meldung wandert unverändert nach details, damit der Support sie
+    // weiterhin hat (sie darf nicht verlorengehen, sie ist nur nichts für den Nutzer).
+    // Drei Texte statt zwei: kam eine Antwort MIT Status (z.B. 502 vom Proxy, Body nicht lesbar),
+    // wäre „Netzwerkverbindung prüfen" eine falsche Anweisung — das Netz des Nutzers ist heil.
+    // Die code-Einteilung (TIMEOUT/NETWORK_ERROR) bleibt unangetastet, sie steht als Support-Kürzel
+    // im ErrorState; der Status steht zusätzlich im Klartext der Meldung.
+    const timeout = error.code === "ECONNABORTED"
+    const status = error.response?.status ?? 0
+    // T-728j: 413 aus dem Sammel-Zweig herausgezogen. „Bitte in wenigen Minuten erneut versuchen"
+    // ist hier eine Anweisung, die nie funktioniert: dieselbe Datei ist in fünf Minuten genauso
+    // groß. Der Fall ist real erreichbar — das FE lässt PDFs bis 12 MB durch (RouteTab), die
+    // DropZone je nach Aufruf bis 50 MB, express nimmt aber nur 20 MB (server/src/app.js) und ein
+    // vorgelagerter Proxy kann noch früher abriegeln. Kommt das 413 vom Proxy statt von express,
+    // ist der Body kein JSON und landet genau hier statt im {error}-Zweig oben.
+    const message = timeout
+      ? "Der Server hat nicht rechtzeitig geantwortet. Bitte erneut versuchen."
+      : status === 413
+        ? "Die Datei ist zu groß für den Server. Bitte eine kleinere Datei hochladen — erneutes Senden ändert daran nichts."
+        : status > 0
+          ? `Der Server konnte die Anfrage nicht verarbeiten (Fehler ${status}). Bitte in wenigen Minuten erneut versuchen.`
+          : "Keine Verbindung zum Setreo-Server. Bitte Netzwerkverbindung prüfen."
+
+    // T-728k: details wird von keiner Oberfläche gerendert (ErrorState zeigt nur message, code,
+    // requestId) — seit T-724 wäre die Original-Zeile damit nirgends mehr sichtbar gewesen. Für den
+    // Support ist genau sie die Diagnose („Network Error" vs. „timeout of 30000ms exceeded"), also
+    // geht sie zusätzlich in die Konsole, zusammen mit Methode/Pfad/Status. Konsole statt Oberfläche,
+    // weil der Disponent mit der englischen Zeile nichts anfangen kann; am Telefon reicht F12.
+    // Prefix „[Roadmap]" wie in der ErrorBoundary, damit beides im selben Filter auftaucht.
+    console.warn(
+      `[Roadmap] API ${error.config?.method?.toUpperCase() ?? "?"} ${error.config?.url ?? "?"} → ${status || "keine Antwort"}: ${error.message}`,
+    )
+
     return Promise.reject(
       new ApiError(
         {
-          code: error.code === "ECONNABORTED" ? "TIMEOUT" : "NETWORK_ERROR",
-          message: error.message ?? "Unbekannter Netzwerkfehler",
+          code: timeout ? "TIMEOUT" : "NETWORK_ERROR",
+          message,
+          details: error.message,
         },
-        error.response?.status ?? 0,
+        status,
       ),
     )
   },

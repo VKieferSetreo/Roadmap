@@ -37,12 +37,14 @@ const szValue = (p: SzPoint) => (p.lat != null && p.lng != null ? `${p.lat},${p.
 // VEMAGS-Upload reaktiviert (2026-06-25): neuer Extraktor + Bereinigung (Schlenker/Fehl-Geocodes raus,
 // Fahrbahnseiten-bearings) ist live. VEMAGS-Strecken kommen UNGEPRÜFT rein und müssen über das
 // Prüfen-Gate (rotes !, „Prüfen"-Button) manuell freigegeben werden, bevor sie in die Analyse gehen.
-const VEMAGS_AKTIV = true
+// T-728g: Der FE-Schalter VEMAGS_AKTIV dazu ist raus — er stand seit der Reaktivierung fest auf true,
+// der gesperrt-Zweig war toter Code. Der Not-Aus sitzt im Backend (FEATURE_VEMAGS): ohne Freigabe
+// antwortet /api/route/vemags mit 404, und den Fall fängt onVemagsFile mit eigener Meldung ab.
 
 /** Die Strecken-Quellen (= Tabs). Reihenfolge (Max): Datei · VEMAGS · Google-Link · Start/Ziel. */
 const STRECKE_TABS = [
   { id: "datei", label: "Datei", icon: Upload },
-  { id: "vemags", label: "Vemags", icon: FileText },
+  { id: "vemags", label: "VEMAGS", icon: FileText },
   { id: "link", label: "Google-Link", icon: Link2 },
   { id: "startziel", label: "Start / Ziel", icon: Navigation },
 ] as const
@@ -183,10 +185,23 @@ export function RouteTab({ project }: { project: Project }) {
       ...(waypoints ? { waypoints } : {}),
       ...(grob ? { grob: true } : {}),
     })
-    toast.success(
-      `Strecke „${name}" angelegt: ${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km` +
-        (grob ? " (grobe Schätzung, Router nicht erreichbar)." : "."),
-    )
+    // T-725: kein „Router" im Kundentext (siehe Badge-Tooltip unten und Karten-Hinweis in RouteMap).
+    const kennzahlen = `${pendingFile.points.length.toLocaleString("de-DE")} Punkte · ca. ${routeLengthKm(pendingFile.points).toLocaleString("de-DE")} km`
+    if (grob) {
+      // T-728h: Der grob-Fall lief als toast.success — grün, 5 s (Toaster-Default in main.tsx), und
+      // die Warnung „vor der Fahrt prüfen" stand am Ende von rund 200 Zeichen. Bei ~20 Zeichen/s
+      // Lesetempo sind das ~10 s, der Disponent hätte den entscheidenden Halbsatz nie gelesen.
+      // Drei Änderungen: warning statt success (grün ist das falsche Signal für „wir konnten die
+      // Strecke nicht berechnen"), die Warnung in die Kopfzeile (~70 Zeichen, in ~3,5 s gelesen —
+      // sie steht damit vor allem anderen), Kennzahlen und Begründung in die Beschreibung. Der
+      // ganze Toast liegt bei ~165 Zeichen ≈ 8 s, die 12 s decken ihn mit Reserve.
+      toast.warning(`Strecke „${name}" angelegt — nur Luftlinie, vor der Fahrt prüfen.`, {
+        description: `Der Streckenverlauf konnte nicht über das Straßennetz berechnet werden. ${kennzahlen}.`,
+        duration: 12_000,
+      })
+    } else {
+      toast.success(`Strecke „${name}" angelegt: ${kennzahlen}.`)
+    }
     if (pendingFile.source === "startziel") setSzPoints([makeSzPoint(), makeSzPoint()]) // T-611: Pins zurücksetzen
     setPendingFile(null)
     setPendingName("")
@@ -326,33 +341,22 @@ export function RouteTab({ project }: { project: Project }) {
         <CardContent className="flex flex-col gap-4">
           {/* Quelle wählen */}
           <div className="inline-flex w-full rounded-md border border-neutral-200 bg-neutral-50 p-1">
-            {STRECKE_TABS.map((opt) => {
-              // VEMAGS ist aktuell deaktiviert (Streckenextraktor wird neu gebaut) → ausgrauen,
-              // klickbar lassen für den Hinweis, aber nicht in den Tab wechseln.
-              const gesperrt = opt.id === "vemags" && !VEMAGS_AKTIV
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() =>
-                    gesperrt ? toast("Der VEMAGS-Upload ist aktuell nicht verfügbar.") : setTab(opt.id)
-                  }
-                  title={gesperrt ? "Aktuell nicht verfügbar" : undefined}
-                  aria-disabled={gesperrt}
-                  className={cn(
-                    "flex flex-1 items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-sm font-medium transition-colors",
-                    gesperrt
-                      ? "cursor-not-allowed text-neutral-300"
-                      : tab === opt.id
-                        ? "cursor-pointer bg-white text-primary-700 shadow-sm"
-                        : "cursor-pointer text-neutral-500 hover:text-neutral-700",
-                  )}
-                >
-                  <opt.icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{opt.label}</span>
-                </button>
-              )
-            })}
+            {STRECKE_TABS.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setTab(opt.id)}
+                className={cn(
+                  "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded px-2.5 py-1.5 text-sm font-medium transition-colors",
+                  tab === opt.id
+                    ? "bg-white text-primary-700 shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-700",
+                )}
+              >
+                <opt.icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{opt.label}</span>
+              </button>
+            ))}
           </div>
 
           {/* Quellen-Inhalt: Mindesthöhe = Höhe des HÖCHSTEN Tabs (Start/Ziel: Spacer + Start-/Ziel-Pin
@@ -532,7 +536,13 @@ export function RouteTab({ project }: { project: Project }) {
                       {/* T-480: grobe Schätzung kenntlich machen — kein echter Straßenweg. */}
                       {r.grob ? (
                         <span
-                          title="OSRM war beim Anlegen nicht erreichbar. Der Verlauf ist nur eine grobe Luftlinien-Schätzung."
+                          // T-725: Werkzeugnamen raus. „OSRM" sagt dem Disponenten nichts, „Router"
+                          // liest er als den Kasten an der Wand.
+                          // T-728i: Der Tooltip trägt die lange Fassung — er erscheint erst auf
+                          // Hover, kostet also keine Fläche und hat keine Anzeigedauer. Der
+                          // Karten-Chip (RouteMap) zeigt dieselbe Aussage in Kurzform, weil er
+                          // dauerhaft über der Karte steht.
+                          title="Der Streckenverlauf konnte beim Anlegen nicht über das Straßennetz berechnet werden. Gezeigt wird die Luftlinie zwischen den Punkten — vor der Fahrt prüfen."
                           className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
                         >
                           grobe Schätzung

@@ -30,7 +30,12 @@ export function useSourceHealth(): { unreachable: number; total: number } {
     staleTime: 60_000,
     refetchInterval: 5 * 60_000, // ~5 min: den 3×/Tag-Stand ohne manuelles Neuladen einsammeln
   })
-  const aktiv = (status.data?.quellen ?? []).filter((q) => q.connector)
+  // T-715: `aktiv` MUSS mitgefiltert werden, nicht nur `connector`. Stillgelegte Quellen
+  // (Register: aktiv=false) plant der Worker seit T-694 nicht mehr ein — ihr letzter
+  // Import-Status bleibt für immer auf dem Stand des letzten Laufs eingefroren. Gemessen am
+  // 05.09.2026: 4 von 71 „nicht erreichbar", davon 3 (0121, 0151, 0159) stillgelegt und auf
+  // „warn" festgenagelt. Der Indikator konnte also nie wieder auf 0 gehen.
+  const aktiv = (status.data?.quellen ?? []).filter((q) => q.connector && q.aktiv)
   return {
     unreachable: aktiv.filter((q) => OHNE_FRISCHE_DATEN.has(String(q.letzterStatus))).length,
     total: aktiv.length,

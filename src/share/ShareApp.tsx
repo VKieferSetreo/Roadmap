@@ -22,7 +22,9 @@ interface ShareData {
   distanzKm?: number
   fahrzeitMin?: number
   updatedAt: string
-  transport?: TransportData
+  // T-721: JEDES Maß einzeln optional. Der Server lässt fehlende Maße weg, statt 0 zu senden
+  // (server/src/map.js#oeffentlichesMass) — die Payload erfüllt TransportData also nicht.
+  transport?: Partial<TransportData>
   zeitraum?: TransportZeitraum // #12b: Transport-Zeitfenster für den Karten-Zeitstrahl extern
   routes: ProjectRoute[]
   findings: Finding[]
@@ -214,7 +216,13 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       createdAt: data.updatedAt,
       updatedAt: data.updatedAt,
       routes: data.routes,
-      transport: data.transport ?? { laenge: 0, breite: 0, hoehe: 0, gesamtgewicht: 0 },
+      // T-721: fehlende Stammdaten bleiben fehlend — durchgereicht, nicht aufgefüllt. Der frühere
+      // 0-Fallback hat dem externen Empfänger "0 m × 0 m × 0 m" und "0 t" als Tatsache gedruckt;
+      // eine erfundene Zahl ist im weitergereichten Dokument schlimmer als eine Lücke. Der Cast
+      // ist nötig, weil Project.transport die vier Felder als Pflicht führt, die Share-Payload sie
+      // aber einzeln weglassen darf; die Leser im Share-Bundle (DashboardTab, ReportView) lesen
+      // ohnehin defensiv und zeigen Fehlendes als "—".
+      transport: (data.transport ?? {}) as TransportData,
       zeitraum: data.zeitraum ?? {}, // #12b: aus der Share-Payload → Zeitstrahl aktiv
       findings: data.findings,
       distanzKm: data.distanzKm,

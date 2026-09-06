@@ -1,9 +1,23 @@
-// Connector Quelle 0153: BASt Brückenstatistik Deutschland — schwerverkehrsgesperrte Brücken.
+// Connector Quelle 0153: BASt Brückenstatistik Deutschland — Bauwerke mit SV-Kennzeichnung.
 // Research-Fund 2026-06-22 (T-540). Bundesweiter offener ArcGIS-FeatureServer (CC BY 4.0), der
 // EINZIGE flächige offene Brücken-Restriktionsquelle über alle Bundesländer (Bundesfernstraßen:
-// BAB + Bundesstraßen). Wir ziehen NUR die für den Schwerverkehr gesperrten Teilbauwerke
-// (sperrung_sv='ja' = harte GST-Sperrung) — die ~49k unbeschränkten Bauwerke sind reine
-// Infrastruktur und gehören NICHT in die Auswertung.
+// BAB + Bundesstraßen). Wir ziehen NUR die Teilbauwerke mit sperrung_sv='ja' — die ~49k übrigen
+// sind reine Infrastruktur und gehören NICHT in die Auswertung.
+//
+// WAS sperrung_sv BEDEUTET, IST NICHT DOKUMENTIERT (T-703, nachgeprüft am 06.09.2026). Hier stand
+// früher „= harte GST-Sperrung". Das war eine Annahme, und sie ist widerlegt:
+//   1. Das Feld steht NICHT in der BASt-Brückenstatistik. Deren offizielle CSV führt 17 Spalten
+//      (id_nr … zustandsnotenklasse), sperrung_sv ist keine davon.
+//   2. Der Dienst gehört esri_DE_content, nicht der BASt. Die Item-Beschreibung erklärt jede
+//      Zustandsnotenklasse einzeln, zu sperrung_sv kein Wort; die BASt-Seite ebenso wenig.
+//   3. Die Verteilung widerlegt jede Zustands-Lesart: bei sperrung_sv='ja' trägt der
+//      Traglastindex 2.073 mal Stufe I (keine Defizite) und nur 190 mal Stufe V. Umgekehrt haben
+//      2.187 Bauwerke mit Stufe V ein sperrung_sv='nein'. Wäre das Feld eine Folge des
+//      Bauzustands, müsste es genau andersherum aussehen. 3.294 von 52.553 tragen 'ja'.
+//
+// Deshalb bleibt die Auswertung bei „auflagenpflichtig, Tragfähigkeit prüfen" (rules.js, T-601)
+// und macht daraus KEINE Sperrung: das ist die Lesart, die durch die Daten gedeckt ist. Wer das
+// später schärfen will, braucht erst eine Auskunft der BASt, keine neue Vermutung.
 //
 // WICHTIG (Welle-2-Korrektur): ASCII-URL ist tot (HTTP 400) → URL-encoded, Layer Brueckenstatistik25.
 // f=geojson&outSR=4326 → WGS84 direkt. maxRecordCount=2000 → Paging über resultOffset. 3294 Treffer.
@@ -15,7 +29,10 @@
 import { makeNormalized, getJson, stabilHash } from "./_helpers.js"
 
 const QUELLE = "0153"
-const QUELLE_NAME = "BASt Brückenstatistik — schwerverkehrsgesperrte Brücken (bundesweit)"
+// Name geändert am 06.09.2026 (T-703): „schwerverkehrsgesperrt" behauptet eine Sperrung, die aus
+// dem Feld nicht ableitbar ist (siehe Kopfkommentar). Die Funde sagen „auflagenpflichtig", der
+// Quellenname muss dasselbe sagen — sonst widerspricht das Register dem Fund.
+const QUELLE_NAME = "BASt Brückenstatistik — Brücken mit Auflagen für Schwertransporte (bundesweit)"
 const BASE = "https://services2.arcgis.com/jUpNdisbWqRpMo35/arcgis/rest/services/Br%C3%BCckenstatistik_Deutschland/FeatureServer/0"
 const LAYER = `${BASE}/query`
 
@@ -80,7 +97,7 @@ export const bastBrueckenConnector = {
 
   async fetch({ timeoutMs = 45000, log = () => {} } = {}) {
     const feats = await ladeAlle({ timeoutMs })
-    log(`${QUELLE}: ${feats.length} schwerverkehrsgesperrte Brücken`)
+    log(`${QUELLE}: ${feats.length} Brücken mit SV-Kennzeichnung`)
 
     const obstacles = feats.map((f) => {
       const p = f.properties ?? {}

@@ -2,7 +2,7 @@
 // sauberem A4-Layout — Kopf, Transport-Daten, KPIs, Funde-Tabellen je Strecke.
 // Beim Drucken ist NUR der Bericht sichtbar (body.printing-report, globals.css).
 
-import { useEffect } from "react"
+import { useEffect, useId, useRef } from "react"
 import { createPortal } from "react-dom"
 import { Printer, X } from "lucide-react"
 import { SetreoLogo } from "@/components/shared/SetreoLogo"
@@ -17,8 +17,9 @@ import {
 } from "./findingMeta"
 import { routeLengthKm } from "@/lib/parseRouteFile"
 import { formatDateDE, fundeText } from "@/lib/format"
-import type { Finding, FindingSeverity, Project } from "@/types/domain"
+import { routeFreigegeben, type Finding, type FindingSeverity, type Project } from "@/types/domain"
 import { cn } from "@/lib/cn"
+import { useFocusTrap } from "@/lib/useFocusTrap"
 
 export function ReportView({
   project,
@@ -39,6 +40,14 @@ export function ReportView({
 }) {
   const routeSel = routeIds && routeIds.length ? new Set(routeIds) : null
   const sevSel = severities && severities.length ? new Set(severities) : null
+  // T-728f: Das Overlay deckt den ganzen Bildschirm ab, war aber nur ein div per Portal — mit Tab
+  // lief man unsichtbar durch die App dahinter weiter. Dieselbe Fokusführung wie Dialog.tsx:
+  // Fokus beim Öffnen in den Bericht (erstes Fokusziel im DOM ist der Druck-Knopf der Toolbar,
+  // genau der, den man hier zuerst braucht), Tab bleibt gefangen, beim Schließen gibt der Hook
+  // den Fokus an den Auslöser zurück. Escape hängt am eigenen Listener unten und bleibt.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const titleId = useId()
+  useFocusTrap(rootRef, true)
   // Druck-Isolation: nur der Report ist beim Drucken sichtbar
   useEffect(() => {
     document.body.classList.add("printing-report")
@@ -73,9 +82,31 @@ export function ReportView({
     .sort()
     .at(-1)
   const t = project.transport
-  const routen = project.routes.filter(
-    (r) => r.points.length >= 2 && (!routeSel || routeSel.has(r.id)),
-  )
+  // Prüfen-Gate (T-593/T-598): ungeprüfte VEMAGS-Strecken sind nie ausgewertet worden — die
+  // Engine schließt sie über usableRoutes aus (server/src/engine/index.js:733), Dashboard, Karte
+  // und Ebenen-Register tun dasselbe. Ohne das Gate hier hätte der Bericht Kilometer gedruckt,
+  // zu denen es gar keine Funde gibt, und "3 von 5 Strecken" gegen eine Grundmenge gezählt, die
+  // die Auswertung nie kannte.
+  const auswertbar = project.routes.filter((r) => r.points.length >= 2 && routeFreigegeben(r))
+  const routen = auswertbar.filter((r) => !routeSel || routeSel.has(r.id))
+  // T-727: Der Kopf zeigte "N Strecken" (Auswahl beachtet) neben project.distanzKm (Auswahl
+  // ignoriert) — bei 1 von 5 gewählten Strecken stand dort die Gesamtlänge aller fünf. Deshalb
+  // die km-Summe aus genau den Strecken bilden, die im Blatt stehen: dann ergibt die Addition
+  // der Strecken-Überschriften unten exakt die Kopfzahl (routeLengthKm rundet auf ganze km).
+  // Alternative wäre gewesen, project.distanzKm bei Vollauswahl weiter zu nehmen (server-Wert
+  // aus dem Routing) und nur bei Teilauswahl zu rechnen — verloren, weil derselbe Bericht dann
+  // je nach Auswahl aus zwei unterschiedlichen Quellen zählt und der Externe die Differenz zur
+  // Summe der Abschnitte nicht auflösen kann. Fahrzeit mit demselben 50-km/h-Schnitt wie der
+  // Server (server/src/engine/index.js:1080) — es ändert sich die Grundlage, nicht die Formel.
+  // BEWUSSTE ABWEICHUNG von der Dashboard-Kachel: die zeigt bei genau einer Strecke den
+  // Server-Wert project.distanzKm, und der ist auf eine Nachkommastelle gerundet (round1,
+  // engine/index.js:1074), während routeLengthKm je Strecke auf ganze km rundet — Dashboard
+  // "234,7 km" gegen Bericht "235 km". Dieselbe Haversine-Rechnung, nur andere Rundung, also
+  // maximal 0,5 km Unterschied je Strecke. Das Blatt gewinnt: der Externe hat den Bericht als
+  // PDF in der Hand und kann die Abschnitte nachaddieren, das Dashboard hat er nicht.
+  const berichtKm = routen.reduce((summe, r) => summe + routeLengthKm(r.points), 0)
+  const berichtFahrzeitMin = Math.round((berichtKm / 50) * 60)
+  const teilauswahl = routen.length < auswertbar.length
   // T-226: Bei mehreren Strecken werden routeId-lose Funde (oder solche, deren Strecke nicht
   // in der Auswahl ist) sonst still verschluckt. Eigene Sammel-Sektion, damit nichts fehlt.
   // (Bei genau einer Strecke saugt deren Sektion die routeId-losen Funde — siehe unten.)
@@ -91,7 +122,15 @@ export function ReportView({
   // `body.printing-report #root { display:none }` auch den Bericht (er wäre ein Kind von #root)
   // → leeres/verhauenes PDF. Als Body-Geschwister von #root bleibt er im Druck sichtbar.
   return createPortal(
-    <div id="report-print-root" className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100">
+    <div
+      id="report-print-root"
+      ref={rootRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className="fixed inset-0 z-[800] overflow-y-auto bg-neutral-100 outline-none"
+    >
       {/* Toolbar (nicht im Druck) */}
       <div className="print-hidden sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 shadow-card">
         <p className="text-sm font-semibold text-neutral-800">Bericht: Vorschau</p>
@@ -113,15 +152,17 @@ export function ReportView({
             <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">
               Routenanalyse-Bericht
             </p>
-            <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
+            <h1 id={titleId} className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
               {project.name}
             </h1>
             <p className="mt-1 text-xs text-neutral-500">
-              Berichtsdatum {formatDateDE(project.updatedAt)} · {routen.length}{" "}
-              {routen.length === 1 ? "Strecke" : "Strecken"} ·{" "}
-              {project.distanzKm?.toLocaleString("de-DE")} km gesamt ·{" "}
-              {Math.floor((project.fahrzeitMin ?? 0) / 60)} h {(project.fahrzeitMin ?? 0) % 60} min
-              {" "}(geschätzt)
+              Berichtsdatum {formatDateDE(project.updatedAt)} ·{" "}
+              {teilauswahl
+                ? `${routen.length} von ${auswertbar.length} Strecken (Auswahl)`
+                : `${routen.length} ${routen.length === 1 ? "Strecke" : "Strecken"}`}{" "}
+              · {berichtKm.toLocaleString("de-DE")} km{" "}
+              {teilauswahl ? "in dieser Auswahl" : "gesamt"} ·{" "}
+              {Math.floor(berichtFahrzeitMin / 60)} h {berichtFahrzeitMin % 60} min (geschätzt)
             </p>
             {/* T-492: Daten-Stand getrennt vom Berichtsdatum — der echte Aktualitäts-Anker der Funde. */}
             {datenStand ? (
@@ -151,14 +192,14 @@ export function ReportView({
                 <tr>
                   <td className="py-0.5 pr-4 text-neutral-500">Maße (L × B × H)</td>
                   <td className="py-0.5 font-medium tabular-nums text-neutral-900">
-                    {t.laenge.toLocaleString("de-DE")} × {t.breite.toLocaleString("de-DE")} ×{" "}
-                    {t.hoehe.toLocaleString("de-DE")} m
+                    {masszahl(t?.laenge, "m")} × {masszahl(t?.breite, "m")} ×{" "}
+                    {masszahl(t?.hoehe, "m")}
                   </td>
                 </tr>
                 <tr>
                   <td className="py-0.5 pr-4 text-neutral-500">Gesamtgewicht</td>
                   <td className="py-0.5 font-medium tabular-nums text-neutral-900">
-                    {t.gesamtgewicht.toLocaleString("de-DE")} t
+                    {masszahl(t?.gesamtgewicht, "t")}
                   </td>
                 </tr>
                 {project.zeitraum?.von ? (
@@ -194,13 +235,32 @@ export function ReportView({
         </section>
 
         {/* T-239: gar keine Funde = Positiv-Befund (Freigabe), nicht als Leere/Fehler lesen — gerade
-            im extern geteilten PDF entscheidend für das Vertrauen. */}
-        {sichtbar.length === 0 ? (
+            im extern geteilten PDF entscheidend für das Vertrauen.
+            ABER NUR, WENN AUCH EINE STRECKE IM BLATT STEHT (T-731): seit das Prüfen-Gate hier greift,
+            kann `routen` leer sein, obwohl der Nutzer im Export-Dialog etwas gewählt hat — der
+            Dialog bietet auch ungeprüfte VEMAGS-Strecken an. Ohne diese Bedingung druckte der
+            Bericht dann „0 von 3 Strecken · 0 km" UND gleichzeitig „Die Route ist frei befahrbar".
+            Ein Blatt ohne eine einzige Strecke darf keine Freigabe aussprechen, erst recht nicht
+            das Dokument, das das Haus verlässt. */}
+        {sichtbar.length === 0 && routen.length > 0 ? (
           <section className="mt-6 rounded-lg border border-primary-300 bg-primary-50/60 px-5 py-6 text-center">
             <p className="text-base font-bold text-primary-800">Keine Hindernisse gefunden</p>
             <p className="mx-auto mt-1 max-w-lg text-sm text-primary-700">
               Auf der ausgewerteten Strecke wurden im gewählten Zeitraum keine relevanten Restriktionen
               gefunden. Die Route ist nach aktueller Datenlage frei befahrbar.
+            </p>
+          </section>
+        ) : null}
+
+        {/* Der Gegenfall, und er braucht eine eigene Ansage: nichts Auswertbares im Blatt. Ohne sie
+            wäre der Bericht an dieser Stelle einfach leer, und Leere liest sich wie „nichts
+            gefunden" — also wie eine Freigabe. */}
+        {routen.length === 0 ? (
+          <section className="mt-6 rounded-lg border border-amber-300 bg-amber-50 px-5 py-6 text-center">
+            <p className="text-base font-bold text-amber-900">Keine ausgewertete Strecke in diesem Bericht</p>
+            <p className="mx-auto mt-1 max-w-lg text-sm text-amber-800">
+              Die gewählten Strecken sind noch nicht geprüft und freigegeben und wurden deshalb nie
+              ausgewertet. Dieser Bericht trifft keine Aussage über ihre Befahrbarkeit.
             </p>
           </section>
         ) : null}
@@ -263,6 +323,23 @@ export function ReportView({
     </div>,
     document.body,
   )
+}
+
+/** Maßangabe für den Berichtskopf: Zahl mit Einheit, fehlender Wert als Gedankenstrich (T-721).
+ *  TransportDataForm schreibt ein geleertes Feld bewusst als undefined statt 0 (sonst prüfte die
+ *  Engine eine erfundene Höhe von 0 m als gültig), die Anlage erlaubt das Leeren ausdrücklich.
+ *  Das ungeschützte toLocaleString() darauf hat den kompletten Bericht — und damit die ganze
+ *  Dashboard-Ansicht — in "Diese Ansicht konnte nicht geladen werden" gekippt. Jedes Maß wird
+ *  einzeln geprüft: eine fehlende Höhe darf angegebene Länge und Breite nicht mitverschlucken.
+ *  Einheit steht am Wert (wie in DashboardTab), sonst bliebe bei fehlendem Maß ein nacktes "m". */
+function masszahl(v: number | undefined, einheit: string): string {
+  // 0 ist hier KEIN zulässiges Maß, sondern eine Lücke: einen Transport mit 0 m Länge oder 0 t
+  // Gewicht gibt es nicht, die 0 entsteht nur aus einem geleerten Feld oder einem Altdatensatz.
+  // Muss dieselbe Lesart sein wie die Eckdaten-Kachel (DashboardTab.tsx:222-223, `t?.laenge ?
+  // … : "—"`) — sonst stünde auf demselben Bildschirm für denselben Wert im Bericht "0 m" und
+  // in der Auswertung "—". Negative Werte fallen aus demselben Grund mit heraus.
+  if (typeof v !== "number" || !Number.isFinite(v) || v <= 0) return "—"
+  return `${v.toLocaleString("de-DE")} ${einheit}`
 }
 
 /** Fund-Tabelle (km · Kategorie · Fund/Grenzwerte · Schweregrad · Zuständig) — geteilt von

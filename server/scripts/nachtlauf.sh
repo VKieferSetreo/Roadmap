@@ -78,6 +78,21 @@ UMGEBUNG=""
 # Sammelt, was schiefging. Ist es am Ende nicht leer, geht eine Mail raus — und zwar nur dann.
 PROBLEM=""
 
+# WAS DER LAUF TATSAECHLICH GESCHAFFT HAT (T-714). Drei Zustaende, und die Unterscheidung ist der
+# ganze Punkt:
+#   leer — die Anreicherung ist nie gestartet (Abbruch davor). Dann ist die Ausbeute keine Aussage
+#          wert, und PROBLEM traegt ohnehin schon den echten Grund.
+#   0    — gestartet, aber nicht ein Block fertig geworden. Das ist der schlimmste Fall und der,
+#          der bisher unsichtbar war.
+#   >0   — so viele Punkte hat der Lauf gesehen (letzte "Block fertig:"/"ENDE."-Zeile).
+PUNKTE_DIESER_LAUF=""
+BESTAND_DURCH=0
+# Unterhalb dieser Zahl gilt ein Lauf als "nichts geschafft". Bewusst sehr niedrig: die beiden
+# abgeschossenen Laeufe vom 03./04.09.2026 kamen auf 50 bzw. 200 Punkte in wenigen Minuten, ein
+# gesunder Lauf hat bis zu MAX_MIN Minuten Zeit und schafft Tausende. Die Schwelle soll den
+# Totalausfall treffen, nicht einen halben Lauf zum Fehlalarm machen.
+MIN_PUNKTE="${NACHTLAUF_MIN_PUNKTE:-25}"
+
 # Abbrechen und den Grund merken, statt ihn nur ins Logfile zu schreiben, das keiner liest.
 abbruch() { PROBLEM="$1"; sage "ABBRUCH: $1"; exit 1; }
 
@@ -139,6 +154,22 @@ melden() {
     || sage "Auch die Meldung ging nicht raus — bitte $LOG ansehen."
 }
 
+# EIN LAUF, DER SAUBER ENDET UND TROTZDEM NICHTS GESCHAFFT HAT, faellt sonst durch jedes Netz
+# (T-714): der Rueckgabewert ist 0, und anreicherungOffen.mjs gibt Entwarnung, weil es nur prueft,
+# ob GERECHNETE Angaben eingespielt sind — nicht, ob ueberhaupt gerechnet wurde.
+#
+# "Bestand durchgelaufen" ist die Ausnahme und muss es sein: ist nichts mehr offen, sind wenige
+# oder null Punkte das richtige Ergebnis. Ohne diese Unterscheidung meldete sich das Skript ab dem
+# Tag taeglich, an dem die Anreicherung einmal aufgeholt hat — und eine Mail, die immer kommt,
+# liest nach einer Woche niemand mehr.
+pruefe_ausbeute() {
+  [ -n "$PUNKTE_DIESER_LAUF" ] || return 0    # gar nicht bis zur Anreicherung gekommen
+  [ "$BESTAND_DURCH" = "1" ] && return 0      # nichts mehr offen — wenig ist hier das richtige Ergebnis
+  [ "$PUNKTE_DIESER_LAUF" -ge "$MIN_PUNKTE" ] && return 0
+  sage "ACHTUNG: nur $PUNKTE_DIESER_LAUF Punkte angereichert, erwartet mindestens $MIN_PUNKTE."
+  PROBLEM="${PROBLEM:+$PROBLEM; }Lauf ohne Ausbeute: $PUNKTE_DIESER_LAUF Punkte (Mindesterwartung $MIN_PUNKTE)"
+}
+
 aufraeumen() {
   sichern
   if [ "$WIR_HABEN_GEWECKT" = "1" ]; then
@@ -158,6 +189,8 @@ aufraeumen() {
       || sage "Modell liess sich nicht ausladen — die Karte bleibt bis zum Ablauf belegt."
     sage "Workstation war vorher schon an — bleibt an."
   fi
+
+  pruefe_ausbeute
 
   # NUR BEI PROBLEMEN. Eine Mail, die jede Nacht kommt, liest nach einer Woche niemand mehr.
   if [ -n "$PROBLEM" ]; then
@@ -296,6 +329,10 @@ $SSH "$GPU" "curl -s -m 600 $OLLAMA_LOKAL/api/generate -d '{\"model\":\"$MODELL\
 sage "Starte Anreicherung mit $IMAGE"
 
 sudo -n docker rm -f anreicherung-nacht >/dev/null 2>&1
+# Wo im Logfile dieser Lauf anfaengt — nur so laesst sich hinterher seine eigene Ausbeute lesen
+# und nicht die des Vortags (das Logfile ist fortlaufend, nicht je Lauf).
+LOG_ZEILEN_VOR=$(wc -l < "$LOG" 2>/dev/null | tr -d ' ')
+: "${LOG_ZEILEN_VOR:=0}"
 sudo -n docker run --rm --name anreicherung-nacht --network setreo-net \
   -e DATABASE_URL="$DB" -e OLLAMA_URL="$OLLAMA/v1" -e ANREICHERUNG_WEG=lokal \
   -e ANREICHERUNG_MODELL="$MODELL" -e GLEICHZEITIG="${NACHTLAUF_PARALLEL:-4}" -e BLOCK=100 \
@@ -303,6 +340,38 @@ sudo -n docker run --rm --name anreicherung-nacht --network setreo-net \
 ERGEBNIS=$?
 sage "Anreicherung beendet (Code $ERGEBNIS)."
 tail -3 "$LOG" | sed 's/^/    /'
+
+# Die Ausbeute aus den Zeilen DIESES Laufs lesen: anreicherungLauf.mjs meldet nach jedem Block
+# "Block fertig: N Punkte …" und am Ende "ENDE. N Punkte …" — die letzte dieser Zahlen ist der
+# Stand bei Abbruch. Kein Treffer heisst: nicht ein Block ist fertig geworden, also 0.
+LAUF_AUSZUG=$(tail -n "+$((LOG_ZEILEN_VOR + 1))" "$LOG" 2>/dev/null)
+PUNKTE_DIESER_LAUF=$(printf '%s\n' "$LAUF_AUSZUG" \
+  | grep -oE '(Block fertig: |ENDE\. )[0-9]+ Punkte' | grep -oE '[0-9]+' | tail -1)
+: "${PUNKTE_DIESER_LAUF:=0}"
+printf '%s\n' "$LAUF_AUSZUG" | grep -q 'Bestand durchgelaufen' && BESTAND_DURCH=1
+
+# DEN RUECKGABEWERT AUSWERTEN, nicht nur protokollieren (T-714). Bis zum 05.09.2026 wurde ERGEBNIS
+# ausschliesslich in die Zeile darueber interpoliert: am 03.09. (Code 137 nach 50 Punkten) und am
+# 04.09. (Code 137 nach 200 Punkten) meldete das Skript anschliessend "Nachtlauf fertig", PROBLEM
+# blieb leer, es ging keine Mail raus. Zwei Tage in Folge lief die Anreicherung faktisch nicht, und
+# der einzige Meldeweg schwieg — genau der Zustand, gegen den melden() ueberhaupt gebaut wurde.
+#
+# ABBRUCH statt exit: der Lauf ist zu Ende, es gibt nichts mehr zu retten, aber das Einspielen
+# gehoert noch gemacht. Deshalb nur PROBLEM setzen und normal weiter in den trap laufen — was der
+# Lauf bis zum Abschuss gerechnet hat, steht in der Anreicherungstabelle und will in den Bestand.
+if [ "$ERGEBNIS" -ne 0 ]; then
+  case "$ERGEBNIS" in
+    124) GRUND="Zeitlimit von ${MAX_MIN} min gerissen (timeout)" ;;
+    # 137 ist SIGKILL von aussen: Deploy, `docker stop` (10 s Gnadenfrist, dann hart) oder der
+    # OOM-Killer. Im Log steht davor "SIGTERM — halte nach diesem Block an", der Lauf wollte also
+    # sauber aufhoeren und durfte nicht mehr.
+    137) GRUND="hart abgeschossen (Code 137/SIGKILL) — Deploy, docker stop oder OOM-Killer" ;;
+    143) GRUND="durch SIGTERM beendet (Code 143)" ;;
+    *)   GRUND="Rueckgabewert $ERGEBNIS" ;;
+  esac
+  sage "ACHTUNG: die Anreicherung ist nicht sauber zu Ende gekommen — $GRUND."
+  PROBLEM="${PROBLEM:+$PROBLEM; }Anreicherung abgebrochen: $GRUND (${PUNKTE_DIESER_LAUF} Punkte geschafft)"
+fi
 
 # Schritt 4 (in den Bestand einspielen und nachzaehlen) und Schritt 5 (herunterfahren) stehen
 # oben in aufraeumen(). Sie gehoeren dorthin, weil sie auch dann laufen muessen, wenn dieses

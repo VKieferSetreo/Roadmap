@@ -196,16 +196,20 @@ export function AppLayout() {
               </div>
             ) : ctxFailed ? (
               // T-479: Kontext-Abruf gescheitert → ehrlicher Wiederholen-Screen statt
-              // fälschlich „Kein Mandant zugeordnet" (Backend war nur kurz nicht erreichbar).
+              // fälschlich „Kein Unternehmen zugeordnet" (Backend war nur kurz nicht erreichbar).
               <div className="flex h-full items-center justify-center px-4">
                 <div className="max-w-md rounded-xl border border-neutral-200 bg-white p-8 text-center shadow-card">
                   <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100">
                     <WifiOff className="h-6 w-6 text-neutral-500" />
                   </div>
                   <h1 className="text-lg font-bold text-neutral-900">Verbindung fehlgeschlagen</h1>
+                  {/* T-725: „Backend" und „Konto-Kontext" sind Entwicklersprache. Wortgleich mit dem
+                      Ladefehler auf der Startseite (DashboardHome), damit der Disponent denselben
+                      Ausfall nicht für zwei verschiedene Probleme hält. Der Button darunter heißt
+                      wie dort „Erneut laden" — der Satz muss also „laden" sagen, nicht „versuchen". */}
                   <p className="mt-2 text-sm text-neutral-500">
-                    Ihr Konto-Kontext konnte nicht geladen werden. Das Backend ist gerade nicht
-                    erreichbar. Bitte erneut versuchen.
+                    Ihre Konto-Daten konnten nicht geladen werden. Die Verbindung zu Setreo Roadmap
+                    steht gerade nicht. Bitte Ihre Internetverbindung prüfen und erneut laden.
                   </p>
                   <Button className="mt-5" onClick={() => window.location.reload()}>
                     <RefreshCcw className="h-4 w-4" /> Erneut laden
@@ -222,9 +226,11 @@ export function AppLayout() {
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-100">
                       <Building2 className="h-6 w-6 text-accent-700" />
                     </div>
-                    <h1 className="text-lg font-bold text-neutral-900">Kein Mandant zugeordnet</h1>
+                    {/* T-725: „Mandant" ist Betreiber-Vokabular. Für den Disponenten ist es das
+                        Unternehmen, für das er fährt — entsprechend heißt es hier auch so. */}
+                    <h1 className="text-lg font-bold text-neutral-900">Kein Unternehmen zugeordnet</h1>
                     <p className="mt-2 text-sm text-neutral-500">
-                      Ihr Konto ({email}) ist noch keinem Mandanten zugewiesen. Bitte wenden Sie sich an Setreo.
+                      Ihr Konto ({email}) ist noch keinem Unternehmen zugewiesen. Bitte wenden Sie sich an Setreo.
                       Sobald die Zuordnung steht, erscheinen hier die Projekte Ihres Teams.
                     </p>
                     {/* T-478: Sackgasse aufbrechen — konkreter nächster Schritt statt nur „wenden Sie sich an Setreo". */}
