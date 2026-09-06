@@ -70,6 +70,7 @@ import { vipnrwBaustellenConnector } from "./0156_vipnrw_baustellen.js"
 import { sevasNrwRestriktionenConnector } from "./0157_sevas_nrw_restriktionen.js"
 import { vmzNiBaustellenConnector } from "./0158_vmz_ni_baustellen.js"
 import { koelnLkwStreckeninfoConnector } from "./0230_koeln_lkw_streckeninfo.js"
+import { baysisFahrbahnbreitenConnector } from "./0234_baysis_fahrbahnbreiten.js"
 import { saarbrueckenBaustellenConnector } from "./0231_saarbruecken_baustellen.js"
 import { vmzBremenConnector } from "./0232_vmz_bremen_restriktionen.js"
 import { freiburgVerkehrszeichenConnector } from "./0233_freiburg_verkehrszeichen.js"
@@ -125,6 +126,7 @@ export const CONNECTORS = [
   freiburgVerkehrszeichenConnector,
   saarbrueckenBaustellenConnector,
   vmzBremenConnector,
+  baysisFahrbahnbreitenConnector,
   babAldVorschauConnector,
   bastBrueckenConnector,
   lsbbStFahrauflagenConnector,
