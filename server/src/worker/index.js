@@ -328,7 +328,26 @@ try {
     .then((r) => r.rowCount > 0 && log(`Orphan-Sweep: ${r.rowCount} verwaiste Import-Läufe freigegeben`))
     .catch((err) => log(`Import-Orphan-Sweep fehlgeschlagen (ignoriert): ${err?.message ?? err}`))
 
-  const connectors = enabledConnectors(process.env)
+  // T-694: `aktiv = false` im Quellen-Register hat das Scheduling bisher NICHT interessiert — es
+  // las allein die Env CONNECTORS. Quelle 0151 wurde am 04.07.2026 per Migration 066 stillgelegt
+  // ("Mobilithek-Subscription dead-on-arrival, 53/53 Läufe 0 Records") und lief trotzdem weiter,
+  // drei Warnläufe am Tag, seit über zwei Monaten. Eine Stilllegung, die nichts stilllegt, ist
+  // schlimmer als keine: sie sieht im Register nach Ordnung aus.
+  //
+  // FAIL-OPEN: ist die Abfrage nicht möglich, wird geplant wie bisher. Ein Datenbankhänger beim
+  // Start darf nicht dazu führen, dass der Worker gar nichts mehr abruft.
+  let inaktiv = new Set()
+  try {
+    const { rows } = await db.query("SELECT id FROM quellen WHERE aktiv = false")
+    inaktiv = new Set(rows.map((r) => String(r.id)))
+  } catch (err) {
+    log(`Aktiv-Abfrage fehlgeschlagen (plane alle): ${err?.message ?? err}`)
+  }
+  const alleGeplanten = enabledConnectors(process.env)
+  const connectors = alleGeplanten.filter((c) => !inaktiv.has(String(c.quelleId)))
+  for (const c of alleGeplanten.filter((c) => inaktiv.has(String(c.quelleId)))) {
+    log(`NICHT geplant: ${c.quelleId} (${c.name}) — im Register auf aktiv=false gesetzt`)
+  }
   if (connectors.length === 0) {
     log("CONNECTORS leer — keine Connectoren geplant, Worker läuft im Leerlauf (nur Heartbeat)")
   }

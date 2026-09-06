@@ -319,9 +319,44 @@ export async function runImport({
     if (reconcileSuspended && status === "ok") status = "partial"
     // T-476: ein Vollbestand-Feed mit 0 Einträgen ist KEIN gesunder Voll-Erfolg (kaputter/leerer
     // Feed) → als 'warn' markieren, damit Staleness sichtbar wird statt grün durchzugehen.
+    //
+    // T-695: hier war ein Schalter „leerIstGueltig" vorgesehen, um Dauer-Warnungen von Feeds zu
+    // unterdruecken, die oft nichts melden. Die Messung hat ihn erledigt: von 68 Quellen haben in
+    // 60 Tagen genau drei NIE Daten geliefert (0121 in 187 Laeufen, 0151 in 187, 0159 in 55). Das
+    // ist kein „manchmal leer", das ist ein Dauerausfall. Wer den stummschaltet, verliert genau
+    // die Meldung, die ihn haette finden lassen. Der richtige Weg ist, die tote Quelle
+    // stillzulegen, nicht ihre Warnung.
     if (connector.vollbestand && stats.gefunden === 0 && status === "ok") {
       status = "warn"
       note("Vollbestand-Feed lieferte 0 Einträge — als 'warn' markiert (kein stiller Voll-Erfolg)")
+    }
+    // T-695: dieselbe Frage fuer Quellen OHNE Vollbestand. Sie umgingen die Regel darueber und
+    // konnten dadurch beliebig lange still nichts liefern. Gefunden an Quelle 0121 (GST-Negativ-
+    // karten Sachsen): 187 Laeufe, kein einziger Eintrag, Status durchgehend "ok". Die Seite
+    // antwortet mit HTTP 200 und traegt schlicht keine PDF-Links mehr — der Betreiber hat sie
+    // umgebaut, und niemand hat es gesehen.
+    //
+    // EIN leerer Lauf ist hier kein Fehler (eine Ereignisquelle darf nichts zu melden haben),
+    // deshalb faellt das Urteil ueber ein Zeitfenster: hat die Quelle in vierzehn Tagen KEIN
+    // einziges Mal etwas geliefert, ist sie faktisch tot und sagt es jetzt auch.
+    if (!connector.vollbestand && stats.gefunden === 0 && status === "ok") {
+      try {
+        const { rows } = await db.query(
+          `SELECT count(*) FILTER (WHERE (stats->>'gefunden')::int > 0)::int AS mit_daten,
+                  count(*)::int AS laeufe
+             FROM import_runs
+            WHERE quelle_id = $1 AND started_at > now() - interval '14 days'`,
+          [connector.quelleId],
+        )
+        const { mit_daten: mitDaten = 0, laeufe = 0 } = rows[0] ?? {}
+        if (laeufe >= 5 && mitDaten === 0) {
+          status = "warn"
+          note(`seit 14 Tagen kein einziger Eintrag (${laeufe} Läufe) — Quelle liefert nichts mehr`)
+        }
+      } catch (err) {
+        // Die Zusatzprüfung darf einen sonst gesunden Lauf nie kippen.
+        note(`Leerlauf-Prüfung übersprungen: ${err?.message ?? err}`)
+      }
     }
   } catch (err) {
     status = "error"
