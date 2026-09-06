@@ -157,7 +157,8 @@ export function FindingCard({
           // Auf der Karte zaehlt, wann die Massnahme selbst gilt — das steht in "Gültig".
           // "Zuordnung" steht daneben als eigenes Badge. Im BERICHT bleiben beide stehen, dort
           // kennt der Leser die Einstellungen nicht. Nur die Anzeige, im Fund bleibt der Wert.
-          .filter(([k]) => k !== "Zuordnung" && k !== "Zeitraum")
+          // "Gilt" gehört zum Badge (T-699) und wird dort im Klartext gezeigt, nicht als Feldzeile.
+          .filter(([k]) => k !== "Zuordnung" && k !== "Zeitraum" && k !== "Gilt")
           .map(([k, v]) => {
             // Das Zeichen sitzt AN DER GEFUNDENEN STELLE (Max 31.08.2026), nicht nur unten am
             // Fund: wer auf eine Durchfahrtshöhe schaut, muss dort sehen, woher sie kommt.
@@ -191,17 +192,24 @@ export function FindingCard({
           nicht woher ein Wert kommt, sondern ob der Fund überhaupt zur Strecke gehört. */}
       {detail?.["Zuordnung"] && (
         <div className="mt-2 flex flex-col gap-1">
-          {detail?.["Zuordnung"] ? (
-            /* T-692 (Max fragte am 06.09.2026, was das heißt): „Zuordnung nicht nachweisbar" ist
-               die Sprache der Engine, nicht die des Disponenten. Gemeint ist immer dieselbe eine
-               Frage, und die steht jetzt auf dem Schild: liegt das Bauwerk auf der Strecke, oder
-               führt es darüber oder darunter hinweg. Der Tooltip sagt dazu, was daraus folgt. */
-            <span
-              title="Es ließ sich nicht belegen, ob dieses Bauwerk wirklich auf der gefahrenen Strecke liegt — es könnte auch darüber oder darunter hinwegführen und damit einer anderen Straße gehören. Der Fund wird trotzdem gezeigt und in der Bewertung mitgezählt: ihn wegzulassen wäre gefährlicher, als ihn zu prüfen."
-              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200"
-            >
-              <HelpCircle className="h-3 w-3 shrink-0" aria-hidden />
-              Streckenbezug unbestätigt
+          {/* T-692 (Max fragte am 06.09.2026, was das heißt): „Zuordnung nicht nachweisbar" ist
+              die Sprache der Engine, nicht die des Disponenten. Gemeint ist immer dieselbe eine
+              Frage, und die steht jetzt auf dem Schild: liegt das Bauwerk auf der Strecke, oder
+              führt es darüber oder darunter hinweg. Der Tooltip sagt dazu, was daraus folgt. */}
+          <span
+            title="Es ließ sich nicht belegen, ob dieses Bauwerk wirklich auf der gefahrenen Strecke liegt — es könnte auch darüber oder darunter hinwegführen und damit einer anderen Straße gehören. Der Fund wird trotzdem gezeigt und in der Bewertung mitgezählt: ihn wegzulassen wäre gefährlicher, als ihn zu prüfen."
+            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200"
+          >
+            <HelpCircle className="h-3 w-3 shrink-0" aria-hidden />
+            Streckenbezug unbestätigt
+          </span>
+          {/* T-699: der Zweifel allein lässt den Disponenten ratlos. Erst die Metrik sagt ihm,
+              wonach er vor Ort schauen muss — eine Traglast gilt oben, eine Durchfahrtshöhe
+              unten. Die Engine setzt das Feld nur, wenn das Bauwerk genau eine der beiden
+              Aussagen trägt; bei beidem schweigt sie, statt zu wählen. */}
+          {typeof detail?.["Gilt"] === "string" ? (
+            <span className="pl-0.5 text-[11px] leading-tight text-neutral-500">
+              Die Angabe gilt {detail["Gilt"]}.
             </span>
           ) : null}
         </div>

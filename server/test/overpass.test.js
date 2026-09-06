@@ -72,8 +72,19 @@ describe("Namensheuristik verwirft nicht mehr", () => {
 
   it("hält harmlose Namen weiterhin für unbestimmt statt sie zu verwerfen", () => {
     expect(urteil(ob("UF Wirtschaftsweg"), hier("A5"))).toBe("unbestimmt")
-    expect(urteil(ob("Talbrücke Haseltal"), hier("A3"))).toBe("unbestimmt")
+    // Nennt der Name eine Strassennummer, schweigt die T-699-Regel — genau dann kann die Nummer
+    // die unterquerte sein. Hier ist es die A 7, und "Bach" allein ist kein Gewaesser-Muster.
     expect(urteil(ob("BW 3052 - Brücke ü.d. Wl Ortshäuser Bach i.Z.d. A 7"), hier("A7"))).toBe("unbestimmt")
+  })
+
+  // T-699 (Max, 06.09.2026: "bei sowas wie Mainbruecke weiss man das ja"). "Talbruecke Haseltal"
+  // stand hier frueher als "unbestimmt" — nicht weil das richtig gewesen waere, sondern weil die
+  // Engine ueber ein Tal nichts sagen konnte. Ueber einem Tal liegt keine Strasse, also faehrt man
+  // darueber. Der Zweck dieses Blocks bleibt unberuehrt: es wird weiterhin NICHTS verworfen, die
+  // Regel hebt nur "unbestimmt" auf "bewiesen".
+  it("beweist Bauwerke, deren Name ein Tal oder Gewässer als das Gekreuzte nennt", () => {
+    expect(urteil(ob("Talbrücke Haseltal"), hier("A3"))).toBe("bewiesen")
+    expect(urteil(ob("Mainbrücke Eddersheim"), hier("A3"))).toBe("bewiesen")
   })
 })
 

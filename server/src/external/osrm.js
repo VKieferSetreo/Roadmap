@@ -57,6 +57,52 @@ const NAME_KOPF = new RegExp(String.raw`^\s*(?:BAB\s*)?(?:Br(?:ü|ue)cke|BW|Talb
 // dahinter unten. Nicht gierig, damit ein zweites "ueber" im Namen die Teilung nicht verschiebt.
 const NAME_UEF_UEBER = /^(.*?)\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der|d\.)?\s*(.*)$/i
 
+/**
+ * Ueberquert dieses Bauwerk etwas, das GAR KEINE STRASSE ist (T-699)?
+ *
+ * Max, 06.09.2026, an einem Fund "Mainbruecke Eddersheim" mit dem Schild "Streckenbezug
+ * unbestaetigt": "aber bei sowas wie Mainbruecke weiss man das ja."
+ *
+ * Er hat recht, und der Grund ist einfach: ueber einem Fluss, einem Tal, einem Kanal oder einer
+ * Bahnstrecke liegt keine Strasse, auf der wir statt dessen fahren koennten. Wer eine Mainbruecke
+ * passiert, faehrt darueber. Die Frage "oben oder unten", die zuordnung() sonst beschaeftigt,
+ * stellt sich hier nicht.
+ *
+ * Bis hierher konnte die Engine das nicht sehen: strasseAusName() sucht ausschliesslich nach
+ * klassifizierten Nummern, und "Mainbruecke Eddersheim" nennt keine. Ergebnis war {oben: null,
+ * unten: null} und damit "unbestimmt".
+ *
+ * DIE ZWEITE BEDINGUNG IST DIE WICHTIGERE: nennt der Name IRGENDEINE klassifizierte Strassennummer,
+ * antwortet diese Funktion nicht. Denn dann kann genau sie die unterquerte sein. Gemessen am
+ * 06.09.2026 gegen alle 16.519 Bauwerke im Bestand: ohne die Nummernsperre trifft das Muster 200
+ * Bauwerke, darunter "UF K807 + Main + K808 - Mainbruecke Schwanheim" und "Lahnbruecke am
+ * Taubenstein, UF Lahn, L 3020" — dort wird sehr wohl eine Strasse unterquert, und ein "wir fahren
+ * drueber" waere schlicht falsch. Mit der Sperre bleiben 139 Bauwerke, und von denen trifft KEINES
+ * mehr einen Fall mit brauchbarer gekreuzter Strasse im Strukturfeld.
+ *
+ * Der Preis sind 6 Bauwerke, die konservativ aussen vor bleiben, obwohl sie eindeutig waeren
+ * ("RUHRBRUECKE B54" — dort ist die B54 die getragene). Das ist der richtige Tausch: die Regel
+ * spricht einen Fund frei, und Freisprechen darf nur, wer sicher ist.
+ */
+const KREUZT_GEWAESSER =
+  /\b(?:fluss|strom|kanal|hafen|see|teich|weiher|bach|graben|aue|sund|f(?:ö|oe)hrde|f(?:ö|oe)rde|watt|siel|deich)br(?:ü|ue)cke\b|\b(?:main|rhein|elbe|donau|weser|neckar|mosel|saale|spree|havel|ems|lahn|ruhr|lippe|aller|leine|isar|inn|lech|regnitz|naab|saar|fulda|werra|oder|neisse|nahe|sieg|wupper|erft|niers|eider|trave|warnow|peene|unstrut|mulde|bode|iller|wertach|amper|vils|rott|salzach|jagst|kocher|tauber|enz|murg|kinzig|dreisam|argen|schussen|rems|fils|brenz|paar|glonn|loisach|ammer|traun|alz|rednitz|pegnitz|wiesent|itz|rodach|schwarza|ilm|gera|helme|selke|ohre|st(?:ö|oe)r|pinnau|bille|alster|este|seeve|oste|hunte|hase|vechte|berkel|issel)[- ]?br(?:ü|ue)cke\b|(?:ü|ue)ber (?:den |die |das )?(?:main|rhein|elbe|donau|weser|neckar|mosel|kanal|fluss|bach|see|hafen|strom)\b/i
+// OHNE Wortgrenze vorn, mit Absicht: im Bestand steht "Wiehltalbruecke" und "Moseltalbruecke"
+// als EIN Wort, "Wupper-Talbruecke" mit Bindestrich. Ein \b davor faende nur die zweite Form.
+const KREUZT_TAL = /talbr(?:ü|ue)cke\b|\bviadukt\b/i
+const KREUZT_BAHN =
+  /\b(?:bahn|eisenbahn|gleis)br(?:ü|ue)cke\b|(?:ü|ue)ber (?:die )?(?:bahn|bahnstrecke|bahnlinie|gleise|eisenbahn|db[- ]?ag|db[- ]strecke)\b/i
+const KREUZT_KANAL =
+  /\b(?:mittellandkanal|nord-ostsee-kanal|dortmund-ems-kanal|rhein-herne-kanal|datteln-hamm-kanal|wesel-datteln-kanal|elbe-seitenkanal|elbe-l(?:ü|ue)beck-kanal|k(?:ü|ue)stenkanal|stichkanal)\b/i
+// Jede klassifizierte Nummer im Namen sperrt die Aussage — auch die getragene. Bewusst grober
+// als REF_ROH: hier soll im Zweifel gesperrt werden, nicht erkannt.
+const IRGENDEINE_NUMMER = /\b(?:A|B|L|K|St|S)\s?\d{1,4}\b|\bBAB\s?\d/i
+
+export function kreuztKeineStrasse(name) {
+  const t = String(name ?? "")
+  if (IRGENDEINE_NUMMER.test(t)) return false
+  return KREUZT_GEWAESSER.test(t) || KREUZT_TAL.test(t) || KREUZT_BAHN.test(t) || KREUZT_KANAL.test(t)
+}
+
 export function strasseAusName(name) {
   const t = String(name ?? "")
   const uef = t.match(NAME_UEF)

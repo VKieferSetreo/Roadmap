@@ -17,7 +17,7 @@ import {
   istMassRestriktion,
 } from "../src/engine/index.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
-import { strasseAusName } from "../src/external/osrm.js"
+import { kreuztKeineStrasse, strasseAusName } from "../src/external/osrm.js"
 
 // Eine gerade Nord-Sued-Route bei Kassel, rund 111 km lang (1 Grad Breite).
 const route = Array.from({ length: 101 }, (_, i) => ({ lat: 51.0 + i * 0.01, lng: 9.5 }))
@@ -358,6 +358,69 @@ describe("istMassRestriktion", () => {
     expect(istMassRestriktion({ vollsperrung: true })).toBe(false)
     expect(istMassRestriktion({})).toBe(false)
     expect(istMassRestriktion(null)).toBe(false)
+  })
+})
+
+// T-699. Max, 06.09.2026, an "Mainbruecke Eddersheim" mit dem Zweifels-Schild: "aber bei sowas
+// wie Mainbruecke weiss man das ja." Alle Namen hier woertlich aus dem Produktionsbestand.
+describe("kreuztKeineStrasse — was ueberquert wird, ist keine Strasse (T-699)", () => {
+  it("erkennt Gewaesser, Taeler, Kanaele und Bahnstrecken", () => {
+    for (const n of [
+      "Mainbrücke Eddersheim",
+      "Rheinbrücke Bendorf",
+      "Elbebrücke Hohewarthe RFB Berlin",
+      "Moselbrücke Ehrang",
+      "Saalebrücke/Saalevorland (Ü1, Ü2) Richtung Quedlinburg (Alsl.)",
+      "Wupperbrücke Dahlhausen",
+      "Talbrücke Fechingen",
+      "Wiehltalbrücke",
+      "Rhein-Herne-Kanal (westl. Überbau)",
+      "Bahnbrücke/Brücke über die DB-AG",
+    ]) expect(kreuztKeineStrasse(n), n).toBe(true)
+  })
+
+  // DIE WICHTIGE RICHTUNG. Nennt der Name eine klassifizierte Nummer, kann genau sie die
+  // unterquerte sein, und ein "wir fahren drueber" waere falsch. Ohne diese Sperre traf das
+  // Muster im Bestand 200 statt 139 Bauwerke — die Differenz sind genau solche Faelle.
+  it("schweigt, sobald der Name IRGENDEINE Strassennummer nennt", () => {
+    for (const n of [
+      "UF K807 + Main + K808 - Mainbrücke Schwanheim-/Überbau FR Frankfurt",
+      'Lahnbrücke am Taubenstein,UF Lahn,L 3020,Stadtstr./UF Lahn, L 3020 u. Stadtstrasse "Taubenstein"',
+      "Brücke A3 über Main - Mainbrücke Randersacker/FR Frankfurt (linker Überbau)",
+      "RUHRBRUECKE B54",
+      "UF Rhein -Rheinbrücke Schierstein-/UF K 648 (Achse N` - O) FR Mainz",
+    ]) expect(kreuztKeineStrasse(n), n).toBe(false)
+  })
+
+  it("schweigt bei Namen, die gar nichts ueber das Gekreuzte sagen", () => {
+    for (const n of ["Autobahnkreuz Landstuhl", "AD Bad Neuenahr-Ahrweiler", "Brücke 6709596", "", null])
+      expect(kreuztKeineStrasse(n), String(n)).toBe(false)
+  })
+})
+
+describe("zuordnung — Gewaesserbruecken (T-699)", () => {
+  // Max' Fall im Ganzen: die GST-Liste der Autobahn GmbH nennt zu dieser Bruecke weder eine
+  // getragene noch eine gekreuzte Strasse. Bis T-699 blieb sie deshalb "unbestimmt".
+  it("beweist die Mainbruecke, die gar keine Strassenangabe traegt", () => {
+    const b = bauwerk({ maxGewichtT: 40 }, { name: "Mainbrücke Eddersheim" })
+    expect(zuordnung(b, ctx, 10)).toBe("bewiesen")
+  })
+
+  // Die Gegenprobe, und sie ist die teurere Richtung: nennt das STRUKTURFELD eine brauchbare
+  // gekreuzte Strasse, gilt sie und nicht der Name. "Wupper-Talbruecke Oehde" traegt die A1 und
+  // kreuzt die L58 — wer die L58 faehrt, faehrt darunter durch.
+  it("laesst das Strukturfeld gewinnen, wenn es eine gekreuzte Strasse nennt", () => {
+    const b = bauwerk(
+      { gekreuzteStrasse: "A 7", maxGewichtT: 40 },
+      { name: "Wupper-Talbrücke Oehde" },
+    )
+    expect(zuordnung(b, ctx, 10)).toBe("widerlegt")
+  })
+
+  // Und sie darf nur Bauwerke betreffen. Alles andere liegt AUF der Strasse.
+  it("greift nicht bei Hindernissen, die keine Bruecke sind", () => {
+    const b = { kategorie: "baustelle", attrs: { maxGewichtT: 40 }, name: "Mainbrücke Eddersheim" }
+    expect(zuordnung(b, ctx, 10)).toBe("unbestimmt")
   })
 })
 

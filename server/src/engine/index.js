@@ -14,7 +14,13 @@ import {
   bboxWithBuffer, buildRouteGrid, clipGeomToCorridor, coincidentRouteKm, cumulativeKm, geomLineParts, haversineKm, lineCrossesRoute, lineOffRoute, nearestOnRoute, obstacleRouteRelation, totalKm,
 } from "./geometry.js"
 import { AUSWERTUNG_AUSGESCHLOSSEN, evaluate } from "./rules.js"
-import { normRoadRef, normRoadRefWeit, normStrassenName, strasseAusName } from "../external/osrm.js"
+import {
+  kreuztKeineStrasse,
+  normRoadRef,
+  normRoadRefWeit,
+  normStrassenName,
+  strasseAusName,
+} from "../external/osrm.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../anreicherung/lesen.js"
 import { kiFelderJePunkt } from "../anreicherung/einspielen.js"
 import { ApiError, isFiniteNumber } from "../util.js"
@@ -295,7 +301,57 @@ export function zuordnung(obstacle, ctx, km) {
     if (fenster.size > 0 || namen.size > 0) return "widerlegt"
   }
 
+  // WAS UEBERQUERT WIRD, IST GAR KEINE STRASSE (T-699). Max, 06.09.2026, an einem Fund
+  // "Mainbruecke Eddersheim" mit dem Zweifels-Schild: "aber bei sowas wie Mainbruecke weiss man
+  // das ja." Ueber einem Fluss, einem Tal, einem Kanal oder einer Bahnstrecke liegt keine Strasse,
+  // auf der wir statt dessen fahren koennten — wer die Bruecke passiert, faehrt darueber.
+  //
+  // Die Stelle ist mit Absicht die LETZTE vor dem Achselzucken: jeder Zweig, der widerlegen kann,
+  // ist damit schon gelaufen. Diese Regel kann also nur "unbestimmt" nach "bewiesen" heben, nie
+  // ein Verwerfungsurteil kippen. Gemessen an den 3.366 Funden der Produktion: 45 Bauwerke fallen
+  // darunter, alle aus 0150/0154/0124 und alle ohne jede Strassenangabe in der Quelle.
+  //
+  // Die zweite Bedingung deckt den Rest ab: nennt das STRUKTURFELD eine brauchbare gekreuzte
+  // Strasse, gilt sie und nicht der Name. Drei Bauwerke im Bestand liegen genau so ("Wupper-
+  // Talbruecke Oehde" traegt die A1 und kreuzt die L58) — dort waere ein pauschales "wir fahren
+  // drueber" falsch, sobald die Route die L58 unterquert.
+  if (istBauwerk(obstacle) && kreuztKeineStrasse(obstacle?.name) && !(brauchbar && gekreuzt != null)) {
+    return "bewiesen"
+  }
+
   return "unbestimmt"
+}
+
+/**
+ * WELCHE METRIK GILT HIER — und damit: worauf muss der Disponent schauen (T-699)?
+ *
+ * Max, 06.09.2026: "vlt ne extra flag einbauen welche metrik relevant ist je nach strasse eben."
+ *
+ * Bei einem Bauwerk haengt die Antwort an der Lage, und die beiden Faelle schliessen einander aus:
+ *   - eine TRAGLAST oder eine Sperrung gilt dem, der DARUEBER faehrt. Wer unten durchfaehrt, den
+ *     geht sie nichts an.
+ *   - eine DURCHFAHRTSHOEHE gilt dem, der DARUNTER durchfaehrt. Wer oben drueberfaehrt, den
+ *     beruehrt sie nicht.
+ *
+ * Diese Angabe RAET NICHT die Lage — sie sagt nur, unter welcher Annahme die Zahl zutrifft. Genau
+ * das fehlte am Zweifels-Schild: "Streckenbezug unbestaetigt" liess offen, was der Disponent denn
+ * nun pruefen soll. Mit der Metrik daneben weiss er es.
+ *
+ * Sie steht bewusst NUR am unbestimmten Fund. Ist die Lage bewiesen, ist die Frage beantwortet und
+ * der Hinweis waere Rauschen.
+ */
+export function massgebendeLage(obstacle) {
+  if (!istBauwerk(obstacle)) return null
+  const attrs = obstacle?.attrs ?? {}
+  const hoehe = attrs.maxHoeheM != null
+  const last =
+    attrs.maxGewichtT != null || attrs.gesperrtKomplett != null ||
+    attrs.vollsperrung != null || attrs.sperrungArt != null
+  // Traegt es beides, sagt die Angabe nichts Trennendes und wir schweigen lieber, als zu waehlen.
+  if (hoehe && last) return null
+  if (hoehe) return "beim Unterqueren des Bauwerks"
+  if (last) return "beim Befahren des Bauwerks"
+  return null
 }
 
 /**
@@ -857,7 +913,18 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // (findingParams), es braucht keine Migration. Die Severity bleibt unangetastet: ob ein Fund
       // uns gilt, ist eine andere Frage als wie schlimm er waere, und die zweite darf die erste
       // nicht ueberschreiben.
-      if (zuord === "unbestimmt") verdict.detail = { ...(verdict.detail ?? {}), Zuordnung: "nicht nachweisbar" }
+      if (zuord === "unbestimmt") {
+        // T-699, Max: "vlt ne extra flag einbauen welche metrik relevant ist je nach strasse".
+        // Der Zweifel allein laesst den Disponenten ratlos zurueck. Er wird handhabbar, sobald
+        // dabeisteht, WORAUF die Zahl sich bezieht: eine Traglast gilt beim Befahren, eine
+        // Durchfahrtshoehe beim Unterqueren. Damit weiss er, wonach er vor Ort schauen muss.
+        const lage = massgebendeLage(obstacle)
+        verdict.detail = {
+          ...(verdict.detail ?? {}),
+          Zuordnung: "nicht nachweisbar",
+          ...(lage ? { Gilt: lage } : {}),
+        }
+      }
       // T-657: hat eine abgeleitete Angabe zu dieser Bewertung beigetragen, steht das am Fund.
       // Die Oberflaeche macht daraus ihr Zeichen; ohne diesen Vermerk saehe ein ergaenzter Wert
       // aus wie ein gemeldeter, und genau das darf er nicht.
