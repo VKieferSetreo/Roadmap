@@ -15,6 +15,7 @@ import {
   kannWiderlegtWerden,
   istBauwerk,
   istMassRestriktion,
+  massgebendeLage,
 } from "../src/engine/index.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
 import { kreuztKeineStrasse, strasseAusName } from "../src/external/osrm.js"
@@ -421,6 +422,31 @@ describe("zuordnung — Gewaesserbruecken (T-699)", () => {
   it("greift nicht bei Hindernissen, die keine Bruecke sind", () => {
     const b = { kategorie: "baustelle", attrs: { maxGewichtT: 40 }, name: "Mainbrücke Eddersheim" }
     expect(zuordnung(b, ctx, 10)).toBe("unbestimmt")
+  })
+})
+
+// T-699, zweiter Teil. Max: "vlt ne extra flag einbauen welche metrik relevant ist je nach
+// strasse eben." Die Feldliste ist aus dem Bestand gezaehlt; dieser Test haelt sie fest.
+describe("massgebendeLage — welche Metrik gilt (T-699)", () => {
+  // DER FALL, DER IN DER ERSTEN FASSUNG DURCHRUTSCHTE. grundsaetzlicheGstSperre ist mit 3.707
+  // Bauwerken das haeufigste Befahren-Feld ueberhaupt, fehlte aber in der Liste. Folge in der
+  // Probe: null Funde bekamen die Angabe. Der Datensatz hier ist woertlich aus der Produktion.
+  it("erkennt die GST-Sperre der BASt-Bruecken als Befahren-Aussage", () => {
+    const b = bauwerk({ getrageneStrasse: "B27", gekreuzteStrasse: "B27", grundsaetzlicheGstSperre: true })
+    expect(massgebendeLage(b)).toBe("beim Befahren des Bauwerks")
+  })
+
+  it("liest eine Durchfahrtshoehe als Unterqueren-Aussage", () => {
+    expect(massgebendeLage(bauwerk({ maxHoeheM: 3.8 }))).toBe("beim Unterqueren des Bauwerks")
+  })
+
+  it("schweigt, wenn beides dasteht — dann trennt die Angabe nichts", () => {
+    expect(massgebendeLage(bauwerk({ maxHoeheM: 3.8, maxGewichtT: 40 }))).toBe(null)
+  })
+
+  it("schweigt ohne Restriktion und bei allem, was kein Bauwerk ist", () => {
+    expect(massgebendeLage(bauwerk({ getrageneStrasse: "A7" }))).toBe(null)
+    expect(massgebendeLage({ kategorie: "baustelle", attrs: { maxGewichtT: 40 } })).toBe(null)
   })
 })
 

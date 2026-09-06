@@ -340,17 +340,28 @@ export function zuordnung(obstacle, ctx, km) {
  * Sie steht bewusst NUR am unbestimmten Fund. Ist die Lage bewiesen, ist die Frage beantwortet und
  * der Hinweis waere Rauschen.
  */
+// Die Liste ist am 06.09.2026 aus dem Bestand GEZAEHLT, nicht geraten. Alle attrs-Schluessel der
+// 16.519 aktiven Bauwerke, nach Haeufigkeit: maxHoeheM 12.534 · grundsaetzlicheGstSperre 3.707 ·
+// getrageneStrasse 3.296 · gekreuzteStrasse 1.231 · maxGewichtT 155 · gesperrtKomplett 105 ·
+// vollsperrung 99 · richtung 45 · sperrungArt 7 · restbreiteM 2 · maxLaengeM 2.
+//
+// grundsaetzlicheGstSperre stand in einer ersten Fassung NICHT hier, und die Folge war in der
+// Probe sofort sichtbar: null Funde bekamen die Angabe, obwohl 3.707 Bauwerke sie tragen. Es ist
+// das mit Abstand haeufigste Befahren-Feld — die BASt-Bruecken fuehren nichts anderes.
+const BEFAHREN_FELDER = [
+  "grundsaetzlicheGstSperre", "maxGewichtT", "gesperrtKomplett",
+  "vollsperrung", "sperrungArt", "restbreiteM", "maxLaengeM",
+]
+
 export function massgebendeLage(obstacle) {
   if (!istBauwerk(obstacle)) return null
   const attrs = obstacle?.attrs ?? {}
   const hoehe = attrs.maxHoeheM != null
-  const last =
-    attrs.maxGewichtT != null || attrs.gesperrtKomplett != null ||
-    attrs.vollsperrung != null || attrs.sperrungArt != null
+  const befahren = BEFAHREN_FELDER.some((f) => attrs[f] != null)
   // Traegt es beides, sagt die Angabe nichts Trennendes und wir schweigen lieber, als zu waehlen.
-  if (hoehe && last) return null
+  if (hoehe && befahren) return null
   if (hoehe) return "beim Unterqueren des Bauwerks"
-  if (last) return "beim Befahren des Bauwerks"
+  if (befahren) return "beim Befahren des Bauwerks"
   return null
 }
 
