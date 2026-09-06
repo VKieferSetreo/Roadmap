@@ -113,6 +113,76 @@ describe("Durchreichung", () => {
   })
 })
 
+// T-700. Der teuerste Fehler, den das Audit vom 06.09.2026 gefunden hat: der Vorfilter sah nur
+// den ANKERPUNKT eines Hindernisses. Bei einer Linie ist das der Anfangs- oder Mittelpunkt, und
+// die Linie laeuft von dort aus weiter — gemessen bei 13,3 Prozent aller Linien ueber einen
+// Kilometer, im Extremfall 43 km. Ergebnis: 172 Hindernisse in 42 von 67 Projekten lagen im
+// 20-m-Korridor und wurden nie geladen, 17 davon mit sicherer Restbreiten-Verletzung.
+//
+// Der Fall hier ist "20280_DO-Unna" im Kleinen: Anker weit noerdlich der Route, Linie laeuft
+// mitten hindurch. Vor dem Fix kam null zurueck.
+describe("Vorfilter sieht die Geometrie, nicht nur den Ankerpunkt (T-700)", () => {
+  const laden = async (obstacle) => {
+    const { analyze } = await import("../src/engine/index.js")
+    const db = {
+      query: async (text) => (text.includes("FROM obstacles") ? { rows: [obstacle] } : { rows: [] }),
+    }
+    // Route laeuft auf Laengengrad 9,5 von 50,40 nach 50,59.
+    const punkte = Array.from({ length: 20 }, (_, i) => ({ lat: 50.4 + i * 0.01, lng: 9.5 }))
+    return analyze({
+      db,
+      project: { id: null, routes: [{ id: "r1", name: "Test", points: punkte, source: "startziel" }], transport: TRANSPORT },
+      corridorM: 500,
+    })
+  }
+  const basis = {
+    id: "o2", kategorie: "baustelle", name: "Engstelle weit weg verankert", beschreibung: null,
+    strassen_ref: null, zustaendig: null, quelle: "0001",
+    attrs: { restbreiteM: 3.0 }, gueltig_von: null, gueltig_bis: null,
+  }
+
+  it("findet die Baustelle, deren Anker 20 km neben der Route liegt", async () => {
+    const out = await laden({
+      ...basis,
+      lat: 50.8, lng: 9.5, // Anker deutlich noerdlich des Streckenendes bei 50,59
+      // Von der Route weg nach Norden, also IN Reiserichtung digitalisiert. Die Richtung gehoert
+      // hier dazu: der Gegenfahrbahn-Filter (T-635) verwirft eine Linie, die im Korridor
+      // ueberwiegend gegen die Fahrtrichtung laeuft, und das taete er auch unabhaengig von der
+      // Bbox-Frage. Der naechste Test haelt genau das fest.
+      geom: { type: "LineString", coordinates: [[9.5, 50.5], [9.5, 50.7], [9.5, 50.8]] },
+    })
+    expect(out.findings.some((f) => f.titel?.includes("Engstelle"))).toBe(true)
+  })
+
+  // Beim Schreiben des Tests darueber zuerst falsch herum digitalisiert — und prompt kam null
+  // zurueck. Das ist kein Fehler, sondern der Gegenfahrbahn-Filter bei der Arbeit. Er steht hier,
+  // damit der naechste, der den Bbox-Filter anfasst, die beiden nicht verwechselt.
+  it("laesst den Gegenfahrbahn-Filter unberuehrt", async () => {
+    const out = await laden({
+      ...basis,
+      lat: 50.8, lng: 9.5,
+      geom: { type: "LineString", coordinates: [[9.5, 50.8], [9.5, 50.7], [9.5, 50.5]] },
+    })
+    expect(out.findings.some((f) => f.titel?.includes("Engstelle"))).toBe(false)
+  })
+
+  it("holt aber nichts herein, was auch mit seiner Geometrie danebenliegt", async () => {
+    const out = await laden({
+      ...basis,
+      lat: 50.8, lng: 9.5,
+      geom: { type: "LineString", coordinates: [[9.5, 50.8], [9.5, 50.75], [9.5, 50.7]] }, // bleibt oben
+    })
+    expect(out.findings.some((f) => f.titel?.includes("Engstelle"))).toBe(false)
+  })
+
+  it("behandelt ein Punkt-Hindernis ohne Geometrie unveraendert", async () => {
+    const drauf = await laden({ ...basis, lat: 50.5, lng: 9.5, geom: null })
+    expect(drauf.findings.some((f) => f.titel?.includes("Engstelle"))).toBe(true)
+    const daneben = await laden({ ...basis, lat: 50.8, lng: 9.5, geom: null })
+    expect(daneben.findings.some((f) => f.titel?.includes("Engstelle"))).toBe(false)
+  })
+})
+
 // Echte Attribut-Formen aus der Produktion. Beim ersten Anlauf pruefte die Einordnung
 // nur maxBreiteM — die Daten fuehren aber restbreiteM. Eine Baustelle mit 3,25 m
 // Restbreite galt damit fuer einen 4,0-m-Transport als "mit Auflagen fahrbar".

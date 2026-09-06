@@ -799,11 +799,24 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
 
   // v3: globale Hindernisse + Kunden-Einträge des Projekt-Tenants. Bbox-Vorfilter in SQL, exaktes
   // Korridor-Matching danach in JS — pro Route gegen ihre eigene Bbox (gleiche Funde wie zuvor).
+  //
+  // T-700: geprueft wird die Bbox der GEOMETRIE, nicht der Ankerpunkt. Der Unterschied ist kein
+  // Randfall: 13,3 Prozent aller Linien-Hindernisse reichen mehr als einen Kilometer ueber ihren
+  // Anker hinaus, und in einer Stichprobe von 500 Geometrien lag der Anker bei 88 ausserhalb der
+  // eigenen Box. Ueber alle 67 ausgewerteten Projekte gezaehlt fielen dadurch 172 Hindernisse aus
+  // dem Vorfilter, die im 20-m-Korridor liegen — 17 davon mit sicherer Restbreiten-Verletzung.
+  //
+  // Die vier Spalten sind generiert und dank COALESCE auf lat/lng IMMER gefuellt (Migration 076),
+  // deshalb steht hier kein COALESCE: die Bedingung bleibt ein schlichter Bereichsvergleich, und
+  // obstacles_geom_bbox_idx ist darauf nutzbar. Fuer ein Punkt-Hindernis ist die Box entartet
+  // (min == max == Anker), die Bedingung also genau die alte.
   const params = [project.tenantId ?? null]
   const boxSql = routeCtx
     .map((c) => {
       const i = params.push(c.bbox.minLat, c.bbox.maxLat, c.bbox.minLng, c.bbox.maxLng) - 4
-      return `(lat BETWEEN $${i + 1} AND $${i + 2} AND lng BETWEEN $${i + 3} AND $${i + 4})`
+      // Zwei Boxen ueberschneiden sich, wenn keine komplett neben der anderen liegt.
+      return `(geom_max_lat >= $${i + 1} AND geom_min_lat <= $${i + 2}
+               AND geom_max_lng >= $${i + 3} AND geom_min_lng <= $${i + 4})`
     })
     .join(" OR ")
   const exclIdx = params.push(AUSWERTUNG_AUSGESCHLOSSEN)
@@ -842,15 +855,34 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       lastYield = Date.now()
     }
   }
+  // T-700: die Bbox der GEOMETRIE je Hindernis, einmal fuer alle Routen. Ohne sie waere der
+  // SQL-Vorfilter oben wirkungslos — die Hindernisse kaemen aus der Datenbank und fielen hier
+  // wieder heraus, weil der Vergleich denselben Ankerpunkt-Fehler machte.
+  //
+  // geomPoints() und NICHT die Geometrie-Spalten aus SQL: die beiden muessen dieselbe Punktbasis
+  // haben wie das Matching darunter, sonst liesse dieser Filter etwas durch, das nachher gar
+  // nicht geprueft wird. geomPoints kennt Linien; bei Polygonen liefert es leer, und dann bleibt
+  // es beim Anker — genau wie das Matching selbst.
+  const obstacleBox = new Map()
+  for (const o of obstacles) {
+    const pts = geomPoints(o.geom)
+    if (pts.length) obstacleBox.set(String(o.id), bboxWithBuffer(pts, 0))
+  }
+
   for (const ctx of routeCtx) {
     const { route, geometry, cum, bbox, grid, refs } = ctx
     for (const rohObstacle of obstacles) {
       const { obstacle, ergaenzt } = mitAnreicherung(rohObstacle, abgeleitet.get(String(rohObstacle.id)))
       await maybeYield()
       // nur Hindernisse in der Bbox DIESER Route prüfen (inkl., wie BETWEEN zuvor).
+      const oBox = obstacleBox.get(String(rohObstacle.id))
       if (
-        obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
-        obstacle.lng < bbox.minLng || obstacle.lng > bbox.maxLng
+        oBox
+          // Zwei Boxen ueberschneiden sich, wenn keine komplett neben der anderen liegt.
+          ? (oBox.maxLat < bbox.minLat || oBox.minLat > bbox.maxLat ||
+             oBox.maxLng < bbox.minLng || oBox.minLng > bbox.maxLng)
+          : (obstacle.lat < bbox.minLat || obstacle.lat > bbox.maxLat ||
+             obstacle.lng < bbox.minLng || obstacle.lng > bbox.maxLng)
       ) continue
       // T-653: das Urteil ueber die Zuordnung faellt WEITER UNTEN, es braucht die km-Position und
       // die gibt es erst nach dem Matching. Hier steht nur noch ein billiges Vorab-Sieb: ist ein
