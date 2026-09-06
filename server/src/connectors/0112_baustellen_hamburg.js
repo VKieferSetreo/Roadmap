@@ -16,7 +16,7 @@ function pageUrl(startIndex) {
   return (
     `${BASE}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=de.hh.up:baustelle` +
     `&maxFeatures=${PAGE_SIZE}&startIndex=${startIndex}` +
-    `&OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1`
+    `&OUTPUTFORMAT=${encodeURIComponent("text/xml; subtype=gml/3.1.1")}`
   )
 }
 

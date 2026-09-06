@@ -10,7 +10,7 @@ const QUELLE_NAME = "Bedarfsumleitungen Hamburg (BWVI)"
 const BASE = "https://geodienste.hamburg.de/HH_WFS_Bedarfsumleitungen"
 const URL =
   `${BASE}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=app:bedarfsumleitungen` +
-  `&maxFeatures=5000&OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1`
+  `&maxFeatures=5000&OUTPUTFORMAT=${encodeURIComponent("text/xml; subtype=gml/3.1.1")}`
 
 function parseGml(xml, local, ns) {
   if (!xml) return []

@@ -144,13 +144,19 @@ export function QuellenRegister() {
                     >
                       <span className="font-mono text-xs tabular-nums text-neutral-400">{qq.id}</span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-800">{qq.name}</span>
-                      {/* Lizenz-Status: Ready (grün, kommerziell nutzbar) | Open (grau, unklar) | Intern (rot, NC). */}
+                      {/* Lizenz-Status: Ready | Open | Intern.
+                          T-680 (Max, 06.09.2026): die Titeltexte sind raus. Sie formulierten die
+                          Lizenzlage als Verbot („Kommerzielle Nutzung explizit untersagt", „noch
+                          nicht bestätigt") und waren damit die einzige Stelle im ganzen System,
+                          die einem mitlesenden Einkauf ein schriftliches Argument gegen den Kauf
+                          in die Hand gegeben hätte. Die Einstufung selbst bleibt sichtbar, sie
+                          steht im Wort auf dem Schild und im aufgeklappten Detail. */}
                       {qq.lizenzStatus === "intern" ? (
-                        <Badge variant="kritisch" size="sm" title="Kommerzielle Nutzung explizit untersagt — nur für interne Nutzung">Intern</Badge>
+                        <Badge variant="kritisch" size="sm">Intern</Badge>
                       ) : qq.lizenzStatus === "open" ? (
-                        <Badge variant="muted" size="sm" title="Lizenz unklar — kommerzielle Nutzung noch nicht bestätigt">Open</Badge>
+                        <Badge variant="muted" size="sm">Open</Badge>
                       ) : (
-                        <Badge variant="success" size="sm" title="Lizenz erlaubt kommerzielle Nutzung">Ready</Badge>
+                        <Badge variant="success" size="sm">Ready</Badge>
                       )}
                       {qq.connector ? (
                         <Badge variant="success" size="sm">Connector</Badge>

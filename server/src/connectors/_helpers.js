@@ -640,7 +640,21 @@ export async function getText(url, { timeoutMs = 30000, headers = {} } = {}) {
   const r = await fetchRetry(url, { timeoutMs, headers })
   if (!r) return null
   if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
-  try { return await r.text() } catch (err) { warnFetch(url, err?.name ?? "text-fail"); return null }
+  let text
+  try { text = await r.text() } catch (err) { warnFetch(url, err?.name ?? "text-fail"); return null }
+  // T-690: OGC-Dienste antworten auf eine fehlerhafte Anfrage mit HTTP 200 und einem
+  // ExceptionReport im Rumpf. Fuer den Aufrufer sah das aus wie ein erfolgreicher Abruf mit null
+  // Treffern — der Lauf meldete "0 Features", der Reconcile-Guard sprang an, und niemand sah einen
+  // Fehler. Genau so sind die beiden Hamburger Quellen seit dem 10.08.2026 stillschweigend
+  // ausgefallen. Ein Fehlerdokument ist ein Fehler, auch mit Statuszeile 200.
+  if (/<(?:ows:)?ExceptionReport\b/i.test(text.slice(0, 2000))) {
+    const grund = text.match(/exceptionCode="([^"]+)"/i)?.[1]
+      ?? text.match(/<(?:ows:)?ExceptionText>([^<]{0,120})/i)?.[1]
+      ?? "ExceptionReport"
+    warnFetch(url, `OGC-Fehler: ${grund.trim()}`)
+    return null
+  }
+  return text
 }
 
 /** Paginierter WFS/OGC-API-Voll-Abruf → GeoJSON-Features. Läuft bis der Bestand vollständig ist

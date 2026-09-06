@@ -192,12 +192,16 @@ export function FindingCard({
       {detail?.["Zuordnung"] && (
         <div className="mt-2 flex flex-col gap-1">
           {detail?.["Zuordnung"] ? (
+            /* T-689 (Max fragte am 06.09.2026, was das heißt): „Zuordnung nicht nachweisbar" ist
+               die Sprache der Engine, nicht die des Disponenten. Gemeint ist immer dieselbe eine
+               Frage, und die steht jetzt auf dem Schild: liegt das Bauwerk auf der Strecke, oder
+               führt es darüber oder darunter hinweg. Der Tooltip sagt dazu, was daraus folgt. */
             <span
-              title="Es ließ sich nicht belegen, ob dieser Fund zur gefahrenen Strecke gehört. Er wird gezeigt, statt still verworfen zu werden."
+              title="Es ließ sich nicht belegen, ob dieses Bauwerk wirklich auf der gefahrenen Strecke liegt — es könnte auch darüber oder darunter hinwegführen und damit einer anderen Straße gehören. Der Fund wird trotzdem gezeigt und in der Bewertung mitgezählt: ihn wegzulassen wäre gefährlicher, als ihn zu prüfen."
               className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200"
             >
               <HelpCircle className="h-3 w-3 shrink-0" aria-hidden />
-              Zuordnung {detail["Zuordnung"]}
+              Streckenbezug unbestätigt
             </span>
           ) : null}
         </div>

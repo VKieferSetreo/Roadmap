@@ -78,7 +78,7 @@ export const brueckenbauwerkeHamburgConnector = {
     for (const { ft, kat } of TYPEN) {
       const url =
         `${BASE}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=${ft}` +
-        `&maxFeatures=${MAX_FEATURES}&OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1`
+        `&maxFeatures=${MAX_FEATURES}&OUTPUTFORMAT=${encodeURIComponent("text/xml; subtype=gml/3.1.1")}`
       const xml = await getText(url, { timeoutMs })
       const feats = parseGml(xml, ft)
       log(`${ft}: ${feats.length} Bauwerke`)
