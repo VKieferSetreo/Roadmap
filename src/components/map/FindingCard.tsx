@@ -192,7 +192,7 @@ export function FindingCard({
       {detail?.["Zuordnung"] && (
         <div className="mt-2 flex flex-col gap-1">
           {detail?.["Zuordnung"] ? (
-            /* T-689 (Max fragte am 06.09.2026, was das heißt): „Zuordnung nicht nachweisbar" ist
+            /* T-692 (Max fragte am 06.09.2026, was das heißt): „Zuordnung nicht nachweisbar" ist
                die Sprache der Engine, nicht die des Disponenten. Gemeint ist immer dieselbe eine
                Frage, und die steht jetzt auf dem Schild: liegt das Bauwerk auf der Strecke, oder
                führt es darüber oder darunter hinweg. Der Tooltip sagt dazu, was daraus folgt. */

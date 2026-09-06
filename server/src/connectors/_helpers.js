@@ -642,7 +642,7 @@ export async function getText(url, { timeoutMs = 30000, headers = {} } = {}) {
   if (!r.ok) { warnFetch(url, `HTTP ${r.status}`); return null }
   let text
   try { text = await r.text() } catch (err) { warnFetch(url, err?.name ?? "text-fail"); return null }
-  // T-690: OGC-Dienste antworten auf eine fehlerhafte Anfrage mit HTTP 200 und einem
+  // T-689: OGC-Dienste antworten auf eine fehlerhafte Anfrage mit HTTP 200 und einem
   // ExceptionReport im Rumpf. Fuer den Aufrufer sah das aus wie ein erfolgreicher Abruf mit null
   // Treffern — der Lauf meldete "0 Features", der Reconcile-Guard sprang an, und niemand sah einen
   // Fehler. Genau so sind die beiden Hamburger Quellen seit dem 10.08.2026 stillschweigend
