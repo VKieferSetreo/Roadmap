@@ -91,6 +91,14 @@
 
 /* ── Leaflet-Politur ───────────────────────────────────────────────────────── */
 
+/* Ukraine-Fähnchen aus der Attribution nehmen (Max, 06.09.2026: "damit weniger politisch wird").
+   Leaflet setzt es seit 1.9 fest in sein Attribution-Präfix; das Ausblenden über diese Klasse ist
+   der von Leaflet selbst dafür vorgesehene Weg. Die Nennung "Leaflet | © OpenStreetMap" bleibt
+   unangetastet — sie ist Lizenzpflicht, nicht Dekoration. Gilt für alle Karten der App. */
+.leaflet-attribution-flag {
+  display: none !important;
+}
+
 /* Popups im App-Look statt Leaflet-Default */
 .leaflet-popup-content-wrapper {
   border-radius: 0.75rem;
