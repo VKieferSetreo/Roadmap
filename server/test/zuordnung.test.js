@@ -463,4 +463,34 @@ describe("strasseAusName — Ueberfuehrung (T-676)", () => {
     // Hier traegt das Bauwerk die A2 selbst, die Reihenfolge im Namen sagt es.
     expect(strasseAusName("BW 657, Üf. BAB A 2 ü. Gemeindestr. in km 260,883/")).toMatchObject({ oben: "A2" })
   })
+
+  // T-699. "Gruenbruecke ueber die A 9" sagt dasselbe wie "UEF ueber die A 9", nur ohne das Wort,
+  // an dem NAME_UEF haengt — und ohne Nummer vor dem "ueber", an der NAME_UEBER haengt. Beides
+  // zusammen liess diese Namen durchfallen. Gemessen: 203 Bauwerke im Bestand, alle von
+  // {null,null} auf {null,unten}, KEINE einzige Umkehr von oben nach unten.
+  it("liest 'X über <Nummer>' auch ohne Ueberfuehrungswort als gekreuzte Strasse", () => {
+    expect(strasseAusName("GRÜNBRÜCKE/Grünbrücke über die B10")).toMatchObject({ oben: null, unten: "B10" })
+    expect(strasseAusName("Grünbrücke über die A 9/Brücke")).toMatchObject({ oben: null, unten: "A9" })
+    expect(strasseAusName("FUßGÄNGERBRÜCKE ÜBER DIE A 4 ZUM LOBECENTER")).toMatchObject({ unten: "A4" })
+    expect(strasseAusName("Radwegbrücke über die BAB A 9/BW 7")).toMatchObject({ unten: "A9" })
+  })
+
+  // DIE SICHERUNG. Ohne den Trenner-Schnitt nahm die Zeile die erste Nummer im GANZEN Rest, und
+  // der traegt oft eine zweite, ganz andere Angabe. Diese vier drehten die Lage um; jetzt
+  // schweigen sie. Gemessen: 26 der urspruenglich 229 Treffer waren genau solche Faelle.
+  it("nimmt NICHT die Nummer hinter einem Trenner — die meint etwas anderes", () => {
+    // Die L37 TRAEGT die Bruecke, unterquert wird die B87n.
+    expect(strasseAusName("Brücke über die B87n im Zuge der L 37/")).toMatchObject({ unten: null })
+    // Ueberquert wird ein Bach; die B182 traegt.
+    expect(strasseAusName("Brücke über die Tauschke/B 182, BW 7")).toMatchObject({ unten: null })
+    expect(strasseAusName("Brücke über die DBAG/B169, OU Senftenberg, Brücke über die DBAG")).toMatchObject({ unten: null })
+    expect(strasseAusName('Forstweg über WL "Saale" neben B 240 in km 3,010/')).toMatchObject({ unten: null })
+  })
+
+  // Und die zweite Sicherung: steht vorne eine Nummer, ist der Name mehrdeutig. Aus einer
+  // mehrdeutigen Angabe darf kein Verwerfen folgen.
+  it("schweigt, wenn vor dem 'über' schon eine Nummer steht", () => {
+    expect(strasseAusName("Brücke A6 Äste A-T u. G-I / Overfly / über A6")).toMatchObject({ oben: "A6", unten: null })
+    expect(strasseAusName("Brücke A3 über Main - Mainbrücke Randersacker/FR Frankfurt")).toMatchObject({ oben: "A3" })
+  })
 })

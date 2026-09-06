@@ -56,6 +56,27 @@ const NAME_KOPF = new RegExp(String.raw`^\s*(?:BAB\s*)?(?:Br(?:ü|ue)cke|BW|Talb
 // Was hinter dem Ueberfuehrungswort steht, noch einmal an "ueber" geteilt: davor liegt oben,
 // dahinter unten. Nicht gierig, damit ein zweites "ueber" im Namen die Teilung nicht verschiebt.
 const NAME_UEF_UEBER = /^(.*?)\s+(?:ü|ue)ber\s+(?:die|den|das|dem|der|d\.)?\s*(.*)$/i
+// Steht IRGENDWO in diesem Stueck Text eine klassifizierte Nummer? Anders als NAME_UEBER, das
+// die Nummer direkt vor dem "ueber" verlangt, fragt das hier nur "kommt eine vor" — als Sperre
+// gegen mehrdeutige Namen, nicht zum Erkennen.
+const REF_IRGENDWO = new RegExp(String.raw`\b(?:BAB\s*)?${REF_ROH}\b`, "i")
+
+/**
+ * Nur das Stueck HINTER dem "ueber", das noch zum Ueberquerten gehoert (T-699).
+ *
+ * Der Grund ist gemessen. Ohne diesen Schnitt nimmt normRoadRefWeit die erste Nummer im GANZEN
+ * Rest, und der traegt im Bestand regelmaessig eine zweite, voellig andere Angabe:
+ *   "Bruecke ueber die B87n im Zuge der L 37"   -> las L37 als unterquert. Die L37 ist die
+ *                                                  GETRAGENE, unterquert wird die B87n.
+ *   "Bruecke ueber die Tauschke/B 182, BW 7"    -> las B182 als unterquert. Ueberquert wird ein
+ *                                                  Bach; die B182 traegt die Bruecke.
+ *   "Bruecke ueber die DBAG/B169, OU Senftenberg" -> dasselbe mit einer Bahnstrecke.
+ *   "Wirtschaftsweg ueber Geh-/Radweg (seitl. B236)" -> "seitlich" ist gar keine Lageangabe.
+ *   "Forstweg ueber WL Saale neben B 240 in km 3,010" -> "neben" ebenso wenig.
+ * Alle fuenf faenden nach dem Schnitt keine Nummer mehr und schweigen, statt die Lage umzudrehen.
+ */
+const TRENNER = /\s*[/,(]|\s+(?:im zuge|i\.\s?z\.|neben|in km|bei km|zwischen)\b/i
+const bisZumTrenner = (s) => String(s ?? "").split(TRENNER)[0]
 
 /**
  * Ueberquert dieses Bauwerk etwas, das GAR KEINE STRASSE ist (T-699)?
@@ -140,6 +161,25 @@ export function strasseAusName(name) {
   if (ueber) {
     const oben = normRoadRefWeit(ueber[1])
     if (oben) return { oben, unten: normRoadRefWeit(ueber[2]) }
+  }
+  // OHNE UEBERFUEHRUNGSWORT UND OHNE NUMMER DAVOR (T-699). "Gruenbruecke ueber die A 9" sagt
+  // dasselbe wie "UEF ueber die A 9", nur ohne das Wort, an dem NAME_UEF haengt — und weil vor
+  // dem "ueber" keine Nummer steht, greift auch NAME_UEBER nicht. Beides zusammen liess diese
+  // Namen bis hier durchfallen: {oben: null, unten: null}, also "unbestimmt".
+  //
+  // Gemessen: 50 von 133 Bauwerks-Funden mit "ueber <Nummer>" im Namen sind genau das, und alle
+  // stehen heute als Auflage in Auswertungen, ueber deren Fahrbahn sie in Wahrheit hinwegfuehren.
+  // Beispiele aus der Produktion: "GRUENBRUECKE/Gruenbruecke ueber die B10", "79UE1 neu Bruecke
+  // i.Z.d. Verb.-Weges Loesau-Nellschuetz/Wegbruecke ueber die BAB A 9".
+  //
+  // DIE BEDINGUNG "keine Nummer davor" IST DIE SICHERUNG: steht vorne eine, ist der Name
+  // mehrdeutig ("Bruecke A6 Aeste A-T u. G-I / Overfly / ueber A6" nennt dieselbe Autobahn zwei
+  // mal), und aus einer mehrdeutigen Angabe darf kein Verwerfen folgen. Verworfen wird ohnehin
+  // erst in zuordnung() Z. 234, und dort nur mit gefuelltem Ortsfenster.
+  const ohneWort = t.match(NAME_UEF_UEBER)
+  if (ohneWort && !REF_IRGENDWO.test(ohneWort[1])) {
+    const unten = normRoadRefWeit(bisZumTrenner(ohneWort[2]))
+    if (unten) return { oben: null, unten }
   }
   const kopf = t.match(NAME_KOPF)
   return { oben: kopf ? normRoadRefWeit(kopf[1]) : null, unten: null }
