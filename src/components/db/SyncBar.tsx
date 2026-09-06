@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AlertTriangle, Database, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { api } from "@/api/roadmap"
-import { OHNE_FRISCHE_DATEN } from "@/lib/sourceHealth"
+import { OHNE_FRISCHE_DATEN, zaehltFuerIndikator } from "@/lib/sourceHealth"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { useContextStore } from "@/store/context"
@@ -139,11 +139,10 @@ export function SyncBar() {
   const running = job.data?.status === "running" || start.isPending
   const { pct, phaseLabel } = progress(job.data)
   const quellen = status.data?.quellen ?? []
-  // T-715: „aktiv" heißt Connector UND im Register nicht stillgelegt. Stillgelegte Quellen plant
-  // der Worker seit T-694 nicht mehr ein, ihr letzter Status friert ein — sie gehören weder in den
-  // Warn-Zähler noch in den Nenner. Gemessen am 05.09.2026: 3 der 4 gemeldeten „nicht erreichbar"
-  // (0121, 0151, 0159) waren stillgelegt und hingen dauerhaft auf „warn".
-  const aktiveQuellen = quellen.filter((q) => q.connector && q.aktiv)
+  // T-733: dieselbe Regel wie im Indikator, und zwar buchstäblich dieselbe Funktion. Hier stand
+  // die Bedingung vorher ein zweites Mal ausgeschrieben; eine Mutationsprobe hat gezeigt, dass
+  // der ursprüngliche T-715-Fehler allein in dieser Kopie die gesamte Testsuite grün ließ.
+  const aktiveQuellen = quellen.filter(zaehltFuerIndikator)
   // Import-abgeleitetes Warnsignal: beim letzten automatischen Abruf (3×/Tag) ohne frische Daten.
   // T-679: zählte nur "error" und blieb deshalb still, während sechs Quellen seit Wochen nichts
   // lieferten — die endeten auf "warn" und "partial", nicht auf "error".

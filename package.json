@@ -6,6 +6,8 @@
   "description": "Roadmap-Frontend — Setreo Corporate Design Starter (Vite + React + TS + Tailwind + shadcn/ui).",
   "scripts": {
     "dev": "vite",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build": "tsc --noEmit -p tsconfig.json && vite build",
     "build:share": "vite build --config vite.config.share.ts",
     "vendor:share": "npm run build:share && rm -rf server/public/share && mkdir -p server/public/share && cp -R dist-share/. server/public/share/ && mv server/public/share/share.html server/public/share/index.html",
@@ -39,6 +41,9 @@
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.59.16",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^22.8.6",
     "@types/proj4": "^2.5.6",
@@ -52,6 +57,7 @@
     "eslint": "^9.13.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
@@ -59,6 +65,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.61.0",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^2.1.9"
   }
 }

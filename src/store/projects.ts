@@ -498,7 +498,8 @@ export const useProjectStore = create<ProjectStore>()(
         set((s) => {
           const cur = s.analysis[id]
           if (!cur?.error) return s
-          const { error: _weg, ...rest } = cur
+          const rest = { ...cur }
+          delete rest.error
           return { analysis: { ...s.analysis, [id]: rest } }
         }),
 

@@ -26,7 +26,7 @@ jobs:
       - run: npm test
 
   frontend:
-    name: Frontend (lint + tsc + build)
+    name: Frontend (test + lint + tsc + build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +36,11 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
+      # T-733: bis zum 06.09.2026 lief hier KEIN Test — alle 69 Testdateien lagen unter server/,
+      # geprüft wurde das Frontend nur mit lint, tsc und build. Die grüne Testzahl im Backend
+      # sagte über die Oberfläche nichts aus, und genau dort steht der Kunde. Vor lint, weil ein
+      # fehlgeschlagener Test die interessantere Meldung ist als eine Formatierungsrüge.
+      - run: npm test
       - run: npm run lint
       # build = tsc --noEmit + vite build; Git-SHA ins Bundle (X-FE-Version, Audit-Trail welcher Stand läuft)
       - run: npm run build

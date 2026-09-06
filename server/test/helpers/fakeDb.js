@@ -927,6 +927,11 @@ export function createFakeDb() {
     if (sql.startsWith("SELECT id FROM quellen LIMIT 1")) {
       return ok(state.quellen.slice(0, 1).map((q) => ({ id: q.id })))
     }
+    // T-694 (Worker-Scheduling) und T-732 (manueller Sync) fragen beide danach, welche Quellen
+    // stillgelegt sind. Beide Wege muessen dieselbe Antwort bekommen — genau das war der Fehler.
+    if (sql.startsWith("SELECT id FROM quellen WHERE aktiv = false")) {
+      return ok(state.quellen.filter((q) => q.aktiv === false).map((q) => ({ id: q.id })))
+    }
     if (sql.startsWith("UPDATE quellen SET letzter_abruf = now() WHERE id = $1")) {
       const row = state.quellen.find((q) => q.id === params[0])
       if (!row) return ok([], 0)

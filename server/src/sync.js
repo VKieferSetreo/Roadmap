@@ -123,6 +123,33 @@ async function fetchConnectorDurations(db) {
 
 async function runJob(job, { db, fetchImpl, env, connectors, paceMs = 0 }) {
   try {
+    // T-732: stillgelegte Quellen auch hier ueberspringen. Das Worker-Scheduling tut das seit
+    // T-694, dieser Weg nicht — und damit beantworteten zwei Stellen dieselbe Frage verschieden:
+    // der Knopf "Alle Quellen aktualisieren" importierte weiter, was das Register als stillgelegt
+    // fuehrt, und konnte dessen Zeilen wieder auf aktiv setzen. Beobachtet am 06.09.2026 bei einem
+    // manuellen Lauf: 0151 und 0159 meldeten "Vollbestand-Feed lieferte 0 Eintraege", obwohl beide
+    // in Migration 073 stillgelegt wurden.
+    //
+    // FAIL-OPEN wie im Worker: scheitert die Abfrage, laeuft der Sync ueber alle Quellen wie
+    // bisher. Ein Datenbankhaenger darf den Aktualisieren-Knopf nicht wirkungslos machen.
+    let geplant = connectors
+    try {
+      const { rows } = await db.query("SELECT id FROM quellen WHERE aktiv = false")
+      const inaktiv = new Set(rows.map((r) => String(r.id)))
+      if (inaktiv.size) {
+        geplant = connectors.filter((c) => !inaktiv.has(String(c.quelleId)))
+        const weggelassen = connectors.length - geplant.length
+        // job.total korrigieren, sonst zeigt der Fortschrittsbalken eine Gesamtzahl, die nie
+        // erreicht wird. startSync setzt ihn synchron, bevor diese Abfrage laufen kann.
+        if (weggelassen > 0) {
+          job.total = geplant.length
+          job.uebersprungen = weggelassen
+        }
+      }
+    } catch {
+      // absichtlich stumm: der Sync laeuft dann ueber alle Quellen, das ist das alte Verhalten.
+    }
+    connectors = geplant
     const durMap = await fetchConnectorDurations(db)
     // Pace-Pause zählt in die ETA mit, sonst läge die Schätzung deutlich zu niedrig.
     const expected = (c) => (durMap.get(c.quelleId) ?? 8) + paceMs / 1000
