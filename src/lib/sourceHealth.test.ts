@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { createElement, type ReactNode } from "react"
 import { renderHook, waitFor } from "@testing-library/react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query"
 import type { SyncSourceStatus, SyncStatus } from "@/types/domain"
 
 // vi.hoisted, weil die vi.mock-Fabrik läuft, bevor normale const-Deklarationen initialisiert sind.
@@ -64,6 +64,29 @@ async function health(quellen: SyncSourceStatus[]) {
   const { result } = renderHook(() => useSourceHealth(), { wrapper: wrapperFuer(client) })
   await waitFor(() => expect(client.getQueryData(["sync-status"])).toBeDefined())
   return result
+}
+
+/** Wartet auf einen Zustand, der eintreten MUSS, statt auf eine pauschale Pause (T-735).
+ *
+ *  Ein Tempomacher-Abruf im selben QueryClient durchläuft einen VOLLSTÄNDIGEN Zyklus: Mount →
+ *  queryFn → aufgelöste Antwort → Re-Render. Ist der durch, hätte ein aktiver Sync-Status-Abruf
+ *  längst stattgefunden — die Wartezeit richtet sich damit nach der Maschine statt nach einer
+ *  geratenen Millisekundenzahl.
+ *
+ *  Vorher stand an beiden Stellen `await new Promise((r) => setTimeout(r, 20))`. GEMESSEN am
+ *  07.09.2026 mit einem Wegwerf-Test gegen den absichtlich aktivierten Hook: useQuery stößt den
+ *  Abruf SYNCHRON beim Mount an. Direkt nach renderHook, ohne jedes await, stehen bei aktiviertem
+ *  Hook 1 Aufruf und fetchStatus "fetching", bei intaktem Code 0 Aufrufe und "idle". Die 20 ms
+ *  haben den Beweis also nie getragen — sie sahen nur so aus. Genau das ist die Gefahr: hängt der
+ *  Abruf eines Tages nicht mehr synchron am Mount, belegt eine feste Pause gar nichts mehr, und
+ *  zu kurz gewartet heißt hier GRÜN statt rot. Falsches Grün meldet sich nie von selbst. */
+async function abrufzyklusAbwarten(client: QueryClient) {
+  const tempomacher = vi.fn().mockResolvedValue("fertig")
+  const { result } = renderHook(
+    () => useQuery({ queryKey: ["t735-tempomacher"], queryFn: tempomacher }),
+    { wrapper: wrapperFuer(client) },
+  )
+  await waitFor(() => expect(result.current.data).toBe("fertig"))
 }
 
 beforeEach(() => {
@@ -148,8 +171,13 @@ describe("useSourceHealth — wann überhaupt gefragt wird", () => {
   it("fragt den Sync-Status im externen Kunden-Login gar nicht erst ab", async () => {
     storeState.extern = true
     statusMock.mockResolvedValue(antwort([quelle({ id: "x", letzterStatus: "error" })]))
-    const { result } = renderHook(() => useSourceHealth(), { wrapper: wrapperFuer(neuerClient()) })
-    await new Promise((r) => setTimeout(r, 20))
+    const client = neuerClient()
+    const { result } = renderHook(() => useSourceHealth(), { wrapper: wrapperFuer(client) })
+    await abrufzyklusAbwarten(client)
+    // Positiver Zustand zuerst: die Abfrage ist im Cache ANGELEGT und steht auf idle — sie wurde
+    // registriert und bewusst nicht gefahren. Diese Aussage hängt an keiner Uhr (bei aktivem Hook
+    // steht hier "fetching", gemessen direkt nach dem Mount). Erst dann die Nicht-Aufruf-Behauptung.
+    expect(client.getQueryState(["sync-status"])?.fetchStatus).toBe("idle")
     expect(statusMock).not.toHaveBeenCalled()
     expect(result.current).toEqual({ unreachable: 0, total: 0 })
   })
@@ -157,9 +185,14 @@ describe("useSourceHealth — wann überhaupt gefragt wird", () => {
   it("fragt im Demo-Modus nicht ab", async () => {
     storeState.mode = "demo"
     statusMock.mockResolvedValue(antwort([quelle({ id: "x", letzterStatus: "error" })]))
-    renderHook(() => useSourceHealth(), { wrapper: wrapperFuer(neuerClient()) })
-    await new Promise((r) => setTimeout(r, 20))
+    const client = neuerClient()
+    const { result } = renderHook(() => useSourceHealth(), { wrapper: wrapperFuer(client) })
+    await abrufzyklusAbwarten(client)
+    expect(client.getQueryState(["sync-status"])?.fetchStatus).toBe("idle")
     expect(statusMock).not.toHaveBeenCalled()
+    // Der Demo-Modus hat keinen Server, der antworten könnte: der Indikator bleibt bei 0/0 und
+    // meldet nicht etwa „alles erreichbar" oder „alles tot".
+    expect(result.current).toEqual({ unreachable: 0, total: 0 })
   })
 })
 

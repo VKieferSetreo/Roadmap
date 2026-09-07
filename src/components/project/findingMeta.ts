@@ -58,7 +58,16 @@ export const FALLBACK_KAT_META = { label: "Hindernis", icon: MapPin } as const
 
 /** Sichere Meta-Auflösung: kennt die Kategorie nicht → Fallback statt undefined. */
 export function katMeta(kategorie: string): { label: string; icon: LucideIcon } {
-  return KATEGORIE_META[kategorie as FindingKategorie] ?? FALLBACK_KAT_META
+  // Object.hasOwn statt blossem Zugriff (T-734, 07.09.2026): bei "__proto__", "constructor" oder
+  // "toString" liefert der Objektzugriff das PROTOTYP-Objekt. Das ist truthy, also greift der
+  // ?? -Fallback nicht, und `meta.icon` bleibt undefined — genau der React-#130-Renderabsturz,
+  // den der Fallback verhindern soll. Heute nicht erreichbar (obstacles.kategorie und
+  // findings.kategorie tragen einen CHECK auf die 11 zulaessigen Werte, gemessen 0 Zeilen
+  // ausserhalb), aber der Schutz soll halten, was sein Kommentar verspricht, und nicht nur
+  // fuer die Faelle, an die jemand gerade gedacht hat.
+  return Object.hasOwn(KATEGORIE_META, kategorie)
+    ? KATEGORIE_META[kategorie as FindingKategorie]
+    : FALLBACK_KAT_META
 }
 
 // ── Stammdaten-Darstellung (Karten-Popups) ────────────────────────────────────
@@ -134,6 +143,75 @@ export function attrLabel(key: string): string {
   return ATTR_LABEL[key]?.label ?? key
 }
 
+// ── T-711: „Restbreite" nur, solange der Wert eine Engstelle beschreiben kann ──
+
+/**
+ * Grenze, oberhalb derer eine gemeldete Breite keine Engstelle mehr beschreibt.
+ *
+ * GEMESSEN am 07.09.2026 an der Produktion: 2.822 aktive Hindernisse tragen ein numerisches
+ * restbreiteM — Median 4,50 m, p75 6,75 m, p90 8,00 m, Maximum 17,50 m. 1.080 davon
+ * (38,3 Prozent) liegen bei 6,00 m oder darüber, 1.066 allein aus der Autobahn-API (2.300 Werte,
+ * Median 5,85 m). Dort ist der Wert die Breite der freigehaltenen Fahrstreifengruppe — fachlich
+ * etwas anderes als die Restbreite einer Engstelle. In den Fund-Details stehen 922 Zeilen
+ * „Restbreite", 516 davon über 6,00 m, und alle 516 sind Warnungen — keine einzige ist kritisch.
+ *
+ * WARUM 6,00 m und nicht eine Fahrstreifen-Arithmetik: die Grenze ist die größte im Bestand
+ * erfasste TRANSPORTBREITE. Über 82 Projekte: Median 4,35 m, p90 5,00 m, Maximum 6,00 m. Ein Wert
+ * oberhalb davon kann keinen dieser Transporte mehr einengen, er trägt die Aussage „Engstelle"
+ * also nachweislich nicht. Nachgerechnet: kein einziger Fund im Bestand hat eine Restbreite ab
+ * 6,00 m, die kleiner als seine eigene Transportbreite wäre (0 von 564).
+ *
+ * WARUM STRIKT GRÖSSER und nicht „ab 6,00 m": bei genau 6,00 m kann ein 6,00-m-Transport exakt
+ * passen, und diesen Gleichstand wertet die Engine als ausreichend (rules.js: kritisch erst bei
+ * Restbreite < Transportbreite). 48 Funde tragen genau 6,00 m, einer davon neben einer
+ * Transportbreite von 6,00 m — das ist eine echte Engstelle ohne jede Reserve und muss
+ * „Restbreite" heißen. Im Zweifel bleibt die sicherheitsrelevante Lesart stehen, deshalb
+ * schneidet die Grenze darüber statt darauf.
+ *
+ * Reine ANZEIGE. Wert und Bewertung bleiben unangetastet — die Engine rechnet weiter mit der Zahl.
+ */
+export const ENGSTELLE_GRENZE_M = 6.0
+
+/** Das ehrliche Wort für einen Wert oberhalb der Grenze: nicht die Enge, sondern die freie Fahrbahn.
+ *  Die Zeile wird NICHT weggelassen — eine weggelassene Maßangabe ist eine verschwiegene Angabe,
+ *  und der Wert steht so in der Quelle. Sie bekommt nur den Namen, der stimmt. */
+export const FREIE_FAHRBAHN_LABEL = "Freie Fahrbahnbreite"
+
+/** Meterzahl aus einem Roh- oder Anzeigewert („14.5", „14,5", „14,50 m"). null, sobald der Wert
+ *  keine reine Maßangabe ist — dann bleibt das Label unangetastet, statt etwas zu behaupten.
+ *  Bewusst OHNE Tausendertrennung: „1.493,0 m" ergibt null. So ein Wert ist keine Breite (der
+ *  größte gemessene Wert im Bestand ist 17,50 m), und wo wir ihn nicht deuten können, schweigen wir. */
+function meterWert(v: unknown): number | null {
+  if (typeof v === "number") return Number.isFinite(v) ? v : null
+  if (typeof v !== "string") return null
+  const m = /^\s*(-?\d+(?:[.,]\d+)?)\s*m?\s*$/.exec(v)
+  if (!m) return null
+  const n = Number(m[1].replace(",", "."))
+  return Number.isFinite(n) ? n : null
+}
+
+/** „Restbreite" → „Freie Fahrbahnbreite", sobald der Wert über der Grenze liegt.
+ *
+ *  Die Regel hängt am LABEL, nicht am Schlüssel — dasselbe Wort entsteht aus drei Quellen:
+ *  attrs.restbreiteM und attrs.maxBreiteM (beide über ATTR_LABEL) sowie dem Detail-Schlüssel
+ *  „Restbreite", den ruleBaustelle und ruleSperrung schreiben. Jeder ANDERE Schlüssel bleibt
+ *  unberührt, auch wenn seine Zahl groß ist: „Transportbreite 6,50 m", „Länge der Maßnahme 740 m"
+ *  und „Durchfahrtshöhe 14,00 m" sind keine Restbreiten und dürfen sich um kein Zeichen ändern. */
+export function breitenLabel(label: string, wert: unknown, transportbreiteM?: number | null): string {
+  if (label !== "Restbreite") return label
+  const m = meterWert(wert)
+  if (m == null) return label
+  // DIE GRENZE RICHTET SICH NACH DEM TRANSPORT, nicht nur nach einer Konstanten. Die feste
+  // 6,00-m-Schwelle allein war zu grob: sie ist die größte HEUTE im Bestand erfasste
+  // Transportbreite, und daraus folgt nichts über den nächsten Kunden. Führe jemand 6,50 m breit,
+  // stünde an einer Restbreite von 6,20 m „Freie Fahrbahnbreite" — an einem Fund, den die Engine
+  // im selben Atemzug als KRITISCH einstuft, weil 6,20 m eben nicht für 6,50 m reichen. Die
+  // Transportbreite steht in demselben detail-Objekt, das hier ohnehin durchlaufen wird; sie zu
+  // ignorieren hieße, die Antwort neben der Frage liegen zu lassen.
+  const grenze = Math.max(ENGSTELLE_GRENZE_M, transportbreiteM ?? 0)
+  return m > grenze ? FREIE_FAHRBAHN_LABEL : label
+}
+
 /** Detail-Zeilen eines Funds ohne die INTERNEN Schlüssel (T-664/F2).
  *
  *  Die Karte filterte diese Schlüssel bisher als Einzige (FindingCard), PDF, CSV und die
@@ -152,7 +230,23 @@ export const INTERNE_DETAIL_SCHLUESSEL = (k: string): boolean => k === "Ergänzt
 export function sichtbaresDetail<T>(
   detail: Record<string, T> | undefined | null,
 ): [string, T][] {
-  return Object.entries(detail ?? {}).filter(([k]) => !INTERNE_DETAIL_SCHLUESSEL(k))
+  // T-711: eine KI-markierte Zeile behält ihren Schlüssel und damit ihr Herkunftszeichen.
+  // FindingCard sucht die zu markierende Zeile über `detail.__ki.includes(k)` — also über GENAU
+  // diesen Schlüssel. Würde er hier umbenannt, fände die Karte die Zeile nicht mehr und das ✦
+  // verschwände STILL; das ist die Fehlerklasse, die in diesem Projekt schon dreimal aufgeschlagen
+  // ist. Gemessen am 07.09.2026: 0 von 922 Restbreiten-Zeilen sind KI-markiert, und die
+  // Anreicherung hat restbreiteM überhaupt nur 13-mal geliefert, alle unter 6,00 m. Die Ausnahme
+  // kostet also heute keine einzige Umbenennung und verhindert trotzdem, dass morgen eine Angabe
+  // wegfällt: lieber das alte Wort als eine verlorene Herkunft.
+  const kiRoh = detail?.__ki
+  const kiMarkiert = new Set<string>(Array.isArray(kiRoh) ? kiRoh.map(String) : [])
+  // Die Transportbreite steht als eigene Detail-Zeile im selben Objekt ("Transportbreite 4,20 m").
+  // Sie ist der Maßstab, an dem sich entscheidet, ob eine gemeldete Breite noch eine Engstelle
+  // beschreibt — siehe breitenLabel.
+  const transportbreite = meterWert((detail as Record<string, unknown> | undefined)?.["Transportbreite"])
+  return Object.entries(detail ?? {})
+    .filter(([k]) => !INTERNE_DETAIL_SCHLUESSEL(k))
+    .map(([k, v]) => [kiMarkiert.has(k) ? k : breitenLabel(k, v, transportbreite), v] as [string, T])
 }
 
 function formatAttrValue(key: string, v: number | string | boolean): string {
@@ -188,7 +282,11 @@ export function attrEntries(
   kiFelder: string[] = [],
 ): { label: string; value: string; ausKi: boolean }[] {
   return Object.entries(attrs ?? {}).map(([k, v]) => ({
-    label: attrLabel(k),
+    // T-711: das Label kennt hier den Wert (attrLabel allein kann das nicht entscheiden, es sieht
+    // nur den Schlüssel). Anders als im Fund-Detail geht auf diesem Weg nichts verloren — `ausKi`
+    // hängt am ROHSCHLÜSSEL (restbreiteM), nicht am angezeigten Wort. Das Herkunftszeichen bleibt
+    // also auch an einer umbenannten Zeile stehen, deshalb greift die Umbenennung hier immer.
+    label: breitenLabel(attrLabel(k), v),
     value: formatAttrValue(k, v as number | string | boolean),
     ausKi: kiFelder.includes(k),
   }))
