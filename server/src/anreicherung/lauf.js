@@ -281,12 +281,28 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
   // Kein Bibliotheks-Pool, sondern feste Arbeiter, die sich aus derselben Liste bedienen: so ist
   // immer die volle Zahl in Arbeit, auch wenn ein Punkt viel laenger braucht als der naechste.
   let naechster = 0
+  // T-736: ein MODELLAUSFALL haelt den ganzen Lauf an, statt ihn durchrauschen zu lassen.
+  //
+  // Vorher schluckte das .catch hier jeden Fehler und zaehlte den Punkt als gesehen. Bei einem
+  // Netzausfall zur GPU-Maschine hiess das: 9.425 Punkte pro Minute, alle als "bearbeitet"
+  // gezaehlt. Die Fertig-Marke bleibt zwar aus (sie steht am Ende von reichereAn, hinter dem
+  // Wurf) — die Punkte sind also nicht verloren —, aber der Lauf meldet am Ende einen
+  // Riesenerfolg, der keiner war, und das Zeitfenster ist verbraucht.
+  // Ein Fehler an EINEM Punkt (kaputter Datensatz, DB-Hicks) bleibt dagegen wie bisher folgenlos.
+  let ausfall = null
   const arbeiter = Array.from({ length: Math.max(1, gleichzeitig) }, async () => {
     while (true) {
+      if (ausfall) return
       const i = naechster++
       if (i >= rows.length) return
       const o = rows[i]
-      const r = await reichereAn(db, o, { modell, rufeModell, rollen }).catch(() => ({ geschrieben: 0, verworfen: 0 }))
+      let r
+      try {
+        r = await reichereAn(db, o, { modell, rufeModell, rollen })
+      } catch (err) {
+        if (err?.name === "ModellNichtErreichbar") { ausfall = err; return }
+        r = { geschrieben: 0, verworfen: 0 }
+      }
       zahl.gesehen++
       if (r.uebersprungen) zahl.uebersprungen++
       zahl.geschrieben += r.geschrieben ?? 0
@@ -295,6 +311,9 @@ export async function laufeUeberBestand(db, { modell, rufeModell, rollen = null,
     }
   })
   await Promise.all(arbeiter)
+  // Nach oben durchreichen, damit der Aufrufer es MELDET statt still zu enden. Der Wurf kommt
+  // erst hier, nachdem alle Arbeiter angehalten haben — sonst liefen sie im Hintergrund weiter.
+  if (ausfall) throw ausfall
   return { ...zahl, rest: rows.length === Number(grenze) }
 }
 

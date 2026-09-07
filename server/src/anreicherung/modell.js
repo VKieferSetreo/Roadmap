@@ -11,6 +11,18 @@
 // ZUGANGSDATEN kommen ausschließlich aus der Umgebung. Kein Schlüssel im Repo, keiner in Tests,
 // keiner in einer Commit-Nachricht.
 
+/**
+ * Das Modell war nicht erreichbar (T-736). EIGENE Klasse, damit der Aufrufer sie von einer
+ * leeren Antwort unterscheiden kann — eine leere Antwort heißt "gelesen, nichts gefunden" und
+ * darf den Punkt abhaken, ein Ausfall darf das auf keinen Fall.
+ */
+export class ModellNichtErreichbar extends Error {
+  constructor(grund) {
+    super(`Modell nicht erreichbar: ${grund}`)
+    this.name = "ModellNichtErreichbar"
+  }
+}
+
 const OLLAMA = "http://100.85.216.95:11434/v1"
 const OPENROUTER = "https://openrouter.ai/api/v1"
 
@@ -63,11 +75,28 @@ export function createModell(konfig = modellKonfig(), { fetchImpl = globalThis.f
   return async function rufeModell(prompt, modellName = null) {
     // Ein Modell nach dem anderen, bis eines antwortet. Bei einem einzelnen Namen (lokal) ist
     // das genau ein Durchgang.
+    let letzterGrund = "kein Kandidat hat geantwortet"
+    // Hat IRGENDEIN Kandidat technisch geantwortet — auch mit leerem Inhalt? Dann ist das eine
+    // gueltige Aussage ("gelesen, nichts gefunden") und kein Ausfall. Ohne diese Unterscheidung
+    // haette der Wurf unten auch die stummen, aber erreichbaren Modelle getroffen und den Lauf
+    // grundlos angehalten.
+    let hatGeantwortet = false
     for (const kandidat of modellName ? [modellName] : kette) {
-      const antwort = await einAufruf(prompt, kandidat)
+      const { antwort, grund } = await einAufruf(prompt, kandidat)
       if (antwort != null) return antwort
+      if (grund) letzterGrund = `${kandidat}: ${grund}`
+      else hatGeantwortet = true
     }
-    return null
+    if (hatGeantwortet) return null
+    // ERST HIER WERFEN, nicht beim einzelnen Kandidaten (T-736): die Kette ist genau dafuer da,
+    // dass ein Limit oder ein Ausfall beim ersten Modell zum zweiten fuehrt. Gemessen am
+    // 31.08.2026 liefen die ersten beiden OpenRouter-Modelle regelmaessig in ein 429, das dritte
+    // antwortete — wer beim ersten wirft, verschenkt die Kette.
+    //
+    // Wenn aber KEINES antwortet, ist das ein Ausfall und keine leere Antwort. Der Unterschied
+    // entscheidet, ob der Lauf den Punkt als "gelesen, nichts gefunden" abhakt: ohne diesen Wurf
+    // waeren bei einem Netzausfall 77.629 Punkte in acht Minuten faelschlich fertig markiert.
+    throw new ModellNichtErreichbar(letzterGrund)
   }
 
   async function einAufruf(prompt, modellName) {
@@ -92,11 +121,15 @@ export function createModell(konfig = modellKonfig(), { fetchImpl = globalThis.f
           messages: [{ role: "user", content: prompt }],
         }),
       })
-      if (!res.ok) return null
+      // Der EINZELNE Aufruf bleibt still und meldet nur, WORAN er gescheitert ist — die Kette
+      // oben entscheidet, ob daraus ein Ausfall wird. Ein 429 beim ersten Modell ist kein
+      // Ausfall, sondern der Grund, warum es die Kette gibt.
+      if (!res.ok) return { antwort: null, grund: `HTTP ${res.status}` }
       const d = await res.json()
-      return d?.choices?.[0]?.message?.content ?? null
-    } catch {
-      return null
+      return { antwort: d?.choices?.[0]?.message?.content ?? null, grund: null }
+    } catch (err) {
+      // Netzfehler, Zeitueberschreitung, abgebrochene Verbindung.
+      return { antwort: null, grund: String(err?.message ?? err) }
     }
   }
 }

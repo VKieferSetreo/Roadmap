@@ -20,7 +20,8 @@
 # ABLAUF, und jeder Schritt kann fehlschlagen, ohne den naechsten zu verhindern:
 #   1. Workstation wecken (nur wenn sie schlaeft) und warten, bis Ollama antwortet
 #   2. Modell laden, damit der Erreichbarkeitstest des Laufs nicht in sein Zeitlimit rennt
-#   3. Anreicherungslauf im eigenen Container — er nimmt sich nur, was noch keine Fertig-Marke hat
+#   3. Anreicherungslauf im eigenen Container — erst die neuen Punkte, dann die, deren Quelltext
+#      sich seit dem letzten Lesen geaendert hat, und mit der Restzeit ein Stueck Altbestand
 #      (vier Stroeme statt acht: das 14B belegt 15 der 24 GB, mehr passt nicht sinnvoll daneben)
 #   4. Herunterfahren, IMMER (trap), auch bei Abbruch
 #
@@ -53,9 +54,26 @@ OLLAMA_LOKAL="http://localhost:11434"
 # der Lauf hat einen ganzen Nachmittag Zeit, niemand wartet auf ihn.
 MODELL="${NACHTLAUF_MODELL:-qwen2.5:14b-instruct}"
 LOG="${NACHTLAUF_LOG:-$HOME/roadmap-nachtlauf.log}"
-# Harte Obergrenze. Laeuft der Lauf laenger, ist etwas faul — dann lieber abbrechen und die Karte
-# ausmachen, als sie bis in die Nacht heizen zu lassen. Der naechste Lauf macht dort weiter.
-MAX_MIN="${NACHTLAUF_MAX_MIN:-300}"
+# DIE LETZTE SICHERUNG, NICHT DIE ARBEITSGRENZE (Max, 07.09.2026: "sauber durchlaufen, kein
+# cutoff" — aber "NICHT EINFACH DAS TIMEOUT ENTFERNEN").
+#
+# Bis zum 07.09.2026 stand hier 300, und das war die Grenze, an der die Arbeit endete: der Lauf
+# rechnete an dem Tag gleichmaessig 12 Punkte pro Minute, 3.600 Punkte in 298 Minuten, und wurde
+# um 15:11 mitten im Bestand abgeschnitten. Eine feste Dauer kann den langen Lauf nicht vom
+# haengenden unterscheiden — sie trifft beide gleich.
+#
+# Wer das kann, ist der Fortschrittswaechter in anreicherungLauf.mjs: er bricht ab, wenn seit 15
+# Minuten kein einziger Punkt mehr fertig geworden ist (Messung dort). Diese Zahl hier greift nur
+# noch, wenn der Prozess so festhaengt, dass nicht einmal mehr ein Timer feuert — deshalb ist sie
+# jetzt grosszuegig. 600 Minuten ab 12:10 enden um 22:10; die Karte heizt also nicht durch die
+# Nacht, und ein normaler Tag (gemessen rund 2.900 neue und ueberholte Punkte, dazu 1.000 aus dem
+# Altbestand: zusammen etwa 5,5 Stunden) bleibt weit darunter.
+MAX_MIN="${NACHTLAUF_MAX_MIN:-600}"
+# Gnadenfrist nach dem SIGTERM des Zeitlimits, bevor hart geschossen wird. Muss laenger sein als
+# ein Block: der Lauf rechnet seinen angefangenen Block noch zu Ende (gemessen 8 Minuten fuer 100
+# Punkte), und ihn dabei abzuschiessen hiesse, genau die Arbeit wegzuwerfen, auf die man gerade
+# gewartet hat. `timeout` im Image ist BusyBox — geprueft, `-k` mit Minutenangabe versteht es.
+KILL_NACH="${NACHTLAUF_KILL_NACH:-15m}"
 SSH="ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 
 sage() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
@@ -336,7 +354,10 @@ LOG_ZEILEN_VOR=$(wc -l < "$LOG" 2>/dev/null | tr -d ' ')
 sudo -n docker run --rm --name anreicherung-nacht --network setreo-net \
   -e DATABASE_URL="$DB" -e OLLAMA_URL="$OLLAMA/v1" -e ANREICHERUNG_WEG=lokal \
   -e ANREICHERUNG_MODELL="$MODELL" -e GLEICHZEITIG="${NACHTLAUF_PARALLEL:-4}" -e BLOCK=100 \
-  "$IMAGE" timeout "${MAX_MIN}m" node scripts/anreicherungLauf.mjs >>"$LOG" 2>&1
+  -e ANREICHERUNG_STILL_MIN="${NACHTLAUF_STILL_MIN:-15}" \
+  -e ANREICHERUNG_ALTBESTAND="${NACHTLAUF_ALTBESTAND:-1000}" \
+  -e ANREICHERUNG_VOLLBESTAND="${NACHTLAUF_VOLLBESTAND:-0}" \
+  "$IMAGE" timeout -k "$KILL_NACH" "${MAX_MIN}m" node scripts/anreicherungLauf.mjs >>"$LOG" 2>&1
 ERGEBNIS=$?
 sage "Anreicherung beendet (Code $ERGEBNIS)."
 tail -3 "$LOG" | sed 's/^/    /'
@@ -361,12 +382,22 @@ printf '%s\n' "$LAUF_AUSZUG" | grep -q 'Bestand durchgelaufen' && BESTAND_DURCH=
 # Lauf bis zum Abschuss gerechnet hat, steht in der Anreicherungstabelle und will in den Bestand.
 if [ "$ERGEBNIS" -ne 0 ]; then
   case "$ERGEBNIS" in
+    # 2 und 3 sind die eigenen Ausgaenge des Laufs (anreicherungLauf.mjs). Bis zum 07.09.2026
+    # endete er IMMER mit 0, auch wenn er mitten im Bestand abgeschnitten wurde — an dem Tag
+    # meldete dieses Skript "Nachtlauf fertig" fuer einen Lauf, der 3.600 von 8.644 Punkten
+    # geschafft hatte. Ein Lauf, der nicht fertig geworden ist, darf nicht wie einer aussehen,
+    # der fertig ist.
+    2)   GRUND="abgeschnitten, es bleibt etwas offen (siehe 'Noch offen' im Log)" ;;
+    3)   GRUND="haengt — seit ${NACHTLAUF_STILL_MIN:-15} min kein Punkt mehr fertig geworden" ;;
+    # 124 gibt coreutils' timeout zurueck; das Image bringt BusyBox mit, und die meldet 143.
+    # Beide Faelle stehen hier, damit ein Wechsel des Basis-Images nicht still durchrutscht.
     124) GRUND="Zeitlimit von ${MAX_MIN} min gerissen (timeout)" ;;
-    # 137 ist SIGKILL von aussen: Deploy, `docker stop` (10 s Gnadenfrist, dann hart) oder der
-    # OOM-Killer. Im Log steht davor "SIGTERM — halte nach diesem Block an", der Lauf wollte also
-    # sauber aufhoeren und durfte nicht mehr.
-    137) GRUND="hart abgeschossen (Code 137/SIGKILL) — Deploy, docker stop oder OOM-Killer" ;;
-    143) GRUND="durch SIGTERM beendet (Code 143)" ;;
+    # 137 ist SIGKILL von aussen: Deploy, `docker stop` (10 s Gnadenfrist, dann hart), der
+    # OOM-Killer — oder unser eigenes `timeout -k $KILL_NACH`, wenn der Lauf auf das SIGTERM des
+    # Zeitlimits nicht mehr reagiert hat. Im Log steht davor "SIGTERM — halte nach diesem Block
+    # an", der Lauf wollte also sauber aufhoeren und durfte nicht mehr.
+    137) GRUND="hart abgeschossen (Code 137/SIGKILL) — Deploy, docker stop, OOM-Killer oder die Gnadenfrist von $KILL_NACH" ;;
+    143) GRUND="vom Zeitlimit (${MAX_MIN} min) beendet, ohne selbst aufzuhoeren (Code 143)" ;;
     *)   GRUND="Rueckgabewert $ERGEBNIS" ;;
   esac
   sage "ACHTUNG: die Anreicherung ist nicht sauber zu Ende gekommen — $GRUND."

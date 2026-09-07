@@ -115,6 +115,38 @@ jaNein.typ = "boolean" // siehe spanne(): der Typ haengt an der Formprobe, nicht
 const EINSPURIG = "nur ein(en|e)?\\s+(fahrstreifen|fahrspur|spur)|auf einen fahrstreifen|abwechselnd frei|einspurig"
 
 /**
+ * Ein BENANNTER oder GEZAEHLTER Fahrstreifen, der gesperrt ist, IST eine Teilsperrung — nie eine
+ * Vollsperrung. Das Wort "teilweise" kommt in solchen Meldungen nicht vor, und daran scheiterte
+ * das Feld.
+ *
+ * Der Anlass ist ein Widerspruch im eigenen Haus, gemessen am 07.09.2026: derselbe Beleg,
+ * derselbe Punkt, derselbe Lauf. An der A19 Rostock ("… — linker Fahrstreifen gesperrt,
+ * Markierungsarbeiten") nahm der Riegel "linker Fahrstreifen gesperrt" als Beleg fuer
+ * sperrungArt = fahrstreifensperrung UND fuer spurenGesperrt = 1 an — und verwarf mit demselben
+ * Satz teilsperrung = ja als "passt nicht zum Feld". Das System sagte also mit einer Hand, ein
+ * Fahrstreifen sei gesperrt und die Art sei eine Fahrstreifensperrung, und mit der anderen, dass
+ * die Strasse teilweise gesperrt ist, sei unbelegt.
+ *
+ * Gemessen am 07.09.2026: 43 solcher Belege bei spurenGesperrt und 29 bei sperrungArt
+ * angenommen, 37 von 127 teilsperrung-Verwerfungen desselben Tages daran gescheitert.
+ * Ueber den ganzen Bestand: 222 von 1.218 Verwerfungen mit dem Grund "passt nicht zum Feld
+ * teilsperrung" tragen diese Form (18,2 Prozent), 220 davon mit dem Wert "ja".
+ *
+ * GEGENPROBE, ueber denselben Bestand: KEINER dieser 222 Belege nennt zugleich eine Vollsperrung
+ * (0 Treffer auf vollsperr|voll gesperrt|komplett gesperrt|in beiden Richtungen gesperrt), und
+ * KEINER betrifft nur den Geh-/Radweg (0 Treffer). Die beiden "nein"-Faelle bleiben verworfen,
+ * denn ein Nein braucht weiterhin eine ausdrueckliche Verneinung im Beleg.
+ *
+ * Die Fenster sind gemessen, nicht geschaetzt: 15 Zeichen deckt "rechte Fahrstreifen IN DER NACHT
+ * gesperrt" (13), 12 Zeichen deckt "Tageweise Sperrung SUEDLICHE Fahrspur" (10). Enger (12/8)
+ * verliert zwei echte Faelle, weiter braucht keiner — und eng gehalten trifft das Muster nicht
+ * "Sperrung des Gehwegs, Fahrstreifen frei" (13 Zeichen) oder "Fahrstreifen frei, Fahrbahn
+ * gesperrt" (16). Das \b vor "sperrung" haelt "Vollsperrung" bewusst heraus.
+ */
+const SPUR_GESPERRT =
+  "(fahrstreifen|fahrspur|(ü|ue)berholspur)[^.;]{0,15}gesperrt|\\bsperrung[^.;]{0,12}(fahrstreifen|fahrspur)"
+
+/**
  * Ein gesperrter oder eingeengter GEH- ODER RADWEG ist fuer einen Schwertransport bedeutungslos.
  * Als Fahrbahneinschraenkung gelesen ist er eine harte Falschaussage — genau der Fehler, der am
  * 31.08.2026 in Produktion gefunden wurde ("Sperrung des Geh-/Radweges" als Vollsperrung
@@ -201,7 +233,7 @@ export const laengeInKm = (beleg) => /\d\s*km\b/i.test(String(beleg ?? ""))
 
 const stichwort = {
   vollsperrung: /vollsperr|voll gesperrt|komplett gesperrt|gesperrt/i,
-  teilsperrung: new RegExp(`teilsperr|teilweise gesperrt|teilw\\. gesperrt|halbseit|einseitig|${EINSPURIG}`, "i"),
+  teilsperrung: new RegExp(`teilsperr|teilweise gesperrt|teilw\\. gesperrt|halbseit|einseitig|${EINSPURIG}|${SPUR_GESPERRT}`, "i"),
   halbseitig: /halbseit|einseitig|wechselseitig|(nord|süd|sued|ost|west)seite|eine\s+(fahrbahn|seite)|abwechselnd/i,
   fahrbahnVerengt: new RegExp(`verengt|verengung|einengung|eingeengt|schmaler|fahrstreifen.*(weg|entf)|${EINSPURIG}`, "i"),
   einbahnstrasse: /einbahn/i,
@@ -364,7 +396,22 @@ export const FAHRBAHN_FELDER = new Set([
 const VERWANDT = [
   ["maxGewichtT", "verkehrsverbotLkwT", "maxAchslastT"],
   ["maxBreiteM", "restbreiteM"],
-  ["vollsperrung", "teilsperrung", "sperrungArt"],
+  // teilsperrung STEHT HIER NICHT MEHR (T-736, 07.09.2026). Die Gruppe gilt als beantwortet,
+  // sobald EIN Mitglied gesetzt ist — und seit der Riegel teilsperrung fuer benannte
+  // Fahrstreifen oeffnet, wird sie deutlich haeufiger als Erstes gefuellt. Gemessen: 47 Punkte
+  // bekaemen jetzt teilsperrung, davon 47 ohne vollsperrung und 19 ohne beide anderen Felder.
+  //
+  // Die Kette waere still und teuer: teilsperrung landet ueber spieleEin in attrs, damit gilt die
+  // Gruppe als beantwortet, und bei jedem KUENFTIGEN Lauf wird nach vollsperrung und sperrungArt
+  // nicht mehr gefragt. Eskaliert eine Baustelle spaeter von "linker Fahrstreifen gesperrt" zu
+  // "Vollsperrung", wird der Punkt zwar wieder Kandidat (der Quelltext-Hash aendert sich), aber
+  // die entscheidende Frage stellt niemand mehr — und beide Felder liest die Engine:
+  // rules.js nutzt sperrungArt im Geh-/Radweg-Guard, index.js fuehrt vollsperrung und
+  // sperrungArt in BEFAHREN_FELDER.
+  //
+  // vollsperrung und sperrungArt bleiben verwandt: die schliessen einander tatsaechlich aus.
+  // teilsperrung dagegen ist eine ANZEIGE-Aussage und kein Ersatz fuer die beiden.
+  ["vollsperrung", "sperrungArt"],
 ]
 
 /**

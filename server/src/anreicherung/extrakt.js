@@ -278,7 +278,11 @@ export function leseAntwort(text) {
  * @returns {{gueltig: Array, verworfen: Array, rohAntwort: string|null}}
  */
 export async function extrahiere(quelltext, { modell, felder, rufeModell, schwierig = null }) {
-  const antwort = await rufeModell(bauePrompt(quelltext, felder, schwierig), modell).catch(() => null)
+  // KEIN .catch(() => null) mehr (T-736): das machte aus einem Modellausfall eine leere Antwort,
+  // und der Aufrufer hakte den Punkt daraufhin als "gelesen, nichts gefunden" ab. Ein Ausfall
+  // gehoert nach oben durchgereicht, damit der Lauf anhalten kann, statt den Bestand in acht
+  // Minuten faelschlich abzuarbeiten. Ein ModellNichtErreichbar fliegt hier also bewusst durch.
+  const antwort = await rufeModell(bauePrompt(quelltext, felder, schwierig), modell)
   const angaben = leseAntwort(antwort)
   if (!angaben) return { gueltig: [], verworfen: [], rohAntwort: antwort }
 

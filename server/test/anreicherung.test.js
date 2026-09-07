@@ -6,7 +6,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { pruefeAngabe, leseAntwort, extrahiere, bauePrompt, FELDER, quelleHash, istOrtsfeld } from "../src/anreicherung/extrakt.js"
 import { quelltextVon, offeneFelder, laufeUeberBestand, reichereAn, AUSSICHTSLOS, quellHashVon } from "../src/anreicherung/lauf.js"
-import { modellKonfig, createModell } from "../src/anreicherung/modell.js"
+import { modellKonfig, createModell, ModellNichtErreichbar } from "../src/anreicherung/modell.js"
 import { ladeAnreicherung, mitAnreicherung, anreicherungsVermerk, kiZeilen } from "../src/anreicherung/lesen.js"
 import { spieleEin, nimmZurueck, typisiere } from "../src/anreicherung/einspielen.js"
 import { nachlauf, nachImport } from "../src/anreicherung/nachlauf.js"
@@ -124,12 +124,24 @@ describe("extrahiere — Modell-Doppel", () => {
     }
   })
 
-  it("uebersteht ein Modell, das wirft", async () => {
-    const r = await extrahiere(TEXT, {
-      modell: "d", felder: ["maxHoeheM"],
-      rufeModell: vi.fn().mockRejectedValue(new Error("Zeit abgelaufen")),
-    })
-    expect(r.gueltig).toEqual([])
+  // T-736 (07.09.2026) kehrt diese Erwartung um, und der Grund ist gemessen.
+  //
+  // Hier stand: ein werfendes Modell wird verschluckt, extrahiere liefert ein leeres Ergebnis.
+  // Der Aufrufer kann das dann nicht von "gelesen, nichts gefunden" unterscheiden — und schreibt
+  // die Fertig-Marke mit dem aktuellen Quelltext-Hash. Nachgemessen: ohne antwortendes Modell
+  // laeuft die Schleife mit 9.425 Punkten pro Minute durch, der gesamte aktive Bestand von
+  // 77.629 Punkten waere in rund acht Minuten faelschlich als bearbeitet abgehakt. Ein
+  // Netzausfall zur GPU-Maschine haette so die Arbeit von Monaten still entwertet.
+  //
+  // Ein Ausfall gehoert also nach oben, damit der Lauf anhalten kann. Eine LEERE Antwort bleibt
+  // dagegen eine gueltige Aussage — das prueft der Test darueber und der bleibt, wie er war.
+  it("reicht einen Modellausfall nach oben durch, statt ihn als leeres Ergebnis auszugeben", async () => {
+    await expect(
+      extrahiere(TEXT, {
+        modell: "d", felder: ["maxHoeheM"],
+        rufeModell: vi.fn().mockRejectedValue(new ModellNichtErreichbar("Zeit abgelaufen")),
+      }),
+    ).rejects.toThrow(/nicht erreichbar/i)
   })
 })
 
@@ -210,9 +222,20 @@ describe("modellKonfig", () => {
     expect(gesehen[1].auth).toBe("Bearer geheim")
   })
 
-  it("gibt null statt zu werfen, wenn der Dienst nicht antwortet", async () => {
+  // T-736: hier stand "gibt null statt zu werfen". Genau das war der Fehler — null ist auch die
+  // leere Antwort, und der Lauf hakte den Punkt daraufhin als bearbeitet ab.
+  it("wirft, wenn KEIN Modell der Kette antwortet", async () => {
     const rufe = createModell({ name: "m", basis: "http://weg/v1", schluessel: null }, {
       fetchImpl: async () => { throw new Error("kein Netz") },
+    })
+    await expect(rufe("x")).rejects.toThrow(/nicht erreichbar/i)
+  })
+
+  // DIE GEGENPROBE, und sie ist die wichtigere: eine leere ANTWORT ist kein Ausfall. Das Modell
+  // hat gelesen und nichts gefunden — eine gueltige Aussage, die den Punkt abhaken darf.
+  it("gibt null zurueck, wenn das Modell antwortet, aber nichts liefert", async () => {
+    const rufe = createModell({ name: "m", basis: "http://x/v1", schluessel: null }, {
+      fetchImpl: async () => ({ ok: true, json: async () => ({ choices: [{ message: { content: null } }] }) }),
     })
     await expect(rufe("x")).resolves.toBeNull()
   })
@@ -1073,6 +1096,59 @@ describe("Aus dem Replay der 786 aufgezeichneten Verwerfungen", () => {
     }
     // Die Meldung selbst bleibt ein gültiger Beleg.
     expect(pruefeAngabe({ feld: "vollsperrung", wert: "ja", beleg: "Bezeichnung: Vollsperrung" }, text).ok).toBe(true)
+  })
+})
+
+// Am 07.09.2026 an 2.898 Verwerfungen nachgezaehlt: die drei groessten Gruende liegen richtig
+// (672 Rahmenzitate, 507 Belege ausserhalb des Quelltexts — davon 450 unser eigener attrs-Block in
+// anderer Schreibweise —, 169 erfundene "3,5 t" an einem Zeichen 250). EINE Stelle war falsch, und
+// zwar ein Widerspruch im eigenen Haus: derselbe Beleg wurde bei spurenGesperrt und sperrungArt
+// angenommen und bei teilsperrung verworfen. Begruendung und Gegenprobe: felder.js SPUR_GESPERRT.
+describe("Ein gesperrter Fahrstreifen IST eine Teilsperrung", () => {
+  // Echter Fall aus der Produktionsdatenbank, 07.09.2026: Anreicherungszeile 2428471, A19 Rostock.
+  // Der Beleg "linker Fahrstreifen gesperrt" stuetzte im selben Lauf spurenGesperrt = 1 und
+  // sperrungArt = fahrstreifensperrung — und wurde bei teilsperrung als "passt nicht zum Feld"
+  // verworfen. Die drei muessen dieselbe Antwort geben.
+  it("nimmt den Beleg an, der bei spurenGesperrt und sperrungArt schon galt", () => {
+    const t = "A19 Rostock Richtung Dreieck Wittstock/Dosse in Höhe Wittstock — linker Fahrstreifen gesperrt, Markierungsarbeiten"
+    const b = "linker Fahrstreifen gesperrt"
+    expect(pruefeAngabe({ feld: "spurenGesperrt", wert: "1", beleg: b }, t).ok).toBe(true)
+    expect(pruefeAngabe({ feld: "sperrungArt", wert: "fahrstreifensperrung", beleg: b }, t).ok).toBe(true)
+    expect(pruefeAngabe({ feld: "teilsperrung", wert: "ja", beleg: b }, t).ok).toBe(true)
+  })
+
+  // Die uebrigen Formen, die im Bestand vorkommen — alle mit dem Wert "ja" aufgezeichnet.
+  it("kennt die gezaehlte und die umgekehrte Form", () => {
+    for (const b of [
+      "rechter Fahrstreifen gesperrt", "1 Fahrstreifen gesperrt", "2 rechte Fahrstreifen gesperrt",
+      "Sperrung eines Fahrstreifens", "Sperrung einer Fahrspur", "wechselweise Sperrung eines Fahrstreifens",
+      "rechte Fahrstreifen in der Nacht gesperrt", "Tageweise Sperrung südliche Fahrspur",
+    ]) {
+      expect(pruefeAngabe({ feld: "teilsperrung", wert: "ja", beleg: b }, b).ok, b).toBe(true)
+    }
+  })
+
+  // GEGENPROBE. Keiner der 222 Belege im Bestand nennt zugleich eine Vollsperrung, und das Muster
+  // darf auch keinen finden: sonst wuerde aus einer gesperrten Strasse eine halb offene.
+  it("macht aus einer Vollsperrung keine Teilsperrung", () => {
+    for (const b of [
+      "Vollsperrung", "Vollsperrung zw. AS Ha-Hohenlimburg u. AK Hagen", "gesperrt",
+      "Richtungsfahrbahn gesperrt", "Fahrbahnerneuerung", "Halteverbot",
+      // Die Fenster sind eng genug, dass der Fahrstreifen das OBJEKT der Sperrung bleiben muss.
+      "Sperrung des Gehwegs, Fahrstreifen frei", "Fahrstreifen frei, Fahrbahn gesperrt",
+    ]) {
+      const r = pruefeAngabe({ feld: "teilsperrung", wert: "ja", beleg: b }, b)
+      expect(r.ok, b).toBe(false)
+    }
+  })
+
+  // Zwei der 222 Zeilen tragen ein "nein". Die bleiben verworfen — ein Nein braucht weiterhin eine
+  // ausdrueckliche Verneinung, sonst belegt der Satz das Gegenteil der Aussage.
+  it("laesst ein Nein nicht mit dem Ja-Beleg durch", () => {
+    const b = "rechter Fahrstreifen gesperrt"
+    const r = pruefeAngabe({ feld: "teilsperrung", wert: "nein", beleg: b }, b)
+    expect(r.ok).toBe(false)
+    expect(r.grund).toMatch(/belegt ein Ja/)
   })
 })
 
