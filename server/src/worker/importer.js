@@ -59,6 +59,47 @@ const dist2 = (a, b) => (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2
 
 // Fehlende Einträge der Quelle deaktivieren (nur Vollbestand-Feeds, nur was nicht
 // mehr gesehen wurde). Manuelle Quelle 0100 ist nie betroffen (eigene quellen_id).
+/**
+ * Ist der Feed dauerhaft geschrumpft statt nur unvollstaendig (T-693)?
+ *
+ * Der Reconcile-Guard schuetzt gegen den stillen Teilbestand: liefert eine Quelle plotzlich nur
+ * einen Bruchteil, darf das nicht den halben Bestand deaktivieren. Er kann aber nicht zwischen
+ * "einmal kaputt" und "ab jetzt kleiner" unterscheiden — und im zweiten Fall blockiert er fuer
+ * immer. Genau das ist bei 0118 passiert: 203 Laeufe in Folge geblockt, waehrend 229 von 321
+ * Eintraegen seit zwei Monaten tot im Bestand liegen.
+ *
+ * Das Unterscheidungsmerkmal ist die STABILITAET ueber mehrere Laeufe. Ein Teilbestand schwankt
+ * (0146 lieferte einmal 17 statt 738 Records) oder erholt sich beim naechsten Lauf. Ein
+ * geschrumpfter Feed liefert verlaesslich dieselbe kleinere Menge.
+ *
+ * Bedingungen, bewusst eng:
+ *   - die letzten FUENF abgeschlossenen Laeufe waren alle 'partial' (also alle geblockt),
+ *   - und die gefundene Menge schwankt in diesem Fenster inklusive des aktuellen Laufs um
+ *     hoechstens 20 Prozent.
+ * Sonst bleibt es beim Blockieren. Der Ausweg oeffnet sich also erst nach mindestens fuenf
+ * gleichlautenden Belegen, und er gilt nur fuer DIESEN Lauf — beim naechsten ist der Bestand
+ * bereinigt, der Anteil faellt unter die Schwelle, und der Guard ist wieder scharf.
+ */
+const GUARD_FENSTER = 5
+const GUARD_SCHWANKUNG = 0.2
+async function feedIstStabilGeschrumpft(q, quelleId, gefundenJetzt) {
+  if (!Number.isFinite(gefundenJetzt) || gefundenJetzt <= 0) return false
+  const { rows } = await q.query(
+    `SELECT status, (stats->>'gefunden')::int AS gefunden
+       FROM import_runs
+      WHERE quelle_id = $1 AND status <> 'running' AND stats ? 'gefunden'
+      ORDER BY started_at DESC LIMIT $2`,
+    [quelleId, GUARD_FENSTER],
+  )
+  if (rows.length < GUARD_FENSTER) return false
+  if (!rows.every((r) => r.status === "partial")) return false
+  const mengen = [gefundenJetzt, ...rows.map((r) => Number(r.gefunden))].filter(Number.isFinite)
+  if (mengen.length < GUARD_FENSTER) return false
+  const max = Math.max(...mengen)
+  const min = Math.min(...mengen)
+  return max > 0 && (max - min) / max <= GUARD_SCHWANKUNG
+}
+
 const RECONCILE_SQL = `UPDATE obstacles
      SET aktiv = false, updated_at = now()
    WHERE quellen_id = $1 AND aktiv = true AND externe_id IS NOT NULL
@@ -335,7 +376,35 @@ export async function runImport({
         const aktivAlt = existingRows.filter((r) => r.aktiv && r.externe_id != null)
         const weg = aktivAlt.reduce((n, r) => (seen.has(r.externe_id) ? n : n + 1), 0)
         const anteil = aktivAlt.length ? weg / aktivAlt.length : 0
-        if (aktivAlt.length >= 50 && anteil > 0.4) {
+        // T-693: DER GUARD BRAUCHT EINEN AUSWEG, sonst blockiert er ewig.
+        //
+        // Er unterstellt, ein zu kleiner Feed sei voruebergehend, und verspricht „Selbstheilung
+        // beim naechsten vollstaendigen Lauf". Genau die tritt nie ein, wenn der Feed DAUERHAFT
+        // kleiner wird. Quelle 0118 (Umleitungsstrecken SH) liegt so seit dem 04.07.2026 fest:
+        // 203 Laeufe hintereinander „partial", der Bestand steht unveraendert auf 321 aktiven
+        // Eintraegen, von denen 229 seit zwei Monaten nicht mehr im Feed sind. Ursache war ein
+        // Dedupe-Umbau, der aus 188 Features 93 Eintraege macht — der kleinere Feed ist der neue
+        // Normalzustand, kein Fehler.
+        //
+        // Das Unterscheidungsmerkmal ist die STABILITAET: ein echter Teilbestand schwankt (mal
+        // 17 Records, mal 738) oder erholt sich. Liefert die Quelle dagegen ueber mehrere Laeufe
+        // hinweg verlaesslich dieselbe Menge, ist der Verdacht widerlegt. Gemessen an 0118:
+        // die letzten Laeufe liegen bei 88 und 93 Eintraegen, also unter 10 Prozent Schwankung.
+        //
+        // Konservativ gefasst: FUENF aufeinanderfolgende geblockte Laeufe UND hoechstens
+        // 20 Prozent Abstand zwischen kleinstem und groesstem Fund in diesem Fenster. Ein
+        // wackelnder Feed erfuellt das nicht, ein stabil geschrumpfter schon.
+        const stabilGeschrumpft = aktivAlt.length >= 50 && anteil > 0.4
+          ? await feedIstStabilGeschrumpft(q, connector.quelleId, seen.size)
+          : false
+        if (stabilGeschrumpft) {
+          note(
+            `Reconcile-Guard: ${weg}/${aktivAlt.length} (${Math.round(anteil * 100)}%) waeren betroffen — ` +
+            `aber der Feed liefert seit fuenf Laeufen stabil diese Menge. Kein Teilbestand, sondern ` +
+            `der neue Bestand: Reconcile wird EINMAL durchgelassen (T-693).`,
+          )
+        }
+        if (aktivAlt.length >= 50 && anteil > 0.4 && !stabilGeschrumpft) {
           reconcileSuspended = true
           note(`Reconcile-Guard: ${weg}/${aktivAlt.length} (${Math.round(anteil * 100)}%) des aktiven Bestands würden deaktiviert — Verdacht Teilbestand/Feed-Fehler → übersprungen (status=partial, kein false-Deaktivieren)`)
         } else {

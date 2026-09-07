@@ -986,6 +986,20 @@ export function createFakeDb() {
         [...state.importRuns].sort((a, b) => (a.started_at < b.started_at ? 1 : -1)).slice(0, 50),
       )
     }
+    // T-693: der Ausweg aus dem Reconcile-Guard fragt die letzten Laeufe, um einen dauerhaft
+    // geschrumpften Feed von einem einmaligen Teilbestand zu unterscheiden. Ohne diesen Zweig
+    // wirft der Fake, der Lauf endet auf 'error' statt 'partial', und der Guard-Test aus T-627
+    // schlaegt fehl — mit einer Meldung, die nichts ueber die Ursache sagt.
+    if (sql.startsWith("SELECT status, (stats->>'gefunden')::int AS gefunden")) {
+      const [quelleId, limit] = params
+      return ok(
+        [...state.importRuns]
+          .filter((r) => r.quelle_id === quelleId && r.status !== "running" && r.stats && "gefunden" in r.stats)
+          .sort((a, b) => (a.started_at < b.started_at ? 1 : -1))
+          .slice(0, Number(limit))
+          .map((r) => ({ status: r.status, gefunden: Number(r.stats.gefunden) })),
+      )
+    }
 
     // ── notifications (v3.1: Nachrichtenzentrum/Glocke) ───────────────────────
     // T-331: jetzt Multi-Row-INSERT (N×14 Params) — in 14er-Tupel zerlegen, je Tupel eine Zeile.

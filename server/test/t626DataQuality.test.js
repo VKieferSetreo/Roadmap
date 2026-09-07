@@ -122,6 +122,45 @@ describe("T-627 — Reconcile-Plausibilitäts-Guard (Data-Loss-Schutz)", () => {
     expect(run.stats.deaktiviert).toBe(5)
     expect(aktivN(db)).toBe(55)
   })
+
+  // T-693: Der Guard braucht einen Ausweg, sonst blockiert er ewig. Er unterstellt, ein zu
+  // kleiner Feed sei voruebergehend — trifft das nicht zu, steht die Quelle fuer immer.
+  // Quelle 0118 lag so seit dem 04.07.2026 fest: 203 Laeufe in Folge "partial", 229 von 321
+  // Eintraegen seit zwei Monaten tot im Bestand, weil ein Dedupe-Umbau den Feed dauerhaft
+  // von 178 auf 88 Eintraege verkleinert hat.
+  it("laesst nach fünf stabilen geblockten Läufen EINMAL durch (T-693)", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: voll(many), log: () => {} })
+    expect(aktivN(db)).toBe(60)
+    // Fünf Läufe mit stabil 20 Einträgen: jedes Mal blockt der Guard.
+    for (let i = 0; i < 5; i++) {
+      const r = await runImport({ db, connector: voll(many.slice(0, 20)), log: () => {} })
+      expect(r.status).toBe("partial")
+      expect(aktivN(db)).toBe(60)
+    }
+    // Der sechste sieht fünf gleichlautende Belege und räumt auf.
+    const durch = await runImport({ db, connector: voll(many.slice(0, 20)), log: () => {} })
+    expect(durch.stats.deaktiviert).toBe(40)
+    expect(aktivN(db)).toBe(20)
+    // Und danach ist der Guard wieder scharf, weil der Bestand jetzt passt.
+    const danach = await runImport({ db, connector: voll(many.slice(0, 20)), log: () => {} })
+    expect(danach.status).toBe("ok")
+    expect(danach.stats.deaktiviert).toBe(0)
+  })
+
+  // DIE GEGENPROBE, und sie ist die wichtigere: ein WACKELNDER Feed ist genau der Fall, gegen
+  // den der Guard gebaut wurde. Er darf nie durchgelassen werden, egal wie oft er blockt.
+  it("laesst einen schwankenden Feed NICHT durch, auch nach vielen Läufen (T-693)", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: voll(many), log: () => {} })
+    const mengen = [20, 30, 18, 33, 21, 29, 19]
+    for (const n of mengen) {
+      const r = await runImport({ db, connector: voll(many.slice(0, n)), log: () => {} })
+      expect(r.status).toBe("partial")
+      expect(r.stats.deaktiviert).toBe(0)
+    }
+    expect(aktivN(db)).toBe(60) // nichts angetastet
+  })
 })
 
 describe("T-635 — Richtung + Zeitfenster als Info (Severity UNVERÄNDERT, FN-Schutz)", () => {
