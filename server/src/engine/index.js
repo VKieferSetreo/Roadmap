@@ -237,9 +237,26 @@ export function zuordnung(obstacle, ctx, km) {
   // Umkehrschluss weiter unten. Sonst wuerde aus einer Luecke in unseren eigenen Streckendaten
   // ein Loeschurteil, und genau dagegen steht der Grundsatz aus T-653, dass die Namenslesung
   // allein nichts verwerfen darf. Mit dem Ortsbezug davor darf sie es, ohne ihn nicht.
+  // DIE GEGENPROBE FRAGT `obenWeit`, NICHT NUR `ausName.oben` (nachgetragen 07.09.2026, T-704).
+  // obenWeit ist das Strukturfeld ODER, wenn das schweigt, die Namenslesung — also immer das
+  // Beste, was wir ueber die getragene Strasse wissen. Vorher stand hier nur ausName.oben, und
+  // das riss ein Loch, sobald der Name die fuehrende Nummer mit Buchstabenzusatz traegt: REF_ROH
+  // in strasseAusName kennt den Zusatz nicht, also liefert der Name {oben: null, unten: X},
+  // waehrend das STRUKTURFELD die getragene Strasse sehr wohl nennt. Gemessen an drei echten
+  // Bauwerken ("Bruecke ueber die B87n im Zuge der L 37", getragen=L37; "Bruecke im Zuge der
+  // A 113n ueber die B 96a", getragen=A113): faehrt die Route im Fenster BEIDE Strassen, kippten
+  // sie von "bewiesen" auf "widerlegt" — der Fund verschwand still. Betroffen sind 6 aktive
+  // Bauwerke. Mit obenWeit greift die Sicherung wieder, denn dort steht die getragene Strasse.
+  //
+  // NUR WENN DAS STRUKTURFELD BRAUCHBAR IST. Sind beide Felder gleich, ist die Quellangabe kaputt
+  // (129 Bauwerke, Ursache im Connector) — dann soll ja gerade der NAME entscheiden, und obenWeit
+  // truege die kaputte Nummer als Schutzschild herein. Genau daran scheiterte der erste Anlauf
+  // dieses Fixes: "BRUECKE I.Z.WIRTSCHAFTSWEG UEBER A5" mit oben=unten=A5 waere nicht mehr
+  // verworfen worden, obwohl der Name sagt, dass wir drunter durchfahren (T-701).
+  const obenVerlaesslich = brauchbar ? obenWeit : ausName.oben
   if (
     fenster.size > 0 && ausName.unten != null && fenster.has(ausName.unten) &&
-    !(ausName.oben != null && fenster.has(ausName.oben))
+    !(obenVerlaesslich != null && fenster.has(obenVerlaesslich))
   ) return "widerlegt"
 
   // Fahren wir auf der getragenen, sind wir oben drauf. Die Tragfaehigkeit gilt uns.
@@ -485,14 +502,122 @@ export const istMassRestriktion = (a) =>
 // dieselbe Quell-Restriktion landet als zwei Obstacle-Zeilen mit verschiedener obstacle_id, aber
 // gleicher Geometrie (T-603/T-532). Solche Klone DÜRFEN gemergt werden; zwei VERSCHIEDENE Geometrien
 // (echte Fahrtrichtungs-/Fahrbahn-Paare) bleiben getrennt.
-const sameGeom = (a, b) => a && b && a.type === b.type && JSON.stringify(a.coordinates) === JSON.stringify(b.coordinates)
+//
+// T-709: der Byte-Vergleich war ZU eng, und das erzeugte den Widerspruch, den ein Disponent nicht
+// aufloesen kann — "A5 | Appenweier - Achern" steht in 14 Projekten ZWEIMAL am selben Meter, einmal
+// kritisch mit 4,00 m Restbreite, einmal Warnung mit 14,00 m.
+//
+// GEMESSEN am 07.09.2026 an den drei Quellzeilen (Quelle 0001, fach_id 21494/21495/21496-0001030111):
+// es sind KEINE zwei Richtungsfahrbahnen. Alle drei tragen richtung="beide", denselben Anker
+// (48.55579249/7.95324092), denselben Abschnitt ("Basel -> Karlsruhe, zwischen 2.7 km hinter AS
+// Appenweier und 9.3 km vor AS Achern") — es sind drei TAGESZEIT-PHASEN derselben Baustelle:
+// nachts 3 Spuren zu (4,00 m), tagsueber 2 Spuren zu (8,00 m), am 20.09. abends 1 Spur zu (14,00 m).
+// Und ihre Geometrien sind identisch: die 14-m-Zeile fuehrt DIESELBE Linie DREIMAL (ein Teil je
+// Gueltigkeitsfenster der Quelle), die anderen beiden je einmal. Byte-gleich ist das nicht,
+// dieselbe Strecke sehr wohl — nachgerechnet: Teil 0 der einen ist zeichengleich mit allen drei
+// Teilen der anderen.
+//
+// Deshalb wird jetzt die MENGE der Teil-Linien verglichen statt des rohen Arrays, und ein
+// LineString gilt als MultiLineString mit einem Teil (der Korridor-Clip macht aus einem
+// einteiligen MultiLineString einen LineString, aus dem dreiteiligen nicht — allein daran waere
+// der Vergleich sonst gescheitert). Zwei echte Fahrbahn-Paare haben verschiedene Koordinaten und
+// bleiben damit unveraendert getrennt: die Regel kann nur Wiederholungen derselben Linie
+// zusammenziehen, nie zwei verschiedene Linien gleichsetzen.
+const geomTeile = (g) => {
+  if (!g) return null
+  if (g.type === "LineString") return [JSON.stringify(g.coordinates)]
+  if (g.type === "MultiLineString" && Array.isArray(g.coordinates)) return g.coordinates.map((t) => JSON.stringify(t))
+  return null
+}
+const sameGeom = (a, b) => {
+  const ta = geomTeile(a)
+  const tb = geomTeile(b)
+  if (!ta?.length || !tb?.length) return false
+  const sa = new Set(ta)
+  const sb = new Set(tb)
+  return sa.size === sb.size && [...sa].every((t) => sb.has(t))
+}
+
+/**
+ * Welcher von zwei Funden traegt die STRENGERE Aussage? > 0 heisst "a ist strenger".
+ *
+ * Zwei Achsen, in dieser Reihenfolge: die hoehere Severity, dann die kleinere Restbreite. Die
+ * Reihenfolge ist nicht beliebig — die Severity ist das Urteil ueber DIESEN Transport (sie kennt
+ * die Transportbreite), die Restbreite nur die nackte Zahl. Ein fehlender Wert gilt als "nicht
+ * einengend" (Infinity) und verliert damit gegen jede gemessene Restbreite.
+ */
+function strengerRang(f) {
+  return [
+    SEV_RANK[f?.severity] ?? 0,
+    -(isFiniteNumber(f?.restbreiteM) ? f.restbreiteM : Infinity),
+    f?.geom ? 1 : 0, // bei Gleichstand die Variante mit Geometrie (sie zeigt mehr auf der Karte)
+  ]
+}
+function strenger(a, b) {
+  const ra = strengerRang(a)
+  const rb = strengerRang(b)
+  for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return ra[i] - rb[i]
+  return 0
+}
+
+// T-708/T-709: eine Zusammenfassung darf den Fund vereinfachen, aber nichts VERSCHWEIGEN. Wird ein
+// Fund in einen anderen gefaltet, wandert seine Herkunft (Quelle + Titel) und seine abweichende
+// Restbreite als Detail-Zeile in den ueberlebenden Fund. Bisher fiel der schwaechere Fund in
+// dropCrossSourceDuplicates ERSATZLOS weg — der Disponent sah nicht einmal, dass es eine zweite
+// Meldung gab. Die Zeile ist ein normaler Detail-Schluessel und erscheint damit ohne weiteres
+// Zutun in Popup, Bericht und Export (sichtbaresDetail filtert nur __-Schluessel).
+const HERKUNFT_ZEILE = "Auch gemeldet"
+// Der Titel wird HIER schon humanisiert, obwohl das sonst erst am Ende der Kette passiert. Sonst
+// stuende im Vermerk der rohe Quell-String ("Bodenuntersuchungen - 9,5-177,7_Baugrunderkundung"),
+// waehrend jeder andere Titel in derselben Ansicht die aufgeraeumte Form traegt — und beim Lesen
+// waere nicht erkennbar, dass es dieselbe Meldung ist.
+const herkunftText = (f) => {
+  const quelle = String(f?.quelle?.name ?? "").trim()
+  const titel = String(humanizeTitel(f?.titel, f?.kategorie) ?? "").trim()
+  const rb = isFiniteNumber(f?.restbreiteM) ? `${f.restbreiteM.toFixed(2).replace(".", ",")} m` : null
+  const kopf = [quelle, titel].filter(Boolean).join(": ")
+  return [kopf || titel || quelle, rb ? `Restbreite ${rb}` : null].filter(Boolean).join(" — ")
+}
+/**
+ * Der Vermerk muss auch die NACHGELAGERTEN Stufen ueberleben.
+ *
+ * dedupeByObstacle und dedupeByLocation fassen ebenfalls zusammen, und sie tun es per
+ * Object.assign — dabei wird `detail` als Ganzes ersetzt und ein bereits gesetzter Vermerk faellt
+ * heraus. Gemessen am 07.09.2026 ueber alle 40 ausgewerteten Projekte: von 384 weggefallenen
+ * Funden trugen 282 ihren Vermerk bis ins Ergebnis, 102 nicht — und der groessere Teil dieser 102
+ * ging genau hier verloren. Diese Funktion vereinigt beide Vermerke, sie fuegt NICHTS Neues hinzu:
+ * was diese beiden Stufen von sich aus zusammenfassen, melden sie weiterhin so wie bisher.
+ */
+function vereinteHerkunft(a, b) {
+  const teile = [...new Set([
+    ...String(a?.detail?.[HERKUNFT_ZEILE] ?? "").split(" · "),
+    ...String(b?.detail?.[HERKUNFT_ZEILE] ?? "").split(" · "),
+  ].filter(Boolean))]
+  return teile.length ? teile.join(" · ") : null
+}
+/** Den vereinten Vermerk an den ueberlebenden Fund schreiben (no-op, wenn keiner existiert). */
+function vermerkUebernehmen(behalten, vermerk) {
+  if (vermerk) behalten.detail = { ...(behalten.detail ?? {}), [HERKUNFT_ZEILE]: vermerk }
+}
+
+/** Die Herkunft des gefalteten Funds an den ueberlebenden haengen — samt der Herkunft, die der
+ *  gefaltete seinerseits schon mitbrachte (Ketten aus drei Meldungen verlieren so nichts). */
+function mitHerkunft(behalten, gefaltet) {
+  const bisher = String(behalten?.detail?.[HERKUNFT_ZEILE] ?? "").split(" · ").filter(Boolean)
+  const mitgebracht = String(gefaltet?.detail?.[HERKUNFT_ZEILE] ?? "").split(" · ").filter(Boolean)
+  const eigen = herkunftText(gefaltet)
+  const alle = [...new Set([...bisher, ...mitgebracht, eigen].filter(Boolean))]
+    .filter((t) => t !== herkunftText(behalten))
+  if (!alle.length) return behalten.detail
+  return { ...(behalten.detail ?? {}), [HERKUNFT_ZEILE]: alle.join(" · ") }
+}
 
 export function dedupeFindings(findings) {
   const kept = []
   for (const f of findings) {
     const key = `${f.routeId}|${f.kategorie}|${normName(f.titel)}`
     // Strecken-Funde (beide mit geom) NICHT mergen → Fahrtrichtungen bleiben getrennt; AUSNAHME:
-    // byte-identische Geometrie = Re-Import-Klon derselben Stelle → doch mergen (T-603).
+    // gleiche Strecke = Re-Import-Klon bzw. Tageszeit-Phase derselben Stelle → doch mergen (T-603/T-709).
     const dup = kept.find(
       (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM && (!(k.geom && f.geom) || sameGeom(k.geom, f.geom)),
     )
@@ -500,9 +625,11 @@ export function dedupeFindings(findings) {
       kept.push({ ...f, __key: key })
       continue
     }
-    const fr = SEV_RANK[f.severity] ?? 0
-    const dr = SEV_RANK[dup.severity] ?? 0
-    if (fr > dr || (fr === dr && f.geom && !dup.geom)) Object.assign(dup, f, { __key: key })
+    // T-709: der ueberlebende Fund ist der STRENGERE (Severity, dann kleinere Restbreite) — vorher
+    // entschied allein die Severity, und bei Gleichstand blieb der zufaellig erste stehen. Der
+    // andere geht nicht ersatzlos verloren, sondern als Herkunfts-Zeile mit.
+    if (strenger(f, dup) > 0) Object.assign(dup, f, { __key: key, detail: mitHerkunft(f, dup) })
+    else dup.detail = mitHerkunft(dup, f)
   }
   // eslint-disable-next-line no-unused-vars
   const same = kept.map(({ __key, ...f }) => f)
@@ -560,7 +687,11 @@ export function dedupeByObstacle(findings) {
       continue
     }
     // schwereren Fund behalten (in-place, Referenz in out bleibt erhalten)
+    // T-708: der Herkunfts-Vermerk beider Seiten wandert mit — Object.assign wuerde `detail`
+    // sonst ersetzen und den Vermerk der anderen Strecke wegwerfen.
+    const vermerk = vereinteHerkunft(prev, f)
     if ((SEV_RANK[f.severity] ?? 0) > (SEV_RANK[prev.severity] ?? 0)) Object.assign(prev, f)
+    vermerkUebernehmen(prev, vermerk)
   }
   return out
 }
@@ -571,6 +702,34 @@ export function dedupeByObstacle(findings) {
 // Regel (Max 2026-06-19): den schwächeren Fund droppen, den KRITISCHEREN behalten. Gleich-schwere
 // bleiben beide (könnten zwei Fahrtrichtungen oder echte Doppelmaßnahmen sein). Eigene Einträge
 // (herkunft 'eigen') werden NIE automatisch gedroppt.
+//
+// T-708, 07.09.2026: Max' Gleichstand-Vorsatz vom 19.06.2026 BLEIBT — mit einer Einschraenkung,
+// die ihn dort loest, wo er nachweislich nur Doppelmeldungen schuetzt.
+//
+// DIE ERSTE FASSUNG DIESER AENDERUNG WAR FALSCH, und der Weg dorthin gehoert dokumentiert. Sie
+// stuetzte sich auf eine Messung, die 109 gleich-schwere Paare fand und feststellte: "bei KEINEM
+// stehen zwei verschiedene Strassen". Diese Messung war auf einen 30-m-Vorfilter konditioniert,
+// den DIESE FUNKTION GAR NICHT HAT — sie greift bis Δkm 0,15, also bis 150 m. Auf ihrem echten
+// Schluessel sind es 362 gleich-schwere Paare, und davon tragen 8 ZWEI VERSCHIEDENE STRASSEN.
+// Genau die Aeste eines Kreuzes, die Max' Regel schuetzen sollte. Gemessen an den 3.684
+// persistierten Funden: die erste Fassung liess 325 statt 9 Funde wegfallen, darunter
+// "A1 | Moseltal - Rioler Wald", geschluckt von einem A602-Fund in 777 m Entfernung, und sechs
+// A9-Baustellen, die in A3-Funde aufgingen.
+//
+// DIE EINSCHRAENKUNG: bei Gleichstand wird nur gefaltet, wenn BEIDE Funde dieselbe
+// Strassennummer tragen. Dann ist es dieselbe Strasse an derselben Stelle, also dieselbe
+// Massnahme aus zwei Quellen — und das ist der Fall, den T-708 gemeldet hat (54 Prozent der
+// Projekte). Trägt einer eine andere Nummer oder gar keine, bleiben beide stehen; die Regel
+// verhaelt sich dort exakt wie vorher.
+//
+// Dass ueberhaupt gefaltet werden darf, haengt am zweiten Teil dieser Aenderung: der gefaltete
+// Fund geht nicht mehr verloren, sondern haengt mit Quelle, Titel und Restbreite als
+// Herkunfts-Zeile am ueberlebenden.
+const gleicheStrasse = (a, b) => {
+  const ra = normRoadRef(a?.strassen_ref ?? a?.strassenRef)
+  const rb = normRoadRef(b?.strassen_ref ?? b?.strassenRef)
+  return ra != null && ra === rb
+}
 function dropCrossSourceDuplicates(findings) {
   const drop = new Set()
   for (const f of findings) {
@@ -580,13 +739,24 @@ function dropCrossSourceDuplicates(findings) {
       if (f.routeId !== g.routeId || f.kategorie !== g.kategorie) continue
       if (Math.abs(f.km - g.km) > DUP_KM) continue
       if (normName(f.quelle?.name) === normName(g.quelle?.name)) continue // gleiche Quelle → behalten
-      const rf = SEV_RANK[f.severity] ?? 0
-      const rg = SEV_RANK[g.severity] ?? 0
-      if (rf < rg) {
+      // Der strengere Fund bleibt (Severity, dann kleinere Restbreite). Bei vollem Gleichstand
+      // gewinnt der frueher einsortierte — das haelt das Ergebnis reproduzierbar, sonst haenge
+      // die Auswertung an der Reihenfolge der Hindernisse aus der Datenbank.
+      const cmp = strenger(f, g)
+      // BEI GLEICHER SEVERITY nur falten, wenn es nachweislich dieselbe Strasse ist (siehe oben).
+      // Auf die SEVERITY bezogen und nicht auf den vollen Rang, denn genau darauf zielte Max'
+      // Vorsatz: "unterschiedliche Schwere entscheidet, gleiche Schwere behaelt beide". Der Rang
+      // vergleicht seit T-708 zusaetzlich Restbreite und Geometrie — pruefte man ihn hier, waere
+      // fast nie Gleichstand und die Einschraenkung liefe ins Leere. Gemessen: mit Rang-Vergleich
+      // fielen 299 Funde zusaetzlich weg, mit Severity-Vergleich sind es die, die T-708 meint.
+      if (SEV_RANK[f?.severity] === SEV_RANK[g?.severity] && !gleicheStrasse(f, g)) continue
+      if (cmp < 0) {
+        g.detail = mitHerkunft(g, f)
         drop.add(f)
         break
       }
-      if (rg < rf) drop.add(g)
+      f.detail = mitHerkunft(f, g)
+      drop.add(g)
     }
   }
   return findings.filter((x) => !drop.has(x))
@@ -618,7 +788,10 @@ export function dedupeByLocation(findings) {
     if (!twin) { out.push(f); continue }
     const fr = SEV_RANK[f.severity] ?? 0
     const tr = SEV_RANK[twin.severity] ?? 0
+    // T-708: wie in dedupeByObstacle — der Vermerk beider Seiten ueberlebt das Object.assign.
+    const vermerk = vereinteHerkunft(twin, f)
     if (fr > tr || (fr === tr && f.geom && !twin.geom)) Object.assign(twin, f)
+    vermerkUebernehmen(twin, vermerk)
   }
   return out
 }
@@ -726,6 +899,59 @@ export function humanizeTitel(s, kat) {
   return t || String(s ?? "").trim() // nie leeren Titel zurückgeben (Fallback = Original)
 }
 
+/**
+ * DER TRANSPORTZEITRAUM, EGAL WIE ER GESCHRIEBEN WURDE (T-705).
+ *
+ * `projects.zeitraum` ist ein freies JSONB. Die Engine liest daraus ausschliesslich `von`/`bis`;
+ * steht dort etwas anderes, sieht sie undefined und behandelt das Projekt als "kein Zeitraum
+ * gesetzt" — mit zwei sichtbaren Folgen: im Fund-Detail steht "Kein Transportzeitraum gesetzt",
+ * obwohl der Nutzer einen gesetzt hat, und die Zeitfilterung faellt auf den Heute-Anker (T-601)
+ * zurueck statt gegen den Transporttermin zu laufen.
+ *
+ * GEMESSEN am 07.09.2026 ueber ALLE 82 Projekte der Produktion, distinct Schluesselformen:
+ *   52 x {} (leer) · 20 x {von,bis} · 8 x {von,bis,ganztaegig} · 2 x {gueltigVon,gueltigBis}
+ * Mehr Formen gibt es nicht. Es ist also GENAU EIN Alias-Paar zu uebersetzen, kein Wildwuchs —
+ * und deshalb steht hier auch keine geratene Liste weiterer Schreibweisen ("start"/"ende",
+ * "from"/"to"): die kommen im Bestand nicht vor, und eine Regel ohne Zahl dahinter gehoert nicht
+ * in die Auswertung.
+ *
+ * WAS DAS AN DEN BEIDEN PROJEKTEN AENDERT (voller analyze()-Lauf gegen die Produktionsdaten,
+ * vorher/nachher, corridorM 20): 137 → 66 und 17 → 15 Funde. 74 fallen weg (11 kritisch),
+ * 1 kommt hinzu, 0 aendern ihre Severity. Die Gegenprobe an den 74: JEDER faengt erst NACH dem
+ * Ende des gesetzten Transportfensters an (Fenster 15.–19.07. bzw. 18.–26.07., frueheste
+ * Gueltigkeit der Weggefallenen 27.07.) — sie tragen also keine Aussage ueber den Termin, um den
+ * es geht, sondern ueber einen spaeteren. Keiner von ihnen war der einzige Traeger einer
+ * Information zu diesem Transport. Der eine hinzugekommene ist eine zweite Zeile derselben
+ * Massnahme "Suedendstrasse", die am 26.07. beginnt und das Fenster damit gerade noch beruehrt.
+ *
+ * WARUM DIE LESESEITE UND NICHT DIE SCHREIBSEITE: die Schreibseite (`PATCH /projects/:id` in
+ * server/src/routes/projects.js) nimmt `zeitraum` als beliebiges Objekt entgegen und merged es
+ * per Spread auf den Bestand. Dort zu normalisieren wuerde nur kuenftige Schreibvorgaenge heilen;
+ * die zwei bereits gespeicherten Zeilen blieben falsch, bis jemand sie anfasst oder migriert.
+ * Die Leseseite heilt den Bestand sofort und ohne Schreibzugriff. Zusaetzlich sollte die
+ * Schreibseite normalisieren — das liegt ausserhalb dieser Datei und ist als Befund gemeldet.
+ *
+ * Liegt kein Alias vor, wird das Objekt UNVERAENDERT (identische Referenz) zurueckgegeben. Damit
+ * ist fuer die 80 anderen Projekte nicht nur gemessen, sondern strukturell garantiert, dass sich
+ * nichts aendert.
+ */
+export function transportZeitraum(zeitraum) {
+  if (!zeitraum || typeof zeitraum !== "object") return zeitraum
+  let out = null
+  for (const [ziel, alias] of [["von", "gueltigVon"], ["bis", "gueltigBis"]]) {
+    // Ein gesetztes von/bis ist die fuehrende Angabe — der Alias fuellt nur eine Luecke.
+    if (typeof zeitraum[ziel] === "string" && zeitraum[ziel].trim()) continue
+    const wert = zeitraum[alias]
+    // Nur nicht-leere Strings. dateOnly() in rules.js macht aus jedem Wert per String().slice(0,10)
+    // ein Datum; ein `true` oder eine Zahl wuerde dort still zu Unsinn ("true") und dann zu einem
+    // falschen Vergleich. Im Bestand sind beide Alias-Werte Strings der Laenge 10.
+    if (typeof wert !== "string" || !wert.trim()) continue
+    out ??= { ...zeitraum }
+    out[ziel] = wert
+  }
+  return out ?? zeitraum
+}
+
 /** Analysierbare Routen: ≥2 valide Punkte (Geometrie) UND freigegeben.
  *  Prüfen-Gate (T-593): aus einem VEMAGS-Bescheid rekonstruierte Strecken werden erst nach
  *  manueller Prüfung (verifiziert=true) ausgewertet — ungeprüfte Strecken fließen NICHT in
@@ -743,6 +969,10 @@ export function usableRoutes(routes) {
 /** Reine Analyse (ohne Persistenz): liest Hindernisse via db, berechnet Findings. */
 export async function analyze({ db, project, corridorM, osrm = null }) {
   const routes = usableRoutes(project.routes)
+  // T-705: einmal je Lauf, nicht je Hindernis — und an genau EINER Stelle, weil evaluate(),
+  // overlapsZeitraum() und das Detail-Label "Kein Transportzeitraum gesetzt" alle aus DIESEM
+  // einen Objekt lesen. Wird es hier richtig gestellt, stimmen alle drei.
+  const zeitraum = transportZeitraum(project.zeitraum)
   if (routes.length === 0) {
     // Gate (T-593): es können Strecken existieren, aber alle ungeprüft (VEMAGS) → für die Auswertung
     // nicht freigegeben. Klare Meldung statt „Strecke hochladen".
@@ -950,7 +1180,7 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
       // Konservativ: kurze Linien (< 120 m Abseits-Anteil) und alles mit ≥ 35 m Mitlauf bleiben drin.
       // TEIL-Linien statt obstaclePts: das Flattening würde Phantom-Sprünge zwischen MLS-Teilen messen.
       if (obstacle.geom && lineOffRoute(geomLineParts(obstacle.geom), geometry, cum, grid, { nearM: corridorM })) continue
-      const verdict = evaluate(obstacle, project.transport, project.zeitraum)
+      const verdict = evaluate(obstacle, project.transport, zeitraum)
       if (!verdict) continue
       // T-653: den Zweifel sichtbar machen, statt ihn zu verschweigen. detail ist bereits JSONB
       // (findingParams), es braucht keine Migration. Die Severity bleibt unangetastet: ob ein Fund

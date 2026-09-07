@@ -3,12 +3,51 @@
 
 import { fetchJson } from "./http.js"
 
+/**
+ * BUCHSTABENZUSATZ HINTER DER NUMMER — "A99a", "B 96a", "B 178n", "A4w" (T-704).
+ *
+ * Bis zum 07.09.2026 gaben normRoadRef und normRoadRefWeit fuer solche Refs null zurueck, weil
+ * hinter der Ziffernfolge eine Wortgrenze verlangt wurde und ein angehaengter Buchstabe keine ist.
+ * Der Schaden war nicht das Schweigen, sondern was danach kam: normStrassenName("A99a") liefert
+ * "a99a", und damit fiel das Hindernis in zuordnung() in den NAMENSVERGLEICH fuer benannte
+ * Gemeindestrassen. Der widerlegt, sobald die Route an der Stelle irgendeine Strasse kennt — und
+ * sie heisst dort nie "a99a", sondern "Autobahnzubringer Mitte". Der Fund verschwand stumm.
+ * Gemessen am 07.09.2026: 76 aktive Hindernisse mit solcher Ref, davon 58 Baustellen/Sperrungen
+ * (B96A 16, A64a 13, B16A 10, A4W/A4O/A4w/A4o 14, B37b 4, A99a 3, B31A 2, Rest einzeln).
+ *
+ * WELCHER WERT — eigene Strasse ("A99A") oder Grundnummer ("A99")? Das ist gemessen, nicht
+ * geraten. Fuer alle 76 Hindernisse wurde beim OSRM-Graphen nachgefragt, welche Ref OSM AN DIESER
+ * KOORDINATE fuehrt (Null-Laengen-Route, steps=true). 51 lieferten eine Ref:
+ *   - Zweigstrecken-Buchstaben a/b: 34x nennt OSM die Ref MIT Zusatz ("B 96a", "B 16a", "A 64a",
+ *     "B 31a", "B 43a", "B 55a"), nur 7x die Grundnummer (A99a→"A 99", B37b→"B 37; B 45").
+ *     -> der Zusatz BLEIBT. Er ist in OSM Teil der Ref, also faellt die Route-Seite genauso aus.
+ *   - Himmelsrichtungen und Planungsstaende N/S/O/W: 10x nennt OSM ausnahmslos die GRUNDNUMMER
+ *     (A4w/A4o/A4W/A4O 6x "A 4", B178N 1x "B 178", B271N 2x "B 271", A14N 1x "A 14"), 0x mit
+ *     Zusatz. Sie sind keine eigenen Strassen: "A4w"/"A4o" sind die Betriebsabschnitte West/Ost
+ *     DERSELBEN A4 (die drei A4o-Funde liegen am Tunnel Koenigshainer Berge, der auf der A4
+ *     liegt), und das "n" fuer "neu" traegt in OSM laengst die alte Nummer, weil die neue Trasse
+ *     sie uebernommen hat. -> der Zusatz FAELLT WEG.
+ * Die Gegenprobe zaehlt hier doppelt, weil die Richtungen verschieden weh tun: haette man N/S/O/W
+ * als eigene Strasse gelesen, waeren die vier BASt-Bruecken auf B178n/B271n/A14n auf der Route,
+ * die sie traegt, per Umkehrschluss VERWORFEN worden — eine Traglastauflage auf unserer eigenen
+ * Fahrbahn, still geloescht. Genau der Fehler, gegen den dieses Ticket steht.
+ *
+ * GENAU EIN BUCHSTABE, DIREKT ANGEHAENGT, kein Leerzeichen davor. Beides ist Absicht: mit
+ * Leerzeichen las der Ausdruck "Üf. A 9 u. Gemeindestr." als "A9U" und "B 20 i.Z.d." als "B20I",
+ * mit zwei Buchstaben "B12BL" als eigene Strasse. Im Bestand traegt keine einzige Ref einen
+ * abgesetzten oder zweibuchstabigen Zusatz (gezaehlt ueber alle 9.174 distinct strassen_ref).
+ */
+const SUFFIX_RICHTUNG = /^[NSOW]$/
+const mitZusatz = (klasse, nummer, zusatz) =>
+  `${klasse}${nummer}${zusatz && !SUFFIX_RICHTUNG.test(zusatz) ? zusatz : ""}`
+
 // Straßen-Referenz normalisieren: "A 1" → "A1", "B 252"/"B252" → "B252", "St 2580" → "ST2580",
-// "L 99" → "L99", "K 142" → "K142". Führende Nullen weg. NUR klassifizierte Straßennummern
-// (A/B/L/K/St/S) — gibt null für Straßennamen/leere Refs zurück (dann NICHT vergleichen).
+// "L 99" → "L99", "K 142" → "K142", "B 96a" → "B96A", "A4w" → "A4". Führende Nullen weg. NUR
+// klassifizierte Straßennummern (A/B/L/K/St/S) — gibt null für Straßennamen/leere Refs zurück
+// (dann NICHT vergleichen).
 export function normRoadRef(s) {
-  const m = String(s ?? "").toUpperCase().match(/\b(A|B|L|K|ST|S)\s*0*(\d{1,4})\b/)
-  return m ? `${m[1] === "S" ? "ST" : m[1]}${m[2]}` : null
+  const m = String(s ?? "").toUpperCase().match(/\b(A|B|L|K|ST|S)\s*0*(\d{1,4})([A-Z])?\b/)
+  return m ? mitZusatz(m[1] === "S" ? "ST" : m[1], m[2], m[3]) : null
 }
 
 /**
@@ -22,13 +61,18 @@ export function normRoadRef(s) {
  *
  * Das Kuerzel MUSS durch Leerzeichen oder Bindestrich getrennt sein. Ohne diese Bedingung liest
  * der Ausdruck "Stein 2" als ST+EIN+2 und "BSW 3" als B+SW+3 — beides Bauwerksnamen, keine Strassen.
+ *
+ * T-704: der Buchstabenzusatz HINTER der Nummer gilt hier wie in normRoadRef (siehe die Messung
+ * dort). Das Landkreiskuerzel davor bleibt davon unberuehrt: "K BA 10" ergibt weiter "KBA10",
+ * "K BA 10a" ergaebe "KBA10A". Die zwei Gruppen koennen sich nicht in die Quere kommen, weil das
+ * Kuerzel VOR der Nummer steht und einen Trenner braucht, der Zusatz DAHINTER und keinen duldet.
  */
-const REF_WEIT = /\b(A|B|L|K|ST|S)\s*(?:[- ]\s*([A-ZÄÖÜ]{2,3})\s*)?[- ]?\s*0*(\d{1,4})\b/
+const REF_WEIT = /\b(A|B|L|K|ST|S)\s*(?:[- ]\s*([A-ZÄÖÜ]{2,3})\s*)?[- ]?\s*0*(\d{1,4})([A-Z])?\b/
 export function normRoadRefWeit(s) {
   const m = String(s ?? "").toUpperCase().match(REF_WEIT)
   if (!m) return null
   const klasse = m[1] === "S" ? "ST" : m[1]
-  return m[2] ? `${klasse}${m[2]}${m[3]}` : `${klasse}${m[3]}`
+  return mitZusatz(m[2] ? `${klasse}${m[2]}` : klasse, m[3], m[4])
 }
 
 /**
@@ -77,6 +121,27 @@ const REF_IRGENDWO = new RegExp(String.raw`\b(?:BAB\s*)?${REF_ROH}\b`, "i")
  */
 const TRENNER = /\s*[/,(]|\s+(?:im zuge|i\.\s?z\.|neben|in km|bei km|zwischen)\b/i
 const bisZumTrenner = (s) => String(s ?? "").split(TRENNER)[0]
+
+/**
+ * NOCH SCHAERFER, und NUR im Zweig ohne Ueberfuehrungswort: eine Bahnstrecke direkt hinter dem
+ * "ueber" beendet die Aufzaehlung des Ueberquerten (T-704).
+ *
+ * Der Anlass ist eine Nebenwirkung des Buchstabenzusatzes oben. Seit normRoadRefWeit "B 6N" liest,
+ * findet der Zweig in "Bruecke ueber die DBAG B 6N BW 98A/RF Koethen" eine Nummer, wo vorher keine
+ * war — und zwar die FALSCHE: ueberquert wird die Bahn, die B6n ist die Strasse, die die Bruecke
+ * TRAEGT (Strukturfeld getrageneStrasse = B6, gekreuzteStrasse leer). Ohne diesen Schnitt haetten
+ * drei BASt-Bruecken mit GST-Sperre auf einer B6-Route den Umkehrschluss ausgeloest und waeren
+ * still verschwunden — genau der Schaden, gegen den T-704 steht.
+ *
+ * NUR HIER, nicht in bisZumTrenner: im Zweig mit Nummer vor dem "ueber" ist die getragene Strasse
+ * bekannt, und dort zaehlt die Bahn als erstes von mehreren ueberquerten Dingen. Gemessen an allen
+ * 5.848 Bauwerksnamen: waere der Schnitt auch dort aktiv, verloere "Bruecke im Zuge der A 10 ueber
+ * DB AG und K 6303" seine richtige gekreuzte Strasse K6303 (vom Strukturfeld bestaetigt).
+ *
+ * Die drei Schreibweisen im Bestand sind gezaehlt: "DB AG", "DB-AG", "DBAG" (78 Namen insgesamt).
+ */
+const BAHN_DAVOR = /\s*\bdb[\s-]?ag\b/i
+const bisZurBahn = (s) => String(s ?? "").split(BAHN_DAVOR)[0]
 
 /**
  * Ueberquert dieses Bauwerk etwas, das GAR KEINE STRASSE ist (T-699)?
@@ -160,7 +225,19 @@ export function strasseAusName(name) {
   const ueber = t.match(NAME_UEBER)
   if (ueber) {
     const oben = normRoadRefWeit(ueber[1])
-    if (oben) return { oben, unten: normRoadRefWeit(ueber[2]) }
+    // T-704: der Schnitt aus T-699 gilt AUCH hier. Er stand bisher nur im Zweig ohne
+    // Ueberfuehrungswort, obwohl das Argument dasselbe ist — hinter dem Trenner steht keine
+    // Lageangabe mehr, sondern die zweite Haelfte des Doppelnamens oder eine Fahrtrichtung.
+    // Anlass war eine Nebenwirkung des Buchstabenzusatzes: "Bruecke i.Z.d. A 36 ueber einen WW
+    // u.Flutgelaende/Bruecke Bw 57.1 A i. Z. d. B6n zur BAB14" las nach der Erweiterung B6 als
+    // unterquert, dabei ist die B6n dieselbe Fahrbahn wie die A36, die die Bruecke traegt.
+    // Gemessen an allen 5.848 Bauwerksnamen: 22 Namen aendern sich, 17 davon folgenlos
+    // (dort war unten == oben, und die Wache in zuordnung() hat sie ohnehin nie wirken lassen).
+    // Die uebrigen fuenf verlieren eine gekreuzte Strasse, die keine ist, alle fuenf vom
+    // Strukturfeld bestaetigt (gekreuzteStrasse leer): "Bruecke A70 ueber Main - Mainbruecke
+    // Oberndorf/FR A7-B26n" las A7, "Del21 / A28 ueber Dauelsberger Weg/Rifa A1" las A1,
+    // "Bruecke B301 ueber S-Bahn (S1)" las ST1.
+    if (oben) return { oben, unten: normRoadRefWeit(bisZumTrenner(ueber[2])) }
   }
   // OHNE UEBERFUEHRUNGSWORT UND OHNE NUMMER DAVOR (T-699). "Gruenbruecke ueber die A 9" sagt
   // dasselbe wie "UEF ueber die A 9", nur ohne das Wort, an dem NAME_UEF haengt — und weil vor
@@ -178,7 +255,7 @@ export function strasseAusName(name) {
   // erst in zuordnung() Z. 234, und dort nur mit gefuelltem Ortsfenster.
   const ohneWort = t.match(NAME_UEF_UEBER)
   if (ohneWort && !REF_IRGENDWO.test(ohneWort[1])) {
-    const unten = normRoadRefWeit(bisZumTrenner(ohneWort[2]))
+    const unten = normRoadRefWeit(bisZurBahn(bisZumTrenner(ohneWort[2])))
     if (unten) return { oben: null, unten }
   }
   const kopf = t.match(NAME_KOPF)

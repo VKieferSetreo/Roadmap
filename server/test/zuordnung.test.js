@@ -18,7 +18,7 @@ import {
   massgebendeLage,
 } from "../src/engine/index.js"
 import { cumulativeKm } from "../src/engine/geometry.js"
-import { kreuztKeineStrasse, strasseAusName } from "../src/external/osrm.js"
+import { kreuztKeineStrasse, normRoadRef, normRoadRefWeit, strasseAusName } from "../src/external/osrm.js"
 
 // Eine gerade Nord-Sued-Route bei Kassel, rund 111 km lang (1 Grad Breite).
 const route = Array.from({ length: 101 }, (_, i) => ({ lat: 51.0 + i * 0.01, lng: 9.5 }))
@@ -450,6 +450,54 @@ describe("massgebendeLage — welche Metrik gilt (T-699)", () => {
   })
 })
 
+// T-702/T-704, 07.09.2026. Diese fuenf Faelle stammen aus einer adversarischen Pruefung, die an
+// zwei frisch gebauten Fixes GENAU DEN FEHLER fand, gegen den die Tickets standen: Bauwerke, die
+// von "bewiesen" auf "widerlegt" kippten und deren Fund damit still verschwand.
+//
+// Beide Ursachen brauchten das ZWEI-STRASSEN-FENSTER, um sichtbar zu werden — an einem
+// Autobahnkreuz faehrt die Route beide Strassen. Mit einem Ein-Strassen-Fenster gemessen, blieben
+// sie unsichtbar; genau daran scheiterte die erste Gegenprobe.
+describe("Zwei-Strassen-Fenster: nichts still verwerfen (T-702/T-704)", () => {
+  const zweiStrassen = (a, b) =>
+    strassenSpannenBauen(
+      [
+        { ref: a, punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.5, lng: 9.5 }] },
+        { ref: b, punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.5, lng: 9.5 }] },
+      ],
+      route, cum, null,
+    )
+  const urteil = (name, attrs, a, b) =>
+    zuordnung({ kategorie: "bruecke", name, attrs }, { strassenSpannen: zweiStrassen(a, b) }, 10)
+
+  // Lage E heisst "zugeordnet, aber weder oben noch unten" — die Quelle sagt zur Hoehenlage
+  // NICHTS. Liess man das Unten-Feld trotzdem stehen, verwarf es allein, und zwar VOR jeder
+  // Namenspruefung. Der Name sagt hier ausdruecklich, dass das Bauwerk die A14 TRAEGT.
+  it("verwirft nicht, wenn die Quelle zur Hoehenlage schweigt (Lage E)", () => {
+    expect(urteil("Kreuzungsbauwerk A14 über A2/Verteiler parallel zur RFB Dresden", {}, "A14", "A2"))
+      .not.toBe("widerlegt")
+  })
+
+  // Traegt die fuehrende Nummer im Namen einen Buchstabenzusatz (B87n, A113n), sieht die
+  // Namenslesung sie nicht und liefert {oben: null, unten: X}. Das STRUKTURFELD nennt die
+  // getragene Strasse aber sehr wohl — die Gegenprobe muss es fragen, nicht nur den Namen.
+  it("laesst das Strukturfeld die Namenslesung ueberstimmen, wenn es die getragene Strasse nennt", () => {
+    expect(urteil("Brücke über die B87n im Zuge der L 37/",
+      { getrageneStrasse: "L 37", gekreuzteStrasse: "B 87" }, "L37", "B87")).toBe("bewiesen")
+    expect(urteil("Brücke im Zuge der A 113n über die B 96a/Überbau 1",
+      { getrageneStrasse: "A 113", gekreuzteStrasse: "B 96" }, "A113", "B96")).toBe("bewiesen")
+  })
+
+  // DIE GEGENPROBE, und sie ist die wichtigere: eine echte Ueberfuehrung ueber unsere Fahrbahn
+  // muss weiterhin verschwinden. Beim ersten Anlauf des Strukturfeld-Vorrangs fiel genau das
+  // aus — bei kaputtem Feldpaar (oben == unten) trug obenWeit die kaputte Nummer als
+  // Schutzschild herein.
+  it("verwirft die Ueberfuehrung ueber unsere Fahrbahn weiterhin", () => {
+    expect(urteil("BRÜCKE I.Z.WIRTSCHAFTSWEG ÜBER A5/Brückenbauwerk Übf. WW über A5",
+      { getrageneStrasse: "A5", gekreuzteStrasse: "A5" }, "A5", "A5")).toBe("widerlegt")
+    expect(urteil("GRÜNBRÜCKE/Grünbrücke über die B10", {}, "B10", "B10")).toBe("widerlegt")
+  })
+})
+
 describe("strasseAusName — Ueberfuehrung (T-676)", () => {
   // Alle Namen woertlich aus dem Produktionsbestand.
   it("liest die Nummer VOR dem Ueberfuehrungswort als gekreuzte Strasse", () => {
@@ -479,8 +527,13 @@ describe("strasseAusName — Ueberfuehrung (T-676)", () => {
   // der traegt oft eine zweite, ganz andere Angabe. Diese vier drehten die Lage um; jetzt
   // schweigen sie. Gemessen: 26 der urspruenglich 229 Treffer waren genau solche Faelle.
   it("nimmt NICHT die Nummer hinter einem Trenner — die meint etwas anderes", () => {
-    // Die L37 TRAEGT die Bruecke, unterquert wird die B87n.
-    expect(strasseAusName("Brücke über die B87n im Zuge der L 37/")).toMatchObject({ unten: null })
+    // Die L37 TRAEGT die Bruecke, unterquert wird die B87n. Bis T-704 stand hier `unten: null`,
+    // weil normRoadRefWeit "B87n" gar nicht lesen konnte — die Zusicherung des Tests war aber
+    // immer "NICHT die L37", nicht "gar nichts". Seit dem Buchstabenzusatz nennt die Zeile die
+    // wirklich unterquerte Strasse, und das Strukturfeld dieses Bauwerks bestaetigt sie:
+    // gekreuzteStrasse = B87, getrageneStrasse = L37.
+    expect(strasseAusName("Brücke über die B87n im Zuge der L 37/")).toMatchObject({ unten: "B87" })
+    expect(strasseAusName("Brücke über die B87n im Zuge der L 37/").unten).not.toBe("L37")
     // Ueberquert wird ein Bach; die B182 traegt.
     expect(strasseAusName("Brücke über die Tauschke/B 182, BW 7")).toMatchObject({ unten: null })
     expect(strasseAusName("Brücke über die DBAG/B169, OU Senftenberg, Brücke über die DBAG")).toMatchObject({ unten: null })
@@ -492,5 +545,132 @@ describe("strasseAusName — Ueberfuehrung (T-676)", () => {
   it("schweigt, wenn vor dem 'über' schon eine Nummer steht", () => {
     expect(strasseAusName("Brücke A6 Äste A-T u. G-I / Overfly / über A6")).toMatchObject({ oben: "A6", unten: null })
     expect(strasseAusName("Brücke A3 über Main - Mainbrücke Randersacker/FR Frankfurt")).toMatchObject({ oben: "A3" })
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// T-704: Strassennummern mit Buchstabenzusatz ("A99a", "B 96a", "A4w", "B 178n")
+//
+// Der Schaden war nicht das Schweigen, sondern was danach kam. normRoadRef gab null, aber
+// normStrassenName machte aus "A99a" den Strassen-NAMEN "a99a" — und damit fiel das Hindernis in
+// den Namensvergleich fuer benannte Gemeindestrassen. Der widerlegt, sobald die Route an dieser
+// Stelle irgendetwas kennt, und "a99a" heisst dort nie so. Der Fund verschwand ohne Vermerk.
+// Gemessen am 07.09.2026: 76 aktive Hindernisse mit solcher Ref, 58 davon Baustellen/Sperrungen.
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Strassennummer mit Buchstabenzusatz (T-704)", () => {
+  const aufA7 = { strassenSpannen: spannen, refs: new Set(["A7", "A44"]) }
+  const baustelle = (strassenRef) => ({ kategorie: "baustelle", strassenRef, attrs: {} })
+
+  it("liest den Zusatz als Teil der NUMMER, nicht als Strassennamen", () => {
+    expect(normRoadRef("A99a")).toBe("A99A")
+    expect(normRoadRef("B 96a")).toBe("B96A")
+    expect(normRoadRef("B16A")).toBe("B16A")
+    expect(normRoadRefWeit("B 31a")).toBe("B31A")
+  })
+
+  // DIE MINDESTANFORDERUNG des Tickets: solange normRoadRef null gibt, springt der Namenszweig
+  // an und loescht still. Ein Wert — irgendeiner — verhindert das.
+  it("laesst eine Baustelle auf der B96a NICHT mehr still verschwinden", () => {
+    expect(zuordnung(baustelle("B96A"), aufA7, 10)).not.toBe("widerlegt")
+    expect(zuordnung(baustelle("A99a"), aufA7, 10)).not.toBe("widerlegt")
+    // Und das Vorab-Sieb darf sie nicht mehr in den Namensvergleich schicken.
+    expect(kannWiderlegtWerden(baustelle("B96A"), new Set(["A7"]))).toBe(false)
+  })
+
+  // Gemessen: fuer 34 der 51 Hindernisse, bei denen OSM an der Koordinate ueberhaupt eine Ref
+  // fuehrt, nennt OSM den Zusatz MIT ("B 96a", "A 64a", "B 31a"). Die Route-Seite faellt also
+  // genauso aus, und beide Seiten treffen sich.
+  it("trifft sich mit der Route, die dieselbe Strasse faehrt", () => {
+    const aufB96a = strassenSpannenBauen(
+      [{ ref: normRoadRef("B 96a"), punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.3, lng: 9.5 }] }],
+      route, cum, null,
+    )
+    expect(zuordnung(baustelle("B96A"), { strassenSpannen: aufB96a }, 10)).toBe("bewiesen")
+  })
+
+  // Die Gegenrichtung, und sie ist der Grund fuer die Entscheidung "eigene Strasse": die B96a in
+  // Berlin ist nicht die B96, sie liegt im naechsten gemessenen Fall 3,1 km entfernt. Wuerde der
+  // Zusatz wegfallen, erklaerte eine B96-Route eine Baustelle auf der B96a zu ihrer eigenen.
+  it("setzt die Zweigstrecke NICHT mit der Grundnummer gleich", () => {
+    const aufB96 = strassenSpannenBauen(
+      [{ ref: "B96", punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.3, lng: 9.5 }] }],
+      route, cum, null,
+    )
+    expect(zuordnung(baustelle("B96A"), { strassenSpannen: aufB96 }, 10)).not.toBe("bewiesen")
+  })
+
+  // N/S/O/W sind KEINE eigenen Strassen, und das ist gemessen: fuer alle 10 Hindernisse mit
+  // solchem Zusatz, bei denen OSM eine Ref fuehrt, nennt OSM ausnahmslos die GRUNDNUMMER
+  // ("A4w"/"A4o" -> "A 4" am Tunnel Koenigshainer Berge, "B178N" -> "B 178", "B271N" -> "B 271",
+  // "A14N" -> "A 14"). Bliebe der Zusatz stehen, wuerden genau die vier BASt-Bruecken auf der
+  // Strecke, die sie traegt, per Umkehrschluss verworfen — eine GST-Sperre auf unserer eigenen
+  // Fahrbahn, still geloescht.
+  it("wirft die Richtungs- und Planungsbuchstaben N/S/O/W weg", () => {
+    expect(normRoadRef("A4w")).toBe("A4")
+    expect(normRoadRef("A4O")).toBe("A4")
+    expect(normRoadRef("B178N")).toBe("B178")
+    expect(normRoadRefWeit("B 178n")).toBe("B178")
+    expect(normRoadRefWeit("A 14N")).toBe("A14")
+    expect(normRoadRefWeit("St2020n")).toBe("ST2020")
+  })
+
+  it("faehrt die A4 auch dann, wenn die Quelle sie A4w nennt", () => {
+    const aufA4 = strassenSpannenBauen(
+      [{ ref: "A4", punkte: [{ lat: 51.0, lng: 9.5 }, { lat: 51.3, lng: 9.5 }] }],
+      route, cum, null,
+    )
+    expect(zuordnung(baustelle("A4w"), { strassenSpannen: aufA4 }, 10)).toBe("bewiesen")
+  })
+
+  // Die Sicherungen von T-653/T-676/T-699 muessen stehen bleiben. Das Landkreiskuerzel steht VOR
+  // der Nummer und braucht einen Trenner, der Zusatz steht DAHINTER und duldet keinen — sie
+  // koennen sich nicht in die Quere kommen.
+  it("laesst das Landkreiskuerzel unberuehrt", () => {
+    expect(normRoadRefWeit("K BA 10")).toBe("KBA10")
+    expect(normRoadRefWeit("K-NES 3")).toBe("KNES3")
+    expect(normRoadRefWeit("K AN 7")).toBe("KAN7")
+    expect(normRoadRefWeit("Stein 2")).toBeNull()
+    expect(normRoadRefWeit("BSW 3")).toBeNull()
+  })
+
+  // GENAU EIN Buchstabe, DIREKT angehaengt. Mit Leerzeichen davor las der Ausdruck "Üf. A 9 u.
+  // Gemeindestr." als "A9U", mit zwei Buchstaben "B12BL" als eigene Strasse.
+  it("nimmt weder abgesetzte noch zweibuchstabige Endungen", () => {
+    expect(normRoadRefWeit("Üf. A 9 u. Gemeindestr.")).toBe("A9")
+    expect(normRoadRef("B 16 A")).toBe("B16")
+    expect(normRoadRef("B12BL")).toBeNull()
+    expect(normRoadRef("Münsterstraße")).toBeNull()
+  })
+})
+
+// Die Nebenwirkung der Erweiterung, und ihre zwei Wachen. Beide sind noetig, weil normRoadRefWeit
+// jetzt Nummern findet, wo vorher keine waren — und an diesen Stellen ist die gefundene Nummer
+// die GETRAGENE, nicht die gekreuzte. Ohne die Wachen waeren drei BASt-Bruecken mit GST-Sperre
+// auf einer B6-Route still verschwunden.
+describe("strasseAusName — Wachen gegen die falsche Richtung (T-704)", () => {
+  it("nimmt keine Nummer als gekreuzt, die hinter einer Bahnstrecke steht", () => {
+    // Strukturfeld dieser drei Bauwerke: getrageneStrasse = B6, gekreuzteStrasse LEER. Die B6n
+    // TRAEGT sie, ueberquert wird die Bahn.
+    expect(strasseAusName("Brücke über die DBAG B 6N BW 98A/RF Köthen")).toMatchObject({ oben: null, unten: null })
+    expect(strasseAusName("Brücke über die DB AG B 6N BW 97A/RF Köthen")).toMatchObject({ unten: null })
+  })
+
+  // ABER NUR DORT. Steht die getragene Strasse vorne, ist die Bahn das erste von mehreren
+  // ueberquerten Dingen — und die Strasse dahinter zaehlt. Vom Strukturfeld bestaetigt:
+  // gekreuzteStrasse = K6303.
+  it("laesst die gekreuzte Strasse stehen, wenn die getragene bekannt ist", () => {
+    expect(strasseAusName("Brücke im Zuge der A 10 über DB AG und K 6303/Überbau 2, rechte Richtungsfahrbahn"))
+      .toMatchObject({ oben: "A10", unten: "K6303" })
+  })
+
+  // Der Trenner-Schnitt aus T-699 gilt jetzt auch im Zweig MIT Nummer vor dem "ueber". Alle drei
+  // Namen woertlich aus dem Bestand, alle drei mit leerem Strukturfeld gekreuzteStrasse.
+  it("liest hinter dem Trenner auch dann nichts, wenn die getragene Strasse bekannt ist", () => {
+    expect(strasseAusName("Brücke A70 über Main - Mainbrücke Oberndorf/FR A7-B26n")).toMatchObject({ oben: "A70", unten: null })
+    expect(strasseAusName("Del21 / A28 über Dauelsberger Weg, km 117,676/Rifa A1, westliches TBW")).toMatchObject({ oben: "A28", unten: null })
+    expect(strasseAusName("Brücke B301 über S-Bahn (S1)")).toMatchObject({ oben: "B301", unten: null })
+    // Und die B6n ist dieselbe Fahrbahn wie die A36, die die Bruecke traegt — keine gekreuzte.
+    expect(strasseAusName("Brücke i.Z.d. A 36 über einen WW u.Flutgelände/Brücke Bw 57.1 A i. Z. d. B6n zur BAB14"))
+      .toMatchObject({ oben: "A36", unten: null })
   })
 })

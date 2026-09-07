@@ -1,7 +1,7 @@
 // Funde-Dedup: NUR ko-lokalisierte Punkt-Dubletten zusammenfassen; Strecken/Fahrtrichtungen bleiben.
 
 import { describe, expect, it } from "vitest"
-import { dedupeByLocation, dedupeFindings } from "../src/engine/index.js"
+import { dedupeByLocation, dedupeByObstacle, dedupeFindings } from "../src/engine/index.js"
 
 const LINE = { type: "LineString", coordinates: [[8, 49], [8.01, 49.01]] }
 const f = (over = {}) => ({
@@ -44,6 +44,51 @@ describe("dedupeFindings", () => {
     expect(out).toHaveLength(1)
   })
 
+  // T-709: der Widerspruch, den ein Disponent nicht aufloesen kann. "A5 | Appenweier - Achern"
+  // stand in 14 Projekten ZWEIMAL am selben Meter: kritisch mit 4,00 m Restbreite und Warnung mit
+  // 14,00 m. Es sind keine zwei Richtungsfahrbahnen (beide Quellzeilen tragen richtung="beide",
+  // denselben Anker und denselben Abschnittstext), sondern Tageszeit-Phasen derselben Baustelle —
+  // und die 14-m-Zeile fuehrt DIESELBE Linie dreimal, eine je Gueltigkeitsfenster der Quelle.
+  // Der Byte-Vergleich sah darin zwei verschiedene Strecken und liess beide Funde stehen.
+  it("T-709: dieselbe Linie mehrfach im MultiLineString ist DIESELBE Strecke → gemergt, strenger gewinnt", () => {
+    const einfach = { type: "MultiLineString", coordinates: [[[8, 49], [8.01, 49.01]]] }
+    const dreifach = {
+      type: "MultiLineString",
+      coordinates: [[[8, 49], [8.01, 49.01]], [[8, 49], [8.01, 49.01]], [[8, 49], [8.01, 49.01]]],
+    }
+    const out = dedupeFindings([
+      f({ km: 10.0, geom: dreifach, severity: "warnung", restbreiteM: 14, quelle: { name: "Autobahn GmbH · A5" } }),
+      f({ km: 10.0, geom: einfach, severity: "kritisch", restbreiteM: 4, quelle: { name: "Autobahn GmbH · A5" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+    expect(out[0].restbreiteM).toBe(4)
+    // Die weggefaltete Phase bleibt lesbar — sonst waere die 14-m-Angabe still verschwunden.
+    expect(out[0].detail["Auch gemeldet"]).toContain("Restbreite 14,00 m")
+  })
+
+  // Die Gegenprobe zur Regel darueber: der Clip macht aus einem einteiligen MultiLineString einen
+  // LineString. Beide beschreiben dieselbe Strecke und muessen als gleich gelten.
+  it("T-709: LineString und einteiliger MultiLineString mit denselben Koordinaten sind dieselbe Strecke", () => {
+    const out = dedupeFindings([
+      f({ km: 10.0, geom: LINE, severity: "warnung" }),
+      f({ km: 10.0, geom: { type: "MultiLineString", coordinates: [LINE.coordinates] }, severity: "kritisch" }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+  })
+
+  // Und die teure Richtung: zwei ECHT verschiedene Linien (die Fahrbahnen einer Autobahn) duerfen
+  // von der Lockerung nicht erfasst werden. Sie unterscheiden sich in den Koordinaten, nicht nur
+  // in der Zerlegung — die Mengen sind also verschieden und der Merge unterbleibt wie bisher.
+  it("T-709: zwei verschiedene Linien bleiben getrennt, auch als MultiLineString", () => {
+    const out = dedupeFindings([
+      f({ km: 10.0, geom: { type: "MultiLineString", coordinates: [[[8, 49], [8.01, 49.01]]] } }),
+      f({ km: 10.05, geom: { type: "MultiLineString", coordinates: [[[8.001, 49], [8.011, 49.01]]] } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+
   it("größerer Abstand (Δkm > 0.15) bleibt getrennt", () => {
     const out = dedupeFindings([f({ km: 10 }), f({ km: 10.3 })])
     expect(out).toHaveLength(2)
@@ -73,12 +118,80 @@ describe("dedupeFindings", () => {
     expect(out[0].severity).toBe("warnung")
   })
 
-  it("Cross-Source gleich-schwer → beide bleiben (z.B. zwei Fahrtrichtungen)", () => {
+  // T-708 (07.09.2026) kehrt diese Erwartung um — ABER NUR BEI NACHWEISLICH GLEICHER STRASSE.
+  //
+  // Der erste Anlauf faltete bei Severity-Gleichstand ohne diese Bedingung und war damit falsch.
+  // Die Messung, die ihn trug, war auf einen 30-m-Vorfilter konditioniert, den die Regel gar
+  // nicht hat (sie greift bis Δkm 0,15). Auf ihrem echten Schluessel sind es 362 gleich-schwere
+  // Paare, und 8 davon tragen ZWEI VERSCHIEDENE STRASSEN — genau die Aeste eines Kreuzes, die
+  // Max' Vorsatz vom 19.06.2026 schuetzen sollte. Gemessen an den 3.684 persistierten Funden
+  // fielen dadurch 325 statt 9 Funde weg, darunter "A1 | Moseltal - Rioler Wald", geschluckt von
+  // einem A602-Fund in 777 m Entfernung.
+  //
+  // Mit der Strassen-Bedingung: 303 zusaetzlich gefaltete Funde, davon 0 mit anderer
+  // Strassennummer, 0 Severity-Verlust, 0 Restbreiten-Verlust, 0 ohne Herkunftsvermerk.
+  it("Cross-Source gleich-schwer auf DERSELBEN Strasse → EIN Fund, zweite Quelle bleibt lesbar (T-708)", () => {
     const out = dedupeFindings([
-      f({ km: 28.3, titel: "A61 Quelle X", severity: "warnung", quelle: { name: "Quelle X" } }),
-      f({ km: 28.35, titel: "A61 Quelle Y", severity: "warnung", quelle: { name: "Quelle Y" } }),
+      f({ km: 28.3, titel: "A61 Quelle X", severity: "warnung", strassenRef: "A61", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "A61 Quelle Y", severity: "warnung", strassenRef: "A61", quelle: { name: "Quelle Y" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].titel).toBe("A61 Quelle X")
+    expect(out[0].detail["Auch gemeldet"]).toBe("Quelle Y: A61 Quelle Y")
+  })
+
+  // DIE WICHTIGERE RICHTUNG, und der Grund, warum Max' Vorsatz bestehen bleibt: zwei gleich
+  // schwere Funde auf VERSCHIEDENEN Strassen sind zwei Massnahmen, nicht eine Doppelmeldung.
+  // An einem Autobahnkreuz liegen sie zwangslaeufig dicht beieinander.
+  it("faltet gleich-schwere Funde auf VERSCHIEDENEN Strassen NICHT (Kreuzungs-Aeste, T-708)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A1 | Moseltal - Rioler Wald", severity: "warnung", strassenRef: "A1", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "A602 Arbeiten an Schutzeinrichtungen", severity: "warnung", strassenRef: "A602", quelle: { name: "Quelle Y" } }),
     ])
     expect(out).toHaveLength(2)
+  })
+
+  // Und ebenso wenig, wenn die Strasse gar nicht bekannt ist: ohne Beleg wird nicht gefaltet.
+  it("faltet gleich-schwer nicht, wenn eine Strassenangabe fehlt (T-708)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "Baustelle ohne Ref", severity: "warnung", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "Andere ohne Ref", severity: "warnung", quelle: { name: "Quelle Y" } }),
+    ])
+    expect(out).toHaveLength(2)
+  })
+
+  it("Cross-Source gleich-schwer: die kleinere Restbreite entscheidet, wer stehen bleibt (T-708)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A61 breit", severity: "warnung", restbreiteM: 14, strassenRef: "A61", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "A61 eng", severity: "warnung", restbreiteM: 4, strassenRef: "A61", quelle: { name: "Quelle Y" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].titel).toBe("A61 eng")
+    expect(out[0].detail["Auch gemeldet"]).toBe("Quelle X: A61 breit — Restbreite 14,00 m")
+  })
+
+  // Der Vermerk steht in derselben Ansicht wie die Titel der uebrigen Funde, und die sind
+  // humanisiert. Stuende hier der rohe Quell-String, waere fuer den Leser nicht erkennbar, dass
+  // es dieselbe Meldung ist.
+  it("Cross-Source: der Titel im Vermerk ist humanisiert wie jeder andere Titel (T-708)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A44 - Fahrbahninstandsetzung - AkD 31550 - 1-str. R KS - 19h bis 6h - Lage-1", severity: "hinweis", quelle: { name: "BAB AkD" } }),
+      f({ km: 28.35, titel: "A44 | Büren - Wünnenberg-Haaren", severity: "kritisch", quelle: { name: "Autobahn GmbH" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].detail["Auch gemeldet"]).toBe("BAB AkD: A44 - Fahrbahninstandsetzung")
+  })
+
+  // Auch der schon vorher gedroppte, schwaechere Fund verschwand bis dahin SPURLOS — der
+  // Disponent sah nicht, dass es eine zweite Meldung gab.
+  it("Cross-Source: auch beim Severity-Drop bleibt die Herkunft der gedroppten Meldung stehen (T-708)", () => {
+    const out = dedupeFindings([
+      f({ km: 28.3, titel: "A61 schwach", severity: "hinweis", quelle: { name: "Quelle X" } }),
+      f({ km: 28.35, titel: "A61 stark", severity: "kritisch", quelle: { name: "Quelle Y" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+    expect(out[0].detail["Auch gemeldet"]).toBe("Quelle X: A61 schwach")
   })
 
   it("Cross-Source: eigener Eintrag (herkunft 'eigen') wird NIE gedroppt", () => {
@@ -95,6 +208,37 @@ describe("dedupeFindings", () => {
       f({ km: 28.35, titel: "Maßnahme B", severity: "warnung", quelle: { name: "Autobahn GmbH" } }),
     ])
     expect(out).toHaveLength(2)
+  })
+})
+
+// T-708: der Herkunfts-Vermerk entsteht in dedupeFindings/dropCrossSourceDuplicates — die beiden
+// NACHGELAGERTEN Stufen fassen aber ebenfalls per Object.assign zusammen und ersetzten `detail`
+// dabei als Ganzes. Gemessen ueber die 38 ausgewerteten Projekte (ohne die zwei T-705-Projekte):
+// von 306 weggefallenen Funden trugen ohne diese Absicherung nur 280 ihren Vermerk bis ins
+// Ergebnis, mit ihr 305 — der eine verbleibende ist nachgeprueft und an derselben Stelle durch
+// einen mindestens gleich schweren Fund gedeckt.
+describe("Herkunfts-Vermerk ueberlebt die nachgelagerten Merge-Stufen (T-708)", () => {
+  const mitVermerk = (over = {}) => f({ detail: { "Auch gemeldet": "Quelle Y: A61 Quelle Y" }, ...over })
+
+  it("dedupeByObstacle: derselbe Hindernis-Punkt auf zwei Strecken", () => {
+    const out = dedupeByObstacle([
+      mitVermerk({ obstacleId: "o1", routeId: "r1", severity: "warnung" }),
+      f({ obstacleId: "o1", routeId: "r2", severity: "kritisch", detail: { Restbreite: "3,00 m" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+    expect(out[0].detail["Auch gemeldet"]).toBe("Quelle Y: A61 Quelle Y")
+  })
+
+  it("dedupeByLocation: Bruecken-Richtungszwillinge am selben Punkt", () => {
+    const p = { lat: 51.6467, lng: 7.9141, kategorie: "bruecke", geom: null, km: 6.94 }
+    const out = dedupeByLocation([
+      mitVermerk({ ...p, severity: "warnung" }),
+      f({ ...p, lat: 51.64677, lng: 7.91412, severity: "kritisch", detail: { "Zul. Brückenlast": "40,0 t" } }),
+    ])
+    expect(out).toHaveLength(1)
+    expect(out[0].severity).toBe("kritisch")
+    expect(out[0].detail["Auch gemeldet"]).toBe("Quelle Y: A61 Quelle Y")
   })
 })
 
