@@ -54,26 +54,24 @@ OLLAMA_LOKAL="http://localhost:11434"
 # der Lauf hat einen ganzen Nachmittag Zeit, niemand wartet auf ihn.
 MODELL="${NACHTLAUF_MODELL:-qwen2.5:14b-instruct}"
 LOG="${NACHTLAUF_LOG:-$HOME/roadmap-nachtlauf.log}"
-# DIE LETZTE SICHERUNG, NICHT DIE ARBEITSGRENZE (Max, 07.09.2026: "sauber durchlaufen, kein
-# cutoff" — aber "NICHT EINFACH DAS TIMEOUT ENTFERNEN").
+# KEIN ZEITLIMIT MEHR (Max, 07.09.2026: "lass das Ding rennen bis alles durch ist und wenns
+# kracht mit Fallback und Error, aber nicht einfach abschneiden").
 #
-# Bis zum 07.09.2026 stand hier 300, und das war die Grenze, an der die Arbeit endete: der Lauf
-# rechnete an dem Tag gleichmaessig 12 Punkte pro Minute, 3.600 Punkte in 298 Minuten, und wurde
-# um 15:11 mitten im Bestand abgeschnitten. Eine feste Dauer kann den langen Lauf nicht vom
-# haengenden unterscheiden — sie trifft beide gleich.
+# Hier stand ein `timeout`, erst 300, dann 600 Minuten. Beides schneidet ab — nur unterschiedlich
+# spaet, und immer mitten in der Arbeit. Am 07.09.2026 traf es den Lauf nach 298 Minuten bei
+# 3.600 von damals geschaetzt zehntausenden Punkten.
 #
-# Wer das kann, ist der Fortschrittswaechter in anreicherungLauf.mjs: er bricht ab, wenn seit 15
-# Minuten kein einziger Punkt mehr fertig geworden ist (Messung dort). Diese Zahl hier greift nur
-# noch, wenn der Prozess so festhaengt, dass nicht einmal mehr ein Timer feuert — deshalb ist sie
-# jetzt grosszuegig. 600 Minuten ab 12:10 enden um 22:10; die Karte heizt also nicht durch die
-# Nacht, und ein normaler Tag (gemessen rund 2.900 neue und ueberholte Punkte, dazu 1.000 aus dem
-# Altbestand: zusammen etwa 5,5 Stunden) bleibt weit darunter.
-MAX_MIN="${NACHTLAUF_MAX_MIN:-600}"
-# Gnadenfrist nach dem SIGTERM des Zeitlimits, bevor hart geschossen wird. Muss laenger sein als
-# ein Block: der Lauf rechnet seinen angefangenen Block noch zu Ende (gemessen 8 Minuten fuer 100
-# Punkte), und ihn dabei abzuschiessen hiesse, genau die Arbeit wegzuwerfen, auf die man gerade
-# gewartet hat. `timeout` im Image ist BusyBox — geprueft, `-k` mit Minutenangabe versteht es.
-KILL_NACH="${NACHTLAUF_KILL_NACH:-15m}"
+# Ein Zeitlimit beantwortet die falsche Frage. "Laeuft schon lange" ist kein Fehler; "kommt nicht
+# mehr voran" ist einer. Deshalb wachen jetzt zwei Dinge, und beide messen FORTSCHRITT:
+#   1. Im Lauf selbst (anreicherungLauf.mjs): kommt seit ANREICHERUNG_STILL_MIN Minuten kein Punkt
+#      mehr fertig, bricht er mit Code 3 ab und sagt warum.
+#   2. Hier, als Auffangnetz fuer den Fall, dass der Prozess so festhaengt, dass nicht einmal mehr
+#      sein eigener Timer feuert: waechst das Logfile ueber LEBENSZEICHEN_MIN Minuten nicht,
+#      stoppen wir den Container. Ein arbeitender Lauf schreibt alle paar Minuten eine Zeile
+#      (gemessen: alle 25 Punkte, also rund alle zwei Minuten bei 12 Punkten/min).
+# Ein Doppelstart ist unabhaengig davon ausgeschlossen (flock weiter unten), und die
+# systemd-Unit hat TimeoutStartSec=infinity — von dort kommt also auch kein Schnitt.
+LEBENSZEICHEN_MIN="${NACHTLAUF_LEBENSZEICHEN_MIN:-30}"
 SSH="ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 
 sage() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
@@ -357,8 +355,41 @@ sudo -n docker run --rm --name anreicherung-nacht --network setreo-net \
   -e ANREICHERUNG_STILL_MIN="${NACHTLAUF_STILL_MIN:-15}" \
   -e ANREICHERUNG_ALTBESTAND="${NACHTLAUF_ALTBESTAND:-1000}" \
   -e ANREICHERUNG_VOLLBESTAND="${NACHTLAUF_VOLLBESTAND:-0}" \
-  "$IMAGE" timeout -k "$KILL_NACH" "${MAX_MIN}m" node scripts/anreicherungLauf.mjs >>"$LOG" 2>&1
+  "$IMAGE" node scripts/anreicherungLauf.mjs >>"$LOG" 2>&1 &
+LAUF_PID=$!
+
+# LEBENSZEICHEN STATT UHR. Der Waechter schaut nicht, WIE LANGE der Lauf schon rechnet, sondern
+# OB er noch etwas tut: waechst das Logfile ueber LEBENSZEICHEN_MIN Minuten nicht, ist der Prozess
+# so festgefahren, dass nicht einmal mehr sein eigener Fortschrittswaechter feuert.
+# Gemessen: ein arbeitender Lauf schreibt alle 25 Punkte eine Zeile, bei 12 Punkten pro Minute
+# also alle zwei Minuten. 30 Minuten Stille sind damit kein langsamer Lauf, sondern ein toter.
+# `docker stop` und nicht `kill`: der Lauf haengt IM Container, und stop schickt erst SIGTERM —
+# der EXIT-trap drinnen kommt also noch zum Zug.
+(
+  letzte_groesse=0
+  still_seit=0
+  while kill -0 "$LAUF_PID" 2>/dev/null; do
+    sleep 60
+    jetzt_groesse=$(wc -c < "$LOG" 2>/dev/null | tr -d ' ')
+    : "${jetzt_groesse:=0}"
+    if [ "$jetzt_groesse" -gt "$letzte_groesse" ]; then
+      letzte_groesse=$jetzt_groesse
+      still_seit=0
+    else
+      still_seit=$((still_seit + 1))
+      if [ "$still_seit" -ge "$LEBENSZEICHEN_MIN" ]; then
+        echo "[$(date '+%F %T')] KEIN LEBENSZEICHEN seit ${LEBENSZEICHEN_MIN} min — Container wird gestoppt." >>"$LOG"
+        sudo -n docker stop -t 120 anreicherung-nacht >/dev/null 2>&1
+        exit 0
+      fi
+    fi
+  done
+) &
+WAECHTER_PID=$!
+
+wait "$LAUF_PID"
 ERGEBNIS=$?
+kill "$WAECHTER_PID" 2>/dev/null
 sage "Anreicherung beendet (Code $ERGEBNIS)."
 tail -3 "$LOG" | sed 's/^/    /'
 
@@ -389,15 +420,20 @@ if [ "$ERGEBNIS" -ne 0 ]; then
     # der fertig ist.
     2)   GRUND="abgeschnitten, es bleibt etwas offen (siehe 'Noch offen' im Log)" ;;
     3)   GRUND="haengt — seit ${NACHTLAUF_STILL_MIN:-15} min kein Punkt mehr fertig geworden" ;;
-    # 124 gibt coreutils' timeout zurueck; das Image bringt BusyBox mit, und die meldet 143.
-    # Beide Faelle stehen hier, damit ein Wechsel des Basis-Images nicht still durchrutscht.
-    124) GRUND="Zeitlimit von ${MAX_MIN} min gerissen (timeout)" ;;
-    # 137 ist SIGKILL von aussen: Deploy, `docker stop` (10 s Gnadenfrist, dann hart), der
-    # OOM-Killer — oder unser eigenes `timeout -k $KILL_NACH`, wenn der Lauf auf das SIGTERM des
-    # Zeitlimits nicht mehr reagiert hat. Im Log steht davor "SIGTERM — halte nach diesem Block
-    # an", der Lauf wollte also sauber aufhoeren und durfte nicht mehr.
-    137) GRUND="hart abgeschossen (Code 137/SIGKILL) — Deploy, docker stop, OOM-Killer oder die Gnadenfrist von $KILL_NACH" ;;
-    143) GRUND="vom Zeitlimit (${MAX_MIN} min) beendet, ohne selbst aufzuhoeren (Code 143)" ;;
+    # 4 kommt aus dem Lauf selbst, wenn KEIN Modell der Kette mehr antwortet (T-736). Das ist der
+    # Fall, in dem Weiterrechnen aktiv schadet: ohne Modell haekt die Schleife mit ueber 9.000
+    # Punkten pro Minute den Bestand als "gelesen, nichts gefunden" ab. Lieber laut abbrechen.
+    4)   GRUND="kein Modell der Kette antwortet — Lauf angehalten, damit nichts faelschlich als bearbeitet gilt" ;;
+    # SEIT 07.09.2026 GIBT ES KEIN ZEITLIMIT MEHR (siehe LEBENSZEICHEN_MIN oben). 124 und 143
+    # koennen also nicht mehr von uns kommen — bleiben sie hier stehen, weil sie weiterhin von
+    # aussen auftreten: 143 ist das SIGTERM eines `docker stop`, etwa durch einen Deploy oder
+    # durch unseren eigenen Lebenszeichen-Waechter.
+    124) GRUND="von einem Zeitlimit beendet (Code 124) — kommt nicht mehr von uns, also von aussen" ;;
+    # 137 ist SIGKILL von aussen: Deploy, `docker stop` nach Ablauf seiner Gnadenfrist, OOM-Killer.
+    # Im Log steht davor oft "SIGTERM — halte nach diesem Block an": der Lauf wollte sauber
+    # aufhoeren und durfte nicht mehr.
+    137) GRUND="hart abgeschossen (Code 137/SIGKILL) — Deploy, docker stop oder OOM-Killer" ;;
+    143) GRUND="durch SIGTERM beendet (Code 143) — Deploy, docker stop oder der Lebenszeichen-Waechter nach ${LEBENSZEICHEN_MIN} min Stille" ;;
     *)   GRUND="Rueckgabewert $ERGEBNIS" ;;
   esac
   sage "ACHTUNG: die Anreicherung ist nicht sauber zu Ende gekommen — $GRUND."

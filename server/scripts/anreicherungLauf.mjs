@@ -68,8 +68,10 @@
 // Doppelte des schlimmsten Falls, den ein einzelner Punkt überhaupt bauen kann (drei Rollen à
 // 120 s Zeitlimit, modell.js).
 //
-// Das feste Zeitlimit in nachtlauf.sh bleibt daneben stehen, aber nur noch als letzte Sicherung
-// für den Fall, dass der Prozess so festhängt, dass nicht einmal mehr ein Timer feuert.
+// In nachtlauf.sh steht daneben KEIN festes Zeitlimit mehr (Max, 07.09.2026: "lass das Ding
+// rennen bis alles durch ist … aber nicht einfach abschneiden"). Statt einer Uhr wacht dort ein
+// Lebenszeichen-Wächter: wächst das Logfile 30 Minuten lang nicht, hängt der Prozess so tief,
+// dass nicht einmal mehr dieser Timer hier feuert — nur dann wird der Container gestoppt.
 //
 // RÜCKGABEWERTE, damit ein abgeschnittener Lauf nicht mehr wie ein fertiger aussieht (bis zum
 // 07.09.2026 endete er IMMER mit 0, auch nach SIGTERM mitten im Bestand — nachtlauf.sh meldete
@@ -77,6 +79,8 @@
 //   0 — durchgelaufen, es ist nichts mehr offen
 //   2 — abgeschnitten: Signal oder Zeitlimit, es bleibt etwas offen
 //   3 — hängt: seit ANREICHERUNG_STILL_MIN Minuten kein Punkt mehr fertig geworden
+//   4 — kein Modell der Kette antwortet (T-736): Abbruch, damit nichts faelschlich als
+//       bearbeitet gilt. Was bis dahin gefunden wurde, ist eingespielt.
 
 import { pathToFileURL } from "node:url"
 import { createDefaultDb } from "../src/db.js"
@@ -338,7 +342,13 @@ async function main() {
     // Auch der Abgleich und das Einspielen sind Fortschritt — sonst schlüge der Wächter an,
     // während der Lauf gerade ordentlich arbeitet.
     letzterFortschritt = Date.now()
-    const r = await laufeUeberBestand(db, {
+    // T-736: ein Modellausfall kommt hier als Wurf an und bekommt einen EIGENEN Ausgang (4).
+    // Ohne ihn liefe der Lauf mit einem gewoehnlichen Fehler aus, und nachtlauf.sh haette ihn
+    // unter "Rueckgabewert N" gemeldet — richtig, aber nichtssagend. Wer die Mail liest, soll
+    // sofort wissen, dass die Karte nicht antwortet und NICHT, dass die Daten kaputt sind.
+    let r
+    try {
+      r = await laufeUeberBestand(db, {
       modell: konfig.name,
       rufeModell,
       rollen,
@@ -352,7 +362,16 @@ async function main() {
           sage(`  ${summe.gesehen + z.gesehen} Punkte, ${summe.geschrieben + z.geschrieben} Angaben gefunden, ${proMin}/min`)
         }
       },
-    })
+      })
+    } catch (err) {
+      if (err?.name !== "ModellNichtErreichbar") throw err
+      sage(`MODELL ANTWORTET NICHT: ${err.message}`)
+      sage("Abbruch, damit keine Punkte faelschlich als bearbeitet gelten. Der naechste Lauf nimmt sie erneut.")
+      // Was bis hierher geschafft wurde, ist echt und darf in den Bestand.
+      const ein = await spieleEin(db, { modell: konfig.name }).catch(() => ({ aktualisiert: 0 }))
+      sage(`Bis zum Abbruch eingespielt: ${ein.aktualisiert} Punkte, ${summe.geschrieben} Angaben.`)
+      process.exit(4)
+    }
     summe = {
       gesehen: summe.gesehen + r.gesehen,
       geschrieben: summe.geschrieben + r.geschrieben,
