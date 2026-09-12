@@ -158,8 +158,10 @@ describe("parsePunkteGeoJson", () => {
     const [ebene] = parsePunkteGeoJson(geojson, "wind")
     expect(ebene.name).toBe("wind")
     expect(ebene.punkte).toEqual([
-      { lat: 53.2, lng: 8.1, name: "Windpark Nord", attribute: { NAME: "Windpark Nord", betreiber: "EnBW" } },
-      { lat: 53.25, lng: 8.15, name: "Windpark Nord", attribute: { NAME: "Windpark Nord", betreiber: "EnBW" } },
+      // NAME steht NICHT mehr in den Attributen: die Spalte hat die Überschrift geliefert, und im
+      // Popup stünde sie sonst zweimal (fett oben und als Zeile darunter). `betreiber` bleibt.
+      { lat: 53.2, lng: 8.1, name: "Windpark Nord", attribute: { betreiber: "EnBW" } },
+      { lat: 53.25, lng: 8.15, name: "Windpark Nord", attribute: { betreiber: "EnBW" } },
     ])
   })
 
@@ -174,7 +176,8 @@ describe("parsePunkteGeoJson", () => {
       ],
     })
     const [ebene] = parsePunkteGeoJson(geojson)
-    expect(ebene.punkte).toEqual([{ lat: 51.5, lng: 7.5, name: "ok", attribute: { name: "ok" } }])
+    // `name` war die einzige Eigenschaft und ist als Überschrift verbraucht → gar keine Attribute.
+    expect(ebene.punkte).toEqual([{ lat: 51.5, lng: 7.5, name: "ok" }])
   })
 
   it("meldet unlesbares JSON in der Sie-Form", () => {
@@ -407,8 +410,9 @@ describe("Shapefile-ZIP", () => {
     expect(ebenen[0].name).toBe("rastplaetze")
     expect(ebenen[0].hinweis).toBeUndefined()
     expect(ebenen[0].punkte).toEqual([
-      { lat: 48.7758, lng: 9.1829, name: "Rastplatz Ost", attribute: { NAME: "Rastplatz Ost" } },
-      { lat: 49, lng: 8.4, name: "Rastplatz West", attribute: { NAME: "Rastplatz West" } },
+      // Das DBF führt nur NAME, und daraus wurde die Überschrift → keine Attributzeile übrig.
+      { lat: 48.7758, lng: 9.1829, name: "Rastplatz Ost" },
+      { lat: 49, lng: 8.4, name: "Rastplatz West" },
     ])
   })
 
@@ -501,5 +505,42 @@ describe("_decodeGpkgGeometry", () => {
       [7.5, 51.5],
     ])
     expect(_decodeGpkgGeometry(blob, "punkt")).toEqual([])
+  })
+})
+
+describe("Überschrift und Attribute", () => {
+  it("entfernt die Namensspalte aus den Attributen, aber nur die (T-739)", () => {
+    const geojson = JSON.stringify({
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          // „Richtung" trägt DENSELBEN Wert wie der Name, ist aber eine eigene Aussage und muss
+          // bleiben. Nur „name" hat die Überschrift geliefert und fällt weg.
+          properties: { name: "Nord", Richtung: "Nord", Traglast: "60 t" },
+          geometry: { type: "Point", coordinates: [9.9, 51.7] },
+        },
+      ],
+    })
+    const [ebene] = parsePunkteGeoJson(geojson)
+    expect(ebene.punkte).toEqual([
+      { lat: 51.7, lng: 9.9, name: "Nord", attribute: { Richtung: "Nord", Traglast: "60 t" } },
+    ])
+  })
+
+  it("lässt eine Namensspalte stehen, wenn sie NICHT die Überschrift geliefert hat", () => {
+    const geojson = JSON.stringify({
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: { name: "Echter Name", bezeichnung: "Etwas anderes" },
+          geometry: { type: "Point", coordinates: [9.9, 51.7] },
+        },
+      ],
+    })
+    const [ebene] = parsePunkteGeoJson(geojson)
+    expect(ebene.punkte[0].name).toBe("Echter Name")
+    expect(ebene.punkte[0].attribute).toEqual({ bezeichnung: "Etwas anderes" })
   })
 })

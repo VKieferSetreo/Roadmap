@@ -66,7 +66,19 @@ export function baueMarkierung(
   const n = kappe(name.trim(), MAX_NAME_LAENGE)
   if (n) m.name = n
   const attribute = normalisiereAttribute(roh)
-  if (attribute) m.attribute = attribute
+  if (attribute) {
+    // Kam die Überschrift aus einer Namensspalte (SHP-DBF, GPKG-Tabelle), stünde sie im Popup
+    // sonst zweimal: einmal fett oben, einmal als Zeile „name: …" darunter.
+    // Bedingung ist BEIDES — Spalte aus NAME_SPALTEN und derselbe Wert. Nur auf den Wert zu
+    // prüfen wäre zu grob: ein Punkt „Nord" mit dem Attribut „Richtung: Nord" verlöre die
+    // Richtung, und die ist eine eigene Aussage.
+    const ohneDoppel = Object.fromEntries(
+      Object.entries(attribute).filter(
+        ([k, v]) => !(v === n && NAME_SPALTEN.includes(k.trim().toLowerCase())),
+      ),
+    )
+    if (Object.keys(ohneDoppel).length) m.attribute = ohneDoppel
+  }
   return m
 }
 
