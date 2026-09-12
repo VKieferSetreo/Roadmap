@@ -90,7 +90,13 @@ export function DropZone({
   }
 
   return (
-    <div className={cn(fill && "flex flex-1 flex-col", className)}>
+    // `relative` ist Pflicht, nicht Kosmetik: der Datei-Input unten trägt `sr-only`, und das
+    // heißt `position: absolute`. Ohne einen positionierten Vorfahren bezieht er sich auf den
+    // initialen Containing Block, entkommt damit dem `overflow` des scrollenden Eltern-Bereichs
+    // und dehnt das DOKUMENT bis zu seiner Position. Folge: die Seite bekommt eine zweite
+    // Scroll-Ebene, und wer ans Ende scrollt, schiebt Kopfzeile, Seitenleiste und Fußzeile aus
+    // dem Bild (T-743). Fällt erst auf, sobald eine DropZone unterhalb der Falz liegt.
+    <div className={cn("relative", fill && "flex flex-1 flex-col", className)}>
       <div
         role="button"
         tabIndex={0}
