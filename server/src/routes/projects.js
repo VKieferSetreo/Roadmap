@@ -81,6 +81,122 @@ export function normalizeRoutes(routes) {
   })
 }
 
+// Voreinstellung für eine Punkt-Ebene ohne (gültige) Farbe — erster Ton aus MARKIERUNG_FARBEN.
+export const DEFAULT_MARKIERUNG_FARBE = "#0F766E"
+
+/** Obergrenzen für Punkt-Ebenen (T-739).
+ *
+ *  Sie stehen HIER und nicht nur im Frontend, weil das Frontend die Bequemlichkeit ist und dieser
+ *  Router die Vertrauensgrenze: ein Client kann jedes beliebige JSON schicken. Die Grenzen sind
+ *  eng, weil GET /api/projects ALLE Projekte in einer Antwort liefert.
+ *
+ *  Das FE (src/types/domain.ts MARKIERUNG_GRENZEN) hält sich absichtlich strenger; hier steht die
+ *  äußere Schranke, unterhalb derer nichts mehr kaputtgehen kann. */
+export const MARKIERUNG_GRENZEN = {
+  punkteJeEbene: 5000,
+  ebenenJeProjekt: 50,
+  // Ohne Gesamtdeckel wären 50 × 5000 = 250.000 Punkte möglich. Das passt zwar durch den
+  // 20-MB-Body, aber nicht mehr auf eine Karte: der Browser des Disponenten stünde. Die Grenze
+  // gehört hierher und nicht nur ins FE, sonst hält sie nur, solange das FE mitspielt.
+  punkteJeProjekt: 20000,
+  attributeJePunkt: 30,
+  attributSchluesselLaenge: 60,
+  attributWertLaenge: 200,
+  namensLaenge: 200,
+}
+
+// Nur echte Hex-Farben. Die Farbe landet im FE in einer Stil-Angabe; alles andere wäre eine
+// fremdgesteuerte CSS-Eingabe und wird still durch die Voreinstellung ersetzt.
+const HEX_FARBE = /^#[0-9a-fA-F]{3,8}$/
+const gekappt = (v, max) => String(v).trim().slice(0, max)
+// Koordinaten: endlich UND im gültigen Bereich. Ein Shapefile in falscher Projektion liefert sonst
+// Werte wie 4.500.000 und reißt die Karte auf.
+const saneMarkierung = (p) => sanePoint(p) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180
+
+/** Attribute eines Punktes: flach, ausschließlich Text, gekappt. Verschachteltes fliegt raus,
+ *  statt als "[object Object]" in der Karte zu landen; Zahlen/Booleans werden zu Text (der
+ *  Vertrag ist Record<string,string>, und angezeigt wird ohnehin alles als Text). */
+function normalizeAttribute(roh) {
+  if (!isPlainObject(roh)) return undefined
+  const out = {}
+  let n = 0
+  for (const [k, v] of Object.entries(roh)) {
+    if (n >= MARKIERUNG_GRENZEN.attributeJePunkt) break
+    if (v == null || typeof v === "object" || typeof v === "function") continue
+    const key = gekappt(k, MARKIERUNG_GRENZEN.attributSchluesselLaenge)
+    // __proto__ als eigener Schlüssel ist auf einem Objektliteral nicht setzbar (der Setter
+    // schluckt ihn) — dann lieber ausdrücklich überspringen als still ein Attribut verlieren.
+    if (!key || key === "__proto__") continue
+    out[key] = gekappt(v, MARKIERUNG_GRENZEN.attributWertLaenge)
+    n++
+  }
+  return n ? out : undefined
+}
+
+/** Boundary-Validierung für PATCH {markierungen} — ersetzt das ganze Array, analog normalizeRoutes.
+ *  Strikte Feld-Whitelist: was hier fehlt, ist beim nächsten Laden weg.
+ *
+ *  ZWEI UNTERSCHIEDLICHE REAKTIONEN, mit Absicht:
+ *   - zu VIELE EBENEN → 400 mit klarer Meldung. Eine ganze Ebene stillschweigend fallenzulassen
+ *     würde der Nutzer erst merken, wenn er sie auf der Karte sucht.
+ *   - zu VIELE PUNKTE in einer Ebene → auf die Grenze gekappt, die Ebene bleibt erhalten.
+ *     NICHT ausgedünnt: das Ausdünnen von Stützpunkten einer Strecke verschiebt eine Linie um
+ *     Meter, das Ausdünnen von Standorten LÖSCHT Standorte. Lieber die ersten 5.000 vollständig
+ *     als 5.000 aus 20.000 herausgegriffene.
+ *  Einzelne kaputte Punkte (NaN, Koordinaten außerhalb der Erde) werden verworfen, nicht die Ebene. */
+export function normalizeMarkierungen(ebenen) {
+  if (!Array.isArray(ebenen)) throw new ApiError(400, "markierungen muss ein Array sein")
+  if (ebenen.length > MARKIERUNG_GRENZEN.ebenenJeProjekt) {
+    throw new ApiError(
+      400,
+      `Ein Projekt fasst höchstens ${MARKIERUNG_GRENZEN.ebenenJeProjekt} Markierungs-Ebenen. Bitte entfernen Sie zuerst eine Ebene.`,
+    )
+  }
+  let punkteGesamt = 0
+  return ebenen.map((e, i) => {
+    if (!isPlainObject(e)) throw new ApiError(400, `markierungen[${i}] muss ein Objekt sein`)
+    if (e.punkte !== undefined && !Array.isArray(e.punkte)) {
+      throw new ApiError(400, `markierungen[${i}].punkte muss ein Array sein`)
+    }
+    // Rest bis zum Projekt-Gesamtdeckel — greift, bevor die Ebene ihren eigenen Deckel ausschöpft.
+    const rest = Math.max(0, MARKIERUNG_GRENZEN.punkteJeProjekt - punkteGesamt)
+    const punkte = (e.punkte ?? [])
+      .filter(saneMarkierung)
+      .slice(0, Math.min(MARKIERUNG_GRENZEN.punkteJeEbene, rest))
+      .map((p) => {
+        const name = typeof p.name === "string" ? gekappt(p.name, MARKIERUNG_GRENZEN.namensLaenge) : ""
+        const attribute = normalizeAttribute(p.attribute)
+        return { lat: p.lat, lng: p.lng, ...(name ? { name } : {}), ...(attribute ? { attribute } : {}) }
+      })
+    punkteGesamt += punkte.length
+    return {
+      id: typeof e.id === "string" && e.id.trim() ? gekappt(e.id, MARKIERUNG_GRENZEN.namensLaenge) : randomUUID(),
+      name: typeof e.name === "string" && e.name.trim()
+        ? gekappt(e.name, MARKIERUNG_GRENZEN.namensLaenge)
+        : `Ebene ${i + 1}`,
+      ...(typeof e.fileName === "string" && e.fileName
+        ? { fileName: gekappt(e.fileName, MARKIERUNG_GRENZEN.namensLaenge) }
+        : {}),
+      punkte,
+      farbe: typeof e.farbe === "string" && HEX_FARBE.test(e.farbe) ? e.farbe : DEFAULT_MARKIERUNG_FARBE,
+      // Nur FALSE speichern, genau wie bei den Strecken (T-650): die Voreinstellung ist sichtbar.
+      ...(e.oeffentlich === false ? { oeffentlich: false } : {}),
+    }
+  })
+}
+
+/** Ebenen für die PROJEKTLISTE: alles außer der Punktlast.
+ *  GET /api/projects liefert jedes Projekt mit voller Geometrie in EINER Antwort — die Punkte
+ *  würden sie vervielfachen, obwohl die Liste nur Namen und Zähler zeigt. `anzahl` ist zugleich
+ *  das Unterscheidungsmerkmal: das Feld existiert AUSSCHLIESSLICH in der Liste, im Detail-GET nie.
+ *  Also: `anzahl !== undefined` heißt „Punkte nicht mitgeliefert", auch bei einer leeren Ebene. */
+const ebenenOhnePunkte = (ebenen) =>
+  (Array.isArray(ebenen) ? ebenen : []).map(({ punkte, ...rest }) => ({
+    ...rest,
+    punkte: [],
+    anzahl: Array.isArray(punkte) ? punkte.length : 0,
+  }))
+
 // Sichtbar: geteilt (owner NULL) ODER eigen-privat (owner = eigene E-Mail). PRIVAT ist strikt pro
 // Account — auch ein Setreo-Super-Admin sieht KEINE fremden privaten Projekte (T-638, Max 2026-07-04:
 // „privat muss wirklich privat sein, pro Email, nicht Gruppe"). Der frühere Admin-Bypass (OR isAdmin)
@@ -188,13 +304,16 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
       for (const s of sRes.rows) sharesBy.set(s.project_id, s)
     }
     res.json({
-      projects: rows.map((p) =>
-        rowToProject(
+      projects: rows.map((p) => {
+        const projekt = rowToProject(
           p,
           findingsBy.get(p.id) ?? [],
           rowToShareInfo(sharesBy.get(p.id) ?? null, shareBaseUrl, req.ctx.tenant.slug),
-        ),
-      ),
+        )
+        // T-739: die Liste trägt die Ebenen, aber nicht deren Punkte (siehe ebenenOhnePunkte).
+        projekt.markierungen = ebenenOhnePunkte(projekt.markierungen)
+        return projekt
+      }),
     })
   }))
 
@@ -227,14 +346,15 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
       throw new ApiError(400, "name erforderlich")
     }
     const { rows } = await db.query(
-      `INSERT INTO projects (name, status, tenant_id, routes, transport, zeitraum, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      `INSERT INTO projects (name, status, tenant_id, routes, transport, zeitraum, created_by, markierungen)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
       [
         name.trim(), "entwurf", req.ctx.tenant.id,
         JSON.stringify([]),
         JSON.stringify(DEFAULT_TRANSPORT),
         JSON.stringify({}),
         req.ctx.email ?? null,
+        JSON.stringify([]),
       ],
     )
     res.status(201).json(rowToProject(rows[0], [], null))
@@ -263,6 +383,9 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
     // transport/zeitraum: Merge-Patch wie der FE-Store; routes: ersetzt das ganze Array
     const name = body.name !== undefined ? body.name.trim() : row.name
     const routes = body.routes !== undefined ? normalizeRoutes(body.routes) : row.routes
+    // markierungen: ersetzt das ganze Array, genau wie routes (T-739).
+    const markierungen =
+      body.markierungen !== undefined ? normalizeMarkierungen(body.markierungen) : (row.markierungen ?? [])
     const transport = body.transport ? { ...row.transport, ...body.transport } : row.transport
     const zeitraum = body.zeitraum ? { ...row.zeitraum, ...body.zeitraum } : row.zeitraum
     // archiviert: true setzt den Zeitstempel (idempotent), false stellt wieder her
@@ -299,12 +422,13 @@ export function projectsRouter({ db, corridorM, shareBaseUrl, osrm = null }) {
     // statt den frischeren Stand still zu überschreiben. Alt-Clients ohne version → blinder
     // Overwrite wie bisher (abwärtskompatibel, kein 409-Sturm während des Deploys).
     const expectedVersion = Number.isInteger(body.version) ? body.version : undefined
-    const params = [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId, ownerEmail]
+    const params = [row.id, name, JSON.stringify(routes), JSON.stringify(transport), JSON.stringify(zeitraum), archivedAt, folderId, ownerEmail, JSON.stringify(markierungen)]
     if (expectedVersion !== undefined) params.push(expectedVersion)
     const { rows } = await db.query(
       `UPDATE projects SET name = $2, routes = $3, transport = $4, zeitraum = $5,
-         archived_at = $6, folder_id = $7, owner_email = $8, version = version + 1, updated_at = now()
-       WHERE id = $1${expectedVersion !== undefined ? " AND version = $9" : ""} RETURNING *`,
+         archived_at = $6, folder_id = $7, owner_email = $8, markierungen = $9,
+         version = version + 1, updated_at = now()
+       WHERE id = $1${expectedVersion !== undefined ? " AND version = $10" : ""} RETURNING *`,
       params,
     )
     if (!rows[0]) throw new ApiError(409, "konflikt-veraltet")

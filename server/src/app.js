@@ -305,6 +305,15 @@ export function createApp({
     if (err?.type === "entity.parse.failed") {
       return res.status(400).json({ error: "Ungültiges JSON" })
     }
+    // T-739: der Body-Deckel (express.json limit 20mb) wirft entity.too.large. Ohne diesen Zweig
+    // fällt ein zu großer Upload — z.B. eine Punkt-Ebene mit zehntausenden Standorten — in den
+    // generischen 500 „Interner Fehler", und der Nutzer sucht den Fehler bei sich in der App
+    // statt in seiner Datei. 413 ist die richtige Antwort und sagt, was zu tun ist.
+    if (err?.type === "entity.too.large") {
+      return res.status(413).json({
+        error: "Die Daten sind zu groß (höchstens 20 MB je Anfrage). Bitte laden Sie eine kleinere Datei hoch oder teilen Sie sie auf.",
+      })
+    }
     // T-389: Pool-Erschöpfung / DB-Verbindungsabriss als 503 + Retry-After surfacen statt
     // generischem 500 — der Client darf dann sinnvoll erneut versuchen.
     if (err?.message && /timeout exceeded when trying to connect|Connection terminated|too many clients/i.test(err.message)) {
