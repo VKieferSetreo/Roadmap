@@ -6,9 +6,10 @@ import L from "leaflet"
 import { MapContainer, Marker, Polyline, Popup, Tooltip, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Locate, Maximize2, Minimize2, Minus, Plus, TriangleAlert } from "lucide-react"
-import { routeFreigegeben, type Finding, type ProjectRoute, type RoutePoint } from "@/types/domain"
+import { routeFreigegeben, type Finding, type MarkierungsEbene, type ProjectRoute, type RoutePoint } from "@/types/domain"
 import { EIGEN_COLOR, istEigenerEintrag, katMeta, SEVERITY_META } from "@/components/project/findingMeta"
 import { FindingMarker } from "./FindingMarker"
+import { MarkierungsLayer } from "./MarkierungsLayer"
 import { LayerSwitcher } from "./MapControls"
 import { MapResize } from "./MapResize"
 import { directionArrowIcon, endPinIcon, startPinIcon } from "./pins"
@@ -80,6 +81,8 @@ interface RouteMapProps {
   /** Karte auf diesen Punkt zentrieren, sobald sich `nonce` ändert (Such-Treffer-Sprung). */
   focusPoint?: { lat: number; lng: number; nonce: number } | null
   className?: string
+  /** Sichtbare Markierungs-Ebenen (T-739) — eigene Punkte, Caller filtert ausgeblendete vorab. */
+  markierungen?: MarkierungsEbene[]
   /** Overlays (Suche, Panels, Zeitstrahl) — liegen IM Karten-Wrapper, damit sie auch
    *  im Vollbild sichtbar bleiben (T-198). */
   children?: ReactNode
@@ -97,6 +100,7 @@ export function RouteMap({
   onUnhide,
   canChat = true,
   focusPoint,
+  markierungen,
   className,
   children,
 }: RouteMapProps) {
@@ -127,9 +131,16 @@ export function RouteMap({
     [routes],
   )
   // Aus den BEREITS sanierten positions (finite) — sonst vergiftet ein NaN-Punkt fitBounds/Zentrieren.
+  // T-739: Markierungen zählen mit, sonst liegt ein Projekt aus reinen Standorten außerhalb des
+  // Ausschnitts (und „Auf Strecke zentrieren" bliebe ohne Strecke dauerhaft deaktiviert).
   const allPoints = useMemo(
-    () => drawn.flatMap((r) => r.positions.map(([lat, lng]) => ({ lat, lng }))),
-    [drawn],
+    () => [
+      ...drawn.flatMap((r) => r.positions.map(([lat, lng]) => ({ lat, lng }))),
+      ...(markierungen ?? []).flatMap((e) =>
+        e.punkte.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng)),
+      ),
+    ],
+    [drawn, markierungen],
   )
   // T-377: Gruppierung (O(n²)) nur bei Funde-Änderung, nicht bei jedem Pan/Zoom-Render.
   const findingGroups = useMemo(() => groupFindings(findings), [findings])
@@ -370,6 +381,9 @@ export function RouteMap({
             Steht NACH den Markern, damit ein kaputter Fund sie nicht mitreisst (siehe oben). */}
         {findingLines(findings, false)}
         {ghostFindings ? findingLines(ghostFindings, true) : null}
+
+        {/* T-739: eigene Markierungen als geclusterte Punkt-Ebene. */}
+        {markierungen?.length ? <MarkierungsLayer ebenen={markierungen} /> : null}
       </MapContainer>
 
       {/* Map-Controls unten links: Ebene + Vollbild + Zentrieren + Zoom +/− (Daten-Panels sitzen rechts) */}

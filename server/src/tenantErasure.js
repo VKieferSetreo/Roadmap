@@ -26,7 +26,9 @@ export async function exportTenant(db, tenant) {
 
   const members = await rows("SELECT email, role, created_at FROM tenant_members WHERE tenant_id = $1", [id])
   const projects = await rows(
-    "SELECT id, name, status, routes, transport, zeitraum, created_by, distanz_km, fahrzeit_min, archived_at, created_at, updated_at FROM projects WHERE tenant_id = $1",
+    // markierungen (T-739): hochgeladene Punkt-Ebenen sind eigene Inhalte des Mandanten und
+    // gehoeren damit in die Auskunft nach Art. 15/20 — genau wie routes.
+    "SELECT id, name, status, routes, markierungen, transport, zeitraum, created_by, distanz_km, fahrzeit_min, archived_at, created_at, updated_at FROM projects WHERE tenant_id = $1",
     [id],
   )
   const projectIds = projects.map((p) => p.id)

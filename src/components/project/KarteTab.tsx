@@ -138,6 +138,11 @@ export function KarteTab({
    *  localStorage-Cache hydriert (kein Flackern), beim Mount mit dem Backend abgeglichen. */
   const [hidden, setHidden] = useState<Set<string>>(() => new Set(getHiddenPref(accountKey, project.id)))
   const [layersOpen, setLayersOpen] = useState(panelsOffen)
+  /** T-739: ausgeblendete Markierungs-Ebenen. Bewusst NUR lokal (kein viewer_route_prefs):
+   *  Markierungen sind eigene Zusatzpunkte, ihre Sichtbarkeit muss nicht über Geräte hinweg
+   *  mitwandern — und die Prefs-Tabelle hängt am Strecken-Modell. */
+  const [versteckteEbenen, setVersteckteEbenen] = useState<Set<string>>(() => new Set())
+  const [markierungenOpen, setMarkierungenOpen] = useState(panelsOffen)
   /** Strecke im Editor (T-197), null = geschlossen. */
   const [editRoute, setEditRoute] = useState<ProjectRoute | null>(null)
   /** Kategorie-Panel (unter Strecken) auf-/zugeklappt. Startwert siehe `panelsOffen`. */
@@ -372,7 +377,11 @@ export function KarteTab({
   // T-220: Karte während (Re-)Auswertung sichtbar lassen (running/vorhandene Funde) statt Empty-Flash;
   // ohne Strecken-Punkte gibt es nichts zu zeigen.
   const hatRouten = freigegebeneRouten.some((r) => r.points.length >= 2)
-  if (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0)) {
+  // T-739: Ein Projekt kann auch NUR aus Markierungen bestehen (z.B. erst die Parkplätze erfasst,
+  // Strecke kommt später). Dann gibt es zwar nichts auszuwerten, aber sehr wohl etwas zu zeigen —
+  // ohne diese Ausnahme bliebe die Karte leer und die hochgeladenen Punkte unsichtbar.
+  const hatMarkierungen = (project.markierungen ?? []).some((e) => e.punkte.length > 0)
+  if (!hatMarkierungen && (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0))) {
     // T-723: ein fehlgeschlagener Lauf setzt den Status zurueck auf "entwurf"
     // (store/projects.ts, fail()) — die Karte sagte danach „Laden Sie die Strecke(n) hoch und
     // starten Sie die Auswertung", obwohl der Disponent genau das getan hatte. Der Fehler stand nur
@@ -494,10 +503,14 @@ export function KarteTab({
     }
   }
 
+  const alleEbenen = project.markierungen ?? []
+  const sichtbareEbenen = alleEbenen.filter((e) => !versteckteEbenen.has(e.id))
+
   return (
     <div className="relative h-full w-full">
       <RouteMap
         routes={sichtbareRouten}
+        markierungen={sichtbareEbenen}
         findings={gefilterteFindings}
         selectedId={selectedId}
         onSelect={setSelectedId}
@@ -755,6 +768,75 @@ export function KarteTab({
             </ul>
           ) : null}
         </div>
+
+        {/* T-739: Markierungs-Ebenen — eigener Schalter je Ebene, gleiche Bauform wie „Strecken".
+            Fehlt eine Ebene, fehlt auch das Panel: leere Kästen kosten nur Höhe. */}
+        {alleEbenen.length > 0 ? (
+          <div className="glass pointer-events-auto animate-rise-in" style={{ animationDelay: "70ms" }}>
+            <button
+              type="button"
+              onClick={() => setMarkierungenOpen((o) => !o)}
+              aria-expanded={markierungenOpen}
+              className="flex w-full cursor-pointer items-center gap-2 px-3 py-2.5 text-left"
+            >
+              <MapPinned className="h-4 w-4 text-primary-600" />
+              <span className="flex-1 text-sm font-semibold text-neutral-800">Markierungen</span>
+              <span className="text-[11px] tabular-nums text-neutral-400">
+                {sichtbareEbenen.length}/{alleEbenen.length}
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-neutral-400 transition-transform duration-200",
+                  markierungenOpen && "rotate-180",
+                )}
+              />
+            </button>
+            {markierungenOpen ? (
+              <ul className="max-h-[30vh] overflow-y-auto border-t border-neutral-200/70 px-2 py-1.5">
+                {alleEbenen.map((e) => {
+                  const sichtbar = !versteckteEbenen.has(e.id)
+                  return (
+                    <li
+                      key={e.id}
+                      className={cn(
+                        "flex items-center gap-1 rounded-md transition-colors hover:bg-neutral-100/70",
+                        !sichtbar && "opacity-55",
+                      )}
+                    >
+                      <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 px-1.5 py-1.5">
+                        <input
+                          type="checkbox"
+                          checked={sichtbar}
+                          onChange={() =>
+                            setVersteckteEbenen((s) => {
+                              const n = new Set(s)
+                              if (n.has(e.id)) n.delete(e.id)
+                              else n.add(e.id)
+                              return n
+                            })
+                          }
+                          className="h-3.5 w-3.5 shrink-0 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
+                          aria-label={`Ebene ${e.name} ${sichtbar ? "ausblenden" : "einblenden"}`}
+                        />
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white"
+                          style={{ background: e.farbe }}
+                          aria-hidden
+                        />
+                        <span className="min-w-0 flex-1 truncate text-xs font-medium text-neutral-700">
+                          {e.name}
+                        </span>
+                        <span className="w-16 shrink-0 text-right text-[10px] tabular-nums text-neutral-400">
+                          {e.punkte.length.toLocaleString("de-DE")}
+                        </span>
+                      </label>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
 
         {/* Kategorie-Filter — direkt unter "Strecken", gleiche Breite (Stack = w-280),
             einklappbar. Klick blendet eine Kategorie auf Karte + Ticket-Suche aus. */}

@@ -190,6 +190,39 @@ export interface Finding {
   publicChat?: FindingChatMessage[]
 }
 
+/** Ein einzelner Standort einer Markierungs-Ebene (T-739). */
+export interface Markierung {
+  lat: number
+  lng: number
+  /** Überschrift im Popup — KML <name>, Namensspalte aus SHP/GPKG, sonst „Punkt N". */
+  name?: string
+  /** Freie Attribute aus der Datei, flach und ausschließlich als Text: DBF liefert sonst
+   *  Date-Objekte und Zahlen gemischt, und angezeigt wird alles ohnehin als Text. */
+  attribute?: Record<string, string>
+}
+
+/** Eine hochgeladene Punkt-Ebene (Parkplätze, Windräder, eigene Standorte …) — je Datei bzw. je
+ *  Layer in der Datei eine Ebene (T-739). REIN VISUELL: fließt nicht in die Hindernis-Auswertung
+ *  ein, erscheint nur als eigene Ebene auf der Karte. Punkte werden NICHT ausgedünnt (das würde
+ *  Standorte löschen, nicht Stützpunkte) — zu große Dateien werden beim Einlesen abgelehnt. */
+export interface MarkierungsEbene {
+  id: string
+  /** Anzeigename im Ebenen-Panel (Default: Layer- bzw. Dateiname). */
+  name: string
+  fileName?: string
+  punkte: Markierung[]
+  /** NUR in der Projektliste (GET /api/projects) gesetzt: dort liefert der Server die Punktlast
+   *  nicht mit, `punkte` ist leer und `anzahl` trägt die echte Zahl. Im Detail-Abruf fehlt das
+   *  Feld immer. `anzahl !== undefined` heißt also „Punkte noch nicht geladen" — und das ist
+   *  scharf zu prüfen, bevor irgendetwas gespeichert wird (sonst überschreibt ein PATCH die
+   *  Punkte mit dem leeren Listen-Stand). */
+  anzahl?: number
+  /** Hex-Farbe für Karte und Liste (FE vergibt aus MARKIERUNG_FARBEN). */
+  farbe: string
+  /** Freigabe für den geteilten Link, analog ProjectRoute.oeffentlich. Fehlt = sichtbar. */
+  oeffentlich?: boolean
+}
+
 /** Minimale GeoJSON-Geometrie (Punkt/Linie/Strecke) — für Karten-Rendering. */
 export interface GeoJSONGeometry {
   type: string
@@ -231,6 +264,9 @@ export interface Project {
   erstelltVon?: string | null
   /** Hochgeladene Strecken (Hin-/Rückfahrt, Varianten …). */
   routes: ProjectRoute[]
+  /** Hochgeladene Punkt-Ebenen (T-739). Optional, damit bestehende Projekte und die Demo-Daten
+   *  unverändert gültig bleiben. */
+  markierungen?: MarkierungsEbene[]
   transport: TransportData
   /** Geplanter Zeitraum des Transports. */
   zeitraum: TransportZeitraum
@@ -624,3 +660,35 @@ export const ROUTE_FARBEN = [
   "#0891B2", // Cyan
   "#1E40AF", // Dunkelblau
 ] as const
+
+// Farb-Palette für Markierungs-Ebenen (T-739). Bewusst NICHT ROUTE_FARBEN: eine Punkt-Ebene läuft
+// oft direkt entlang einer Strecke, in gleicher Farbe wäre sie von ihr nicht zu unterscheiden.
+// Dieselbe Regel wie oben gilt weiter — kein Grün/Gelb/Rot/Orange (Severity-Farben der Funde).
+export const MARKIERUNG_FARBEN = [
+  "#0F766E", // Teal
+  "#6D28D9", // Violett dunkel
+  "#334155", // Schiefer
+  "#0369A1", // Petrol
+  "#7E22CE", // Purpur
+  "#155E75", // Dunkeltürkis
+] as const
+
+/** True, solange mindestens eine Ebene nur als Listen-Fassung (ohne Punkte) vorliegt. */
+export function markierungenUnvollstaendig(p: { markierungen?: MarkierungsEbene[] }): boolean {
+  return (p.markierungen ?? []).some((e) => e.anzahl !== undefined)
+}
+
+/** Obergrenzen für Markierungs-Ebenen (T-739). Punkte werden NICHT ausgedünnt, zu große Dateien
+ *  werden abgelehnt. Die Grenzen sind bewusst eng: die App lädt alle Projekte samt Geometrie in
+ *  EINER Antwort (GET /projects), die Detailansicht hat keinen eigenen Endpunkt. Der Server setzt
+ *  dieselben Grenzen unabhängig durch — server/src/routes/projects.js#MARKIERUNG_GRENZEN führt
+ *  dieselben Zahlen und ist die äußere Schranke. Wer hier etwas ändert, ändert dort mit. */
+export const MARKIERUNG_GRENZEN = {
+  punkteJeEbene: 5_000,
+  ebenenJeProjekt: 50,
+  punkteJeProjekt: 20_000,
+  attributeJePunkt: 30,
+  attributSchluesselLaenge: 60,
+  attributWertLaenge: 200,
+  namensLaenge: 200,
+} as const

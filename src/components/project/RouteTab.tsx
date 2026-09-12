@@ -21,6 +21,7 @@ import { useProjectStore } from "@/store/projects"
 import { parseRouteFile, routeLengthKm } from "@/lib/parseRouteFile"
 import { parseGpkg, type GpkgRoute } from "@/lib/parseGpkg"
 import { GpkgRouteSelectDialog } from "./GpkgRouteSelectDialog"
+import { MarkierungenCard } from "./MarkierungenCard"
 import { VemagsRouteSelectDialog } from "./VemagsRouteSelectDialog"
 import { api, type VemagsResult } from "@/api/roadmap"
 import { ApiError } from "@/api/client"
@@ -149,6 +150,16 @@ export function RouteTab({ project }: { project: Project }) {
       return
     }
     try {
+      // T-739: Eine KML aus lauter <Point>-Placemarks (z.B. Parkplätze) lief hier bisher STILL als
+      // Strecke durch — parseKml sammelt jede Koordinate ein, aus zwei Standorten wurde eine
+      // Luftlinie. Solche Dateien gehören in den Markierungs-Block darunter.
+      const { istReinePunktDatei } = await import("@/lib/parsePunkte")
+      if (istReinePunktDatei(await file.text())) {
+        toast.error(
+          `Diese Datei enthält nur einzelne Punkte, keinen Streckenverlauf. Bitte laden Sie sie unten unter „Markierungen & Standorte" hoch.`,
+        )
+        return
+      }
       const parsed = await parseRouteFile(file)
       // Nicht sofort anlegen: erst Namen vergeben lassen (keine Datei-Namen als Strecken-Namen).
       const suggest = file.name.replace(/\.kml$/i, "")
@@ -641,6 +652,9 @@ export function RouteTab({ project }: { project: Project }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* T-739: Punkt-Ebenen (Parkplätze, Standorte …) — eigener Block direkt unter den Strecken. */}
+      <MarkierungenCard project={project} />
 
       {pendingFile ? (
         <Dialog open onClose={() => setPendingFile(null)} size="default">

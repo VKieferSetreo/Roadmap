@@ -2,7 +2,7 @@
 // (SPEC-backend-v2.md — das FE wird parallel 1:1 dagegen gebaut).
 
 import { cleanText, toIso, toIsoDate } from "./util.js"
-import { oeffentlicheFunde, oeffentlicheKennzahlen, oeffentlicheRouten } from "./oeffentlicheSicht.js"
+import { istOeffentlich, oeffentlicheFunde, oeffentlicheKennzahlen, oeffentlicheRouten } from "./oeffentlicheSicht.js"
 import { resolveKontakt } from "./engine/zustaendigkeitResolver.js"
 
 const normName = (s) => String(s ?? "").trim().toLowerCase().replace(/\s+/g, " ")
@@ -29,6 +29,9 @@ export function rowToProject(row, findings = [], share = null) {
     folderId: row.folder_id ?? null, // Ordner-Zuordnung (T-177), null = Wurzel
     owner: row.owner_email ?? null, // null = geteilt (alle Mandanten-Mitglieder); gesetzt = privat
     routes: row.routes ?? [],
+    // T-739: hochgeladene Punkt-Ebenen. Diese Whitelist ist die zweite stille Stelle, an der ein
+    // Feld verschwinden kann — steht es hier nicht, ist es beim naechsten Laden weg.
+    markierungen: row.markierungen ?? [],
     transport: row.transport ?? {},
     zeitraum: row.zeitraum ?? {},
     findings,
@@ -214,6 +217,16 @@ export function rowToShareData(row, findings = []) {
       farbe: r.farbe,
       points: r.points ?? [],
       // `oeffentlich` wird bewusst NICHT mitgegeben: das Feld selbst waere der Abdruck.
+    })),
+    // T-739: Punkt-Ebenen gehen mit in den geteilten Link — abgewaehlte (oeffentlich === false)
+    // aber gar nicht, auch nicht als leere Ebene. Dieselbe Regel und derselbe Grund wie bei den
+    // Strecken (T-650): der Kunde soll nicht sehen, DASS etwas ausgeblendet wurde. `oeffentlich`
+    // selbst faellt hier ebenfalls weg, denn das Feld waere genau dieser Abdruck.
+    markierungen: (Array.isArray(row.markierungen) ? row.markierungen : []).filter(istOeffentlich).map((e) => ({
+      id: e.id,
+      name: e.name,
+      farbe: e.farbe,
+      punkte: Array.isArray(e.punkte) ? e.punkte : [],
     })),
     findings: funde,
   }

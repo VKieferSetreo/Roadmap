@@ -2,43 +2,7 @@
 // Alle Pfade relativ zur axios-baseURL (Dev: /api via Vite-Proxy, Prod: /roadmap/api).
 
 import axiosClient from "./client"
-import type {
-  AccountLicense,
-  AppNotification,
-  AppStats,
-  BugReport,
-  BugReportCreate,
-  BugReportList,
-  BugReportStatus,
-  Finding,
-  FindingChatMessage,
-  FindingKategorie,
-  FindingSeverity,
-  Folder,
-  HideReason,
-  HiddenFindingsResponse,
-  MailPref,
-  News,
-  NewsKategorie,
-  Obstacle,
-  ObstacleCreate,
-  Project,
-  ProjectRoute,
-  RoutePoint,
-  SeatCode,
-  ShareInfo,
-  Branding,
-  SourceRequest,
-  SourceRequestCreate,
-  SourceRequestList,
-  SyncJob,
-  SyncStatus,
-  Tenant,
-  TenantLicense,
-  TenantRole,
-  TransportData,
-  TransportZeitraum,
-} from "@/types/domain"
+import type { AccountLicense, AppNotification, AppStats, Branding, BugReport, BugReportCreate, BugReportList, BugReportStatus, Finding, FindingChatMessage, FindingKategorie, FindingSeverity, Folder, HiddenFindingsResponse, HideReason, MailPref, MarkierungsEbene, News, NewsKategorie, Obstacle, ObstacleCreate, Project, ProjectRoute, RoutePoint, SeatCode, ShareInfo, SourceRequest, SourceRequestCreate, SourceRequestList, SyncJob, SyncStatus, Tenant, TenantLicense, TenantRole, TransportData, TransportZeitraum } from "@/types/domain"
 
 export interface HealthResponse {
   ok: boolean
@@ -68,6 +32,8 @@ export type DbFinding = Finding & { projektId: string; projektName: string; fach
 export interface ProjectPatch {
   name?: string
   routes?: ProjectRoute[]
+  /** Markierungs-Ebenen (T-739). */
+  markierungen?: MarkierungsEbene[]
   transport?: TransportData
   zeitraum?: TransportZeitraum
   /** true = archivieren, false = wiederherstellen. */
@@ -196,6 +162,9 @@ export const api = {
   createProject: (name: string) =>
     axiosClient<Project>({ url: "/projects", method: "POST", data: { name } }),
 
+  /** Ein einzelnes Projekt VOLLSTÄNDIG (T-739): die Liste liefert Markierungs-Ebenen ohne ihre
+   *  Punkte, die kommen nur hier. */
+  getProject: (id: string) => axiosClient<Project>({ url: `/projects/${id}`, method: "GET" }),
   patchProject: (id: string, patch: ProjectPatch) =>
     axiosClient<Project>({ url: `/projects/${id}`, method: "PATCH", data: patch }),
 

@@ -123,7 +123,11 @@ async function parseShapefile(file: File, isZip: boolean): Promise<RoutePoint[]>
     } else {
       // nacktes .shp: keine .prj → Koordinaten werden ungeprüft übernommen und
       // unten gegen WGS84-Grenzen validiert (UTM fällt dabei sauber durch).
-      for (const geom of shp.parseShp(buffer) as GeoJsonGeometry[]) collectGeoJson(geom, out)
+      // T-739: parseShp hängt NICHT am Default-Export (nachgemessen: undefined) — der Aufruf
+      // shp.parseShp(...) hätte zur Laufzeit geworfen. Er wurde nie erreicht, weil die UI nur
+      // KML und GPKG durchlässt; korrekt ist trotzdem der named export.
+      const { parseShp } = await import("shpjs")
+      for (const geom of parseShp(buffer) as GeoJsonGeometry[]) collectGeoJson(geom, out)
     }
   } catch {
     throw new Error("Shapefile konnte nicht gelesen werden. Ist die Datei vollständig?")

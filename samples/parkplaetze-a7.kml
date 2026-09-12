@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Parkplätze A7</name>
+    <Folder>
+      <name>Rastplätze</name>
+      <Placemark>
+        <name>Rastplatz Bockenem Ost</name>
+        <description>Für Schwertransporte freigegeben</description>
+        <ExtendedData>
+          <Data name="Stellplätze"><value>12</value></Data>
+          <Data name="Traglast"><value>60 t</value></Data>
+          <Data name="Beleuchtung"><value>ja</value></Data>
+        </ExtendedData>
+        <Point><coordinates>10.0134,52.0091,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>Rastplatz Seesen West</name>
+        <ExtendedData>
+          <Data name="Stellplätze"><value>8</value></Data>
+          <Data name="Traglast"><value>40 t</value></Data>
+          <Data name="Beleuchtung"><value>nein</value></Data>
+        </ExtendedData>
+        <Point><coordinates>10.1782,51.8933,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>Rastplatz Northeim</name>
+        <ExtendedData>
+          <Data name="Stellplätze"><value>20</value></Data>
+          <Data name="Traglast"><value>80 t</value></Data>
+        </ExtendedData>
+        <Point><coordinates>9.9421,51.7065,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Aufstellflächen</name>
+      <Placemark>
+        <name>Aufstellfläche Echte</name>
+        <ExtendedData>
+          <Data name="Länge"><value>85 m</value></Data>
+          <Data name="Untergrund"><value>Schotter</value></Data>
+        </ExtendedData>
+        <Point><coordinates>9.9903,51.7712,0</coordinates></Point>
+      </Placemark>
+      <Placemark>
+        <name>Aufstellfläche Salzderhelden</name>
+        <ExtendedData>
+          <Data name="Länge"><value>120 m</value></Data>
+          <Data name="Untergrund"><value>Asphalt</value></Data>
+        </ExtendedData>
+        <Point><coordinates>9.9235,51.7401,0</coordinates></Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

@@ -72,6 +72,11 @@ describe("public share API (/_share, UNGATED)", () => {
       const created = await admin(request(app).post("/api/projects")).send({ name: "Öffentlich" })
       await admin(request(app).patch(`/api/projects/${created.body.id}`)).send({
         routes: [{ id: "r-1", name: "Hinfahrt", points: POINTS }],
+        // T-739: eine freigegebene und eine abgewaehlte Punkt-Ebene.
+        markierungen: [
+          { id: "m-1", name: "Parkplätze", fileName: "pp.kml", farbe: "#0F766E", punkte: [{ lat: 53.5, lng: 10.0, name: "P1" }] },
+          { id: "m-2", name: "Intern", farbe: "#6D28D9", oeffentlich: false, punkte: [{ lat: 53.6, lng: 10.1 }] },
+        ],
       })
       const mid = midOf(POINTS)
       await admin(request(app).post("/api/obstacles")).send({
@@ -88,13 +93,17 @@ describe("public share API (/_share, UNGATED)", () => {
     expect(res.body.locked).toBe(false)
     const data = res.body.data
     expect(Object.keys(data).sort()).toEqual(
-      ["distanzKm", "fahrzeitMin", "findings", "name", "routes", "transport", "updatedAt", "zeitraum"],
+      ["distanzKm", "fahrzeitMin", "findings", "markierungen", "name", "routes", "transport", "updatedAt", "zeitraum"],
     )
     expect(data.name).toBe("Öffentlich")
     // T-223 + #12b: Abmessungen (L/B/H/Gewicht) + zeitraum (Planungs-Datumsfenster für den externen
     // Karten-Zeitstrahl); KEINE weiteren Stammdaten/Admin-Felder.
     expect(Object.keys(data.transport).sort()).toEqual(["breite", "gesamtgewicht", "hoehe", "laenge"])
     expect(Object.keys(data.routes[0]).sort()).toEqual(["farbe", "id", "name", "points"])
+    // T-739: Punkt-Ebenen gehen mit, aber ebenfalls gestrippt — kein fileName, kein `oeffentlich`.
+    expect(Object.keys(data.markierungen[0]).sort()).toEqual(["farbe", "id", "name", "punkte"])
+    expect(data.markierungen.map((e) => e.id)).toEqual(["m-1"])
+    expect(data.markierungen[0].punkte).toHaveLength(1)
     expect(data.findings).toHaveLength(1)
     expect(data.findings[0]).toMatchObject({ routeId: "r-1", routeName: "Hinfahrt" })
   })

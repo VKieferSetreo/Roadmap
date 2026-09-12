@@ -3,7 +3,7 @@
 
 import { useNavigate } from "react-router-dom"
 import { fundeText } from "@/lib/format"
-import { ArrowRight, Route as RouteIcon, TriangleAlert } from "lucide-react"
+import { ArrowRight, MapPinned, Route as RouteIcon, TriangleAlert } from "lucide-react"
 import { Badge } from "@/components/ui/Badge"
 import { MapPreview } from "@/components/shared/MapPreview"
 import { ProjectMenu } from "./ProjectMenu"
@@ -22,10 +22,20 @@ const STATUS_META: Record<
   fertig: { label: "Fertig", variant: "success" },
 }
 
-/** Strecken-Beschriftung: immer die Anzahl ("1 Strecke", "2 Strecken") — nicht den Dateinamen. */
+/** Anzahl Markierungen über alle Ebenen (T-739). */
+function markierungenAnzahl(project: Project): number {
+  return (project.markierungen ?? []).reduce((n, e) => n + e.punkte.length, 0)
+}
+
+/** Strecken-Beschriftung: immer die Anzahl ("1 Strecke", "2 Strecken") — nicht den Dateinamen.
+ *  T-739: Ein Projekt ohne Strecke, aber mit Markierungen ist nicht leer — dann steht dort, was
+ *  wirklich drin liegt, statt "Noch keine Strecke". */
 function routeLabel(project: Project): string {
   const n = project.routes.filter((r) => r.points.length >= 2).length
-  if (n === 0) return "Noch keine Strecke"
+  if (n === 0) {
+    const m = markierungenAnzahl(project)
+    return m > 0 ? `${m.toLocaleString("de-DE")} Markierung${m === 1 ? "" : "en"}` : "Noch keine Strecke"
+  }
   return `${n} Strecke${n === 1 ? "" : "n"}`
 }
 
@@ -60,8 +70,17 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           <MapPreview routes={project.routes} findings={sichtbar} />
         ) : (
           <div className="flex h-full items-center justify-center gap-2 text-neutral-300">
-            <RouteIcon className="h-5 w-5" />
-            <span className="text-xs font-medium">Noch keine Strecke</span>
+            {markierungenAnzahl(project) > 0 ? (
+              <>
+                <MapPinned className="h-5 w-5" />
+                <span className="text-xs font-medium">{routeLabel(project)}</span>
+              </>
+            ) : (
+              <>
+                <RouteIcon className="h-5 w-5" />
+                <span className="text-xs font-medium">Noch keine Strecke</span>
+              </>
+            )}
           </div>
         )}
         <div className="absolute right-2 top-2 flex items-center gap-1">

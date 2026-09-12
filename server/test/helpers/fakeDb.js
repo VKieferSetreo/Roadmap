@@ -479,6 +479,7 @@ export function createFakeDb() {
         distanz_km: null,
         fahrzeit_min: null,
         created_by: params[6],
+        markierungen: J(params[7]), // T-739: Punkt-Ebenen, an das Ende der Spaltenliste gehaengt
         owner_email: null,
         created_at: now(),
         updated_at: now(),
@@ -507,7 +508,8 @@ export function createFakeDb() {
       const row = state.projects.find((p) => p.id === params[0])
       if (!row) return ok([])
       // 058: owner_email = $8 eingefügt → Version-Precondition wanderte auf $9 (params[8]).
-      if (params[8] !== undefined && (row.version ?? 0) !== params[8]) return ok([], 0)
+      // T-739: markierungen = $9 dazu → Version-Precondition steht jetzt auf $10 (params[9]).
+      if (params[9] !== undefined && (row.version ?? 0) !== params[9]) return ok([], 0)
       Object.assign(row, {
         name: params[1],
         routes: J(params[2]),
@@ -516,6 +518,7 @@ export function createFakeDb() {
         archived_at: params[5],
         folder_id: params[6],
         owner_email: params[7] ?? null,
+        markierungen: J(params[8]),
         version: (row.version ?? 0) + 1,
         updated_at: now(),
       })
