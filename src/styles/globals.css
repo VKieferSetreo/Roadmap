@@ -143,6 +143,32 @@
 .fcard-popup .leaflet-popup-tip {
   display: none;
 }
+/* Markierungs-Popup (T-739). Der Inhalt entsteht imperativ als HTML-String, weil die Ebene
+   ueber leaflet.markercluster laeuft und kein React-<Popup> haben kann. Damit sie trotzdem
+   dieselben Farben traegt wie der Rest, stehen die Tokens HIER statt als Hex im JS: das
+   Projekt fuehrt `neutral` als Zinc, ein von Hand gewaehltes Slate haette einen Blaustich. */
+.mpopup p {
+  margin: 0;
+}
+.mpopup-titel {
+  @apply font-semibold text-neutral-900;
+}
+.mpopup-ebene {
+  @apply mt-0.5 text-[11px] text-neutral-400;
+}
+.mpopup-leer {
+  @apply mt-2 text-xs text-neutral-400;
+}
+.mpopup-tabelle {
+  @apply mt-2 w-full border-collapse text-xs;
+}
+.mpopup-tabelle th {
+  @apply whitespace-nowrap py-0.5 pr-2.5 text-left align-top font-medium text-neutral-500;
+}
+.mpopup-tabelle td {
+  @apply py-0.5 align-top text-neutral-800;
+}
+
 .leaflet-popup-tip {
   box-shadow: 0 2px 8px -2px rgba(16, 24, 40, 0.12);
 }

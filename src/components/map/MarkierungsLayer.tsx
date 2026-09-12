@@ -1,9 +1,13 @@
 // Karten-Ebene für Markierungen (T-739) — eigene Punkte eines Projekts (Parkplätze, Standorte …).
 //
-// Imperativ über leaflet.markercluster, NICHT als React-<Marker>-Kinder: dieselbe Begründung wie
-// in ObstaclesMap.tsx (Max 2026-06-14) — bei der Children-Variante hängen alle Marker dauerhaft im
-// DOM und die Karte ruckelt. Ein Projekt darf bis zu 10.000 Markierungen tragen, das ist genau der
-// Fall, für den der Cluster gebaut ist.
+// OHNE Clustering (Max 2026-09-12: „nur die Punkte DIREKT anzeigen"). Jeder Punkt ist ein eigener
+// Marker, es gibt keine Zusammenfassung bei kleinem Zoom. Das ist eine bewusste Anzeige-
+// entscheidung, keine Nachlässigkeit: der Disponent will seine Standorte sehen, nicht eine Zahl
+// in einem Kreis. Die Kehrseite steht in den Grenzen (MARKIERUNG_GRENZEN) — sehr große Ebenen
+// legen entsprechend viele Marker ins DOM.
+//
+// Imperativ über eine LayerGroup statt als React-<Marker>-Kinder, aus demselben Grund wie in
+// ObstaclesMap.tsx (Max 2026-06-14): bei der Children-Variante ruckelte die Karte.
 //
 // Fund-Marker sind Tropfen mit StVO-Schild (pins.tsx). Markierungen sind bewusst RUNDE Punkte in
 // der Ebenenfarbe: sie sind keine Funde, und der Formunterschied trennt sie auf einen Blick.
@@ -11,9 +15,6 @@
 import { useEffect } from "react"
 import { useMap } from "react-leaflet"
 import L from "leaflet"
-import "leaflet.markercluster"
-import "leaflet.markercluster/dist/MarkerCluster.css"
-import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import type { MarkierungsEbene } from "@/types/domain"
 
 /** Attributwerte stammen aus einer hochgeladenen Fremddatei und gehen in innerHTML → escapen. */
@@ -40,61 +41,61 @@ function punktIcon(farbe: string): L.DivIcon {
   })
 }
 
+// Farben und Abstaende kommen aus .mpopup* in styles/globals.css, NICHT als Hex hierher:
+// das Projekt fuehrt `neutral` als Zinc, handgewaehlte Slate-Toene faerben das Popup blaustichig
+// gegen den Rest der Oberflaeche.
 function popupHtml(titel: string, ebenenName: string, attribute: Record<string, string>): string {
   const zeilen = Object.entries(attribute)
     .filter(([, v]) => v !== "")
-    .map(
-      ([k, v]) =>
-        `<tr><th style="text-align:left;font-weight:500;color:#64748b;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap">${esc(k)}</th><td style="color:#1f2937;padding:2px 0;vertical-align:top">${esc(v)}</td></tr>`,
-    )
+    .map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`)
     .join("")
-  return `<div style="min-width:180px;max-width:280px">
-    <p style="margin:0;font-weight:600;color:#0f172a">${esc(titel)}</p>
-    <p style="margin:2px 0 0;font-size:11px;color:#94a3b8">${esc(ebenenName)}</p>
-    ${zeilen ? `<table style="margin-top:8px;font-size:12px;border-collapse:collapse">${zeilen}</table>` : `<p style="margin:8px 0 0;font-size:12px;color:#94a3b8">Keine weiteren Angaben in der Datei.</p>`}
+  return `<div class="mpopup" style="min-width:180px;max-width:280px">
+    <p class="mpopup-titel">${esc(titel)}</p>
+    <p class="mpopup-ebene">${esc(ebenenName)}</p>
+    ${zeilen ? `<table class="mpopup-tabelle">${zeilen}</table>` : `<p class="mpopup-leer">Keine weiteren Angaben in der Datei.</p>`}
   </div>`
 }
 
-/** Cluster-Gruppe je Ebene, damit ein- und ausblenden eine Ebene wirklich komplett entfernt. */
-export function MarkierungsLayer({ ebenen }: { ebenen: MarkierungsEbene[] }) {
+/** EINE Gruppe je Ebene, damit ein Umschalten nur die betroffene Ebene anfasst und die übrigen
+ *  unberührt stehen bleiben. */
+function EbenenCluster({ ebene }: { ebene: MarkierungsEbene }) {
   const map = useMap()
 
   useEffect(() => {
-    if (!ebenen.length) return
-    // leaflet.markercluster erweitert L zur Laufzeit (kein @types-Paket) → lose getypt.
-    const cluster = (
-      L as unknown as {
-        markerClusterGroup: (o: unknown) => L.LayerGroup & { addLayers: (l: L.Layer[]) => void }
-      }
-    ).markerClusterGroup({
-      chunkedLoading: true,
-      maxClusterRadius: 50,
-      animate: false, // wie ObstaclesMap: kein Opacity-Transition-Pfad → Marker bleiben sichtbar
-    })
-
+    const gruppe = L.layerGroup()
+    const icon = punktIcon(ebene.farbe)
     const marker: L.Layer[] = []
-    for (const e of ebenen) {
-      const icon = punktIcon(e.farbe)
-      e.punkte.forEach((p, i) => {
-        // T-600: NaN/Infinity würde die Bounds-Mathematik von markercluster vergiften und beim
-        // Zoom ALLE Marker verschwinden lassen. Hier raus, nicht erst beim Zeichnen.
-        if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return
-        const titel = p.name?.trim() || `Punkt ${i + 1}`
-        marker.push(
-          L.marker([p.lat, p.lng], { icon, title: titel }).bindPopup(
-            popupHtml(titel, e.name, p.attribute ?? {}),
-          ),
-        )
-      })
-    }
+    ebene.punkte.forEach((p, i) => {
+      // T-600: NaN/Infinity bricht Leaflets Zoom-Animation und lässt dann ALLE Marker im Pane
+      // verschwinden, nicht nur den kaputten. Hier raus, nicht erst beim Zeichnen.
+      if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return
+      const titel = p.name?.trim() || `Punkt ${i + 1}`
+      marker.push(
+        L.marker([p.lat, p.lng], { icon, title: titel }).bindPopup(
+          popupHtml(titel, ebene.name, p.attribute ?? {}),
+        ),
+      )
+    })
     if (!marker.length) return
 
-    cluster.addLayers(marker)
-    map.addLayer(cluster)
+    for (const m of marker) gruppe.addLayer(m)
+    map.addLayer(gruppe)
     return () => {
-      map.removeLayer(cluster)
+      map.removeLayer(gruppe)
     }
-  }, [map, ebenen])
+    // Nur an dem hängen, was die Darstellung bestimmt. Am Objekt selbst zu hängen würde die Ebene
+    // bei jedem Store-Update neu aufbauen, auch wenn sich an ihren Punkten nichts geändert hat.
+  }, [map, ebene.punkte, ebene.farbe, ebene.name])
 
   return null
+}
+
+export function MarkierungsLayer({ ebenen }: { ebenen: MarkierungsEbene[] }) {
+  return (
+    <>
+      {ebenen.map((e) => (
+        <EbenenCluster key={e.id} ebene={e} />
+      ))}
+    </>
+  )
 }
