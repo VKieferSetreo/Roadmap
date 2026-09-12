@@ -7,8 +7,8 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
-import type { Finding, HideReason, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
-import { DEFAULT_TRANSPORT, ROUTE_FARBEN } from "@/types/domain"
+import type { Finding, HideReason, MarkierungsEbene, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
+import { DEFAULT_TRANSPORT, MARKIERUNG_FARBEN, markierungenUnvollstaendig, ROUTE_FARBEN } from "@/types/domain"
 import { runMockAnalysis } from "@/lib/mock/generate"
 import { buildSeedProjects } from "@/lib/mock/seed"
 import { api, type ProjectPatch } from "@/api/roadmap"
@@ -76,6 +76,14 @@ interface ProjectStore {
   /** `oeffentlich` gehoert dazu (T-650): die Freigabe je Strecke laeuft ueber denselben Weg
    *  wie Umbenennen und Ziehen, inklusive optimistischem Update und Sync. */
   updateRoute: (id: string, routeId: string, patch: Partial<Pick<ProjectRoute, "name" | "points" | "waypoints" | "oeffentlich">>) => void
+  /** Markierungs-Ebenen (T-739). Mehrere auf einmal, weil eine Datei mehrere Layer liefert und
+   *  die Farbvergabe sonst gegen einen veralteten Stand liefe. */
+  /** Holt EIN Projekt vollständig nach (T-739): die Liste liefert Markierungs-Ebenen ohne ihre
+   *  Punkte. Ohne diesen Nachlauf bliebe die Karte leer und ein Speichern würde die Punkte löschen. */
+  loadProjectDetail: (id: string) => Promise<void>
+  addMarkierungsEbenen: (id: string, ebenen: Array<Omit<MarkierungsEbene, "id" | "farbe">>) => void
+  removeMarkierungsEbene: (id: string, ebeneId: string) => void
+  updateMarkierungsEbene: (id: string, ebeneId: string, patch: Partial<Pick<MarkierungsEbene, "name" | "oeffentlich">>) => void
 
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
@@ -134,8 +142,29 @@ function scheduleSync(id: string, get: () => ProjectStore, set: SetState) {
     delete syncTimers[id]
     const p = get().getProject(id)
     if (!p) return
-    void applyPatch(id, { name: p.name, routes: p.routes, transport: p.transport, zeitraum: p.zeitraum }, get, set)
+    // T-739: markierungen NUR mitsenden, wenn die Punkte wirklich geladen sind. Die Projektliste
+    // liefert die Ebenen ohne Punktlast (punkte: [], anzahl: n) — ein PATCH mit diesem Stand würde
+    // beim Speichern einer beliebigen anderen Änderung ALLE Markierungen des Projekts löschen.
+    // Feld weglassen heißt serverseitig „unverändert lassen".
+    void applyPatch(
+      id,
+      {
+        name: p.name,
+        routes: p.routes,
+        ...(markierungenUnvollstaendig(p) ? {} : { markierungen: p.markierungen ?? [] }),
+        transport: p.transport,
+        zeitraum: p.zeitraum,
+      },
+      get,
+      set,
+    )
   }, 600)
+}
+
+/** Nächste freie Markierungs-Farbe (Palette der Reihe nach, Lücken zuerst). */
+function naechsteMarkierungsFarbe(ebenen: MarkierungsEbene[]): string {
+  const used = new Set(ebenen.map((e) => e.farbe))
+  return MARKIERUNG_FARBEN.find((f) => !used.has(f)) ?? MARKIERUNG_FARBEN[ebenen.length % MARKIERUNG_FARBEN.length]
 }
 
 /** Nächste freie Strecken-Farbe (Palette der Reihe nach, Lücken zuerst). */
@@ -466,6 +495,67 @@ export const useProjectStore = create<ProjectStore>()(
               ? {
                   ...p,
                   routes: p.routes.map((r) => (r.id === routeId ? { ...r, ...patch } : r)),
+                  updatedAt: now(),
+                }
+              : p,
+          ),
+        }))
+        scheduleSync(id, get, set)
+      },
+
+      loadProjectDetail: async (id) => {
+        const p = get().getProject(id)
+        if (!isLive() || !p || !markierungenUnvollstaendig(p)) return
+        try {
+          const voll = await api.getProject(id)
+          set((s) => ({
+            projects: s.projects.map((x) =>
+              // Nur die Markierungen übernehmen: alles andere kann lokal frischer sein als der
+              // Server (offene optimistische Änderung, die noch im Sync-Debounce hängt).
+              x.id === id ? { ...x, markierungen: voll.markierungen ?? [] } : x,
+            ),
+          }))
+        } catch {
+          // Still: die Strecken und Funde stehen bereits. Ein Fehlerbanner für nachgeladene
+          // Zusatzpunkte wäre lauter als der Verlust. Der nächste Aufruf versucht es erneut.
+        }
+      },
+
+      addMarkierungsEbenen: (id, ebenen) => {
+        if (!ebenen.length) return
+        set((s) => ({
+          projects: s.projects.map((p) => {
+            if (p.id !== id) return p
+            const neu = [...(p.markierungen ?? [])]
+            // Farbe je Ebene gegen den WACHSENDEN Stand vergeben, sonst bekämen alle Ebenen
+            // einer Datei dieselbe Farbe.
+            for (const e of ebenen) neu.push({ ...e, id: uid(), farbe: naechsteMarkierungsFarbe(neu) })
+            return { ...p, markierungen: neu, updatedAt: now() }
+          }),
+        }))
+        scheduleSync(id, get, set)
+        // Bewusst KEIN runAnalysis: Markierungen sind rein visuell und ändern an der
+        // Hindernis-Auswertung nichts (anders als addRoute).
+      },
+
+      removeMarkierungsEbene: (id, ebeneId) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? { ...p, markierungen: (p.markierungen ?? []).filter((e) => e.id !== ebeneId), updatedAt: now() }
+              : p,
+          ),
+        }))
+        scheduleSync(id, get, set)
+      },
+
+      updateMarkierungsEbene: (id, ebeneId, patch) => {
+        set((s) => ({
+          projects: s.projects.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  markierungen: (p.markierungen ?? []).map((e) => (e.id === ebeneId ? { ...e, ...patch } : e)),
                   updatedAt: now(),
                 }
               : p,

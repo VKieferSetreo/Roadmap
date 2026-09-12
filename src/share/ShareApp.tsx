@@ -13,7 +13,7 @@ import { DisclaimerModal } from "@/components/account/DisclaimerModal"
 import { DropdownMenu, DropdownItem } from "@/components/ui/DropdownMenu"
 import { downloadKml, openInGoogleMaps } from "@/lib/routeExport"
 import { routeLengthKm } from "@/lib/parseRouteFile"
-import type { Finding, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
+import type { Finding, MarkierungsEbene, Project, ProjectRoute, TransportData, TransportZeitraum } from "@/types/domain"
 import { cn } from "@/lib/cn"
 
 /** Daten-Payload des Public-Share-Endpoints (gestripped — nur Abmessungen als Stammdaten, T-223). */
@@ -27,6 +27,9 @@ interface ShareData {
   transport?: Partial<TransportData>
   zeitraum?: TransportZeitraum // #12b: Transport-Zeitfenster für den Karten-Zeitstrahl extern
   routes: ProjectRoute[]
+  /** T-739: eigene Markierungs-Ebenen. Fehlt bei älteren Freigaben und bei Ebenen, die der
+   *  Ersteller nicht freigegeben hat (server/src/map.js#rowToShareData). */
+  markierungen?: MarkierungsEbene[]
   findings: Finding[]
 }
 
@@ -216,6 +219,7 @@ function ShareViewer({ data, projectId }: { data: ShareData; projectId: string }
       createdAt: data.updatedAt,
       updatedAt: data.updatedAt,
       routes: data.routes,
+      markierungen: data.markierungen ?? [],
       // T-721: fehlende Stammdaten bleiben fehlend — durchgereicht, nicht aufgefüllt. Der frühere
       // 0-Fallback hat dem externen Empfänger "0 m × 0 m × 0 m" und "0 t" als Tatsache gedruckt;
       // eine erfundene Zahl ist im weitergereichten Dokument schlimmer als eine Lücke. Der Cast
