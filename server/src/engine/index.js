@@ -54,7 +54,8 @@ import { ApiError, isFiniteNumber } from "../util.js"
 // je MultiLineString-TEIL-Linie gerechnet (keine Phantom-Sprungsegmente). Kalibriert an allen 1334
 // Prod-Linien-Funden + adversarialer Review (17 Agenten): 54 Drops, Schwellen mittig in den Daten-
 // Lücken zu allen identifizierten echten Grenzfällen (A28-Versatz, B31a-Ziel-Sperrung, AS Bühl).
-export const ENGINE_VERSION = "2.4.0"
+// 2.5.0 (T-729): geschaetzte Breiten mit Toleranzband (breiteToleranzUntenM/ObenM, ATKIS TH/MV).
+export const ENGINE_VERSION = "2.5.0"
 
 // Überführungen (T-601, seit T-653 als Zuordnungsnachweis): BASt-/Last-Brücken sind Punkte ohne
 // eigene Geometrie und sitzen geometrisch AUF der Autobahn. Maßgeblich ist, welche Straße das

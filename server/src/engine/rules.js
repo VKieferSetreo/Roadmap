@@ -216,6 +216,31 @@ function ruleEngstelle(attrs, transport) {
       detail: { Transportbreite: fmtM(transport.breite) },
     }
   }
+  // T-729: eine GESCHAETZTE Breite (ATKIS, aus dem Luftbild, auf 0,5 m gerundet) kommt mit ihrem
+  // Messfehler. Gegen BAYSIS-Messwerte in Bayern hielt ATKIS +-0,25 m nur in 37-44 %, und der Fehler
+  // ist schief: meist zu schmal geschaetzt, selten zu breit. Deshalb zwei Grenzen statt einer Zahl —
+  // WARNUNG, wenn schon die Untergrenze knapp wird, KRITISCH nur, wenn selbst die Obergrenze nicht
+  // reicht. Mit dem nackten Wert rechnen hiesse: jeder 4-m-Transport auf jeder 4-m-Kreisstrasse
+  // kritisch (Marge 0), und ein 3,5-m-Transport dort ohne Fund (Marge genau 0,50). Quellen ohne
+  // Toleranz (BAYSIS, Verkehrszeichen) laufen unveraendert durch den Zweig darunter.
+  const tolUnten = num(attrs.breiteToleranzUntenM)
+  const tolOben = num(attrs.breiteToleranzObenM)
+  if (tolUnten != null || tolOben != null) {
+    const unten = round2(maxB - (tolUnten ?? 0))
+    const oben = round2(maxB + (tolOben ?? 0))
+    const margeUnten = round2(unten - transport.breite)
+    const margeOben = round2(oben - transport.breite)
+    return {
+      severity: sev3(margeOben < 0.10, margeUnten < 0.50),
+      beschreibung: "Schmaler Straßenabschnitt laut Landschaftsmodell. Die Breite ist aus dem Luftbild geschätzt und gerundet, vor Ort prüfen.",
+      detail: {
+        Fahrbahnbreite: `${fmtM(maxB)} (geschätzt, gerundet)`,
+        "Tatsächlich vermutlich": `${fmtM(unten)} bis ${fmtM(oben)}`,
+        Transportbreite: fmtM(transport.breite),
+        Marge: `${fmtM(margeUnten)} bis ${fmtM(margeOben)}`,
+      },
+    }
+  }
   const marge = round2(maxB - transport.breite)
   return {
     severity: sev3(marge < 0.10, marge < 0.50),

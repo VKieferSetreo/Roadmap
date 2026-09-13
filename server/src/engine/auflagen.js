@@ -89,7 +89,22 @@ export function bewerteAuflagen({ kategorie, attrs = {}, transport = {} }) {
     gruende.push(`Restbreite der Baustelle ${restB} m unter Transportbreite ${breite} m`)
   }
   const engsteB = [maxB, restB].filter((v) => v != null).length ? Math.min(...[maxB, restB].filter((v) => v != null)) : null
-  if (engsteB != null && breite != null) {
+  // T-729: geschaetzte Breite mit Toleranz (ATKIS). Die harte Auflage nur, wenn selbst die
+  // Obergrenze nicht reicht; knapp ist es, sobald die Untergrenze weniger als 0,5 m laesst. Dieselben
+  // Grenzen wie in ruleEngstelle, sonst sagten Fund und Auflagen-Lage Verschiedenes.
+  const tolUnten = zahl(attrs.breiteToleranzUntenM)
+  const tolOben = zahl(attrs.breiteToleranzObenM)
+  if (maxB != null && breite != null && restB == null && (tolUnten != null || tolOben != null)) {
+    if (runde2(maxB + (tolOben ?? 0) - breite) < 0) {
+      lage = haerter(lage, "mit-auflagen")
+      auflagen.push("Begleitfahrzeug BF3", "Mitbenutzung der Gegenfahrbahn", "ggf. kurzzeitige Sperrung durch die Polizei")
+      gruende.push(`geschaetzte Breite ${maxB} m (hoechstens ${runde2(maxB + (tolOben ?? 0))} m) unter Transportbreite ${breite} m`)
+    } else if (runde2(maxB - (tolUnten ?? 0) - breite) < 0.5) {
+      lage = haerter(lage, "mit-auflagen")
+      auflagen.push("Begleitfahrzeug BF3", "Fahrbahnbreite vor Ort pruefen")
+      gruende.push(`geschaetzte Breite ${maxB} m, vielleicht nur ${runde2(maxB - (tolUnten ?? 0))} m`)
+    }
+  } else if (engsteB != null && breite != null) {
     const marge = runde2(engsteB - breite)
     if (marge < 0 && maxB != null && maxB < breite) {
       lage = haerter(lage, "mit-auflagen")
