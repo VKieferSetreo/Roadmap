@@ -5,15 +5,17 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Loader2, MapPinned, Pencil, RotateCcw, X } from "lucide-react"
+import { Check, Copy, Loader2, MapPinned, Pencil, RotateCcw, X } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { DropZone } from "@/components/upload/DropZone"
 import { MarkierungsEbenenDialog } from "./MarkierungsEbenenDialog"
+import { MarkierungsEbeneKopierenDialog } from "./MarkierungsEbeneKopierenDialog"
 import { useProjectStore } from "@/store/projects"
 import { MARKIERUNG_GRENZEN, markierungenUnvollstaendig } from "@/types/domain"
-import type { Project } from "@/types/domain"
+import { grenzText, pruefeMarkierungsGrenzen } from "@/lib/markierungsGrenzen"
+import type { MarkierungsEbene, Project } from "@/types/domain"
 import type { ParsedPunktEbene } from "@/lib/parsePunkte"
 
 const ACCEPT = ".kml,.kmz,.geojson,.json,.zip,.gpkg"
@@ -28,6 +30,8 @@ export function MarkierungenCard({ project }: { project: Project }) {
   const [busy, setBusy] = useState(false)
   const [auswahl, setAuswahl] = useState<{ fileName: string; ebenen: ParsedPunktEbene[] } | null>(null)
   const [umbenennen, setUmbenennen] = useState<{ id: string; name: string } | null>(null)
+  /** Ebene, die gerade kopiert wird (T-742), null = kein Dialog. */
+  const [kopieren, setKopieren] = useState<MarkierungsEbene | null>(null)
 
   const ebenen = project.markierungen ?? []
   // T-739: Solange die Punkte nur als Zähler aus der Projektliste vorliegen, darf hier NICHTS
@@ -35,39 +39,22 @@ export function MarkierungenCard({ project }: { project: Project }) {
   // Änderung ginge still verloren. ProjectDetail holt die Punkte beim Öffnen nach, das dauert
   // einen Wimpernschlag; bis dahin zeigt die Liste ehrlich an, dass sie noch lädt.
   const laedtNach = markierungenUnvollstaendig(project)
-  const punkteGesamt = ebenen.reduce((n, e) => n + (e.anzahl ?? e.punkte.length), 0)
 
-  /** Grenzen, die am Projekt hängen (die Punktzahl je Ebene prüft schon der Parser).
-   *  `imDialog`: die Meldung sagt dann „weniger Ebenen anhaken" statt „erst eine entfernen". */
+  /** Grenzen, die am Projekt hängen (die Punktzahl je Ebene prüft schon der Parser). Die Prüfung
+   *  selbst ist geteilt mit dem Kopieren (lib/markierungsGrenzen), die Abhilfe formuliert jeder Ort. */
   function passtInsProjekt(neu: ParsedPunktEbene[], imDialog: boolean): boolean {
-    if (ebenen.length + neu.length > MARKIERUNG_GRENZEN.ebenenJeProjekt) {
-      toast.error(
-        `Ein Projekt fasst höchstens ${MARKIERUNG_GRENZEN.ebenenJeProjekt} Ebenen. ` +
-          (imDialog ? "Bitte haken Sie weniger Ebenen an." : "Bitte entfernen Sie zuerst eine."),
-      )
-      return false
-    }
-    const summe = punkteGesamt + neu.reduce((n, e) => n + e.punkte.length, 0)
-    if (summe > MARKIERUNG_GRENZEN.punkteJeProjekt) {
-      toast.error(
-        `Zusammen wären das ${summe.toLocaleString("de-DE")} Markierungen. Erlaubt sind ${MARKIERUNG_GRENZEN.punkteJeProjekt.toLocaleString("de-DE")} je Projekt` +
-          (imDialog ? " — bitte haken Sie weniger Ebenen an." : ", damit die Karte flüssig bleibt."),
-      )
-      return false
-    }
-    // T-744: Die Zählgrenzen deckeln keine Bytes. Mit vielen langen Attributen reißt schon eine
-    // erlaubte Punktzahl den 20-MB-Body des Servers; der 413 kam früher als „Verbindung prüfen" an und
-    // blockierte danach jedes Speichern. Vorher messen ist billiger als hinterher aufräumen.
-    const bytes = new Blob([JSON.stringify([...ebenen, ...neu])]).size
-    if (bytes > MARKIERUNG_GRENZEN.jsonBytes) {
-      toast.error(
-        `Die Markierungen wären zusammen ${(bytes / 1024 / 1024).toLocaleString("de-DE", { maximumFractionDigits: 1 })} MB groß, ` +
-          `erlaubt sind ${(MARKIERUNG_GRENZEN.jsonBytes / 1024 / 1024).toLocaleString("de-DE")} MB. ` +
-          "Meist tragen die Punkte sehr viele oder sehr lange Angaben — bitte entfernen Sie nicht benötigte Spalten aus der Datei.",
-      )
-      return false
-    }
-    return true
+    const verstoss = pruefeMarkierungsGrenzen(ebenen, neu)
+    if (!verstoss) return true
+    const abhilfe =
+      verstoss.grund === "bytes"
+        ? "Meist tragen die Punkte sehr viele oder sehr lange Angaben — bitte entfernen Sie nicht benötigte Spalten aus der Datei."
+        : imDialog
+          ? "Bitte haken Sie weniger Ebenen an."
+          : verstoss.grund === "ebenen"
+            ? "Bitte entfernen Sie zuerst eine."
+            : "Damit bleibt die Karte flüssig."
+    toast.error(`${grenzText(verstoss)} ${abhilfe}`)
+    return false
   }
 
   /** true = übernommen. Der Auswahldialog schließt nur dann (T-744: vorher war die Auswahl bei
@@ -232,6 +219,18 @@ export function MarkierungenCard({ project }: { project: Project }) {
                         {(e.anzahl ?? e.punkte.length) === 1 ? "Markierung" : "Markierungen"}
                       </p>
                     </div>
+                    {/* Kopieren steht VOR Umbenennen und Entfernen, wie bei den Strecken (T-658): es ist die
+                        harmlose Aktion und gehört nicht neben das Kreuz. */}
+                    <button
+                      type="button"
+                      onClick={() => setKopieren(e)}
+                      disabled={laedtNach}
+                      aria-label={`Ebene ${e.name} in ein Projekt kopieren`}
+                      title="In ein anderes Projekt kopieren"
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
                     <button
                       type="button"
                       onClick={() => setUmbenennen({ id: e.id, name: e.name })}
@@ -266,6 +265,10 @@ export function MarkierungenCard({ project }: { project: Project }) {
           </div>
         </CardContent>
       </Card>
+
+      {kopieren ? (
+        <MarkierungsEbeneKopierenDialog ebene={kopieren} quelle={project} onSchliessen={() => setKopieren(null)} />
+      ) : null}
 
       {auswahl ? (
         <MarkierungsEbenenDialog
