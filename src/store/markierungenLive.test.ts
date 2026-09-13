@@ -167,10 +167,69 @@ describe("Analyse-Flush ohne ausstehenden Sync (T-744, Review)", () => {
     useProjectStore.getState().runAnalysis(P)
     await vi.advanceTimersByTimeAsync(10)
     const [, flush] = api.patchProject.mock.calls[0]
-    // Vorher ging hier `markierungen: []` blind raus — der Server hätte alle Ebenen gelöscht.
+    // Ohne ausstehenden Sync keine Markierungen im Flush (bis zu 8 MB je Auswertungsstart gespart).
     expect(flush).not.toHaveProperty("markierungen")
-    expect(flush).not.toHaveProperty("version")
     expect(flush).toHaveProperty("routes")
+  })
+})
+
+describe("T-745: Flush vor der Auswertung prüft die version", () => {
+  // Früher lief der Flush bewusst versionslos (T-467/T-501). Ein veralteter Tab überschrieb damit beim
+  // Auswertungsstart still eine Freigabe, die ein Kollege gerade geändert hatte.
+
+  it("schickt die version mit", async () => {
+    vi.useFakeTimers()
+    api.runAnalysis.mockReturnValue(new Promise(() => {}))
+    setzeStore([{ ...projekt(), id: P, version: 7, markierungen: [] }])
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    expect(api.patchProject.mock.calls[0][1]).toMatchObject({ version: 7 })
+  })
+
+  it("bei 409 des Flush: KEINE Auswertung, kein rotes ‚fehlgeschlagen', Hinweis und Neuladen", async () => {
+    vi.useFakeTimers()
+    api.patchProject.mockRejectedValueOnce(new ApiError({ message: "Konflikt", code: "HTTP_409" }, 409))
+    setzeStore([{ ...projekt(), id: P, version: 3, markierungen: [] }])
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    expect(api.runAnalysis).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/zwischenzeitlich geändert.*erneut/))
+    expect(api.listProjects).toHaveBeenCalled()
+    // Kein Fehler-Marker: sonst zeigte die Karte ‚Letzte Auswertung fehlgeschlagen' oder ‚läuft bereits'.
+    expect(useProjectStore.getState().analysis[P]).toBeUndefined()
+  })
+
+  it("ein 409 der Auswertung SELBST bleibt ‚läuft bereits' (T-467 unverändert)", async () => {
+    vi.useFakeTimers()
+    api.runAnalysis.mockRejectedValueOnce(new ApiError({ message: "läuft", code: "HTTP_409" }, 409))
+    setzeStore([{ ...projekt(), id: P, version: 3, markierungen: [] }])
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    expect(api.runAnalysis).toHaveBeenCalled()
+    expect(useProjectStore.getState().analysis[P]?.error).toMatch(/läuft bereits eine Auswertung/)
+    expect(api.listProjects).not.toHaveBeenCalled()
+  })
+
+  it("wartet auf den eigenen laufenden Sync und nimmt DESSEN version — kein Konflikt mit sich selbst (T-501)", async () => {
+    vi.useFakeTimers()
+    let antworten!: (v: { version: number }) => void
+    api.patchProject.mockImplementationOnce(() => new Promise((r) => { antworten = r }))
+    api.runAnalysis.mockReturnValue(new Promise(() => {}))
+    setzeStore([{ ...projekt(), id: P, version: 4, markierungen: [volleEbene(1)] }])
+
+    useProjectStore.getState().updateTransport(P, { hoehe: 4.1 })
+    await vi.advanceTimersByTimeAsync(700) // Sync-Timer ist abgelaufen, der PATCH ist UNTERWEGS
+    expect(api.patchProject).toHaveBeenCalledTimes(1)
+
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    // Der Flush darf NICHT mit der alten version 4 losschicken, solange der eigene PATCH läuft.
+    expect(api.patchProject).toHaveBeenCalledTimes(1)
+
+    antworten({ version: 5 })
+    await vi.advanceTimersByTimeAsync(10)
+    expect(api.patchProject).toHaveBeenCalledTimes(2)
+    expect(api.patchProject.mock.calls[1][1]).toMatchObject({ version: 5 })
   })
 })
 

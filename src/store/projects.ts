@@ -113,6 +113,15 @@ interface ProjectStore {
 // Laufende Intervalle + Sync-Debounces außerhalb des States (nicht serialisierbar).
 const timers: Record<string, ReturnType<typeof setInterval>> = {}
 const syncTimers: Record<string, ReturnType<typeof setTimeout>> = {}
+/** Ein gerade LAUFENDER Sync je Projekt (Timer schon abgelaufen, PATCH unterwegs). Der Flush vor
+ *  der Auswertung wartet darauf (T-745): er prüft jetzt die version, und ohne dieses Warten bekäme
+ *  er ein 409 gegen den eigenen, noch nicht beantworteten PATCH — genau der Selbstkonflikt, gegen
+ *  den T-501 den Flush früher versionslos gemacht hatte. */
+const syncLaeuft: Record<string, Promise<void>> = {}
+
+/** Marker: der Flush vor der Auswertung ist an einer fremden Änderung gescheitert (409). Getrennt
+ *  vom 409 der Auswertung selbst (T-467 „läuft bereits"), denn die Reaktion ist eine andere. */
+class FlushKonflikt extends Error {}
 // #21: Auto-Analyse-Debounce je Projekt — eine Strecke laden (auch ein GPKG-Batch mit N Strecken)
 // stößt EINE Auswertung an, nicht N.
 const autoTimers: Record<string, ReturnType<typeof setTimeout>> = {}
@@ -184,7 +193,12 @@ function scheduleSync(id: string, get: () => ProjectStore, set: SetState) {
     delete syncTimers[id]
     const p = get().getProject(id)
     if (!p) return
-    void applyPatch(id, syncFelder(p), get, set)
+    const lauf = applyPatch(id, syncFelder(p), get, set)
+    syncLaeuft[id] = lauf
+    // applyPatch fängt seine Fehler selbst ab, die Promise erfüllt sich also immer.
+    void lauf.then(() => {
+      if (syncLaeuft[id] === lauf) delete syncLaeuft[id]
+    })
   }, 600)
 }
 
@@ -730,36 +744,59 @@ export const useProjectStore = create<ProjectStore>()(
             clearTimeout(pending)
             delete syncTimers[id]
           }
-          const p = get().getProject(id)
-          // Blind flushen (KEINE version) — der Nutzer will genau seinen aktuellen Stand auswerten;
-          // ein version-409 hier wäre nicht von dem T-467-Analyse-409 unten zu unterscheiden. Die
-          // server-seitig erhöhte version übernehmen wir trotzdem (T-501, kein Self-Conflict danach).
-          const felder = p ? syncFelder(p) : undefined
-          // T-744 (Review): markierungen NUR, wenn wirklich ein Sync ausstand. Ohne diese Bedingung
-          // schrieb JEDER Auswertungsstart die Markierungen blind (ohne version) zurück: ein veralteter
-          // Tab überschrieb dann still die Ebenen eines Kollegen oder blendete eine gerade für den Kunden
-          // ausgeblendete Ebene wieder ein — ohne 409, ohne Hinweis. Vor T-744 enthielt der Flush gar
-          // keine Markierungen. Die Engine braucht sie nicht, sie sind rein visuell.
-          // ponytail: Restfenster bleibt — steht in genau diesem Moment ein Sync aus UND hat ein anderer
-          // Tab die Freigabe geändert, gewinnt dieser Tab. Dieselbe Lücke haben Strecken seit T-650;
-          // richtig wäre ein Flush MIT version und getrennter 409-Behandlung (Ticket T-745).
-          if (felder && !pending) delete felder.markierungen
-          const sync = felder
-            ? api.patchProject(id, felder).then((u) => adoptVersion(set, id, u.version))
-            : Promise.resolve()
+          // T-745 (Max 13.09.): Der Flush prüft jetzt die version. Früher lief er bewusst BLIND (T-467/
+          // T-501), weil ein version-409 hier nicht vom Analyse-409 zu unterscheiden war. Folge: ein
+          // veralteter Tab überschrieb beim Auswertungsstart still eine Strecken- oder Ebenen-Freigabe,
+          // die ein Kollege gerade geändert hatte — der Kunde sah Ausgeblendetes wieder. Unterscheidbar
+          // ist es, weil Flush und Auswertung zwei getrennte Schritte sind (FlushKonflikt unten).
+          //
+          // Erst auf einen gerade laufenden eigenen Sync warten, DANACH Stand und version lesen — sonst
+          // 409 gegen den eigenen PATCH (das war der Grund für T-501).
+          const sync = (syncLaeuft[id] ?? Promise.resolve()).then(() => {
+            const p = get().getProject(id)
+            if (!p) return
+            const felder = syncFelder(p)
+            // markierungen nur, wenn wirklich ein Sync ausstand: die Engine braucht sie nicht, und ohne
+            // Anlass wären es bis zu 8 MB je Auswertungsstart (T-744). Sicherheitsrelevant ist das seit
+            // T-745 nicht mehr — die version verhindert das stille Überschreiben ohnehin.
+            if (!pending) delete felder.markierungen
+            return api.patchProject(id, { ...felder, version: p.version }).then(
+              (u) => adoptVersion(set, id, u.version),
+              (e) => {
+                throw e instanceof ApiError && e.status === 409 ? new FlushKonflikt() : e
+              },
+            )
+          })
 
           sync
             .then(() => api.runAnalysis(id))
             .then((updated) => finish(() => updated))
-            .catch((e) =>
+            .catch((e) => {
+              if (e instanceof FlushKonflikt) {
+                // Kein rotes „fehlgeschlagen": die Auswertung wurde gar nicht gestartet, und das Projekt
+                // ist nicht kaputt, nur veraltet. Neu laden, dann entscheidet der Nutzer erneut.
+                clearInterval(timers[id])
+                delete timers[id]
+                set((s) => {
+                  const analysis = { ...s.analysis }
+                  delete analysis[id]
+                  return { analysis }
+                })
+                toast.error(
+                  "Das Projekt wurde zwischenzeitlich geändert, in einem anderen Fenster oder von jemand anderem. " +
+                    "Es wird neu geladen — bitte starten Sie die Auswertung danach erneut.",
+                )
+                void get().loadProjects()
+                return
+              }
               // T-467: 409 = für dieses Projekt läuft bereits eine Auswertung (Doppelklick /
               // zweiter Disponent / Kollision mit Nacht-Rerun) → klare Meldung statt „Server-Fehler".
               fail(
                 e instanceof ApiError && e.status === 409
                   ? "Für dieses Projekt läuft bereits eine Auswertung. Bitte kurz warten."
                   : "Analyse fehlgeschlagen. Server nicht erreichbar oder Fehler in der Engine.",
-              ),
-            )
+              )
+            })
         }
       },
 
