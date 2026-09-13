@@ -5,12 +5,13 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Copy, Eye, EyeOff, Globe2, Link2, Lock, LockOpen, PowerOff, Route } from "lucide-react"
+import { Check, Copy, Eye, EyeOff, Globe2, Link2, Loader2, Lock, LockOpen, PowerOff, RotateCcw, Route } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Dialog, DialogHeader } from "@/components/ui/Dialog"
 import { Input, Label } from "@/components/ui/Input"
-import { useProjectStore } from "@/store/projects"
+import { useMarkierungenNachladen, useProjectStore } from "@/store/projects"
 import { cn } from "@/lib/cn"
+import { markierungenUnvollstaendig } from "@/types/domain"
 import type { Project } from "@/types/domain"
 
 /**
@@ -66,6 +67,90 @@ function Streckenauswahl({ project }: { project: Project }) {
   )
 }
 
+/**
+ * Die Freigabe je Markierungs-Ebene (T-744), gespiegelt von der Streckenauswahl. Ohne sie ging
+ * JEDE Ebene samt aller Attribute aus der hochgeladenen Datei in den geteilten Link — auch interne
+ * Standorte, auch in Links, die längst verteilt sind. Das Backend konnte es schon (map.js filtert
+ * oeffentlich===false spurlos), es fehlte nur die Bedienung.
+ *
+ * Bewusst ANDERS als bei den Strecken:
+ * - Keine „Mindestens eine"-Regel. Null freigegebene Ebenen sind eine legitime Entscheidung, die
+ *   Karte beim Kunden bleibt ja nicht leer — die Strecken tragen sie.
+ * - GESPERRT, solange die Punkte nur als Listen-Fassung im Store stehen. Ein Haken im Listen-Stand
+ *   ginge still verloren: die Oberfläche zeigte „ausgeblendet", der Sync ließe das Feld weg, und der
+ *   Kunde sähe die Ebene weiter. Bei einer Datenschutz-Funktion der schlimmste denkbare Fall.
+ */
+function Ebenenauswahl({ project }: { project: Project }) {
+  const updateEbene = useProjectStore((s) => s.updateMarkierungsEbene)
+  const loadProjectDetail = useProjectStore((s) => s.loadProjectDetail)
+  const ladefehler = useProjectStore((s) => Boolean(s.markierungenLadefehler[project.id]))
+  // Die Freigabe kann aufgehen, bevor der Eingabe-Reiter je nachgeladen hat — also selbst anstoßen.
+  useMarkierungenNachladen(project.id)
+  const ebenen = project.markierungen ?? []
+  if (ebenen.length === 0) return null
+  const laedtNach = markierungenUnvollstaendig(project)
+  const sichtbar = ebenen.filter((e) => e.oeffentlich !== false).length
+  return (
+    <div>
+      <Label>Welche Markierungen sollen sichtbar sein?</Label>
+      {laedtNach ? (
+        <div className="mt-1.5 flex items-center justify-between gap-2 rounded-md border border-neutral-200 px-3 py-2 text-xs text-neutral-500">
+          {ladefehler ? (
+            <>
+              <span>Die Markierungen konnten nicht geladen werden.</span>
+              <Button variant="outline" size="xs" onClick={() => void loadProjectDetail(project.id)}>
+                <RotateCcw className="h-3 w-3" /> Erneut versuchen
+              </Button>
+            </>
+          ) : (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Markierungen werden geladen …
+            </span>
+          )}
+        </div>
+      ) : (
+        <ul className="mt-1.5 max-h-56 space-y-1 overflow-y-auto rounded-md border border-neutral-200 p-1.5">
+          {ebenen.map((e) => {
+            const an = e.oeffentlich !== false
+            const anzahl = e.anzahl ?? e.punkte.length
+            return (
+              <li key={e.id}>
+                <label className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-neutral-50">
+                  <input
+                    type="checkbox"
+                    checked={an}
+                    onChange={() => updateEbene(project.id, e.id, { oeffentlich: !an })}
+                    className="h-4 w-4 shrink-0 accent-primary-600"
+                  />
+                  <span aria-hidden className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: e.farbe }} />
+                  <span className={cn("min-w-0 flex-1 truncate", an ? "text-neutral-800" : "text-neutral-400 line-through")}>
+                    {e.name}
+                  </span>
+                  <span className="shrink-0 text-[11px] tabular-nums text-neutral-400">{anzahl.toLocaleString("de-DE")}</span>
+                  {an ? (
+                    <Eye className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                  ) : (
+                    <EyeOff className="h-3.5 w-3.5 shrink-0 text-neutral-300" />
+                  )}
+                </label>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {!laedtNach ? (
+        <p className="mt-1.5 text-xs text-neutral-400">
+          {sichtbar === ebenen.length
+            ? "Alle Markierungen sind sichtbar, samt ihrer Angaben aus der Datei."
+            : sichtbar === 0
+              ? "Keine Markierungen sichtbar. Der Empfänger sieht nur die Strecken."
+              : `${sichtbar} von ${ebenen.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 export function PublishCard({ project }: { project: Project }) {
   const publishProject = useProjectStore((s) => s.publishProject)
   const revokeShare = useProjectStore((s) => s.revokeShare)
@@ -80,6 +165,12 @@ export function PublishCard({ project }: { project: Project }) {
   // Eine Freigabe ohne eine einzige sichtbare Strecke waere eine leere Karte beim Kunden —
   // und die sieht nach einem Fehler aus, nicht nach einer Entscheidung.
   const sichtbareStrecken = project.routes.filter((r) => r.oeffentlich !== false).length
+  // T-744: Hat das Projekt Markierungen, meldet der Knopf den GESAMTstand. Stünde dort weiter
+  // „Strecken (5/5)", sähe niemand auf einen Blick, dass eine Ebene ausgeblendet ist — und genau
+  // dafür steht die Zahl auf dem Knopf (T-650).
+  const ebenen = project.markierungen ?? []
+  const sichtbareEbenen = ebenen.filter((e) => e.oeffentlich !== false).length
+  const allesSichtbar = sichtbareStrecken === project.routes.length && sichtbareEbenen === ebenen.length
 
   // Status-Badge (oben rechts, wie die „Tage" beim Transport-Zeitraum): Live = freigegeben.
   const statusBadge = (
@@ -168,10 +259,24 @@ export function PublishCard({ project }: { project: Project }) {
               dass etwas ausgeblendet ist. Vor T-650 kam man an die Auswahl nur ueber
               "Passwort ändern" — dort sucht sie niemand. */}
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm" onClick={() => setStreckenOpen(true)} disabled={busy} className="w-full">
-              <Route className="h-3.5 w-3.5 shrink-0" />
-              Strecken{project.routes.length > 0 ? ` (${sichtbareStrecken}/${project.routes.length})` : ""}
-            </Button>
+            {ebenen.length === 0 ? (
+              <Button variant="outline" size="sm" onClick={() => setStreckenOpen(true)} disabled={busy} className="w-full">
+                <Route className="h-3.5 w-3.5 shrink-0" />
+                Strecken{project.routes.length > 0 ? ` (${sichtbareStrecken}/${project.routes.length})` : ""}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStreckenOpen(true)}
+                disabled={busy}
+                className="w-full"
+                title={`Strecken ${sichtbareStrecken}/${project.routes.length} · Markierungen ${sichtbareEbenen}/${ebenen.length}`}
+              >
+                {allesSichtbar ? <Eye className="h-3.5 w-3.5 shrink-0" /> : <EyeOff className="h-3.5 w-3.5 shrink-0" />}
+                Sichtbar ({sichtbareStrecken + sichtbareEbenen}/{project.routes.length + ebenen.length})
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)} disabled={busy} className="w-full">
               <Lock className="h-3.5 w-3.5 shrink-0" /> Passwort ändern
             </Button>
@@ -226,12 +331,13 @@ export function PublishCard({ project }: { project: Project }) {
           jeder Haken wirkt sofort, auch am bereits geteilten Link. */}
       <Dialog open={streckenOpen} onClose={() => setStreckenOpen(false)} size="sm">
         <DialogHeader
-          title="Sichtbare Strecken"
+          title={ebenen.length > 0 ? "Sichtbar beim Empfänger" : "Sichtbare Strecken"}
           subtitle="Änderungen wirken sofort — auch am bereits geteilten Link."
           onClose={() => setStreckenOpen(false)}
         />
-        <div className="px-6 py-5">
+        <div className="flex flex-col gap-5 px-6 py-5">
           <Streckenauswahl project={project} />
+          <Ebenenauswahl project={project} />
         </div>
         <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4">
           <Button onClick={() => setStreckenOpen(false)}>Fertig</Button>
@@ -248,8 +354,9 @@ export function PublishCard({ project }: { project: Project }) {
           {/* T-650: die inhaltliche Entscheidung steht VOR dem Passwort — das Passwort ist nur
               der Zugang. Nach dem Onlineschalten fuehrt der Knopf "Strecken" in der Karte
               zu derselben Auswahl. */}
-          <div className="mb-5">
+          <div className="mb-5 flex flex-col gap-5">
             <Streckenauswahl project={project} />
+            <Ebenenauswahl project={project} />
           </div>
 
           <Label htmlFor="share-pw">Passwort (optional)</Label>
