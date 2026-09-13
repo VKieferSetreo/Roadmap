@@ -380,7 +380,9 @@ export function KarteTab({
   // T-739: Ein Projekt kann auch NUR aus Markierungen bestehen (z.B. erst die Parkplätze erfasst,
   // Strecke kommt später). Dann gibt es zwar nichts auszuwerten, aber sehr wohl etwas zu zeigen —
   // ohne diese Ausnahme bliebe die Karte leer und die hochgeladenen Punkte unsichtbar.
-  const hatMarkierungen = (project.markierungen ?? []).some((e) => e.punkte.length > 0)
+  // `anzahl` zählt mit: solange die Punkte nachgeladen werden, springt die Karte sonst kurz in den
+  // Leerzustand, obwohl es Markierungen gibt.
+  const hatMarkierungen = (project.markierungen ?? []).some((e) => (e.anzahl ?? e.punkte.length) > 0)
   if (!hatMarkierungen && (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0))) {
     // T-723: ein fehlgeschlagener Lauf setzt den Status zurueck auf "entwurf"
     // (store/projects.ts, fail()) — die Karte sagte danach „Laden Sie die Strecke(n) hoch und
@@ -827,7 +829,7 @@ export function KarteTab({
                           {e.name}
                         </span>
                         <span className="w-16 shrink-0 text-right text-[10px] tabular-nums text-neutral-400">
-                          {e.punkte.length.toLocaleString("de-DE")}
+                          {(e.anzahl ?? e.punkte.length).toLocaleString("de-DE")}
                         </span>
                       </label>
                     </li>

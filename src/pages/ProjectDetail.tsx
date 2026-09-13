@@ -2,12 +2,11 @@
 // Tab steckt in der URL (/projekte/:id/:tab). Karte rendert vollflächig.
 // Umbenennen/Archiv/Löschen läuft über das ⋮-Menü der Projekt-Übersicht.
 
-import { useEffect } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { Archive, ClipboardList, MapPin, MapPinned, RotateCcw, type LucideIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs"
 import { Button } from "@/components/ui/Button"
-import { useProjectStore } from "@/store/projects"
+import { useMarkierungenNachladen, useProjectStore } from "@/store/projects"
 import { RouteTab } from "@/components/project/RouteTab"
 import { AnlageTab } from "@/components/project/AnlageTab"
 import { KarteTab } from "@/components/project/KarteTab"
@@ -31,15 +30,8 @@ export function ProjectDetail() {
   const loading = useProjectStore((s) => s.loading)
   const seeded = useProjectStore((s) => s.seeded)
   const archiveProject = useProjectStore((s) => s.archiveProject)
-  const loadProjectDetail = useProjectStore((s) => s.loadProjectDetail)
-
-  // T-739: Die Projektliste liefert Markierungs-Ebenen OHNE ihre Punkte (sonst trüge jede
-  // Listen-Antwort die gesamte Punktlast aller Projekte). Hier, beim Öffnen genau eines Projekts,
-  // werden sie nachgeholt — davor zeigt die Karte keine Markierungen und ein Speichern ließe das
-  // Feld bewusst aus (store/projects.ts#scheduleSync).
-  useEffect(() => {
-    if (id) void loadProjectDetail(id)
-  }, [id, loadProjectDetail])
+  // T-739/T-744: Markierungs-Punkte nachladen, sobald das Projekt nur als Listen-Fassung im Store steht.
+  useMarkierungenNachladen(id)
 
   // Deep-Link während des Initial-Loads: warten statt nach Home umleiten.
   if (!project && (loading || !seeded)) {

@@ -5,7 +5,8 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Check, Loader2, MapPinned, Pencil, X } from "lucide-react"
+import { Check, Loader2, MapPinned, Pencil, RotateCcw, X } from "lucide-react"
+import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { DropZone } from "@/components/upload/DropZone"
@@ -21,6 +22,8 @@ export function MarkierungenCard({ project }: { project: Project }) {
   const addEbenen = useProjectStore((s) => s.addMarkierungsEbenen)
   const removeEbene = useProjectStore((s) => s.removeMarkierungsEbene)
   const updateEbene = useProjectStore((s) => s.updateMarkierungsEbene)
+  const loadProjectDetail = useProjectStore((s) => s.loadProjectDetail)
+  const ladefehler = useProjectStore((s) => Boolean(s.markierungenLadefehler[project.id]))
 
   const [busy, setBusy] = useState(false)
   const [auswahl, setAuswahl] = useState<{ fileName: string; ebenen: ParsedPunktEbene[] } | null>(null)
@@ -108,7 +111,20 @@ export function MarkierungenCard({ project }: { project: Project }) {
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {laedtNach ? (
+          {laedtNach && ladefehler ? (
+            <div
+              role="alert"
+              className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-amber-300 bg-amber-50/60 px-4 py-6 text-center text-sm text-amber-800"
+            >
+              <span>
+                Die vorhandenen Markierungen konnten nicht geladen werden. Bis sie da sind, lassen sich
+                keine Ebenen hinzufügen oder ändern, damit nichts verloren geht.
+              </span>
+              <Button variant="outline" size="sm" onClick={() => void loadProjectDetail(project.id)}>
+                <RotateCcw className="h-3.5 w-3.5" /> Erneut versuchen
+              </Button>
+            </div>
+          ) : laedtNach ? (
             <div className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-200 bg-neutral-50/50 px-4 py-8 text-sm text-neutral-500">
               <Loader2 className="h-4 w-4 animate-spin" /> Vorhandene Markierungen werden geladen …
             </div>

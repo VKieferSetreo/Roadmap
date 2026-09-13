@@ -24,7 +24,9 @@ const STATUS_META: Record<
 
 /** Anzahl Markierungen über alle Ebenen (T-739). */
 function markierungenAnzahl(project: Project): number {
-  return (project.markierungen ?? []).reduce((n, e) => n + e.punkte.length, 0)
+  // `anzahl` zuerst: die Übersicht sieht NUR die Listen-Fassung und lädt nie nach — dort ist
+  // `punkte` immer leer. Ohne das stünde bei jedem Projekt mit Markierungen „Noch keine Strecke".
+  return (project.markierungen ?? []).reduce((n, e) => n + (e.anzahl ?? e.punkte.length), 0)
 }
 
 /** Strecken-Beschriftung: immer die Anzahl ("1 Strecke", "2 Strecken") — nicht den Dateinamen.

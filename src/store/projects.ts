@@ -4,6 +4,7 @@
 //  - "demo": lokaler Mock (Frontend-only-Fallback, z.B. Dev ohne Server).
 // `analysis` (laufender Fortschritt) wird NICHT persistiert.
 
+import { useEffect } from "react"
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
@@ -41,6 +42,9 @@ interface ProjectStore {
   projects: Project[]
   /** laufende Analysen je Projekt-ID (ephemer). */
   analysis: Record<string, AnalysisState>
+  /** T-744: Projekte, deren Markierungs-Punkte nicht nachgeladen werden konnten. Ohne dieses Flag
+   *  bliebe der Markierungs-Block dauerhaft auf „wird geladen" stehen — ohne Ausweg außer Reload. */
+  markierungenLadefehler: Record<string, true>
   seeded: boolean
   loadError: boolean // T-228: letzter loadProjects ist mit Fehler gescheitert (≠ legitim leer)
   /** true während der initiale Live-Load läuft (Skeletons). */
@@ -197,6 +201,7 @@ export const useProjectStore = create<ProjectStore>()(
     (set, get) => ({
       projects: [],
       analysis: {},
+      markierungenLadefehler: {},
       seeded: false,
       loading: false,
       loadError: false,
@@ -506,6 +511,11 @@ export const useProjectStore = create<ProjectStore>()(
       loadProjectDetail: async (id) => {
         const p = get().getProject(id)
         if (!isLive() || !p || !markierungenUnvollstaendig(p)) return
+        if (get().markierungenLadefehler[id]) {
+          const rest = { ...get().markierungenLadefehler }
+          delete rest[id]
+          set({ markierungenLadefehler: rest })
+        }
         try {
           const voll = await api.getProject(id)
           set((s) => ({
@@ -516,8 +526,11 @@ export const useProjectStore = create<ProjectStore>()(
             ),
           }))
         } catch {
-          // Still: die Strecken und Funde stehen bereits. Ein Fehlerbanner für nachgeladene
-          // Zusatzpunkte wäre lauter als der Verlust. Der nächste Aufruf versucht es erneut.
+          // Kein Toast: Strecken und Funde stehen bereits, ein Banner für Zusatzpunkte wäre lauter als
+          // der Verlust. Aber merken — der Markierungs-Block zeigt dann „Erneut versuchen" statt
+          // endlos „wird geladen". Die Sperre selbst bleibt: auf einem unvollständigen Stand darf
+          // nichts geändert werden, sonst ginge die Änderung beim Speichern still verloren.
+          set((s) => ({ markierungenLadefehler: { ...s.markierungenLadefehler, [id]: true } }))
         }
       },
 
@@ -754,3 +767,24 @@ export const useProjectStore = create<ProjectStore>()(
     },
   ),
 )
+
+/** Holt die Markierungs-Punkte eines Projekts nach, sobald es nur als Listen-Fassung im Store steht
+ *  (T-739). Die Projektliste liefert Ebenen ohne Punkte, sonst trüge jede Listen-Antwort die gesamte
+ *  Punktlast aller Projekte.
+ *
+ *  T-744: Der Effekt hängt am ZUSTAND „Punkte fehlen", nicht nur an der Projekt-ID. Die erste Fassung
+ *  lief mit [id] und feuerte bei einem Reload oder Direktlink, BEVOR die Projektliste da war: das
+ *  Projekt fehlte im Store, der Aufruf kehrte sofort zurück, und weil sich die ID danach nicht mehr
+ *  änderte, lief er nie wieder. Gemessen gegen ein echtes Backend: kein einziges
+ *  GET /api/projects/<id> nach dem Reload, Punkte dauerhaft unsichtbar, Block dauerhaft gesperrt.
+ *  Im Demo-Modus war das unsichtbar, dort gibt es keine beschnittene Liste. */
+export function useMarkierungenNachladen(id: string | undefined) {
+  const loadProjectDetail = useProjectStore((s) => s.loadProjectDetail)
+  const fehlen = useProjectStore((s) => {
+    const p = id ? (s.projects ?? []).find((x) => x.id === id) : undefined
+    return p ? markierungenUnvollstaendig(p) : false
+  })
+  useEffect(() => {
+    if (id && fehlen) void loadProjectDetail(id)
+  }, [id, fehlen, loadProjectDetail])
+}

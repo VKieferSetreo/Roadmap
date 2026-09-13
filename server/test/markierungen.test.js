@@ -86,6 +86,44 @@ describe("Markierungen: PATCH speichert und liest zurück", () => {
   })
 })
 
+describe("Markierungen: ein Listen-Stand darf keine Punkte löschen", () => {
+  // Gemessen am 13.09. gegen eine echte Postgres: 5 Punkte in der DB, ein PATCH mit dem Stand aus
+  // GET /api/projects (punkte: [], anzahl: n) — danach 0. Das Frontend schützt sich davor, der Server
+  // muss es aber auch tun: ein alter Tab oder ein anderer Client schriebe sonst still Datenverlust.
+  it("lehnt eine Ebene mit `anzahl` ab, statt ihre Punkte zu überschreiben", async () => {
+    const { app } = makeApp()
+    const p = await createProject(app)
+    await request(app).patch(`/api/projects/${p.id}`).send({
+      markierungen: [{ id: "m-1", name: "Parkplätze", farbe: "#0F766E", punkte: punkte(3) }],
+    })
+
+    const liste = await request(app).get("/api/projects")
+    const listenStand = liste.body.projects.find((x) => x.id === p.id).markierungen
+    expect(listenStand[0]).toMatchObject({ punkte: [], anzahl: 3 })
+
+    const res = await request(app).patch(`/api/projects/${p.id}`).send({ markierungen: listenStand })
+    expect(res.status).toBe(409)
+    expect(res.body.error).toMatch(/nicht vollständig geladen/)
+
+    // Und das ist der eigentliche Beleg: die Punkte stehen noch.
+    const detail = await request(app).get(`/api/projects/${p.id}`)
+    expect(detail.body.markierungen[0].punkte).toHaveLength(3)
+  })
+
+  it("lässt ein PATCH ohne das Feld markierungen die Punkte unberührt", async () => {
+    const { app } = makeApp()
+    const p = await createProject(app)
+    await request(app).patch(`/api/projects/${p.id}`).send({
+      markierungen: [{ id: "m-1", name: "Parkplätze", farbe: "#0F766E", punkte: punkte(3) }],
+    })
+    const res = await request(app).patch(`/api/projects/${p.id}`).send({ name: "Umbenannt" })
+    expect(res.status).toBe(200)
+    const detail = await request(app).get(`/api/projects/${p.id}`)
+    expect(detail.body.name).toBe("Umbenannt")
+    expect(detail.body.markierungen[0].punkte).toHaveLength(3)
+  })
+})
+
 describe("Markierungen: die Grenzen greifen serverseitig", () => {
   it("kappt eine Ebene auf 5.000 Punkte, statt sie zu verlieren oder auszudünnen", () => {
     const [e] = normalizeMarkierungen([{ name: "Viele", farbe: "#0F766E", punkte: punkte(6000) }])

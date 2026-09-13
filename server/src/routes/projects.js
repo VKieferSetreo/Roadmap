@@ -152,6 +152,19 @@ export function normalizeMarkierungen(ebenen) {
       `Ein Projekt fasst höchstens ${MARKIERUNG_GRENZEN.ebenenJeProjekt} Markierungs-Ebenen. Bitte entfernen Sie zuerst eine Ebene.`,
     )
   }
+  // Eine Ebene mit `anzahl` ist die LISTEN-Fassung aus GET /api/projects: dort fehlen die Punkte
+  // absichtlich. Kommt so ein Stand in einem PATCH zurück, würde er alle Punkte des Projekts durch
+  // leere Arrays ersetzen — gemessen am 13.09.: 5 Punkte in der DB, ein PATCH mit dem Listen-Stand,
+  // danach 0. Das Frontend lässt das Feld in diesem Fall weg (store/projects.ts#scheduleSync), aber
+  // der Server darf sich darauf nicht verlassen: ein alter Tab mit altem Bundle oder ein anderer
+  // Client schriebe sonst still Datenverlust. 409, weil es ein veralteter Stand ist — das Frontend
+  // lädt daraufhin ohnehin neu.
+  if (ebenen.some((e) => isPlainObject(e) && e.anzahl !== undefined)) {
+    throw new ApiError(
+      409,
+      "Die Markierungen dieses Projekts waren noch nicht vollständig geladen. Bitte laden Sie die Seite neu und versuchen Sie es erneut.",
+    )
+  }
   let punkteGesamt = 0
   return ebenen.map((e, i) => {
     if (!isPlainObject(e)) throw new ApiError(400, `markierungen[${i}] muss ein Objekt sein`)
