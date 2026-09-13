@@ -85,9 +85,15 @@ interface ProjectStore {
   /** Holt EIN Projekt vollständig nach (T-739): die Liste liefert Markierungs-Ebenen ohne ihre
    *  Punkte. Ohne diesen Nachlauf bliebe die Karte leer und ein Speichern würde die Punkte löschen. */
   loadProjectDetail: (id: string) => Promise<void>
-  addMarkierungsEbenen: (id: string, ebenen: Array<Omit<MarkierungsEbene, "id" | "farbe">>) => void
-  removeMarkierungsEbene: (id: string, ebeneId: string) => void
-  updateMarkierungsEbene: (id: string, ebeneId: string, patch: Partial<Pick<MarkierungsEbene, "name" | "oeffentlich">>) => void
+  /** Alle drei geben false zurück und ändern NICHTS, solange die Punkte nur als Listen-Fassung da
+   *  sind (T-744). Die Sperre sitzt hier und nicht nur im Rendern: loadProjects kann den Stand
+   *  jederzeit zurück in die Listenform kippen, während ein Dialog, ein Datei-Parse oder ein
+   *  Umbenennen-Formular noch offen ist — deren Callbacks kämen sonst durch, der Sync ließe das Feld
+   *  weg, und die Änderung wäre still verloren. Bei der Freigabe hieße das: die Oberfläche zeigt
+   *  „ausgeblendet", der Kunde sieht die Ebene weiter. */
+  addMarkierungsEbenen: (id: string, ebenen: Array<Omit<MarkierungsEbene, "id" | "farbe">>) => boolean
+  removeMarkierungsEbene: (id: string, ebeneId: string) => boolean
+  updateMarkierungsEbene: (id: string, ebeneId: string, patch: Partial<Pick<MarkierungsEbene, "name" | "oeffentlich">>) => boolean
 
   updateTransport: (id: string, patch: Partial<TransportData>) => void
   updateZeitraum: (id: string, patch: Partial<TransportZeitraum>) => void
@@ -124,6 +130,24 @@ function adoptVersion(set: SetState, id: string, version?: number) {
 
 /** Server-PATCH mit Optimistic-Lock (T-466/T-501): bekannte Version mitsenden, Server-Version
  *  übernehmen, 409 (jemand anderes hat geändert) → Refetch + Hinweis statt stillem Verlust. */
+/** Die Felder, die ein Sync vom lokalen Projekt an den Server schickt — EINE Liste für scheduleSync
+ *  und den Sofort-Flush vor der Auswertung. T-744: der Flush führte seine eigene Kopie, ohne
+ *  markierungen; eine Ebenen-Änderung, die noch im 600-ms-Fenster hing, ging beim Start der
+ *  Auswertung verloren und wurde von der Analyse-Antwort überschrieben.
+ *
+ *  markierungen NUR, wenn die Punkte wirklich geladen sind (T-739): die Projektliste liefert die
+ *  Ebenen ohne Punktlast (punkte: [], anzahl: n) — ein PATCH mit diesem Stand würde ALLE Markierungen
+ *  löschen. Feld weglassen heißt serverseitig „unverändert lassen". */
+function syncFelder(p: Project): ProjectPatch {
+  return {
+    name: p.name,
+    routes: p.routes,
+    ...(markierungenUnvollstaendig(p) ? {} : { markierungen: p.markierungen ?? [] }),
+    transport: p.transport,
+    zeitraum: p.zeitraum,
+  }
+}
+
 function applyPatch(id: string, patch: ProjectPatch, get: () => ProjectStore, set: SetState): Promise<void> {
   const known = get().getProject(id)?.version
   return api
@@ -133,7 +157,21 @@ function applyPatch(id: string, patch: ProjectPatch, get: () => ProjectStore, se
       if (e instanceof ApiError && e.status === 409) {
         toast.error("Das Projekt wurde zwischenzeitlich von jemand anderem geändert. Es wird neu geladen.")
         void get().loadProjects()
+      } else if (e instanceof ApiError && e.status === 413) {
+        // T-744: Vorher landete das als „Verbindung prüfen" — und der zu große Stand blieb im Store,
+        // so dass JEDER weitere Sync des Projekts (auch Name oder Transport) wieder mit 413 scheiterte.
+        // Die Meldung des Servers sagt, was zu tun ist; der Neuladen verwirft den zu großen Stand.
+        toast.error(`${e.message} Die letzte Änderung wurde nicht gespeichert, das Projekt wird neu geladen.`)
+        void get().loadProjects()
+      } else if (e instanceof ApiError && e.status > 0) {
+        // T-744 (Review): Der Server hat geantwortet und abgelehnt (4xx/5xx) — die Änderung ist NICHT
+        // gespeichert, der Store zeigt sie aber weiter. Bei der Freigabe hieße das: Haken
+        // „ausgeblendet", der Kunde sieht die Ebene weiter. Also den echten Stand holen.
+        toast.error("Die Änderung wurde vom Server nicht angenommen und ist nicht gespeichert. Das Projekt wird neu geladen.")
+        void get().loadProjects()
       } else {
+        // Keine Antwort (Netz, Timeout): ein Neuladen scheiterte ebenso. Der Hinweis sagt ehrlich,
+        // dass nichts gespeichert wurde.
         toast.error("Änderung konnte nicht gespeichert werden. Verbindung prüfen.")
       }
     })
@@ -146,23 +184,16 @@ function scheduleSync(id: string, get: () => ProjectStore, set: SetState) {
     delete syncTimers[id]
     const p = get().getProject(id)
     if (!p) return
-    // T-739: markierungen NUR mitsenden, wenn die Punkte wirklich geladen sind. Die Projektliste
-    // liefert die Ebenen ohne Punktlast (punkte: [], anzahl: n) — ein PATCH mit diesem Stand würde
-    // beim Speichern einer beliebigen anderen Änderung ALLE Markierungen des Projekts löschen.
-    // Feld weglassen heißt serverseitig „unverändert lassen".
-    void applyPatch(
-      id,
-      {
-        name: p.name,
-        routes: p.routes,
-        ...(markierungenUnvollstaendig(p) ? {} : { markierungen: p.markierungen ?? [] }),
-        transport: p.transport,
-        zeitraum: p.zeitraum,
-      },
-      get,
-      set,
-    )
+    void applyPatch(id, syncFelder(p), get, set)
   }, 600)
+}
+
+/** true = Punkte nur als Listen-Fassung da, keine Änderung zulassen (siehe addMarkierungsEbenen). */
+function markierungenGesperrt(get: () => ProjectStore, id: string): boolean {
+  const p = get().getProject(id)
+  if (!p || !markierungenUnvollstaendig(p)) return false
+  toast.error("Die Markierungen dieses Projekts werden gerade geladen. Bitte versuchen Sie es gleich noch einmal.")
+  return true
 }
 
 /** Nächste freie Markierungs-Farbe (Palette der Reihe nach, Lücken zuerst). */
@@ -535,7 +566,8 @@ export const useProjectStore = create<ProjectStore>()(
       },
 
       addMarkierungsEbenen: (id, ebenen) => {
-        if (!ebenen.length) return
+        if (!ebenen.length) return false
+        if (markierungenGesperrt(get, id)) return false
         set((s) => ({
           projects: s.projects.map((p) => {
             if (p.id !== id) return p
@@ -549,9 +581,11 @@ export const useProjectStore = create<ProjectStore>()(
         scheduleSync(id, get, set)
         // Bewusst KEIN runAnalysis: Markierungen sind rein visuell und ändern an der
         // Hindernis-Auswertung nichts (anders als addRoute).
+        return true
       },
 
       removeMarkierungsEbene: (id, ebeneId) => {
+        if (markierungenGesperrt(get, id)) return false
         set((s) => ({
           projects: s.projects.map((p) =>
             p.id === id
@@ -560,9 +594,11 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         }))
         scheduleSync(id, get, set)
+        return true
       },
 
       updateMarkierungsEbene: (id, ebeneId, patch) => {
+        if (markierungenGesperrt(get, id)) return false
         set((s) => ({
           projects: s.projects.map((p) =>
             p.id === id
@@ -575,6 +611,7 @@ export const useProjectStore = create<ProjectStore>()(
           ),
         }))
         scheduleSync(id, get, set)
+        return true
       },
 
       updateTransport: (id, patch) => {
@@ -697,15 +734,18 @@ export const useProjectStore = create<ProjectStore>()(
           // Blind flushen (KEINE version) — der Nutzer will genau seinen aktuellen Stand auswerten;
           // ein version-409 hier wäre nicht von dem T-467-Analyse-409 unten zu unterscheiden. Die
           // server-seitig erhöhte version übernehmen wir trotzdem (T-501, kein Self-Conflict danach).
-          const sync = p
-            ? api
-                .patchProject(id, {
-                  name: p.name,
-                  routes: p.routes,
-                  transport: p.transport,
-                  zeitraum: p.zeitraum,
-                })
-                .then((u) => adoptVersion(set, id, u.version))
+          const felder = p ? syncFelder(p) : undefined
+          // T-744 (Review): markierungen NUR, wenn wirklich ein Sync ausstand. Ohne diese Bedingung
+          // schrieb JEDER Auswertungsstart die Markierungen blind (ohne version) zurück: ein veralteter
+          // Tab überschrieb dann still die Ebenen eines Kollegen oder blendete eine gerade für den Kunden
+          // ausgeblendete Ebene wieder ein — ohne 409, ohne Hinweis. Vor T-744 enthielt der Flush gar
+          // keine Markierungen. Die Engine braucht sie nicht, sie sind rein visuell.
+          // ponytail: Restfenster bleibt — steht in genau diesem Moment ein Sync aus UND hat ein anderer
+          // Tab die Freigabe geändert, gewinnt dieser Tab. Dieselbe Lücke haben Strecken seit T-650;
+          // richtig wäre ein Flush MIT version und getrennter 409-Behandlung (Ticket T-745).
+          if (felder && !pending) delete felder.markierungen
+          const sync = felder
+            ? api.patchProject(id, felder).then((u) => adoptVersion(set, id, u.version))
             : Promise.resolve()
 
           sync

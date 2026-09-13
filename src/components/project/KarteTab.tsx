@@ -383,7 +383,16 @@ export function KarteTab({
   // `anzahl` zählt mit: solange die Punkte nachgeladen werden, springt die Karte sonst kurz in den
   // Leerzustand, obwohl es Markierungen gibt.
   const hatMarkierungen = (project.markierungen ?? []).some((e) => (e.anzahl ?? e.punkte.length) > 0)
-  if (!hatMarkierungen && (!hatRouten || (project.status !== "fertig" && !running && project.findings.length === 0))) {
+  // T-744: Die Markierungs-Ausnahme gilt NUR für Projekte ohne auswertbare Strecke. Die erste Fassung
+  // stand als äußeres UND vor dem ganzen Gate und übersprang damit auch „noch nicht ausgewertet",
+  // „Letzte Auswertung fehlgeschlagen" und „Auswertung läuft bereits" — gemessen: die Karte zeigte
+  // stattdessen „0 Kritisch · 0 Warnung · 0 Hinweis". Genau diese Entwarnung sollten T-722/T-723
+  // abstellen; für einen Schwertransport-Disponenten liest sie sich wie „nichts im Weg".
+  // Folge: mit Strecke erscheinen die Markierungen erst mit dem ersten Ergebnis. Das Anlegen einer
+  // Strecke startet die Auswertung ohnehin selbst.
+  const ohneAuswertbareStrecke = !hatRouten && !hatMarkierungen
+  const streckeOhneErgebnis = hatRouten && project.status !== "fertig" && !running && project.findings.length === 0
+  if (ohneAuswertbareStrecke || streckeOhneErgebnis) {
     // T-723: ein fehlgeschlagener Lauf setzt den Status zurueck auf "entwurf"
     // (store/projects.ts, fail()) — die Karte sagte danach „Laden Sie die Strecke(n) hoch und
     // starten Sie die Auswertung", obwohl der Disponent genau das getan hatte. Der Fehler stand nur
@@ -626,7 +635,9 @@ export function KarteTab({
                 letzten Laufs stehen (T-220: waehrend des Laufs Inhalt behalten statt Empty-Flash);
                 sie sind ein echter, wenn auch alter Stand, und der Fortschritt daneben sagt, dass
                 gerade neu gerechnet wird. */}
-            {!laeuftOhneErgebnis ? (
+            {/* T-744: ohne auswertbare Strecke (Projekt nur mit Markierungen) gibt es nichts, das
+                geprüft wurde — „0 Kritisch" wäre dort dieselbe falsche Entwarnung. */}
+            {!laeuftOhneErgebnis && hatRouten ? (
               <div className={cn("flex flex-wrap items-center gap-1.5", running && "mt-2")}>
                 {/* T-688: die Marken standen unter `n > 0` und verschwanden beim Ziehen des
                     Zeitstrahls einzeln aus der umbrechenden Zeile — der Stapel darunter sprang mit.

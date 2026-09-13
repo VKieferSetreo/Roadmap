@@ -37,30 +37,49 @@ export function MarkierungenCard({ project }: { project: Project }) {
   const laedtNach = markierungenUnvollstaendig(project)
   const punkteGesamt = ebenen.reduce((n, e) => n + (e.anzahl ?? e.punkte.length), 0)
 
-  /** Grenzen, die am Projekt hängen (die Punktzahl je Ebene prüft schon der Parser). */
-  function passtInsProjekt(neu: ParsedPunktEbene[]): boolean {
+  /** Grenzen, die am Projekt hängen (die Punktzahl je Ebene prüft schon der Parser).
+   *  `imDialog`: die Meldung sagt dann „weniger Ebenen anhaken" statt „erst eine entfernen". */
+  function passtInsProjekt(neu: ParsedPunktEbene[], imDialog: boolean): boolean {
     if (ebenen.length + neu.length > MARKIERUNG_GRENZEN.ebenenJeProjekt) {
       toast.error(
-        `Ein Projekt fasst höchstens ${MARKIERUNG_GRENZEN.ebenenJeProjekt} Ebenen. Bitte entfernen Sie zuerst eine.`,
+        `Ein Projekt fasst höchstens ${MARKIERUNG_GRENZEN.ebenenJeProjekt} Ebenen. ` +
+          (imDialog ? "Bitte haken Sie weniger Ebenen an." : "Bitte entfernen Sie zuerst eine."),
       )
       return false
     }
     const summe = punkteGesamt + neu.reduce((n, e) => n + e.punkte.length, 0)
     if (summe > MARKIERUNG_GRENZEN.punkteJeProjekt) {
       toast.error(
-        `Zusammen wären das ${summe.toLocaleString("de-DE")} Markierungen. Erlaubt sind ${MARKIERUNG_GRENZEN.punkteJeProjekt.toLocaleString("de-DE")} je Projekt.`,
+        `Zusammen wären das ${summe.toLocaleString("de-DE")} Markierungen. Erlaubt sind ${MARKIERUNG_GRENZEN.punkteJeProjekt.toLocaleString("de-DE")} je Projekt` +
+          (imDialog ? " — bitte haken Sie weniger Ebenen an." : ", damit die Karte flüssig bleibt."),
+      )
+      return false
+    }
+    // T-744: Die Zählgrenzen deckeln keine Bytes. Mit vielen langen Attributen reißt schon eine
+    // erlaubte Punktzahl den 20-MB-Body des Servers; der 413 kam früher als „Verbindung prüfen" an und
+    // blockierte danach jedes Speichern. Vorher messen ist billiger als hinterher aufräumen.
+    const bytes = new Blob([JSON.stringify([...ebenen, ...neu])]).size
+    if (bytes > MARKIERUNG_GRENZEN.jsonBytes) {
+      toast.error(
+        `Die Markierungen wären zusammen ${(bytes / 1024 / 1024).toLocaleString("de-DE", { maximumFractionDigits: 1 })} MB groß, ` +
+          `erlaubt sind ${(MARKIERUNG_GRENZEN.jsonBytes / 1024 / 1024).toLocaleString("de-DE")} MB. ` +
+          "Meist tragen die Punkte sehr viele oder sehr lange Angaben — bitte entfernen Sie nicht benötigte Spalten aus der Datei.",
       )
       return false
     }
     return true
   }
 
-  function uebernehmen(fileName: string, gewaehlt: ParsedPunktEbene[]) {
-    if (!passtInsProjekt(gewaehlt)) return
-    addEbenen(
+  /** true = übernommen. Der Auswahldialog schließt nur dann (T-744: vorher war die Auswahl bei
+   *  überschrittener Grenze weg, und der Nutzer musste die Datei neu wählen). */
+  function uebernehmen(fileName: string, gewaehlt: ParsedPunktEbene[], imDialog: boolean): boolean {
+    if (!passtInsProjekt(gewaehlt, imDialog)) return false
+    const ok = addEbenen(
       project.id,
       gewaehlt.map((e) => ({ name: e.name, fileName, punkte: e.punkte })),
     )
+    // Der Store hat abgelehnt (Punkte werden gerade nachgeladen) und das selbst gemeldet.
+    if (!ok) return false
     const punkte = gewaehlt.reduce((n, e) => n + e.punkte.length, 0)
     toast.success(
       gewaehlt.length === 1
@@ -68,6 +87,7 @@ export function MarkierungenCard({ project }: { project: Project }) {
         : `${gewaehlt.length} Ebenen mit ${punkte.toLocaleString("de-DE")} Markierungen geladen.`,
     )
     for (const e of gewaehlt) if (e.hinweis) toast.warning(e.hinweis)
+    return true
   }
 
   async function onFile(file: File) {
@@ -84,7 +104,9 @@ export function MarkierungenCard({ project }: { project: Project }) {
         toast.error("In der Datei stehen keine Punkte. Enthält sie nur Linien oder Flächen?")
         return
       }
-      if (mitPunkten.length === 1) uebernehmen(file.name, mitPunkten)
+      // Eine einzelne Ebene mit Hinweis (z.B. „Nicht übernommen, weil zu groß") trotzdem direkt
+      // übernehmen — der Hinweis erscheint als Toast.
+      if (mitPunkten.length === 1) uebernehmen(file.name, mitPunkten, false)
       else setAuswahl({ fileName: file.name, ebenen: mitPunkten })
     } catch (e) {
       // Nur unsere eigenen Meldungen durchreichen: die sind deutsch und sagen, was zu tun ist.
@@ -176,7 +198,9 @@ export function MarkierungenCard({ project }: { project: Project }) {
                           onSubmit={(ev) => {
                             ev.preventDefault()
                             const name = umbenennen.name.trim()
-                            if (name) updateEbene(project.id, e.id, { name })
+                            // Bei Ablehnung (Punkte werden nachgeladen) das Feld offen lassen, damit
+                            // der eingegebene Name nicht verloren geht.
+                            if (name && !updateEbene(project.id, e.id, { name })) return
                             setUmbenennen(null)
                           }}
                         >
@@ -249,8 +273,7 @@ export function MarkierungenCard({ project }: { project: Project }) {
           ebenen={auswahl.ebenen}
           onClose={() => setAuswahl(null)}
           onConfirm={(gewaehlt) => {
-            uebernehmen(auswahl.fileName, gewaehlt)
-            setAuswahl(null)
+            if (uebernehmen(auswahl.fileName, gewaehlt, true)) setAuswahl(null)
           }}
         />
       ) : null}

@@ -14,14 +14,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import type { MarkierungsEbene, Project } from "@/types/domain"
 
-const { api } = vi.hoisted(() => ({
-  api: { getProject: vi.fn(), patchProject: vi.fn() },
+const { api, toast } = vi.hoisted(() => ({
+  api: { getProject: vi.fn(), patchProject: vi.fn(), runAnalysis: vi.fn(), listProjects: vi.fn(), projectCount: vi.fn() },
+  toast: { error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() },
 }))
 vi.mock("@/api/roadmap", () => ({ api }))
 vi.mock("@/store/datasource", () => ({ isLive: () => true }))
-vi.mock("sonner", () => ({ toast: { error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() } }))
+vi.mock("sonner", () => ({ toast }))
 
 import { useMarkierungenNachladen, useProjectStore } from "@/store/projects"
+import { ApiError } from "@/api/client"
 import { projekt } from "@/test/fixtures"
 
 const P = "p-live"
@@ -40,6 +42,11 @@ const imStore = () => useProjectStore.getState().getProject(P)
 beforeEach(() => {
   api.getProject.mockReset()
   api.patchProject.mockReset()
+  api.runAnalysis.mockReset()
+  api.listProjects.mockReset()
+  api.listProjects.mockResolvedValue([])
+  api.projectCount.mockResolvedValue({ aktiv: 0, archiviert: 0, topLevel: 0 })
+  Object.values(toast).forEach((f) => f.mockReset())
   api.patchProject.mockImplementation(async (_id: string, patch: { version?: number }) => ({ version: (patch.version ?? 0) + 1 }))
 })
 afterEach(() => vi.useRealTimers())
@@ -111,3 +118,96 @@ describe("Speichern, solange die Punkte fehlen", () => {
     expect(patch.markierungen[0].punkte).toHaveLength(5)
   })
 })
+
+describe("Sperre in den Store-Aktionen, nicht nur im Rendern (T-744)", () => {
+  // loadProjects kann den Stand jederzeit zurück in die Listenform kippen, während ein Dialog oder ein
+  // Umbenennen-Formular noch offen ist. Deren Callbacks dürfen dann nichts ändern — sonst ließe der Sync
+  // das Feld weg, und die Änderung wäre still verloren. Bei der Freigabe: Oberfläche „ausgeblendet",
+  // Kunde sieht die Ebene weiter.
+  it.each([
+    ["addMarkierungsEbenen", () => useProjectStore.getState().addMarkierungsEbenen(P, [{ name: "Neu", punkte: punkte(1) }])],
+    ["removeMarkierungsEbene", () => useProjectStore.getState().removeMarkierungsEbene(P, "e1")],
+    ["updateMarkierungsEbene", () => useProjectStore.getState().updateMarkierungsEbene(P, "e1", { oeffentlich: false })],
+  ])("%s ändert im Listen-Stand nichts und meldet false", (_name, aktion) => {
+    setzeStore([{ ...projekt(), id: P, markierungen: [listenEbene(3)] }])
+    const vorher = JSON.stringify(imStore()?.markierungen)
+    expect(aktion()).toBe(false)
+    expect(JSON.stringify(imStore()?.markierungen)).toBe(vorher)
+    expect(toast.error).toHaveBeenCalled()
+  })
+
+  it("lässt dieselben Aktionen zu, sobald die Punkte vollständig sind", () => {
+    setzeStore([{ ...projekt(), id: P, markierungen: [volleEbene(3)] }])
+    expect(useProjectStore.getState().updateMarkierungsEbene(P, "e1", { oeffentlich: false })).toBe(true)
+    expect(imStore()?.markierungen?.[0].oeffentlich).toBe(false)
+  })
+})
+
+describe("Auswertung starten, während eine Ebenen-Änderung noch im Sync-Fenster hängt (T-744)", () => {
+  it("schickt die Markierungen im Sofort-Flush mit, statt sie zu verlieren", async () => {
+    vi.useFakeTimers()
+    api.runAnalysis.mockReturnValue(new Promise(() => {})) // Lauf hängt, uns interessiert nur der Flush
+    setzeStore([{ ...projekt(), id: P, markierungen: [volleEbene(2)] }])
+    useProjectStore.getState().updateMarkierungsEbene(P, "e1", { oeffentlich: false })
+    // Noch innerhalb der 600 ms startet die Auswertung.
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    const flush = api.patchProject.mock.calls.find(([, patch]) => "markierungen" in patch)
+    expect(flush).toBeDefined()
+    expect(flush![1].markierungen[0].oeffentlich).toBe(false)
+  })
+})
+
+describe("Analyse-Flush ohne ausstehenden Sync (T-744, Review)", () => {
+  it("schickt KEINE Markierungen — sonst überschriebe ein veralteter Tab still fremde Ebenen und Freigaben", async () => {
+    vi.useFakeTimers()
+    api.runAnalysis.mockReturnValue(new Promise(() => {}))
+    // Tab mit altem Stand: keine Ebenen im Store, nichts steht zur Synchronisation an.
+    setzeStore([{ ...projekt(), id: P, markierungen: [] }])
+    useProjectStore.getState().runAnalysis(P)
+    await vi.advanceTimersByTimeAsync(10)
+    const [, flush] = api.patchProject.mock.calls[0]
+    // Vorher ging hier `markierungen: []` blind raus — der Server hätte alle Ebenen gelöscht.
+    expect(flush).not.toHaveProperty("markierungen")
+    expect(flush).not.toHaveProperty("version")
+    expect(flush).toHaveProperty("routes")
+  })
+})
+
+describe("Sync abgelehnt: Oberfläche darf nicht weiter den ungespeicherten Stand zeigen (T-744, Review)", () => {
+  it("holt bei einer Server-Ablehnung (500) den echten Stand", async () => {
+    vi.useFakeTimers()
+    api.patchProject.mockRejectedValueOnce(new ApiError({ message: "Interner Fehler", code: "HTTP_500" }, 500))
+    setzeStore([{ ...projekt(), id: P, markierungen: [volleEbene(2)] }])
+    useProjectStore.getState().updateMarkierungsEbene(P, "e1", { oeffentlich: false })
+    await vi.advanceTimersByTimeAsync(700)
+    expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/nicht angenommen/))
+    expect(api.listProjects).toHaveBeenCalled()
+  })
+
+  it("lädt ohne Verbindung NICHT neu (würde ebenso scheitern), sagt aber ehrlich, dass nichts gespeichert ist", async () => {
+    vi.useFakeTimers()
+    api.patchProject.mockRejectedValueOnce(new ApiError({ message: "Keine Verbindung", code: "NETWORK_ERROR" }, 0))
+    setzeStore([{ ...projekt(), id: P, markierungen: [volleEbene(2)] }])
+    useProjectStore.getState().updateMarkierungsEbene(P, "e1", { oeffentlich: false })
+    await vi.advanceTimersByTimeAsync(700)
+    expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/nicht gespeichert werden/))
+    expect(api.listProjects).not.toHaveBeenCalled()
+  })
+})
+
+describe("413: zu großer Stand (T-744)", () => {
+  it("zeigt die Meldung des Servers statt „Verbindung prüfen“ und lädt neu", async () => {
+    vi.useFakeTimers()
+    const meldung = "Die Daten sind zu groß (höchstens 20 MB je Anfrage)."
+    api.patchProject.mockRejectedValueOnce(new ApiError({ message: meldung, code: "PAYLOAD_TOO_LARGE" }, 413))
+    setzeStore([{ ...projekt(), id: P, markierungen: [volleEbene(2)] }])
+    useProjectStore.getState().updateTransport(P, { hoehe: 4.4 })
+    await vi.advanceTimersByTimeAsync(700)
+    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining(meldung))
+    expect(toast.error).not.toHaveBeenCalledWith(expect.stringContaining("Verbindung prüfen"))
+    // Neu laden verwirft den zu großen Stand — sonst scheiterte JEDER weitere Sync wieder mit 413.
+    expect(api.listProjects).toHaveBeenCalled()
+  })
+})
+
