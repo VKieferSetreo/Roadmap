@@ -264,6 +264,25 @@ describe("mitAnreicherung — abgeleitete Werte füllen nur Lücken", () => {
     expect(r.ergaenzt).toEqual(["maxHoeheM"])
   })
 
+  // T-702 (13.09.2026): in Prod machten 137 von 143 abgeleiteten Strassen der BASt-Bruecken das
+  // Paar gleich. Die Engine verwirft ein gleiches Paar ganz, der Wert loeschte also die brauchbare
+  // Angabe der Quelle.
+  it("setzt keine Strasse ein, die getragen und gekreuzt gleich macht — andere Felder schon", () => {
+    const r = mitAnreicherung(
+      { attrs: { gekreuzteStrasse: "A20" } },
+      { getrageneStrasse: { wert: "A20", beleg: "A 20, ÜF Gemeindestraße" }, maxHoeheM: { wert: "4.5", beleg: "4,50 m" } },
+    )
+    expect(r.obstacle.attrs.getrageneStrasse).toBeUndefined()
+    expect(r.ergaenzt).toEqual(["maxHoeheM"])
+  })
+
+  it("auch zwei abgeleitete, gleiche Strassen bleiben draussen; eine verschiedene geht rein", () => {
+    const beide = mitAnreicherung({ attrs: {} }, { getrageneStrasse: { wert: "A1" }, gekreuzteStrasse: { wert: "A1" } })
+    expect(beide.ergaenzt).toEqual([])
+    const verschieden = mitAnreicherung({ attrs: { gekreuzteStrasse: "A20" } }, { getrageneStrasse: { wert: "B62" } })
+    expect(verschieden.obstacle.attrs.getrageneStrasse).toBe("B62")
+  })
+
   it("lässt das Hindernis unangetastet, wenn es nichts zu ergänzen gibt", () => {
     const o = { attrs: { getrageneStrasse: "B62" } }
     expect(mitAnreicherung(o, null).obstacle).toBe(o)
@@ -495,6 +514,16 @@ describe("spieleEin — abgeleitete Werte in obstacles.attrs", () => {
     expect(gesehen[0].sql).toContain("ki_aufbereitet = true")
     expect(gesehen[0].sql).toContain("stand = 'ok'")
     expect(gesehen[0].sql).toContain("geprueft IS NULL OR geprueft = true")
+  })
+
+  // Die Semantik ist gegen ein echtes Postgres geprueft (PGlite, 13.09.2026, samt Gegenprobe ohne
+  // die Bedingung). Hier bleibt nur die Wache, dass sie nicht wieder herausfaellt.
+  it("nimmt keine abgeleitete Strasse, die das wirksame Paar gleich macht (T-702)", async () => {
+    const { db, gesehen } = fangeSql()
+    await spieleEin(db)
+    expect(gesehen[0].sql).toContain(
+      "coalesce(ob.attrs->>'getrageneStrasse', s.getragen) = coalesce(ob.attrs->>'gekreuzteStrasse', s.gekreuzt)",
+    )
   })
 
   it("fasst nur an, was sich wirklich ändert", async () => {

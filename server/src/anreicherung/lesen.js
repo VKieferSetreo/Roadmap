@@ -43,8 +43,18 @@ export function mitAnreicherung(obstacle, eintrag) {
   if (!eintrag || !Object.keys(eintrag).length) return { obstacle, ergaenzt: [] }
   const attrs = { ...(obstacle.attrs ?? {}) }
   const ergaenzt = []
+  // T-702 (13.09.2026): eine abgeleitete Strasse, die getragen und gekreuzt GLEICH macht, wird
+  // nicht eingesetzt. Ein gleiches Paar verwirft die Engine als kaputt (engine/index.js,
+  // `brauchbar`), der Wert loescht also die brauchbare Einzelangabe der Quelle. Gemessen in Prod:
+  // 137 von 143 abgeleiteten Strassen der BASt-Bruecken taten genau das ("A 20, ÜF Gemeindestraße
+  // nach Bartow" → Modell: getragen A20, Quelle: gekreuzt A20), 75 Funde blieben "nicht
+  // nachweisbar". Dieselbe Regel steht in spieleEin, sonst saehen Anzeige und Bewertung Verschiedenes.
+  const getragen = attrs.getrageneStrasse ?? eintrag.getrageneStrasse?.wert
+  const gekreuzt = attrs.gekreuzteStrasse ?? eintrag.gekreuzteStrasse?.wert
+  const paarGleich = getragen != null && getragen === gekreuzt
   for (const [feld, a] of Object.entries(eintrag)) {
     if (attrs[feld] != null) continue // gemeldete Angabe gewinnt, immer
+    if (paarGleich && (feld === "getrageneStrasse" || feld === "gekreuzteStrasse")) continue
     // T-664/F1: derselbe Typ wie beim Einspielen. Dieser Pfad baut die Ansicht zur Laufzeit auf,
     // ohne in attrs zu schreiben — kaeme der Wert hier als Text durch, saehe die Anzeige etwas
     // anderes als die Bewertung. Zwei Wahrheiten fuer denselben Punkt sind schlimmer als eine

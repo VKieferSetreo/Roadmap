@@ -57,17 +57,37 @@ export async function spieleEin(db, { modell = null } = {}) {
   // damit hier nichts geraten wird und ein neues Feld seinen Typ automatisch mitbringt.
   // Die Regex ist dieselbe wie in typisiere(): nur eine saubere Dezimalzahl wird zur Zahl.
   const { rows } = await db.query(
-    `WITH abgeleitet AS (
-       SELECT ziel_id::uuid AS id, jsonb_object_agg(feld, CASE
-                WHEN feld = ANY($1::text[]) AND wert IN ('true', 'false') THEN to_jsonb(wert::boolean)
-                WHEN feld = ANY($2::text[]) AND wert ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN to_jsonb(wert::numeric)
-                ELSE to_jsonb(wert)
-              END) AS werte
+    `WITH kandidat AS (
+       SELECT ziel_id, feld, wert
          FROM anreicherung
         WHERE ziel_typ = 'obstacle' AND stand = 'ok' AND wert IS NOT NULL
           AND (geprueft IS NULL OR geprueft = true)
           ${modell ? "AND modell = $3" : ""}
+     ),
+     -- T-702: keine abgeleitete Strasse, die getragen und gekreuzt gleich macht (Begruendung und
+     -- Messung in lesen.js, mitAnreicherung). Das wirksame Paar ist das der Engine: gemeldet vor
+     -- abgeleitet.
+     strasse AS (
+       SELECT ziel_id,
+              max(wert) FILTER (WHERE feld = 'getrageneStrasse') AS getragen,
+              max(wert) FILTER (WHERE feld = 'gekreuzteStrasse') AS gekreuzt
+         FROM kandidat
+        WHERE feld IN ('getrageneStrasse', 'gekreuzteStrasse')
         GROUP BY ziel_id
+     ),
+     abgeleitet AS (
+       SELECT k.ziel_id::uuid AS id, jsonb_object_agg(k.feld, CASE
+                WHEN k.feld = ANY($1::text[]) AND k.wert IN ('true', 'false') THEN to_jsonb(k.wert::boolean)
+                WHEN k.feld = ANY($2::text[]) AND k.wert ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN to_jsonb(k.wert::numeric)
+                ELSE to_jsonb(k.wert)
+              END) AS werte
+         FROM kandidat k
+         LEFT JOIN strasse s ON s.ziel_id = k.ziel_id
+         LEFT JOIN obstacles ob ON ob.id = s.ziel_id::uuid
+        WHERE NOT (k.feld IN ('getrageneStrasse', 'gekreuzteStrasse') AND coalesce(
+                coalesce(ob.attrs->>'getrageneStrasse', s.getragen) = coalesce(ob.attrs->>'gekreuzteStrasse', s.gekreuzt),
+                false))
+        GROUP BY k.ziel_id
      )
      UPDATE obstacles o
         SET attrs = a.werte || coalesce(o.attrs, '{}'::jsonb),
