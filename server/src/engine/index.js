@@ -618,8 +618,13 @@ export function dedupeFindings(findings) {
     const key = `${f.routeId}|${f.kategorie}|${normName(f.titel)}`
     // Strecken-Funde (beide mit geom) NICHT mergen → Fahrtrichtungen bleiben getrennt; AUSNAHME:
     // gleiche Strecke = Re-Import-Klon bzw. Tageszeit-Phase derselben Stelle → doch mergen (T-603/T-709).
+    // Verglichen wird die ROHE Hindernis-Geometrie, nicht die geclippte (T-709, 13.09.2026): der
+    // Clip verdichtet in einer Schrittweite, die an der Gesamtlaenge haengt, und eine doppelt
+    // gefuehrte Linie ist doppelt so lang. In Prod ergab dieselbe A5-Linie so 146 und 118 Punkte,
+    // der Vergleich scheiterte, und der Doppelfund stand in 15 Projekten weiter da.
     const dup = kept.find(
-      (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM && (!(k.geom && f.geom) || sameGeom(k.geom, f.geom)),
+      (k) => k.__key === key && Math.abs(k.km - f.km) <= DUP_KM &&
+        (!(k.geom && f.geom) || sameGeom(k.geomRoh ?? k.geom, f.geomRoh ?? f.geom)),
     )
     if (!dup) {
       kept.push({ ...f, __key: key })
@@ -1264,6 +1269,7 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
         lat: markerPt.lat,
         lng: markerPt.lng,
         geom: geomFuerFund, // auf den Routen-Korridor geclippte Strecke (nur durchfahrener Teil), sonst Punkt
+        geomRoh: obstacle.geom, // T-709: transient fuer dedupeFindings, nach dem Dedup entfernt (nicht persistiert)
         km: near.km, // Position auf SEINER Route — bereits deterministisch in nearestOnRoute() gerundet (#9)
         routeId: route.id,
         routeName: route.name,
@@ -1295,6 +1301,7 @@ export async function analyze({ db, project, corridorM, osrm = null }) {
   findings = dedupeByLocation(findings) // T-607: Brücken-Richtungszwillinge + quell-übergreifende Orts-Dubletten
   findings = dedupeDominatedWidth(findings) // T-611: gleiche Route+km+Zeit, nur breitere Restbreite = dominiert → raus
   for (const f of findings) {
+    delete f.geomRoh
     const set = f.obstacleId != null ? routesByObstacle.get(f.obstacleId) : null
     f.routeIds = set && set.size ? [...set] : f.routeId != null ? [f.routeId] : []
   }

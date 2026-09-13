@@ -1,7 +1,7 @@
 // Funde-Dedup: NUR ko-lokalisierte Punkt-Dubletten zusammenfassen; Strecken/Fahrtrichtungen bleiben.
 
 import { describe, expect, it } from "vitest"
-import { dedupeByLocation, dedupeByObstacle, dedupeFindings } from "../src/engine/index.js"
+import { analyze, dedupeByLocation, dedupeByObstacle, dedupeFindings } from "../src/engine/index.js"
 
 const LINE = { type: "LineString", coordinates: [[8, 49], [8.01, 49.01]] }
 const f = (over = {}) => ({
@@ -87,6 +87,42 @@ describe("dedupeFindings", () => {
       f({ km: 10.05, geom: { type: "MultiLineString", coordinates: [[[8.001, 49], [8.011, 49.01]]] } }),
     ])
     expect(out).toHaveLength(2)
+  })
+
+  // T-709, zweiter Anlauf (13.09.2026): die drei Tests darueber waren gruen, in Prod stand der
+  // Doppelfund trotzdem in 15 Projekten. dedupeFindings bekommt die GECLIPPTE Geometrie, und der
+  // Clip verdichtet in einer Schrittweite, die an der Gesamtlaenge der Quell-Linie haengt. Die
+  // 14-m-Zeile fuehrt dieselbe Linie zweimal, ist also doppelt so lang, und wird anders verdichtet:
+  // 146 gegen 118 Punkte, keine einzige gemeinsame Koordinate ausser den Enden. Deshalb geht dieser
+  // Test durch analyze() statt fertige Geometrien hineinzureichen.
+  it("T-709: doppelt gefuehrte Linie durch den ganzen Lauf → EIN Fund, der engere, mit Vermerk", async () => {
+    const linie = Array.from({ length: 32 }, (_, i) => [7.95 + i * 0.0025, 48.55 + i * 0.0025])
+    // Verschiedene Enden wie in Prod (19.09. und 23.09.): sonst faengt dedupeDominatedWidth den Fall
+    // ab, und der Test prueft gar nicht den Vergleich, um den es geht.
+    const tag = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10)
+    const zeile = (id, restbreiteM, teile, bis) => ({
+      id, kategorie: "baustelle", name: "A5 | Appenweier - Achern", beschreibung: null,
+      lat: linie[0][1], lng: linie[0][0], strassen_ref: "A5", zustaendig: null, quelle: "0001",
+      gueltig_von: tag(-30), gueltig_bis: tag(bis), attrs: { restbreiteM },
+      geom: { type: "MultiLineString", coordinates: Array.from({ length: teile }, () => linie) },
+    })
+    const db = {
+      query: async (text) =>
+        text.includes("FROM obstacles") ? { rows: [zeile("o4", 4, 1, 10), zeile("o14", 14, 2, 6)] } : { rows: [] },
+    }
+    const out = await analyze({
+      db,
+      project: {
+        id: null, transport: { laenge: 45, breite: 3.5, hoehe: 4.0, gesamtgewicht: 40 }, zeitraum: {},
+        routes: [{ id: "r1", name: "A5", points: linie.map(([lng, lat]) => ({ lat, lng })), source: "startziel" }],
+      },
+      corridorM: 50,
+    })
+    const a5 = out.findings.filter((x) => x.titel.includes("Appenweier"))
+    expect(a5).toHaveLength(1)
+    expect(a5[0].detail.Restbreite).toBe("4,00 m")
+    expect(a5[0].detail["Auch gemeldet"]).toContain("Restbreite 14,00 m")
+    expect(a5[0]).not.toHaveProperty("geomRoh") // transient, darf nicht in den Fund
   })
 
   it("größerer Abstand (Δkm > 0.15) bleibt getrennt", () => {
