@@ -76,6 +76,9 @@ export function katMeta(kategorie: string): { label: string; icon: LucideIcon } 
 const ATTR_LABEL: Record<string, { label: string; unit?: string }> = {
   maxHoeheM: { label: "Durchfahrtshöhe", unit: "m" },
   maxBreiteM: { label: "Restbreite", unit: "m" },
+  // T-729: geschätzte Breiten (ATKIS) tragen ihr Toleranzband. Ohne Label stünde der Rohschlüssel im Popup.
+  breiteToleranzUntenM: { label: "Evtl. schmaler um bis zu", unit: "m" },
+  breiteToleranzObenM: { label: "Evtl. breiter um bis zu", unit: "m" },
   restbreiteM: { label: "Restbreite", unit: "m" },
   maxGewichtT: { label: "Zul. Gesamtlast", unit: "t" },
   steigungPct: { label: "Steigung", unit: "%" },
