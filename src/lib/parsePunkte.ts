@@ -3,7 +3,7 @@
 // jeder Standort einzeln, mit seinen Attributen aus der Datei, und je Layer der Datei (KML-Folder,
 // Shapefile-Layer, GPKG-Punkttabelle) entsteht eine eigene Ebene.
 
-import type { Markierung } from "@/types/domain"
+import { MARKIERUNG_GRENZEN, type Markierung } from "@/types/domain"
 import { unzip } from "./unzip"
 
 export interface ParsedPunktEbene {
@@ -14,18 +14,26 @@ export interface ParsedPunktEbene {
 }
 
 /** Harte Grenze je Ebene. Bewusst Ablehnung statt Ausdünnen: Ausdünnen löscht bei Punkten
- *  ganze Standorte, nicht bloß Stützpunkte einer Linie. */
-export const MAX_PUNKTE_JE_EBENE = 5000
-export const MAX_ATTRIBUTE_JE_PUNKT = 30
-const MAX_SCHLUESSEL_LAENGE = 60
-const MAX_WERT_LAENGE = 200
-const MAX_NAME_LAENGE = 200
+ *  ganze Standorte, nicht bloß Stützpunkte einer Linie. Die Zahlen kommen aus EINER Quelle
+ *  (MARKIERUNG_GRENZEN in domain.ts) — hier standen sie früher als eigene Kopie und liefen
+ *  auseinander (Parser 5.000, Oberfläche 2.000). */
+export const MAX_PUNKTE_JE_EBENE = MARKIERUNG_GRENZEN.punkteJeEbene
+export const MAX_ATTRIBUTE_JE_PUNKT = MARKIERUNG_GRENZEN.attributeJePunkt
+const MAX_SCHLUESSEL_LAENGE = MARKIERUNG_GRENZEN.attributSchluesselLaenge
+const MAX_WERT_LAENGE = MARKIERUNG_GRENZEN.attributWertLaenge
+const MAX_NAME_LAENGE = MARKIERUNG_GRENZEN.namensLaenge
 
 /** Spaltennamen, die als Überschrift des Punktes taugen (Vergleich kleingeschrieben). */
 const NAME_SPALTEN = ["name", "titel", "title", "bezeichnung", "label"]
 
+/** Auf höchstens `max` UTF-16-Einheiten kappen, OHNE ein Surrogatpaar zu zerschneiden (T-744).
+ *  Ein naives slice ließ bei einem Emoji an der Grenze ein einzelnes High-Surrogate stehen;
+ *  JSON.stringify macht daraus "\ud83d", Postgres lehnt das jsonb ab („Unicode low surrogate must
+ *  follow a high surrogate") — gemessen: 500, und jeder weitere Sync desselben Stands ebenso. */
 function kappe(s: string, max: number): string {
-  return s.length > max ? s.slice(0, max) : s
+  if (s.length <= max) return s
+  const letztes = s.charCodeAt(max - 1)
+  return s.slice(0, letztes >= 0xd800 && letztes <= 0xdbff ? max - 1 : max)
 }
 
 /** Koordinatenwert zu Zahl. Nicht über Number() allein: Number(null) und Number("") ergeben 0 —
@@ -90,18 +98,31 @@ export function nameAusAttributen(roh: Record<string, unknown>): string {
   return ""
 }
 
-/** Grenze durchsetzen und leere Ebenen verwerfen. Wirft bei Überschreitung. */
+const zuGrossText = (e: ParsedPunktEbene) => `„${e.name}" (${e.punkte.length.toLocaleString("de-DE")})`
+
+/** Grenze durchsetzen und leere Ebenen verwerfen.
+ *  T-744: Geworfen wird nur noch, wenn KEINE Ebene in die Grenze passt. Vorher reichte eine einzige
+ *  zu große Ebene, um die ganze Datei abzulehnen — ein GeoPackage mit „alle Laternen" (8.000) und
+ *  „Parkplätze" (12) ließ sich gar nicht laden, obwohl nur die Parkplätze gebraucht wurden, und die
+ *  Auswahlmaske kam nie. Jetzt werden die zu großen Ebenen ausgelassen und beim Namen genannt. */
 function pruefeGrenze(ebenen: ParsedPunktEbene[]): ParsedPunktEbene[] {
-  for (const e of ebenen) {
-    if (e.punkte.length > MAX_PUNKTE_JE_EBENE) {
-      throw new Error(
-        `Die Ebene „${e.name}" enthält ${e.punkte.length} Punkte. Bitte laden Sie höchstens ` +
-          `${MAX_PUNKTE_JE_EBENE} Punkte je Ebene hoch. Es wird bewusst nicht ausgedünnt, damit ` +
-          `keine Standorte verloren gehen.`,
-      )
-    }
+  const befuellt = ebenen.filter((e) => e.punkte.length > 0)
+  const passend = befuellt.filter((e) => e.punkte.length <= MAX_PUNKTE_JE_EBENE)
+  const zuGross = befuellt.filter((e) => e.punkte.length > MAX_PUNKTE_JE_EBENE)
+  const grenze = MAX_PUNKTE_JE_EBENE.toLocaleString("de-DE")
+  if (zuGross.length && passend.length === 0) {
+    throw new Error(
+      `${zuGross.length === 1 ? "Die Ebene" : "Die Ebenen"} ${zuGross.map(zuGrossText).join(", ")} ` +
+        `${zuGross.length === 1 ? "enthält" : "enthalten"} mehr als ${grenze} Punkte. Mehr lässt sich ohne ` +
+        `Zusammenfassen nicht flüssig auf der Karte zeigen. Es wird bewusst nicht ausgedünnt, damit keine ` +
+        `Standorte verloren gehen — bitte teilen Sie die Datei auf.`,
+    )
   }
-  return ebenen.filter((e) => e.punkte.length > 0)
+  if (zuGross.length) {
+    const hinweis = `Nicht übernommen, weil über ${grenze} Punkte: ${zuGross.map(zuGrossText).join(", ")}.`
+    passend[0].hinweis = passend[0].hinweis ? `${passend[0].hinweis} ${hinweis}` : hinweis
+  }
+  return passend
 }
 
 // ---------------------------------------------------------------- KML / KMZ
@@ -223,23 +244,33 @@ interface GeoJsonKnoten {
   properties?: Record<string, unknown> | null
 }
 
-/** Point und MultiPoint einsammeln; properties werden zu Attributen. */
-function sammlePunkte(knoten: GeoJsonKnoten, props: Record<string, unknown>, out: Markierung[]): void {
+/** Point und MultiPoint einsammeln; properties werden zu Attributen.
+ *  `ausserhalb` zählt Punkte mit gültigen Zahlen, die nur außerhalb von ±90/±180 liegen — das ist
+ *  fast immer ein projiziertes System (UTM, EPSG:25832), keine kaputte Datei. */
+function sammlePunkte(
+  knoten: GeoJsonKnoten,
+  props: Record<string, unknown>,
+  out: Markierung[],
+  zaehler: { ausserhalb: number },
+): void {
   if (!knoten || typeof knoten !== "object") return
   const einer = (c: unknown) => {
     if (!Array.isArray(c)) return
-    const punkt = baueMarkierung(zahl(c[1]), zahl(c[0]), nameAusAttributen(props), props)
+    const lat = zahl(c[1])
+    const lng = zahl(c[0])
+    const punkt = baueMarkierung(lat, lng, nameAusAttributen(props), props)
     if (punkt) out.push(punkt)
+    else if (Number.isFinite(lat) && Number.isFinite(lng)) zaehler.ausserhalb++
   }
   switch (knoten.type) {
     case "FeatureCollection":
-      knoten.features?.forEach((f) => sammlePunkte(f, props, out))
+      knoten.features?.forEach((f) => sammlePunkte(f, props, out, zaehler))
       break
     case "Feature":
-      if (knoten.geometry) sammlePunkte(knoten.geometry, knoten.properties ?? {}, out)
+      if (knoten.geometry) sammlePunkte(knoten.geometry, knoten.properties ?? {}, out, zaehler)
       break
     case "GeometryCollection":
-      knoten.geometries?.forEach((g) => sammlePunkte(g, props, out))
+      knoten.geometries?.forEach((g) => sammlePunkte(g, props, out, zaehler))
       break
     case "Point":
       einer(knoten.coordinates)
@@ -258,7 +289,17 @@ export function parsePunkteGeoJson(text: string, name = "Punkte"): ParsedPunktEb
     throw new Error("Die GeoJSON-Datei konnte nicht gelesen werden. Bitte prüfen Sie die Datei.")
   }
   const punkte: Markierung[] = []
-  sammlePunkte(wurzel, {}, punkte)
+  const zaehler = { ausserhalb: 0 }
+  sammlePunkte(wurzel, {}, punkte, zaehler)
+  if (punkte.length === 0 && zaehler.ausserhalb > 0) {
+    // T-744: vorher hieß es hier „enthält keine Punkte" — die falsche Diagnose. GeoJSON ist laut
+    // RFC 7946 immer WGS84; GDAL/QGIS schreiben bei Behördendaten trotzdem UTM mit einem crs-Feld.
+    throw new Error(
+      `Die ${zaehler.ausserhalb.toLocaleString("de-DE")} Punkte liegen nicht in geographischen Koordinaten ` +
+        `(WGS84), vermutlich in UTM (z.B. EPSG:25832). Bitte exportieren Sie das GeoJSON in EPSG:4326 oder laden ` +
+        `Sie die Daten als Shapefile oder GeoPackage hoch — dort wird automatisch umgerechnet.`,
+    )
+  }
   if (punkte.length === 0) {
     throw new Error("Die Datei enthält keine Punkte. Erwartet werden Point- oder MultiPoint-Geometrien.")
   }
@@ -270,6 +311,11 @@ export function parsePunkteGeoJson(text: string, name = "Punkte"): ParsedPunktEb
 /** Shapefile-ZIP über shpjs: liest Punkte, Attribute und reprojiziert über die .prj.
  *  parseZip ist ein NAMED export — am Default hängt allein getShapefile. */
 async function parsePunkteShapefile(file: File, fallbackName: string): Promise<ParsedPunktEbene[]> {
+  // ponytail: kein Zip-Bomben-Deckel auf diesem Pfad. shpjs entpackt selbst und bietet keinen Haken
+  // dafür; ein Vorscan der deklarierten Größen hülfe nur gegen ehrliche Riesendateien, nicht gegen ein
+  // lügendes Central Directory. Schadensbild: der eigene Browser-Tab mit der eigenen Datei, begrenzt
+  // durch die 50 MB der DropZone. Braucht es mehr: ZIP über unzip.ts entpacken und die Einzeldateien
+  // an parseShp/parseDbf reichen (beide sind named exports von shpjs).
   const { parseZip } = await import("shpjs") // lazy — hält den Haupt-Bundle klein
   let roh
   try {
@@ -280,7 +326,7 @@ async function parsePunkteShapefile(file: File, fallbackName: string): Promise<P
   const ebenen: ParsedPunktEbene[] = []
   for (const fc of Array.isArray(roh) ? roh : [roh]) {
     const punkte: Markierung[] = []
-    sammlePunkte(fc as GeoJsonKnoten, {}, punkte)
+    sammlePunkte(fc as GeoJsonKnoten, {}, punkte, { ausserhalb: 0 })
     if (punkte.length === 0) continue
     const ebene: ParsedPunktEbene = { name: fc.fileName?.trim() || fallbackName, punkte }
     // FALLE, live reproduziert: fehlt die .cpg, dekodiert parsedbf als UTF-8 und aus
@@ -318,7 +364,14 @@ export async function parsePunkteFile(file: File): Promise<ParsedPunktEbene[]> {
   if (endung.endsWith(".zip")) return parsePunkteShapefile(file, basis)
   if (endung.endsWith(".gpkg")) {
     const { parseGpkgPunkte } = await import("./parseGpkg") // lazy — sql.js ist groß
-    const ebenen = await parseGpkgPunkte(file)
+    let ebenen: ParsedPunktEbene[]
+    try {
+      ebenen = await parseGpkgPunkte(file)
+    } catch {
+      // T-744: sql.js wirft den rohen SQLite-Text („file is not a database") — der landete sonst
+      // englisch beim Nutzer. Gleiches Muster wie bei Shapefile und GeoJSON.
+      throw new Error("Das GeoPackage konnte nicht gelesen werden. Bitte prüfen Sie die Datei.")
+    }
     if (ebenen.length === 0) throw new Error("Das GeoPackage enthält keine Punkttabelle.")
     return pruefeGrenze(ebenen)
   }

@@ -101,13 +101,14 @@ describe("parsePunkteKml", () => {
     expect(ebene.punkte.map((p) => p.name)).toEqual(["gut"])
   })
 
-  it("lehnt mehr als 5.000 Punkte je Ebene ab, statt auszudünnen", () => {
+  it("lehnt eine Ebene über der Grenze ab, statt auszudünnen", () => {
     const pm = (i: number) =>
       `<Placemark><Point><coordinates>${(7 + i / 1e6).toFixed(6)},51.0</coordinates></Point></Placemark>`
     const zuViele = Array.from({ length: MAX_PUNKTE_JE_EBENE + 1 }, (_, i) => pm(i)).join("")
     const kml = `<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Masse</name>${zuViele}</Document></kml>`
-    expect(() => parsePunkteKml(kml)).toThrow(/5001 Punkte/)
-    expect(() => parsePunkteKml(kml)).toThrow(/höchstens 5000 Punkte je Ebene/)
+    const n = (MAX_PUNKTE_JE_EBENE + 1).toLocaleString("de-DE")
+    expect(() => parsePunkteKml(kml)).toThrow(new RegExp(`„Masse" \\(${n.replace(".", "\\.")}\\)`))
+    expect(() => parsePunkteKml(kml)).toThrow(/nicht ausgedünnt/)
 
     const gerade = Array.from({ length: MAX_PUNKTE_JE_EBENE }, (_, i) => pm(i)).join("")
     const okKml = `<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Masse</name>${gerade}</Document></kml>`
@@ -287,9 +288,26 @@ describe("unzip", () => {
     await expect(unzip(new TextEncoder().encode("kein zip"))).rejects.toThrow(/kein lesbares ZIP/)
   })
 
-  it("überspringt Einträge, die sich laut Verzeichnis über den Deckel hinaus entpacken", async () => {
+  it("weist ein Archiv ab, das sich laut Verzeichnis über den Deckel hinaus entpackt", async () => {
+    // T-744: früher wurde der Eintrag still übersprungen — dann kam „enthält keine KML-Datei", die
+    // falsche Diagnose. Jetzt die ehrliche Meldung.
     const zip = baueZip([{ name: "doc.kml", daten: new Uint8Array(200_000), methode: 8 }])
-    await expect(unzip(zip, 1024)).resolves.toEqual([])
+    await expect(unzip(zip, 1024)).rejects.toThrow(/unverhältnismäßig groß/)
+  })
+
+  it("deckelt auch dann, wenn jeder Eintrag seine Größe lügt und erst die Summe überläuft (T-744, Review)", async () => {
+    // Das Verzeichnis behauptet je 1 Byte — der frühe Ausstieg über die deklarierte Größe greift nie.
+    // Nur das mitlaufende Budget beim tatsächlichen Entpacken fängt den zweiten Eintrag ab.
+    const zwei = [1, 2].map((i) => ({ name: `t${i}.kml`, daten: new Uint8Array(600), methode: 8 as const, entpacktLuege: 1 }))
+    await expect(unzip(baueZip(zwei), 1024)).rejects.toThrow(/unverhältnismäßig groß/)
+  })
+
+  it("deckelt die Summe über ALLE Einträge, nicht nur je Eintrag (T-744)", async () => {
+    // Drei Einträge je 600 Byte liegen einzeln unter dem Deckel von 1.024, zusammen darüber.
+    const drei = [1, 2, 3].map((i) => ({ name: `teil${i}.kml`, daten: new Uint8Array(600), methode: 8 as const }))
+    await expect(unzip(baueZip(drei), 1024)).rejects.toThrow(/unverhältnismäßig groß/)
+    // Gegenprobe: dieselben drei passen unter einen ausreichenden Deckel.
+    await expect(unzip(baueZip(drei), 4096)).resolves.toHaveLength(3)
   })
 
   it("bricht ab, wenn ein Eintrag über seine angegebene Größe hinaus entpackt (Zip-Bombe)", async () => {
@@ -544,3 +562,53 @@ describe("Überschrift und Attribute", () => {
     expect(ebene.punkte[0].attribute).toEqual({ bezeichnung: "Etwas anderes" })
   })
 })
+
+describe("T-744: Kappung, Grenzen, Diagnosen", () => {
+  it("zerschneidet kein Surrogatpaar an der Grenze (sonst lehnt Postgres das jsonb ab)", () => {
+    const name = "a".repeat(199) + "😀" // das Emoji belegt die Positionen 200 und 201
+    const kml = `<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>E</name>
+      <Placemark><name>${name}</name><ExtendedData><Data name="Wert"><value>${name}</value></Data></ExtendedData>
+      <Point><coordinates>7,51</coordinates></Point></Placemark></Document></kml>`
+    const [p] = parsePunkteKml(kml)[0].punkte
+    for (const s of [p.name!, p.attribute!.Wert]) {
+      expect(s.length).toBeLessThanOrEqual(200)
+      // Genau das hätte Postgres zum 500 gebracht: ein High-Surrogate ohne Partner.
+      expect(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/.test(s)).toBe(false)
+      // Und es wird ehrlich gekappt, nicht auf das nächste Wort gerundet.
+      expect(s).toBe("a".repeat(199))
+    }
+  })
+
+  it("lässt nur die zu große Ebene aus, wenn die Datei auch passende enthält", async () => {
+    const pm = (i: number) => `<Placemark><Point><coordinates>${(7 + i / 1e6).toFixed(6)},51.0</coordinates></Point></Placemark>`
+    const gross = Array.from({ length: MAX_PUNKTE_JE_EBENE + 1 }, (_, i) => pm(i)).join("")
+    const kml = `<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+      <Folder><name>Alle Laternen</name>${gross}</Folder>
+      <Folder><name>Parkplätze</name>${pm(1)}${pm(2)}</Folder></Document></kml>`
+    const ebenen = parsePunkteKml(kml)
+    expect(ebenen.map((e) => e.name)).toEqual(["Parkplätze"])
+    expect(ebenen[0].hinweis).toMatch(/Nicht übernommen.*„Alle Laternen"/)
+  })
+
+  it("erkennt UTM-Koordinaten in GeoJSON, statt ‚keine Punkte' zu behaupten", () => {
+    const utm = JSON.stringify({
+      type: "FeatureCollection",
+      features: [
+        { type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [565097.1, 5728815.2] } },
+        { type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [563579.9, 5721421.2] } },
+      ],
+    })
+    expect(() => parsePunkteGeoJson(utm)).toThrow(/2 Punkte liegen nicht in geographischen Koordinaten/)
+    expect(() => parsePunkteGeoJson(utm)).not.toThrow(/keine Punkte/)
+  })
+})
+
+describe("GeoPackage-Fehler (T-744, Review)", () => {
+  it("meldet eine kaputte .gpkg auf Deutsch statt mit dem rohen SQLite-Text", async () => {
+    // Egal ob sql.js schon beim WASM-Laden oder erst beim Öffnen scheitert — der Nutzer liest Deutsch.
+    const kaputt = new File([new Uint8Array([1, 2, 3, 4])], "kaputt.gpkg")
+    await expect(parsePunkteFile(kaputt)).rejects.toThrow(/GeoPackage konnte nicht gelesen werden/)
+    await expect(parsePunkteFile(kaputt)).rejects.not.toThrow(/file is not a database|not a database/i)
+  })
+})
+

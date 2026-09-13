@@ -93,12 +93,13 @@ export const DEFAULT_MARKIERUNG_FARBE = "#0F766E"
  *  Das FE (src/types/domain.ts MARKIERUNG_GRENZEN) hält sich absichtlich strenger; hier steht die
  *  äußere Schranke, unterhalb derer nichts mehr kaputtgehen kann. */
 export const MARKIERUNG_GRENZEN = {
-  punkteJeEbene: 5000,
+  // T-744: 1.000 statt 5.000/20.000, gemessen — ohne Clustering kippt die Karte bei 20.000 (Einzelbilder
+  // bis 8,9 s), und schon 5.000 sind spürbar. Herleitung in src/types/domain.ts#MARKIERUNG_GRENZEN.
+  // Vor dem Senken den Prod-Bestand gelesen: 0 Projekte mit Markierungen, also kappt das nichts weg.
+  punkteJeEbene: 1000,
   ebenenJeProjekt: 50,
-  // Ohne Gesamtdeckel wären 50 × 5000 = 250.000 Punkte möglich. Das passt zwar durch den
-  // 20-MB-Body, aber nicht mehr auf eine Karte: der Browser des Disponenten stünde. Die Grenze
-  // gehört hierher und nicht nur ins FE, sonst hält sie nur, solange das FE mitspielt.
-  punkteJeProjekt: 20000,
+  // Gesamtdeckel: sonst wären 50 × 1.000 Punkte möglich, die Karte zählt aber alle sichtbaren zusammen.
+  punkteJeProjekt: 1000,
   attributeJePunkt: 30,
   attributSchluesselLaenge: 60,
   attributWertLaenge: 200,
@@ -108,7 +109,18 @@ export const MARKIERUNG_GRENZEN = {
 // Nur echte Hex-Farben. Die Farbe landet im FE in einer Stil-Angabe; alles andere wäre eine
 // fremdgesteuerte CSS-Eingabe und wird still durch die Voreinstellung ersetzt.
 const HEX_FARBE = /^#[0-9a-fA-F]{3,8}$/
-const gekappt = (v, max) => String(v).trim().slice(0, max)
+// T-744: nicht mitten in ein Surrogatpaar schneiden, und einzelne Surrogate entfernen, die ein Client
+// schon kaputt schickt. Sonst macht JSON.stringify daraus "\ud83d", Postgres lehnt das jsonb ab
+// („Unicode low surrogate must follow a high surrogate") — gemessen: 500, und jeder weitere Sync
+// desselben Stands ebenso. Bewusst Entfernen statt toWellFormed(): das setzte U+FFFD ein, und genau
+// daran erkennt der Parser eine fehlende .cpg im Shapefile.
+const EINZELNES_SURROGAT = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g
+const gekappt = (v, max) => {
+  const s = String(v).trim()
+  const hoch = s.length > max ? s.charCodeAt(max - 1) : 0
+  const schnitt = s.length > max && hoch >= 0xd800 && hoch <= 0xdbff ? max - 1 : max
+  return s.slice(0, schnitt).replace(EINZELNES_SURROGAT, "")
+}
 // Koordinaten: endlich UND im gültigen Bereich. Ein Shapefile in falscher Projektion liefert sonst
 // Werte wie 4.500.000 und reißt die Karte auf.
 const saneMarkierung = (p) => sanePoint(p) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180
@@ -165,17 +177,30 @@ export function normalizeMarkierungen(ebenen) {
       "Die Markierungen dieses Projekts waren noch nicht vollständig geladen. Bitte laden Sie die Seite neu und versuchen Sie es erneut.",
     )
   }
+  // T-744 (Review): über der Grenze ABLEHNEN statt still kappen. Kappen ist stiller Datenverlust —
+  // genau das, was das Frontend mit „es wird bewusst nicht ausgedünnt" ausschließt. Ein alter Tab
+  // oder ein anderer Client bekäme sonst eine gekürzte Ebene gespeichert, ohne es zu merken. 413,
+  // weil das Frontend diesen Code bereits abfängt und die Meldung zeigt.
+  const zuViele = (n, grenze, wo) =>
+    new ApiError(
+      413,
+      `${wo} enthält ${n.toLocaleString("de-DE")} Markierungen, erlaubt sind ${grenze.toLocaleString("de-DE")}. ` +
+        "Mehr lässt sich ohne Zusammenfassen nicht flüssig auf der Karte zeigen.",
+    )
   let punkteGesamt = 0
   return ebenen.map((e, i) => {
     if (!isPlainObject(e)) throw new ApiError(400, `markierungen[${i}] muss ein Objekt sein`)
     if (e.punkte !== undefined && !Array.isArray(e.punkte)) {
       throw new ApiError(400, `markierungen[${i}].punkte muss ein Array sein`)
     }
-    // Rest bis zum Projekt-Gesamtdeckel — greift, bevor die Ebene ihren eigenen Deckel ausschöpft.
-    const rest = Math.max(0, MARKIERUNG_GRENZEN.punkteJeProjekt - punkteGesamt)
-    const punkte = (e.punkte ?? [])
-      .filter(saneMarkierung)
-      .slice(0, Math.min(MARKIERUNG_GRENZEN.punkteJeEbene, rest))
+    const gueltig = (e.punkte ?? []).filter(saneMarkierung)
+    if (gueltig.length > MARKIERUNG_GRENZEN.punkteJeEbene) {
+      throw zuViele(gueltig.length, MARKIERUNG_GRENZEN.punkteJeEbene, `Die Ebene „${gekappt(e.name ?? `Ebene ${i + 1}`, 60)}"`)
+    }
+    if (punkteGesamt + gueltig.length > MARKIERUNG_GRENZEN.punkteJeProjekt) {
+      throw zuViele(punkteGesamt + gueltig.length, MARKIERUNG_GRENZEN.punkteJeProjekt, "Das Projekt")
+    }
+    const punkte = gueltig
       .map((p) => {
         const name = typeof p.name === "string" ? gekappt(p.name, MARKIERUNG_GRENZEN.namensLaenge) : ""
         const attribute = normalizeAttribute(p.attribute)

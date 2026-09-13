@@ -16,7 +16,9 @@ export interface ZipEintrag {
   daten: Uint8Array
 }
 
-/** Deckel gegen Zip-Bomben: darüber liegt kein legitimes KMZ. Gilt je Eintrag. */
+/** Deckel gegen Zip-Bomben: darüber liegt kein legitimes KMZ.
+ *  T-744: gilt für das GANZE Archiv, nicht je Eintrag. Je Eintrag hätten sich viele Einträge knapp
+ *  unter der Grenze beliebig aufsummiert, alle gleichzeitig im Speicher. */
 const MAX_ENTPACKT = 64 * 1024 * 1024
 
 const EOCD_SIGNATUR = 0x06054b50
@@ -73,6 +75,8 @@ export async function unzip(buf: Uint8Array, maxEntpackt = MAX_ENTPACKT): Promis
   const anzahl = dv.getUint16(eocd + 10, true)
   const dekoder = new TextDecoder()
   const out: ZipEintrag[] = []
+  let rest = maxEntpackt
+  const zuGross = () => new Error("Die Datei entpackt sich unverhältnismäßig groß und wurde abgewiesen.")
   let p = dv.getUint32(eocd + 16, true)
   for (let i = 0; i < anzahl; i++) {
     if (p < 0 || p + 46 > buf.length || dv.getUint32(p, true) !== CD_SIGNATUR) break
@@ -84,13 +88,21 @@ export async function unzip(buf: Uint8Array, maxEntpackt = MAX_ENTPACKT): Promis
     const lokal = dv.getUint32(p + 42, true)
     p += 46 + nameLaenge + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true)
 
-    if (name.endsWith("/") || entpackt > maxEntpackt) continue
+    if (name.endsWith("/")) continue
+    // Die deklarierte Größe kann lügen — sie dient nur als früher Ausstieg. Der eigentliche Deckel
+    // sitzt beim Entpacken selbst (inflateRaw zählt die tatsächlich erzeugten Bytes gegen `rest`).
+    if (entpackt > rest) throw zuGross()
     if (lokal + 30 > buf.length) continue
     const start = lokal + 30 + dv.getUint16(lokal + 26, true) + dv.getUint16(lokal + 28, true)
     if (start + komprimiert > buf.length) continue
     const roh = buf.subarray(start, start + komprimiert)
-    if (methode === 0) out.push({ name, daten: roh })
-    else if (methode === 8) out.push({ name, daten: await inflateRaw(roh, maxEntpackt) })
+    let daten: Uint8Array
+    if (methode === 0) daten = roh
+    else if (methode === 8) daten = await inflateRaw(roh, rest)
+    else continue
+    rest -= daten.length
+    if (rest < 0) throw zuGross()
+    out.push({ name, daten })
   }
   return out
 }

@@ -125,25 +125,33 @@ describe("Markierungen: ein Listen-Stand darf keine Punkte löschen", () => {
 })
 
 describe("Markierungen: die Grenzen greifen serverseitig", () => {
-  it("kappt eine Ebene auf 5.000 Punkte, statt sie zu verlieren oder auszudünnen", () => {
-    const [e] = normalizeMarkierungen([{ name: "Viele", farbe: "#0F766E", punkte: punkte(6000) }])
+  it("lehnt eine Ebene über der Grenze ab, statt sie still zu kappen (T-744)", () => {
+    // Kappen wäre stiller Datenverlust: ein alter Tab bekäme eine gekürzte Ebene gespeichert, ohne es
+    // zu merken. Das Frontend fängt 413 ab und zeigt die Meldung.
+    let fehler
+    try {
+      normalizeMarkierungen([{ name: "Viele", farbe: "#0F766E", punkte: punkte(MARKIERUNG_GRENZEN.punkteJeEbene + 1) }])
+    } catch (e) { fehler = e }
+    expect(fehler?.status).toBe(413)
+    expect(fehler?.message).toMatch(/„Viele"/)
+    // genau an der Grenze geht es durch, vollständig und in Originalreihenfolge
+    const [e] = normalizeMarkierungen([{ name: "Genau", farbe: "#0F766E", punkte: punkte(MARKIERUNG_GRENZEN.punkteJeEbene) }])
     expect(e.punkte).toHaveLength(MARKIERUNG_GRENZEN.punkteJeEbene)
-    // NICHT ausgedünnt: es sind die ERSTEN 5.000, lückenlos in Originalreihenfolge.
     expect(e.punkte[0]).toEqual({ lat: 53, lng: 10 })
-    expect(e.punkte[1].lat).toBeCloseTo(53.00001, 8)
   })
 
-  it("deckelt die Punkte ÜBER ALLE Ebenen, nicht nur je Ebene", () => {
-    // Fünf volle Ebenen wären 25.000 Punkte. Der Gesamtdeckel (20.000) muss vorher greifen,
-    // sonst könnte man ihn durch Aufteilen auf viele Ebenen umgehen.
-    const ebenen = normalizeMarkierungen(
-      Array.from({ length: 5 }, (_, i) => ({ name: `E${i}`, farbe: "#0F766E", punkte: punkte(5000) })),
-    )
-    const gesamt = ebenen.reduce((n, e) => n + e.punkte.length, 0)
-    expect(gesamt).toBe(MARKIERUNG_GRENZEN.punkteJeProjekt)
-    // Die vorderen Ebenen bleiben voll, die letzte läuft leer — kein Ausdünnen quer über alles.
-    expect(ebenen[0].punkte).toHaveLength(MARKIERUNG_GRENZEN.punkteJeEbene)
-    expect(ebenen[4].punkte).toHaveLength(0)
+  it("lehnt ab, wenn die Summe ÜBER ALLE Ebenen die Projektgrenze reißt", () => {
+    // Sonst ließe sich die Grenze durch Aufteilen auf viele Ebenen umgehen.
+    const halb = Math.ceil(MARKIERUNG_GRENZEN.punkteJeProjekt / 2) + 1
+    let fehler
+    try {
+      normalizeMarkierungen([
+        { name: "A", farbe: "#0F766E", punkte: punkte(halb) },
+        { name: "B", farbe: "#0F766E", punkte: punkte(halb) },
+      ])
+    } catch (e) { fehler = e }
+    expect(fehler?.status).toBe(413)
+    expect(fehler?.message).toMatch(/Das Projekt/)
   })
 
   it("mehr als 50 Ebenen → 400 mit klarer Meldung (statt stiller Verluste)", async () => {
@@ -257,3 +265,34 @@ describe("Markierungen: Liste ohne Punktlast, Share ohne abgewählte Ebenen", ()
     expect(Object.keys(ebenen[0]).sort()).toEqual(["farbe", "id", "name", "punkte"])
   })
 })
+
+describe("Markierungen: Unicode an der Kappungsgrenze (T-744)", () => {
+  // Gemessen am 13.09. gegen echte Postgres: ein Emoji genau an Position 200 wurde zerschnitten, das
+  // einzelne High-Surrogate kam als "\ud83d" in den jsonb-Wert — 500 „Unicode low surrogate must
+  // follow a high surrogate", und jeder weitere Sync desselben Stands ebenso.
+  const halb = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/
+
+  it("zerschneidet kein Surrogatpaar in Namen, Schlüsseln und Werten", () => {
+    const lang = "a".repeat(199) + "😀"
+    const [e] = normalizeMarkierungen([{
+      name: lang, farbe: "#0F766E",
+      punkte: [{ lat: 52, lng: 10, name: lang, attribute: { ["k".repeat(59) + "😀"]: lang } }],
+    }])
+    const p = e.punkte[0]
+    for (const s of [e.name, p.name, ...Object.keys(p.attribute), ...Object.values(p.attribute)]) {
+      expect(halb.test(s)).toBe(false)
+    }
+    expect(e.name).toBe("a".repeat(199))
+  })
+
+  it("entfernt ein einzelnes Surrogat, das ein Client schon kaputt schickt", () => {
+    const [e] = normalizeMarkierungen([{ name: "Park\ud83dplatz", farbe: "#0F766E", punkte: [] }])
+    expect(e.name).toBe("Parkplatz")
+  })
+
+  it("lässt vollständige Emoji unterhalb der Grenze unangetastet", () => {
+    const [e] = normalizeMarkierungen([{ name: "Kran 🏗️ Nord", farbe: "#0F766E", punkte: [] }])
+    expect(e.name).toBe("Kran 🏗️ Nord")
+  })
+})
+

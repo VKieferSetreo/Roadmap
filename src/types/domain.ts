@@ -679,14 +679,27 @@ export function markierungenUnvollstaendig(p: { markierungen?: MarkierungsEbene[
 }
 
 /** Obergrenzen für Markierungs-Ebenen (T-739). Punkte werden NICHT ausgedünnt, zu große Dateien
- *  werden abgelehnt. Die Grenzen sind bewusst eng: die App lädt alle Projekte samt Geometrie in
- *  EINER Antwort (GET /projects), die Detailansicht hat keinen eigenen Endpunkt. Der Server setzt
- *  dieselben Grenzen unabhängig durch — server/src/routes/projects.js#MARKIERUNG_GRENZEN führt
- *  dieselben Zahlen und ist die äußere Schranke. Wer hier etwas ändert, ändert dort mit. */
+ *  werden abgelehnt. Der Server setzt dieselben Zahlen unabhängig durch —
+ *  server/src/routes/projects.js#MARKIERUNG_GRENZEN ist die äußere Schranke. Wer hier etwas
+ *  ändert, ändert dort mit.
+ *
+ *  T-744: 1.000 Punkte, GEMESSEN statt gesetzt. Seit Max das Clustering hat entfernen lassen, liegt
+ *  jeder Punkt als eigener DOM-Marker auf der Karte. Headless auf einem schnellen Mac: 5.000 Punkte
+ *  bereits spürbar (Bild p95 35 ms), 10.000 unbenutzbar, 20.000 — die alte Grenze — kippt die Karte
+ *  (Einzelbilder bis 8,9 s). Mit CPU-Drosselung ×4/×6 als Näherung für einen Büro-Laptop bleibt die
+ *  Karte bei 1.000 gerade noch „spürbar", bei 1.500 wird sie zäh. Maßgeblich ist die GESAMTzahl der
+ *  sichtbaren Punkte, deshalb gilt je Ebene dieselbe Zahl wie je Projekt.
+ *  ponytail: DOM-Marker, Grenze 1.000. Braucht es mehr, muss die Darstellung wechseln, nicht die
+ *  Zahl: ein Canvas-Renderer (L.circleMarker) zeichnete im Nachbau 20.000 Punkte flüssig — in der
+ *  App samt Klick-Treffer auf Punkte noch ungemessen. */
 export const MARKIERUNG_GRENZEN = {
-  punkteJeEbene: 5_000,
+  punkteJeEbene: 1_000,
   ebenenJeProjekt: 50,
-  punkteJeProjekt: 20_000,
+  punkteJeProjekt: 1_000,
+  /** Bytes des markierungen-JSON. Die Zählgrenzen deckeln keine Bytes: mit 30 langen Attributen je
+   *  Punkt reißen schon ~1.300 Punkte mit Umlauten den 20-MB-Body des Servers — und der PATCH trägt
+   *  zusätzlich die Strecken. 8 MB lässt dafür Luft. */
+  jsonBytes: 8 * 1024 * 1024,
   attributeJePunkt: 30,
   attributSchluesselLaenge: 60,
   attributWertLaenge: 200,

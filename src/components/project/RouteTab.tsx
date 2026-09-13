@@ -140,8 +140,10 @@ export function RouteTab({ project }: { project: Project }) {
           return
         }
         setGpkg({ fileName: file.name, routes })
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "GeoPackage konnte nicht gelesen werden.")
+      } catch {
+        // T-744: nicht err.message — sql.js wirft den rohen SQLite-Text („file is not a database"),
+        // der kam sonst englisch beim Disponenten an.
+        toast.error("Das GeoPackage konnte nicht gelesen werden. Bitte prüfen Sie die Datei.")
       }
       return
     }
