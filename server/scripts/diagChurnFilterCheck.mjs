@@ -90,4 +90,34 @@ const quellenAlter = await db.query(`
 console.log("=== Alter der Top-Quellen (erste Zeile je Quelle, gesamter Bestand) ===")
 console.log(JSON.stringify(quellenAlter.rows))
 
+// Würde Name-Gleichheit (statt/zusätzlich zu Geo-Nähe) bei ETABLIERTEN Quellen (0001/0145/0147)
+// noch mehr Churn fangen? Ohne Geo-Einschränkung, nur quellen_id+kategorie+exakter Name+Fenster.
+const nameMatch = await db.query(`
+  WITH echte_neu AS (
+    SELECT n.* FROM obstacles n
+    WHERE n.demo = false AND n.kategorie = ANY($1) AND n.quellen_id = ANY($6::text[])
+      AND n.created_at >= current_date - $2::int * interval '1 day'
+      AND NOT EXISTS (
+        SELECT 1 FROM obstacles w
+        WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
+          AND w.id <> n.id
+          AND w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
+          AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8
+          AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
+                                AND n.created_at + ($5::int * interval '1 day')
+      )
+  )
+  SELECT n.quellen_id,
+    count(*) AS rest_ohne_geo_filter,
+    count(*) FILTER (WHERE EXISTS (
+      SELECT 1 FROM obstacles w
+      WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false AND w.id <> n.id
+        AND w.name = n.name
+        AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day') AND n.created_at + ($5::int * interval '1 day')
+    )) AS zusaetzlich_per_namensmatch_fangbar
+  FROM echte_neu n GROUP BY 1 ORDER BY 2 DESC
+`, [...params, ["0001", "0145", "0147", "0141", "0156", "0152"]])
+console.log("=== Name-Match-Potenzial bei etablierten Top-Quellen (ohne Geo-Einschränkung) ===")
+console.log(JSON.stringify(nameMatch.rows))
+
 process.exit(0)
