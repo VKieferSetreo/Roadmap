@@ -201,7 +201,7 @@ export function veraenderungenRouter({ db }) {
            (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
               AND created_at >= current_date - $2::int * interval '1 day'
               AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen`,
-        params,
+        [kategorien, tage], // nur $1/$2 referenziert — node-pg verlangt exakte Bind-Anzahl
       ),
     ])
 

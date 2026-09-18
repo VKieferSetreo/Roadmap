@@ -63,7 +63,7 @@ const roh = await db.query(`
     (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
        AND created_at >= current_date - $2::int * interval '1 day'
        AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung
-`, params)
+`, [KATEGORIEN, 30])
 console.log(JSON.stringify(roh.rows[0]))
 
 const restJeQuelle = await db.query(`WITH ${CTES} SELECT quellen_id, count(*) AS n FROM echte_neu GROUP BY 1 ORDER BY 2 DESC LIMIT 15`, params)
