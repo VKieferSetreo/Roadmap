@@ -1,11 +1,9 @@
-// GL-Änderungstracking (nur Admin): quellenübergreifende Auswertung, wie viel sich am
-// Hindernis-Bestand täglich wirklich ändert — Antwort auf den GL-Einwand "es kann nicht sein,
-// dass so viele Änderungen an Baustellen/Sperrungen dazukommen". Erreichbar über /veraenderungen
-// (Profil-Menü, nur Admin), NICHT in der Kunden-Sidebar — internes Auswertungswerkzeug.
+// Änderungsverfolgung (nur Admin): quellenübergreifende Auswertung, wie viel sich am
+// Hindernis-Bestand täglich wirklich ändert. Erreichbar über /veraenderungen (Profil-Menü,
+// nur Admin), NICHT in der Kunden-Sidebar — internes Auswertungswerkzeug.
 //
-// Bewusst als Vorstands-taugliches Dashboard gebaut (Max-Wunsch): EINE berechnete Kernaussage
-// vorne (Ø Ereignisse/Tag + Spontan-Anteil), erst danach die Belege als Charts. Zahlen sprechen,
-// keine Bewertung im Text.
+// Layout bewusst mit einer berechneten Kennzahl vorne (Ø Ereignisse/Tag + Spontan-Anteil),
+// erst danach die Belege als Charts — analytisch, keine Bewertung im Text.
 
 import { Suspense, lazy, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
@@ -49,7 +47,7 @@ export function VeraenderungenPage() {
 
   return (
     <PageContainer
-      title="GL-Änderungstracking"
+      title="Änderungsverfolgung"
       description="Wie viel ändert sich täglich quellenübergreifend an Baustellen/Sperrungen — Art, Laufzeit, Vorlaufzeit."
       actions={
         <div className="flex items-center gap-2">
@@ -126,8 +124,8 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </Card>
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-sm">Laufzeit der neuen Maßnahmen</CardTitle>
-            <p className="text-xs text-neutral-400">Kurz ≤7 Tage · Mittel 8–30 Tage · Lang &gt;30 Tage / unbefristet</p>
+            <CardTitle className="text-sm">Laufzeit</CardTitle>
+            <p className="text-xs text-neutral-400">Neue Maßnahmen · Kurz ≤7 Tage · Mittel 8–30 Tage · Lang &gt;30 Tage / unbefristet</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -137,8 +135,8 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </Card>
         <Card className="lg:col-span-1 border-primary-200/70">
           <CardHeader>
-            <CardTitle className="text-sm">Wie spontan? (Vorlaufzeit)</CardTitle>
-            <p className="text-xs text-neutral-400">Zeit zwischen Erst-Erfassung und Beginn der Maßnahme</p>
+            <CardTitle className="text-sm">Vorlaufzeit</CardTitle>
+            <p className="text-xs text-neutral-400">Neue Maßnahmen · Zeit zwischen Erst-Erfassung und Beginn</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -148,13 +146,23 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </Card>
       </div>
 
-      <p className="px-1 text-xs text-neutral-400">
-        "Neu" und "Weggefallen" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im
-        Bestand). "Geändert" (inhaltliche Änderung an einer bestehenden Zeile, z.B. verschobenes
-        Datum oder geänderte Breite) wird erst seit{" "}
-        {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} echt erfasst —
-        die Kurve dafür füllt sich über die nächsten Tage.
-      </p>
+      <Card className="p-4">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">Herleitung, ungeschönt</p>
+        <p className="text-xs leading-relaxed text-neutral-500">
+          Rohzahl vor Bereinigung: {d.roh.neu.toLocaleString("de-DE")} Neu, {d.roh.weggefallen.toLocaleString("de-DE")} Weggefallen.
+          Davon {d.roh.erstbefuellungNeuerQuellen.toLocaleString("de-DE")} als Erstbefüllung neu angebundener Quellen
+          und {(d.roh.neu - d.roh.erstbefuellungNeuerQuellen - d.gesamt.neu).toLocaleString("de-DE")} als
+          Quellen-Rotation (dieselbe Stelle, neue ID innerhalb von 45 Tagen am gleichen Ort) erkannt und
+          nicht mitgezählt — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte "Neu" und {d.gesamt.weggefallen.toLocaleString("de-DE")} echte "Weggefallen".
+        </p>
+        <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+          "Neu" und "Weggefallen" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im
+          Bestand). "Geändert" (inhaltliche Änderung an einer bestehenden Zeile, z.B. verschobenes
+          Datum oder geänderte Breite) wird erst seit{" "}
+          {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} echt erfasst —
+          die Kurve dafür füllt sich über die nächsten Tage.
+        </p>
+      </Card>
     </div>
   )
 }
@@ -187,14 +195,15 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary-600">
-            <Gauge className="h-3.5 w-3.5" /> GL-Auswertung · letzte {d.tage} Tage
+            <Gauge className="h-3.5 w-3.5" /> Änderungsverfolgung · letzte {d.tage} Tage
           </p>
           <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-neutral-900 sm:text-[1.7rem]">
-            Der Bestand ist in Bewegung — messbar, nicht gefühlt.
+            Neue, geänderte und weggefallene Hindernisse
           </h1>
           <p className="mt-2 max-w-xl text-sm text-neutral-600">
-            Jede neue, geänderte oder weggefallene Baustelle/Sperrung wird quellenübergreifend
-            erfasst, nicht geschätzt.
+            Quellenübergreifend erfasst, je Ereignis mit Kategorie, Laufzeit und Vorlaufzeit.
+            Quellen-Rotation (dieselbe Stelle unter neuer ID) und Erstbefüllung neu angebundener
+            Quellen sind herausgerechnet — Beleg unten.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">

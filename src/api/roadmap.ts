@@ -136,6 +136,8 @@ export interface VeraenderungenUebersicht {
   geaendertTrackingSeit: string | null
   zeitreihe: { tag: string; neu: number; weggefallen: number; geaendert: number }[]
   gesamt: { neu: number; weggefallen: number; geaendert: number }
+  /** Zahlen VOR dem Herausrechnen von Quellen-Rotation/Erstbefüllung — Beleg, kein Versteck. */
+  roh: { neu: number; weggefallen: number; erstbefuellungNeuerQuellen: number }
   proKategorie: {
     neu: Record<string, number>
     weggefallen: Record<string, number>

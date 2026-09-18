@@ -151,7 +151,7 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
               <Bug className="h-4 w-4 text-neutral-400" /> Debug &amp; Bug-Reports
             </DropdownItem>
             <DropdownItem onClick={() => navigate("/veraenderungen")}>
-              <Activity className="h-4 w-4 text-neutral-400" /> GL-Änderungstracking
+              <Activity className="h-4 w-4 text-neutral-400" /> Änderungsverfolgung
             </DropdownItem>
           </div>
         ) : null}

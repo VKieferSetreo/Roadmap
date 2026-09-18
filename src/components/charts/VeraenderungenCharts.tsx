@@ -1,4 +1,4 @@
-// GL-Änderungstracking (recharts, lazy geladen): Zeitreihe neu/geändert/weggefallen,
+// Änderungsverfolgung (recharts, lazy geladen): Zeitreihe neu/geändert/weggefallen,
 // Kategorie-Aufschlüsselung, Laufzeit- und Vorlaufzeit-Verteilung.
 //
 // Farben nach dataviz-Skill-Palette (validate_palette.js, alle Checks PASS): die drei
