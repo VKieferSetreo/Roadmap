@@ -1,42 +1,54 @@
 // Änderungsverfolgung (nur Admin): belegt quellenübergreifend, wie viel sich am
 // Hindernis-Bestand täglich wirklich ändert.
 //
-// Drei Ereignis-Typen, drei verschiedene Quellen:
-//   - "neu"        ← obstacles.created_at (echter Einfüge-Zeitstempel, nie vom Re-Import berührt)
-//   - "weggefallen" ← obstacles.aktiv=false + updated_at (Reconcile ist der EINZIGE Pfad, der
-//                     aktiv auf false setzt, und tut das WHERE aktiv=true — eine einmalige,
-//                     saubere Zustandsänderung, kein Dauerstempel)
-//   - "geaendert"   ← obstacle_aenderungen (eigene Tabelle, siehe worker/importer.js). Läuft erst
-//                     seit dem Rollout dieser Migration — VOR diesem Datum gibt es keine echte
-//                     Änderungs-Historie, weil UPDATE_SACHFELDER_SQL bis dahin bedingungslos jeden
-//                     Re-Import als "aktualisiert" zählte (T-738) und updated_at damit für
-//                     rückwirkende Auswertung unbrauchbar ist (76.721 von 77.715 Zeilen an einem
-//                     einzigen Tag gestempelt, nur 7.861 mit wirklich anderem Inhalt — T-737).
+// Vier Ereignis-Typen, drei verschiedene Quellen:
+//   - "neu"                    ← obstacles.created_at (echter Einfüge-Zeitstempel, nie vom
+//                                 Re-Import berührt)
+//   - "ausgelaufen"/"entfernt" ← obstacles.aktiv=false + updated_at (Reconcile ist der EINZIGE
+//                                 Pfad, der aktiv auf false setzt, WHERE aktiv=true davor — eine
+//                                 einmalige, saubere Zustandsänderung, kein Dauerstempel).
+//                                 Unterschieden nach gueltig_bis: lag das Enddatum schon VOR der
+//                                 Deaktivierung, ist die Maßnahme planmäßig ausgelaufen; war sie
+//                                 noch gültig (oder unbefristet) und verschwindet trotzdem aus dem
+//                                 Feed, wurde sie vorzeitig entfernt (Auftrag storniert, Quelle
+//                                 zieht sie zurück, o.ä.) — das ist das eigentlich auffällige
+//                                 Ereignis, nicht das planmäßige Auslaufen.
+//   - "geaendert"               ← obstacle_aenderungen (eigene Tabelle, siehe worker/importer.js).
+//                                 Läuft erst seit dem Rollout dieser Migration — VOR diesem Datum
+//                                 gibt es keine echte Änderungs-Historie, weil UPDATE_SACHFELDER_SQL
+//                                 bis dahin bedingungslos jeden Re-Import als "aktualisiert" zählte
+//                                 (T-738) und updated_at damit für rückwirkende Auswertung
+//                                 unbrauchbar ist (76.721 von 77.715 Zeilen an einem Tag
+//                                 gestempelt, nur 7.861 mit wirklich anderem Inhalt — T-737).
 //
-// "neu" und "weggefallen" sind deshalb für die vollen `tage` Tage belastbar, "geaendert" erst ab
-// dem ersten Lauf nach diesem Deploy — das Frontend zeigt das Startdatum offen an.
+// "neu"/"ausgelaufen"/"entfernt" sind deshalb für die vollen `tage` Tage belastbar, "geaendert"
+// erst ab dem ersten Lauf nach diesem Deploy — das Frontend zeigt das Startdatum offen an.
 //
-// QUELLEN-ROTATION HERAUSGERECHNET (T-747-Nachbesserung, Max 18.09.: "40.702 Neu" war Rauschen).
-// Diagnose (scripts/diagNeuChurn.mjs, 18.09. gegen Prod gefahren): dieselbe reale Baustelle
-// bekommt bei mehreren Quellen (0145, 0147, 0131, 0214, 0001, …) bei jedem Pull eine NEUE
-// externe_id — entweder weil dedupeObstacles() bei mehreren zusammengefassten Features einen
-// anderen Repräsentanten wählt (dup#<hash>@<hash> ändert sich) oder weil die Quelle selbst
-// Feature-IDs neu vergibt. Der Fuzzy-Match im Importer (worker/importer.js, FUZZY_LAT/FUZZY_LNG,
+// QUELLEN-ROTATION HERAUSGERECHNET (T-747-Nachbesserung, Max 18.09.: "40.702 Neu" war Rauschen,
+// "muss wirklich streng sein"). Diagnose (scripts/diagNeuChurn.mjs, gegen Prod gefahren):
+// dieselbe reale Baustelle bekommt bei mehreren Quellen (0145, 0147, 0131, 0214, 0001, …) bei
+// jedem Pull eine NEUE externe_id — entweder weil dedupeObstacles() bei mehreren zusammengefassten
+// Features einen anderen Repräsentanten wählt (dup#<hash>@<hash> ändert sich) oder weil die
+// Quelle selbst Feature-IDs neu vergibt. Der Fuzzy-Match im Importer (worker/importer.js,
 // ~300 m) fängt das nur INNERHALB eines Laufs ab, nicht wenn die alte Zeile schon reconciled ist.
 // Ergebnis: Reconcile deaktiviert die alte Zeile, der nächste Insert legt eine neue an — "neu"
 // UND "weggefallen" zählen dieselbe reale Stelle doppelt, ohne dass sich etwas geändert hat.
 //
 // Fix HIER (Tracking-Ebene, nicht die Connectoren): ein "neu"-Kandidat zählt nur, wenn KEINE
-// andere Zeile derselben Quelle+Kategorie im selben Radius (CHURN_GEO_TOLERANZ, großzügiger als
-// der Importer-Fuzzy-Match — lineare Infrastruktur wie eine mehrwöchige Tunnelsperrung kann ihren
-// Referenzpunkt zwischen zwei Läufen über die Importer-Toleranz hinaus verschieben) innerhalb von
-// CHURN_FENSTER_TAGE um den Erfassungszeitpunkt deaktiviert wurde (und umgekehrt für
-// "weggefallen"). ZWEITE Sonderregel, empirisch nachgezogen (scripts/diagChurnFilterCheck.mjs,
-// 18.09.): frisch angebundene Quellen (0234/0235/0236/0135 — Erst-Pull nach dem letzten Deploy)
-// lieferten ihren KOMPLETTEN Bestand als "neu", das ist eine Erstbefüllung, kein Tages-Delta.
-// Eine Quelle ohne jede Zeile VOR dem Fenster zählt deshalb gar nicht mit; ihre Erstbefüllung
-// steht separat in `roh.erstbefuellungNeuerQuellen`. Die roh/gefiltert-Differenz wird mit
-// ausgeliefert (`roh` im Response) — nachvollziehbar statt eine geglättete Zahl ohne Beleg.
+// andere Zeile derselben Quelle+Kategorie GEOGRAFISCH NAH (CHURN_GEO_LAT/LNG, großzügiger als der
+// Importer-Fuzzy-Match — lineare Infrastruktur wie eine mehrwöchige Tunnelsperrung kann ihren
+// Referenzpunkt weiter verschieben) ODER mit IDENTISCHEM Namen innerhalb von CHURN_FENSTER_TAGE
+// um den Erfassungszeitpunkt deaktiviert wurde (und umgekehrt für "ausgelaufen"/"entfernt"). Der
+// Namens-Zweig fängt Fälle, deren Referenzpunkt über den Geo-Radius hinaus wandert.
+//
+// ZWEITE Sonderregel, empirisch nachgezogen: frisch angebundene Quellen (0234/0235/0236/0135 —
+// Erst-Pull nach dem letzten Deploy) lieferten ihren KOMPLETTEN Bestand als "neu", das ist eine
+// Erstbefüllung, kein Tages-Delta. Eine Quelle ohne jede Zeile VOR dem Fenster zählt deshalb gar
+// nicht mit; ihre Erstbefüllung steht separat in `roh.erstbefuellungNeuerQuellen`.
+//
+// Wirkung (18.09., alle Kategorien, 30 Tage): 47.898 roh → 9.263 echte "neu" (−81 %), 42.086 roh
+// → 6.746 echte "ausgelaufen"+"entfernt" (−84 %). `roh` bleibt im Response — nachvollziehbar
+// statt eine geglättete Zahl ohne Beleg.
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
@@ -58,7 +70,8 @@ const CHURN_FENSTER_TAGE = 45
 // Grosszuegiger als der Importer-Fuzzy-Match (dort 0.003/0.0045, ~300 m — der muss praezise
 // bleiben, sonst kollabieren echte Bauphasen unterschiedlicher Breite auf eine Zeile). Hier zaehlt
 // das Gegenteil: eine lineare Sperrung (Tunnel, langer Autobahnabschnitt) darf ihren Referenzpunkt
-// zwischen zwei Laeufen verschieben, ohne als "neu" durchzurutschen. ~1,1 km.
+// zwischen zwei Laeufen verschieben, ohne als "neu" durchzurutschen. ~1,1 km. ODER-verknuepft mit
+// exaktem Namensgleich (siehe CHURN_CTES) fuer Faelle, die selbst das noch verfehlen.
 const CHURN_GEO_LAT = 0.01
 const CHURN_GEO_LNG = 0.015
 
@@ -71,10 +84,26 @@ function parseKategorien(raw) {
   return gueltig.length ? gueltig : KATEGORIEN
 }
 
-/** "echte_neu"/"echte_weg" als CTE-Text — von jeder der vier Abfragen wiederverwendet.
- *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG,
- *  $5 = CHURN_FENSTER_TAGE. `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand
- *  erst innerhalb des Fensters entstand (Erstbefüllung, kein Tages-Delta). */
+// Straßenklasse aus strassen_ref (T-747-Erweiterung, Max: "nach Strassen differenzieren —
+// Autobahn, Bundesstraße, …"). Empirisch gegen den Bestand geprüft (scripts/diagStrassenklasse.mjs):
+// A<Zahl> Autobahn, B<Zahl> Bundesstraße, L/S/St<Zahl> Landes-/Staatsstraße (Bayern/Sachsen nennen
+// die Landesstraße "Staatsstraße", St oder S abgekürzt — fachlich dieselbe Ebene, deshalb
+// zusammengefasst), K<Zahl> Kreisstraße. Alles andere (benannte Straßen, kein strassen_ref, ~37 %
+// des Bestands) ist "sonstige" — bewusst nicht erraten.
+const STRASSENKLASSE_CASE = `CASE
+  WHEN strassen_ref IS NULL THEN 'unbekannt'
+  WHEN strassen_ref ~* '^A[0-9]' THEN 'autobahn'
+  WHEN strassen_ref ~* '^B[0-9]' THEN 'bundesstrasse'
+  WHEN strassen_ref ~* '^St?[0-9]' THEN 'landesstrasse'
+  WHEN strassen_ref ~* '^K[0-9]' THEN 'kreisstrasse'
+  ELSE 'sonstige'
+END`
+
+/** "echte_neu"/"echte_weg" als CTE-Text — von jeder Abfrage wiederverwendet. Nutzt $1 =
+ *  Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG, $5 = CHURN_FENSTER_TAGE.
+ *  `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand erst innerhalb des Fensters
+ *  entstand (Erstbefüllung, kein Tages-Delta). `weg_typ` auf echte_weg trennt planmäßiges
+ *  Auslaufen von vorzeitigem Entfernen (siehe Kopf-Kommentar). */
 const CHURN_CTES = `
   etablierte_quelle AS (
     SELECT quellen_id FROM obstacles
@@ -90,22 +119,31 @@ const CHURN_CTES = `
         SELECT 1 FROM obstacles w
         WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
           AND w.id <> n.id
-          AND w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
-          AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8
+          AND (
+            (w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
+             AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8)
+            OR w.name = n.name
+          )
           AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
                                 AND n.created_at + ($5::int * interval '1 day')
       )
   ),
   echte_weg AS (
-    SELECT w.* FROM obstacles w
+    SELECT w.*,
+      CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
+           THEN 'ausgelaufen' ELSE 'entfernt' END AS weg_typ
+    FROM obstacles w
     WHERE w.demo = false AND w.kategorie = ANY($1) AND w.aktiv = false
       AND w.updated_at >= current_date - $2::int * interval '1 day'
       AND NOT EXISTS (
         SELECT 1 FROM obstacles n
         WHERE n.quellen_id = w.quellen_id AND n.kategorie = w.kategorie
           AND n.id <> w.id
-          AND n.lat BETWEEN w.lat - $3::float8 AND w.lat + $3::float8
-          AND n.lng BETWEEN w.lng - $4::float8 AND w.lng + $4::float8
+          AND (
+            (n.lat BETWEEN w.lat - $3::float8 AND w.lat + $3::float8
+             AND n.lng BETWEEN w.lng - $4::float8 AND w.lng + $4::float8)
+            OR n.name = w.name
+          )
           AND n.created_at BETWEEN w.updated_at - ($5::int * interval '1 day')
                                 AND w.updated_at + ($5::int * interval '1 day')
       )
@@ -119,23 +157,22 @@ export function veraenderungenRouter({ db }) {
     const tage = Math.min(TAGE_MAX, Math.max(1, Number.parseInt(req.query.tage, 10) || TAGE_DEFAULT))
     const kategorien = parseKategorien(req.query.kategorien)
     const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
+    const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
 
-    const [zeitreihe, kategorieRows, laufzeitRows, vorlaufRows, seitWann, roh] = await Promise.all([
+    const [zeitreihe, kategorieRows, strassenklasseRows, laufzeitRows, vorlaufRows, seitWann, roh] = await Promise.all([
       // Lückenlose Tagesreihe (generate_series), je Typ eine Serie — dieselbe Technik wie
       // analytics.js proTagRows. LEFT JOIN statt UNION-Aggregat, damit ein Tag ohne Ereignis
       // als 0 erscheint statt zu fehlen (sonst "springt" das Chart).
       db.query(
         `WITH ${CHURN_CTES}
          SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
-           coalesce(n.n, 0) AS neu, coalesce(w.n, 0) AS weggefallen, coalesce(g.n, 0) AS geaendert
+           coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
+           coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
          FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
          LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
-         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg GROUP BY 1) w ON w.tag = d::date
-         LEFT JOIN (
-           SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen
-           WHERE kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'
-           GROUP BY 1
-         ) g ON g.tag = d::date
+         LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
+         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
          ORDER BY d`,
         params,
       ),
@@ -144,11 +181,19 @@ export function veraenderungenRouter({ db }) {
         `WITH ${CHURN_CTES}
          SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
          UNION ALL
-         SELECT kategorie, 'weggefallen', count(*) FROM echte_weg GROUP BY 1
+         SELECT kategorie, weg_typ, count(*) FROM echte_weg GROUP BY 1, 2
          UNION ALL
-         SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen
-           WHERE kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'
-           GROUP BY 1`,
+         SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1`,
+        params,
+      ),
+      // Straßenklasse-Aufschlüsselung (Max: "nach Straßen differenzieren, Autobahn/Bundesstraße/…").
+      db.query(
+        `WITH ${CHURN_CTES}
+         SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
+         UNION ALL
+         SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM echte_weg GROUP BY 1, weg_typ
+         UNION ALL
+         SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1`,
         params,
       ),
       // Laufzeit-Klasse (nur echte "neu" — Eigenschaft der Maßnahme selbst, nicht des Ereignisses).
@@ -205,20 +250,23 @@ export function veraenderungenRouter({ db }) {
       ),
     ])
 
-    const kat = { neu: {}, weggefallen: {}, geaendert: {} }
+    const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
+    const kat = bucket()
     for (const row of kategorieRows.rows) kat[row.typ][row.kategorie] = Number(row.n)
+    const strasse = bucket()
+    for (const row of strassenklasseRows.rows) strasse[row.typ][row.klasse] = Number(row.n)
 
-    const gesamtNeu = zeitreihe.rows.reduce((s, t) => s + Number(t.neu), 0)
-    const gesamtWeg = zeitreihe.rows.reduce((s, t) => s + Number(t.weggefallen), 0)
+    const summe = (feld) => zeitreihe.rows.reduce((s, t) => s + Number(t[feld]), 0)
 
     res.json({
       tage,
       kategorien,
       geaendertTrackingSeit: seitWann.rows[0]?.seit ?? null,
       zeitreihe: zeitreihe.rows.map((t) => ({
-        tag: t.tag, neu: Number(t.neu), weggefallen: Number(t.weggefallen), geaendert: Number(t.geaendert),
+        tag: t.tag, neu: Number(t.neu), geaendert: Number(t.geaendert),
+        ausgelaufen: Number(t.ausgelaufen), entfernt: Number(t.entfernt),
       })),
-      gesamt: { neu: gesamtNeu, weggefallen: gesamtWeg, geaendert: zeitreihe.rows.reduce((s, t) => s + Number(t.geaendert), 0) },
+      gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
       // Rohzahlen vor dem Herausrechnen von Quellen-Rotation — Beleg, kein Versteck.
       roh: {
         neu: Number(roh.rows[0]?.neu ?? 0),
@@ -226,8 +274,9 @@ export function veraenderungenRouter({ db }) {
         erstbefuellungNeuerQuellen: Number(roh.rows[0]?.erstbefuellung_neuer_quellen ?? 0),
       },
       proKategorie: kat,
-      laufzeiten: Object.fromEntries(laufzeitRows.rows.map((r) => [r.laufzeit, Number(r.n)])),
-      vorlaufzeiten: Object.fromEntries(vorlaufRows.rows.map((r) => [r.vorlauf, Number(r.n)])),
+      proStrassenklasse: strasse,
+      laufzeiten: Object.fromEntries(laufzeitRows.rows.map((rr) => [rr.laufzeit, Number(rr.n)])),
+      vorlaufzeiten: Object.fromEntries(vorlaufRows.rows.map((rr) => [rr.vorlauf, Number(rr.n)])),
     })
   }))
 
