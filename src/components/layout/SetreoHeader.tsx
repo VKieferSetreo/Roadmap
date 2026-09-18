@@ -3,7 +3,7 @@
 // Setreo-Admins sehen zusätzlich den Mandanten-Switcher (X-Tenant-Kontext).
 
 import { Link, useNavigate } from "react-router-dom"
-import { Building2, Bug, LogOut, Menu } from "lucide-react"
+import { Activity, Building2, Bug, LogOut, Menu } from "lucide-react"
 import { DropdownItem, DropdownMenu } from "@/components/ui/DropdownMenu"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { BugReportButton } from "@/components/bugreport/BugReportButton"
@@ -149,6 +149,9 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
             </DropdownItem>
             <DropdownItem onClick={() => navigate("/debugging")}>
               <Bug className="h-4 w-4 text-neutral-400" /> Debug &amp; Bug-Reports
+            </DropdownItem>
+            <DropdownItem onClick={() => navigate("/veraenderungen")}>
+              <Activity className="h-4 w-4 text-neutral-400" /> GL-Änderungstracking
             </DropdownItem>
           </div>
         ) : null}

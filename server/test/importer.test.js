@@ -64,7 +64,9 @@ describe("runImport (Mock-Connector)", () => {
     const run = await runImport({ db, connector: mockConnector([changed, ITEM_B]), log: quiet })
 
     expect(run.stats).toEqual({
-      gefunden: 2, neu: 1, aktualisiert: 1, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0,
+      // geaendert: GL-Änderungstracking (T-737-Nachfolger) erkennt den echten Namens-/Datums-Delta
+      // gegenüber dem beim ersten Insert gesetzten change_hash.
+      gefunden: 2, neu: 1, aktualisiert: 1, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0, geaendert: 1,
     })
     expect(db.state.obstacles).toHaveLength(2)
     const updated = db.state.obstacles.find((o) => o.externe_id === "ext-a")
@@ -76,6 +78,26 @@ describe("runImport (Mock-Connector)", () => {
     // fachId-Sequenz läuft über Runs weiter
     expect(db.state.obstacles.find((o) => o.externe_id === "ext-b").fach_id)
       .toBe(buildFachId(2, "0009", todayIso()))
+  })
+
+  it("GL-Änderungstracking: echter Sachfeld-Delta loggt eine Zeile, unveränderter Re-Import keine", async () => {
+    const db = createFakeDb()
+    await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
+    expect(db.state.obstacleAenderungen).toHaveLength(0) // Erst-Insert: nur Baseline, kein Delta
+
+    const changed = { ...ITEM_A, name: "Baustelle A2 (verlängert)", gueltigBis: "2026-09-30" }
+    await runImport({ db, connector: mockConnector([changed]), log: quiet })
+    expect(db.state.obstacleAenderungen).toHaveLength(1)
+    const obstacleId = db.state.obstacles.find((o) => o.externe_id === "ext-a").id
+    expect(db.state.obstacleAenderungen[0]).toMatchObject({
+      obstacle_id: obstacleId, kategorie: "baustelle", quellen_id: "0009", gueltig_bis: "2026-09-30",
+    })
+
+    // T-738: updated_at wird bei JEDEM Re-Import gestempelt, auch ohne Inhalts-Delta — der
+    // change_hash-Vergleich (nicht updated_at) entscheidet, ob geloggt wird. Gleicher Inhalt
+    // nochmal rein → kein zweiter Eintrag.
+    await runImport({ db, connector: mockConnector([changed]), log: quiet })
+    expect(db.state.obstacleAenderungen).toHaveLength(1)
   })
 
   it("Dublettenfilter: gleiche Kategorie+Name+~Ort werden zu EINEM Eintrag (1 INSERT statt 3)", async () => {

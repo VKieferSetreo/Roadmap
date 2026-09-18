@@ -127,6 +127,24 @@ export interface AnalyticsOverview {
   }[]
 }
 
+/** GL-Änderungstracking (GET /api/veraenderungen/uebersicht, nur Admin). "neu"/"weggefallen"
+ *  sind volle `tage`-Historie (obstacles.created_at/aktiv sind echte Zustands-Zeitstempel,
+ *  nie vom Re-Import berührt); "geaendert" läuft erst ab `geaendertTrackingSeit`. */
+export interface VeraenderungenUebersicht {
+  tage: number
+  kategorien: string[]
+  geaendertTrackingSeit: string | null
+  zeitreihe: { tag: string; neu: number; weggefallen: number; geaendert: number }[]
+  gesamt: { neu: number; weggefallen: number; geaendert: number }
+  proKategorie: {
+    neu: Record<string, number>
+    weggefallen: Record<string, number>
+    geaendert: Record<string, number>
+  }
+  laufzeiten: Record<"kurz" | "mittel" | "lang" | "unbekannt", number | undefined>
+  vorlaufzeiten: Record<"spontan" | "kurzfristig" | "geplant" | "langfristig" | "unbekannt", number | undefined>
+}
+
 export const api = {
   health: () => axiosClient<HealthResponse>({ url: "/health", method: "GET", timeout: 2_500 }),
 
@@ -377,6 +395,16 @@ export const api = {
     heartbeat: () => axiosClient<void>({ url: "/analytics/heartbeat", method: "PUT" }),
     /** Nutzungs-Übersicht (Admin). */
     overview: () => axiosClient<AnalyticsOverview>({ url: "/analytics/overview", method: "GET" }),
+  },
+
+  // ── GL-Änderungstracking (nur Admin) — quellenübergreifende Diff-Auswertung ──
+  veraenderungen: {
+    uebersicht: (tage?: number) =>
+      axiosClient<VeraenderungenUebersicht>({
+        url: "/veraenderungen/uebersicht",
+        method: "GET",
+        params: tage ? { tage } : undefined,
+      }),
   },
 
   // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──

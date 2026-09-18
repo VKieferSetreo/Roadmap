@@ -7,6 +7,7 @@
 // ersten 4 Stellen bestehender fachIds. Transaktionssicher über pg_advisory_xact_lock
 // pro Quelle — Aufrufer MUSS innerhalb von db.tx arbeiten (q = tx-Client).
 
+import { createHash } from "node:crypto"
 import { KATEGORIEN } from "./engine/rules.js"
 import { isFiniteNumber, isPlainObject } from "./util.js"
 import { schlankeRohdaten } from "./connectors/_helpers.js"
@@ -204,12 +205,27 @@ export const insertParams = (o) => [
   o.roh != null ? JSON.stringify(o.roh) : null,
 ]
 
+/** Hash über die Sachfelder, die eine ECHTE inhaltliche Änderung ausmachen — bewusst OHNE
+ *  updated_at/roh/quelle (Rausch-Felder, siehe T-737/T-738). gueltig_von/bis sind bewusst DRIN:
+ *  eine verschobene Bauphase IST die Änderung, die das GL-Tracking zeigen soll. attrs-Keys
+ *  werden sortiert, damit Objekt-Eintragsreihenfolge den Hash nicht künstlich kippt. */
+export function changeRelevantHash(o) {
+  const attrs = Object.fromEntries(Object.entries(o.attrs ?? {}).sort(([a], [b]) => a.localeCompare(b)))
+  const payload = JSON.stringify({
+    kategorie: o.kategorie, name: o.name ?? null, strassenRef: o.strassenRef ?? null,
+    gueltigVon: o.gueltigVon ?? null, gueltigBis: o.gueltigBis ?? null, attrs,
+  })
+  return createHash("sha256").update(payload).digest("hex").slice(0, 16)
+}
+
 /** Sachfeld-Update beim Re-Import: fachId/realerStart/aktiv/tenant bleiben stabil.
- *  ki_aufbereitet ist "sticky" (einmal true bleibt true), damit ein Re-Import ohne Treffer das Flag nicht löscht. */
+ *  ki_aufbereitet ist "sticky" (einmal true bleibt true), damit ein Re-Import ohne Treffer das Flag nicht löscht.
+ *  change_hash wird bei JEDEM Update neu gesetzt (billig) — nur ein GEÄNDERTER Hash gegenüber dem
+ *  vorherigen Wert löst beim Aufrufer (worker/importer.js) einen obstacle_aenderungen-Eintrag aus. */
 export const UPDATE_SACHFELDER_SQL = `UPDATE obstacles SET kategorie = $2, name = $3, beschreibung = $4,
     lat = $5, lng = $6, strassen_ref = $7, zustaendig = $8, quelle = $9, attrs = $10,
     gueltig_von = $11, gueltig_bis = $12, ki_aufbereitet = (ki_aufbereitet OR $13), geom = $14,
-    roh = coalesce($15::jsonb, roh), updated_at = now()
+    roh = coalesce($15::jsonb, roh), change_hash = $16, updated_at = now()
   WHERE id = $1 RETURNING *`
 
 export const sachfeldParams = (id, o) => [
@@ -220,8 +236,9 @@ export const sachfeldParams = (id, o) => [
   // coalesce statt Zuweisung: liefert ein Connector (noch) kein roh, soll ein einmal erfasster
   // Rohsatz nicht bei jedem Import geloescht werden.
   o.roh != null ? JSON.stringify(o.roh) : null,
+  changeRelevantHash(o),
 ]
-export const SACHFELD_COL_COUNT = 15 // sachfeldParams: id + 14 Sachfelder
+export const SACHFELD_COL_COUNT = 16 // sachfeldParams: id + 15 Sachfelder
 
 /** Batch-Sachfeld-Update (T-329): N Updates als EIN `UPDATE … FROM (VALUES …)`-Join statt N Round-Trips.
  *  `valuesSql` = Platzhalter-Tupel aus dbBatch.placeholders(rows, SACHFELD_COL_COUNT), Params = flache
@@ -234,9 +251,9 @@ export const sachfeldBatchSql = (valuesSql) => `UPDATE obstacles AS o SET
     quelle = v.quelle::jsonb, attrs = v.attrs::jsonb,
     gueltig_von = v.gueltig_von::date, gueltig_bis = v.gueltig_bis::date,
     ki_aufbereitet = (o.ki_aufbereitet OR v.ki_aufbereitet::boolean),
-    geom = v.geom::jsonb, roh = coalesce(v.roh::jsonb, o.roh), updated_at = now()
+    geom = v.geom::jsonb, roh = coalesce(v.roh::jsonb, o.roh), change_hash = v.change_hash, updated_at = now()
   FROM (VALUES ${valuesSql}) AS v(id, kategorie, name, beschreibung, lat, lng, strassen_ref,
-    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom, roh)
+    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom, roh, change_hash)
   WHERE o.id = v.id::uuid`
 
 // T-262: siehe importer.js — Index = fach_id ohne die letzten 10 Zeichen (QUELLE+DDMMYY), damit

@@ -45,6 +45,7 @@ import { accountRouter } from "./routes/account.js"
 import { routeRouter } from "./routes/route.js"
 import { archivRouter } from "./routes/archiv.js"
 import { analyticsRouter } from "./routes/analytics.js"
+import { veraenderungenRouter } from "./routes/veraenderungen.js"
 import { getTenantBranding, listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -253,6 +254,7 @@ export function createApp({
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
   app.use("/api/analytics", analyticsRouter({ db }))
+  app.use("/api/veraenderungen", veraenderungenRouter({ db }))
   app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim, fetchImpl }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.
   // T-393: eigener, strengerer Eimer (30/min je Identität) vor dem globalen Backstop, weil

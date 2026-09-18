@@ -212,7 +212,7 @@ export async function pruneNotifications(db, { keepDays = 120 } = {}) {
 // anreicherung steht seit T-662 mit dabei: seit der Waisen-Lauf dort loescht, entsteht auch dort
 // Churn. Ohne den Eintrag waere die groesste Tabelle des Systems (413 MB) die einzige, um die sich
 // nach einem Retention-Lauf niemand kuemmert.
-const VACUUM_TABLES = ["obstacles", "findings", "notifications", "import_runs", "analytics_events", "anreicherung"]
+const VACUUM_TABLES = ["obstacles", "findings", "notifications", "import_runs", "analytics_events", "anreicherung", "obstacle_aenderungen"]
 export async function vacuumChurnedTables(db, { log = () => {} } = {}) {
   let ok = 0
   for (const t of VACUUM_TABLES) {

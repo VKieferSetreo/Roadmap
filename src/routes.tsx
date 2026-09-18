@@ -15,6 +15,9 @@ const SettingsPage = lazy(() => import("@/pages/SettingsPage").then((m) => ({ de
 const AdminTenantsPage = lazy(() => import("@/pages/AdminTenantsPage").then((m) => ({ default: m.AdminTenantsPage })))
 const TenantUsersPage = lazy(() => import("@/pages/TenantUsersPage").then((m) => ({ default: m.TenantUsersPage })))
 const DebugPage = lazy(() => import("@/pages/DebugPage").then((m) => ({ default: m.DebugPage })))
+const VeraenderungenPage = lazy(() =>
+  import("@/pages/VeraenderungenPage").then((m) => ({ default: m.VeraenderungenPage })),
+)
 const NewsPage = lazy(() => import("@/pages/NewsPage").then((m) => ({ default: m.NewsPage })))
 const NotFound = lazy(() => import("@/pages/NotFound").then((m) => ({ default: m.NotFound })))
 
@@ -59,6 +62,7 @@ export const router = createBrowserRouter(
       children: [
         { path: "/mandanten", element: page(<AdminTenantsPage />) },
         { path: "/debugging", element: page(<DebugPage />) },
+        { path: "/veraenderungen", element: page(<VeraenderungenPage />) },
         // Alt-Link /debug → /debugging (Bookmarks / alte Verweise nicht brechen).
         { path: "/debug", element: <Navigate to="/debugging" replace /> },
       ],

@@ -15,14 +15,34 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { durchsGate, schreibeBelege } from "../anreicherung/gate.js"
 import { spieleEin } from "../anreicherung/einspielen.js"
 import {
-  buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
+  buildFachId, changeRelevantHash, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
   OBSTACLE_COLS, OBSTACLE_INSERT_COLS, OBSTACLE_INSERT_COL_COUNT,
   sachfeldBatchSql, sachfeldParams, SACHFELD_COL_COUNT, todayIso, validateObstacle,
 } from "../obstaclesRepo.js"
 
 // Bulk-Import-Speed (T-042): EINMAL je Lauf den Quellen-Bestand laden statt per-Zeile zu
 // SELECTen — Upsert/Drift-Match/fachId laufen dann in-memory (kein N+1, kein per-Zeile-Lock).
-const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS} FROM obstacles WHERE quellen_id = $1`
+// change_hash zusätzlich zu OBSTACLE_COLS (nur hier gebraucht, deshalb nicht im geteilten
+// Spalten-Set) — Vergleichsbasis fürs GL-Änderungstracking.
+const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS}, change_hash FROM obstacles WHERE quellen_id = $1`
+// GL-Änderungstracking (T-737-Nachfolger): eine Zeile je Tag, an dem sich der relevante Inhalt
+// eines Hindernisses wirklich geändert hat. ON CONFLICT DO NOTHING ist nur ein Sicherheitsnetz —
+// die eigentliche Dedup-Logik ist der change_hash-Vergleich weiter unten (nur EIN Delta wird
+// je Zeile überhaupt gesammelt).
+const AENDERUNG_COL_COUNT = 6 // obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis
+const aenderungBatchSql = (valuesSql) => `INSERT INTO obstacle_aenderungen
+    (obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis, erkannt_am)
+  SELECT obstacle_id::uuid, kategorie, quellen_id, strassen_ref, gueltig_von::date, gueltig_bis::date, current_date
+  FROM (VALUES ${valuesSql}) AS v(obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis)
+  ON CONFLICT (obstacle_id, erkannt_am) DO NOTHING`
+// Nach dem Insert-Batch: change_hash der frisch eingefügten Zeilen setzen (kein eigener
+// obstacle_aenderungen-Eintrag dafür — "neu" liest direkt obstacles.created_at, siehe
+// routes/veraenderungen.js). Schlüssel (quellen_id, externe_id) ist derselbe Upsert-Schlüssel
+// wie überall im Importer.
+const CHANGE_HASH_COL_COUNT = 3 // quellen_id, externe_id, change_hash
+const changeHashBatchSql = (valuesSql) => `UPDATE obstacles AS o SET change_hash = v.change_hash
+  FROM (VALUES ${valuesSql}) AS v(quellen_id, externe_id, change_hash)
+  WHERE o.quellen_id = v.quellen_id AND o.externe_id = v.externe_id`
 // T-262: Index = ALLES vor QUELLE(4)+DDMMYY(6), also fach_id ohne die letzten 10 Zeichen — NICHT
 // fix die ersten 4. Sonst bricht der Zähler bei >9999 Einträgen/Quelle (5-stelliger Index, fach_id
 // 15-stellig): substring(…,1,4) las nur "1000…", MAX blieb bei 9999 → Folge-Importe vergaben Index
@@ -194,7 +214,10 @@ export async function runImport({
           // mit unterschiedlicher Breite tragen; ohne dieses Feld zog der Fuzzy-Match alle Phasen auf EINE
           // Zeile (last-write, schmalste Restbreite → falsch-kritisch). Profil statt Zeitfenster → kein
           // Churn bei rollenden Enddaten.
-          const cand = { id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng), profil: restriktionsProfil(r.attrs) }
+          const cand = {
+            id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng),
+            profil: restriktionsProfil(r.attrs), change_hash: r.change_hash,
+          }
           const arr = fuzzyIndex.get(k)
           if (arr) arr.push(cand)
           else fuzzyIndex.set(k, [cand])
@@ -211,6 +234,9 @@ export async function runImport({
       const pendingUpdates = new Map() // obstacle-id → value (Sachfeld-Update, last-write-wins)
       const pendingReactivate = new Set() // obstacle-ids
       const pendingInserts = new Map() // externeId → value (fachId/realerStart bereits vergeben)
+      // GL-Änderungstracking: obstacle-id → value, NUR wenn der Sachfeld-Hash sich gegenüber dem
+      // zuletzt gespeicherten change_hash wirklich unterscheidet (last-write wie pendingUpdates).
+      const pendingAenderungen = new Map()
 
       for (const [index, item] of items.entries()) {
         const externeId =
@@ -265,6 +291,14 @@ export async function runImport({
           // Sachfeld-Update — fachId/realerStart bleiben stabil
           pendingUpdates.set(target.id, value) // gleiche id mehrfach → letzter Wert gewinnt (wie zuvor)
           stats.aktualisiert += 1
+          // GL-Änderungstracking: NUR wenn der Hash wirklich abweicht — updated_at wird bei JEDEM
+          // Re-Import gestempelt (T-738), der Hash-Vergleich ist das echte Änderungssignal. Ein
+          // change_hash von null heißt "noch nie verglichen" (Altzeile vor dem Rollout oder
+          // Drift-Match ohne change_hash im Kandidaten) → kein Delta loggen, nur Baseline setzen,
+          // sonst zählt der erste Lauf nach dem Rollout den kompletten Bestand als "geändert".
+          if (target.change_hash != null && target.change_hash !== changeRelevantHash(value)) {
+            pendingAenderungen.set(target.id, value)
+          }
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
           // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.
           // T-611 (Voll-Bestand): NICHT reaktivieren, wenn die Quell-Meldung selbst schon abgelaufen ist
@@ -322,11 +356,33 @@ export async function runImport({
           part.flatMap(insertParams),
         )
       }
+      // GL-Änderungstracking: change_hash der frisch eingefügten Zeilen setzen (Baseline für den
+      // NÄCHSTEN Re-Import-Vergleich). Kein obstacle_aenderungen-Eintrag hierfür — "neu" liest
+      // direkt obstacles.created_at (routes/veraenderungen.js).
+      for (const part of chunk([...pendingInserts.values()], BATCH_ROWS)) {
+        await q.query(
+          changeHashBatchSql(placeholders(part.length, CHANGE_HASH_COL_COUNT)),
+          part.flatMap((value) => [connector.quelleId, value.externeId, changeRelevantHash(value)]),
+        )
+      }
       for (const part of chunk([...pendingUpdates], BATCH_ROWS)) {
         await q.query(
           sachfeldBatchSql(placeholders(part.length, SACHFELD_COL_COUNT)),
           part.flatMap(([id, value]) => sachfeldParams(id, value)),
         )
+      }
+      // GL-Änderungstracking: echte inhaltliche Änderungen aus dem Sachfeld-Update protokollieren.
+      for (const part of chunk([...pendingAenderungen], BATCH_ROWS)) {
+        await q.query(
+          aenderungBatchSql(placeholders(part.length, AENDERUNG_COL_COUNT)),
+          part.flatMap(([id, value]) => [
+            id, value.kategorie, value.quellenId, value.strassenRef, value.gueltigVon, value.gueltigBis,
+          ]),
+        )
+      }
+      if (pendingAenderungen.size) {
+        stats.geaendert = pendingAenderungen.size
+        note(`GL-Änderungstracking: ${pendingAenderungen.size} echte inhaltliche Änderungen erkannt`)
       }
       if (pendingReactivate.size) {
         await q.query(

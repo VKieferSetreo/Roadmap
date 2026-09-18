@@ -34,6 +34,7 @@ export function createFakeDb() {
     projects: [],
     findings: [],
     obstacles: [],
+    obstacleAenderungen: [], // GL-Änderungstracking: { id, obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis, erkannt_am, created_at }
     runs: [],
     quellen: DEFAULT_QUELLEN.map(([id, name, typ, abruf_intervall]) => ({
       id, name, typ, endpoint_url: null, abruf_intervall, letzter_abruf: null, aktiv: true,
@@ -818,11 +819,50 @@ export function createFakeDb() {
           geom: params[b + 13] != null ? J(params[b + 13]) : null,
           // coalesce wie im echten SQL: kein roh im Import loescht kein vorhandenes roh.
           roh: params[b + 14] != null ? J(params[b + 14]) : row.roh ?? null,
+          change_hash: params[b + 15],
           updated_at: now(),
         })
         n += 1
       }
       return ok([], n)
+    }
+    // GL-Änderungstracking: change_hash frisch eingefügter Zeilen setzen (worker/importer.js).
+    if (sql.startsWith("UPDATE obstacles AS o SET change_hash = v.change_hash")) {
+      const COLS = 3 // quellen_id, externe_id, change_hash
+      let n = 0
+      for (let b = 0; b < params.length; b += COLS) {
+        const row = state.obstacles.find(
+          (o) => o.quellen_id === params[b + 0] && o.externe_id === params[b + 1],
+        )
+        if (!row) continue
+        row.change_hash = params[b + 2]
+        n += 1
+      }
+      return ok([], n)
+    }
+    // GL-Änderungstracking: echte inhaltliche Änderungen protokollieren (worker/importer.js).
+    if (sql.startsWith("INSERT INTO obstacle_aenderungen")) {
+      const COLS = 6 // obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis
+      const tag = now().slice(0, 10)
+      for (let b = 0; b < params.length; b += COLS) {
+        // ON CONFLICT (obstacle_id, erkannt_am) DO NOTHING
+        const dupe = state.obstacleAenderungen.some(
+          (a) => a.obstacle_id === params[b + 0] && a.erkannt_am === tag,
+        )
+        if (dupe) continue
+        state.obstacleAenderungen.push({
+          id: randomUUID(),
+          obstacle_id: params[b + 0],
+          kategorie: params[b + 1],
+          quellen_id: params[b + 2],
+          strassen_ref: params[b + 3],
+          gueltig_von: params[b + 4],
+          gueltig_bis: params[b + 5],
+          erkannt_am: tag,
+          created_at: now(),
+        })
+      }
+      return ok([])
     }
     if (sql.startsWith("UPDATE obstacles SET kategorie = $2,") && sql.includes("fach_id = $13")) {
       const row = state.obstacles.find((o) => o.id === params[0])
@@ -867,6 +907,7 @@ export function createFakeDb() {
         ki_aufbereitet: row.ki_aufbereitet || params[12] === true,
         geom: params[13] != null ? J(params[13]) : row.geom ?? null,
         roh: params[14] != null ? J(params[14]) : row.roh ?? null,
+        change_hash: params[15],
         updated_at: now(),
       })
       return ok([row])
