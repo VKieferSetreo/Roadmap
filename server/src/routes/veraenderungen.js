@@ -51,8 +51,19 @@
 // Erstbefüllung, kein Tages-Delta. Eine Quelle ohne jede Zeile VOR dem Fenster zählt deshalb gar
 // nicht mit; ihre Erstbefüllung steht separat in `roh.erstbefuellungNeuerQuellen`.
 //
-// Wirkung (18.09., alle Kategorien, 30 Tage): 47.898 roh → 6.822 echte "neu" (−86 %), 42.086 roh
-// → 4.613 echte "ausgelaufen"+"entfernt" (−89 %). `roh` bleibt im Response — nachvollziehbar
+// DRITTE Sonderregel (Max 18.09., Beleg "A48 Brückeninstandsetzung" — EINE reale Baustelle, aber
+// 17 Zeilen in 30 Tagen): ein VORGANG kann mehrere physische Segmente haben (dedupeObstacles()
+// gruppiert nur auf ~100m, eine kilometerlange Baustelle bleibt also mehrzeilig) UND mehrfach neu
+// veröffentlicht werden (externe_id trug in diesem Beispiel einen Versions-Zeitstempel). "neu"/
+// "ausgelaufen"/"entfernt" zählen deshalb VORGÄNGE (vorgang_neu/vorgang_weg: Zeilen nach Quelle+
+// Kategorie+Basis-Name — Segment-Suffix wie "- Lage-3" abgeschnitten — auf einen Vorgang
+// zusammengefasst), nicht Zeilen. Das allein hebt Max' Erwartung ("~100") nicht vollständig ein
+// (siehe Diskussion T-747: die verbleibende Menge sind grösstenteils echte, aber KURZE/kleine
+// Ereignisse wie Grünpflege/Unfallfolgen-Beseitigung/Beschilderungsarbeiten, kein Datenfehler) —
+// per Max-Entscheid bewusst NICHT weiter nach Laufzeit/Stichwort gefiltert.
+//
+// Wirkung (18.09., alle Kategorien, 30 Tage): 47.898 roh → 6.822 Zeilen nach Rotations-Filter →
+// weiter komprimiert durch Vorgangs-Zusammenfassung. `roh` bleibt im Response — nachvollziehbar
 // statt eine geglättete Zahl ohne Beleg.
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
@@ -160,6 +171,26 @@ const CHURN_CTES = `
           AND n.created_at BETWEEN w.updated_at - ($5::int * interval '1 day')
                                 AND w.updated_at + ($5::int * interval '1 day')
       )
+  ),
+  -- VORGANG statt Zeile (T-747-Nachbesserung, Max 18.09.: "Segmente pro Vorgang zusammenfassen"
+  -- — Beleg 'A48 Brückeninstandsetzung': eine reale Baustelle über mehrere km, dedupeObstacles()
+  -- gruppiert nur auf ~100m, jedes Segment landet als eigene Zeile). BASISNAME schneidet einen
+  -- Segment-Suffix ab ("... - Lage-3" → "..."), fehlender Name faellt auf die eigene id zurueck
+  -- (nie fremde namenlose Zeilen zusammenfassen). DISTINCT ON: ein Vorgang = eine Zeile, die
+  -- frueheste (neu) bzw. spaeteste (weg) als Repräsentant für Laufzeit/Vorlauf/Straßenklasse.
+  vorgang_neu AS (
+    SELECT DISTINCT ON (quellen_id, kategorie, basisname) * FROM (
+      SELECT en.*, regexp_replace(coalesce(en.name, en.id::text),
+        '\\s*[-/]?\\s*(Lage|Teil|Abschnitt|Los)[\\s.:-]*[0-9]+\\s*$', '', 'i') AS basisname
+      FROM echte_neu en
+    ) x ORDER BY quellen_id, kategorie, basisname, created_at ASC
+  ),
+  vorgang_weg AS (
+    SELECT DISTINCT ON (quellen_id, kategorie, basisname) * FROM (
+      SELECT ew.*, regexp_replace(coalesce(ew.name, ew.id::text),
+        '\\s*[-/]?\\s*(Lage|Teil|Abschnitt|Los)[\\s.:-]*[0-9]+\\s*$', '', 'i') AS basisname
+      FROM echte_weg ew
+    ) y ORDER BY quellen_id, kategorie, basisname, updated_at DESC
   )
 `
 
@@ -189,26 +220,29 @@ export function veraenderungenRouter({ db }) {
                coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
                coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
              FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
+             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_neu GROUP BY 1) n ON n.tag = d::date
              LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
              LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM rotation_neu GROUP BY 1) rot ON rot.tag = d::date
-             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
            ),
+           -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
+           -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
            -- "geaendert" fasst zwei Quellen zusammen: echte Inhalts-Deltas (obstacle_aenderungen,
-           -- erst ab Deploy) UND Quellen-Rotation (rotation_neu, volle Fenster-Historie) — auf
-           -- Max' Anweisung zählt eine als "neu" erkannte Rotation als Änderung, nicht als nichts.
+           -- erst ab Deploy) UND Quellen-Rotation (rotation_neu, volle Fenster-Historie, weiterhin
+           -- Zeilen-Ebene — Max' Anweisung betraf explizit nur "neu") — eine als solche erkannte
+           -- Rotation zählt als Änderung, nicht als nichts.
            kat AS (
-             SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
-             UNION ALL SELECT kategorie, weg_typ, count(*) FROM echte_weg GROUP BY 1, 2
+             SELECT kategorie, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
+             UNION ALL SELECT kategorie, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, 2
              UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
                SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
                UNION ALL SELECT kategorie FROM rotation_neu
              ) x GROUP BY 1
            ),
            strasse AS (
-             SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
-             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM echte_weg GROUP BY 1, weg_typ
+             SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
+             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, weg_typ
              UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
                SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
                UNION ALL SELECT strassen_ref FROM rotation_neu
@@ -223,7 +257,7 @@ export function veraenderungenRouter({ db }) {
                  WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
                  ELSE 'lang'
                END AS laufzeit, count(*) AS n
-             FROM echte_neu GROUP BY 1
+             FROM vorgang_neu GROUP BY 1
            ),
            vl AS (
              SELECT
@@ -234,7 +268,7 @@ export function veraenderungenRouter({ db }) {
                  WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
                  ELSE 'langfristig'
                END AS vorlauf, count(*) AS n
-             FROM echte_neu GROUP BY 1
+             FROM vorgang_neu GROUP BY 1
            ),
            roh AS (
              SELECT
@@ -245,7 +279,8 @@ export function veraenderungenRouter({ db }) {
                (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
                   AND created_at >= current_date - $2::int * interval '1 day'
                   AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
-               (SELECT count(*) FROM rotation_neu) AS rotation_als_geaendert
+               (SELECT count(*) FROM rotation_neu) AS rotation_als_geaendert,
+               (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst
            )
            SELECT
              (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -285,6 +320,9 @@ export function veraenderungenRouter({ db }) {
         // (Quellen-Rotation — dieselbe reale Stelle unter neuer ID) und steckt bereits in
         // `gesamt.geaendert` und `proKategorie.geaendert`/`proStrassenklasse.geaendert`.
         rotationAlsGeaendert: Number(row.roh?.rotation_als_geaendert ?? 0),
+        // Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
+        // Namens) — steckt in "neu" NICHT mehr drin, seit "neu" Vorgänge statt Zeilen zählt.
+        segmenteZusammengefasst: Number(row.roh?.segmente_zusammengefasst ?? 0),
       },
       proKategorie: kat,
       proStrassenklasse: strasse,
