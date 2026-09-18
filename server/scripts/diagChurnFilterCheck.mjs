@@ -81,4 +81,13 @@ const restJeQuelle = await db.query(`
 console.log("=== verbleibende echte_neu je Quelle ===")
 console.log(JSON.stringify(restJeQuelle.rows))
 
+// Erstbefüllung erkennen: Quelle, deren ALLERERSTE Zeile ueberhaupt im Fenster liegt, ist ein
+// neu angeschlossener Connector — sein kompletter Erst-Bestand ist kein Tages-Delta.
+const quellenAlter = await db.query(`
+  SELECT quellen_id, min(created_at) AS erste_zeile_je, count(*) AS zeilen_gesamt
+  FROM obstacles WHERE demo=false AND quellen_id = ANY($1::text[]) GROUP BY 1 ORDER BY 2 DESC
+`, [restJeQuelle.rows.map((r) => r.quellen_id)])
+console.log("=== Alter der Top-Quellen (erste Zeile je Quelle, gesamter Bestand) ===")
+console.log(JSON.stringify(quellenAlter.rows))
+
 process.exit(0)
