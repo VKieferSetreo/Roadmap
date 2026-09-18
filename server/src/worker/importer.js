@@ -71,9 +71,12 @@ function istEchtesDatum(s) {
   return d.getUTCFullYear() === j && d.getUTCMonth() === m - 1 && d.getUTCDate() === t
 }
 
-// ~300 m Bounding-Box (1° lat ≈ 111 km; 1° lng ≈ 70 km bei 51°N).
-const FUZZY_LAT = 0.003
-const FUZZY_LNG = 0.0045
+// ~300 m Bounding-Box (1° lat ≈ 111 km; 1° lng ≈ 70 km bei 51°N). Exportiert, weil
+// routes/veraenderungen.js dieselbe Toleranz braucht, um Quellen-Rotation (dup#-Hash bzw.
+// zusammengesetzte externe_id ändert sich, obwohl es dieselbe reale Stelle ist) von echten
+// neuen Hindernissen zu unterscheiden — EINE Quelle der Wahrheit für "was ist dieselbe Stelle".
+export const FUZZY_LAT = 0.003
+export const FUZZY_LNG = 0.0045
 const normName = (name) => String(name ?? "").trim().toLowerCase().replace(/\s+/g, " ")
 const dist2 = (a, b) => (a.lat - b.lat) ** 2 + (a.lng - b.lng) ** 2
 

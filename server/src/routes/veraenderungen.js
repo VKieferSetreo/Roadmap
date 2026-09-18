@@ -1,7 +1,7 @@
-// GL-Änderungstracking (nur Admin): "es kann nicht sein, dass so viele Änderungen an
-// Baustellen/Sperrungen dazukommen" — die GL-Auswertung, die das quellenübergreifend belegt.
+// Änderungsverfolgung (nur Admin): belegt quellenübergreifend, wie viel sich am
+// Hindernis-Bestand täglich wirklich ändert.
 //
-// Drei Ereignis-Typen, zwei verschiedene Quellen:
+// Drei Ereignis-Typen, drei verschiedene Quellen:
 //   - "neu"        ← obstacles.created_at (echter Einfüge-Zeitstempel, nie vom Re-Import berührt)
 //   - "weggefallen" ← obstacles.aktiv=false + updated_at (Reconcile ist der EINZIGE Pfad, der
 //                     aktiv auf false setzt, und tut das WHERE aktiv=true — eine einmalige,
@@ -15,25 +15,83 @@
 //
 // "neu" und "weggefallen" sind deshalb für die vollen `tage` Tage belastbar, "geaendert" erst ab
 // dem ersten Lauf nach diesem Deploy — das Frontend zeigt das Startdatum offen an.
+//
+// QUELLEN-ROTATION HERAUSGERECHNET (T-747-Nachbesserung, Max 18.09.: "40.702 Neu" war Rauschen).
+// Diagnose (scripts/diagNeuChurn.mjs, 18.09. gegen Prod gefahren): dieselbe reale Baustelle
+// bekommt bei mehreren Quellen (0145, 0147, 0131, 0214, 0001, …) bei jedem Pull eine NEUE
+// externe_id — entweder weil dedupeObstacles() bei mehreren zusammengefassten Features einen
+// anderen Repräsentanten wählt (dup#<hash>@<hash> ändert sich) oder weil die Quelle selbst
+// Feature-IDs neu vergibt. Der Fuzzy-Match im Importer (worker/importer.js, FUZZY_LAT/FUZZY_LNG,
+// ~300 m) fängt das nur INNERHALB eines Laufs ab, nicht wenn die alte Zeile schon reconciled ist.
+// Ergebnis: Reconcile deaktiviert die alte Zeile, der nächste Insert legt eine neue an — "neu"
+// UND "weggefallen" zählen dieselbe reale Stelle doppelt, ohne dass sich etwas geändert hat.
+//
+// Fix HIER (Tracking-Ebene, nicht die Connectoren): ein "neu"-Kandidat zählt nur, wenn KEINE
+// andere Zeile derselben Quelle+Kategorie im selben ~300-m-Radius innerhalb von
+// CHURN_FENSTER_TAGE um den Erfassungszeitpunkt deaktiviert wurde (und umgekehrt für
+// "weggefallen"). Die roh/gefiltert-Differenz wird mit ausgeliefert (`roh` im Response) —
+// nachvollziehbar statt eine geglättete Zahl ohne Beleg.
+//
+// Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
+// schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
+// change_hash-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
+// liefert (`value`, das eingehende Item), nie den angereicherten DB-Wert. Eine reine
+// KI-Anreicherung kann also strukturell nie als "geaendert" auftauchen.
 
 import { Router } from "express"
 import { requireRole } from "../auth.js"
 import { asyncHandler } from "../util.js"
-import { GEMELDETE_KATEGORIEN } from "../obstaclesRepo.js"
 import { KATEGORIEN } from "../engine/rules.js"
+import { FUZZY_LAT, FUZZY_LNG } from "../worker/importer.js"
 
 const TAGE_DEFAULT = 30
 const TAGE_MAX = 90
+// Wie weit vor/nach der Erfassung nach einer weggefallenen "alten Identität" derselben Stelle
+// gesucht wird. Grosszuegig, weil strenges Aussieben (weniger "neu" melden) gewollt ist — siehe
+// Kommentar oben. 45 Tage deckt auch mehrwoechige Bauphasen mit einer Zwischen-Rotation ab.
+const CHURN_FENSTER_TAGE = 45
 
-/** ?kategorien=baustelle,sperrung → validierte Teilmenge von KATEGORIEN; leer/fehlend →
- *  GEMELDETE_KATEGORIEN (das, worüber sich die GL beschwert hat — temporäre Ereignisse,
- *  nicht permanente Infrastruktur wie Brücken/Tunnel). */
+/** ?kategorien=baustelle,sperrung → validierte Teilmenge von KATEGORIEN; leer/fehlend → ALLE
+ *  Kategorien (der Nutzer entscheidet in der UI, was er sehen will). */
 function parseKategorien(raw) {
-  if (typeof raw !== "string" || !raw.trim()) return GEMELDETE_KATEGORIEN
+  if (typeof raw !== "string" || !raw.trim()) return KATEGORIEN
   const gewuenscht = raw.split(",").map((s) => s.trim()).filter(Boolean)
   const gueltig = gewuenscht.filter((k) => KATEGORIEN.includes(k))
-  return gueltig.length ? gueltig : GEMELDETE_KATEGORIEN
+  return gueltig.length ? gueltig : KATEGORIEN
 }
+
+/** "echte_neu"/"echte_weg" als CTE-Text — von jeder der vier Abfragen wiederverwendet.
+ *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = FUZZY_LAT, $4 = FUZZY_LNG, $5 = CHURN_FENSTER_TAGE. */
+const CHURN_CTES = `
+  echte_neu AS (
+    SELECT n.* FROM obstacles n
+    WHERE n.demo = false AND n.kategorie = ANY($1)
+      AND n.created_at >= current_date - $2::int * interval '1 day'
+      AND NOT EXISTS (
+        SELECT 1 FROM obstacles w
+        WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
+          AND w.id <> n.id
+          AND w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
+          AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8
+          AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
+                                AND n.created_at + ($5::int * interval '1 day')
+      )
+  ),
+  echte_weg AS (
+    SELECT w.* FROM obstacles w
+    WHERE w.demo = false AND w.kategorie = ANY($1) AND w.aktiv = false
+      AND w.updated_at >= current_date - $2::int * interval '1 day'
+      AND NOT EXISTS (
+        SELECT 1 FROM obstacles n
+        WHERE n.quellen_id = w.quellen_id AND n.kategorie = w.kategorie
+          AND n.id <> w.id
+          AND n.lat BETWEEN w.lat - $3::float8 AND w.lat + $3::float8
+          AND n.lng BETWEEN w.lng - $4::float8 AND w.lng + $4::float8
+          AND n.created_at BETWEEN w.updated_at - ($5::int * interval '1 day')
+                                AND w.updated_at + ($5::int * interval '1 day')
+      )
+  )
+`
 
 export function veraenderungenRouter({ db }) {
   const r = Router()
@@ -41,28 +99,19 @@ export function veraenderungenRouter({ db }) {
   r.get("/uebersicht", requireRole("admin"), asyncHandler(async (req, res) => {
     const tage = Math.min(TAGE_MAX, Math.max(1, Number.parseInt(req.query.tage, 10) || TAGE_DEFAULT))
     const kategorien = parseKategorien(req.query.kategorien)
-    // $2 = tage, als Bind-Parameter statt String-Interpolation (wie hygiene.js PRUNE_*_SQL).
-    const params = [kategorien, tage]
+    const params = [kategorien, tage, FUZZY_LAT, FUZZY_LNG, CHURN_FENSTER_TAGE]
 
-    const [zeitreihe, kategorieRows, laufzeitRows, vorlaufRows, seitWann] = await Promise.all([
+    const [zeitreihe, kategorieRows, laufzeitRows, vorlaufRows, seitWann, roh] = await Promise.all([
       // Lückenlose Tagesreihe (generate_series), je Typ eine Serie — dieselbe Technik wie
       // analytics.js proTagRows. LEFT JOIN statt UNION-Aggregat, damit ein Tag ohne Ereignis
       // als 0 erscheint statt zu fehlen (sonst "springt" das Chart).
       db.query(
-        `SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
+        `WITH ${CHURN_CTES}
+         SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
            coalesce(n.n, 0) AS neu, coalesce(w.n, 0) AS weggefallen, coalesce(g.n, 0) AS geaendert
          FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-         LEFT JOIN (
-           SELECT created_at::date AS tag, count(*) AS n FROM obstacles
-           WHERE demo = false AND kategorie = ANY($1) AND created_at >= current_date - $2::int * interval '1 day'
-           GROUP BY 1
-         ) n ON n.tag = d::date
-         LEFT JOIN (
-           SELECT updated_at::date AS tag, count(*) AS n FROM obstacles
-           WHERE demo = false AND kategorie = ANY($1) AND aktiv = false
-             AND updated_at >= current_date - $2::int * interval '1 day'
-           GROUP BY 1
-         ) w ON w.tag = d::date
+         LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
+         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg GROUP BY 1) w ON w.tag = d::date
          LEFT JOIN (
            SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen
            WHERE kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'
@@ -73,25 +122,22 @@ export function veraenderungenRouter({ db }) {
       ),
       // Kategorie-Aufschlüsselung über das ganze Fenster, je Typ.
       db.query(
-        `SELECT kategorie, 'neu' AS typ, count(*) AS n FROM obstacles
-           WHERE demo = false AND kategorie = ANY($1) AND created_at >= current_date - $2::int * interval '1 day'
-           GROUP BY 1
+        `WITH ${CHURN_CTES}
+         SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
          UNION ALL
-         SELECT kategorie, 'weggefallen', count(*) FROM obstacles
-           WHERE demo = false AND kategorie = ANY($1) AND aktiv = false
-             AND updated_at >= current_date - $2::int * interval '1 day'
-           GROUP BY 1
+         SELECT kategorie, 'weggefallen', count(*) FROM echte_weg GROUP BY 1
          UNION ALL
          SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen
            WHERE kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'
            GROUP BY 1`,
         params,
       ),
-      // Laufzeit-Klasse (nur "neu" — Eigenschaft der Maßnahme selbst, nicht des Ereignisses).
+      // Laufzeit-Klasse (nur echte "neu" — Eigenschaft der Maßnahme selbst, nicht des Ereignisses).
       // Heuristik: gueltig_von fehlt → unbekannt; gueltig_bis fehlt → lang (unbefristet);
       // sonst <=7 Tage kurz, <=30 Tage mittel, darüber lang.
       db.query(
-        `SELECT
+        `WITH ${CHURN_CTES}
+         SELECT
            CASE
              WHEN gueltig_von IS NULL THEN 'unbekannt'
              WHEN gueltig_bis IS NULL THEN 'lang'
@@ -99,15 +145,15 @@ export function veraenderungenRouter({ db }) {
              WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
              ELSE 'lang'
            END AS laufzeit, count(*) AS n
-         FROM obstacles
-         WHERE demo = false AND kategorie = ANY($1) AND created_at >= current_date - $2::int * interval '1 day'
+         FROM echte_neu
          GROUP BY 1`,
         params,
       ),
-      // Vorlaufzeit-Klasse (nur "neu"): wie spontan wurde die Maßnahme eingestellt — Tage
-      // zwischen unserer Erst-Erfassung (created_at) und dem Beginn (gueltig_von).
+      // Vorlaufzeit-Klasse (nur echte "neu"): wie viele Tage zwischen unserer Erst-Erfassung
+      // (created_at) und dem Beginn (gueltig_von) liegen.
       db.query(
-        `SELECT
+        `WITH ${CHURN_CTES}
+         SELECT
            CASE
              WHEN gueltig_von IS NULL THEN 'unbekannt'
              WHEN gueltig_von - created_at::date <= 1 THEN 'spontan'
@@ -115,17 +161,28 @@ export function veraenderungenRouter({ db }) {
              WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
              ELSE 'langfristig'
            END AS vorlauf, count(*) AS n
-         FROM obstacles
-         WHERE demo = false AND kategorie = ANY($1) AND created_at >= current_date - $2::int * interval '1 day'
+         FROM echte_neu
          GROUP BY 1`,
         params,
       ),
       // Seit wann läuft "geaendert" überhaupt? Transparenz statt stillschweigend 0 zu zeigen.
       db.query(`SELECT min(erkannt_am) AS seit FROM obstacle_aenderungen`),
+      // Rohzahlen OHNE Churn-Filter — Transparenz, wie viel rausgerechnet wurde.
+      db.query(
+        `SELECT
+           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+              AND created_at >= current_date - $2::int * interval '1 day') AS neu,
+           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
+              AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen`,
+        params,
+      ),
     ])
 
     const kat = { neu: {}, weggefallen: {}, geaendert: {} }
     for (const row of kategorieRows.rows) kat[row.typ][row.kategorie] = Number(row.n)
+
+    const gesamtNeu = zeitreihe.rows.reduce((s, t) => s + Number(t.neu), 0)
+    const gesamtWeg = zeitreihe.rows.reduce((s, t) => s + Number(t.weggefallen), 0)
 
     res.json({
       tage,
@@ -134,10 +191,11 @@ export function veraenderungenRouter({ db }) {
       zeitreihe: zeitreihe.rows.map((t) => ({
         tag: t.tag, neu: Number(t.neu), weggefallen: Number(t.weggefallen), geaendert: Number(t.geaendert),
       })),
-      gesamt: {
-        neu: zeitreihe.rows.reduce((s, t) => s + Number(t.neu), 0),
-        weggefallen: zeitreihe.rows.reduce((s, t) => s + Number(t.weggefallen), 0),
-        geaendert: zeitreihe.rows.reduce((s, t) => s + Number(t.geaendert), 0),
+      gesamt: { neu: gesamtNeu, weggefallen: gesamtWeg, geaendert: zeitreihe.rows.reduce((s, t) => s + Number(t.geaendert), 0) },
+      // Rohzahlen vor dem Herausrechnen von Quellen-Rotation — Beleg, kein Versteck.
+      roh: {
+        neu: Number(roh.rows[0]?.neu ?? 0),
+        weggefallen: Number(roh.rows[0]?.weggefallen ?? 0),
       },
       proKategorie: kat,
       laufzeiten: Object.fromEntries(laufzeitRows.rows.map((r) => [r.laufzeit, Number(r.n)])),
