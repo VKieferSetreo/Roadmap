@@ -13,16 +13,21 @@
 //                                 Feed, wurde sie vorzeitig entfernt (Auftrag storniert, Quelle
 //                                 zieht sie zurück, o.ä.) — das ist das eigentlich auffällige
 //                                 Ereignis, nicht das planmäßige Auslaufen.
-//   - "geaendert"               ← obstacle_aenderungen (eigene Tabelle, siehe worker/importer.js).
-//                                 Läuft erst seit dem Rollout dieser Migration — VOR diesem Datum
-//                                 gibt es keine echte Änderungs-Historie, weil UPDATE_SACHFELDER_SQL
+//   - "geaendert"               ← ZWEI Quellen, addiert:
+//                                 (a) obstacle_aenderungen (eigene Tabelle, siehe worker/
+//                                 importer.js), echte Sachfeld-Änderung an derselben Zeile. Läuft
+//                                 erst seit dem Rollout dieser Migration — VOR diesem Datum gibt
+//                                 es keine echte Änderungs-Historie, weil UPDATE_SACHFELDER_SQL
 //                                 bis dahin bedingungslos jeden Re-Import als "aktualisiert" zählte
 //                                 (T-738) und updated_at damit für rückwirkende Auswertung
 //                                 unbrauchbar ist (76.721 von 77.715 Zeilen an einem Tag
 //                                 gestempelt, nur 7.861 mit wirklich anderem Inhalt — T-737).
+//                                 (b) rotation_neu (siehe unten) — volle Fenster-Historie, weil
+//                                 sie aus obstacles.created_at/aktiv abgeleitet ist wie "neu".
 //
-// "neu"/"ausgelaufen"/"entfernt" sind deshalb für die vollen `tage` Tage belastbar, "geaendert"
-// erst ab dem ersten Lauf nach diesem Deploy — das Frontend zeigt das Startdatum offen an.
+// "neu"/"ausgelaufen"/"entfernt" und der Rotations-Anteil von "geaendert" sind deshalb für die
+// vollen `tage` Tage belastbar; nur der obstacle_aenderungen-Anteil von "geaendert" läuft erst ab
+// dem ersten Lauf nach diesem Deploy — das Frontend zeigt das Startdatum offen an.
 //
 // QUELLEN-ROTATION HERAUSGERECHNET (T-747-Nachbesserung, Max 18.09.: "40.702 Neu" war Rauschen,
 // "muss wirklich streng sein"). Diagnose (scripts/diagNeuChurn.mjs, gegen Prod gefahren):
@@ -99,35 +104,43 @@ const STRASSENKLASSE_CASE = `CASE
   ELSE 'sonstige'
 END`
 
-/** "echte_neu"/"echte_weg" als CTE-Text — von jeder Abfrage wiederverwendet. Nutzt $1 =
- *  Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG, $5 = CHURN_FENSTER_TAGE.
- *  `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand erst innerhalb des Fensters
- *  entstand (Erstbefüllung, kein Tages-Delta). `weg_typ` auf echte_weg trennt planmäßiges
- *  Auslaufen von vorzeitigem Entfernen (siehe Kopf-Kommentar). */
+/** "echte_neu"/"rotation_neu"/"echte_weg" als CTE-Text — von jeder Abfrage wiederverwendet.
+ *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG,
+ *  $5 = CHURN_FENSTER_TAGE. `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand
+ *  erst innerhalb des Fensters entstand (Erstbefüllung, kein Tages-Delta). `weg_typ` auf
+ *  echte_weg trennt planmäßiges Auslaufen von vorzeitigem Entfernen (siehe Kopf-Kommentar).
+ *
+ *  neu_kandidaten trägt EINE Scalar-Subquery statt zwei EXISTS/NOT EXISTS (Max 18.09.: Rotation
+ *  soll nicht verschwinden, sondern als "geaendert" zählen) — `rotation_partner_id` ist NULL für
+ *  eine echte Neuanlage, sonst die id der alten Zeile derselben realen Stelle. echte_neu und
+ *  rotation_neu sind die Partition danach. */
 const CHURN_CTES = `
   etablierte_quelle AS (
     SELECT quellen_id FROM obstacles
     GROUP BY quellen_id
     HAVING min(created_at) < current_date - $2::int * interval '1 day'
   ),
-  echte_neu AS (
-    SELECT n.* FROM obstacles n
+  neu_kandidaten AS (
+    SELECT n.*, (
+      SELECT w.id FROM obstacles w
+      WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
+        AND w.id <> n.id
+        AND (
+          (w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
+           AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8)
+          OR w.name = n.name
+        )
+        AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
+                              AND n.created_at + ($5::int * interval '1 day')
+      LIMIT 1
+    ) AS rotation_partner_id
+    FROM obstacles n
     WHERE n.demo = false AND n.kategorie = ANY($1)
       AND n.created_at >= current_date - $2::int * interval '1 day'
       AND n.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
-      AND NOT EXISTS (
-        SELECT 1 FROM obstacles w
-        WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
-          AND w.id <> n.id
-          AND (
-            (w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
-             AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8)
-            OR w.name = n.name
-          )
-          AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
-                                AND n.created_at + ($5::int * interval '1 day')
-      )
   ),
+  echte_neu AS (SELECT * FROM neu_kandidaten WHERE rotation_partner_id IS NULL),
+  rotation_neu AS (SELECT * FROM neu_kandidaten WHERE rotation_partner_id IS NOT NULL),
   echte_weg AS (
     SELECT w.*,
       CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
@@ -173,23 +186,33 @@ export function veraenderungenRouter({ db }) {
       `WITH ${CHURN_CTES},
            zr AS (
              SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
-               coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
+               coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
                coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
              FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
              LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
              LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
+             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM rotation_neu GROUP BY 1) rot ON rot.tag = d::date
              LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
              LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
            ),
+           -- "geaendert" fasst zwei Quellen zusammen: echte Inhalts-Deltas (obstacle_aenderungen,
+           -- erst ab Deploy) UND Quellen-Rotation (rotation_neu, volle Fenster-Historie) — auf
+           -- Max' Anweisung zählt eine als "neu" erkannte Rotation als Änderung, nicht als nichts.
            kat AS (
              SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
              UNION ALL SELECT kategorie, weg_typ, count(*) FROM echte_weg GROUP BY 1, 2
-             UNION ALL SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1
+             UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
+               SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
+               UNION ALL SELECT kategorie FROM rotation_neu
+             ) x GROUP BY 1
            ),
            strasse AS (
              SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
              UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM echte_weg GROUP BY 1, weg_typ
-             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1
+             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
+               SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
+               UNION ALL SELECT strassen_ref FROM rotation_neu
+             ) x GROUP BY 1
            ),
            lz AS (
              SELECT
@@ -221,7 +244,8 @@ export function veraenderungenRouter({ db }) {
                   AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
                (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
                   AND created_at >= current_date - $2::int * interval '1 day'
-                  AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen
+                  AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
+               (SELECT count(*) FROM rotation_neu) AS rotation_als_geaendert
            )
            SELECT
              (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -252,11 +276,15 @@ export function veraenderungenRouter({ db }) {
       geaendertTrackingSeit: row.geaendert_seit ?? null,
       zeitreihe,
       gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
-      // Rohzahlen vor dem Herausrechnen von Quellen-Rotation — Beleg, kein Versteck.
+      // Rohzahlen vor der Aufteilung — Beleg, kein Versteck.
       roh: {
         neu: Number(row.roh?.neu ?? 0),
         weggefallen: Number(row.roh?.weggefallen ?? 0),
         erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
+        // War in "roh.neu" enthalten, zählt aber nicht als Neuanlage, sondern als "geaendert"
+        // (Quellen-Rotation — dieselbe reale Stelle unter neuer ID) und steckt bereits in
+        // `gesamt.geaendert` und `proKategorie.geaendert`/`proStrassenklasse.geaendert`.
+        rotationAlsGeaendert: Number(row.roh?.rotation_als_geaendert ?? 0),
       },
       proKategorie: kat,
       proStrassenklasse: strasse,
