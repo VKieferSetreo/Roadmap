@@ -162,16 +162,15 @@ export function veraenderungenRouter({ db }) {
     // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
     // berechnet — Postgres materialisiert eine CTE automatisch, sobald sie mehr als einmal
     // referenziert wird (zr/kat/strasse/lz/vl greifen alle darauf zu). Grund für den Umbau
-    // (T-747, 18.09.): sieben PARALLELE Aufrufe des ursprünglich selben teuren Anti-Joins haben
-    // dem Postgres-Container gleichzeitig Shared-Memory für Parallel-Worker abverlangt und ihn
-    // mit "could not resize shared memory segment … No space left on device" (53100) abstürzen
-    // lassen. `db.session` + SET (nicht LOCAL, wirkt für die ganze Verbindung) erzwingt zusätzlich
-    // Single-Worker-Ausführung — auf dieser kleinen VM bringt Parallelität ohnehin selten etwas,
-    // Stabilität zählt hier mehr als ein paar Sekunden Query-Zeit.
-    const { rows: [row] } = await db.session((q) =>
-      q.query("SET max_parallel_workers_per_gather = 0").then(() =>
-        q.query(
-          `WITH ${CHURN_CTES},
+    // (T-747, 18.09.): sieben PARALLELE Aufrufe desselben teuren Anti-Joins (Promise.all) haben
+    // dem Postgres-Container gleichzeitig Shared-Memory für Parallel-Worker abverlangt und ihn mit
+    // "could not resize shared memory segment … No space left on device" (53100) abstürzen lassen.
+    // Gemessen (scripts/diagKonsolidierteQuery*.mjs, 18.09.): die Konsolidierung allein behebt es
+    // bereits (ein Statement braucht nur einmal Shared Memory, nicht mehr sieben gleichzeitig) —
+    // ein zusätzliches `SET max_parallel_workers_per_gather = 0` macht die Query nur ~3× langsamer
+    // (48 s statt 18 s) ohne messbaren Stabilitätsgewinn, deshalb NICHT gesetzt.
+    const { rows: [row] } = await db.query(
+      `WITH ${CHURN_CTES},
            zr AS (
              SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
                coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
@@ -232,9 +231,7 @@ export function veraenderungenRouter({ db }) {
              (SELECT json_object_agg(vorlauf, n) FROM vl) AS vorlaufzeiten,
              (SELECT row_to_json(roh) FROM roh) AS roh,
              (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit`,
-          params,
-        ),
-      ),
+      params,
     )
 
     const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
