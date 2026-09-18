@@ -121,10 +121,12 @@ END`
  *  erst innerhalb des Fensters entstand (Erstbefüllung, kein Tages-Delta). `weg_typ` auf
  *  echte_weg trennt planmäßiges Auslaufen von vorzeitigem Entfernen (siehe Kopf-Kommentar).
  *
- *  neu_kandidaten trägt EINE Scalar-Subquery statt zwei EXISTS/NOT EXISTS (Max 18.09.: Rotation
- *  soll nicht verschwinden, sondern als "geaendert" zählen) — `rotation_partner_id` ist NULL für
- *  eine echte Neuanlage, sonst die id der alten Zeile derselben realen Stelle. echte_neu und
- *  rotation_neu sind die Partition danach. */
+ *  echte_neu/rotation_neu sind eine Partition von neu_kandidaten über EXISTS/NOT EXISTS auf
+ *  DASSELBE Prädikat (bewusst dupliziert, nicht als eine Scalar-Subquery mit LIMIT 1 — eine
+ *  Scalar-Subquery im SELECT ist für Postgres immer ein korrelierter Subplan pro Zeile und wird
+ *  NIE zu einem Semi-/Anti-Join umgeplant; EXISTS/NOT EXISTS dagegen schon. Verifiziert 18.09.:
+ *  die Scalar-Variante lief in Prod in ein Statement-Timeout, die EXISTS-Variante lief vorher
+ *  bereits nachweislich in 18-48s — scripts/diagKonsolidierteQuery.mjs). */
 const CHURN_CTES = `
   etablierte_quelle AS (
     SELECT quellen_id FROM obstacles
@@ -132,26 +134,41 @@ const CHURN_CTES = `
     HAVING min(created_at) < current_date - $2::int * interval '1 day'
   ),
   neu_kandidaten AS (
-    SELECT n.*, (
-      SELECT w.id FROM obstacles w
-      WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
-        AND w.id <> n.id
-        AND (
-          (w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
-           AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8)
-          OR w.name = n.name
-        )
-        AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
-                              AND n.created_at + ($5::int * interval '1 day')
-      LIMIT 1
-    ) AS rotation_partner_id
-    FROM obstacles n
+    SELECT n.* FROM obstacles n
     WHERE n.demo = false AND n.kategorie = ANY($1)
       AND n.created_at >= current_date - $2::int * interval '1 day'
       AND n.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
   ),
-  echte_neu AS (SELECT * FROM neu_kandidaten WHERE rotation_partner_id IS NULL),
-  rotation_neu AS (SELECT * FROM neu_kandidaten WHERE rotation_partner_id IS NOT NULL),
+  echte_neu AS (
+    SELECT nk.* FROM neu_kandidaten nk
+    WHERE NOT EXISTS (
+      SELECT 1 FROM obstacles w
+      WHERE w.quellen_id = nk.quellen_id AND w.kategorie = nk.kategorie AND w.aktiv = false
+        AND w.id <> nk.id
+        AND (
+          (w.lat BETWEEN nk.lat - $3::float8 AND nk.lat + $3::float8
+           AND w.lng BETWEEN nk.lng - $4::float8 AND nk.lng + $4::float8)
+          OR w.name = nk.name
+        )
+        AND w.updated_at BETWEEN nk.created_at - ($5::int * interval '1 day')
+                              AND nk.created_at + ($5::int * interval '1 day')
+    )
+  ),
+  rotation_neu AS (
+    SELECT nk.* FROM neu_kandidaten nk
+    WHERE EXISTS (
+      SELECT 1 FROM obstacles w
+      WHERE w.quellen_id = nk.quellen_id AND w.kategorie = nk.kategorie AND w.aktiv = false
+        AND w.id <> nk.id
+        AND (
+          (w.lat BETWEEN nk.lat - $3::float8 AND nk.lat + $3::float8
+           AND w.lng BETWEEN nk.lng - $4::float8 AND nk.lng + $4::float8)
+          OR w.name = nk.name
+        )
+        AND w.updated_at BETWEEN nk.created_at - ($5::int * interval '1 day')
+                              AND nk.created_at + ($5::int * interval '1 day')
+    )
+  ),
   echte_weg AS (
     SELECT w.*,
       CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
