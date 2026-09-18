@@ -1,15 +1,17 @@
-// Änderungsverfolgung (recharts, lazy geladen): Zeitreihe neu/geändert/weggefallen,
-// Kategorie-Aufschlüsselung, Laufzeit- und Vorlaufzeit-Verteilung.
+// Änderungsverfolgung (recharts, lazy geladen): Zeitreihe neu/geändert/ausgelaufen/entfernt,
+// Kategorie- und Straßenklassen-Aufschlüsselung, Laufzeit- und Vorlaufzeit-Verteilung.
 //
-// Farben nach dataviz-Skill-Palette (validate_palette.js, alle Checks PASS): die drei
+// Farben nach dataviz-Skill-Palette (validate_palette.js, alle Checks PASS): die vier
 // Ereignis-Typen sind ein fester, app-weiter Farbcode — NIE nach Rang neu zugeordnet.
+// "ausgelaufen" (planmäßig, gueltig_bis war schon erreicht) vs. "entfernt" (Maßnahme war noch
+// gültig/unbefristet und verschwand trotzdem — das eigentlich auffällige Ereignis).
 
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import type { VeraenderungenUebersicht } from "@/api/roadmap"
 import { katMeta } from "@/components/project/findingMeta"
 
-const FARBE = { neu: "#1baf7a", geaendert: "#eb6834", weggefallen: "#2a78d6" } as const
-const LABEL = { neu: "Neu", geaendert: "Geändert", weggefallen: "Weggefallen" } as const
+const FARBE = { neu: "#1baf7a", geaendert: "#eb6834", ausgelaufen: "#2a78d6", entfernt: "#4a3aa7" } as const
+const LABEL = { neu: "Neu", geaendert: "Geändert", ausgelaufen: "Ausgelaufen", entfernt: "Entfernt" } as const
 
 const TOOLTIP = {
   borderRadius: 12,
@@ -23,10 +25,12 @@ function Leer({ text = "Noch keine Daten in diesem Fenster" }: { text?: string }
   return <div className="flex h-44 items-center justify-center text-sm text-neutral-400">{text}</div>
 }
 
-/** Gestapelte Säulen: neu/geändert/weggefallen je Tag. Das Kern-Chart der Auswertung —
+const TYPEN = ["neu", "geaendert", "ausgelaufen", "entfernt"] as const
+
+/** Gestapelte Säulen: neu/geändert/ausgelaufen/entfernt je Tag. Das Kern-Chart der Auswertung —
  *  zeigt Tag für Tag, wie viel Bewegung im Bestand ist. */
 export function VeraenderungenZeitreihe({ data }: { data: VeraenderungenUebersicht["zeitreihe"] }) {
-  if (!data.some((d) => d.neu > 0 || d.geaendert > 0 || d.weggefallen > 0)) return <Leer />
+  if (!data.some((d) => TYPEN.some((t) => d[t] > 0))) return <Leer />
   const rows = data.map((d) => ({ ...d, label: `${d.tag.slice(8, 10)}.${d.tag.slice(5, 7)}` }))
   return (
     <div style={{ height: 260 }}>
@@ -37,9 +41,53 @@ export function VeraenderungenZeitreihe({ data }: { data: VeraenderungenUebersic
           <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} />
           <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={TOOLTIP} />
           <Legend wrapperStyle={{ fontSize: 12 }} formatter={(k) => LABEL[k as keyof typeof LABEL]} />
-          <Bar dataKey="neu" name="neu" stackId="e" fill={FARBE.neu} isAnimationActive animationDuration={500} />
-          <Bar dataKey="geaendert" name="geaendert" stackId="e" fill={FARBE.geaendert} isAnimationActive animationDuration={500} />
-          <Bar dataKey="weggefallen" name="weggefallen" stackId="e" fill={FARBE.weggefallen} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={500} />
+          {TYPEN.map((t, i) => (
+            <Bar
+              key={t} dataKey={t} name={t} stackId="e" fill={FARBE[t]} isAnimationActive animationDuration={500}
+              radius={i === TYPEN.length - 1 ? [3, 3, 0, 0] : undefined}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
+/** Horizontale Balken je Dimension (Kategorie oder Straßenklasse), gestapelt nach Typ. Generisch,
+ *  weil "Je Kategorie" und "Je Straßenklasse" dieselbe Form haben. */
+function GestapelteBalken({
+  data, labelFuer,
+}: {
+  data: VeraenderungenUebersicht["proKategorie"] | VeraenderungenUebersicht["proStrassenklasse"]
+  labelFuer: (key: string) => string
+}) {
+  const keys = Array.from(new Set(TYPEN.flatMap((t) => Object.keys(data[t]))))
+  const rows = keys
+    .map((k) => {
+      const row: Record<string, number | string> = { name: labelFuer(k) }
+      let summe = 0
+      for (const t of TYPEN) { const v = data[t][k] ?? 0; row[t] = v; summe += v }
+      row.__summe = summe
+      return row
+    })
+    .filter((r) => (r.__summe as number) > 0)
+    .sort((a, b) => (b.__summe as number) - (a.__summe as number))
+  if (!rows.length) return <Leer />
+  return (
+    <div style={{ height: Math.max(176, rows.length * 32 + 30) }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
+          <CartesianGrid horizontal={false} stroke="#F4F4F5" />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} />
+          <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12, fill: "#52525B" }} axisLine={false} tickLine={false} />
+          <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={TOOLTIP} />
+          <Legend wrapperStyle={{ fontSize: 12 }} formatter={(k) => LABEL[k as keyof typeof LABEL]} />
+          {TYPEN.map((t, i) => (
+            <Bar
+              key={t} dataKey={t} name={t} stackId="k" fill={FARBE[t]} maxBarSize={18} isAnimationActive animationDuration={500}
+              radius={i === TYPEN.length - 1 ? [0, 3, 3, 0] : undefined}
+            />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -48,33 +96,18 @@ export function VeraenderungenZeitreihe({ data }: { data: VeraenderungenUebersic
 
 /** Horizontale Balken je Kategorie (Baustelle/Sperrung/…), gestapelt nach Typ. */
 export function VeraenderungenProKategorie({ data }: { data: VeraenderungenUebersicht["proKategorie"] }) {
-  const kats = Array.from(new Set([...Object.keys(data.neu), ...Object.keys(data.geaendert), ...Object.keys(data.weggefallen)]))
-  const rows = kats
-    .map((k) => ({
-      name: katMeta(k).label,
-      neu: data.neu[k] ?? 0,
-      geaendert: data.geaendert[k] ?? 0,
-      weggefallen: data.weggefallen[k] ?? 0,
-    }))
-    .filter((r) => r.neu + r.geaendert + r.weggefallen > 0)
-    .sort((a, b) => b.neu + b.geaendert + b.weggefallen - (a.neu + a.geaendert + a.weggefallen))
-  if (!rows.length) return <Leer />
-  return (
-    <div style={{ height: Math.max(176, rows.length * 32 + 30) }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
-          <CartesianGrid horizontal={false} stroke="#F4F4F5" />
-          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} />
-          <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 12, fill: "#52525B" }} axisLine={false} tickLine={false} />
-          <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={TOOLTIP} />
-          <Legend wrapperStyle={{ fontSize: 12 }} formatter={(k) => LABEL[k as keyof typeof LABEL]} />
-          <Bar dataKey="neu" name="neu" stackId="k" fill={FARBE.neu} maxBarSize={18} isAnimationActive animationDuration={500} />
-          <Bar dataKey="geaendert" name="geaendert" stackId="k" fill={FARBE.geaendert} maxBarSize={18} isAnimationActive animationDuration={500} />
-          <Bar dataKey="weggefallen" name="weggefallen" stackId="k" fill={FARBE.weggefallen} maxBarSize={18} radius={[0, 3, 3, 0]} isAnimationActive animationDuration={500} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  )
+  return <GestapelteBalken data={data} labelFuer={(k) => katMeta(k).label} />
+}
+
+const STRASSENKLASSE_LABEL: Record<string, string> = {
+  autobahn: "Autobahn", bundesstrasse: "Bundesstraße", landesstrasse: "Landes-/Staatsstraße",
+  kreisstrasse: "Kreisstraße", sonstige: "Sonstige", unbekannt: "Unbekannt",
+}
+
+/** Horizontale Balken je Straßenklasse (Autobahn/Bundes-/Landes-/Kreisstraße/Sonstige), gestapelt
+ *  nach Typ. Straßenklasse aus strassen_ref-Präfix (routes/veraenderungen.js STRASSENKLASSE_CASE). */
+export function VeraenderungenProStrassenklasse({ data }: { data: VeraenderungenUebersicht["proStrassenklasse"] }) {
+  return <GestapelteBalken data={data} labelFuer={(k) => STRASSENKLASSE_LABEL[k] ?? k} />
 }
 
 const LAUFZEIT_LABEL: Record<string, string> = { kurz: "Kurz (≤7 Tage)", mittel: "Mittel (8–30 Tage)", lang: "Lang (>30 Tage)", unbekannt: "Unbekannt" }
@@ -120,7 +153,7 @@ export function VeraenderungenLaufzeiten({ data }: { data: VeraenderungenUebersi
   return <VerteilungsDonut daten={data} labelMap={LAUFZEIT_LABEL} farbeMap={LAUFZEIT_FARBE} reihenfolge={["kurz", "mittel", "lang", "unbekannt"]} />
 }
 
-/** Vorlaufzeit-Verteilung — die Kernaussage für die GL: wie spontan kommt eine Maßnahme rein. */
+/** Vorlaufzeit-Verteilung: wie spontan kommt eine Maßnahme rein. */
 export function VeraenderungenVorlaufzeiten({ data }: { data: VeraenderungenUebersicht["vorlaufzeiten"] }) {
   return <VerteilungsDonut daten={data} labelMap={VORLAUF_LABEL} farbeMap={VORLAUF_FARBE} reihenfolge={["spontan", "kurzfristig", "geplant", "langfristig", "unbekannt"]} />
 }

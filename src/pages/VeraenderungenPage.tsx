@@ -8,7 +8,7 @@
 import { Suspense, lazy, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
-  Activity, ArrowRightLeft, Gauge, PlusCircle, RefreshCw, Sparkles, Zap, type LucideIcon,
+  Activity, CalendarX2, Gauge, PlusCircle, RefreshCw, Sparkles, XCircle, Zap, type LucideIcon,
 } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -24,6 +24,9 @@ const VeraenderungenZeitreihe = lazy(() =>
 )
 const VeraenderungenProKategorie = lazy(() =>
   import("@/components/charts/VeraenderungenCharts").then((m) => ({ default: m.VeraenderungenProKategorie })),
+)
+const VeraenderungenProStrassenklasse = lazy(() =>
+  import("@/components/charts/VeraenderungenCharts").then((m) => ({ default: m.VeraenderungenProStrassenklasse })),
 )
 const VeraenderungenLaufzeiten = lazy(() =>
   import("@/components/charts/VeraenderungenCharts").then((m) => ({ default: m.VeraenderungenLaufzeiten })),
@@ -95,10 +98,11 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
     <div className="flex flex-col gap-5">
       <Hero d={d} insight={insight} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi icon={PlusCircle} label="Neu" sub={`${d.tage} Tage`} value={d.gesamt.neu} akzent="#1baf7a" />
         <Kpi icon={Sparkles} label="Geändert" sub={geaendertSub(d)} value={d.gesamt.geaendert} akzent="#eb6834" />
-        <Kpi icon={ArrowRightLeft} label="Weggefallen" sub={`${d.tage} Tage`} value={d.gesamt.weggefallen} akzent="#2a78d6" />
+        <Kpi icon={CalendarX2} label="Ausgelaufen" sub="planmäßig" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
+        <Kpi icon={XCircle} label="Entfernt" sub="vorzeitig" value={d.gesamt.entfernt} akzent="#4a3aa7" />
       </div>
 
       <Card className="overflow-hidden">
@@ -113,8 +117,8 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
           <CardHeader><CardTitle className="text-sm">Je Kategorie</CardTitle></CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -122,7 +126,21 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
             </Suspense>
           </CardContent>
         </Card>
-        <Card className="lg:col-span-1">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Je Straßenklasse</CardTitle>
+            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen (strassen_ref) abgeleitet — ohne Kennzeichen bleibt "Sonstige"</p>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
+              <VeraenderungenProStrassenklasse data={d.proStrassenklasse} />
+            </Suspense>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle className="text-sm">Laufzeit</CardTitle>
             <p className="text-xs text-neutral-400">Neue Maßnahmen · Kurz ≤7 Tage · Mittel 8–30 Tage · Lang &gt;30 Tage / unbefristet</p>
@@ -133,7 +151,7 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
             </Suspense>
           </CardContent>
         </Card>
-        <Card className="lg:col-span-1 border-primary-200/70">
+        <Card className="border-primary-200/70">
           <CardHeader>
             <CardTitle className="text-sm">Vorlaufzeit</CardTitle>
             <p className="text-xs text-neutral-400">Neue Maßnahmen · Zeit zwischen Erst-Erfassung und Beginn</p>
@@ -152,12 +170,15 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
           Rohzahl vor Bereinigung: {d.roh.neu.toLocaleString("de-DE")} Neu, {d.roh.weggefallen.toLocaleString("de-DE")} Weggefallen.
           Davon {d.roh.erstbefuellungNeuerQuellen.toLocaleString("de-DE")} als Erstbefüllung neu angebundener Quellen
           und {(d.roh.neu - d.roh.erstbefuellungNeuerQuellen - d.gesamt.neu).toLocaleString("de-DE")} als
-          Quellen-Rotation (dieselbe Stelle, neue ID innerhalb von 45 Tagen am gleichen Ort) erkannt und
-          nicht mitgezählt — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte "Neu" und {d.gesamt.weggefallen.toLocaleString("de-DE")} echte "Weggefallen".
+          Quellen-Rotation (dieselbe Stelle — Geo-Nähe ODER identischer Name — innerhalb von 45 Tagen)
+          erkannt und nicht mitgezählt — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte "Neu" und{" "}
+          {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
+          ({d.gesamt.ausgelaufen.toLocaleString("de-DE")} davon planmäßig ausgelaufen,{" "}
+          {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt).
         </p>
         <p className="mt-2 text-xs leading-relaxed text-neutral-400">
-          "Neu" und "Weggefallen" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im
-          Bestand). "Geändert" (inhaltliche Änderung an einer bestehenden Zeile, z.B. verschobenes
+          "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel
+          im Bestand). "Geändert" (inhaltliche Änderung an einer bestehenden Zeile, z.B. verschobenes
           Datum oder geänderte Breite) wird erst seit{" "}
           {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} echt erfasst —
           die Kurve dafür füllt sich über die nächsten Tage.
@@ -171,7 +192,9 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
  *  neuen Maßnahmen (nur die messbaren, "unbekannt" fließt nicht in den Anteil ein — ehrlicher
  *  als es über den vollen Nenner zu glätten). */
 function computeInsight(d: VeraenderungenUebersicht) {
-  const proTag = d.tage > 0 ? (d.gesamt.neu + d.gesamt.geaendert + d.gesamt.weggefallen) / d.tage : 0
+  const proTag = d.tage > 0
+    ? (d.gesamt.neu + d.gesamt.geaendert + d.gesamt.ausgelaufen + d.gesamt.entfernt) / d.tage
+    : 0
   const v = d.vorlaufzeiten
   const messbar = (v.spontan ?? 0) + (v.kurzfristig ?? 0) + (v.geplant ?? 0) + (v.langfristig ?? 0)
   const spontanAnteil = messbar > 0 ? ((v.spontan ?? 0) + (v.kurzfristig ?? 0)) / messbar : null

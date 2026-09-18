@@ -127,20 +127,31 @@ export interface AnalyticsOverview {
   }[]
 }
 
-/** GL-Änderungstracking (GET /api/veraenderungen/uebersicht, nur Admin). "neu"/"weggefallen"
- *  sind volle `tage`-Historie (obstacles.created_at/aktiv sind echte Zustands-Zeitstempel,
- *  nie vom Re-Import berührt); "geaendert" läuft erst ab `geaendertTrackingSeit`. */
+/** Änderungsverfolgung (GET /api/veraenderungen/uebersicht, nur Admin). "neu"/"ausgelaufen"/
+ *  "entfernt" sind volle `tage`-Historie (obstacles.created_at/aktiv sind echte Zustands-
+ *  Zeitstempel, nie vom Re-Import berührt); "geaendert" läuft erst ab `geaendertTrackingSeit`.
+ *  "ausgelaufen" = Maßnahme war laut gueltig_bis schon zu Ende, als sie deaktiviert wurde
+ *  (planmäßig); "entfernt" = sie war noch gültig/unbefristet und verschwand trotzdem. */
+type Ereignistyp = { neu: number; geaendert: number; ausgelaufen: number; entfernt: number }
 export interface VeraenderungenUebersicht {
   tage: number
   kategorien: string[]
   geaendertTrackingSeit: string | null
-  zeitreihe: { tag: string; neu: number; weggefallen: number; geaendert: number }[]
-  gesamt: { neu: number; weggefallen: number; geaendert: number }
+  zeitreihe: (Ereignistyp & { tag: string })[]
+  gesamt: Ereignistyp
   /** Zahlen VOR dem Herausrechnen von Quellen-Rotation/Erstbefüllung — Beleg, kein Versteck. */
   roh: { neu: number; weggefallen: number; erstbefuellungNeuerQuellen: number }
   proKategorie: {
     neu: Record<string, number>
-    weggefallen: Record<string, number>
+    ausgelaufen: Record<string, number>
+    entfernt: Record<string, number>
+    geaendert: Record<string, number>
+  }
+  /** Autobahn/Bundesstraße/Landes- (bzw. Staatsstraße)/Kreisstraße/Sonstige/Unbekannt. */
+  proStrassenklasse: {
+    neu: Record<string, number>
+    ausgelaufen: Record<string, number>
+    entfernt: Record<string, number>
     geaendert: Record<string, number>
   }
   laufzeiten: Record<"kurz" | "mittel" | "lang" | "unbekannt", number | undefined>
