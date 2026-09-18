@@ -66,6 +66,16 @@
 // weiter komprimiert durch Vorgangs-Zusammenfassung. `roh` bleibt im Response — nachvollziehbar
 // statt eine geglättete Zahl ohne Beleg.
 //
+// VIERTE Sonderregel, selber Tag: dieselbe Vorgangs-Zusammenfassung gilt für rotation_neu
+// (vorgang_rotation) — Max hielt 35.137 Rotations-Treffer für unglaubwürdig hoch. Diagnose
+// bestätigte: manche Quellen vergeben die externe_id TÄGLICH neu für denselben laufenden Vorgang,
+// 30 Tage Laufzeit erzeugen so 20-30 Treffer für EIN reales Ereignis. Zusammengefasst: 35.137 →
+// 22.736 Vorgänge. Geprüft und BEWUSST NICHT verändert: der Namens-Zweig im Match-Prädikat trägt
+// nur 2.460 der 35.137 Treffer bei; eine engere Geo-Toleranz (300 m, wie der Importer) drückt
+// Rotation zwar weiter, schiebt die Differenz aber symmetrisch in "echte Neu" (6.820 → 16.616) —
+// ein Präzisions-/Recall-Tausch ohne objektiv richtige Antwort, keine Bug-Behebung, deshalb
+// unverändert gelassen (siehe CHURN_CTES-Kommentar zu vorgang_rotation).
+//
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
 // change_hash-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
@@ -90,15 +100,6 @@ const CHURN_FENSTER_TAGE = 45
 // exaktem Namensgleich (siehe CHURN_CTES) fuer Faelle, die selbst das noch verfehlen.
 const CHURN_GEO_LAT = 0.01
 const CHURN_GEO_LNG = 0.015
-
-/** ?kategorien=baustelle,sperrung → validierte Teilmenge von KATEGORIEN; leer/fehlend → ALLE
- *  Kategorien (der Nutzer entscheidet in der UI, was er sehen will). */
-function parseKategorien(raw) {
-  if (typeof raw !== "string" || !raw.trim()) return KATEGORIEN
-  const gewuenscht = raw.split(",").map((s) => s.trim()).filter(Boolean)
-  const gueltig = gewuenscht.filter((k) => KATEGORIEN.includes(k))
-  return gueltig.length ? gueltig : KATEGORIEN
-}
 
 // Straßenklasse aus strassen_ref (T-747-Erweiterung, Max: "nach Strassen differenzieren —
 // Autobahn, Bundesstraße, …"). Empirisch gegen den Bestand geprüft (scripts/diagStrassenklasse.mjs):
@@ -208,144 +209,200 @@ const CHURN_CTES = `
         '\\s*[-/]?\\s*(Lage|Teil|Abschnitt|Los)[\\s.:-]*[0-9]+\\s*$', '', 'i') AS basisname
       FROM echte_weg ew
     ) y ORDER BY quellen_id, kategorie, basisname, updated_at DESC
+  ),
+  -- Dieselbe Vorgangs-Zusammenfassung wie oben, aber auf rotation_neu (Max 18.09., zweite Kritik
+  -- am selben Tag: "35.137 Rotationen kann ich mir kaum vorstellen, fasse zusammen"). Diagnose
+  -- bestätigte den Verdacht: manche Quellen (0145/0147/0001 u.a.) vergeben die externe_id TÄGLICH
+  -- neu für denselben laufenden Vorgang — 30 Tage Laufzeit können so 20-30 Rotations-"Treffer"
+  -- für EIN reales Ereignis erzeugen (scripts/diagRotationGranularitaet.mjs: 35.137 Zeilen auf
+  -- 22.736 Vorgänge). Getrennt geprüft und NICHT verändert: der Namens-Zweig im Match-Prädikat
+  -- selbst erzeugte nur 2.460 der 35.137 Treffer (scripts/diagNamensmatchFalschpositiv.mjs) und
+  -- eine engere Geo-Toleranz (300 m wie der Importer-Fuzzy-Match) drückt rotation zwar auf 25.341,
+  -- schiebt die Differenz aber symmetrisch in "echte Neu" (6.820 → 16.616) — ein Praezisions-
+  -- /Recall-Tausch ohne objektiv richtige Antwort, keine Bug-Behebung. Bewusst NICHT angefasst,
+  -- Max entscheidet das separat (scripts/diagGeoToleranzVergleich.mjs dokumentiert die Zahlen).
+  vorgang_rotation AS (
+    SELECT DISTINCT ON (quellen_id, kategorie, basisname) * FROM (
+      SELECT rn.*, regexp_replace(coalesce(rn.name, rn.id::text),
+        '\\s*[-/]?\\s*(Lage|Teil|Abschnitt|Los)[\\s.:-]*[0-9]+\\s*$', '', 'i') AS basisname
+      FROM rotation_neu rn
+    ) z ORDER BY quellen_id, kategorie, basisname, created_at ASC
   )
 `
 
+/** Reine Berechnung, kein HTTP — vom Route-Handler (Cache-Miss-Fallback) UND vom taeglichen
+ *  Worker-Cron (worker/index.js runVeraenderungenCache) genutzt. Kategorien sind fix "alle": das
+ *  Frontend fragt nie eine Teilmenge ab (T-747-Nachbesserung, eingedampft), das haelt den Cache
+ *  auf einen einzigen Schluessel (`tage`). */
+export async function berechneUebersicht(db, tage) {
+  const kategorien = KATEGORIEN
+  const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
+  const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
+
+  // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
+  // berechnet — Postgres materialisiert eine CTE automatisch, sobald sie mehr als einmal
+  // referenziert wird (zr/kat/strasse/lz/vl greifen alle darauf zu). Grund für den Umbau
+  // (T-747, 18.09.): sieben PARALLELE Aufrufe desselben teuren Anti-Joins (Promise.all) haben
+  // dem Postgres-Container gleichzeitig Shared-Memory für Parallel-Worker abverlangt und ihn mit
+  // "could not resize shared memory segment … No space left on device" (53100) abstürzen lassen.
+  // Gemessen (scripts/diagKonsolidierteQuery*.mjs, 18.09.): die Konsolidierung allein behebt es
+  // bereits (ein Statement braucht nur einmal Shared Memory, nicht mehr sieben gleichzeitig) —
+  // ein zusätzliches `SET max_parallel_workers_per_gather = 0` macht die Query nur ~3× langsamer
+  // (48 s statt 18 s) ohne messbaren Stabilitätsgewinn, deshalb NICHT gesetzt.
+  const { rows: [row] } = await db.query(
+    `WITH ${CHURN_CTES},
+         zr AS (
+           SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
+             coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
+             coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
+           FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
+           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_neu GROUP BY 1) n ON n.tag = d::date
+           LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
+           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_rotation GROUP BY 1) rot ON rot.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+         ),
+         -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
+         -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
+         -- "geaendert" fasst zwei Quellen zusammen: echte Inhalts-Deltas (obstacle_aenderungen,
+         -- erst ab Deploy) UND Quellen-Rotation (vorgang_rotation, volle Fenster-Historie,
+         -- ebenfalls auf Vorgangs-Ebene zusammengefasst — ein täglich neu vergebenes externe_id
+         -- desselben laufenden Vorgangs zählt einmal, nicht einmal pro Tag).
+         kat AS (
+           SELECT kategorie, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
+           UNION ALL SELECT kategorie, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, 2
+           UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
+             SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
+             UNION ALL SELECT kategorie FROM vorgang_rotation
+           ) x GROUP BY 1
+         ),
+         strasse AS (
+           SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
+           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, weg_typ
+           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
+             SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
+             UNION ALL SELECT strassen_ref FROM vorgang_rotation
+           ) x GROUP BY 1
+         ),
+         lz AS (
+           SELECT
+             CASE
+               WHEN gueltig_von IS NULL THEN 'unbekannt'
+               WHEN gueltig_bis IS NULL THEN 'lang'
+               WHEN gueltig_bis - gueltig_von <= 7 THEN 'kurz'
+               WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
+               ELSE 'lang'
+             END AS laufzeit, count(*) AS n
+           FROM vorgang_neu GROUP BY 1
+         ),
+         vl AS (
+           SELECT
+             CASE
+               WHEN gueltig_von IS NULL THEN 'unbekannt'
+               WHEN gueltig_von - created_at::date <= 1 THEN 'spontan'
+               WHEN gueltig_von - created_at::date <= 6 THEN 'kurzfristig'
+               WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
+               ELSE 'langfristig'
+             END AS vorlauf, count(*) AS n
+           FROM vorgang_neu GROUP BY 1
+         ),
+         roh AS (
+           SELECT
+             (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+                AND created_at >= current_date - $2::int * interval '1 day') AS neu,
+             (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
+                AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
+             (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+                AND created_at >= current_date - $2::int * interval '1 day'
+                AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
+             (SELECT count(*) FROM vorgang_rotation) AS rotation_als_geaendert,
+             (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst,
+             (SELECT count(*) FROM rotation_neu) - (SELECT count(*) FROM vorgang_rotation) AS rotation_vorgaenge_zusammengefasst
+         )
+         SELECT
+           (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
+           (SELECT json_agg(kat) FROM kat) AS kategorien,
+           (SELECT json_agg(strasse) FROM strasse) AS strassenklassen,
+           (SELECT json_object_agg(laufzeit, n) FROM lz) AS laufzeiten,
+           (SELECT json_object_agg(vorlauf, n) FROM vl) AS vorlaufzeiten,
+           (SELECT row_to_json(roh) FROM roh) AS roh,
+           (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit`,
+    params,
+  )
+
+  const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
+  const kat = bucket()
+  for (const r2 of row.kategorien ?? []) kat[r2.typ][r2.kategorie] = Number(r2.n)
+  const strasse = bucket()
+  for (const r2 of row.strassenklassen ?? []) strasse[r2.typ][r2.klasse] = Number(r2.n)
+
+  const zeitreihe = (row.zeitreihe ?? []).map((t) => ({
+    tag: t.tag, neu: Number(t.neu), geaendert: Number(t.geaendert),
+    ausgelaufen: Number(t.ausgelaufen), entfernt: Number(t.entfernt),
+  }))
+  const summe = (feld) => zeitreihe.reduce((s, t) => s + t[feld], 0)
+
+  return {
+    tage,
+    kategorien,
+    geaendertTrackingSeit: row.geaendert_seit ?? null,
+    zeitreihe,
+    gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
+    // Rohzahlen vor der Aufteilung — Beleg, kein Versteck.
+    roh: {
+      neu: Number(row.roh?.neu ?? 0),
+      weggefallen: Number(row.roh?.weggefallen ?? 0),
+      erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
+      // War in "roh.neu" enthalten, zählt aber nicht als Neuanlage, sondern als "geaendert"
+      // (Quellen-Rotation — dieselbe reale Stelle unter neuer ID), bereits auf Vorgangs-Ebene
+      // zusammengefasst (siehe rotationVorgaengeZusammengefasst) und steckt in `gesamt.geaendert`
+      // sowie `proKategorie.geaendert`/`proStrassenklasse.geaendert`.
+      rotationAlsGeaendert: Number(row.roh?.rotation_als_geaendert ?? 0),
+      // Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
+      // Namens) — steckt in "neu" NICHT mehr drin, seit "neu" Vorgänge statt Zeilen zählt.
+      segmenteZusammengefasst: Number(row.roh?.segmente_zusammengefasst ?? 0),
+      // Rotations-TREFFER (Zeilen), die zu einer bereits gezählten Rotations-Vorgang gehören —
+      // z.B. dieselbe Baustelle, deren externe_id sich innerhalb des Fensters mehrfach ändert
+      // (Max 18.09.: "35.137 kann ich mir kaum vorstellen, fasse zusammen"). rotationAlsGeaendert
+      // oben ist bereits NACH diesem Zusammenfassen.
+      rotationVorgaengeZusammengefasst: Number(row.roh?.rotation_vorgaenge_zusammengefasst ?? 0),
+    },
+    proKategorie: kat,
+    proStrassenklasse: strasse,
+    laufzeiten: row.laufzeiten ?? {},
+    vorlaufzeiten: row.vorlaufzeiten ?? {},
+  }
+}
+
+// Cache-first (T-747-Nachbesserung, 18.09., Max: "einmal morgens alle Daten ready, das ist nur
+// noch Visu"): berechneUebersicht braucht ~55s (Anti-Join gegen den vollen Bestand), das darf
+// kein Seitenaufruf live tragen. Der Worker fuellt veraenderungen_cache taeglich frueh morgens
+// (runVeraenderungenCache). Cache-Miss (vor dem ersten Cron-Lauf, oder ein `tage`-Wert, den der
+// Cron nicht vorrechnet) faellt live zurueck UND schreibt das Ergebnis gleich in den Cache, statt
+// jeden weiteren Aufruf erneut ~55s warten zu lassen.
 export function veraenderungenRouter({ db }) {
   const r = Router()
 
   r.get("/uebersicht", requireRole("admin"), asyncHandler(async (req, res) => {
     const tage = Math.min(TAGE_MAX, Math.max(1, Number.parseInt(req.query.tage, 10) || TAGE_DEFAULT))
-    const kategorien = parseKategorien(req.query.kategorien)
-    const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
-    const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
 
-    // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
-    // berechnet — Postgres materialisiert eine CTE automatisch, sobald sie mehr als einmal
-    // referenziert wird (zr/kat/strasse/lz/vl greifen alle darauf zu). Grund für den Umbau
-    // (T-747, 18.09.): sieben PARALLELE Aufrufe desselben teuren Anti-Joins (Promise.all) haben
-    // dem Postgres-Container gleichzeitig Shared-Memory für Parallel-Worker abverlangt und ihn mit
-    // "could not resize shared memory segment … No space left on device" (53100) abstürzen lassen.
-    // Gemessen (scripts/diagKonsolidierteQuery*.mjs, 18.09.): die Konsolidierung allein behebt es
-    // bereits (ein Statement braucht nur einmal Shared Memory, nicht mehr sieben gleichzeitig) —
-    // ein zusätzliches `SET max_parallel_workers_per_gather = 0` macht die Query nur ~3× langsamer
-    // (48 s statt 18 s) ohne messbaren Stabilitätsgewinn, deshalb NICHT gesetzt.
-    const { rows: [row] } = await db.query(
-      `WITH ${CHURN_CTES},
-           zr AS (
-             SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
-               coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
-               coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
-             FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_neu GROUP BY 1) n ON n.tag = d::date
-             LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
-             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM rotation_neu GROUP BY 1) rot ON rot.tag = d::date
-             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
-           ),
-           -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
-           -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
-           -- "geaendert" fasst zwei Quellen zusammen: echte Inhalts-Deltas (obstacle_aenderungen,
-           -- erst ab Deploy) UND Quellen-Rotation (rotation_neu, volle Fenster-Historie, weiterhin
-           -- Zeilen-Ebene — Max' Anweisung betraf explizit nur "neu") — eine als solche erkannte
-           -- Rotation zählt als Änderung, nicht als nichts.
-           kat AS (
-             SELECT kategorie, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
-             UNION ALL SELECT kategorie, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, 2
-             UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
-               SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
-               UNION ALL SELECT kategorie FROM rotation_neu
-             ) x GROUP BY 1
-           ),
-           strasse AS (
-             SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
-             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, weg_typ
-             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
-               SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
-               UNION ALL SELECT strassen_ref FROM rotation_neu
-             ) x GROUP BY 1
-           ),
-           lz AS (
-             SELECT
-               CASE
-                 WHEN gueltig_von IS NULL THEN 'unbekannt'
-                 WHEN gueltig_bis IS NULL THEN 'lang'
-                 WHEN gueltig_bis - gueltig_von <= 7 THEN 'kurz'
-                 WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
-                 ELSE 'lang'
-               END AS laufzeit, count(*) AS n
-             FROM vorgang_neu GROUP BY 1
-           ),
-           vl AS (
-             SELECT
-               CASE
-                 WHEN gueltig_von IS NULL THEN 'unbekannt'
-                 WHEN gueltig_von - created_at::date <= 1 THEN 'spontan'
-                 WHEN gueltig_von - created_at::date <= 6 THEN 'kurzfristig'
-                 WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
-                 ELSE 'langfristig'
-               END AS vorlauf, count(*) AS n
-             FROM vorgang_neu GROUP BY 1
-           ),
-           roh AS (
-             SELECT
-               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
-                  AND created_at >= current_date - $2::int * interval '1 day') AS neu,
-               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
-                  AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
-               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
-                  AND created_at >= current_date - $2::int * interval '1 day'
-                  AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
-               (SELECT count(*) FROM rotation_neu) AS rotation_als_geaendert,
-               (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst
-           )
-           SELECT
-             (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
-             (SELECT json_agg(kat) FROM kat) AS kategorien,
-             (SELECT json_agg(strasse) FROM strasse) AS strassenklassen,
-             (SELECT json_object_agg(laufzeit, n) FROM lz) AS laufzeiten,
-             (SELECT json_object_agg(vorlauf, n) FROM vl) AS vorlaufzeiten,
-             (SELECT row_to_json(roh) FROM roh) AS roh,
-             (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit`,
-      params,
+    const { rows: [cached] } = await db.query(
+      "SELECT payload, berechnet_am FROM veraenderungen_cache WHERE tage = $1",
+      [tage],
     )
+    if (cached) {
+      res.json({ ...cached.payload, berechnetAm: cached.berechnet_am })
+      return
+    }
 
-    const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
-    const kat = bucket()
-    for (const r2 of row.kategorien ?? []) kat[r2.typ][r2.kategorie] = Number(r2.n)
-    const strasse = bucket()
-    for (const r2 of row.strassenklassen ?? []) strasse[r2.typ][r2.klasse] = Number(r2.n)
-
-    const zeitreihe = (row.zeitreihe ?? []).map((t) => ({
-      tag: t.tag, neu: Number(t.neu), geaendert: Number(t.geaendert),
-      ausgelaufen: Number(t.ausgelaufen), entfernt: Number(t.entfernt),
-    }))
-    const summe = (feld) => zeitreihe.reduce((s, t) => s + t[feld], 0)
-
-    res.json({
-      tage,
-      kategorien,
-      geaendertTrackingSeit: row.geaendert_seit ?? null,
-      zeitreihe,
-      gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
-      // Rohzahlen vor der Aufteilung — Beleg, kein Versteck.
-      roh: {
-        neu: Number(row.roh?.neu ?? 0),
-        weggefallen: Number(row.roh?.weggefallen ?? 0),
-        erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
-        // War in "roh.neu" enthalten, zählt aber nicht als Neuanlage, sondern als "geaendert"
-        // (Quellen-Rotation — dieselbe reale Stelle unter neuer ID) und steckt bereits in
-        // `gesamt.geaendert` und `proKategorie.geaendert`/`proStrassenklasse.geaendert`.
-        rotationAlsGeaendert: Number(row.roh?.rotation_als_geaendert ?? 0),
-        // Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
-        // Namens) — steckt in "neu" NICHT mehr drin, seit "neu" Vorgänge statt Zeilen zählt.
-        segmenteZusammengefasst: Number(row.roh?.segmente_zusammengefasst ?? 0),
-      },
-      proKategorie: kat,
-      proStrassenklasse: strasse,
-      laufzeiten: row.laufzeiten ?? {},
-      vorlaufzeiten: row.vorlaufzeiten ?? {},
-    })
+    const payload = await berechneUebersicht(db, tage)
+    const berechnetAm = new Date()
+    await db.query(
+      `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, $3)
+       ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
+      [tage, JSON.stringify(payload), berechnetAm],
+    )
+    res.json({ ...payload, berechnetAm })
   }))
 
   return r

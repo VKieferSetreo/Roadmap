@@ -34,7 +34,12 @@ export function AdminLayout() {
     })
   }, [fetchIdentity, detect, loadContext])
 
-  if (mode === "live" && !ctxLoaded) {
+  // Harter Reload auf /veraenderungen o.ä. setzt ALLE Stores zurueck: mode startet bei "checking"
+  // (noch nicht "live"), isAdmin bei false. Die vorherige Bedingung deckte nur "live"+"!ctxLoaded"
+  // ab — waehrend "checking" fiel sie durch und `!isAdmin` griff SOFORT, bevor detect()/
+  // loadContext() ueberhaupt zurueck waren. Ergebnis: jeder Reload auf einer Admin-Seite bounced
+  // kurz auf "/", bevor der echte Adminstatus geladen war. Fix: "checking" zaehlt mit zum Laden.
+  if (mode === "checking" || (mode === "live" && !ctxLoaded)) {
     return (
       <div className="flex h-screen items-center justify-center text-sm text-neutral-400">Lädt …</div>
     )

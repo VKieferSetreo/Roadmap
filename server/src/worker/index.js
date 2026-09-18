@@ -19,6 +19,7 @@ import { mailEnabled, sendMail } from "../mail/mailer.js"
 import { deaktiviereBestandStillgelegterQuellen, detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, purgeVerwaisteAnreicherung, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 import { gateKonfig } from "../anreicherung/gateKonfig.js"
+import { berechneUebersicht } from "../routes/veraenderungen.js"
 
 loadEnv()
 initSentry("worker") // T-468/469: GlitchTip-Error-Tracking (no-op ohne SENTRY_DSN)
@@ -331,6 +332,27 @@ async function runGstDriftCheck() {
   }
 }
 
+// T-747-Nachbesserung (18.09.): Änderungsverfolgung-Seite liest nur noch aus dem Cache, dieser
+// Job befuellt ihn. Feste FENSTER (7/30/90) statt beliebiger Werte — das sind die einzigen, die
+// das Frontend anfragt; ein abweichender `tage`-Wert faellt in der Route live zurueck.
+const VERAENDERUNGEN_FENSTER = [7, 30, 90]
+async function runVeraenderungenCache() {
+  for (const tage of VERAENDERUNGEN_FENSTER) {
+    try {
+      const t0 = Date.now()
+      const payload = await berechneUebersicht(db, tage)
+      await db.query(
+        `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, now())
+         ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
+        [tage, JSON.stringify(payload)],
+      )
+      log(`Änderungsverfolgung-Cache: ${tage} Tage in ${Date.now() - t0}ms vorgerechnet`)
+    } catch (err) {
+      log(`Änderungsverfolgung-Cache (${tage} Tage) fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+    }
+  }
+}
+
 // Prozessübergreifender Lock pro Connector (pg-Advisory-Lock auf dediziertem Client).
 // Ersetzt die frühere In-Memory-Set: verhindert Doppel-Runs NICHT nur im selben Prozess,
 // sondern über mehrere Worker-Instanzen hinweg. Cron-Duplikation (2 Worker feuern denselben
@@ -471,6 +493,9 @@ try {
   jobs.push(new Cron("45 3 * * *", CRON_OPTS, () => void runPrune()))
   // T-614: monatlicher Drift-Check der GST-Kreis-Zuordnung (1. des Monats, 04:10).
   jobs.push(new Cron("10 4 1 * *", CRON_OPTS, () => void runGstDriftCheck()))
+  // T-747-Nachbesserung: Änderungsverfolgung-Cache taeglich vorrechnen (05:00, nach Cleanup/
+  // Prune um 3:30/3:45) — die Seite selbst liest nur noch aus veraenderungen_cache.
+  jobs.push(new Cron("0 5 * * *", CRON_OPTS, () => void runVeraenderungenCache()))
 
   // Heartbeat (T-469): hält den Event-Loop am Leben, macht den Worker im Log sichtbar UND
   // schreibt einen DB-Heartbeat, den /api/health auf Staleness prüft (Dead-Man's-Switch).

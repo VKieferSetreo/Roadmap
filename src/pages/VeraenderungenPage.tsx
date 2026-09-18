@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
-import { formatDateDE } from "@/lib/format"
+import { formatDateDE, formatStampDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
 const VeraenderungenZeitreihe = lazy(() =>
@@ -68,6 +68,11 @@ export function VeraenderungenPage() {
               </button>
             ))}
           </div>
+          {q.data && (
+            <span className="hidden text-xs text-neutral-400 sm:inline" title="Ein täglicher Hintergrund-Job rechnet die Zahlen vor, die Seite zeigt keine Live-Berechnung">
+              Stand: {formatStampDE(q.data.berechnetAm)}
+            </span>
+          )}
           <Button variant="outline" size="sm" onClick={() => void q.refetch()} disabled={q.isFetching}>
             <RefreshCw className={cn("h-3.5 w-3.5", q.isFetching && "animate-spin")} /> Aktualisieren
           </Button>
@@ -167,21 +172,28 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
       <Card className="p-4">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">Herleitung, ungeschönt</p>
         <p className="text-xs leading-relaxed text-neutral-500">
-          Rohzahl vor Bereinigung: {d.roh.neu.toLocaleString("de-DE")} Neu, {d.roh.weggefallen.toLocaleString("de-DE")} Weggefallen.
-          Davon {d.roh.erstbefuellungNeuerQuellen.toLocaleString("de-DE")} als Erstbefüllung neu angebundener Quellen
-          und {(d.roh.neu - d.roh.erstbefuellungNeuerQuellen - d.gesamt.neu).toLocaleString("de-DE")} als
-          Quellen-Rotation (dieselbe Stelle — Geo-Nähe ODER identischer Name — innerhalb von 45 Tagen)
-          erkannt und nicht mitgezählt — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte "Neu" und{" "}
-          {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
+          Rohzahl vor Bereinigung: {d.roh.neu.toLocaleString("de-DE")} Neu, {d.roh.weggefallen.toLocaleString("de-DE")} Weggefallen (Zeilen-Ebene).
+          Davon {d.roh.erstbefuellungNeuerQuellen.toLocaleString("de-DE")} als Erstbefüllung neu angebundener Quellen ausgeklammert
+          und {(d.roh.rotationAlsGeaendert + d.roh.rotationVorgaengeZusammengefasst).toLocaleString("de-DE")} als Quellen-Rotation
+          (dieselbe Stelle — Geo-Nähe ODER identischer Name — innerhalb von 45 Tagen erkannt) nicht mehr als "Neu" gezählt;
+          davon sind {d.roh.rotationVorgaengeZusammengefasst.toLocaleString("de-DE")} Treffer derselben laufenden Rotation
+          (z.B. eine externe_id, die täglich neu vergeben wird) — zusammengefasst bleiben{" "}
+          {d.roh.rotationAlsGeaendert.toLocaleString("de-DE")} echte "Geändert"-Vorgänge durch Rotation.
+          Von den verbleibenden echten Neuanlagen fasst die Vorgangs-Zusammenfassung weitere{" "}
+          {d.roh.segmenteZusammengefasst.toLocaleString("de-DE")} Zeilen zusammen, die zu einem bereits gezählten
+          Vorgang gehören (mehrere Segmente oder mehrfache Neuveröffentlichung derselben Maßnahme, z.B. eine
+          kilometerlange Baustelle mit mehreren Bauabschnitten) — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte
+          neue Vorgänge und {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
           ({d.gesamt.ausgelaufen.toLocaleString("de-DE")} davon planmäßig ausgelaufen,{" "}
           {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt).
         </p>
         <p className="mt-2 text-xs leading-relaxed text-neutral-400">
-          "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel
-          im Bestand). "Geändert" (inhaltliche Änderung an einer bestehenden Zeile, z.B. verschobenes
-          Datum oder geänderte Breite) wird erst seit{" "}
-          {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} echt erfasst —
-          die Kurve dafür füllt sich über die nächsten Tage.
+          "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im Bestand),
+          gezählt auf Vorgangs- nicht Zeilen-Ebene. "Geändert" fasst zwei Signale zusammen: Quellen-Rotation
+          (voller {d.tage}-Tage-Zeitraum) und inhaltliche Änderung an einer bestehenden Zeile (z.B. verschobenes
+          Datum oder geänderte Breite) — Letzteres wird erst seit{" "}
+          {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} erfasst und füllt sich
+          über die nächsten Tage weiter auf.
         </p>
       </Card>
     </div>

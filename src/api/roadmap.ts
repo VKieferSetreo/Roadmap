@@ -137,10 +137,29 @@ export interface VeraenderungenUebersicht {
   tage: number
   kategorien: string[]
   geaendertTrackingSeit: string | null
+  /** Wann der Server diese Zahlen zuletzt berechnet hat — die Seite liest aus einem täglich
+   *  morgens vorgerechneten Cache, nicht live (T-747-Nachbesserung: die Query braucht ~55s). */
+  berechnetAm: string
   zeitreihe: (Ereignistyp & { tag: string })[]
   gesamt: Ereignistyp
-  /** Zahlen VOR dem Herausrechnen von Quellen-Rotation/Erstbefüllung — Beleg, kein Versteck. */
-  roh: { neu: number; weggefallen: number; erstbefuellungNeuerQuellen: number }
+  /** Zahlen VOR dem Herausrechnen von Quellen-Rotation/Erstbefüllung/Vorgangs-Zusammenfassung —
+   *  Beleg, kein Versteck. */
+  roh: {
+    neu: number
+    weggefallen: number
+    erstbefuellungNeuerQuellen: number
+    /** War in roh.neu enthalten, zählt aber als "geaendert" (Quellen-Rotation), bereits auf
+     *  Vorgangs-Ebene zusammengefasst (siehe rotationVorgaengeZusammengefasst) — steckt in
+     *  gesamt.geaendert / proKategorie.geaendert / proStrassenklasse.geaendert. */
+    rotationAlsGeaendert: number
+    /** Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
+     *  Namens) — "neu" zählt Vorgänge, nicht Zeilen. */
+    segmenteZusammengefasst: number
+    /** Rotations-Treffer (Zeilen), die zu einem bereits gezählten Rotations-Vorgang gehören —
+     *  z.B. dieselbe Baustelle, deren externe_id innerhalb des Fensters mehrfach wechselt.
+     *  rotationAlsGeaendert oben ist bereits NACH diesem Zusammenfassen. */
+    rotationVorgaengeZusammengefasst: number
+  }
   proKategorie: {
     neu: Record<string, number>
     ausgelaufen: Record<string, number>
