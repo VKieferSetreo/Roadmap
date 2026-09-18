@@ -116,7 +116,7 @@ const nameMatch = await db.query(`
         AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day') AND n.created_at + ($5::int * interval '1 day')
     )) AS zusaetzlich_per_namensmatch_fangbar
   FROM echte_neu n GROUP BY 1 ORDER BY 2 DESC
-`, [...params, ["0001", "0145", "0147", "0141", "0156", "0152"]])
+`, [...params, ["0001"]])
 console.log("=== Name-Match-Potenzial bei etablierten Top-Quellen (ohne Geo-Einschränkung) ===")
 console.log(JSON.stringify(nameMatch.rows))
 
