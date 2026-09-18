@@ -27,10 +27,16 @@
 // UND "weggefallen" zählen dieselbe reale Stelle doppelt, ohne dass sich etwas geändert hat.
 //
 // Fix HIER (Tracking-Ebene, nicht die Connectoren): ein "neu"-Kandidat zählt nur, wenn KEINE
-// andere Zeile derselben Quelle+Kategorie im selben ~300-m-Radius innerhalb von
+// andere Zeile derselben Quelle+Kategorie im selben Radius (CHURN_GEO_TOLERANZ, großzügiger als
+// der Importer-Fuzzy-Match — lineare Infrastruktur wie eine mehrwöchige Tunnelsperrung kann ihren
+// Referenzpunkt zwischen zwei Läufen über die Importer-Toleranz hinaus verschieben) innerhalb von
 // CHURN_FENSTER_TAGE um den Erfassungszeitpunkt deaktiviert wurde (und umgekehrt für
-// "weggefallen"). Die roh/gefiltert-Differenz wird mit ausgeliefert (`roh` im Response) —
-// nachvollziehbar statt eine geglättete Zahl ohne Beleg.
+// "weggefallen"). ZWEITE Sonderregel, empirisch nachgezogen (scripts/diagChurnFilterCheck.mjs,
+// 18.09.): frisch angebundene Quellen (0234/0235/0236/0135 — Erst-Pull nach dem letzten Deploy)
+// lieferten ihren KOMPLETTEN Bestand als "neu", das ist eine Erstbefüllung, kein Tages-Delta.
+// Eine Quelle ohne jede Zeile VOR dem Fenster zählt deshalb gar nicht mit; ihre Erstbefüllung
+// steht separat in `roh.erstbefuellungNeuerQuellen`. Die roh/gefiltert-Differenz wird mit
+// ausgeliefert (`roh` im Response) — nachvollziehbar statt eine geglättete Zahl ohne Beleg.
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
@@ -42,7 +48,6 @@ import { Router } from "express"
 import { requireRole } from "../auth.js"
 import { asyncHandler } from "../util.js"
 import { KATEGORIEN } from "../engine/rules.js"
-import { FUZZY_LAT, FUZZY_LNG } from "../worker/importer.js"
 
 const TAGE_DEFAULT = 30
 const TAGE_MAX = 90
@@ -50,6 +55,12 @@ const TAGE_MAX = 90
 // gesucht wird. Grosszuegig, weil strenges Aussieben (weniger "neu" melden) gewollt ist — siehe
 // Kommentar oben. 45 Tage deckt auch mehrwoechige Bauphasen mit einer Zwischen-Rotation ab.
 const CHURN_FENSTER_TAGE = 45
+// Grosszuegiger als der Importer-Fuzzy-Match (dort 0.003/0.0045, ~300 m — der muss praezise
+// bleiben, sonst kollabieren echte Bauphasen unterschiedlicher Breite auf eine Zeile). Hier zaehlt
+// das Gegenteil: eine lineare Sperrung (Tunnel, langer Autobahnabschnitt) darf ihren Referenzpunkt
+// zwischen zwei Laeufen verschieben, ohne als "neu" durchzurutschen. ~1,1 km.
+const CHURN_GEO_LAT = 0.01
+const CHURN_GEO_LNG = 0.015
 
 /** ?kategorien=baustelle,sperrung → validierte Teilmenge von KATEGORIEN; leer/fehlend → ALLE
  *  Kategorien (der Nutzer entscheidet in der UI, was er sehen will). */
@@ -61,12 +72,20 @@ function parseKategorien(raw) {
 }
 
 /** "echte_neu"/"echte_weg" als CTE-Text — von jeder der vier Abfragen wiederverwendet.
- *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = FUZZY_LAT, $4 = FUZZY_LNG, $5 = CHURN_FENSTER_TAGE. */
+ *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG,
+ *  $5 = CHURN_FENSTER_TAGE. `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand
+ *  erst innerhalb des Fensters entstand (Erstbefüllung, kein Tages-Delta). */
 const CHURN_CTES = `
+  etablierte_quelle AS (
+    SELECT quellen_id FROM obstacles
+    GROUP BY quellen_id
+    HAVING min(created_at) < current_date - $2::int * interval '1 day'
+  ),
   echte_neu AS (
     SELECT n.* FROM obstacles n
     WHERE n.demo = false AND n.kategorie = ANY($1)
       AND n.created_at >= current_date - $2::int * interval '1 day'
+      AND n.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
       AND NOT EXISTS (
         SELECT 1 FROM obstacles w
         WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
@@ -99,7 +118,7 @@ export function veraenderungenRouter({ db }) {
   r.get("/uebersicht", requireRole("admin"), asyncHandler(async (req, res) => {
     const tage = Math.min(TAGE_MAX, Math.max(1, Number.parseInt(req.query.tage, 10) || TAGE_DEFAULT))
     const kategorien = parseKategorien(req.query.kategorien)
-    const params = [kategorien, tage, FUZZY_LAT, FUZZY_LNG, CHURN_FENSTER_TAGE]
+    const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
 
     const [zeitreihe, kategorieRows, laufzeitRows, vorlaufRows, seitWann, roh] = await Promise.all([
       // Lückenlose Tagesreihe (generate_series), je Typ eine Serie — dieselbe Technik wie
@@ -167,13 +186,21 @@ export function veraenderungenRouter({ db }) {
       ),
       // Seit wann läuft "geaendert" überhaupt? Transparenz statt stillschweigend 0 zu zeigen.
       db.query(`SELECT min(erkannt_am) AS seit FROM obstacle_aenderungen`),
-      // Rohzahlen OHNE Churn-Filter — Transparenz, wie viel rausgerechnet wurde.
+      // Rohzahlen OHNE Churn-Filter — Transparenz, wie viel rausgerechnet wurde. Erstbefüllung
+      // separat: Zeilen von Quellen, deren gesamter Bestand erst im Fenster entstand.
       db.query(
-        `SELECT
+        `WITH etablierte_quelle AS (
+           SELECT quellen_id FROM obstacles GROUP BY quellen_id
+           HAVING min(created_at) < current_date - $2::int * interval '1 day'
+         )
+         SELECT
            (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
               AND created_at >= current_date - $2::int * interval '1 day') AS neu,
            (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
-              AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen`,
+              AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
+           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+              AND created_at >= current_date - $2::int * interval '1 day'
+              AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen`,
         params,
       ),
     ])
@@ -196,6 +223,7 @@ export function veraenderungenRouter({ db }) {
       roh: {
         neu: Number(roh.rows[0]?.neu ?? 0),
         weggefallen: Number(roh.rows[0]?.weggefallen ?? 0),
+        erstbefuellungNeuerQuellen: Number(roh.rows[0]?.erstbefuellung_neuer_quellen ?? 0),
       },
       proKategorie: kat,
       laufzeiten: Object.fromEntries(laufzeitRows.rows.map((r) => [r.laufzeit, Number(r.n)])),
