@@ -59,4 +59,26 @@ const roh = await db.query(`
 `, [KATEGORIEN, 30])
 console.log(JSON.stringify(roh.rows[0]))
 
+// Verbleibende "echte_neu" je Quelle — sind die Top-Quellen der Rohliste (0145/0147/0131/0214)
+// noch dominant (Filter zu schwach) oder verteilt sich der Rest breiter (Filter greift)?
+const restJeQuelle = await db.query(`
+  WITH echte_neu AS (
+    SELECT n.* FROM obstacles n
+    WHERE n.demo = false AND n.kategorie = ANY($1)
+      AND n.created_at >= current_date - $2::int * interval '1 day'
+      AND NOT EXISTS (
+        SELECT 1 FROM obstacles w
+        WHERE w.quellen_id = n.quellen_id AND w.kategorie = n.kategorie AND w.aktiv = false
+          AND w.id <> n.id
+          AND w.lat BETWEEN n.lat - $3::float8 AND n.lat + $3::float8
+          AND w.lng BETWEEN n.lng - $4::float8 AND n.lng + $4::float8
+          AND w.updated_at BETWEEN n.created_at - ($5::int * interval '1 day')
+                                AND n.created_at + ($5::int * interval '1 day')
+      )
+  )
+  SELECT quellen_id, count(*) AS n FROM echte_neu GROUP BY 1 ORDER BY 2 DESC LIMIT 15
+`, params)
+console.log("=== verbleibende echte_neu je Quelle ===")
+console.log(JSON.stringify(restJeQuelle.rows))
+
 process.exit(0)
