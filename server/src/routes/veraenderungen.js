@@ -46,8 +46,8 @@
 // Erstbefüllung, kein Tages-Delta. Eine Quelle ohne jede Zeile VOR dem Fenster zählt deshalb gar
 // nicht mit; ihre Erstbefüllung steht separat in `roh.erstbefuellungNeuerQuellen`.
 //
-// Wirkung (18.09., alle Kategorien, 30 Tage): 47.898 roh → 9.263 echte "neu" (−81 %), 42.086 roh
-// → 6.746 echte "ausgelaufen"+"entfernt" (−84 %). `roh` bleibt im Response — nachvollziehbar
+// Wirkung (18.09., alle Kategorien, 30 Tage): 47.898 roh → 6.822 echte "neu" (−86 %), 42.086 roh
+// → 4.613 echte "ausgelaufen"+"entfernt" (−89 %). `roh` bleibt im Response — nachvollziehbar
 // statt eine geglättete Zahl ohne Beleg.
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
@@ -159,124 +159,112 @@ export function veraenderungenRouter({ db }) {
     const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
     const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
 
-    const [zeitreihe, kategorieRows, strassenklasseRows, laufzeitRows, vorlaufRows, seitWann, roh] = await Promise.all([
-      // Lückenlose Tagesreihe (generate_series), je Typ eine Serie — dieselbe Technik wie
-      // analytics.js proTagRows. LEFT JOIN statt UNION-Aggregat, damit ein Tag ohne Ereignis
-      // als 0 erscheint statt zu fehlen (sonst "springt" das Chart).
-      db.query(
-        `WITH ${CHURN_CTES}
-         SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
-           coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
-           coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
-         FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-         LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
-         LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
-         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-         LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
-         ORDER BY d`,
-        params,
+    // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
+    // berechnet — Postgres materialisiert eine CTE automatisch, sobald sie mehr als einmal
+    // referenziert wird (zr/kat/strasse/lz/vl greifen alle darauf zu). Grund für den Umbau
+    // (T-747, 18.09.): sieben PARALLELE Aufrufe des ursprünglich selben teuren Anti-Joins haben
+    // dem Postgres-Container gleichzeitig Shared-Memory für Parallel-Worker abverlangt und ihn
+    // mit "could not resize shared memory segment … No space left on device" (53100) abstürzen
+    // lassen. `db.session` + SET (nicht LOCAL, wirkt für die ganze Verbindung) erzwingt zusätzlich
+    // Single-Worker-Ausführung — auf dieser kleinen VM bringt Parallelität ohnehin selten etwas,
+    // Stabilität zählt hier mehr als ein paar Sekunden Query-Zeit.
+    const { rows: [row] } = await db.session((q) =>
+      q.query("SET max_parallel_workers_per_gather = 0").then(() =>
+        q.query(
+          `WITH ${CHURN_CTES},
+           zr AS (
+             SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
+               coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
+               coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
+             FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
+             LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM echte_neu GROUP BY 1) n ON n.tag = d::date
+             LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
+             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+             LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM echte_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+           ),
+           kat AS (
+             SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
+             UNION ALL SELECT kategorie, weg_typ, count(*) FROM echte_weg GROUP BY 1, 2
+             UNION ALL SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1
+           ),
+           strasse AS (
+             SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
+             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM echte_weg GROUP BY 1, weg_typ
+             UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1
+           ),
+           lz AS (
+             SELECT
+               CASE
+                 WHEN gueltig_von IS NULL THEN 'unbekannt'
+                 WHEN gueltig_bis IS NULL THEN 'lang'
+                 WHEN gueltig_bis - gueltig_von <= 7 THEN 'kurz'
+                 WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
+                 ELSE 'lang'
+               END AS laufzeit, count(*) AS n
+             FROM echte_neu GROUP BY 1
+           ),
+           vl AS (
+             SELECT
+               CASE
+                 WHEN gueltig_von IS NULL THEN 'unbekannt'
+                 WHEN gueltig_von - created_at::date <= 1 THEN 'spontan'
+                 WHEN gueltig_von - created_at::date <= 6 THEN 'kurzfristig'
+                 WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
+                 ELSE 'langfristig'
+               END AS vorlauf, count(*) AS n
+             FROM echte_neu GROUP BY 1
+           ),
+           roh AS (
+             SELECT
+               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+                  AND created_at >= current_date - $2::int * interval '1 day') AS neu,
+               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
+                  AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
+               (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
+                  AND created_at >= current_date - $2::int * interval '1 day'
+                  AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen
+           )
+           SELECT
+             (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
+             (SELECT json_agg(kat) FROM kat) AS kategorien,
+             (SELECT json_agg(strasse) FROM strasse) AS strassenklassen,
+             (SELECT json_object_agg(laufzeit, n) FROM lz) AS laufzeiten,
+             (SELECT json_object_agg(vorlauf, n) FROM vl) AS vorlaufzeiten,
+             (SELECT row_to_json(roh) FROM roh) AS roh,
+             (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit`,
+          params,
+        ),
       ),
-      // Kategorie-Aufschlüsselung über das ganze Fenster, je Typ.
-      db.query(
-        `WITH ${CHURN_CTES}
-         SELECT kategorie, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
-         UNION ALL
-         SELECT kategorie, weg_typ, count(*) FROM echte_weg GROUP BY 1, 2
-         UNION ALL
-         SELECT kategorie, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1`,
-        params,
-      ),
-      // Straßenklasse-Aufschlüsselung (Max: "nach Straßen differenzieren, Autobahn/Bundesstraße/…").
-      db.query(
-        `WITH ${CHURN_CTES}
-         SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM echte_neu GROUP BY 1
-         UNION ALL
-         SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM echte_weg GROUP BY 1, weg_typ
-         UNION ALL
-         SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1`,
-        params,
-      ),
-      // Laufzeit-Klasse (nur echte "neu" — Eigenschaft der Maßnahme selbst, nicht des Ereignisses).
-      // Heuristik: gueltig_von fehlt → unbekannt; gueltig_bis fehlt → lang (unbefristet);
-      // sonst <=7 Tage kurz, <=30 Tage mittel, darüber lang.
-      db.query(
-        `WITH ${CHURN_CTES}
-         SELECT
-           CASE
-             WHEN gueltig_von IS NULL THEN 'unbekannt'
-             WHEN gueltig_bis IS NULL THEN 'lang'
-             WHEN gueltig_bis - gueltig_von <= 7 THEN 'kurz'
-             WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
-             ELSE 'lang'
-           END AS laufzeit, count(*) AS n
-         FROM echte_neu
-         GROUP BY 1`,
-        params,
-      ),
-      // Vorlaufzeit-Klasse (nur echte "neu"): wie viele Tage zwischen unserer Erst-Erfassung
-      // (created_at) und dem Beginn (gueltig_von) liegen.
-      db.query(
-        `WITH ${CHURN_CTES}
-         SELECT
-           CASE
-             WHEN gueltig_von IS NULL THEN 'unbekannt'
-             WHEN gueltig_von - created_at::date <= 1 THEN 'spontan'
-             WHEN gueltig_von - created_at::date <= 6 THEN 'kurzfristig'
-             WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
-             ELSE 'langfristig'
-           END AS vorlauf, count(*) AS n
-         FROM echte_neu
-         GROUP BY 1`,
-        params,
-      ),
-      // Seit wann läuft "geaendert" überhaupt? Transparenz statt stillschweigend 0 zu zeigen.
-      db.query(`SELECT min(erkannt_am) AS seit FROM obstacle_aenderungen`),
-      // Rohzahlen OHNE Churn-Filter — Transparenz, wie viel rausgerechnet wurde. Erstbefüllung
-      // separat: Zeilen von Quellen, deren gesamter Bestand erst im Fenster entstand.
-      db.query(
-        `WITH etablierte_quelle AS (
-           SELECT quellen_id FROM obstacles GROUP BY quellen_id
-           HAVING min(created_at) < current_date - $2::int * interval '1 day'
-         )
-         SELECT
-           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
-              AND created_at >= current_date - $2::int * interval '1 day') AS neu,
-           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
-              AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
-           (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
-              AND created_at >= current_date - $2::int * interval '1 day'
-              AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen`,
-        [kategorien, tage], // nur $1/$2 referenziert — node-pg verlangt exakte Bind-Anzahl
-      ),
-    ])
+    )
 
     const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
     const kat = bucket()
-    for (const row of kategorieRows.rows) kat[row.typ][row.kategorie] = Number(row.n)
+    for (const r2 of row.kategorien ?? []) kat[r2.typ][r2.kategorie] = Number(r2.n)
     const strasse = bucket()
-    for (const row of strassenklasseRows.rows) strasse[row.typ][row.klasse] = Number(row.n)
+    for (const r2 of row.strassenklassen ?? []) strasse[r2.typ][r2.klasse] = Number(r2.n)
 
-    const summe = (feld) => zeitreihe.rows.reduce((s, t) => s + Number(t[feld]), 0)
+    const zeitreihe = (row.zeitreihe ?? []).map((t) => ({
+      tag: t.tag, neu: Number(t.neu), geaendert: Number(t.geaendert),
+      ausgelaufen: Number(t.ausgelaufen), entfernt: Number(t.entfernt),
+    }))
+    const summe = (feld) => zeitreihe.reduce((s, t) => s + t[feld], 0)
 
     res.json({
       tage,
       kategorien,
-      geaendertTrackingSeit: seitWann.rows[0]?.seit ?? null,
-      zeitreihe: zeitreihe.rows.map((t) => ({
-        tag: t.tag, neu: Number(t.neu), geaendert: Number(t.geaendert),
-        ausgelaufen: Number(t.ausgelaufen), entfernt: Number(t.entfernt),
-      })),
+      geaendertTrackingSeit: row.geaendert_seit ?? null,
+      zeitreihe,
       gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
       // Rohzahlen vor dem Herausrechnen von Quellen-Rotation — Beleg, kein Versteck.
       roh: {
-        neu: Number(roh.rows[0]?.neu ?? 0),
-        weggefallen: Number(roh.rows[0]?.weggefallen ?? 0),
-        erstbefuellungNeuerQuellen: Number(roh.rows[0]?.erstbefuellung_neuer_quellen ?? 0),
+        neu: Number(row.roh?.neu ?? 0),
+        weggefallen: Number(row.roh?.weggefallen ?? 0),
+        erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
       },
       proKategorie: kat,
       proStrassenklasse: strasse,
-      laufzeiten: Object.fromEntries(laufzeitRows.rows.map((rr) => [rr.laufzeit, Number(rr.n)])),
-      vorlaufzeiten: Object.fromEntries(vorlaufRows.rows.map((rr) => [rr.vorlauf, Number(rr.n)])),
+      laufzeiten: row.laufzeiten ?? {},
+      vorlaufzeiten: row.vorlaufzeiten ?? {},
     })
   }))
 
