@@ -76,6 +76,20 @@
 // ein Präzisions-/Recall-Tausch ohne objektiv richtige Antwort, keine Bug-Behebung, deshalb
 // unverändert gelassen (siehe CHURN_CTES-Kommentar zu vorgang_rotation).
 //
+// FÜNFTE Sonderregel (T-748, 19.09., Max: "zusammenhängende Baustellen, Dubletten … alle
+// rausfiltern, max. Informationsgehalt aus minimalen Punkten"): dieselbe reale Autobahn-Baustelle
+// wird oft von MEHREREN Quellen DESSELBEN Herausgebers gleichzeitig gemeldet — 0001 (Autobahn-API,
+// öffentlich), 0145 (BAB Arbeitsstellen kürzerer Dauer) und 0152 (BAB Arbeitsstellen längerer
+// Dauer Vorschau) sind alle Autobahn GmbH. Diagnose: 74 % der Autobahn-"Neu"-Kandidaten hatten
+// eine geografisch nahe + zeitlich überlappende Zeile in einer ANDEREN dieser Quellen; 0001↔0145
+// allein erklärte 66 % davon — die einzige Kombination, die der bestehende Dublettenfilter NICHT
+// abdeckt (0152 dedupt sich bereits beim Import gegen 0001/0145, siehe
+// connectors/0152_bab_ald_vorschau.js). Fix HIER (Tracking-Ebene): final_neu/final_weg
+// entfernen aus vorgang_neu/vorgang_weg Zeilen, für die eine höher priorisierte Quelle derselben
+// Familie (QUELLEN_FAMILIE_AUTOBAHN_GMBH, Priorität = Array-Reihenfolge) denselben Vorgang bereits
+// zählt. Der TIEFERE Fix (0001↔0145 direkt im Connector deduplizieren, würde auch die Kunden-Karte
+// ändern) ist eine separate, größere Entscheidung — hier bewusst nicht gemacht.
+//
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
 // change_hash-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
@@ -100,6 +114,23 @@ const CHURN_FENSTER_TAGE = 45
 // exaktem Namensgleich (siehe CHURN_CTES) fuer Faelle, die selbst das noch verfehlen.
 const CHURN_GEO_LAT = 0.01
 const CHURN_GEO_LNG = 0.015
+
+// T-748 (19.09., Max: "zusammenhängende Baustellen, Dubletten … alle rausfiltern, max.
+// Informationsgehalt aus minimalen Punkten"). Diagnose (scripts/diagQuellenuebergreifendeDubletten.mjs
+// + diagQuellenNamen.mjs, gegen Prod): 74 % (13.993/18.977) der Autobahn-"Neu"-Kandidaten haben
+// eine geografisch nahe + zeitlich überlappende Zeile in einer ANDEREN Quelle mit gleichem
+// strassen_ref. Ursache: 0001 (Autobahn-API, verkehr.autobahn.de — öffentlich), 0145 (BAB
+// Arbeitsstellen kürzerer Dauer, Mobilithek) und 0152 (BAB Arbeitsstellen längerer Dauer Vorschau,
+// Mobilithek) sind ALLE derselbe Herausgeber (Autobahn GmbH), dieselbe reale Baustelle läuft über
+// mehrere ihrer eigenen Feeds gleichzeitig. 0152 dedupt sich bereits beim Import gegen 0001/0145
+// (connectors/0152_bab_ald_vorschau.js, DEDUP_QUELLEN) — 0001↔0145 NIE, das erklärt allein 66 %
+// der gefundenen Überlappungen (12.672/19.259 Paare). Fix HIER (Tracking-Ebene, wie schon die
+// Quellen-Rotation): eine zweite Zusammenfassung NACH der Vorgangs-Gruppierung, die Vorgänge
+// derselben Familie mit gleichem strassen_ref, geografischer Nähe und überlappender Gültigkeit
+// auf einen zusammenfasst. Der TIEFERE Fix (0001↔0145 direkt im Connector/Importer deduplizieren,
+// würde auch die Kunden-Karte ändern) ist eine separate, größere Entscheidung — hier bewusst NICHT
+// gemacht, nur die interne Auswertung wird strenger.
+const QUELLEN_FAMILIE_AUTOBAHN_GMBH = ["0001", "0145", "0152"]
 
 // Straßenklasse aus strassen_ref (T-747-Erweiterung, Max: "nach Strassen differenzieren —
 // Autobahn, Bundesstraße, …"). Empirisch gegen den Bestand geprüft (scripts/diagStrassenklasse.mjs):
@@ -227,7 +258,43 @@ const CHURN_CTES = `
         '\\s*[-/]?\\s*(Lage|Teil|Abschnitt|Los)[\\s.:-]*[0-9]+\\s*$', '', 'i') AS basisname
       FROM rotation_neu rn
     ) z ORDER BY quellen_id, kategorie, basisname, created_at ASC
-  )
+  ),
+  -- T-748: KREUZQUELLEN-Zusammenfassung, NACH der Vorgangs-Gruppierung — derselbe Vorgang, von
+  -- mehreren Quellen DERSELBEN Familie (aktuell nur Autobahn GmbH, $6) gleichzeitig gemeldet,
+  -- gleicher strassen_ref, geografisch nah, Gültigkeit überlappend. Priorität nach Reihenfolge in
+  -- $6 (array_position: 0001 vor 0145 vor 0152 — die öffentliche API gewinnt als Repräsentant).
+  -- Ein Vorgang verliert nur gegen einen mit STRIKT besserer Priorität, nie gegen einen gleich-
+  -- oder schlechter-priorisierten — kein gegenseitiges Ausschließen möglich.
+  familie_dublette_neu AS (
+    SELECT a.id FROM vorgang_neu a
+    WHERE a.quellen_id = ANY($6::text[])
+      AND EXISTS (
+        SELECT 1 FROM vorgang_neu b
+        WHERE b.quellen_id = ANY($6::text[]) AND b.quellen_id <> a.quellen_id
+          AND b.strassen_ref = a.strassen_ref
+          AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
+          AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
+          AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
+          AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
+          AND array_position($6::text[], b.quellen_id) < array_position($6::text[], a.quellen_id)
+      )
+  ),
+  final_neu AS (SELECT * FROM vorgang_neu WHERE id NOT IN (SELECT id FROM familie_dublette_neu)),
+  familie_dublette_weg AS (
+    SELECT a.id FROM vorgang_weg a
+    WHERE a.quellen_id = ANY($6::text[])
+      AND EXISTS (
+        SELECT 1 FROM vorgang_weg b
+        WHERE b.quellen_id = ANY($6::text[]) AND b.quellen_id <> a.quellen_id
+          AND b.strassen_ref = a.strassen_ref
+          AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
+          AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
+          AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
+          AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
+          AND array_position($6::text[], b.quellen_id) < array_position($6::text[], a.quellen_id)
+      )
+  ),
+  final_weg AS (SELECT * FROM vorgang_weg WHERE id NOT IN (SELECT id FROM familie_dublette_weg))
 `
 
 /** Reine Berechnung, kein HTTP — vom Route-Handler (Cache-Miss-Fallback) UND vom taeglichen
@@ -236,7 +303,7 @@ const CHURN_CTES = `
  *  auf einen einzigen Schluessel (`tage`). */
 export async function berechneUebersicht(db, tage) {
   const kategorien = KATEGORIEN
-  const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
+  const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE, QUELLEN_FAMILIE_AUTOBAHN_GMBH]
   const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
 
   // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
@@ -256,11 +323,11 @@ export async function berechneUebersicht(db, tage) {
              coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
              coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
            FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_neu GROUP BY 1) n ON n.tag = d::date
+           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM final_neu GROUP BY 1) n ON n.tag = d::date
            LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
            LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_rotation GROUP BY 1) rot ON rot.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM vorgang_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM final_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM final_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
          ),
          -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
          -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
@@ -269,16 +336,16 @@ export async function berechneUebersicht(db, tage) {
          -- ebenfalls auf Vorgangs-Ebene zusammengefasst — ein täglich neu vergebenes externe_id
          -- desselben laufenden Vorgangs zählt einmal, nicht einmal pro Tag).
          kat AS (
-           SELECT kategorie, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
-           UNION ALL SELECT kategorie, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, 2
+           SELECT kategorie, 'neu' AS typ, count(*) AS n FROM final_neu GROUP BY 1
+           UNION ALL SELECT kategorie, weg_typ, count(*) FROM final_weg GROUP BY 1, 2
            UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
              SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
              UNION ALL SELECT kategorie FROM vorgang_rotation
            ) x GROUP BY 1
          ),
          strasse AS (
-           SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM vorgang_neu GROUP BY 1
-           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM vorgang_weg GROUP BY 1, weg_typ
+           SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM final_neu GROUP BY 1
+           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM final_weg GROUP BY 1, weg_typ
            UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
              SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
              UNION ALL SELECT strassen_ref FROM vorgang_rotation
@@ -293,7 +360,7 @@ export async function berechneUebersicht(db, tage) {
                WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
                ELSE 'lang'
              END AS laufzeit, count(*) AS n
-           FROM vorgang_neu GROUP BY 1
+           FROM final_neu GROUP BY 1
          ),
          vl AS (
            SELECT
@@ -304,7 +371,7 @@ export async function berechneUebersicht(db, tage) {
                WHEN gueltig_von - created_at::date <= 30 THEN 'geplant'
                ELSE 'langfristig'
              END AS vorlauf, count(*) AS n
-           FROM vorgang_neu GROUP BY 1
+           FROM final_neu GROUP BY 1
          ),
          roh AS (
            SELECT
@@ -317,7 +384,9 @@ export async function berechneUebersicht(db, tage) {
                 AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
              (SELECT count(*) FROM vorgang_rotation) AS rotation_als_geaendert,
              (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst,
-             (SELECT count(*) FROM rotation_neu) - (SELECT count(*) FROM vorgang_rotation) AS rotation_vorgaenge_zusammengefasst
+             (SELECT count(*) FROM rotation_neu) - (SELECT count(*) FROM vorgang_rotation) AS rotation_vorgaenge_zusammengefasst,
+             (SELECT count(*) FROM vorgang_neu) - (SELECT count(*) FROM final_neu) AS familie_dubletten_neu,
+             (SELECT count(*) FROM vorgang_weg) - (SELECT count(*) FROM final_weg) AS familie_dubletten_weg
          )
          SELECT
            (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -366,6 +435,11 @@ export async function berechneUebersicht(db, tage) {
       // (Max 18.09.: "35.137 kann ich mir kaum vorstellen, fasse zusammen"). rotationAlsGeaendert
       // oben ist bereits NACH diesem Zusammenfassen.
       rotationVorgaengeZusammengefasst: Number(row.roh?.rotation_vorgaenge_zusammengefasst ?? 0),
+      // Vorgänge, die eine ANDERE Quelle derselben Familie (aktuell Autobahn GmbH: 0001/0145/0152)
+      // bereits gemeldet hat — gleicher strassen_ref, geografisch nah, Gültigkeit überlappend.
+      // Steckt weder in "neu" noch in "geaendert", ist einfach raus (Dublette, kein Ereignis).
+      familieDublettenNeu: Number(row.roh?.familie_dubletten_neu ?? 0),
+      familieDublettenWeg: Number(row.roh?.familie_dubletten_weg ?? 0),
     },
     proKategorie: kat,
     proStrassenklasse: strasse,

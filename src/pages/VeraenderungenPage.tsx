@@ -182,16 +182,22 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
           Von den verbleibenden echten Neuanlagen fasst die Vorgangs-Zusammenfassung weitere{" "}
           {d.roh.segmenteZusammengefasst.toLocaleString("de-DE")} Zeilen zusammen, die zu einem bereits gezählten
           Vorgang gehören (mehrere Segmente oder mehrfache Neuveröffentlichung derselben Maßnahme, z.B. eine
-          kilometerlange Baustelle mit mehreren Bauabschnitten) — bleiben {d.gesamt.neu.toLocaleString("de-DE")} echte
-          neue Vorgänge und {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
+          kilometerlange Baustelle mit mehreren Bauabschnitten). Zusätzlich fallen{" "}
+          {d.roh.familieDublettenNeu.toLocaleString("de-DE")} Vorgänge raus, die eine andere Quelle desselben
+          Herausgebers (aktuell Autobahn GmbH: öffentliche API + zwei Mobilithek-Feeds) bereits gemeldet hat —
+          gleiche Straße, gleicher Ort, überlappender Zeitraum, aber eine zweite Meldung derselben Sache. Bleiben{" "}
+          {d.gesamt.neu.toLocaleString("de-DE")} echte neue Vorgänge und{" "}
+          {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
           ({d.gesamt.ausgelaufen.toLocaleString("de-DE")} davon planmäßig ausgelaufen,{" "}
-          {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt).
+          {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt,{" "}
+          {d.roh.familieDublettenWeg.toLocaleString("de-DE")} weitere Quellen-Dubletten dort ebenfalls entfernt).
         </p>
         <p className="mt-2 text-xs leading-relaxed text-neutral-400">
           "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im Bestand),
-          gezählt auf Vorgangs- nicht Zeilen-Ebene. "Geändert" fasst zwei Signale zusammen: Quellen-Rotation
-          (voller {d.tage}-Tage-Zeitraum) und inhaltliche Änderung an einer bestehenden Zeile (z.B. verschobenes
-          Datum oder geänderte Breite) — Letzteres wird erst seit{" "}
+          gezählt auf Vorgangs- nicht Zeilen-Ebene, quellenübergreifend dedupliziert für bekannte Herausgeber-
+          Familien. "Geändert" fasst zwei Signale zusammen: Quellen-Rotation (voller {d.tage}-Tage-Zeitraum) und
+          inhaltliche Änderung an einer bestehenden Zeile (z.B. verschobenes Datum oder geänderte Breite) —
+          Letzteres wird erst seit{" "}
           {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} erfasst und füllt sich
           über die nächsten Tage weiter auf.
         </p>

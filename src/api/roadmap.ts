@@ -159,6 +159,11 @@ export interface VeraenderungenUebersicht {
      *  z.B. dieselbe Baustelle, deren externe_id innerhalb des Fensters mehrfach wechselt.
      *  rotationAlsGeaendert oben ist bereits NACH diesem Zusammenfassen. */
     rotationVorgaengeZusammengefasst: number
+    /** Vorgänge, die eine ANDERE Quelle derselben Herausgeber-Familie (aktuell Autobahn GmbH:
+     *  0001/0145/0152) bereits gemeldet hat — gleiche Straße, geografisch nah, Gültigkeit
+     *  überlappend. Weder "neu" noch "geaendert", einfach eine Dublette. */
+    familieDublettenNeu: number
+    familieDublettenWeg: number
   }
   proKategorie: {
     neu: Record<string, number>
