@@ -91,6 +91,24 @@
 // ändern) ist eine separate, größere Entscheidung — hier bewusst nicht gemacht. Zweite Familie
 // (Berlin VIZ, 0114/0115) siehe QUELLEN_FAMILIEN-Kommentar weiter unten.
 //
+// SECHSTE Sonderregel (T-748, 19.09., Max: "wir machen auch nur relevante Änderungen als
+// Änderungen, nicht Kleinscheiß"): selbst nach allen bisherigen Fixes blieben ~5.050 "Neu"-
+// Vorgänge (30 Tage, alle Kategorien) — Stichwort-Prüfung auf administrative Arbeiten
+// (Beschilderung, Grünpflege, Markierung, Reinigung, Auf-/Abbau Verkehrsführung, …) traf nur
+// ~9 % davon (scripts/diagKleinscheissKeywords.mjs); die übrigen 91 % sind spezifisch benannte
+// Maßnahmen mit durchschnittlich 32 Tagen Laufzeit — kein Datenfehler, keine administrative
+// Nebensache. Die LAUFZEIT selbst trennt dagegen sauber: 53 % aller Vorgänge sind "kurz" (≤7
+// Tage). "Relevant" nutzt deshalb dieselbe "lang"-Klassifikation, die ohnehin schon für die
+// Laufzeit-Verteilung berechnet wird (kein neu erfundener Schwellwert) — relevant_neu/
+// relevant_weg/relevant_geaendert_rotation filtern auf gueltig_von IS NOT NULL AND (gueltig_bis
+// IS NULL OR Laufzeit > 30 Tage). Wirkung: Autobahn-"neu" sinkt von 2.353 auf 254
+// (scripts/diagAutobahnLangExakt.mjs) — eine Größenordnung näher an Max' Erwartung (~100), ohne
+// eine willkürliche neue Zahl zu erfinden. "Kurz"/"mittel" werden NICHT gelöscht, nur aus der
+// Kopfzahl ausgeklammert (roh.relevanzAusgeklammertNeu/Weg/Geaendert zeigt wie viele) — der
+// Laufzeit-Chart selbst bleibt auf der VOLLEN Verteilung (sonst 100 % "lang", trivial und
+// nutzlos). Das ist eine DEFINITIONS-Änderung ("Neu" heißt jetzt "relevant Neu"), keine reine
+// Bereinigung — im Frontend entsprechend beschriftet, nicht stillschweigend umbenannt.
+//
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
 // change_hash-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
@@ -326,7 +344,30 @@ const CHURN_CTES = `
         AND fb.prioritaet < fa.prioritaet
     )
   ),
-  final_weg AS (SELECT * FROM vorgang_weg WHERE id NOT IN (SELECT id FROM familie_dublette_weg))
+  final_weg AS (SELECT * FROM vorgang_weg WHERE id NOT IN (SELECT id FROM familie_dublette_weg)),
+  -- RELEVANZ-Filter (T-748, 19.09., Max: "wir machen auch nur relevante Änderungen als
+  -- Änderungen, nicht Kleinscheiß"). Empirisch geprüft (scripts/diagKleinscheissKeywords.mjs):
+  -- Stichwort-Filterung auf administrative Arbeiten (Beschilderung, Grünpflege, Markierung, …)
+  -- greift nur bei ~9 % des Bestands — die übrigen 91 % sind spezifisch benannte, im Schnitt
+  -- 32 Tage laufende Maßnahmen, kein "Kleinscheiß" im engeren Sinn. Die LAUFZEIT dagegen trennt
+  -- sauber: 53 % aller Vorgänge sind "kurz" (≤7 Tage). "Relevant" = dieselbe "lang"-Klasse, die
+  -- ohnehin schon für Laufzeiten/vl berechnet wird (kein neuer Schwellwert erfunden) — Autobahn
+  -- sinkt damit von 2.353 auf 254 (scripts/diagAutobahnLangExakt.mjs), eine Größenordnung näher an
+  -- Max' Erwartung, ohne eine willkürliche neue Zahl zu erfinden. "Kurz"/"mittel" werden NICHT
+  -- gelöscht, nur aus der Kopfzahl ausgeklammert — Laufzeit-Chart zeigt weiterhin ALLE Vorgänge
+  -- (sonst würde sie trivial zu 100 % "lang" und ihren Zweck verlieren), roh bleibt vollständig.
+  relevant_neu AS (
+    SELECT * FROM final_neu
+    WHERE gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)
+  ),
+  relevant_weg AS (
+    SELECT * FROM final_weg
+    WHERE gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)
+  ),
+  relevant_geaendert_rotation AS (
+    SELECT * FROM vorgang_rotation
+    WHERE gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)
+  )
 `
 
 /** Reine Berechnung, kein HTTP — vom Route-Handler (Cache-Miss-Fallback) UND vom taeglichen
@@ -337,6 +378,9 @@ export async function berechneUebersicht(db, tage) {
   const kategorien = KATEGORIEN
   const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
   const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
+  // Dieselbe Relevanz-Regel wie relevant_neu/relevant_weg (T-748) — auf obstacle_aenderungen
+  // angewendet, das dieselben gueltig_von/gueltig_bis-Spalten trägt (Migration 081).
+  const relevantFilter = `${geaendertFilter} AND gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)`
 
   // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
   // berechnet — Postgres materialisiert eine CTE automatisch, sobald sie mehr als einmal
@@ -355,11 +399,11 @@ export async function berechneUebersicht(db, tage) {
              coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
              coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
            FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
-           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM final_neu GROUP BY 1) n ON n.tag = d::date
-           LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${geaendertFilter} GROUP BY 1) g ON g.tag = d::date
-           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM vorgang_rotation GROUP BY 1) rot ON rot.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM final_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM final_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM relevant_neu GROUP BY 1) n ON n.tag = d::date
+           LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1) g ON g.tag = d::date
+           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM relevant_geaendert_rotation GROUP BY 1) rot ON rot.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
          ),
          -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
          -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
@@ -368,19 +412,19 @@ export async function berechneUebersicht(db, tage) {
          -- ebenfalls auf Vorgangs-Ebene zusammengefasst — ein täglich neu vergebenes externe_id
          -- desselben laufenden Vorgangs zählt einmal, nicht einmal pro Tag).
          kat AS (
-           SELECT kategorie, 'neu' AS typ, count(*) AS n FROM final_neu GROUP BY 1
-           UNION ALL SELECT kategorie, weg_typ, count(*) FROM final_weg GROUP BY 1, 2
+           SELECT kategorie, 'neu' AS typ, count(*) AS n FROM relevant_neu GROUP BY 1
+           UNION ALL SELECT kategorie, weg_typ, count(*) FROM relevant_weg GROUP BY 1, 2
            UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
-             SELECT kategorie FROM obstacle_aenderungen WHERE ${geaendertFilter}
-             UNION ALL SELECT kategorie FROM vorgang_rotation
+             SELECT kategorie FROM obstacle_aenderungen WHERE ${relevantFilter}
+             UNION ALL SELECT kategorie FROM relevant_geaendert_rotation
            ) x GROUP BY 1
          ),
          strasse AS (
-           SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM final_neu GROUP BY 1
-           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM final_weg GROUP BY 1, weg_typ
+           SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM relevant_neu GROUP BY 1
+           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM relevant_weg GROUP BY 1, weg_typ
            UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
-             SELECT strassen_ref FROM obstacle_aenderungen WHERE ${geaendertFilter}
-             UNION ALL SELECT strassen_ref FROM vorgang_rotation
+             SELECT strassen_ref FROM obstacle_aenderungen WHERE ${relevantFilter}
+             UNION ALL SELECT strassen_ref FROM relevant_geaendert_rotation
            ) x GROUP BY 1
          ),
          lz AS (
@@ -418,7 +462,11 @@ export async function berechneUebersicht(db, tage) {
              (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst,
              (SELECT count(*) FROM rotation_neu) - (SELECT count(*) FROM vorgang_rotation) AS rotation_vorgaenge_zusammengefasst,
              (SELECT count(*) FROM vorgang_neu) - (SELECT count(*) FROM final_neu) AS familie_dubletten_neu,
-             (SELECT count(*) FROM vorgang_weg) - (SELECT count(*) FROM final_weg) AS familie_dubletten_weg
+             (SELECT count(*) FROM vorgang_weg) - (SELECT count(*) FROM final_weg) AS familie_dubletten_weg,
+             (SELECT count(*) FROM final_neu) - (SELECT count(*) FROM relevant_neu) AS relevanz_ausgeklammert_neu,
+             (SELECT count(*) FROM final_weg) - (SELECT count(*) FROM relevant_weg) AS relevanz_ausgeklammert_weg,
+             ((SELECT count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter}) - (SELECT count(*) FROM obstacle_aenderungen WHERE ${relevantFilter}))
+               + ((SELECT count(*) FROM vorgang_rotation) - (SELECT count(*) FROM relevant_geaendert_rotation)) AS relevanz_ausgeklammert_geaendert
          )
          SELECT
            (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -472,6 +520,13 @@ export async function berechneUebersicht(db, tage) {
       // Steckt weder in "neu" noch in "geaendert", ist einfach raus (Dublette, kein Ereignis).
       familieDublettenNeu: Number(row.roh?.familie_dubletten_neu ?? 0),
       familieDublettenWeg: Number(row.roh?.familie_dubletten_weg ?? 0),
+      // Relevanz-Filter (T-748, Max: "nur relevante Änderungen, nicht Kleinscheiß"): "kurz"/
+      // "mittel" laufende Vorgänge (≤30 Tage) zählen nicht mehr in gesamt.neu/geaendert/
+      // ausgelaufen/entfernt — bleiben aber vollständig sichtbar im Laufzeit-Chart (laufzeiten
+      // unten zeigt ALLE Vorgänge, nicht nur die relevanten).
+      relevanzAusgeklammertNeu: Number(row.roh?.relevanz_ausgeklammert_neu ?? 0),
+      relevanzAusgeklammertWeg: Number(row.roh?.relevanz_ausgeklammert_weg ?? 0),
+      relevanzAusgeklammertGeaendert: Number(row.roh?.relevanz_ausgeklammert_geaendert ?? 0),
     },
     proKategorie: kat,
     proStrassenklasse: strasse,

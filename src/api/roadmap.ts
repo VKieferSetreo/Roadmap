@@ -164,6 +164,12 @@ export interface VeraenderungenUebersicht {
      *  überlappend. Weder "neu" noch "geaendert", einfach eine Dublette. */
     familieDublettenNeu: number
     familieDublettenWeg: number
+    /** Vorgänge mit Laufzeit ≤30 Tage ("kurz"/"mittel") — zählen nicht mehr in gesamt/proKategorie/
+     *  proStrassenklasse, bleiben aber vollständig im Laufzeit-Chart sichtbar. Relevanz-Filter
+     *  (Max: "nur relevante Änderungen, nicht Kleinscheiß"), keine Löschung. */
+    relevanzAusgeklammertNeu: number
+    relevanzAusgeklammertWeg: number
+    relevanzAusgeklammertGeaendert: number
   }
   proKategorie: {
     neu: Record<string, number>

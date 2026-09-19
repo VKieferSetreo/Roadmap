@@ -103,11 +103,16 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
     <div className="flex flex-col gap-5">
       <Hero d={d} insight={insight} />
 
+      <p className="-mb-1 text-xs text-neutral-400">
+        Nur relevante Maßnahmen (Laufzeit &gt;30 Tage oder unbefristet) — Kleinschriebenes wie
+        Beschilderungsarbeiten oder Grünpflege zählt hier nicht mit, ist aber im Laufzeit-Chart
+        unten vollständig sichtbar.
+      </p>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi icon={PlusCircle} label="Neu" sub={`${d.tage} Tage`} value={d.gesamt.neu} akzent="#1baf7a" />
+        <Kpi icon={PlusCircle} label="Neu" sub={`${d.tage} Tage · relevant`} value={d.gesamt.neu} akzent="#1baf7a" />
         <Kpi icon={Sparkles} label="Geändert" sub={geaendertSub(d)} value={d.gesamt.geaendert} akzent="#eb6834" />
-        <Kpi icon={CalendarX2} label="Ausgelaufen" sub="planmäßig" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
-        <Kpi icon={XCircle} label="Entfernt" sub="vorzeitig" value={d.gesamt.entfernt} akzent="#4a3aa7" />
+        <Kpi icon={CalendarX2} label="Ausgelaufen" sub="planmäßig, relevant" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
+        <Kpi icon={XCircle} label="Entfernt" sub="vorzeitig, relevant" value={d.gesamt.entfernt} akzent="#4a3aa7" />
       </div>
 
       <Card className="overflow-hidden">
@@ -184,22 +189,25 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
           Vorgang gehören (mehrere Segmente oder mehrfache Neuveröffentlichung derselben Maßnahme, z.B. eine
           kilometerlange Baustelle mit mehreren Bauabschnitten). Zusätzlich fallen{" "}
           {d.roh.familieDublettenNeu.toLocaleString("de-DE")} Vorgänge raus, die eine andere Quelle desselben
-          Herausgebers (aktuell Autobahn GmbH: öffentliche API + zwei Mobilithek-Feeds) bereits gemeldet hat —
-          gleiche Straße, gleicher Ort, überlappender Zeitraum, aber eine zweite Meldung derselben Sache. Bleiben{" "}
-          {d.gesamt.neu.toLocaleString("de-DE")} echte neue Vorgänge und{" "}
-          {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} echte "Weggefallen"
+          Herausgebers (aktuell Autobahn GmbH: öffentliche API + zwei Mobilithek-Feeds, oder Berlin VIZ: zwei
+          Feed-Formate) bereits gemeldet hat — gleiche Straße, gleicher Ort, überlappender Zeitraum. Zuletzt fallen{" "}
+          {d.roh.relevanzAusgeklammertNeu.toLocaleString("de-DE")} Vorgänge mit Laufzeit ≤30 Tage aus der Kopfzahl
+          (bleiben im Laufzeit-Chart unten sichtbar) — bleiben {d.gesamt.neu.toLocaleString("de-DE")} relevante neue
+          Vorgänge und {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} relevante "Weggefallen"
           ({d.gesamt.ausgelaufen.toLocaleString("de-DE")} davon planmäßig ausgelaufen,{" "}
           {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt,{" "}
-          {d.roh.familieDublettenWeg.toLocaleString("de-DE")} weitere Quellen-Dubletten dort ebenfalls entfernt).
+          {d.roh.familieDublettenWeg.toLocaleString("de-DE")} Quellen-Dubletten und{" "}
+          {d.roh.relevanzAusgeklammertWeg.toLocaleString("de-DE")} kurzlaufende dort ebenfalls ausgeklammert).
         </p>
         <p className="mt-2 text-xs leading-relaxed text-neutral-400">
           "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im Bestand),
           gezählt auf Vorgangs- nicht Zeilen-Ebene, quellenübergreifend dedupliziert für bekannte Herausgeber-
-          Familien. "Geändert" fasst zwei Signale zusammen: Quellen-Rotation (voller {d.tage}-Tage-Zeitraum) und
-          inhaltliche Änderung an einer bestehenden Zeile (z.B. verschobenes Datum oder geänderte Breite) —
-          Letzteres wird erst seit{" "}
+          Familien, auf Laufzeit &gt;30 Tage bzw. unbefristet beschränkt (Relevanz-Filter). "Geändert" fasst zwei
+          Signale zusammen: Quellen-Rotation (voller {d.tage}-Tage-Zeitraum) und inhaltliche Änderung an einer
+          bestehenden Zeile (z.B. verschobenes Datum oder geänderte Breite) — Letzteres wird erst seit{" "}
           {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} erfasst und füllt sich
-          über die nächsten Tage weiter auf.
+          über die nächsten Tage weiter auf. Beide Signale unterliegen ebenfalls dem Relevanz-Filter
+          ({d.roh.relevanzAusgeklammertGeaendert.toLocaleString("de-DE")} kurzlaufende dort ausgeklammert).
         </p>
       </Card>
     </div>
