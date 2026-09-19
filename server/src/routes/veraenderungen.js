@@ -86,9 +86,10 @@
 // abdeckt (0152 dedupt sich bereits beim Import gegen 0001/0145, siehe
 // connectors/0152_bab_ald_vorschau.js). Fix HIER (Tracking-Ebene): final_neu/final_weg
 // entfernen aus vorgang_neu/vorgang_weg Zeilen, für die eine höher priorisierte Quelle derselben
-// Familie (QUELLEN_FAMILIE_AUTOBAHN_GMBH, Priorität = Array-Reihenfolge) denselben Vorgang bereits
+// Familie (QUELLEN_FAMILIEN, Priorität = Array-Reihenfolge je Familie) denselben Vorgang bereits
 // zählt. Der TIEFERE Fix (0001↔0145 direkt im Connector deduplizieren, würde auch die Kunden-Karte
-// ändern) ist eine separate, größere Entscheidung — hier bewusst nicht gemacht.
+// ändern) ist eine separate, größere Entscheidung — hier bewusst nicht gemacht. Zweite Familie
+// (Berlin VIZ, 0114/0115) siehe QUELLEN_FAMILIEN-Kommentar weiter unten.
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
@@ -116,21 +117,42 @@ const CHURN_GEO_LAT = 0.01
 const CHURN_GEO_LNG = 0.015
 
 // T-748 (19.09., Max: "zusammenhängende Baustellen, Dubletten … alle rausfiltern, max.
-// Informationsgehalt aus minimalen Punkten"). Diagnose (scripts/diagQuellenuebergreifendeDubletten.mjs
-// + diagQuellenNamen.mjs, gegen Prod): 74 % (13.993/18.977) der Autobahn-"Neu"-Kandidaten haben
-// eine geografisch nahe + zeitlich überlappende Zeile in einer ANDEREN Quelle mit gleichem
-// strassen_ref. Ursache: 0001 (Autobahn-API, verkehr.autobahn.de — öffentlich), 0145 (BAB
-// Arbeitsstellen kürzerer Dauer, Mobilithek) und 0152 (BAB Arbeitsstellen längerer Dauer Vorschau,
-// Mobilithek) sind ALLE derselbe Herausgeber (Autobahn GmbH), dieselbe reale Baustelle läuft über
-// mehrere ihrer eigenen Feeds gleichzeitig. 0152 dedupt sich bereits beim Import gegen 0001/0145
-// (connectors/0152_bab_ald_vorschau.js, DEDUP_QUELLEN) — 0001↔0145 NIE, das erklärt allein 66 %
-// der gefundenen Überlappungen (12.672/19.259 Paare). Fix HIER (Tracking-Ebene, wie schon die
-// Quellen-Rotation): eine zweite Zusammenfassung NACH der Vorgangs-Gruppierung, die Vorgänge
-// derselben Familie mit gleichem strassen_ref, geografischer Nähe und überlappender Gültigkeit
-// auf einen zusammenfasst. Der TIEFERE Fix (0001↔0145 direkt im Connector/Importer deduplizieren,
-// würde auch die Kunden-Karte ändern) ist eine separate, größere Entscheidung — hier bewusst NICHT
-// gemacht, nur die interne Auswertung wird strenger.
-const QUELLEN_FAMILIE_AUTOBAHN_GMBH = ["0001", "0145", "0152"]
+// Informationsgehalt aus minimalen Punkten", danach "weiter nach sowas suchen"). Erste Diagnose
+// (scripts/diagQuellenuebergreifendeDubletten.mjs, gegen Prod): 74 % (13.993/18.977) der Autobahn-
+// "Neu"-Kandidaten hatten eine geografisch nahe + zeitlich überlappende Zeile in einer ANDEREN
+// Quelle mit gleichem strassen_ref. Ursache: 0001 (Autobahn-API, öffentlich), 0145 (BAB
+// Arbeitsstellen kürzerer Dauer) und 0152 (BAB Arbeitsstellen längerer Dauer Vorschau) sind ALLE
+// Autobahn GmbH. 0152 dedupt sich bereits beim Import gegen 0001/0145
+// (connectors/0152_bab_ald_vorschau.js, DEDUP_QUELLEN) — 0001↔0145 NIE, das erklärte allein 66 %
+// der gefundenen Überlappungen.
+//
+// Genereller Nachfolge-Scan über ALLE Quellenpaare (scripts/diagAllgemeineQuellenDubletten.mjs +
+// diagQuellenpaareNamen.mjs, geo+Kategorie+Gültigkeit, KEIN Namens- oder Strassen-Filter — bewusst
+// die Rohdaten, um nicht auf dieselbe Weise blind zu sein wie die erste Diagnose): 25 Quellenpaare
+// mit ≥20 Überlappungen. Manuell mit echten Beispielen geprüft, NICHT blind übernommen — das
+// Risiko, echte Ereignisse fälschlich als Dublette zu löschen, ist schlimmer als ein paar sichtbare
+// Dubletten übrig zu lassen. Eindeutig bestätigt: 0114/0115 (beide "Berlin VIZ", zwei Feed-Formate
+// desselben Herausgebers — Beispiele zeigen WÖRTLICH identische Namen wie "B96a Am Seegraben
+// (Altglienicke)" in beiden). Andere Kandidaten (NRW-Staat 0149/0156, Bayern-Staat vs. Städte
+// 0147/0210/0224, Brandenburg 0132/0143, A73 an der Thüringen/Bayern-Grenze 0131/0147) zeigten
+// GEMISCHTE Evidenz — teils echte Dubletten, teils eindeutig verschiedene reale Ereignisse (z.B.
+// 0129↔0148: "Halbseitige Sperrungen" matched gegen "Neubau Einfamilienhaus"; 0115↔0135: Sperrung
+// auf einer Straße matched gegen ein Verkehrszeichen-Verbot auf einer ANDEREN Straße) — bewusst
+// NICHT aufgenommen, offen für weitere Prüfung.
+//
+// Fix HIER (Tracking-Ebene, wie schon die Quellen-Rotation): pro Familie eine Zusammenfassung NACH
+// der Vorgangs-Gruppierung — MATCH über gleichen strassen_ref ODER exakten Namensgleich (Berlin-
+// VIZ-Fälle haben oft keinen strassen_ref, z.B. reine Straßennamen), plus geografische Nähe und
+// überlappende Gültigkeit. Der TIEFERE Fix (Dedup direkt im Connector/Importer, würde auch die
+// Kunden-Karte ändern) ist eine separate, größere Entscheidung — hier bewusst NICHT gemacht, nur
+// die interne Auswertung wird strenger.
+const QUELLEN_FAMILIEN = [
+  { name: "autobahn_gmbh", quellen: ["0001", "0145", "0152"] },
+  { name: "berlin_viz", quellen: ["0115", "0114"] },
+]
+const FAMILIE_VALUES = QUELLEN_FAMILIEN.flatMap((f, fi) =>
+  f.quellen.map((q, qi) => `('${q}', ${fi}, ${qi})`),
+).join(", ")
 
 // Straßenklasse aus strassen_ref (T-747-Erweiterung, Max: "nach Strassen differenzieren —
 // Autobahn, Bundesstraße, …"). Empirisch gegen den Bestand geprüft (scripts/diagStrassenklasse.mjs):
@@ -260,39 +282,49 @@ const CHURN_CTES = `
     ) z ORDER BY quellen_id, kategorie, basisname, created_at ASC
   ),
   -- T-748: KREUZQUELLEN-Zusammenfassung, NACH der Vorgangs-Gruppierung — derselbe Vorgang, von
-  -- mehreren Quellen DERSELBEN Familie (aktuell nur Autobahn GmbH, $6) gleichzeitig gemeldet,
-  -- gleicher strassen_ref, geografisch nah, Gültigkeit überlappend. Priorität nach Reihenfolge in
-  -- $6 (array_position: 0001 vor 0145 vor 0152 — die öffentliche API gewinnt als Repräsentant).
-  -- Ein Vorgang verliert nur gegen einen mit STRIKT besserer Priorität, nie gegen einen gleich-
-  -- oder schlechter-priorisierten — kein gegenseitiges Ausschließen möglich.
+  -- mehreren Quellen DERSELBEN Familie (familie_mitglied, siehe QUELLEN_FAMILIEN) gleichzeitig
+  -- gemeldet: gleicher strassen_ref ODER exakter Namensgleich (Berlin-VIZ-Fälle haben oft keinen
+  -- strassen_ref), geografisch nah, Gültigkeit überlappend. Priorität = Reihenfolge im jeweiligen
+  -- Familien-Array (fm.prioritaet, 0 = gewinnt). Ein Vorgang verliert nur gegen einen mit STRIKT
+  -- besserer Priorität DERSELBEN Familie, nie gegen einen gleich-/schlechter-priorisierten oder
+  -- einen aus einer ANDEREN Familie — kein gegenseitiges Ausschließen möglich.
+  familie_mitglied (quellen_id, familie, prioritaet) AS (VALUES ${FAMILIE_VALUES}),
   familie_dublette_neu AS (
     SELECT a.id FROM vorgang_neu a
-    WHERE a.quellen_id = ANY($6::text[])
-      AND EXISTS (
-        SELECT 1 FROM vorgang_neu b
-        WHERE b.quellen_id = ANY($6::text[]) AND b.quellen_id <> a.quellen_id
-          AND b.strassen_ref = a.strassen_ref
-          AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
-          AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
-          AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
-          AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
-          AND array_position($6::text[], b.quellen_id) < array_position($6::text[], a.quellen_id)
-      )
+    JOIN familie_mitglied fa ON fa.quellen_id = a.quellen_id
+    WHERE EXISTS (
+      SELECT 1 FROM vorgang_neu b
+      JOIN familie_mitglied fb ON fb.quellen_id = b.quellen_id
+      WHERE fb.familie = fa.familie AND b.quellen_id <> a.quellen_id
+        AND (
+          (a.strassen_ref IS NOT NULL AND b.strassen_ref = a.strassen_ref)
+          OR (a.name IS NOT NULL AND b.name = a.name)
+        )
+        AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
+        AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
+        AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
+        AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
+        AND fb.prioritaet < fa.prioritaet
+    )
   ),
   final_neu AS (SELECT * FROM vorgang_neu WHERE id NOT IN (SELECT id FROM familie_dublette_neu)),
   familie_dublette_weg AS (
     SELECT a.id FROM vorgang_weg a
-    WHERE a.quellen_id = ANY($6::text[])
-      AND EXISTS (
-        SELECT 1 FROM vorgang_weg b
-        WHERE b.quellen_id = ANY($6::text[]) AND b.quellen_id <> a.quellen_id
-          AND b.strassen_ref = a.strassen_ref
-          AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
-          AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
-          AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
-          AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
-          AND array_position($6::text[], b.quellen_id) < array_position($6::text[], a.quellen_id)
-      )
+    JOIN familie_mitglied fa ON fa.quellen_id = a.quellen_id
+    WHERE EXISTS (
+      SELECT 1 FROM vorgang_weg b
+      JOIN familie_mitglied fb ON fb.quellen_id = b.quellen_id
+      WHERE fb.familie = fa.familie AND b.quellen_id <> a.quellen_id
+        AND (
+          (a.strassen_ref IS NOT NULL AND b.strassen_ref = a.strassen_ref)
+          OR (a.name IS NOT NULL AND b.name = a.name)
+        )
+        AND b.lat BETWEEN a.lat - $3::float8 AND a.lat + $3::float8
+        AND b.lng BETWEEN a.lng - $4::float8 AND a.lng + $4::float8
+        AND (a.gueltig_von IS NULL OR b.gueltig_bis IS NULL OR a.gueltig_von <= b.gueltig_bis)
+        AND (b.gueltig_von IS NULL OR a.gueltig_bis IS NULL OR b.gueltig_von <= a.gueltig_bis)
+        AND fb.prioritaet < fa.prioritaet
+    )
   ),
   final_weg AS (SELECT * FROM vorgang_weg WHERE id NOT IN (SELECT id FROM familie_dublette_weg))
 `
@@ -303,7 +335,7 @@ const CHURN_CTES = `
  *  auf einen einzigen Schluessel (`tage`). */
 export async function berechneUebersicht(db, tage) {
   const kategorien = KATEGORIEN
-  const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE, QUELLEN_FAMILIE_AUTOBAHN_GMBH]
+  const params = [kategorien, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
   const geaendertFilter = `kategorie = ANY($1) AND erkannt_am >= current_date - $2::int * interval '1 day'`
 
   // EIN Statement statt sieben: echte_neu/echte_weg (der teure Anti-Join) wird nur EINMAL
