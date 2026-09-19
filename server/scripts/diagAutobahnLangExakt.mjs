@@ -1,6 +1,5 @@
-// Einmalige Diagnose (T-748, 19.09.): wie tief kommt man mit dem AGGRESSIVSTEN plausiblen Filter
-// (nur Autobahn, nur lange Laufzeit) — der Boden dessen, was durch reine Definitions-Aenderung
-// erreichbar ist. Nur lesend. `node scripts/diagAutobahnLaufzeitFloor.mjs`.
+// Praezise Zahl mit der BESTEHENDEN Laufzeit-Klassifikation (nicht neu erfunden) fuer Autobahn.
+// T-748, 19.09. `node scripts/diagAutobahnLangExakt.mjs`.
 import { createDefaultDb } from "/app/src/db.js"
 import { KATEGORIEN } from "/app/src/engine/rules.js"
 
@@ -18,7 +17,6 @@ const FAMILIE_VALUES = QUELLEN_FAMILIEN.flatMap((f, fi) =>
 ).join(", ")
 const params = [KATEGORIEN, tage, CHURN_GEO_LAT, CHURN_GEO_LNG, CHURN_FENSTER_TAGE]
 
-const t0 = Date.now()
 const { rows: [row] } = await db.query(
   `WITH
   etablierte_quelle AS (
@@ -62,15 +60,25 @@ const { rows: [row] } = await db.query(
         AND fb.prioritaet < fa.prioritaet
     )
   ),
-  final_neu AS (SELECT * FROM vorgang_neu WHERE id NOT IN (SELECT id FROM familie_dublette_neu))
+  final_neu AS (SELECT * FROM vorgang_neu WHERE id NOT IN (SELECT id FROM familie_dublette_neu)),
+  klassifiziert AS (
+    SELECT *,
+      CASE
+        WHEN gueltig_von IS NULL THEN 'unbekannt'
+        WHEN gueltig_bis IS NULL THEN 'lang'
+        WHEN gueltig_bis - gueltig_von <= 7 THEN 'kurz'
+        WHEN gueltig_bis - gueltig_von <= 30 THEN 'mittel'
+        ELSE 'lang'
+      END AS laufzeit
+    FROM final_neu
+  )
   SELECT
     count(*) FILTER (WHERE strassen_ref ~* '^A[0-9]') AS autobahn_alle,
-    count(*) FILTER (WHERE strassen_ref ~* '^A[0-9]' AND gueltig_von IS NOT NULL AND gueltig_bis IS NOT NULL AND gueltig_bis - gueltig_von > 30) AS autobahn_lang,
-    count(*) FILTER (WHERE strassen_ref ~* '^A[0-9]' AND (gueltig_bis IS NULL OR gueltig_von IS NULL)) AS autobahn_unbefristet_oder_unbekannt,
-    count(*) FILTER (WHERE strassen_ref ~* '^A[0-9]' AND kategorie = 'sperrung' AND gueltig_von IS NOT NULL AND gueltig_bis IS NOT NULL AND gueltig_bis - gueltig_von > 30) AS autobahn_sperrung_lang
-  FROM final_neu`,
+    count(*) FILTER (WHERE strassen_ref ~* '^A[0-9]' AND laufzeit = 'lang') AS autobahn_lang,
+    count(*) FILTER (WHERE laufzeit = 'lang') AS alle_kategorien_lang,
+    count(*) AS alle_kategorien_gesamt
+  FROM klassifiziert`,
   params,
 )
-console.log(`Dauer: ${Date.now() - t0} ms`)
 console.log(JSON.stringify(row, null, 2))
 process.exit(0)
