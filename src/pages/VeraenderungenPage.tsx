@@ -211,21 +211,15 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
           <p className="mt-2 max-w-xl text-sm text-neutral-600">
             {d.quellenBasis ? (
               <>
-                Grundlage sind <strong className="font-semibold text-neutral-800">
-                  {d.quellenBasis.quellen}
-                </strong>{" "}
-                angebundene Quellen mit{" "}
+                <strong className="font-semibold text-neutral-800">{d.quellenBasis.quellen}</strong>{" "}
+                Quellen ·{" "}
                 <strong className="font-semibold text-neutral-800">
                   {d.quellenBasis.hindernisse.toLocaleString("de-DE")}
                 </strong>{" "}
-                aktiven Hindernissen — Autobahn GmbH, Landesbetriebe, Städte und Kommunen.{" "}
+                aktive Hindernisse ·{" "}
               </>
             ) : null}
-            Gezählt werden nur relevante Maßnahmen — Laufzeit über 30 Tage oder unbefristet;
-            Kleinteiliges wie Beschilderung oder Grünpflege bleibt im Laufzeit-Chart sichtbar,
-            nicht in den Kopfzahlen. Quellen-Rotation und Erstbefüllung neu angebundener Quellen
-            sind herausgerechnet. „Geändert" heißt ausschließlich: die Quelle hat den Eintrag
-            inhaltlich geändert.
+            nur Maßnahmen über 30 Tage. „Geändert" = die Quelle selbst hat etwas geändert.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">

@@ -340,6 +340,13 @@ export async function runImport({
       // Die Stelle ist mit Absicht HIER und nicht frueher: erst nach der Schleife steht fest, wer
       // wirklich neu ist. Vorher wuerde das Gate ueber tausende Punkte laufen, die es laengst
       // gesehen hat.
+      // Hash der REINEN QUELLDATEN festhalten, BEVOR das Gate eigene Felder in attrs schreibt.
+      // Sonst traegt die eingefuegte Zeile einen change_hash, der UNSERE Ableitungen enthaelt;
+      // der naechste Import vergleicht ihn gegen reine Quelldaten, der Hash weicht ab, und jede
+      // angereicherte Neuanlage meldet eine "Aenderung", die die Quelle nie gemacht hat.
+      // Max 2026-09-20: "Aenderungen von extern tracken, nicht von intern -- unsere raus".
+      for (const value of pendingInserts.values()) value.quellHash = changeRelevantHash(value)
+
       const gateBelege = []
       if (gate && pendingInserts.size) {
         const r = await durchsGate([...pendingInserts.values()], { ...gate, log: note })
@@ -362,7 +369,7 @@ export async function runImport({
       for (const part of chunk([...pendingInserts.values()], BATCH_ROWS)) {
         await q.query(
           changeHashBatchSql(placeholders(part.length, CHANGE_HASH_COL_COUNT)),
-          part.flatMap((value) => [connector.quelleId, value.externeId, changeRelevantHash(value)]),
+          part.flatMap((value) => [connector.quelleId, value.externeId, value.quellHash ?? changeRelevantHash(value)]),
         )
       }
       for (const part of chunk([...pendingUpdates], BATCH_ROWS)) {
