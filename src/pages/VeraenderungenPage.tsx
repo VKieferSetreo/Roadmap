@@ -209,17 +209,11 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
             Neue, geänderte und weggefallene Hindernisse
           </h1>
           <p className="mt-2 max-w-xl text-sm text-neutral-600">
+            Grundlage sind{" "}
             {d.quellenBasis ? (
-              <>
-                <strong className="font-semibold text-neutral-800">{d.quellenBasis.quellen}</strong>{" "}
-                Quellen ·{" "}
-                <strong className="font-semibold text-neutral-800">
-                  {d.quellenBasis.hindernisse.toLocaleString("de-DE")}
-                </strong>{" "}
-                aktive Hindernisse ·{" "}
-              </>
-            ) : null}
-            nur Maßnahmen über 30 Tage. „Geändert" = die Quelle selbst hat etwas geändert.
+              <strong className="font-semibold text-neutral-800">{d.quellenBasis.quellen}</strong>
+            ) : null}{" "}
+            bundesweit angebundene Quellen — Autobahn GmbH, Landesbetriebe, Städte und Kommunen.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">
