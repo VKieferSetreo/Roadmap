@@ -62,10 +62,15 @@ export const router = createBrowserRouter(
       children: [
         { path: "/mandanten", element: page(<AdminTenantsPage />) },
         { path: "/debugging", element: page(<DebugPage />) },
-        { path: "/veraenderungen", element: page(<VeraenderungenPage />) },
         // Alt-Link /debug → /debugging (Bookmarks / alte Verweise nicht brechen).
         { path: "/debug", element: <Navigate to="/debugging" replace /> },
       ],
+    },
+    // Aenderungsverfolgung: gleiche schlanke Huelle, aber OHNE Admin-Gate — offen fuer jeden
+    // angemeldeten Roadmap-Nutzer (Max 2026-09-20).
+    {
+      element: <AdminLayout offen />,
+      children: [{ path: "/veraenderungen", element: page(<VeraenderungenPage />) }],
     },
   ],
   { basename },

@@ -15,7 +15,10 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useSettingsStore } from "@/store/settings"
 import { avatarBg, handleLogout, initialsFromEmail } from "@/lib/auth"
 
-export function AdminLayout() {
+/** `offen` haengt NUR die Admin-Pruefung aus, die schlanke Verwaltungs-Huelle bleibt.
+ *  Gebraucht fuer die Aenderungsverfolgung, die Max am 2026-09-20 fuer alle Roadmap-Nutzer
+ *  freigegeben hat ("die Rolle darf auch JEDER im System haben"). */
+export function AdminLayout({ offen = false }: { offen?: boolean }) {
   const fetchIdentity = useAuthStore((s) => s.fetchIdentity)
   const identity = useAuthStore((s) => s.identity)
   const detect = useDataSourceStore((s) => s.detect)
@@ -44,8 +47,9 @@ export function AdminLayout() {
       <div className="flex h-screen items-center justify-center text-sm text-neutral-400">Lädt …</div>
     )
   }
-  // Global + admin-only. Nicht-Admins (inkl. aller externen Kunden) → zurück in die App.
-  if (!isAdmin) return <Navigate to="/" replace />
+  // Global + admin-only, AUSSER die Seite ist ausdruecklich offen gestellt.
+  // Achtung: "offen" heisst wirklich jeder angemeldete Nutzer, auch externe Kunden.
+  if (!offen && !isAdmin) return <Navigate to="/" replace />
 
   const email = identity?.email ?? profile.email
 

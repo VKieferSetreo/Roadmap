@@ -150,11 +150,15 @@ export function SetreoHeader({ onMenuClick }: { onMenuClick: () => void }) {
             <DropdownItem onClick={() => navigate("/debugging")}>
               <Bug className="h-4 w-4 text-neutral-400" /> Debug &amp; Bug-Reports
             </DropdownItem>
-            <DropdownItem onClick={() => navigate("/veraenderungen")}>
-              <Activity className="h-4 w-4 text-neutral-400" /> Änderungsverfolgung
-            </DropdownItem>
           </div>
         ) : null}
+        {/* Aenderungsverfolgung steht ALLEN angemeldeten Nutzern offen (Max 2026-09-20),
+            deshalb ausserhalb des isAdmin-Blocks. */}
+        <div className="border-b border-neutral-100 py-1">
+          <DropdownItem onClick={() => navigate("/veraenderungen")}>
+            <Activity className="h-4 w-4 text-neutral-400" /> Änderungsverfolgung
+          </DropdownItem>
+        </div>
         <DropdownItem onClick={handleLogout}>
           <LogOut className="h-4 w-4 text-neutral-400" /> Abmelden
         </DropdownItem>
