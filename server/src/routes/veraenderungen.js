@@ -1,4 +1,4 @@
-// Änderungsverfolgung (nur Admin): belegt quellenübergreifend, wie viel sich am
+// Änderungsverfolgung (alle angemeldeten Nutzer): belegt quellenübergreifend, wie viel sich am
 // Hindernis-Bestand täglich wirklich ändert.
 //
 // Vier Ereignis-Typen, drei verschiedene Quellen:
@@ -116,7 +116,6 @@
 // KI-Anreicherung kann also strukturell nie als "geaendert" auftauchen.
 
 import { Router } from "express"
-import { requireRole } from "../auth.js"
 import { asyncHandler } from "../util.js"
 import { KATEGORIEN } from "../engine/rules.js"
 
@@ -491,9 +490,23 @@ export async function berechneUebersicht(db, tage) {
   }))
   const summe = (feld) => zeitreihe.reduce((s, t) => s + t[feld], 0)
 
+  // Grundgesamtheit fuer die Kopfzeile (Max 2026-09-20: "kurz einordnen, was die
+  // Grundgesamtheit ist"). Bewusst aus den Daten gezaehlt statt im Frontend hartkodiert --
+  // eine Zahl, die nicht aus dem Bestand kommt, waere in einem Auswertungswerkzeug das
+  // Schlechteste. Separate, billige Abfrage: ein Index-Scan auf obstacles, kein Join.
+  const { rows: [basis] } = await db.query(
+    `SELECT count(DISTINCT quellen_id)::int AS quellen, count(*)::int AS hindernisse
+       FROM obstacles WHERE demo = false AND aktiv = true AND kategorie = ANY($1)`,
+    [kategorien],
+  )
+
   return {
     tage,
     kategorien,
+    quellenBasis: {
+      quellen: Number(basis?.quellen ?? 0),
+      hindernisse: Number(basis?.hindernisse ?? 0),
+    },
     geaendertTrackingSeit: row.geaendert_seit ?? null,
     zeitreihe,
     gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
@@ -544,7 +557,11 @@ export async function berechneUebersicht(db, tage) {
 export function veraenderungenRouter({ db }) {
   const r = Router()
 
-  r.get("/uebersicht", requireRole("admin"), asyncHandler(async (req, res) => {
+  // Kein requireRole mehr: die Auswertung steht seit 2026-09-20 JEDEM angemeldeten Nutzer
+  // offen (Max: "die Rolle darf auch JEDER im System haben"). Authentifizierung bleibt, die
+  // gilt global fuer /api (app.js: authMiddleware). Ohne diese Lockerung liefe das offene
+  // Frontend in einen 403 — die Seite waere sichtbar, aber leer.
+  r.get("/uebersicht", asyncHandler(async (req, res) => {
     const tage = Math.min(TAGE_MAX, Math.max(1, Number.parseInt(req.query.tage, 10) || TAGE_DEFAULT))
 
     const { rows: [cached] } = await db.query(

@@ -214,9 +214,20 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
             Neue, geänderte und weggefallene Hindernisse
           </h1>
           <p className="mt-2 max-w-xl text-sm text-neutral-600">
-            Quellenübergreifend erfasst, je Ereignis mit Kategorie, Laufzeit und Vorlaufzeit.
+            {d.quellenBasis ? (
+              <>
+                Grundlage sind <strong className="font-semibold text-neutral-800">
+                  {d.quellenBasis.quellen}
+                </strong>{" "}
+                angebundene Quellen mit{" "}
+                <strong className="font-semibold text-neutral-800">
+                  {d.quellenBasis.hindernisse.toLocaleString("de-DE")}
+                </strong>{" "}
+                aktiven Hindernissen — Autobahn GmbH, Landesbetriebe, Städte und Kommunen.{" "}
+              </>
+            ) : null}
             Quellen-Rotation (dieselbe Stelle unter neuer ID) und Erstbefüllung neu angebundener
-            Quellen sind herausgerechnet — Beleg unten.
+            Quellen sind herausgerechnet.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">

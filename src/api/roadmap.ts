@@ -136,6 +136,8 @@ type Ereignistyp = { neu: number; geaendert: number; ausgelaufen: number; entfer
 export interface VeraenderungenUebersicht {
   tage: number
   kategorien: string[]
+  /** Grundgesamtheit: so viele aktive Quellen und Hindernisse stehen hinter den Zahlen. */
+  quellenBasis?: { quellen: number; hindernisse: number }
   geaendertTrackingSeit: string | null
   /** Wann der Server diese Zahlen zuletzt berechnet hat — die Seite liest aus einem täglich
    *  morgens vorgerechneten Cache, nicht live (T-747-Nachbesserung: die Query braucht ~55s). */
