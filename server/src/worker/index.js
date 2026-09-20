@@ -20,6 +20,7 @@ import { deaktiviereBestandStillgelegterQuellen, detectStaleSources, expireObsta
 import { runImport } from "./importer.js"
 import { gateKonfig } from "../anreicherung/gateKonfig.js"
 import { berechneUebersicht } from "../routes/veraenderungen.js"
+import { loeseStrassenklassen } from "./strassenklasse.js"
 
 loadEnv()
 initSentry("worker") // T-468/469: GlitchTip-Error-Tracking (no-op ohne SENTRY_DSN)
@@ -290,6 +291,15 @@ oder die Quelle stillgelegt gehört.`
 // T-372: täglicher Retention-/Pruning-Lauf (eigener Cron, NICHT in den Rerun gemischt — Rerun
 // läuft auch import-getrieben, Pruning soll nur 1×/Tag). Löscht alte import_runs (je Quelle bleibt
 // der jüngste) + Analytics-Sessions/-Events älter als 365 Tage. Fire-and-forget, robust.
+async function runStrassenklassen() {
+  try {
+    const r = await loeseStrassenklassen(db, { log: (m) => console.log(`[strassenklasse] ${m}`) })
+    if (r.geprueft) console.log(`[strassenklasse] fertig: ${JSON.stringify(r)}`)
+  } catch (e) {
+    console.error(`[strassenklasse] fehlgeschlagen: ${e.message}`)
+  }
+}
+
 async function runPrune() {
   try {
     const ir = await pruneImportRuns(db)
@@ -491,6 +501,10 @@ try {
   jobs.push(new Cron("0 7 * * *", CRON_OPTS, () => void runLicenseReminders()))
   // T-372: tägliches Retention-/Pruning (import_runs + analytics) — eigener Job, früh morgens.
   jobs.push(new Cron("45 3 * * *", CRON_OPTS, () => void runPrune()))
+  // Strassenklasse aus der Koordinate nachziehen — VOR dem Uebersichts-Cache (05:00), damit
+  // der die frisch aufgeloesten Klassen schon sieht. Begrenztes Kontingent je Lauf: der
+  // Rueckstand (rund 33.000 Zeilen) baut sich ueber wenige Naechte ab, ohne OSRM zu fluten.
+  jobs.push(new Cron("15 4 * * *", CRON_OPTS, () => void runStrassenklassen()))
   // T-614: monatlicher Drift-Check der GST-Kreis-Zuordnung (1. des Monats, 04:10).
   jobs.push(new Cron("10 4 1 * *", CRON_OPTS, () => void runGstDriftCheck()))
   // T-747-Nachbesserung: Änderungsverfolgung-Cache taeglich vorrechnen (05:00, nach Cleanup/

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 // Geteilte Connector-Helfer (dependency-frei) — die EINZIGE live genutzte Normalisierung.
 // Der frühere Ursprung API/_lib/format.mjs (von 37 alten cron.mjs importiert) ist totes Legacy:
 // nicht deployed, nicht von server/src importiert → kein reales Drift-Risiko (T-284, untersucht).
@@ -920,3 +921,26 @@ export function unzipEntry(buf, nameRegex) {
   }
   return null
 }
+
+// Stabile Fachkennung aus dem INHALT, wenn die Quelle keine hat.
+//
+// Anlass (2026-09-20, gemessen): Schleswig-Holstein (0117) und Osnabrueck (0225) liefern als
+// einzigen Schluessel `OBJECTID` — bei ArcGIS/WFS-Diensten eine interne ZEILENNUMMER, die beim
+// Neuaufbau der Ebene neu vergeben wird. Pruefung gegen den Live-Feed: 145 von 400 OBJECTIDs
+// (36 %) zeigten auf eine ANDERE Strasse als bei uns gespeichert (ID 106: B430 bei uns, B76 im
+// Feed). Der Importer band damit neue Baustellen auf alte Zeilen; der Inhalt kippte taeglich und
+// jeder Lauf protokollierte eine "Aenderung", die die Quelle nie gemacht hat.
+//
+// Der Ersatzschluessel nutzt nur Merkmale, die eine Baustelle ueber ihre Laufzeit behaelt:
+// Ort (auf ~11 m gerundet) und Art der Massnahme. Bewusst OHNE Datum — ein verschobener Termin
+// ist eine Aenderung derselben Baustelle, keine neue.
+export function stabileId(teile) {
+  const roh = teile
+    .map((t) => (t == null ? "" : String(t).trim().toLowerCase()))
+    .join("|")
+  return createHash("sha1").update(roh).digest("hex").slice(0, 16)
+}
+
+/** Koordinate als Schluesselbestandteil: 4 Nachkommastellen ≈ 11 m. */
+export const ortSchluessel = (lat, lng) =>
+  lat == null || lng == null ? "" : `${Number(lat).toFixed(4)},${Number(lng).toFixed(4)}`

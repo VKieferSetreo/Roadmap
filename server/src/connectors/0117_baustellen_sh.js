@@ -3,7 +3,7 @@
 // ArcGIS-WFS 2.0, GeoJSON, EPSG:4326 nativ. ~1137 Baustellen. Strukturierte Grenzwerte:
 // Gewichtsbeschränkung_in_t, Verbleibende_Restbreite_in_m, Länge_in_m. Datum "von bis" → dateOnly.
 
-import { makeNormalized, fetchAllFeatures, dateOnly, num } from "./_helpers.js"
+import { makeNormalized, fetchAllFeatures, dateOnly, num, stabileId, ortSchluessel } from "./_helpers.js"
 
 const QUELLE_NAME = "Straßenbaustellen Schleswig-Holstein (LBV.SH / GDI-SH)"
 const QUELLE_URL = "https://www.govdata.de/daten/-/details/strassenbaustellen-schleswig-holsteinf229d"
@@ -54,7 +54,9 @@ export const baustellenShConnector = {
         ? `Baustelle (${p.Art_der_Maßnahme ?? "Bauarbeiten"})`
         : `Baustelle ${p.Straßenname ?? ""} (${p.Art_der_Maßnahme ?? "Bauarbeiten"})`.trim()
       obstacles.push(makeNormalized({
-        externeId: p.OBJECTID ?? f.id,
+        // NICHT OBJECTID: das ist bei diesem WFS eine interne Zeilennummer, die neu vergeben
+        // wird (gemessen 2026-09-20: 36 % zeigten auf eine andere Strasse als gespeichert).
+        externeId: stabileId([ortSchluessel(lat, lng), p.Art_der_Maßnahme, p.Straßenname]),
         kategorie: gewicht ? "gewicht" : "baustelle",
         name,
         beschreibung: text || null,

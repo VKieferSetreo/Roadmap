@@ -2,7 +2,7 @@
 // WFS 2.0, outputFormat=GEOJSON (Großschreibung Pflicht!), EPSG:4326 (native, keine Reprojektion),
 // Point. Lizenz DL-DE/BY 2.0, Namensnennung „Stadt Osnabrück". Datum DD.MM.YYYY. ~38 Baustellen.
 
-import { makeNormalized, getJson, dateOnly } from "./_helpers.js"
+import { makeNormalized, getJson, dateOnly, stabileId, ortSchluessel } from "./_helpers.js"
 
 const QUELLE = "0225"
 const QUELLE_NAME = "Osnabrück — Baustellen (geo.osnabrueck.de)"
@@ -30,7 +30,8 @@ export const osnabrueckBaustellenConnector = {
       // T-611: bare „gesperrt" raus (Geh-/Radweg-/Spursperren → Falsch-Kritisch); nur echte Vollsperrung.
       const vollsperrung = /vollsperr|voll gesperrt|komplett gesperrt|gesamtsperrung/i.test(text) || undefined
       return makeNormalized({
-        externeId: p.OBJECTID,
+        // NICHT OBJECTID — interne Zeilennummer des ArcGIS-Dienstes, siehe stabileId().
+        externeId: stabileId([ortSchluessel(lat, lng), p.MERKMALKUR, p.STANDORT]),
         kategorie: vollsperrung ? "sperrung" : "baustelle",
         name: p.STANDORT || "Baustelle",
         beschreibung: text || null,
