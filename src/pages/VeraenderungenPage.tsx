@@ -1,6 +1,6 @@
-// Änderungsverfolgung (nur Admin): quellenübergreifende Auswertung, wie viel sich am
-// Hindernis-Bestand täglich wirklich ändert. Erreichbar über /veraenderungen (Profil-Menü,
-// nur Admin), NICHT in der Kunden-Sidebar — internes Auswertungswerkzeug.
+// Änderungsverfolgung: quellenübergreifende Auswertung, wie viel sich am Hindernis-Bestand
+// täglich wirklich ändert. Erreichbar über /veraenderungen (Profil-Menü). Seit 2026-09-20
+// für ALLE angemeldeten Nutzer offen, nicht mehr nur Admin.
 //
 // Layout bewusst mit einer berechneten Kennzahl vorne (Ø Ereignisse/Tag + Spontan-Anteil),
 // erst danach die Belege als Charts — analytisch, keine Bewertung im Text.
@@ -174,42 +174,6 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </Card>
       </div>
 
-      <Card className="p-4">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">Herleitung, ungeschönt</p>
-        <p className="text-xs leading-relaxed text-neutral-500">
-          Rohzahl vor Bereinigung: {d.roh.neu.toLocaleString("de-DE")} Neu, {d.roh.weggefallen.toLocaleString("de-DE")} Weggefallen (Zeilen-Ebene).
-          Davon {d.roh.erstbefuellungNeuerQuellen.toLocaleString("de-DE")} als Erstbefüllung neu angebundener Quellen ausgeklammert
-          und {(d.roh.rotationAlsGeaendert + d.roh.rotationVorgaengeZusammengefasst).toLocaleString("de-DE")} als Quellen-Rotation
-          (dieselbe Stelle — Geo-Nähe ODER identischer Name — innerhalb von 45 Tagen erkannt) nicht mehr als "Neu" gezählt;
-          davon sind {d.roh.rotationVorgaengeZusammengefasst.toLocaleString("de-DE")} Treffer derselben laufenden Rotation
-          (z.B. eine externe_id, die täglich neu vergeben wird) — zusammengefasst bleiben{" "}
-          {d.roh.rotationAlsGeaendert.toLocaleString("de-DE")} echte "Geändert"-Vorgänge durch Rotation.
-          Von den verbleibenden echten Neuanlagen fasst die Vorgangs-Zusammenfassung weitere{" "}
-          {d.roh.segmenteZusammengefasst.toLocaleString("de-DE")} Zeilen zusammen, die zu einem bereits gezählten
-          Vorgang gehören (mehrere Segmente oder mehrfache Neuveröffentlichung derselben Maßnahme, z.B. eine
-          kilometerlange Baustelle mit mehreren Bauabschnitten). Zusätzlich fallen{" "}
-          {d.roh.familieDublettenNeu.toLocaleString("de-DE")} Vorgänge raus, die eine andere Quelle desselben
-          Herausgebers (aktuell Autobahn GmbH: öffentliche API + zwei Mobilithek-Feeds, oder Berlin VIZ: zwei
-          Feed-Formate) bereits gemeldet hat — gleiche Straße, gleicher Ort, überlappender Zeitraum. Zuletzt fallen{" "}
-          {d.roh.relevanzAusgeklammertNeu.toLocaleString("de-DE")} Vorgänge mit Laufzeit ≤30 Tage aus der Kopfzahl
-          (bleiben im Laufzeit-Chart unten sichtbar) — bleiben {d.gesamt.neu.toLocaleString("de-DE")} relevante neue
-          Vorgänge und {(d.gesamt.ausgelaufen + d.gesamt.entfernt).toLocaleString("de-DE")} relevante "Weggefallen"
-          ({d.gesamt.ausgelaufen.toLocaleString("de-DE")} davon planmäßig ausgelaufen,{" "}
-          {d.gesamt.entfernt.toLocaleString("de-DE")} vorzeitig entfernt,{" "}
-          {d.roh.familieDublettenWeg.toLocaleString("de-DE")} Quellen-Dubletten und{" "}
-          {d.roh.relevanzAusgeklammertWeg.toLocaleString("de-DE")} kurzlaufende dort ebenfalls ausgeklammert).
-        </p>
-        <p className="mt-2 text-xs leading-relaxed text-neutral-400">
-          "Neu"/"Ausgelaufen"/"Entfernt" sind vollständige {d.tage}-Tage-Historie (echte Zeitstempel im Bestand),
-          gezählt auf Vorgangs- nicht Zeilen-Ebene, quellenübergreifend dedupliziert für bekannte Herausgeber-
-          Familien, auf Laufzeit &gt;30 Tage bzw. unbefristet beschränkt (Relevanz-Filter). "Geändert" fasst zwei
-          Signale zusammen: Quellen-Rotation (voller {d.tage}-Tage-Zeitraum) und inhaltliche Änderung an einer
-          bestehenden Zeile (z.B. verschobenes Datum oder geänderte Breite) — Letzteres wird erst seit{" "}
-          {d.geaendertTrackingSeit ? formatDateDE(d.geaendertTrackingSeit) : "heute"} erfasst und füllt sich
-          über die nächsten Tage weiter auf. Beide Signale unterliegen ebenfalls dem Relevanz-Filter
-          ({d.roh.relevanzAusgeklammertGeaendert.toLocaleString("de-DE")} kurzlaufende dort ausgeklammert).
-        </p>
-      </Card>
     </div>
   )
 }
