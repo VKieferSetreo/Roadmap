@@ -175,14 +175,24 @@ const FAMILIE_VALUES = QUELLEN_FAMILIEN.flatMap((f, fi) =>
 // Autobahn, Bundesstraße, …"). Empirisch gegen den Bestand geprüft (scripts/diagStrassenklasse.mjs):
 // A<Zahl> Autobahn, B<Zahl> Bundesstraße, L/S/St<Zahl> Landes-/Staatsstraße (Bayern/Sachsen nennen
 // die Landesstraße "Staatsstraße", St oder S abgekürzt — fachlich dieselbe Ebene, deshalb
-// zusammengefasst), K<Zahl> Kreisstraße. Alles andere (benannte Straßen, kein strassen_ref, ~37 %
-// des Bestands) ist "sonstige" — bewusst nicht erraten.
+// zusammengefasst), K<Zahl> Kreisstraße.
+//
+// KORREKTUR 2026-09-20: Der L-Zweig FEHLTE — `^St?[0-9]` deckt nur S/St, jedes "L123" fiel nach
+// "sonstige". Das war ein Versehen, kein Urteil: das zugehoerige Diagnose-Skript filterte damals
+// auf '^[ABLK]'. Ausserdem tolerierte das Muster kein Leerzeichen, wodurch DATEX-Refs wie "A 7"
+// und "B 6" durchfielen (der Zustaendigkeits-Resolver matcht an derselben Stelle bewusst mit
+// `A ?\\d`). Beides behoben. Was danach uebrig bleibt und mindestens drei Buchstaben am Stueck
+// traegt, ist ein ausgeschriebener Strassenname — eigene Klasse "gemeindestrasse" statt Sammeltopf.
+// Bewusst OHNE Backslash-Klassen: zwischen JS-Template und Postgres-Literal heben sich die
+// Escape-Ebenen auf (gemessen: mit '\\s' fiel JEDER Wert nach 'sonstige'). btrim + literales
+// Leerzeichen leistet dasselbe und kann nicht kippen.
 const STRASSENKLASSE_CASE = `CASE
-  WHEN strassen_ref IS NULL THEN 'unbekannt'
-  WHEN strassen_ref ~* '^A[0-9]' THEN 'autobahn'
-  WHEN strassen_ref ~* '^B[0-9]' THEN 'bundesstrasse'
-  WHEN strassen_ref ~* '^St?[0-9]' THEN 'landesstrasse'
-  WHEN strassen_ref ~* '^K[0-9]' THEN 'kreisstrasse'
+  WHEN strassen_ref IS NULL OR btrim(strassen_ref) = '' THEN 'unbekannt'
+  WHEN btrim(strassen_ref) ~* '^A ?[0-9]' THEN 'autobahn'
+  WHEN btrim(strassen_ref) ~* '^B ?[0-9]' THEN 'bundesstrasse'
+  WHEN btrim(strassen_ref) ~* '^(L|St?) ?[0-9]' THEN 'landesstrasse'
+  WHEN btrim(strassen_ref) ~* '^K ?[0-9]' THEN 'kreisstrasse'
+  WHEN strassen_ref ~* '[A-Za-zÄÖÜäöüß]{3}' THEN 'gemeindestrasse'
   ELSE 'sonstige'
 END`
 
@@ -395,36 +405,33 @@ export async function berechneUebersicht(db, tage) {
     `WITH ${CHURN_CTES},
          zr AS (
            SELECT to_char(d::date, 'YYYY-MM-DD') AS tag,
-             coalesce(n.n, 0) AS neu, coalesce(g.n, 0) + coalesce(rot.n, 0) AS geaendert,
+             coalesce(n.n, 0) AS neu, coalesce(g.n, 0) AS geaendert,
              coalesce(a.n, 0) AS ausgelaufen, coalesce(e.n, 0) AS entfernt
            FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
            LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM relevant_neu GROUP BY 1) n ON n.tag = d::date
            LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1) g ON g.tag = d::date
-           LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM relevant_geaendert_rotation GROUP BY 1) rot ON rot.tag = d::date
            LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
            LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
          ),
          -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
          -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).
-         -- "geaendert" fasst zwei Quellen zusammen: echte Inhalts-Deltas (obstacle_aenderungen,
-         -- erst ab Deploy) UND Quellen-Rotation (vorgang_rotation, volle Fenster-Historie,
-         -- ebenfalls auf Vorgangs-Ebene zusammengefasst — ein täglich neu vergebenes externe_id
-         -- desselben laufenden Vorgangs zählt einmal, nicht einmal pro Tag).
+         -- "geaendert" ist AUSSCHLIESSLICH die echte Inhalts-Aenderung durch die Quelle
+         -- (obstacle_aenderungen: Hash ueber kategorie/name/strassenRef/gueltigVon/gueltigBis/attrs
+         -- der EINGEHENDEN Quelldaten). Quellen-Rotation zaehlt hier NICHT mehr mit
+         -- (Max 2026-09-20: "Geaendert darf nicht heissen durch uns angereichert, sondern dass
+         -- die Quelle das physisch aendert") — dieselbe Stelle unter neuer ID ist keine
+         -- Sachaenderung. Die Rotationszahl bleibt als roh.rotationAlsGeaendert sichtbar.
          kat AS (
            SELECT kategorie, 'neu' AS typ, count(*) AS n FROM relevant_neu GROUP BY 1
            UNION ALL SELECT kategorie, weg_typ, count(*) FROM relevant_weg GROUP BY 1, 2
-           UNION ALL SELECT kategorie, 'geaendert', count(*) FROM (
-             SELECT kategorie FROM obstacle_aenderungen WHERE ${relevantFilter}
-             UNION ALL SELECT kategorie FROM relevant_geaendert_rotation
-           ) x GROUP BY 1
+           UNION ALL SELECT kategorie, 'geaendert', count(*)
+             FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1
          ),
          strasse AS (
            SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM relevant_neu GROUP BY 1
            UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM relevant_weg GROUP BY 1, weg_typ
-           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*) FROM (
-             SELECT strassen_ref FROM obstacle_aenderungen WHERE ${relevantFilter}
-             UNION ALL SELECT strassen_ref FROM relevant_geaendert_rotation
-           ) x GROUP BY 1
+           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*)
+             FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1
          ),
          lz AS (
            SELECT

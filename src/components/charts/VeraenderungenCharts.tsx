@@ -101,7 +101,8 @@ export function VeraenderungenProKategorie({ data }: { data: VeraenderungenUeber
 
 const STRASSENKLASSE_LABEL: Record<string, string> = {
   autobahn: "Autobahn", bundesstrasse: "Bundesstraße", landesstrasse: "Landes-/Staatsstraße",
-  kreisstrasse: "Kreisstraße", sonstige: "Sonstige", unbekannt: "Unbekannt",
+  kreisstrasse: "Kreisstraße", gemeindestrasse: "Gemeindestraße (Name statt Kennzeichen)",
+  sonstige: "Sonstige", unbekannt: "Ohne Straßenangabe",
 }
 
 /** Horizontale Balken je Straßenklasse (Autobahn/Bundes-/Landes-/Kreisstraße/Sonstige), gestapelt

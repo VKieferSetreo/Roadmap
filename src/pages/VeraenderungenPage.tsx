@@ -103,11 +103,6 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
     <div className="flex flex-col gap-5">
       <Hero d={d} insight={insight} />
 
-      <p className="-mb-1 text-xs text-neutral-400">
-        Nur relevante Maßnahmen (Laufzeit &gt;30 Tage oder unbefristet) — Kleinschriebenes wie
-        Beschilderungsarbeiten oder Grünpflege zählt hier nicht mit, ist aber im Laufzeit-Chart
-        unten vollständig sichtbar.
-      </p>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi icon={PlusCircle} label="Neu" sub={`${d.tage} Tage · relevant`} value={d.gesamt.neu} akzent="#1baf7a" />
         <Kpi icon={Sparkles} label="Geändert" sub={geaendertSub(d)} value={d.gesamt.geaendert} akzent="#eb6834" />
@@ -139,7 +134,7 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Je Straßenklasse</CardTitle>
-            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen (strassen_ref) abgeleitet — ohne Kennzeichen bleibt "Sonstige"</p>
+            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet — ausgeschriebene Namen gelten als Gemeindestraße, Einträge ganz ohne Angabe als „Ohne Straßenangabe"</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -226,8 +221,11 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
                 aktiven Hindernissen — Autobahn GmbH, Landesbetriebe, Städte und Kommunen.{" "}
               </>
             ) : null}
-            Quellen-Rotation (dieselbe Stelle unter neuer ID) und Erstbefüllung neu angebundener
-            Quellen sind herausgerechnet.
+            Gezählt werden nur relevante Maßnahmen — Laufzeit über 30 Tage oder unbefristet;
+            Kleinteiliges wie Beschilderung oder Grünpflege bleibt im Laufzeit-Chart sichtbar,
+            nicht in den Kopfzahlen. Quellen-Rotation und Erstbefüllung neu angebundener Quellen
+            sind herausgerechnet. „Geändert" heißt ausschließlich: die Quelle hat den Eintrag
+            inhaltlich geändert.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">
