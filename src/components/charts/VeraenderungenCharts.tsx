@@ -100,9 +100,13 @@ export function VeraenderungenProKategorie({ data }: { data: VeraenderungenUeber
 }
 
 const STRASSENKLASSE_LABEL: Record<string, string> = {
-  autobahn: "Autobahn", bundesstrasse: "Bundesstraße", landesstrasse: "Landes-/Staatsstraße",
-  kreisstrasse: "Kreisstraße", gemeindestrasse: "Gemeindestraße (Name statt Kennzeichen)",
-  sonstige: "Sonstige", unbekannt: "Ohne Straßenangabe",
+  // Max 2026-09-21: Staatsstrasse gehoert unter Landstrasse (dieselbe Baulast, nur anderer
+  // Landesname), Gemeindestrasse ohne den Zusatz. "Sonstige"/"unbekannt" werden ueber die aus
+  // der Koordinate aufgeloeste Klasse den echten Klassen zugeordnet; was danach uebrig bleibt,
+  // steht als "Ohne Zuordnung" da — es zu verteilen waere geraten, nicht gemessen.
+  autobahn: "Autobahn", bundesstrasse: "Bundesstraße", landesstrasse: "Landstraße",
+  kreisstrasse: "Kreisstraße", gemeindestrasse: "Gemeindestraße",
+  sonstige: "Ohne Zuordnung", unbekannt: "Ohne Zuordnung",
 }
 
 /** Horizontale Balken je Straßenklasse (Autobahn/Bundes-/Landes-/Kreisstraße/Sonstige), gestapelt
