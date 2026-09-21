@@ -121,6 +121,13 @@ import { KATEGORIEN } from "../engine/rules.js"
 
 const TAGE_DEFAULT = 30
 const TAGE_MAX = 90
+// Ab wann ist die Erfassung VOLLSTAENDIG? Die Hygiene raeumt inaktive Zeilen nach 30 Tagen
+// (worker/hygiene.js, purgeStaleInactive mit days = 30). Davor lassen sich weggefallene
+// Massnahmen nur noch ueber ihr eigenes gueltig_bis rekonstruieren, und vorzeitig entfernte
+// gar nicht mehr. Aeltere Tage sind damit unvollstaendig: sie zeigen im Wesentlichen
+// Neuanlagen. Die Zahl geht in den Payload, damit die Seite diese Tage kennzeichnen kann,
+// statt sie wie vollwertige Messwerte darzustellen (Max 2026-09-21).
+const ERFASSUNG_VOLLSTAENDIG_TAGE = 30
 // Wie weit vor/nach der Erfassung nach einer weggefallenen "alten Identität" derselben Stelle
 // gesucht wird. Grosszuegig, weil strenges Aussieben (weniger "neu" melden) gewollt ist — siehe
 // Kommentar oben. 45 Tage deckt auch mehrwoechige Bauphasen mit einer Zwischen-Rotation ab.
@@ -694,6 +701,8 @@ export async function berechneUebersicht(db, tage) {
       hindernisse: Number(basis?.hindernisse ?? 0),
     },
     geaendertTrackingSeit: row.geaendert_seit ?? null,
+    erfassungVollstaendigAb: new Date(Date.now() - ERFASSUNG_VOLLSTAENDIG_TAGE * 86400000)
+      .toISOString().slice(0, 10),
     zeitreihe,
     gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
     // Rohzahlen vor der Aufteilung — Beleg, kein Versteck.

@@ -139,6 +139,10 @@ export interface VeraenderungenUebersicht {
   /** Grundgesamtheit: so viele aktive Quellen und Hindernisse stehen hinter den Zahlen. */
   quellenBasis?: { quellen: number; hindernisse: number }
   geaendertTrackingSeit: string | null
+  /** Ab diesem Tag ist die Erfassung vollständig. Davor räumt die Hygiene inaktive Zeilen weg
+   *  (30 Tage), weggefallene Maßnahmen lassen sich dort nur noch teilweise rekonstruieren —
+   *  solche Tage werden im Chart als unvollständig gekennzeichnet. */
+  erfassungVollstaendigAb?: string
   /** Wann der Server diese Zahlen zuletzt berechnet hat — die Seite liest aus einem täglich
    *  morgens vorgerechneten Cache, nicht live (T-747-Nachbesserung: die Query braucht ~55s). */
   berechnetAm: string

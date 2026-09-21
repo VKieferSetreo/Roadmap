@@ -29,9 +29,50 @@ const TYPEN = ["neu", "geaendert", "ausgelaufen", "entfernt"] as const
 
 /** Gestapelte Säulen: neu/geändert/ausgelaufen/entfernt je Tag. Das Kern-Chart der Auswertung —
  *  zeigt Tag für Tag, wie viel Bewegung im Bestand ist. */
-export function VeraenderungenZeitreihe({ data }: { data: VeraenderungenUebersicht["zeitreihe"] }) {
+// Grautoene fuer die Tage VOR dem Stichtag. Dort raeumt die Hygiene inaktive Zeilen bereits weg
+// (30 Tage), weggefallene Massnahmen sind nur noch teilweise rekonstruierbar und vorzeitig
+// entfernte gar nicht mehr. Die Balken bestehen dort also fast nur aus Neuanlagen. Sie farbig
+// wie vollstaendige Tage zu zeichnen, waere eine Behauptung, die die Daten nicht tragen
+// (Max 2026-09-21: "grau machen mit Tooltip, dass diese noch nicht systematisch erfasst wurden
+// und Luecken sein koennen"). Vier Abstufungen, damit die Stapelung erkennbar bleibt.
+const GRAU = { neu: "#c4c4c8", geaendert: "#b0b0b5", ausgelaufen: "#9c9ca2", entfernt: "#88888f" } as const
+const UNVOLLSTAENDIG_HINWEIS = "Noch nicht systematisch erfasst, hier können Lücken sein"
+
+/** Tooltip, der unvollständige Tage als solche ausweist. */
+function ZeitreiheTooltip({ active, payload, label }: {
+  active?: boolean
+  payload?: { name?: string; value?: number; payload?: { unvollstaendig?: boolean } }[]
+  label?: string
+}) {
+  if (!active || !payload?.length) return null
+  const unvollstaendig = payload[0]?.payload?.unvollstaendig
+  return (
+    <div style={{ ...TOOLTIP, padding: "8px 10px" }}>
+      <p style={{ fontWeight: 600, marginBottom: 4 }}>{label}</p>
+      {payload.filter((p) => (p.value ?? 0) > 0).map((p) => (
+        <p key={p.name} style={{ margin: 0 }}>
+          {LABEL[p.name as keyof typeof LABEL] ?? p.name}: {p.value}
+        </p>
+      ))}
+      {unvollstaendig ? (
+        <p style={{ margin: "6px 0 0", maxWidth: 220, color: "#71717A", whiteSpace: "normal" }}>
+          {UNVOLLSTAENDIG_HINWEIS}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+export function VeraenderungenZeitreihe({ data, vollstaendigAb }: {
+  data: VeraenderungenUebersicht["zeitreihe"]
+  vollstaendigAb?: string
+}) {
   if (!data.some((d) => TYPEN.some((t) => d[t] > 0))) return <Leer />
-  const rows = data.map((d) => ({ ...d, label: `${d.tag.slice(8, 10)}.${d.tag.slice(5, 7)}` }))
+  const rows = data.map((d) => ({
+    ...d,
+    label: `${d.tag.slice(8, 10)}.${d.tag.slice(5, 7)}`,
+    unvollstaendig: vollstaendigAb ? d.tag < vollstaendigAb : false,
+  }))
   return (
     <div style={{ height: 260 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -39,13 +80,17 @@ export function VeraenderungenZeitreihe({ data }: { data: VeraenderungenUebersic
           <CartesianGrid vertical={false} stroke="#F4F4F5" />
           <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
           <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#A1A1AA" }} axisLine={false} tickLine={false} />
-          <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={TOOLTIP} />
+          <Tooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} content={<ZeitreiheTooltip />} />
           <Legend wrapperStyle={{ fontSize: 12 }} formatter={(k) => LABEL[k as keyof typeof LABEL]} />
           {TYPEN.map((t, i) => (
             <Bar
               key={t} dataKey={t} name={t} stackId="e" fill={FARBE[t]} isAnimationActive animationDuration={500}
               radius={i === TYPEN.length - 1 ? [3, 3, 0, 0] : undefined}
-            />
+            >
+              {rows.map((r) => (
+                <Cell key={r.tag} fill={r.unvollstaendig ? GRAU[t] : FARBE[t]} />
+              ))}
+            </Bar>
           ))}
         </BarChart>
       </ResponsiveContainer>
