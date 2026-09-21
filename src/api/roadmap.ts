@@ -150,10 +150,17 @@ export interface VeraenderungenUebersicht {
     neu: number
     weggefallen: number
     erstbefuellungNeuerQuellen: number
-    /** War in roh.neu enthalten, zählt aber als "geaendert" (Quellen-Rotation), bereits auf
-     *  Vorgangs-Ebene zusammengefasst (siehe rotationVorgaengeZusammengefasst) — steckt in
-     *  gesamt.geaendert / proKategorie.geaendert / proStrassenklasse.geaendert. */
+    /** War in roh.neu enthalten und ist dort raus (dieselbe Stelle unter neuer Quell-ID ist
+     *  keine Neuanlage). Zählt seit dem 20.09.2026 aber auch NICHT als Änderung und steckt in
+     *  keiner der vier Kopfzahlen — reiner Beleg, wie viel Rotation im Fenster steckte. */
     rotationAlsGeaendert: number
+    /** Selbstkontrolle der Metrik (T-749): eine Änderung ist ein Ereignis und passiert einmal.
+     *  Wiederholen sich dieselben Zeilen täglich, misst die Metrik einen Zustand statt einen
+     *  Vorgang — genau der Fehler vom 21.09.2026 (615 von 635). Der Worker schlägt ab 25 %
+     *  Alarm; die Seite weist die Zahl aus, damit sie nicht nur in einer Mail lebt. */
+    geaendertHeute: number
+    geaendertGestern: number
+    wiederholtVomVortag: number
     /** Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
      *  Namens) — "neu" zählt Vorgänge, nicht Zeilen. */
     segmenteZusammengefasst: number

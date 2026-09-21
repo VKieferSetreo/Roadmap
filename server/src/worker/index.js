@@ -19,7 +19,7 @@ import { mailEnabled, sendMail } from "../mail/mailer.js"
 import { deaktiviereBestandStillgelegterQuellen, detectStaleSources, expireObstacles, pruneAnalytics, pruneBugReportScreenshots, pruneImportRuns, pruneNotifications, purgeOrphanFindings, purgeStaleInactive, purgeVerwaisteAnreicherung, reconcileFachIdDupes, vacuumChurnedTables } from "./hygiene.js"
 import { runImport } from "./importer.js"
 import { gateKonfig } from "../anreicherung/gateKonfig.js"
-import { berechneUebersicht } from "../routes/veraenderungen.js"
+import { berechneUebersicht, pruefeTrackingGuete } from "../routes/veraenderungen.js"
 import { loeseStrassenklassen } from "./strassenklasse.js"
 
 loadEnv()
@@ -346,11 +346,49 @@ async function runGstDriftCheck() {
 // Job befuellt ihn. Feste FENSTER (7/30/90) statt beliebiger Werte — das sind die einzigen, die
 // das Frontend anfragt; ein abweichender `tage`-Wert faellt in der Route live zurueck.
 const VERAENDERUNGEN_FENSTER = [7, 30, 90]
+
+// Wie bei der Staleness-Meldung: nur bei Aenderung der Lage, Signatur aus der ART des Befunds.
+// Die Quote selbst taugt nicht als Signatur, sie schwankt taeglich und wuerde dieselbe Meldung
+// jeden Morgen erneut verschicken.
+let gemeldeteTrackingGuete = ""
+
+async function meldeTrackingGuete(roh) {
+  const befunde = pruefeTrackingGuete(roh)
+  if (!befunde.length) { gemeldeteTrackingGuete = ""; return }
+  const signatur = befunde.map((b) => b.art).sort().join("|")
+  const zeilen = befunde.map((b) => `- ${b.grund}`).join("\n")
+  log(`Aenderungstracking auffaellig: ${befunde.map((b) => b.grund).join("; ")}`)
+  if (signatur === gemeldeteTrackingGuete) return
+  const empfaenger = String(process.env.ROADMAP_ADMIN_EMAILS ?? "")
+    .split(",").map((e) => e.trim()).filter((e) => e.includes("@")).map((email) => ({ email }))
+  if (!empfaenger.length || !mailEnabled(process.env)) return // Log oben steht schon
+  const text = `Die Aenderungsverfolgung meldet unplausible Zahlen:
+
+${zeilen}
+
+Was das bedeutet: "geaendert" soll zaehlen, was eine Behoerde an einer bestehenden Meldung
+wirklich anpasst. Wiederholt sich dieselbe Stelle taeglich oder springt die Tagesmenge, zaehlt
+die Metrik hoechstwahrscheinlich etwas, das wir selbst verursachen, nicht die Quelle.
+Vorgeschichte: T-749 (21.09.2026).`
+  try {
+    const r = await sendMail(
+      { recipients: empfaenger, subject: "Roadmap: Aenderungsverfolgung meldet unplausible Zahlen", text,
+        html: `<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>")}</p>` },
+      { env: process.env, log },
+    )
+    if (r?.sent > 0) gemeldeteTrackingGuete = signatur
+  } catch (err) {
+    log(`Tracking-Guete-Meldung fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  }
+}
+
 async function runVeraenderungenCache() {
+  let rohFuerGuete = null
   for (const tage of VERAENDERUNGEN_FENSTER) {
     try {
       const t0 = Date.now()
       const payload = await berechneUebersicht(db, tage)
+      rohFuerGuete = rohFuerGuete ?? payload?.roh // fensterunabhaengig, erster Treffer genuegt
       await db.query(
         `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, now())
          ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
@@ -361,6 +399,9 @@ async function runVeraenderungenCache() {
       log(`Änderungsverfolgung-Cache (${tage} Tage) fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
     }
   }
+  // Erst NACH dem Schreiben pruefen: der Cache soll auch dann aktuell sein, wenn die Zahlen
+  // auffaellig sind — eine stille Seite waere die schlechtere Antwort auf einen Verdacht.
+  if (rohFuerGuete) await meldeTrackingGuete(rohFuerGuete)
 }
 
 // Prozessübergreifender Lock pro Connector (pg-Advisory-Lock auf dediziertem Client).

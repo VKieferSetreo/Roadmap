@@ -375,6 +375,55 @@ const CHURN_CTES = `
   )
 `
 
+// ── SELBSTKONTROLLE DER AENDERUNGSMETRIK (T-749) ────────────────────────────────────────
+//
+// Am 21.09.2026 meldete die Seite 800 "geaenderte" Hindernisse an einem Sonntag. Der Fehler saß
+// im Importer (geprueft wurde jedes eingehende Item, geschrieben nur das letzte), und er fiel
+// NUR auf, weil Max die Zahl nicht glaubte. Das ist der eigentliche Mangel: die Metrik konnte
+// nicht selbst merken, dass sie kaputt war.
+//
+// Diese zwei Schwellen schließen die Lücke. Sie prüfen nicht den bekannten Fehler — der ist
+// gefixt —, sondern die SIGNATUR, die jede kaputte Aenderungsmetrik hat, egal aus welcher
+// Ursache:
+//
+// 1. WIEDERHOLUNG. Eine Aenderung ist ein Ereignis, sie passiert einmal. Meldet die Metrik
+//    dieselbe Zeile morgen wieder, bewertet sie einen Zustand statt einen Vorgang. Am 21.09.
+//    lag diese Quote bei 97 % (615 von 635); nach dem Fix bei praktisch null. 25 % lassen
+//    reichlich Luft fuer echte Faelle (eine Quelle, die an zwei Tagen hintereinander wirklich
+//    nachbessert) und haetten den Fehler am zweiten Tag gemeldet.
+// 2. TAGESMENGE. Faengt Ursachen ohne Wiederholungsmuster ab, etwa einen Connector-Umbau, der
+//    einmalig den halben Bestand als geaendert meldet. 300 ist das Vierfache des gemessenen
+//    Normalwerts (78 Aenderungen ueber alle 73 Quellen am 21.09. nach dem Fix).
+//
+// Unter TRACKING_MIN_MASSE wird die Quote nicht geprueft: bei einer Handvoll Aenderungen ist
+// ein Anteil kein Signal, sondern Zufall.
+const TRACKING_WIEDERHOLUNG_MAX = 0.25
+const TRACKING_TAGESMENGE_MAX = 300
+const TRACKING_MIN_MASSE = 30
+
+/** Befunde der Selbstkontrolle — reine Rechnung auf den roh-Zahlen, damit testbar. */
+export function pruefeTrackingGuete(roh, {
+  wiederholungMax = TRACKING_WIEDERHOLUNG_MAX,
+  tagesmengeMax = TRACKING_TAGESMENGE_MAX,
+  minMasse = TRACKING_MIN_MASSE,
+} = {}) {
+  const heute = Number(roh?.geaendertHeute ?? 0)
+  const gestern = Number(roh?.geaendertGestern ?? 0)
+  const wiederholt = Number(roh?.wiederholtVomVortag ?? 0)
+  const befunde = []
+  if (gestern >= minMasse && wiederholt / gestern > wiederholungMax) {
+    befunde.push({
+      art: "wiederholung",
+      grund: `${wiederholt} von ${gestern} gestrigen Aenderungen wurden heute erneut gemeldet ` +
+             `(${Math.round((wiederholt / gestern) * 100)} %, erlaubt sind ${Math.round(wiederholungMax * 100)} %)`,
+    })
+  }
+  if (heute > tagesmengeMax) {
+    befunde.push({ art: "tagesmenge", grund: `${heute} Aenderungen heute (Schwelle ${tagesmengeMax})` })
+  }
+  return befunde
+}
+
 /** Reine Berechnung, kein HTTP — vom Route-Handler (Cache-Miss-Fallback) UND vom taeglichen
  *  Worker-Cron (worker/index.js runVeraenderungenCache) genutzt. Kategorien sind fix "alle": das
  *  Frontend fragt nie eine Teilmenge ab (T-747-Nachbesserung, eingedampft), das haelt den Cache
@@ -472,7 +521,22 @@ export async function berechneUebersicht(db, tage) {
              -- ausgeklammert werden. Der alte Summand zaehlte sie trotzdem mit und wies damit mehr
              -- ausgeklammerte Aenderungen aus, als es ueberhaupt gab.
              (SELECT count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter})
-               - (SELECT count(*) FROM obstacle_aenderungen WHERE ${relevantFilter}) AS relevanz_ausgeklammert_geaendert
+               - (SELECT count(*) FROM obstacle_aenderungen WHERE ${relevantFilter}) AS relevanz_ausgeklammert_geaendert,
+             -- SELBSTKONTROLLE DER METRIK (T-749). Eine Aenderung ist ein EREIGNIS: sie passiert
+             -- einmal. Meldet die Metrik dieselbe Zeile Tag fuer Tag, misst sie keinen Vorgang,
+             -- sondern bewertet bei jedem Lauf denselben Zustand neu — und ist damit kaputt,
+             -- egal wie plausibel die Einzelwerte aussehen. Genau diese drei Zahlen haben den
+             -- Fehler vom 21.09. aufgedeckt (800 heute, 635 gestern, 615 davon dieselben Zeilen),
+             -- bevor ein einziges Feld analysiert war. Sie stehen deshalb dauerhaft im Payload,
+             -- nicht in einem Diagnose-Skript: der Worker schlaegt daraus Alarm (worker/index.js,
+             -- meldeTrackingGuete) und die Seite weist sie als Beleg aus.
+             (SELECT count(*) FROM obstacle_aenderungen WHERE erkannt_am = current_date) AS geaendert_heute,
+             (SELECT count(*) FROM obstacle_aenderungen WHERE erkannt_am = current_date - 1) AS geaendert_gestern,
+             (SELECT count(*) FROM (
+                SELECT obstacle_id FROM obstacle_aenderungen WHERE erkannt_am = current_date
+                INTERSECT
+                SELECT obstacle_id FROM obstacle_aenderungen WHERE erkannt_am = current_date - 1
+              ) w) AS wiederholt_vom_vortag
          )
          SELECT
            (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -548,6 +612,11 @@ export async function berechneUebersicht(db, tage) {
       relevanzAusgeklammertNeu: Number(row.roh?.relevanz_ausgeklammert_neu ?? 0),
       relevanzAusgeklammertWeg: Number(row.roh?.relevanz_ausgeklammert_weg ?? 0),
       relevanzAusgeklammertGeaendert: Number(row.roh?.relevanz_ausgeklammert_geaendert ?? 0),
+      // Selbstkontrolle (T-749): wie viele der heutigen Aenderungen betrafen dieselbe Zeile wie
+      // gestern? Ein Ereignis wiederholt sich nicht. Siehe Kommentar an der SQL oben.
+      geaendertHeute: Number(row.roh?.geaendert_heute ?? 0),
+      geaendertGestern: Number(row.roh?.geaendert_gestern ?? 0),
+      wiederholtVomVortag: Number(row.roh?.wiederholt_vom_vortag ?? 0),
     },
     proKategorie: kat,
     proStrassenklasse: strasse,

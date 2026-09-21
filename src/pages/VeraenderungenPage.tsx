@@ -187,8 +187,13 @@ function computeInsight(d: VeraenderungenUebersicht) {
 }
 
 function geaendertSub(d: VeraenderungenUebersicht) {
-  if (!d.geaendertTrackingSeit) return "ab heute"
-  return `seit ${formatDateDE(d.geaendertTrackingSeit)}`
+  const basis = d.geaendertTrackingSeit ? `seit ${formatDateDE(d.geaendertTrackingSeit)}` : "ab heute"
+  // Selbstkontrolle (T-749): eine Aenderung passiert einmal. Wiederholen sich dieselben Stellen
+  // von Tag zu Tag, misst die Zahl einen Zustand statt ein Ereignis — der Fehler, der am
+  // 21.09.2026 800 Aenderungen an einem Sonntag meldete. Die Zahl steht deshalb an der Kachel
+  // selbst und nicht nur in der Warnmail des Workers.
+  const w = d.roh?.wiederholtVomVortag ?? 0
+  return w > 0 ? `${basis} · ${w} davon gestern schon gemeldet` : basis
 }
 
 function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType<typeof computeInsight> }) {
