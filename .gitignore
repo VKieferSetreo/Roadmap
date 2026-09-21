@@ -1,5 +1,9 @@
 # Dependencies
 node_modules/
+# ohne Schraegstrich zusaetzlich: in einem separaten Arbeitsbaum ist node_modules oft ein
+# symbolischer LINK auf den Hauptbaum. Das Muster mit Schraegstrich trifft nur Verzeichnisse,
+# der Link rutschte dadurch in 'git add -A' und brach den Docker-Build (COPY . .).
+node_modules
 bun.lockb
 
 # Lokale Arbeits-Artefakte (kein Produktcode)
