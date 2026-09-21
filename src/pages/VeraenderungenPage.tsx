@@ -134,7 +134,7 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Je Straßenklasse</CardTitle>
-            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet; fehlt es, aus der Koordinate aufgelöst</p>
+            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet; fehlt es, aus der Koordinate über das Straßennetz aufgelöst</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>

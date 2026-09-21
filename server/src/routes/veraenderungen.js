@@ -206,7 +206,13 @@ const strassenklasseCase = (klasseSpalte = "strassen_klasse") => `CASE
   WHEN btrim(coalesce(strassen_ref, '')) ~* '^K ?[0-9]' THEN 'kreisstrasse'
   WHEN strassen_ref ~* '[A-Za-zÄÖÜäöüß]{3}' THEN 'gemeindestrasse'
   WHEN ${klasseSpalte} IS NOT NULL THEN ${klasseSpalte}
-  ELSE 'unbekannt'
+  -- KEINE Restkategorie (Max 2026-09-21: "Ohne Zuordnung darf es nicht geben"). Der Fall ist
+  -- nach der Koordinaten-Aufloesung praktisch leer — jede aktive Zeile im Bestand traegt eine
+  -- Koordinate (gemessen: 79.301 von 79.301), und OSRM verortet sie auf dem Fahrnetz. Bleibt
+  -- eine Zeile trotzdem uebrig (Quelle noch nicht durch den Auflaufer, OSRM zur Laufzeit nicht
+  -- erreichbar), gilt dieselbe Hierarchie wie dort: ohne nachweisbares Kennzeichen ist eine
+  -- Stelle keine Autobahn, Bundes-, Landes- oder Kreisstrasse, also kommunal.
+  ELSE 'gemeindestrasse'
 END`
 const STRASSENKLASSE_CASE = strassenklasseCase()
 // obstacle_aenderungen traegt nur den strassen_ref-Schnappschuss. Die Subquery greift erst,

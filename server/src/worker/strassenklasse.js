@@ -9,7 +9,8 @@
 const RUNDUNG = 4 // ≈ 11 m — fein genug für Straßenidentität, grob genug als Cache-Schlüssel
 
 /** Klasse aus OSRM-Antwort. Dieselbe Reihenfolge wie STRASSENKLASSE_CASE, damit beide Wege
- *  dasselbe Ergebnis liefern. */
+ *  dasselbe Ergebnis liefern. null heisst: OSRM hat zwar geantwortet, die Kante traegt aber
+ *  weder Kennzeichen noch Namen — was daraus folgt, entscheidet der Aufrufer. */
 export function klasseAus(ref, name) {
   const r = String(ref ?? "").trim()
   if (/^A ?[0-9]/i.test(r)) return "autobahn"
@@ -17,8 +18,20 @@ export function klasseAus(ref, name) {
   if (/^(L|St?) ?[0-9]/i.test(r)) return "landesstrasse"
   if (/^K ?[0-9]/i.test(r)) return "kreisstrasse"
   if (String(name ?? "").trim().length > 2) return "gemeindestrasse"
-  return null // nichts gefunden — NICHT als "unbekannt" cachen, das kann ein Abrufproblem sein
+  return null
 }
+
+// Eine Kante im Fahrnetz OHNE Kennzeichen ist keine Autobahn, Bundes-, Landes- oder
+// Kreisstrasse: diese vier tragen ihr Kennzeichen in OSM ausnahmslos, daran haengt die ganze
+// Ableitung oben. Was uebrig bleibt, ist kommunal — das ist die Netzhierarchie, keine Notloesung
+// (Max 2026-09-21: "Ohne Zuordnung darf es nicht geben").
+//
+// Gemessen an 300 Stichproben aus dem bis dahin nicht zugeordneten Bestand: ALLE lagen auf dem
+// Fahrnetz, der Snap-Abstand betrug 0 bis 6 m. 251 davon auf einer Kante ganz ohne Name und
+// Kennzeichen (unbenannte Wohn- und Wirtschaftswege), 36 mit Namen ohne Kennzeichen, 13 mit
+// Kennzeichen. Es ist also kein Verortungsproblem: die Stellen liegen auf Strassen, die in OSM
+// schlicht keinen Namen tragen.
+const OHNE_KENNZEICHEN = "gemeindestrasse"
 
 const runde = (n) => Number(Number(n).toFixed(RUNDUNG))
 
@@ -34,8 +47,11 @@ async function frageOsrm(basis, lat, lng, fetchImpl, timeoutMs) {
     const j = await res.json()
     const s = j?.routes?.[0]?.legs?.[0]?.steps?.[0]
     if (!s) return null
-    const klasse = klasseAus(s.ref, s.name)
-    return klasse ? { klasse, ref: s.ref ?? null, name: s.name ?? null } : null
+    // OSRM hat die Stelle auf einer Kante verortet. Traegt sie kein Kennzeichen, ist sie
+    // kommunal (siehe OHNE_KENNZEICHEN). Vorher fiel dieser Fall als null durch und die Zeile
+    // blieb dauerhaft ohne Klasse — 84 % der Stichprobe.
+    const klasse = klasseAus(s.ref, s.name) ?? OHNE_KENNZEICHEN
+    return { klasse, ref: s.ref ?? null, name: s.name ?? null }
   } catch {
     return null
   } finally {
