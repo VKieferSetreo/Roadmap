@@ -166,7 +166,7 @@ axiosInstance.interceptors.response.use(
     const message = timeout
       ? "Der Server hat nicht rechtzeitig geantwortet. Bitte erneut versuchen."
       : status === 413
-        ? "Die Datei ist zu groß für den Server. Bitte eine kleinere Datei hochladen — erneutes Senden ändert daran nichts."
+        ? "Die Datei ist zu groß für den Server. Bitte eine kleinere Datei hochladen. Erneutes Senden ändert daran nichts."
         : status > 0
           ? `Der Server konnte die Anfrage nicht verarbeiten (Fehler ${status}). Bitte in wenigen Minuten erneut versuchen.`
           : "Keine Verbindung zum Setreo-Server. Bitte Netzwerkverbindung prüfen."

@@ -135,7 +135,7 @@ export function MarkierungsEbeneKopierenDialog({ ebene, quelle, onSchliessen }: 
       {ausgeblendet ? (
         <p className="flex items-center gap-1.5 border-t border-neutral-200 px-4 py-2 text-[12px] text-neutral-500">
           <EyeOff className="h-3.5 w-3.5 shrink-0" />
-          Die Ebene ist für den Empfänger ausgeblendet — die Kopie ebenfalls.
+          Die Ebene ist für den Empfänger ausgeblendet, die Kopie ebenfalls.
         </p>
       ) : null}
 

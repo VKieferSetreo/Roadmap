@@ -206,7 +206,7 @@ function ObstacleKarte({ live }: { live: boolean }) {
           <Database className="h-4 w-4 text-primary-500" />
           Hindernis-Datenbank wird geladen …
         </div>
-        <p className="text-xs text-neutral-400">In Paketen laden — die Suche steht, sobald alles da ist.</p>
+        <p className="text-xs text-neutral-400">In Paketen laden. Die Suche steht, sobald alles da ist.</p>
 
         {/* Ladebalken unten am Kartenbereich */}
         <div className="absolute inset-x-0 bottom-0 border-t border-neutral-100 bg-neutral-50/80 px-4 py-3">

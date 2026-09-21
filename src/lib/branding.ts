@@ -90,5 +90,5 @@ export function applyBranding(branding?: Branding | null): void {
     for (const stop of STOPS) root.style.removeProperty(`--primary-${stop}`)
   }
   const appName = branding?.appName?.trim()
-  document.title = appName || "Roadmap — Setreo"
+  document.title = appName || "Setreo Roadmap"
 }

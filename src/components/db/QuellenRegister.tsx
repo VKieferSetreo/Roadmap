@@ -182,7 +182,7 @@ export function QuellenRegister() {
                       {/* „Datenstand" statt „Letzter Abruf" (T-731). Seit T-716 trägt das Feld bei
                           Schnappschuss-Quellen den Stand des Auszugs, nicht den Zeitpunkt des Abrufs:
                           Hessen (0126) liest eine Datei vom 27.02. und lief trotzdem dreimal täglich
-                          erfolgreich — „Letzter Abruf: vor 30 Minuten" war dort schlicht falsch.
+                          erfolgreich. „Letzter Abruf: vor 30 Minuten" war dort schlicht falsch.
                           „Datenstand" stimmt für beide Fälle und ist ohnehin die Frage, die der
                           Disponent hat: wie alt sind die Daten, nicht wann hat der Server angeklopft. */}
                       <Detail label="Datenstand" value={qq.letzterAbruf ? formatRelativeDE(qq.letzterAbruf) : "noch nie"} />

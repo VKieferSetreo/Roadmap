@@ -784,7 +784,7 @@ export const useProjectStore = create<ProjectStore>()(
                 })
                 toast.error(
                   "Das Projekt wurde zwischenzeitlich geändert, in einem anderen Fenster oder von jemand anderem. " +
-                    "Es wird neu geladen — bitte starten Sie die Auswertung danach erneut.",
+                    "Es wird neu geladen. Bitte starten Sie die Auswertung danach erneut.",
                 )
                 void get().loadProjects()
                 return

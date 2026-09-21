@@ -684,7 +684,7 @@ export function ProjectTree({ query, activeId, activeTab, go }: TreeProps) {
       key: "__zone_private__",
       folders: wurzel.filter((f) => f.owner),
       projekte: rootProjects.filter((p) => p.owner),
-      leerText: "Noch nichts Privates — mit + anlegen oder hierher ziehen.",
+      leerText: "Noch nichts Privates. Mit + anlegen oder hierher ziehen.",
     },
   ]
 

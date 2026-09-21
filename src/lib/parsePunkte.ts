@@ -115,7 +115,7 @@ function pruefeGrenze(ebenen: ParsedPunktEbene[]): ParsedPunktEbene[] {
       `${zuGross.length === 1 ? "Die Ebene" : "Die Ebenen"} ${zuGross.map(zuGrossText).join(", ")} ` +
         `${zuGross.length === 1 ? "enthält" : "enthalten"} mehr als ${grenze} Punkte. Mehr lässt sich ohne ` +
         `Zusammenfassen nicht flüssig auf der Karte zeigen. Es wird bewusst nicht ausgedünnt, damit keine ` +
-        `Standorte verloren gehen — bitte teilen Sie die Datei auf.`,
+        `Standorte verloren gehen. Bitte teilen Sie die Datei auf.`,
     )
   }
   if (zuGross.length) {
@@ -297,7 +297,7 @@ export function parsePunkteGeoJson(text: string, name = "Punkte"): ParsedPunktEb
     throw new Error(
       `Die ${zaehler.ausserhalb.toLocaleString("de-DE")} Punkte liegen nicht in geographischen Koordinaten ` +
         `(WGS84), vermutlich in UTM (z.B. EPSG:25832). Bitte exportieren Sie das GeoJSON in EPSG:4326 oder laden ` +
-        `Sie die Daten als Shapefile oder GeoPackage hoch — dort wird automatisch umgerechnet.`,
+        `Sie die Daten als Shapefile oder GeoPackage hoch, dort wird automatisch umgerechnet.`,
     )
   }
   if (punkte.length === 0) {

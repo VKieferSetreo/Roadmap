@@ -77,7 +77,7 @@ export function RoutePreviewMap({ points, className }: { points: Pt[]; className
       </MapContainer>
       {kachelFehler ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[500] bg-white/85 px-2 py-1 text-center text-[11px] text-neutral-600">
-          Kartenhintergrund konnte nicht geladen werden — der Streckenverlauf stimmt trotzdem.
+          Kartenhintergrund konnte nicht geladen werden. Der Streckenverlauf stimmt trotzdem.
         </div>
       ) : null}
     </div>

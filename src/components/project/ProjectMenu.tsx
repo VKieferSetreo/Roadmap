@@ -23,7 +23,7 @@ export function ProjectMenu({ project }: { project: Project }) {
   const commitRename = () => {
     const n = nameDraft.trim()
     if (n.length < 2 || n.length > 80) {
-      toast.error("Projektname: 2–80 Zeichen.")
+      toast.error("Projektname: 2 bis 80 Zeichen.")
       return
     }
     if (n !== project.name) renameProject(project.id, n)

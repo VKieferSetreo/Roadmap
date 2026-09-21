@@ -88,7 +88,7 @@ export function AdminTenantsPage() {
     const s = slug.trim().toLowerCase()
     const n = name.trim()
     if (!/^[a-z0-9-]{2,40}$/.test(s)) {
-      toast.error("Kürzel: 2–40 Zeichen, nur a–z, 0–9 und Bindestrich.")
+      toast.error("Kürzel: 2 bis 40 Zeichen, nur Kleinbuchstaben, Ziffern und Bindestrich.")
       return
     }
     if (!n) {
@@ -596,7 +596,7 @@ function TenantBrandingPanel({ tenant, onChanged }: { tenant: Tenant; onChanged:
             <p className="mt-1 text-[11px] text-severity-kritisch">Ungültiger Hex-Code.</p>
           )}
           <p className="mt-1 text-[11px] text-neutral-400">
-            Nur diese eine Farbe setzen — die Abstufungen werden automatisch daraus berechnet.
+            Nur diese eine Farbe setzen. Die Abstufungen werden automatisch daraus berechnet.
           </p>
         </div>
 

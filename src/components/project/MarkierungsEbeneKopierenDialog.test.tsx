@@ -121,7 +121,7 @@ describe("Ebene kopieren", () => {
   it("übernimmt eine Ausblendung: die Kopie einer internen Ebene geht NICHT in den Kundenlink", async () => {
     const e = ebene({ oeffentlich: false })
     const schliessen = oeffne(proj("q", "Quelle", { markierungen: [e] }), e, [proj("z", "Kundenprojekt")])
-    expect(within(dialog()).getByText(/ausgeblendet — die Kopie ebenfalls/)).toBeInTheDocument()
+    expect(within(dialog()).getByText(/ausgeblendet, die Kopie ebenfalls/)).toBeInTheDocument()
     waehle("Kundenprojekt")
     kopiere()
     await waitFor(() => expect(schliessen).toHaveBeenCalled())

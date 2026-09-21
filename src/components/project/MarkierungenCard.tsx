@@ -47,7 +47,7 @@ export function MarkierungenCard({ project }: { project: Project }) {
     if (!verstoss) return true
     const abhilfe =
       verstoss.grund === "bytes"
-        ? "Meist tragen die Punkte sehr viele oder sehr lange Angaben — bitte entfernen Sie nicht benötigte Spalten aus der Datei."
+        ? "Meist tragen die Punkte sehr viele oder sehr lange Angaben. Bitte entfernen Sie nicht benötigte Spalten aus der Datei."
         : imDialog
           ? "Bitte haken Sie weniger Ebenen an."
           : verstoss.grund === "ebenen"

@@ -17,7 +17,6 @@ import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { VeraenderungenFreigaben } from "@/components/veraenderungen/VeraenderungenFreigaben"
-import { formatDateDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
 const VeraenderungenZeitreihe = lazy(() =>
@@ -52,7 +51,7 @@ export function VeraenderungenPage() {
   return (
     <PageContainer
       title="Änderungsverfolgung"
-      description="Wie viel ändert sich täglich quellenübergreifend an Baustellen/Sperrungen — Art, Laufzeit, Vorlaufzeit."
+      description="Wie viel ändert sich täglich quellenübergreifend an Baustellen und Sperrungen: Art, Laufzeit, Vorlaufzeit."
       actions={
         <div className="flex items-center gap-2">
           <div className="flex rounded-lg border border-neutral-200 bg-white p-0.5">
@@ -98,20 +97,19 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
       <Hero d={d} insight={insight} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi icon={PlusCircle} label="Neu" sub={`${d.tage} Tage · relevant`} value={d.gesamt.neu} akzent="#1baf7a" />
-        <Kpi icon={Sparkles} label="Geändert" sub={geaendertSub(d)} value={d.gesamt.geaendert} akzent="#eb6834" />
-        <Kpi icon={CalendarX2} label="Ausgelaufen" sub="planmäßig, relevant" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
-        <Kpi icon={XCircle} label="Entfernt" sub="vorzeitig, relevant" value={d.gesamt.entfernt} akzent="#4a3aa7" />
+        <Kpi icon={PlusCircle} label="Neu" value={d.gesamt.neu} akzent="#1baf7a" />
+        <Kpi icon={Sparkles} label="Geändert" value={d.gesamt.geaendert} akzent="#eb6834" />
+        <Kpi icon={CalendarX2} label="Ausgelaufen" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
+        <Kpi icon={XCircle} label="Entfernt" value={d.gesamt.entfernt} akzent="#4a3aa7" />
       </div>
 
       <Card className="overflow-hidden">
-        <CardHeader className="flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle className="text-base">Änderungen je Tag</CardTitle>
-          <span className="text-xs text-neutral-400">{d.kategorien.length <= 2 ? "Baustellen und Sperrungen" : `${d.kategorien.length} Kategorien`}</span>
         </CardHeader>
         <CardContent className="pt-2">
           <Suspense fallback={<div className="skeleton h-56 w-full rounded-lg" />}>
-            <VeraenderungenZeitreihe data={d.zeitreihe} />
+            <VeraenderungenZeitreihe data={d.zeitreihe} vollstaendigAb={d.erfassungVollstaendigAb} />
           </Suspense>
         </CardContent>
       </Card>
@@ -128,7 +126,6 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Je Straßenklasse</CardTitle>
-            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet; fehlt es, aus der Koordinate über das Straßennetz aufgelöst</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -142,7 +139,6 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Laufzeit</CardTitle>
-            <p className="text-xs text-neutral-400">Neue Maßnahmen · Kurz ≤7 Tage · Mittel 8–30 Tage · Lang &gt;30 Tage / unbefristet</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -184,16 +180,6 @@ function computeInsight(d: VeraenderungenUebersicht) {
   return { proTag, spontanAnteil }
 }
 
-function geaendertSub(d: VeraenderungenUebersicht) {
-  const basis = d.geaendertTrackingSeit ? `seit ${formatDateDE(d.geaendertTrackingSeit)}` : "ab heute"
-  // Selbstkontrolle (T-749): eine Aenderung passiert einmal. Wiederholen sich dieselben Stellen
-  // von Tag zu Tag, misst die Zahl einen Zustand statt ein Ereignis — der Fehler, der am
-  // 21.09.2026 800 Aenderungen an einem Sonntag meldete. Die Zahl steht deshalb an der Kachel
-  // selbst und nicht nur in der Warnmail des Workers.
-  const w = d.roh?.wiederholtVomVortag ?? 0
-  return w > 0 ? `${basis} · ${w} davon gestern schon gemeldet` : basis
-}
-
 function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType<typeof computeInsight> }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-white p-6 shadow-card sm:p-8">
@@ -216,7 +202,7 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
             {d.quellenBasis ? (
               <strong className="font-semibold text-neutral-800">{d.quellenBasis.quellen}</strong>
             ) : null}{" "}
-            bundesweit angebundene Quellen — Autobahn GmbH, Landesbetriebe, Städte und Kommunen.
+            bundesweit angebundene Quellen: Autobahn GmbH, Landesbetriebe, Städte und Kommunen.
           </p>
         </div>
         <div className="flex shrink-0 gap-6">
@@ -249,7 +235,7 @@ function HeroStat({ value, label, icon: Icon }: { value: string; label: string; 
   )
 }
 
-function Kpi({ icon: Icon, label, sub, value, akzent }: { icon: LucideIcon; label: string; sub: string; value: number; akzent: string }) {
+function Kpi({ icon: Icon, label, value, akzent }: { icon: LucideIcon; label: string; value: number; akzent: string }) {
   return (
     <Card className="relative overflow-hidden p-4 pl-5">
       <span className="absolute inset-y-0 left-0 w-1" style={{ background: akzent }} aria-hidden />
@@ -259,7 +245,7 @@ function Kpi({ icon: Icon, label, sub, value, akzent }: { icon: LucideIcon; labe
         </div>
         <div>
           <p className="text-2xl font-bold tabular-nums tracking-tight text-neutral-900">{value.toLocaleString("de-DE")}</p>
-          <p className="text-xs font-medium text-neutral-600">{label} <span className="text-neutral-400">· {sub}</span></p>
+          <p className="text-xs font-medium text-neutral-600">{label}</p>
         </div>
       </div>
     </Card>
