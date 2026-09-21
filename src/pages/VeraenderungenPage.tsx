@@ -18,6 +18,7 @@ import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { VeraenderungenFreigaben } from "@/components/veraenderungen/VeraenderungenFreigaben"
 import { cn } from "@/lib/cn"
+import { AMPEL } from "@/lib/ampel"
 
 const VeraenderungenZeitreihe = lazy(() =>
   import("@/components/charts/VeraenderungenCharts").then((m) => ({ default: m.VeraenderungenZeitreihe })),
@@ -101,10 +102,12 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
       <Hero d={d} insight={insight} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi icon={PlusCircle} label="Neu" value={d.gesamt.neu} akzent="#1baf7a" />
-        <Kpi icon={Sparkles} label="Geändert" value={d.gesamt.geaendert} akzent="#eb6834" />
-        <Kpi icon={CalendarX2} label="Ausgelaufen" value={d.gesamt.ausgelaufen} akzent="#2a78d6" />
-        <Kpi icon={XCircle} label="Entfernt" value={d.gesamt.entfernt} akzent="#4a3aa7" />
+        {/* Dieselbe Ampel wie in den Diagrammen: eine Kategorie hat EINE Farbe auf der Seite,
+            sonst ist "Neu" oben grün und im Balken darunter rot. */}
+        <Kpi icon={PlusCircle} label="Neu" value={d.gesamt.neu} akzent={AMPEL.rot} />
+        <Kpi icon={Sparkles} label="Geändert" value={d.gesamt.geaendert} akzent={AMPEL.orange} />
+        <Kpi icon={CalendarX2} label="Ausgelaufen" value={d.gesamt.ausgelaufen} akzent={AMPEL.gelb} />
+        <Kpi icon={XCircle} label="Entfernt" value={d.gesamt.entfernt} akzent={AMPEL.gruen} />
       </div>
 
       <Card className="overflow-hidden">
@@ -153,7 +156,6 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card className="border-primary-200/70">
           <CardHeader>
             <CardTitle className="text-sm">Vorlaufzeit</CardTitle>
-            <p className="text-xs text-neutral-400">Neue Maßnahmen · Zeit zwischen Erst-Erfassung und Beginn</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
