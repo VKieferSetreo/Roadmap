@@ -4,8 +4,17 @@ import path from "node:path"
 
 // Dev läuft auf Root (/), der Production-Build wird unter /roadmap/ ausgeliefert
 // (setreo-intern-hub serviert roadmap/ mit strip-prefix /roadmap).
+//
+// FREIGABE=1 baut stattdessen die oeffentliche Ansicht der Aenderungsauswertung: gleicher
+// Code, andere Auslieferung. Sie liegt nicht im Hub, sondern im api-Container unter
+// server/public/freigabe (wie der Share-Viewer) und wird unter /_share/freigabe/ serviert.
+// Bewusst als Schalter in DIESER Datei und nicht als zweite Konfiguration: mit --config
+// findet vite den React-Plugin nicht, wenn node_modules ein symbolischer Link ist, und in
+// einem separaten Arbeitsbaum ist es genau das.
+const freigabe = process.env.FREIGABE === "1"
+
 export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/roadmap/" : "/",
+  base: command !== "build" ? "/" : freigabe ? "/_share/freigabe/" : "/roadmap/",
   plugins: [react()],
   resolve: {
     alias: {
@@ -25,10 +34,12 @@ export default defineConfig(({ command }) => ({
     },
   },
   build: {
-    outDir: "dist",
+    outDir: freigabe ? "server/public/freigabe" : "dist",
+    emptyOutDir: true,
     sourcemap: false,
     target: "es2022",
     rollupOptions: {
+      ...(freigabe ? { input: path.resolve(__dirname, "freigabe.html") } : {}),
       output: {
         // T-362: stabile Vendor-Chunks für die großen eager-Libs, damit ein App-Code-Change
         // nicht den ganzen react/query/leaflet-Code neu-hasht (Browser-Cache bleibt warm).

@@ -88,7 +88,11 @@ export function VeraenderungenPage() {
   )
 }
 
-function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
+/** Der komplette Seiteninhalt unter dem Kopf. Wird AUCH von der oeffentlichen
+ *  Freigabe-Ansicht gerendert (src/freigabe/main.tsx), damit aussen und innen nicht
+ *  auseinanderlaufen koennen — es ist derselbe Code, kein Nachbau. Was hier geaendert
+ *  wird, aendert sich in beiden Ansichten. */
+export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
   const isAdmin = useContextStore((s) => s.isAdmin)
   const insight = useMemo(() => computeInsight(d), [d])
 

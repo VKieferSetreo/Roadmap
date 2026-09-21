@@ -68,12 +68,13 @@ const SHARE_DIR = fileURLToPath(new URL("../public/share", import.meta.url))
 // Seite des Aenderungs-Freigabelinks. Einmal beim Start gelesen: eine Datei ohne
 // Bauschritt, sie aendert sich nur mit einem Deploy. Faellt sie aus, bleibt der
 // Rest der Anwendung heil und der Link meldet sauber, dass nichts da ist.
+const FREIGABE_DIR = fileURLToPath(new URL("../public/freigabe", import.meta.url))
+// Die oeffentliche Ansicht ist derselbe Build wie die angemeldete Seite (npm run build:freigabe,
+// Max 2026-09-21: "1:1 so optisch wie das interne"), ausgeliefert aus dem api-Container wie der
+// Share-Viewer. Einmal beim Start gelesen; fehlt der Build, bleibt der Rest der Anwendung heil.
 const VERAENDERUNGEN_SEITE = (() => {
   try {
-    return readFileSync(
-      fileURLToPath(new URL("../public/veraenderungen-freigabe.html", import.meta.url)),
-      "utf8",
-    )
+    return readFileSync(`${FREIGABE_DIR}/freigabe.html`, "utf8")
   } catch {
     return "<!doctype html><meta charset=\"utf-8\"><title>Nicht verfügbar</title>"
       + "<p>Diese Ansicht ist derzeit nicht verfügbar.</p>"
@@ -172,6 +173,9 @@ export function createApp({
   app.use("/_share", shareRouter({ db, sessionSalt }))
   // Freigabelink der Aenderungsauswertung. MUSS vor express.static stehen: die
   // Share-SPA liefert sonst ihr index.html fuer /_share/v/<token> aus.
+  // Die Bundle-Dateien liegen unter /_share/freigabe/ (base im Build), die Seite selbst
+  // unter /_share/v/<token> — deshalb zwei getrennte Einhaengungen.
+  app.use("/_share/freigabe", express.static(FREIGABE_DIR, { index: false }))
   app.use("/_share", veraenderungenFreigabeRouter({ db, seiteHtml: VERAENDERUNGEN_SEITE }))
   // Statisches Share-FE; Verzeichnis wird später vendored — fehlt es, greift 404
   app.use("/_share", express.static(shareDir))
