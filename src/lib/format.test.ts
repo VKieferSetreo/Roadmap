@@ -19,7 +19,7 @@ describe("fundeText", () => {
     expect(fundeText(1)).toBe("1 Fund")
   })
 
-  it("setzt den Plural bei allem anderen — auch bei null", () => {
+  it("setzt den Plural bei allem anderen, auch bei null", () => {
     expect(fundeText(0)).toBe("0 Funde")
     expect(fundeText(2)).toBe("2 Funde")
     expect(fundeText(3366)).toBe("3366 Funde")
@@ -36,7 +36,7 @@ describe("fundeText", () => {
 // Feste Systemzeit, weil „heute"/„gestern" sonst vom Tag des Testlaufs abhängen — ein Test, der
 // um Mitternacht kippt, ist kein Test. Alle Eingaben stehen in LOKALER Zeit (kein Z am Ende),
 // damit das Ergebnis nicht von der Zeitzone der Maschine abhängt.
-describe("formatStampDE — Letzter Stand im Kopf und im Reiter Anlage", () => {
+describe("formatStampDE: Letzter Stand im Kopf und im Reiter Anlage", () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 8, 7, 12, 0, 0)) // Montag, 07.09.2026, 12:00 Uhr
@@ -68,14 +68,14 @@ describe("formatStampDE — Letzter Stand im Kopf und im Reiter Anlage", () => {
 // ProjectCard schreibt damit „Aktualisiert …" unter jeden Projektnamen. Gemessen am 07.09.2026:
 // von 82 Projekten standen 2 auf „gestern" und 80 auf einem älteren Stand, der älteste vom
 // 18.06.2026 — die relative Angabe ist also der Normalfall, nicht die Ausnahme.
-describe("formatRelativeDE — Aktualisiert-Zeile der Projektkachel", () => {
+describe("formatRelativeDE: Aktualisiert-Zeile der Projektkachel", () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 8, 7, 12, 0, 0))
   })
   afterEach(() => vi.useRealTimers())
 
-  it("hängt bei heute und gestern die Uhrzeit an — die Frage ist WANN heute", () => {
+  it("hängt bei heute und gestern die Uhrzeit an: die Frage ist WANN heute", () => {
     expect(formatRelativeDE("2026-09-07T14:05:00")).toBe("heute, 14:05")
     expect(formatRelativeDE("2026-09-06T18:02:00")).toBe("gestern, 18:02")
   })
@@ -100,7 +100,7 @@ describe("formatRelativeDE — Aktualisiert-Zeile der Projektkachel", () => {
 
 // Berichtsdatum, Daten-Stand und Export-Zeitraum im PDF (ReportView) — das Dokument, das der
 // Kunde weitergibt. Eine amerikanische Reihenfolge wäre dort ein Fehler mit Rechtsfolge.
-describe("formatDateDE — Datum im Kundenbericht", () => {
+describe("formatDateDE: Datum im Kundenbericht", () => {
   it("schreibt Tag.Monat.Jahr, nicht Monat/Tag", () => {
     expect(formatDateDE("2026-09-07")).toBe("07.09.2026")
     expect(formatDateDE(new Date(2026, 8, 7, 14, 5))).toBe("07.09.2026")
@@ -112,7 +112,7 @@ describe("formatDateDE — Datum im Kundenbericht", () => {
 })
 
 // DropZone beschriftet damit die Obergrenze („max. 50 MB", Vorgabe maxSizeMb = 50).
-describe("formatBytes — Größenangabe im Upload-Feld", () => {
+describe("formatBytes: Größenangabe im Upload-Feld", () => {
   it("beschriftet die 50-MB-Grenze der Upload-Fläche", () => {
     expect(formatBytes(50 * 1024 * 1024)).toBe("50.0 MB")
   })

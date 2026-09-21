@@ -25,19 +25,19 @@ describe("sichtbaresDetail", () => {
     const detail = {
       Zuordnung: "nicht nachweisbar",
       __ki: "",
-      Zeitraum: "01.09.2026 – 30.09.2026",
+      Zeitraum: "01.09.2026 bis 30.09.2026",
       Ergänzt: "Vollsperrung: true",
       Gilt: "für Fahrzeuge über 3,5 t",
       __marker: "x",
     }
     expect(sichtbaresDetail(detail)).toEqual([
       ["Zuordnung", "nicht nachweisbar"],
-      ["Zeitraum", "01.09.2026 – 30.09.2026"],
+      ["Zeitraum", "01.09.2026 bis 30.09.2026"],
       ["Gilt", "für Fahrzeuge über 3,5 t"],
     ])
   })
 
-  it("entfernt auch ein __ki ohne Wert — genau die 177 Zeilen, die als leeres __ki im Bericht standen", () => {
+  it("entfernt auch ein __ki ohne Wert: genau die 177 Zeilen, die als leeres __ki im Bericht standen", () => {
     expect(sichtbaresDetail({ __ki: [] })).toEqual([])
   })
 
@@ -65,7 +65,7 @@ describe("sichtbaresDetail", () => {
 // ohne Label — im Popup stand der Rohname des Feldes. Dazu der Text-Fall: die KI-Anreicherung legt
 // ihre Werte als Zeichenkette ab, deshalb las der Kunde „true" statt „ja" und „3.5" ohne Einheit.
 // Gemessen: 3.377 mal umleitung als String, 2.056 mal vollsperrung, 1.794 mal fahrbahnVerengt.
-describe("attrEntries — Zahlen", () => {
+describe("attrEntries: Zahlen", () => {
   it("hängt die Einheit an und schreibt das Komma deutsch", () => {
     expect(attrEntries({ maxHoeheM: 4.5 })).toEqual([
       { label: "Durchfahrtshöhe", value: "4,5 m", ausKi: false },
@@ -83,7 +83,7 @@ describe("attrEntries — Zahlen", () => {
   })
 })
 
-describe("attrEntries — Wahrheitswerte", () => {
+describe("attrEntries: Wahrheitswerte", () => {
   it("zeigt echte booleans als ja und nein statt als true und false", () => {
     const zeilen = attrEntries({ vollsperrung: true, halbseitig: false } as unknown as Record<
       string,
@@ -99,7 +99,7 @@ describe("attrEntries — Wahrheitswerte", () => {
   })
 })
 
-describe("attrEntries — Zahlen, die als Text ankommen", () => {
+describe("attrEntries: Zahlen, die als Text ankommen", () => {
   it("macht aus dem Text 3.5 eine deutsche Zahl mit Einheit", () => {
     expect(attrEntries({ maxHoeheM: "3.5" })[0].value).toBe("3,5 m")
   })
@@ -122,7 +122,7 @@ describe("attrEntries — Zahlen, die als Text ankommen", () => {
 
 // T-664/F8: 13 verschiedene Rohwerte auf 9.294 Hindernissen, angeführt von roadClosed mit 4.679.
 // Der Kunde las bisher „roadClosed" im Popup.
-describe("attrEntries — Art der Sperrung", () => {
+describe("attrEntries: Art der Sperrung", () => {
   it("übersetzt den DATEX2-Rohwert in einen Satz, den der Disponent lesen kann", () => {
     expect(attrEntries({ sperrungArt: "roadClosed" })).toEqual([
       { label: "Art der Sperrung", value: "Straße gesperrt", ausKi: false },
@@ -254,7 +254,7 @@ describe("T-711 Restbreite über der Engstellen-Grenze", () => {
   })
 
   // ── GEGENPROBE 4: NICHTS VERSCHWINDEN LASSEN ─────────────────────────────────────────────
-  it("lässt Wert, Zeilenzahl und Reihenfolge unangetastet — nur das Wort ändert sich", () => {
+  it("lässt Wert, Zeilenzahl und Reihenfolge unangetastet: nur das Wort ändert sich", () => {
     const detail = { Zeitraum: "Überschneidet", Restbreite: "15,00 m", Transportbreite: "3,00 m" }
     const zeilen = sichtbaresDetail(detail)
     expect(zeilen.map(([, v]) => v)).toEqual(Object.values(detail))
@@ -286,7 +286,7 @@ describe("T-711 Restbreite über der Engstellen-Grenze", () => {
 
   // attrLabel sieht nur den Schlüssel und kann die Grenze deshalb gar nicht kennen. Das ist
   // Absicht und festgehalten, damit niemand die Entscheidung dorthin verschiebt.
-  it("entscheidet am Wert, nicht am Schlüssel — attrLabel bleibt wertfrei", () => {
+  it("entscheidet am Wert, nicht am Schlüssel: attrLabel bleibt wertfrei", () => {
     expect(attrLabel("restbreiteM")).toBe("Restbreite")
     expect(attrLabel("maxBreiteM")).toBe("Restbreite")
   })

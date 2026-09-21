@@ -268,7 +268,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
           setRoutingFailed(true)
           if (!failToastRef.current) {
             failToastRef.current = true
-            toast.error("Routing nicht verfügbar — die Linie ist nur eine Luftlinie. Speichern ist blockiert, bis das Routing wieder antwortet.")
+            toast.error("Routing nicht verfügbar. Die Linie ist nur eine Luftlinie. Speichern ist blockiert, bis das Routing wieder antwortet.")
           }
         }
       } finally {
@@ -460,8 +460,8 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
         if (offen) {
           toast.warning(
             offen === 1
-              ? "Eine Sperrzone konnte nicht umfahren werden — die Strecke verläuft weiterhin hindurch."
-              : `${offen} Sperrzonen konnten nicht umfahren werden — die Strecke verläuft weiterhin hindurch.`,
+              ? "Eine Sperrzone konnte nicht umfahren werden. Die Strecke verläuft weiterhin hindurch."
+              : `${offen} Sperrzonen konnten nicht umfahren werden. Die Strecke verläuft weiterhin hindurch.`,
           )
         }
         setRoutingFailed(false)
@@ -498,7 +498,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
         {verificationMode ? (
           <div className="flex items-center gap-2 border-b border-severity-kritisch/30 bg-severity-kritisch-bg px-4 py-2 text-xs font-medium text-severity-kritisch">
             <Flag className="h-3.5 w-3.5 shrink-0" />
-            VEMAGS-Prüfung: Bescheide variieren in Qualität — fehlende/falsche Punkte sauber ziehen, dann gibt „Prüfung abschließen" die Strecke frei.
+            VEMAGS-Prüfung: Bescheide variieren in Qualität. Fehlende oder falsche Punkte sauber ziehen, dann gibt „Prüfung abschließen" die Strecke frei.
           </div>
         ) : null}
         {/* Kopf: Name + Aktionen */}
@@ -519,7 +519,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
               "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums",
               routingFailed ? "bg-severity-kritisch/10 text-severity-kritisch" : "bg-neutral-100 text-neutral-600",
             )}
-            title={routingFailed ? "Routing nicht verfügbar — angezeigte Linie ist nur eine Luftlinie" : undefined}
+            title={routingFailed ? "Routing nicht verfügbar: angezeigte Linie ist nur eine Luftlinie" : undefined}
           >
             {routing ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-600" />
@@ -709,7 +709,7 @@ export function RouteEditDialog({ open, onClose, projectId, route, verificationM
                             <>
                               <AlertTriangle className="mt-px h-3 w-3 shrink-0 text-severity-kritisch" />
                               <span className="text-severity-kritisch-text">
-                                {st.grund ?? "Keine Umfahrung gefunden — Strecke läuft weiterhin hindurch."}
+                                {st.grund ?? "Keine Umfahrung gefunden. Strecke läuft weiterhin hindurch."}
                               </span>
                             </>
                           )}

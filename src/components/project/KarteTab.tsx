@@ -415,9 +415,9 @@ export function KarteTab({
           }
           description={
             kollision
-              ? "Für dieses Projekt rechnet gerade ein anderer Lauf — ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
+              ? "Für dieses Projekt rechnet gerade ein anderer Lauf: ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
               : fehlgeschlagen
-                ? `${laufFehler} Ihre Strecken sind gespeichert — ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
+                ? `${laufFehler} Ihre Strecken sind gespeichert. Ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
                 : "Laden Sie die Strecke(n) hoch und starten Sie die Auswertung. Die Funde erscheinen dann hier auf der Karte."
           }
           cta={

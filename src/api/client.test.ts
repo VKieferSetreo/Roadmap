@@ -64,7 +64,7 @@ const ENGLISCH = /Network Error|timeout of|exceeded|Request failed with status c
 // die Aufrufer `err instanceof ApiError ? err.message : "<deutscher Fallback>"` schreiben, gewann
 // immer die englische Zeile über den guten Fallback: der Disponent klickte „Route berechnen" und
 // bekam „timeout of 30000ms exceeded" als Toast.
-describe("Response-Interceptor — Netz und Zeitüberschreitung", () => {
+describe("Response-Interceptor: Netz und Zeitüberschreitung", () => {
   it("sagt bei fehlender Verbindung einen deutschen Satz statt Network Error", async () => {
     const err = await fehlerBeimAufruf({ message: "Network Error", code: "ERR_NETWORK" })
     expect(err.message).toBe("Keine Verbindung zum Setreo-Server. Bitte Netzwerkverbindung prüfen.")
@@ -85,7 +85,7 @@ describe("Response-Interceptor — Netz und Zeitüberschreitung", () => {
 
   // Genau das ist der Grund, warum der deutsche Fallback der Aufrufer nie zog: es IST ein
   // ApiError, der Fallback wird gar nicht erst erreicht.
-  it("wirft einen ApiError — der deutsche Fallback der Aufrufer greift hier nie", async () => {
+  it("wirft einen ApiError: der deutsche Fallback der Aufrufer greift hier nie", async () => {
     const err = await fehlerBeimAufruf({ message: "Network Error", code: "ERR_NETWORK" })
     expect(err).toBeInstanceOf(ApiError)
     expect(err.name).toBe("ApiError")
@@ -94,7 +94,7 @@ describe("Response-Interceptor — Netz und Zeitüberschreitung", () => {
 
 // Drei Texte statt zwei: kam eine Antwort MIT Status (z.B. 502 vom Proxy, Body nicht lesbar), wäre
 // „Netzwerkverbindung prüfen" eine falsche Anweisung — das Netz des Nutzers ist heil.
-describe("Response-Interceptor — Antwort mit Status, aber ohne lesbaren Körper", () => {
+describe("Response-Interceptor: Antwort mit Status, aber ohne lesbaren Körper", () => {
   it("nennt bei einem 502 vom Proxy die Fehlernummer statt Request failed with status code 502", async () => {
     const err = await fehlerBeimAufruf({
       message: "Request failed with status code 502",
@@ -120,7 +120,7 @@ describe("Response-Interceptor — Antwort mit Status, aber ohne lesbaren Körpe
 // funktioniert — dieselbe Datei ist in fünf Minuten genauso groß. Der Fall ist real erreichbar:
 // das FE lässt PDFs bis 12 MB durch, express nimmt nur 20 MB, ein vorgelagerter Proxy riegelt
 // womöglich früher ab. Kommt das 413 vom Proxy, ist der Körper kein JSON und landet genau hier.
-describe("Response-Interceptor — zu große Datei (413)", () => {
+describe("Response-Interceptor: zu große Datei (413)", () => {
   it("rät bei einer zu großen Datei zu einer kleineren Datei, nicht zum Abwarten", async () => {
     const err = await fehlerBeimAufruf({
       message: "Request failed with status code 413",
@@ -149,7 +149,7 @@ describe("Response-Interceptor — zu große Datei (413)", () => {
 // T-724 wäre die Original-Zeile damit nirgends mehr sichtbar. Für den Support ist genau sie die
 // Diagnose („Network Error" gegen „timeout of 30000ms exceeded"), also geht sie zusätzlich in die
 // Konsole, zusammen mit Methode, Pfad und Status.
-describe("Response-Interceptor — die Original-Meldung geht nicht verloren", () => {
+describe("Response-Interceptor: die Original-Meldung geht nicht verloren", () => {
   it("hebt die englische Original-Zeile in details auf", async () => {
     const err = await fehlerBeimAufruf({ message: "Network Error", code: "ERR_NETWORK" })
     expect(err.details).toBe("Network Error")
@@ -178,7 +178,7 @@ describe("Response-Interceptor — die Original-Meldung geht nicht verloren", ()
 
 // T-316: Das Backend liefert seinen Fehlerkontrakt als {error:"…deutsche Meldung…"}. Die festen
 // deutschen Texte von T-724 dürfen diese Meldung nicht überschreiben — sie ist die genauere.
-describe("Response-Interceptor — Meldungen des Servers", () => {
+describe("Response-Interceptor: Meldungen des Servers", () => {
   it("reicht die deutsche Server-Meldung aus dem error-Feld unverändert durch", async () => {
     const err = await fehlerBeimAufruf({
       message: "Request failed with status code 400",

@@ -284,8 +284,8 @@ describe("katMeta (T-734)", () => {
 // Gemessen am 07.09.2026 im aktiven Bestand: 276 Hindernisse mit Start ohne Ende („Ab/am"),
 // 202 nur mit Ende („Bis"), 42.270 ohne beides („Unbefristet"), 34.532 mit beiden Grenzen.
 describe("formatGueltigkeit (T-734)", () => {
-  it("schreibt einen Zeitraum mit beiden Grenzen deutsch mit Gedankenstrich", () => {
-    expect(formatGueltigkeit("2026-09-01", "2026-09-30")).toBe("01.09.2026 – 30.09.2026")
+  it("schreibt einen Zeitraum mit beiden Grenzen deutsch aus", () => {
+    expect(formatGueltigkeit("2026-09-01", "2026-09-30")).toBe("01.09.2026 bis 30.09.2026")
   })
 
   // T-611: „Ab/am", nicht „Ab" — und groß. Beides ist bewusst so gewollt.
@@ -306,6 +306,6 @@ describe("formatGueltigkeit (T-734)", () => {
   })
 
   it("dreht das ISO-Datum auf die deutsche Reihenfolge", () => {
-    expect(formatGueltigkeit("2026-12-24", "2027-01-06")).toBe("24.12.2026 – 06.01.2027")
+    expect(formatGueltigkeit("2026-12-24", "2027-01-06")).toBe("24.12.2026 bis 06.01.2027")
   })
 })

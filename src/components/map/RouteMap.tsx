@@ -450,7 +450,7 @@ export function RouteMap({
         <div className="pointer-events-none absolute bottom-3 left-1/2 z-[500] flex w-[min(26rem,calc(100%-1.5rem))] -translate-x-1/2 justify-center">
           <span className="pointer-events-auto inline-flex max-w-full items-start gap-1.5 rounded-2xl border border-amber-200 bg-amber-50/95 px-3 py-1.5 text-xs font-medium leading-snug text-amber-800 shadow-sm backdrop-blur-sm">
             <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            Gestrichelt: Luftlinie statt berechnetem Straßenverlauf — vor der Fahrt prüfen.
+            Gestrichelt: Luftlinie statt berechnetem Straßenverlauf. Vor der Fahrt prüfen.
           </span>
         </div>
       ) : null}

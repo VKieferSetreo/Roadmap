@@ -231,9 +231,9 @@ export function DashboardTab({
           }
           description={
             kollision
-              ? "Für dieses Projekt rechnet gerade ein anderer Lauf — ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
+              ? "Für dieses Projekt rechnet gerade ein anderer Lauf: ein zweiter Start, ein Kollege oder der Nachtlauf. Ihre Strecken sind gespeichert. Kurz warten und dann aktualisieren."
               : fehlgeschlagen
-                ? `${laufFehler} Ihre Strecken sind gespeichert — ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
+                ? `${laufFehler} Ihre Strecken sind gespeichert. Ein neuer Lauf genügt, erneutes Hochladen ist nicht nötig.`
                 : "Sobald die Auswertung gefahren wurde, erscheinen hier alle Funde mit Details."
           }
           cta={
@@ -541,7 +541,7 @@ export function DashboardTab({
             triggerLabel="Herunterladen: PDF oder CSV"
             trigger={
               <span
-                title={running ? "Auswertung läuft — Download gleich wieder verfügbar" : "Herunterladen"}
+                title={running ? "Auswertung läuft, Download gleich wieder verfügbar" : "Herunterladen"}
                 aria-disabled={running || undefined}
                 className={cn(
                   "inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 shadow-sm transition-colors",

@@ -61,7 +61,7 @@ function Streckenauswahl({ project }: { project: Project }) {
           ? "Mindestens eine Strecke muss sichtbar bleiben."
           : sichtbar === project.routes.length
             ? "Alle Strecken sind sichtbar."
-            : `${sichtbar} von ${project.routes.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
+            : `${sichtbar} von ${project.routes.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht, auch nicht als Hinweis.`}
       </p>
     </div>
   )
@@ -144,7 +144,7 @@ function Ebenenauswahl({ project }: { project: Project }) {
             ? "Alle Markierungen sind sichtbar, samt ihrer Angaben aus der Datei."
             : sichtbar === 0
               ? "Keine Markierungen sichtbar. Der Empfänger sieht nur die Strecken."
-              : `${sichtbar} von ${ebenen.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht — auch nicht als Hinweis.`}
+              : `${sichtbar} von ${ebenen.length} sichtbar. Die übrigen erscheinen beim Empfänger nicht, auch nicht als Hinweis.`}
         </p>
       ) : null}
     </div>
@@ -332,7 +332,7 @@ export function PublishCard({ project }: { project: Project }) {
       <Dialog open={streckenOpen} onClose={() => setStreckenOpen(false)} size="sm">
         <DialogHeader
           title={ebenen.length > 0 ? "Sichtbar beim Empfänger" : "Sichtbare Strecken"}
-          subtitle="Änderungen wirken sofort — auch am bereits geteilten Link."
+          subtitle="Änderungen wirken sofort, auch am bereits geteilten Link."
           onClose={() => setStreckenOpen(false)}
         />
         <div className="flex flex-col gap-5 px-6 py-5">

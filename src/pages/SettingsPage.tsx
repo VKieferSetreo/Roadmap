@@ -328,7 +328,7 @@ function DangerZoneCard() {
       toast.error(`Bitte „${tenant.slug}" exakt eingeben, um zu bestätigen.`)
       return
     }
-    if (!window.confirm("Mandant endgültig löschen? Alle personenbezogenen Daten werden anonymisiert — das ist NICHT umkehrbar.")) return
+    if (!window.confirm("Mandant endgültig löschen? Alle personenbezogenen Daten werden anonymisiert. Das ist NICHT umkehrbar.")) return
     setBusy(true)
     try {
       await api.eraseOwnTenant(confirm.trim())

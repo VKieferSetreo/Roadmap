@@ -99,7 +99,7 @@ beforeEach(() => {
 // plant der Worker seit T-694 nicht mehr ein — ihr letzter Import-Status bleibt für immer
 // eingefroren. Gemessen am 05.09.2026: 4 von 71 nicht erreichbar, davon 3 (0121, 0151, 0159)
 // stillgelegt und auf warn festgenagelt. Der Indikator konnte nie wieder auf 0 gehen.
-describe("useSourceHealth — stillgelegte Quellen", () => {
+describe("useSourceHealth: stillgelegte Quellen", () => {
   it("zählt eine stillgelegte Quelle mit Warnung weder als nicht erreichbar noch überhaupt mit", async () => {
     const result = await health([quelle({ id: "0121", aktiv: false, letzterStatus: "warn" })])
     await waitFor(() => {
@@ -125,7 +125,7 @@ describe("useSourceHealth — stillgelegte Quellen", () => {
 // T-679: gezählt wurde nur "error", der seltenste Fall. Gemessen am 05.09.2026 stand der Indikator
 // auf grün, obwohl sechs Quellen seit Wochen nichts mehr lieferten: 62 ok, 5 warn, 1 partial,
 // 0 error. Halb geschafft oder mit Warnung beendet heißt für den Nutzer dasselbe: nicht frisch.
-describe("useSourceHealth — aktive Quellen", () => {
+describe("useSourceHealth: aktive Quellen", () => {
   it("meldet eine aktive Quelle mit Warnung, Fehler oder Teil-Abruf als nicht erreichbar", async () => {
     const result = await health([
       quelle({ id: "w", letzterStatus: "warn" }),
@@ -144,7 +144,7 @@ describe("useSourceHealth — aktive Quellen", () => {
     })
   })
 
-  it("zählt eine Quelle ohne lauffähigen Connector nirgends mit — auch nicht bei Fehler", async () => {
+  it("zählt eine Quelle ohne lauffähigen Connector nirgends mit, auch nicht bei Fehler", async () => {
     const result = await health([quelle({ id: "ohne", connector: false, letzterStatus: "error" })])
     await waitFor(() => {
       expect(result.current).toEqual({ unreachable: 0, total: 0 })
@@ -165,7 +165,7 @@ describe("useSourceHealth — aktive Quellen", () => {
   })
 })
 
-describe("useSourceHealth — wann überhaupt gefragt wird", () => {
+describe("useSourceHealth: wann überhaupt gefragt wird", () => {
   // Der externe Kunden-Gateway darf /sync/status nicht abfragen (403), und im Demo-Modus gibt es
   // keinen Server, der antworten könnte.
   it("fragt den Sync-Status im externen Kunden-Login gar nicht erst ab", async () => {
@@ -210,11 +210,11 @@ describe("zaehltFuerIndikator (T-715/T-733)", () => {
     expect(zaehltFuerIndikator({ connector: true, aktiv: true })).toBe(true)
   })
 
-  it("zählt eine stillgelegte Quelle NICHT — ihr Status ist für immer eingefroren", () => {
+  it("zählt eine stillgelegte Quelle NICHT: ihr Status ist für immer eingefroren", () => {
     expect(zaehltFuerIndikator({ connector: true, aktiv: false })).toBe(false)
   })
 
-  it("zählt eine Quelle ohne lauffähigen Connector nicht — es gibt keinen Abruf zu bewerten", () => {
+  it("zählt eine Quelle ohne lauffähigen Connector nicht: es gibt keinen Abruf zu bewerten", () => {
     expect(zaehltFuerIndikator({ connector: false, aktiv: true })).toBe(false)
     expect(zaehltFuerIndikator({ aktiv: true })).toBe(false)
   })

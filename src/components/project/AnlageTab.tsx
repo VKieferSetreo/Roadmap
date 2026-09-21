@@ -294,7 +294,7 @@ export function AnlageTab({ project }: { project: Project }) {
                         ) : fehlgeschlagen ? (
                           <span className="text-red-500">{analysis?.error ?? "Bitte erneut versuchen."}</span>
                         ) : routeReady ? (
-                          <span>Bereit — Auswertung jetzt starten.</span>
+                          <span>Bereit. Auswertung jetzt starten.</span>
                         ) : (
                           <span>Oben eine Strecke anlegen, um die Auswertung zu starten.</span>
                         )}

@@ -208,7 +208,7 @@ export function RouteTab({ project }: { project: Project }) {
       // Strecke nicht berechnen"), die Warnung in die Kopfzeile (~70 Zeichen, in ~3,5 s gelesen —
       // sie steht damit vor allem anderen), Kennzahlen und Begründung in die Beschreibung. Der
       // ganze Toast liegt bei ~165 Zeichen ≈ 8 s, die 12 s decken ihn mit Reserve.
-      toast.warning(`Strecke „${name}" angelegt — nur Luftlinie, vor der Fahrt prüfen.`, {
+      toast.warning(`Strecke „${name}" angelegt: nur Luftlinie, vor der Fahrt prüfen.`, {
         description: `Der Streckenverlauf konnte nicht über das Straßennetz berechnet werden. ${kennzahlen}.`,
         duration: 12_000,
       })
@@ -555,7 +555,7 @@ export function RouteTab({ project }: { project: Project }) {
                           // Hover, kostet also keine Fläche und hat keine Anzeigedauer. Der
                           // Karten-Chip (RouteMap) zeigt dieselbe Aussage in Kurzform, weil er
                           // dauerhaft über der Karte steht.
-                          title="Der Streckenverlauf konnte beim Anlegen nicht über das Straßennetz berechnet werden. Gezeigt wird die Luftlinie zwischen den Punkten — vor der Fahrt prüfen."
+                          title="Der Streckenverlauf konnte beim Anlegen nicht über das Straßennetz berechnet werden. Gezeigt wird die Luftlinie zwischen den Punkten, vor der Fahrt prüfen."
                           className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700"
                         >
                           grobe Schätzung
@@ -672,7 +672,7 @@ export function RouteTab({ project }: { project: Project }) {
               <RoutePreviewMap points={pendingFile.points} className="h-60 w-full" />
             </div>
             <p className="mb-4 text-xs text-neutral-500">
-              Vorschau der geladenen Strecke — bitte prüfen, dass Start, Ziel und Zwischenstopps stimmen.
+              Vorschau der geladenen Strecke. Bitte prüfen, dass Start, Ziel und Zwischenstopps stimmen.
               {pendingFile.grob ? " Hinweis: nur grobe Luftlinie (kein Straßenverlauf)." : ""}
             </p>
             <Label htmlFor="route-name">Name der Strecke</Label>
@@ -687,7 +687,7 @@ export function RouteTab({ project }: { project: Project }) {
               placeholder="z.B. Hinfahrt Werk → Baustelle"
               maxLength={80}
             />
-            <p className="mt-1.5 text-xs text-neutral-400">Sprechender Name statt Dateiname, 2–80 Zeichen.</p>
+            <p className="mt-1.5 text-xs text-neutral-400">Sprechender Name statt Dateiname, 2 bis 80 Zeichen.</p>
           </div>
           <div className="flex items-center justify-end gap-2 border-t border-neutral-200 px-6 py-4">
             <Button variant="ghost" onClick={() => setPendingFile(null)}>

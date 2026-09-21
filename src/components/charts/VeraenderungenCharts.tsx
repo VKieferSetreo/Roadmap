@@ -116,11 +116,11 @@ export function VeraenderungenProStrassenklasse({ data }: { data: Veraenderungen
   return <GestapelteBalken data={data} labelFuer={(k) => STRASSENKLASSE_LABEL[k] ?? k} />
 }
 
-const LAUFZEIT_LABEL: Record<string, string> = { kurz: "Kurz (≤7 Tage)", mittel: "Mittel (8–30 Tage)", lang: "Lang (>30 Tage)", unbekannt: "Unbekannt" }
+const LAUFZEIT_LABEL: Record<string, string> = { kurz: "Kurz (bis 7 Tage)", mittel: "Mittel (8 bis 30 Tage)", lang: "Lang (über 30 Tage)", unbekannt: "Unbekannt" }
 const LAUFZEIT_FARBE: Record<string, string> = { kurz: "#1baf7a", mittel: "#eb6834", lang: "#2a78d6", unbekannt: "#a1a1aa" }
 const VORLAUF_LABEL: Record<string, string> = {
-  spontan: "Spontan (≤1 Tag)", kurzfristig: "Kurzfristig (2–6 Tage)",
-  geplant: "Geplant (7–30 Tage)", langfristig: "Langfristig (>30 Tage)", unbekannt: "Unbekannt",
+  spontan: "Spontan (bis 1 Tag)", kurzfristig: "Kurzfristig (2 bis 6 Tage)",
+  geplant: "Geplant (7 bis 30 Tage)", langfristig: "Langfristig (über 30 Tage)", unbekannt: "Unbekannt",
 }
 const VORLAUF_FARBE: Record<string, string> = {
   spontan: "#eb6834", kurzfristig: "#eda100", geplant: "#1baf7a", langfristig: "#2a78d6", unbekannt: "#a1a1aa",
@@ -135,9 +135,13 @@ function VerteilungsDonut({
   farbeMap: Record<string, string>
   reihenfolge: string[]
 }) {
+  // Max 2026-09-21: "nach Groesse aufsteigend sortieren". `reihenfolge` liefert weiterhin die
+  // fachliche Klassenfolge (und damit Farbe und Beschriftung), die ANZEIGE folgt aber der
+  // Segmentgroesse: kleinstes Segment zuerst, in Donut wie Legende dieselbe Ordnung.
   const rows = reihenfolge
     .map((k) => ({ key: k, name: labelMap[k] ?? k, value: daten[k] ?? 0 }))
     .filter((r) => r.value > 0)
+    .sort((a, b) => a.value - b.value)
   if (!rows.length) return <Leer />
   return (
     <div style={{ height: 220 }}>

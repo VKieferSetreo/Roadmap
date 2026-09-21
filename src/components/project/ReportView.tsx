@@ -173,7 +173,7 @@ export function ReportView({
             ) : null}
             {exportVon || exportBis ? (
               <p className="mt-1 inline-flex rounded border border-primary-200 bg-primary-50/60 px-2 py-0.5 text-[11px] font-medium text-primary-700">
-                Export-Zeitraum: {exportVon ? formatDateDE(exportVon) : "Beginn"} –{" "}
+                Export-Zeitraum: {exportVon ? formatDateDE(exportVon) : "Beginn"} bis{" "}
                 {exportBis ? formatDateDE(exportBis) : "offen"} (nur Funde, die in diesem Zeitraum gelten)
               </p>
             ) : null}
@@ -207,7 +207,7 @@ export function ReportView({
                     <td className="py-0.5 pr-4 text-neutral-500">Zeitraum</td>
                     <td className="py-0.5 font-medium tabular-nums text-neutral-900">
                       {formatDateDE(project.zeitraum.von)}
-                      {project.zeitraum.bis ? ` – ${formatDateDE(project.zeitraum.bis)}` : ""}
+                      {project.zeitraum.bis ? ` bis ${formatDateDE(project.zeitraum.bis)}` : ""}
                     </td>
                   </tr>
                 ) : null}
