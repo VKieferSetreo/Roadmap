@@ -8,15 +8,14 @@
 import { Suspense, lazy, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
-  Activity, CalendarX2, Gauge, PlusCircle, RefreshCw, Sparkles, XCircle, Zap, type LucideIcon,
+  Activity, CalendarX2, Gauge, PlusCircle, Sparkles, XCircle, Zap, type LucideIcon,
 } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Button } from "@/components/ui/Button"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
-import { formatDateDE, formatStampDE } from "@/lib/format"
+import { formatDateDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
 const VeraenderungenZeitreihe = lazy(() =>
@@ -68,14 +67,6 @@ export function VeraenderungenPage() {
               </button>
             ))}
           </div>
-          {q.data && (
-            <span className="hidden text-xs text-neutral-400 sm:inline" title="Ein täglicher Hintergrund-Job rechnet die Zahlen vor, die Seite zeigt keine Live-Berechnung">
-              Stand: {formatStampDE(q.data.berechnetAm)}
-            </span>
-          )}
-          <Button variant="outline" size="sm" onClick={() => void q.refetch()} disabled={q.isFetching}>
-            <RefreshCw className={cn("h-3.5 w-3.5", q.isFetching && "animate-spin")} /> Aktualisieren
-          </Button>
         </div>
       }
     >
