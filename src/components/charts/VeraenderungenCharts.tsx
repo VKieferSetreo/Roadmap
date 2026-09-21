@@ -198,7 +198,10 @@ const LAUFZEIT_FARBE: Record<string, string> = {
 // Vorlaufzeit: je kurzfristiger die Maßnahme auftaucht, desto weniger Zeit für Umplanung — spontan = rot.
 const VORLAUF_LABEL: Record<string, string> = {
   spontan: "Spontan (bis 1 Tag)", kurzfristig: "Kurzfristig (2 bis 6 Tage)",
-  geplant: "Geplant (7 bis 30 Tage)", langfristig: "Langfristig (über 30 Tage)", unbekannt: "Unbekannt",
+  // "Mittelfristig" statt "Geplant" (Max 2026-09-21): die Reihe heisst durchgaengig nach
+  // Fristigkeit, und "geplant" klang wie eine Eigenschaft der Massnahme statt wie eine Stufe.
+  // Der Datenschluessel bleibt `geplant`, den liefert das Backend.
+  geplant: "Mittelfristig (7 bis 30 Tage)", langfristig: "Langfristig (über 30 Tage)", unbekannt: "Unbekannt",
 }
 const VORLAUF_FARBE: Record<string, string> = {
   spontan: AMPEL.rot, kurzfristig: AMPEL.orange, geplant: AMPEL.gelb, langfristig: AMPEL.gruen, unbekannt: AMPEL.grau,
