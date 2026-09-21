@@ -186,15 +186,35 @@ const FAMILIE_VALUES = QUELLEN_FAMILIEN.flatMap((f, fi) =>
 // Bewusst OHNE Backslash-Klassen: zwischen JS-Template und Postgres-Literal heben sich die
 // Escape-Ebenen auf (gemessen: mit '\\s' fiel JEDER Wert nach 'sonstige'). btrim + literales
 // Leerzeichen leistet dasselbe und kann nicht kippen.
-const STRASSENKLASSE_CASE = `CASE
-  WHEN strassen_ref IS NULL OR btrim(strassen_ref) = '' THEN 'unbekannt'
-  WHEN btrim(strassen_ref) ~* '^A ?[0-9]' THEN 'autobahn'
-  WHEN btrim(strassen_ref) ~* '^B ?[0-9]' THEN 'bundesstrasse'
-  WHEN btrim(strassen_ref) ~* '^(L|St?) ?[0-9]' THEN 'landesstrasse'
-  WHEN btrim(strassen_ref) ~* '^K ?[0-9]' THEN 'kreisstrasse'
+/** Straßenklasse eines Eintrags. Erst das gemeldete Kennzeichen, dann die aus der Koordinate
+ *  aufgeloeste Klasse (worker/strassenklasse.js, obstacles.strassen_klasse) — 41,8 % des
+ *  Bestands tragen kein Kennzeichen, haben aber ausnahmslos eine Koordinate.
+ *
+ *  Max 2026-09-21: "die Ohnes muessen wir aufloesen … und die sonstigen und unbekannten den
+ *  anderen zuordnen". Genau dafuer ist der zweite Schritt da. Was auch die Koordinate nicht
+ *  aufloest, bleibt 'unbekannt' und wird als "Ohne Zuordnung" ausgewiesen — es auf die echten
+ *  Klassen zu verteilen waere geraten, nicht gemessen, und die Seite lebt davon, dass ihre
+ *  Zahlen tragen. Die frühere Klasse 'sonstige' (Kennzeichen vorhanden, aber keinem Muster
+ *  zuzuordnen) gibt es nicht mehr: sie laeuft jetzt ebenfalls ueber die Koordinate.
+ *
+ *  `klasseSpalte` ist der Ausdruck, der die aufgeloeste Klasse liefert — obstacle_aenderungen
+ *  fuehrt die Spalte nicht selbst und reicht deshalb eine Subquery herein. */
+const strassenklasseCase = (klasseSpalte = "strassen_klasse") => `CASE
+  WHEN btrim(coalesce(strassen_ref, '')) ~* '^A ?[0-9]' THEN 'autobahn'
+  WHEN btrim(coalesce(strassen_ref, '')) ~* '^B ?[0-9]' THEN 'bundesstrasse'
+  WHEN btrim(coalesce(strassen_ref, '')) ~* '^(L|St?) ?[0-9]' THEN 'landesstrasse'
+  WHEN btrim(coalesce(strassen_ref, '')) ~* '^K ?[0-9]' THEN 'kreisstrasse'
   WHEN strassen_ref ~* '[A-Za-zÄÖÜäöüß]{3}' THEN 'gemeindestrasse'
-  ELSE 'sonstige'
+  WHEN ${klasseSpalte} IS NOT NULL THEN ${klasseSpalte}
+  ELSE 'unbekannt'
 END`
+const STRASSENKLASSE_CASE = strassenklasseCase()
+// obstacle_aenderungen traegt nur den strassen_ref-Schnappschuss. Die Subquery greift erst,
+// wenn keines der Kennzeichen-Muster trifft (CASE wertet von oben nach unten aus), und die
+// Tabelle ist klein — ein Tageswert liegt im zweistelligen Bereich.
+const STRASSENKLASSE_CASE_AENDERUNG = strassenklasseCase(
+  "(SELECT o.strassen_klasse FROM obstacles o WHERE o.id = obstacle_aenderungen.obstacle_id)",
+)
 
 /** "echte_neu"/"rotation_neu"/"echte_weg" als CTE-Text — von jeder Abfrage wiederverwendet.
  *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG,
@@ -214,11 +234,48 @@ const CHURN_CTES = `
     GROUP BY quellen_id
     HAVING min(created_at) < current_date - $2::int * interval '1 day'
   ),
+  -- BEFUELLUNGSTAGE (Max 2026-09-21: "haben da noch einen Ausreisser, glaube das war Rollout,
+  -- den bitte stutzen"). Ein Kataster bekommt nicht an einem Tag 14.889 neue Restriktionen: es
+  -- wird befuellt. Solche Tage sind technische Ereignisse von uns, keine Meldungen der Behoerde,
+  -- und sie zerlegen die Chart-Skala, bis daneben kein echter Tag mehr sichtbar ist.
+  --
+  -- etablierte_quelle oben fing nur den Fall "Quelle ist ganz neu" ab. Eine BESTEHENDE Quelle,
+  -- die spaeter umgebaut und neu eingelesen wird, lief weiter durch: Quelle 0157 (SEVAS NRW)
+  -- legte am 04.07. 14.889 Zeilen an, 67 % ihres gesamten Bestands, und am 23.06. weitere 5.192.
+  --
+  -- Zwei Kriterien, gemessen am Bestand statt geraten, jedes mit eigener Bedeutung:
+  --   Anteil  — mehr als ein Fuenftel des Gesamtbestands der Quelle an EINEM Tag. Echte aktive
+  --             Tage grosser Quellen liegen bei 3 bis 5 %, in der Spitze bei 12 %.
+  --   Faktor  — mehr als das Hundertfache eines typischen Tages derselben Quelle. Faengt den
+  --             Umbau einer sehr grossen Quelle, bei der schon 9 % des Bestands ein Ausreisser
+  --             sind (0157 am 28.06.: 1.993 Zeilen bei einem Median von 2). Bewusst 100 und
+  --             nicht 10: bei Faktor 10 faellt Quelle 0145 an fuenf voellig normalen Tagen mit
+  --             heraus (Median 39, echte Tageswerte um 540).
+  -- Mindestmenge 200, damit kleine Quellen nicht bei jedem Alltagslauf als "befuellt" gelten.
+  tagesmenge_quelle AS (
+    SELECT quellen_id, created_at::date AS tag, count(*) AS n
+      FROM obstacles WHERE demo = false GROUP BY 1, 2
+  ),
+  quelle_profil AS (
+    SELECT quellen_id, count(*) AS tage, sum(n) AS gesamt,
+           percentile_cont(0.5) WITHIN GROUP (ORDER BY n) AS median_tag
+      FROM tagesmenge_quelle GROUP BY 1
+  ),
+  befuellungstag AS (
+    SELECT t.quellen_id, t.tag
+      FROM tagesmenge_quelle t JOIN quelle_profil p USING (quellen_id)
+     WHERE t.n >= 200
+       AND (t.n > 0.2 * p.gesamt OR (p.tage >= 5 AND t.n > 100 * greatest(p.median_tag, 1)))
+  ),
   neu_kandidaten AS (
     SELECT n.* FROM obstacles n
     WHERE n.demo = false AND n.kategorie = ANY($1)
       AND n.created_at >= current_date - $2::int * interval '1 day'
       AND n.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
+      AND NOT EXISTS (
+        SELECT 1 FROM befuellungstag bt
+        WHERE bt.quellen_id = n.quellen_id AND bt.tag = n.created_at::date
+      )
   ),
   echte_neu AS (
     SELECT nk.* FROM neu_kandidaten nk
@@ -475,7 +532,7 @@ export async function berechneUebersicht(db, tage) {
          strasse AS (
            SELECT ${STRASSENKLASSE_CASE} AS klasse, 'neu' AS typ, count(*) AS n FROM relevant_neu GROUP BY 1
            UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, weg_typ, count(*) FROM relevant_weg GROUP BY 1, weg_typ
-           UNION ALL SELECT ${STRASSENKLASSE_CASE} AS klasse, 'geaendert', count(*)
+           UNION ALL SELECT ${STRASSENKLASSE_CASE_AENDERUNG} AS klasse, 'geaendert', count(*)
              FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1
          ),
          lz AS (
@@ -509,6 +566,13 @@ export async function berechneUebersicht(db, tage) {
              (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
                 AND created_at >= current_date - $2::int * interval '1 day'
                 AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
+             -- Zeilen aus Befuellungstagen ETABLIERTER Quellen (Umbau/Neueinlesen) — Beleg dafuer,
+             -- wie viel die Regel oben aus "neu" herausnimmt.
+             (SELECT count(*) FROM obstacles o WHERE o.demo=false AND o.kategorie=ANY($1)
+                AND o.created_at >= current_date - $2::int * interval '1 day'
+                AND o.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
+                AND EXISTS (SELECT 1 FROM befuellungstag bt
+                             WHERE bt.quellen_id = o.quellen_id AND bt.tag = o.created_at::date)) AS befuellung_ausgeklammert,
              (SELECT count(*) FROM vorgang_rotation) AS rotation_als_geaendert,
              (SELECT count(*) FROM echte_neu) - (SELECT count(*) FROM vorgang_neu) AS segmente_zusammengefasst,
              (SELECT count(*) FROM rotation_neu) - (SELECT count(*) FROM vorgang_rotation) AS rotation_vorgaenge_zusammengefasst,
@@ -586,6 +650,9 @@ export async function berechneUebersicht(db, tage) {
       neu: Number(row.roh?.neu ?? 0),
       weggefallen: Number(row.roh?.weggefallen ?? 0),
       erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
+      /** Zeilen aus Befuellungstagen bestehender Quellen (Umbau, Neueinlesen) — zaehlen nicht
+       *  als "neu", weil sie kein Ereignis der Behoerde sind. */
+      befuellungAusgeklammert: Number(row.roh?.befuellung_ausgeklammert ?? 0),
       // War in "roh.neu" enthalten und ist dort raus: dieselbe reale Stelle unter neuer Quell-ID
       // ist keine Neuanlage. Sie ist aber AUCH keine Aenderung (Max 2026-09-20) und steckt seit
       // dba94f5 in KEINER der vier Kopfzahlen — diese Zahl ist reiner Beleg dafuer, wie viel
