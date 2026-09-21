@@ -22,9 +22,18 @@ const TAGE_MAX = 365
 
 export const hashToken = (token) => createHash("sha256").update(String(token)).digest("hex")
 
-/** Neuer Token: 32 Byte base64url. Der Klartext wird EINMAL zurueckgegeben und nie gespeichert. */
+/** Neuer Token: 20 Byte als Kleinbuchstaben-Hex (40 Zeichen, 160 Bit).
+ *
+ *  BEWUSST kein base64url. Dessen "_" und "-" zerbrechen beim Weitergeben: Chat- und
+ *  Mailprogramme beenden die automatische Verlinkung davor oder lesen "_text_" als
+ *  Kursivauszeichnung, der Empfaenger bekommt einen abgeschnittenen Link und sieht
+ *  "Freigabe nicht gefunden" (Max 2026-09-21: "lokal geht der, extern kommt diese
+ *  Freigabe-Sache"). Hex hat nur 0-9a-f, ueberlebt jeden Transportweg und ist obendrein
+ *  unempfindlich gegen Gross-/Kleinschreibung unterwegs.
+ *
+ *  Der Klartext wird EINMAL zurueckgegeben und nie gespeichert. */
 export function neuerToken() {
-  return randomBytes(32).toString("base64url")
+  return randomBytes(20).toString("hex")
 }
 
 /** Hash-Vergleich in konstanter Zeit. Beide Seiten sind Hex gleicher Laenge. */
@@ -81,11 +90,37 @@ export function veraenderungenFreigabeRouter({ db, seiteHtml }) {
     res.setHeader("Cache-Control", "private, no-store")
   }
 
-  // Die Seite selbst. Statisches HTML, holt die Zahlen per fetch von der Route darunter.
+  // Ein ungueltiger Link ist der Normalfall, nicht der Ausnahmefall: widerrufen, abgelaufen
+  // oder beim Weiterleiten zerbrochen. Wer ihn oeffnet, ist ein Mensch im Browser und bekam
+  // bisher rohes JSON zu sehen ("Freigabe nicht gefunden oder widerrufen") — das liest sich
+  // wie ein kaputter Server, nicht wie eine abgelaufene Einladung.
+  const UNGUELTIG = `<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Link nicht mehr gültig</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+background:#f7f8f7;color:#161c16;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+Helvetica,Arial,sans-serif;padding:24px}main{max-width:30rem;text-align:center}
+.m{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#6aa511;font-weight:700}
+h1{font-size:21px;margin:10px 0 12px;font-weight:650}p{color:#5d675d;margin:0 0 10px}</style>
+</head><body><main><div class="m">Setreo</div>
+<h1>Dieser Link ist nicht mehr gültig</h1>
+<p>Er wurde zurückgezogen, oder er ist beim Weiterleiten unvollständig angekommen.</p>
+<p>Bitte prüfen Sie, ob die Adresse vollständig kopiert wurde, und fragen Sie sonst
+bei Ihrem Ansprechpartner nach einem neuen Link.</p></main></body></html>`
+
+  // Die Seite selbst. Der Build aus server/public/freigabe holt die Zahlen per fetch von der
+  // Route darunter.
   r.get("/v/:token", drossel, asyncHandler(async (req, res) => {
     nichtIndexieren(res)
     const f = await ladeFreigabe(db, req.params.token)
-    if (!f) throw new ApiError(404, "Freigabe nicht gefunden oder widerrufen")
+    if (!f) {
+      // Laenge und Zeichenvorrat protokollieren, NIE den Token selbst: ein abgeschnittener
+      // Link faellt damit sofort auf, ohne das Geheimnis in die Protokolle zu schreiben.
+      const t = String(req.params.token ?? "")
+      console.warn(`[freigabe] unbekannter Token: ${t.length} Zeichen, `
+        + `${/^[0-9a-f]+$/.test(t) ? "hex" : /^[A-Za-z0-9_-]+$/.test(t) ? "base64url" : "anderes"}`)
+      return res.status(404).type("html").send(UNGUELTIG)
+    }
     res.type("html").send(seiteHtml)
   }))
 

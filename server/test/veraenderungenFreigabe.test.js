@@ -100,6 +100,25 @@ describe("Freigabelink Aenderungsauswertung", () => {
   it("neuerToken liefert jedes Mal einen anderen, ausreichend langen Wert", () => {
     const werte = new Set(Array.from({ length: 200 }, () => neuerToken()))
     expect(werte.size).toBe(200)
-    for (const t of werte) expect(t.length).toBeGreaterThanOrEqual(43)
+    for (const t of werte) expect(t.length).toBeGreaterThanOrEqual(40)
+  })
+
+  it("Token enthaelt NUR 0-9a-f — '_' und '-' zerbrechen Links beim Weitergeben", () => {
+    // Chat- und Mailprogramme beenden die automatische Verlinkung vor '_' oder lesen
+    // '_text_' als Kursivauszeichnung. Der Empfaenger bekommt dann einen abgeschnittenen
+    // Link. Deshalb ein Zeichenvorrat, der jeden Transportweg ueberlebt.
+    for (let i = 0; i < 50; i++) expect(neuerToken()).toMatch(/^[0-9a-f]{40}$/)
+  })
+
+  it("ungueltiger Token liefert eine lesbare Seite, kein rohes JSON", async () => {
+    const db = fakeDb({ freigabe: { id: "f1", token_hash: hashToken(neuerToken()), name: null, tage: 30 } })
+    const res = await request(makeApp(db)).get("/_share/v/" + neuerToken())
+    expect(res.status).toBe(404)
+    expect(res.headers["content-type"]).toMatch(/text\/html/)
+    expect(res.text).toContain("Dieser Link ist nicht mehr gültig")
+    // Der Datenpfad bleibt JSON: den ruft das Bundle auf, nicht ein Mensch.
+    const daten = await request(makeApp(db)).get("/_share/v/" + neuerToken() + "/daten")
+    expect(daten.status).toBe(404)
+    expect(daten.headers["content-type"]).toMatch(/application\/json/)
   })
 })
