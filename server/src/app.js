@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url"
 import express from "express"
 import compression from "compression"
 import { createRateLimiter } from "./shares.js"
-import { authMiddleware, requireTenant, tenantContext } from "./auth.js"
+import { authMiddleware, requireRole, requireTenant, tenantContext } from "./auth.js"
 import { createDefaultDb } from "./db.js"
 import { requestId } from "./requestId.js"
 import { captureException } from "./sentry.js"
@@ -46,6 +46,7 @@ import { routeRouter } from "./routes/route.js"
 import { archivRouter } from "./routes/archiv.js"
 import { analyticsRouter } from "./routes/analytics.js"
 import { veraenderungenRouter } from "./routes/veraenderungen.js"
+import { veraenderungenFreigabeAdminRouter, veraenderungenFreigabeRouter } from "./routes/veraenderungenFreigabe.js"
 import { getTenantBranding, listTenants, RESERVED_SLUGS, SLUG_RE } from "./tenants.js"
 import { ApiError, asyncHandler, isUuid } from "./util.js"
 
@@ -64,6 +65,20 @@ function readAppVersion() {
 export const APP_VERSION = readAppVersion()
 
 const SHARE_DIR = fileURLToPath(new URL("../public/share", import.meta.url))
+// Seite des Aenderungs-Freigabelinks. Einmal beim Start gelesen: eine Datei ohne
+// Bauschritt, sie aendert sich nur mit einem Deploy. Faellt sie aus, bleibt der
+// Rest der Anwendung heil und der Link meldet sauber, dass nichts da ist.
+const VERAENDERUNGEN_SEITE = (() => {
+  try {
+    return readFileSync(
+      fileURLToPath(new URL("../public/veraenderungen-freigabe.html", import.meta.url)),
+      "utf8",
+    )
+  } catch {
+    return "<!doctype html><meta charset=\"utf-8\"><title>Nicht verfügbar</title>"
+      + "<p>Diese Ansicht ist derzeit nicht verfügbar.</p>"
+  }
+})()
 
 export function createApp({
   db = createDefaultDb(),
@@ -155,6 +170,9 @@ export function createApp({
 
   // ── Public-Share (UNGATED — Proxy routet /_share ohne forward_auth) ─────────
   app.use("/_share", shareRouter({ db, sessionSalt }))
+  // Freigabelink der Aenderungsauswertung. MUSS vor express.static stehen: die
+  // Share-SPA liefert sonst ihr index.html fuer /_share/v/<token> aus.
+  app.use("/_share", veraenderungenFreigabeRouter({ db, seiteHtml: VERAENDERUNGEN_SEITE }))
   // Statisches Share-FE; Verzeichnis wird später vendored — fehlt es, greift 404
   app.use("/_share", express.static(shareDir))
 
@@ -254,6 +272,8 @@ export function createApp({
   // Analytics: Heartbeat (jeder eingeloggte Nutzer) + Übersicht (nur Admin, intern gegated).
   // KEIN requireTenant — der Heartbeat soll auch für (noch) mandantenlose Nutzer zählen.
   app.use("/api/analytics", analyticsRouter({ db }))
+  app.use("/api/veraenderungen/freigaben", requireRole("admin"),
+    veraenderungenFreigabeAdminRouter({ db, basisUrl: shareBaseUrl }))
   app.use("/api/veraenderungen", veraenderungenRouter({ db }))
   app.use("/api/geocode", requireTenant, geoRouter({ db, nominatim, fetchImpl }))
   // Routen-Berechnung (Start/Ziel + Google-Maps-Link) → optimaler Straßenweg via OSRM.

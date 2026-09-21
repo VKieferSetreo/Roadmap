@@ -127,6 +127,19 @@ export interface AnalyticsOverview {
   }[]
 }
 
+/** Ein externer Freigabelink der Änderungsauswertung. `url` gibt es NUR direkt nach dem
+ *  Anlegen — der Token wird nicht gespeichert, nur sein Hash. Verloren heißt neu anlegen. */
+export type VeraenderungFreigabe = {
+  id: string
+  name: string | null
+  tage: number
+  erstellt_von?: string | null
+  erstellt_am: string
+  widerrufen_am?: string | null
+  letzter_zugriff?: string | null
+  zugriffe?: number
+}
+
 /** Änderungsverfolgung (GET /api/veraenderungen/uebersicht, nur Admin). "neu"/"ausgelaufen"/
  *  "entfernt" sind volle `tage`-Historie (obstacles.created_at/aktiv sind echte Zustands-
  *  Zeitstempel, nie vom Re-Import berührt); "geaendert" läuft erst ab `geaendertTrackingSeit`.
@@ -461,6 +474,16 @@ export const api = {
         method: "GET",
         params: tage ? { tage } : undefined,
       }),
+    /** Externe Freigabelinks der Auswertung. Nur Admin; die URL kommt EINMAL beim Anlegen
+     *  zurueck, danach steht in der Datenbank nur noch ihr Hash. */
+    freigaben: () =>
+      axiosClient<{ freigaben: VeraenderungFreigabe[] }>({ url: "/veraenderungen/freigaben", method: "GET" }),
+    freigabeAnlegen: (body: { name?: string; tage?: number }) =>
+      axiosClient<VeraenderungFreigabe & { url: string }>({
+        url: "/veraenderungen/freigaben", method: "POST", data: body,
+      }),
+    freigabeWiderrufen: (id: string) =>
+      axiosClient<{ ok: true }>({ url: `/veraenderungen/freigaben/${id}`, method: "DELETE" }),
   },
 
   // ── Routen-Berechnung (Start/Ziel + Google-Maps-Link → optimaler Straßenweg) ──

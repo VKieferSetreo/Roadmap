@@ -15,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
+import { useContextStore } from "@/store/context"
+import { VeraenderungenFreigaben } from "@/components/veraenderungen/VeraenderungenFreigaben"
 import { formatDateDE } from "@/lib/format"
 import { cn } from "@/lib/cn"
 
@@ -88,6 +90,7 @@ export function VeraenderungenPage() {
 }
 
 function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
+  const isAdmin = useContextStore((s) => s.isAdmin)
   const insight = useMemo(() => computeInsight(d), [d])
 
   return (
@@ -159,6 +162,10 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Nur Admin: die Auswertung selbst steht jedem Angemeldeten offen, sie nach AUSSEN
+          freizugeben ist eine andere Entscheidung. */}
+      {isAdmin ? <VeraenderungenFreigaben /> : null}
 
     </div>
   )
