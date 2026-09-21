@@ -218,8 +218,8 @@ const STRASSENKLASSE_CASE_AENDERUNG = strassenklasseCase(
 
 /** "echte_neu"/"rotation_neu"/"echte_weg" als CTE-Text — von jeder Abfrage wiederverwendet.
  *  Nutzt $1 = Kategorien-Array, $2 = Tage, $3 = CHURN_GEO_LAT, $4 = CHURN_GEO_LNG,
- *  $5 = CHURN_FENSTER_TAGE. `etablierte_quelle` schliesst Quellen aus, deren gesamter Bestand
- *  erst innerhalb des Fensters entstand (Erstbefüllung, kein Tages-Delta). `weg_typ` auf
+ *  $5 = CHURN_FENSTER_TAGE. `quelle_start` klammert die ersten 14 Tage jeder Quelle aus
+ *  (Einschwingphase, Bestandsaufnahme statt Tages-Delta). `weg_typ` auf
  *  echte_weg trennt planmäßiges Auslaufen von vorzeitigem Entfernen (siehe Kopf-Kommentar).
  *
  *  echte_neu/rotation_neu sind eine Partition von neu_kandidaten über EXISTS/NOT EXISTS auf
@@ -229,18 +229,33 @@ const STRASSENKLASSE_CASE_AENDERUNG = strassenklasseCase(
  *  die Scalar-Variante lief in Prod in ein Statement-Timeout, die EXISTS-Variante lief vorher
  *  bereits nachweislich in 18-48s — scripts/diagKonsolidierteQuery.mjs). */
 const CHURN_CTES = `
-  etablierte_quelle AS (
-    SELECT quellen_id FROM obstacles
-    GROUP BY quellen_id
-    HAVING min(created_at) < current_date - $2::int * interval '1 day'
+  -- EINSCHWINGPHASE JE QUELLE (Max 2026-09-21, "das war Rollout, den bitte stutzen").
+  -- Wird eine Quelle angebunden, ist alles, was sie in den ersten Tagen liefert, Bestands-
+  -- aufnahme: nicht unterscheidbar, ob eine Baustelle gerade gemeldet wurde oder nur bei uns
+  -- noch nicht erfasst war. Erst danach ist "neu" eine Aussage.
+  --
+  -- Das ersetzt den frueheren Alles-oder-nichts-Guard (Quelle zaehlte gar nicht, solange ihr
+  -- erster Eintrag im Fenster lag). Der war in beide Richtungen ungenau: eine vor 60 Tagen
+  -- angebundene Quelle verschwand im 90-Tage-Fenster komplett, waehrend der Rollout einer schon
+  -- laenger bekannten Quelle voll durchschlug. Der ganze Bestand wurde Mitte Juni erstbefuellt
+  -- (alle Quellen tragen min(created_at) zwischen dem 13. und 25.06.), das 90-Tage-Fenster faengt
+  -- also mitten im Rollout an — genau der Balken, den Max im Chart sah.
+  --
+  -- 14 Tage, am Bestand gemessen: der 04.07. faellt von 15.071 auf 158, der 23.06. auf 0, der
+  -- 28.06. von 3.081 auf 261, waehrend normale Tage unberuehrt bleiben (18.09.: 1.983 auf 1.980).
+  -- Mit 7 Tagen wirkt die Regel beim 04.07. gar nicht: Quelle 0157 startete am 23.06., der
+  -- Rollout lag auf Tag 11.
+  quelle_start AS (
+    SELECT quellen_id, min(created_at)::date + 14 AS zaehlt_ab
+      FROM obstacles WHERE demo = false GROUP BY quellen_id
   ),
   -- BEFUELLUNGSTAGE (Max 2026-09-21: "haben da noch einen Ausreisser, glaube das war Rollout,
   -- den bitte stutzen"). Ein Kataster bekommt nicht an einem Tag 14.889 neue Restriktionen: es
   -- wird befuellt. Solche Tage sind technische Ereignisse von uns, keine Meldungen der Behoerde,
   -- und sie zerlegen die Chart-Skala, bis daneben kein echter Tag mehr sichtbar ist.
   --
-  -- etablierte_quelle oben fing nur den Fall "Quelle ist ganz neu" ab. Eine BESTEHENDE Quelle,
-  -- die spaeter umgebaut und neu eingelesen wird, lief weiter durch: Quelle 0157 (SEVAS NRW)
+  -- Die Einschwingphase oben deckt nur die ANBINDUNG einer Quelle ab. Eine laengst bekannte
+  -- Quelle, die spaeter umgebaut und neu eingelesen wird, laeuft weiter durch: Quelle 0157 (SEVAS NRW)
   -- legte am 04.07. 14.889 Zeilen an, 67 % ihres gesamten Bestands, und am 23.06. weitere 5.192.
   --
   -- Zwei Kriterien, gemessen am Bestand statt geraten, jedes mit eigener Bedeutung:
@@ -271,7 +286,7 @@ const CHURN_CTES = `
     SELECT n.* FROM obstacles n
     WHERE n.demo = false AND n.kategorie = ANY($1)
       AND n.created_at >= current_date - $2::int * interval '1 day'
-      AND n.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
+      AND n.created_at::date >= (SELECT qs.zaehlt_ab FROM quelle_start qs WHERE qs.quellen_id = n.quellen_id)
       AND NOT EXISTS (
         SELECT 1 FROM befuellungstag bt
         WHERE bt.quellen_id = n.quellen_id AND bt.tag = n.created_at::date
@@ -563,14 +578,16 @@ export async function berechneUebersicht(db, tage) {
                 AND created_at >= current_date - $2::int * interval '1 day') AS neu,
              (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1) AND aktiv=false
                 AND updated_at >= current_date - $2::int * interval '1 day') AS weggefallen,
-             (SELECT count(*) FROM obstacles WHERE demo=false AND kategorie=ANY($1)
-                AND created_at >= current_date - $2::int * interval '1 day'
-                AND quellen_id NOT IN (SELECT quellen_id FROM etablierte_quelle)) AS erstbefuellung_neuer_quellen,
+             (SELECT count(*) FROM obstacles o WHERE o.demo=false AND o.kategorie=ANY($1)
+                AND o.created_at >= current_date - $2::int * interval '1 day'
+                AND o.created_at::date < (SELECT qs.zaehlt_ab FROM quelle_start qs
+                                           WHERE qs.quellen_id = o.quellen_id)) AS erstbefuellung_neuer_quellen,
              -- Zeilen aus Befuellungstagen ETABLIERTER Quellen (Umbau/Neueinlesen) — Beleg dafuer,
              -- wie viel die Regel oben aus "neu" herausnimmt.
              (SELECT count(*) FROM obstacles o WHERE o.demo=false AND o.kategorie=ANY($1)
                 AND o.created_at >= current_date - $2::int * interval '1 day'
-                AND o.quellen_id IN (SELECT quellen_id FROM etablierte_quelle)
+                AND o.created_at::date >= (SELECT qs.zaehlt_ab FROM quelle_start qs
+                                            WHERE qs.quellen_id = o.quellen_id)
                 AND EXISTS (SELECT 1 FROM befuellungstag bt
                              WHERE bt.quellen_id = o.quellen_id AND bt.tag = o.created_at::date)) AS befuellung_ausgeklammert,
              (SELECT count(*) FROM vorgang_rotation) AS rotation_als_geaendert,
