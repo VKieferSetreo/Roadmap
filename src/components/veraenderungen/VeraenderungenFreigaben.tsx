@@ -70,7 +70,7 @@ export function VeraenderungenFreigaben() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-neutral-600">
-          Ein Link, der diese Auswertung ohne Anmeldung zeigt — schreibgeschützt, ohne
+          Ein Link, der diese Auswertung ohne Anmeldung zeigt: schreibgeschützt, ohne
           Suchmaschinen-Eintrag, jederzeit widerrufbar. Wer den Link hat, sieht die Zahlen.
         </p>
 
