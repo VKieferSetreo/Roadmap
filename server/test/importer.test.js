@@ -100,6 +100,40 @@ describe("runImport (Mock-Connector)", () => {
     expect(db.state.obstacleAenderungen).toHaveLength(1)
   })
 
+  it("GL-Änderungstracking: mehrere Feed-Items auf EINER Zeile — nur der geschriebene zählt", async () => {
+    // Der Fall, der am 21.09.2026 taeglich 800 Falschmeldungen erzeugte: zwei Items treffen
+    // dieselbe Bestandszeile, geschrieben wird nur das letzte. Weicht ein VERLIERER ab, ist das
+    // keine Aenderung des Bestands — er landet nie darin.
+    const db = createFakeDb()
+    await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
+    expect(db.state.obstacleAenderungen).toHaveLength(0)
+
+    const verlierer = { ...ITEM_A, name: "Baustelle A2 (andere Fassung)" }
+    const run = await runImport({ db, connector: mockConnector([verlierer, ITEM_A]), log: quiet })
+
+    // Gewinner ist ITEM_A und damit identisch mit dem Bestand → keine Aenderung.
+    expect(db.state.obstacleAenderungen).toHaveLength(0)
+    expect(run.stats.geaendert).toBeUndefined()
+    expect(db.state.obstacles.find((o) => o.externe_id === "ext-a").name).toBe("Baustelle A2")
+
+    // Gegenprobe: gewinnt der abweichende Schreiber, wird die Aenderung sehr wohl gemeldet.
+    await runImport({ db, connector: mockConnector([ITEM_A, verlierer]), log: quiet })
+    expect(db.state.obstacleAenderungen).toHaveLength(1)
+  })
+
+  it("GL-Änderungstracking: Treffer nur über den Drift-Match meldet keine Änderung (ID-Rotation)", async () => {
+    // Die Quelle vergibt eine neue externe_id fuer dieselbe Stelle. Der gespeicherte Hash stammt
+    // dann von der alten ID — ein Vergleich damit misst die Rotation, nicht die Sache.
+    const db = createFakeDb()
+    await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
+
+    const rotiert = { ...ITEM_A, externeId: "ext-a-neu", gueltigBis: "2026-12-31" }
+    await runImport({ db, connector: mockConnector([rotiert]), log: quiet })
+
+    expect(db.state.obstacles).toHaveLength(1) // Drift-Match, keine Neuanlage
+    expect(db.state.obstacleAenderungen).toHaveLength(0)
+  })
+
   it("Dublettenfilter: gleiche Kategorie+Name+~Ort werden zu EINEM Eintrag (1 INSERT statt 3)", async () => {
     const db = createFakeDb()
     const seg = (ext, lng) => ({

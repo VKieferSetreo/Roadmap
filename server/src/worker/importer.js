@@ -235,8 +235,13 @@ export async function runImport({
       const pendingReactivate = new Set() // obstacle-ids
       const pendingInserts = new Map() // externeId → value (fachId/realerStart bereits vergeben)
       // GL-Änderungstracking: obstacle-id → value, NUR wenn der Sachfeld-Hash sich gegenüber dem
-      // zuletzt gespeicherten change_hash wirklich unterscheidet (last-write wie pendingUpdates).
+      // zuletzt gespeicherten change_hash wirklich unterscheidet. Der Vergleich läuft NACH der
+      // Schleife (siehe unten) — hier steht nur das Ergebnis.
       const pendingAenderungen = new Map()
+      // Herkunft des Schreibers, der die Zeile am Ende wirklich gewinnt (last-write wie
+      // pendingUpdates): der gespeicherte Hash der Zielzeile und ob der Treffer nur über den
+      // Drift-Match zustande kam. Beides entscheidet unten, ob eine Änderung gemeldet wird.
+      const updateHerkunft = new Map() // obstacle-id → { changeHash, viaFuzzy }
 
       for (const [index, item] of items.entries()) {
         const externeId =
@@ -267,6 +272,7 @@ export async function runImport({
         value.demo = false
 
         let target = byExterneId.get(externeId) ?? null
+        let viaFuzzy = false
         // Kein exakter Treffer? → Drift-Schutz in-memory: dasselbe reale Hindernis unter neuer
         // Quell-ID / leicht versetzter Position wiederfinden (gleiche Kategorie+Name, ~300m),
         // statt es neu anzulegen (sonst Reconcile-Churn jeden Lauf, T-078).
@@ -282,6 +288,7 @@ export async function runImport({
             : []
           if (near.length) {
             target = near.reduce((best, r) => (dist2(r, value) < dist2(best, value) ? r : best), near[0])
+            viaFuzzy = true
             // Der Treffer behält seine externe_id — die ins seen-Set, damit der
             // Vollbestand-Reconcile diese (noch im Feed vorhandene) Zeile nicht deaktiviert.
             seen.add(target.externe_id)
@@ -290,15 +297,10 @@ export async function runImport({
         if (target) {
           // Sachfeld-Update — fachId/realerStart bleiben stabil
           pendingUpdates.set(target.id, value) // gleiche id mehrfach → letzter Wert gewinnt (wie zuvor)
+          // Dieselbe last-write-wins-Regel wie pendingUpdates: der Änderungsvergleich unten muss
+          // gegen GENAU den Schreiber laufen, der die Zeile am Ende gewinnt.
+          updateHerkunft.set(target.id, { changeHash: target.change_hash, viaFuzzy })
           stats.aktualisiert += 1
-          // GL-Änderungstracking: NUR wenn der Hash wirklich abweicht — updated_at wird bei JEDEM
-          // Re-Import gestempelt (T-738), der Hash-Vergleich ist das echte Änderungssignal. Ein
-          // change_hash von null heißt "noch nie verglichen" (Altzeile vor dem Rollout oder
-          // Drift-Match ohne change_hash im Kandidaten) → kein Delta loggen, nur Baseline setzen,
-          // sonst zählt der erste Lauf nach dem Rollout den kompletten Bestand als "geändert".
-          if (target.change_hash != null && target.change_hash !== changeRelevantHash(value)) {
-            pendingAenderungen.set(target.id, value)
-          }
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
           // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.
           // T-611 (Voll-Bestand): NICHT reaktivieren, wenn die Quell-Meldung selbst schon abgelaufen ist
@@ -327,6 +329,33 @@ export async function runImport({
           pendingInserts.set(externeId, value)
           stats.neu += 1
         }
+      }
+
+      // ── GL-Änderungstracking: EINMAL je Zeile, gegen den Wert, der wirklich geschrieben wird ──
+      //
+      // Mehrere Feed-Items koennen dieselbe Bestandszeile treffen: echte Dubletten im Feed, vom
+      // Dedup zusammengefasste Gruppen und Treffer aus dem Drift-Match landen auf derselben id.
+      // Geschrieben wird davon nur EINER (pendingUpdates, last-write-wins). Bis zum 21.09.2026
+      // pruefte der Vergleich aber JEDES Item einzeln — ein abweichender VERLIERER meldete damit
+      // eine Aenderung, die nie in den Bestand ging, und meldete sie am naechsten Tag wieder.
+      //
+      // Gemessen am Prod-Bestand (21.09., sechs groesste Quellen, 450 Kandidaten): 379 davon
+      // trugen einen Gewinner, der mit dem Bestand identisch war, weitere 25 kamen allein ueber
+      // den Drift-Match. Echte Quellenaenderungen blieben 41. Passend dazu waren 615 der 800
+      // Tageseintraege schon am Vortag dieselben Zeilen — echte Aenderungen wiederholen sich nicht.
+      //
+      // Max 2026-09-21: "geaendert ist nur, wenn extern was angepasst wird an bestehende".
+      //
+      // Zwei Faelle bleiben bewusst stumm:
+      //   changeHash == null → noch nie verglichen (Altzeile vor dem Rollout): nur Baseline setzen.
+      //   viaFuzzy → die Quelle hat die ID gewechselt, die Zeile wurde ueber Name+Ort wiedergefunden.
+      //     Der gespeicherte Hash stammt dann von einer anderen Quell-ID, ein Vergleich damit
+      //     misst die ID-Rotation, nicht die Sache. Dieselbe Entscheidung wie in routes/
+      //     veraenderungen.js, wo die Rotation seit dem 20.09. nicht mehr als Aenderung zaehlt.
+      for (const [id, value] of pendingUpdates) {
+        const herkunft = updateHerkunft.get(id)
+        if (!herkunft || herkunft.changeHash == null || herkunft.viaFuzzy) continue
+        if (herkunft.changeHash !== changeRelevantHash(value)) pendingAenderungen.set(id, value)
       }
 
       // ── DAS KI-GATE, vor dem Schreiben (T-660) ──────────────────────────────────────────
