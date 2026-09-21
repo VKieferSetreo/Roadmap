@@ -100,7 +100,7 @@
 // Nebensache. Die LAUFZEIT selbst trennt dagegen sauber: 53 % aller Vorgänge sind "kurz" (≤7
 // Tage). "Relevant" nutzt deshalb dieselbe "lang"-Klassifikation, die ohnehin schon für die
 // Laufzeit-Verteilung berechnet wird (kein neu erfundener Schwellwert) — relevant_neu/
-// relevant_weg/relevant_geaendert_rotation filtern auf gueltig_von IS NOT NULL AND (gueltig_bis
+// relevant_weg filtern auf gueltig_von IS NOT NULL AND (gueltig_bis
 // IS NULL OR Laufzeit > 30 Tage). Wirkung: Autobahn-"neu" sinkt von 2.353 auf 254
 // (scripts/diagAutobahnLangExakt.mjs) — eine Größenordnung näher an Max' Erwartung (~100), ohne
 // eine willkürliche neue Zahl zu erfinden. "Kurz"/"mittel" werden NICHT gelöscht, nur aus der
@@ -372,10 +372,6 @@ const CHURN_CTES = `
   relevant_weg AS (
     SELECT * FROM final_weg
     WHERE gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)
-  ),
-  relevant_geaendert_rotation AS (
-    SELECT * FROM vorgang_rotation
-    WHERE gueltig_von IS NOT NULL AND (gueltig_bis IS NULL OR gueltig_bis - gueltig_von > 30)
   )
 `
 
@@ -471,8 +467,12 @@ export async function berechneUebersicht(db, tage) {
              (SELECT count(*) FROM vorgang_weg) - (SELECT count(*) FROM final_weg) AS familie_dubletten_weg,
              (SELECT count(*) FROM final_neu) - (SELECT count(*) FROM relevant_neu) AS relevanz_ausgeklammert_neu,
              (SELECT count(*) FROM final_weg) - (SELECT count(*) FROM relevant_weg) AS relevanz_ausgeklammert_weg,
-             ((SELECT count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter}) - (SELECT count(*) FROM obstacle_aenderungen WHERE ${relevantFilter}))
-               + ((SELECT count(*) FROM vorgang_rotation) - (SELECT count(*) FROM relevant_geaendert_rotation)) AS relevanz_ausgeklammert_geaendert
+             -- NUR der obstacle_aenderungen-Anteil: die Quellen-Rotation zaehlt seit dem 20.09.
+             -- (dba94f5) ueberhaupt nicht mehr als "geaendert" und kann deshalb auch nicht daraus
+             -- ausgeklammert werden. Der alte Summand zaehlte sie trotzdem mit und wies damit mehr
+             -- ausgeklammerte Aenderungen aus, als es ueberhaupt gab.
+             (SELECT count(*) FROM obstacle_aenderungen WHERE ${geaendertFilter})
+               - (SELECT count(*) FROM obstacle_aenderungen WHERE ${relevantFilter}) AS relevanz_ausgeklammert_geaendert
          )
          SELECT
            (SELECT json_agg(zr ORDER BY tag) FROM zr) AS zeitreihe,
@@ -522,10 +522,11 @@ export async function berechneUebersicht(db, tage) {
       neu: Number(row.roh?.neu ?? 0),
       weggefallen: Number(row.roh?.weggefallen ?? 0),
       erstbefuellungNeuerQuellen: Number(row.roh?.erstbefuellung_neuer_quellen ?? 0),
-      // War in "roh.neu" enthalten, zählt aber nicht als Neuanlage, sondern als "geaendert"
-      // (Quellen-Rotation — dieselbe reale Stelle unter neuer ID), bereits auf Vorgangs-Ebene
-      // zusammengefasst (siehe rotationVorgaengeZusammengefasst) und steckt in `gesamt.geaendert`
-      // sowie `proKategorie.geaendert`/`proStrassenklasse.geaendert`.
+      // War in "roh.neu" enthalten und ist dort raus: dieselbe reale Stelle unter neuer Quell-ID
+      // ist keine Neuanlage. Sie ist aber AUCH keine Aenderung (Max 2026-09-20) und steckt seit
+      // dba94f5 in KEINER der vier Kopfzahlen — diese Zahl ist reiner Beleg dafuer, wie viel
+      // Rotation im Fenster steckte, bereits auf Vorgangs-Ebene zusammengefasst
+      // (siehe rotationVorgaengeZusammengefasst).
       rotationAlsGeaendert: Number(row.roh?.rotation_als_geaendert ?? 0),
       // Zeilen, die zu einem bereits gezählten Vorgang gehören (Segmente/Rotationen desselben
       // Namens) — steckt in "neu" NICHT mehr drin, seit "neu" Vorgänge statt Zeilen zählt.
