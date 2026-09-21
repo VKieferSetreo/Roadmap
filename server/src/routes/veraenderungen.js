@@ -121,13 +121,18 @@ import { KATEGORIEN } from "../engine/rules.js"
 
 const TAGE_DEFAULT = 30
 const TAGE_MAX = 90
-// Ab wann ist die Erfassung VOLLSTAENDIG? Die Hygiene raeumt inaktive Zeilen nach 30 Tagen
-// (worker/hygiene.js, purgeStaleInactive mit days = 30). Davor lassen sich weggefallene
-// Massnahmen nur noch ueber ihr eigenes gueltig_bis rekonstruieren, und vorzeitig entfernte
-// gar nicht mehr. Aeltere Tage sind damit unvollstaendig: sie zeigen im Wesentlichen
-// Neuanlagen. Die Zahl geht in den Payload, damit die Seite diese Tage kennzeichnen kann,
-// statt sie wie vollwertige Messwerte darzustellen (Max 2026-09-21).
-const ERFASSUNG_VOLLSTAENDIG_TAGE = 30
+// Ab wann ist die Erfassung VOLLSTAENDIG? "Weggefallen" liest aktiv = false plus updated_at,
+// und was die Hygiene hart geloescht hat, fehlt dort ersatzlos (worker/hygiene.js,
+// purgeStaleInactive). Aeltere Tage zeigen deshalb im Wesentlichen nur Neuanlagen, und die
+// Seite kennzeichnet sie als unvollstaendig, statt sie wie Messwerte darzustellen.
+//
+// Der Stichtag wird AUS DEM BESTAND abgeleitet, nicht aus der Purge-Frist gerechnet. Der
+// Unterschied ist wesentlich: die Frist wurde am 21.09. von 30 auf 120 Tage erhoeht (T-757),
+// aber das wirkt nur vorwaerts — alles, was vorher geloescht wurde, bleibt geloescht. Wer
+// jetzt "current_date - 120" rechnete, behauptete Vollstaendigkeit fuer drei Monate, die es
+// nicht gibt. Der aelteste noch vorhandene Wegfall sagt dagegen die Wahrheit, wandert von
+// selbst mit, wenn die Historie waechst, und braucht kein Umstellungsdatum im Code.
+// Die untere Schranke faengt den Fall ab, dass gerade gar keine inaktive Zeile existiert.
 // Wie weit vor/nach der Erfassung nach einer weggefallenen "alten Identität" derselben Stelle
 // gesucht wird. Grosszuegig, weil strenges Aussieben (weniger "neu" melden) gewollt ist — siehe
 // Kommentar oben. 45 Tage deckt auch mehrwoechige Bauphasen mit einer Zwischen-Rotation ab.
@@ -667,7 +672,10 @@ export async function berechneUebersicht(db, tage) {
            (SELECT json_object_agg(laufzeit, n) FROM lz) AS laufzeiten,
            (SELECT json_object_agg(vorlauf, n) FROM vl) AS vorlaufzeiten,
            (SELECT row_to_json(roh) FROM roh) AS roh,
-           (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit`,
+           (SELECT min(erkannt_am) FROM obstacle_aenderungen) AS geaendert_seit,
+           (SELECT greatest(min(updated_at)::date, current_date - 120)
+              FROM obstacles
+             WHERE aktiv = false AND tenant_id IS NULL AND quellen_id IS NOT NULL) AS erfassung_vollstaendig_ab`,
     params,
   )
 
@@ -701,8 +709,8 @@ export async function berechneUebersicht(db, tage) {
       hindernisse: Number(basis?.hindernisse ?? 0),
     },
     geaendertTrackingSeit: row.geaendert_seit ?? null,
-    erfassungVollstaendigAb: new Date(Date.now() - ERFASSUNG_VOLLSTAENDIG_TAGE * 86400000)
-      .toISOString().slice(0, 10),
+    erfassungVollstaendigAb: row.erfassung_vollstaendig_ab
+      ? String(row.erfassung_vollstaendig_ab).slice(0, 10) : null,
     zeitreihe,
     gesamt: { neu: summe("neu"), geaendert: summe("geaendert"), ausgelaufen: summe("ausgelaufen"), entfernt: summe("entfernt") },
     // Rohzahlen vor der Aufteilung — Beleg, kein Versteck.

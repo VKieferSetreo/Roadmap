@@ -47,10 +47,14 @@ function ZeitreiheTooltip({ active, payload, label }: {
   if (!active || !payload?.length) return null
   const unvollstaendig = payload[0]?.payload?.unvollstaendig
   return (
-    <div style={{ ...TOOLTIP, padding: "8px 10px" }}>
-      <p style={{ fontWeight: 600, marginBottom: 4 }}>{label}</p>
+    // background gehoert hierher: den setzt sonst Recharts' eigener Tooltip-Container, und der
+    // faellt weg, sobald man content= uebergibt. Ohne ihn stand der Kasten durchsichtig ueber
+    // den Balken. Die Werte tragen ihre Kategoriefarbe wie im Balken selbst — auch an
+    // ausgegrauten Tagen, denn die Farbe kodiert die Kategorie, nicht die Datenqualitaet.
+    <div style={{ ...TOOLTIP, background: "#fff", padding: "8px 10px" }}>
+      <p style={{ fontWeight: 600, marginBottom: 4, color: "#18181B" }}>{label}</p>
       {payload.filter((p) => (p.value ?? 0) > 0).map((p) => (
-        <p key={p.name} style={{ margin: 0 }}>
+        <p key={p.name} style={{ margin: 0, color: FARBE[p.name as keyof typeof FARBE] ?? "#18181B" }}>
           {LABEL[p.name as keyof typeof LABEL] ?? p.name}: {p.value}
         </p>
       ))}

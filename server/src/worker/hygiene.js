@@ -71,6 +71,21 @@ export async function deaktiviereBestandStillgelegterQuellen(db) {
   return rows
 }
 
+// FRIST: 120 TAGE (Max 2026-09-21, T-757; vorher 30). Die Aenderungsverfolgung liest
+// "weggefallen" aus `aktiv = false` plus `updated_at` — was hier geloescht wird, fehlt dort
+// ersatzlos. Mit 30 Tagen zeigte das 90-Tage-Fenster vor dem Stichtag fast nur noch Neuanlagen,
+// weil zwei Drittel der Historie schon weggeraeumt waren. 120 Tage decken das groesste Fenster
+// (90) mit Reserve ab.
+//
+// Der Preis ist Bestandsgroesse: die Zahl der inaktiven Zeilen waechst ueber die naechsten
+// Monate etwa auf das Vierfache (Stand 21.09.: 41.137). Das trifft vor allem den Importer, der
+// je Lauf den kompletten Quellen-Bestand laedt (importer.js, EXISTING_ALL_SQL — inklusive der
+// inaktiven Zeilen, sie sind die Vergleichsbasis fuer Reaktivierung und Drift-Match).
+//
+// Die Wirkung ist NUR VORWAERTS: was vor dem 21.09. geloescht wurde, ist weg. Die Historie
+// waechst von da an mit, deshalb leitet routes/veraenderungen.js den Stichtag aus dem Bestand
+// ab statt aus dieser Zahl.
+//
 // Hard-Purge lang-inaktiver IMPORTIERTER Hindernisse (Audit 2026-06-22, FIX-4).
 // Reconcile/Hygiene setzt nicht mehr im Feed vorhandene bzw. abgelaufene Importe auf aktiv=false
 // (Soft-Delete). Bleiben sie ewig liegen, sammelt sich toter Ballast (z.B. 9.606 Zeilen aus einer
@@ -90,7 +105,7 @@ const PURGE_SQL = `DELETE FROM obstacles
  * Löscht importierte Hindernisse, die seit `days` Tagen inaktiv sind, endgültig.
  * @returns {Promise<Array>} die gelöschten Rows (für Logging/Statistik)
  */
-export async function purgeStaleInactive(db, { days = 30 } = {}) {
+export async function purgeStaleInactive(db, { days = 120 } = {}) {
   const { rows } = await db.query(PURGE_SQL, [days])
   return rows
 }

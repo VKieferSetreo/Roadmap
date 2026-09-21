@@ -5,7 +5,7 @@
 // dem SQL heraus, loescht dieselbe Zeile Code die gesamte Anreicherung von 73.000 Punkten.
 
 import { describe, it, expect } from "vitest"
-import { purgeVerwaisteAnreicherung } from "../src/worker/hygiene.js"
+import { purgeStaleInactive, purgeVerwaisteAnreicherung } from "../src/worker/hygiene.js"
 
 describe("purgeVerwaisteAnreicherung", () => {
   const fang = () => {
@@ -42,5 +42,27 @@ describe("purgeVerwaisteAnreicherung", () => {
     const { db, gesehen } = fang()
     await purgeVerwaisteAnreicherung(db)
     expect(gesehen[0].sql, "aktiv=false ist KEIN Grund zu loeschen").not.toContain("aktiv")
+  })
+})
+
+describe("purgeStaleInactive", () => {
+  it("haelt inaktive Zeilen laenger, als die Auswertung zurueckschaut", async () => {
+    // Die Aufraeumfrist ist keine freie Zahl: "weggefallen" auf /veraenderungen liest
+    // aktiv = false plus updated_at, was hier geloescht wird, fehlt dort ersatzlos. Faellt die
+    // Frist unter das groesste Auswertungsfenster (90 Tage), zeigt das Chart fuer die aelteren
+    // Tage wieder fast nur Neuanlagen — genau der Zustand, den T-757 behoben hat.
+    let frist = null
+    const db = { query: async (_sql, p) => { frist = p[0]; return { rows: [] } } }
+    await purgeStaleInactive(db)
+    expect(frist).toBeGreaterThan(90)
+  })
+
+  it("loescht nur globale Importe, nie Kunden-Eintraege", async () => {
+    let sql = ""
+    const db = { query: async (s2) => { sql = s2; return { rows: [] } } }
+    await purgeStaleInactive(db)
+    expect(sql).toContain("aktiv = false")
+    expect(sql, "ohne tenant_id IS NULL trifft das DELETE auch Mandanten-Eintraege").toContain("tenant_id IS NULL")
+    expect(sql, "ohne quellen_id IS NOT NULL auch manuell angelegte Punkte").toContain("quellen_id IS NOT NULL")
   })
 })
