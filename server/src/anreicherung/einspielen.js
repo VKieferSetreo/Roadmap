@@ -95,6 +95,15 @@ export async function spieleEin(db, { modell = null } = {}) {
             updated_at = now()
        FROM abgeleitet a
       WHERE o.id = a.id
+        -- NUR AKTIVE ZEILEN (T-749). /veraenderungen definiert "ausgelaufen"/"entfernt" als
+        -- aktiv = false UND updated_at im Fenster. Ein Stempel auf eine bereits deaktivierte
+        -- Zeile schiebt sie damit erneut in den Wegfall, ohne dass an der Quelle irgendetwas
+        -- passiert waere — wir wuerden unseren eigenen Schreibvorgang als Ereignis der Behoerde
+        -- ausweisen (Max 2026-09-21: "die werden nicht von extern geaendert"). Zweiter Effekt:
+        -- purgeStaleInactive raeumt ueber updated_at aelter als 30 Tage, der Stempel setzt diese
+        -- Uhr zurueck und haelt tote Zeilen laenger im Bestand. Die Anreicherung einer
+        -- deaktivierten Zeile hat ohnehin keinen Nutzen: sie erscheint nirgends.
+        AND o.aktiv = true
         -- Nur anfassen, was sich wirklich ändert: sonst schreibt jeder Lauf alle Zeilen neu und
         -- updated_at verliert seine Aussage.
         AND (a.werte || coalesce(o.attrs, '{}'::jsonb)) IS DISTINCT FROM coalesce(o.attrs, '{}'::jsonb)
@@ -134,6 +143,7 @@ export async function nimmZurueck(db, { modell = null } = {}) {
             updated_at = now()
        FROM abgeleitet a
       WHERE o.id = a.id
+        AND o.aktiv = true -- wie oben: kein Wegfall-Signal aus unserem eigenen Schreibvorgang
       RETURNING o.id`,
     modell ? [modell] : [],
   )

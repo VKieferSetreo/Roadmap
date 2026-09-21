@@ -296,10 +296,25 @@ export async function runImport({
         }
         if (target) {
           // Sachfeld-Update — fachId/realerStart bleiben stabil
-          pendingUpdates.set(target.id, value) // gleiche id mehrfach → letzter Wert gewinnt (wie zuvor)
-          // Dieselbe last-write-wins-Regel wie pendingUpdates: der Änderungsvergleich unten muss
-          // gegen GENAU den Schreiber laufen, der die Zeile am Ende gewinnt.
-          updateHerkunft.set(target.id, { changeHash: target.change_hash, viaFuzzy })
+          // EXAKTER IDENTITAETSTREFFER SCHLAEGT DRIFT-TREFFER (T-749, gemessen 21.09.2026).
+          // Dieselbe Zeile kann im selben Lauf von ihrem eigenen Item (exakte externe_id) UND von
+          // einem fremden Item getroffen werden, das ueber Name + 300 m darauf driftet. Bis hierher
+          // entschied allein die Reihenfolge im Feed: von 405 solchen Kollisionen ueber zwoelf
+          // Quellen gewann in 332 (82 %) der FREMDE Schreiber. Die Zeile behielt ihre externe_id
+          // und trug ab dann die Sachdaten eines anderen Vorgangs — bei Quelle 0129 etwa die
+          // Massnahme "TH26/09/002" auf der Zeile von "TH26/07/002". Das beschaedigt nicht nur die
+          // Aenderungsmetrik, sondern den Bestand, den der Kunde sieht.
+          //
+          // Die exakte externe_id ist die staerkere Identitaetsaussage: sie kommt von der Quelle
+          // selbst, der Drift-Match ist unsere Heuristik. Also darf ein Drift-Treffer einen
+          // exakten nie verdraengen; umgekehrt sehr wohl.
+          const bisher = updateHerkunft.get(target.id)
+          if (!(viaFuzzy && bisher && !bisher.viaFuzzy)) {
+            pendingUpdates.set(target.id, value) // gleiche Staerke mehrfach → letzter gewinnt
+            // Dieselbe Regel wie pendingUpdates: der Änderungsvergleich unten muss gegen GENAU den
+            // Schreiber laufen, der die Zeile am Ende gewinnt.
+            updateHerkunft.set(target.id, { changeHash: target.change_hash, viaFuzzy })
+          }
           stats.aktualisiert += 1
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
           // Fuzzy-Treffer stammen aus dem aktiven Satz (kein aktiv-Feld) → nie reaktiviert.

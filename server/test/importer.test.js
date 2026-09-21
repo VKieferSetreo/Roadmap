@@ -121,6 +121,23 @@ describe("runImport (Mock-Connector)", () => {
     expect(db.state.obstacleAenderungen).toHaveLength(1)
   })
 
+  it("Exakter Identitätstreffer schlägt den Drift-Treffer — die Zeile behält ihre eigenen Daten", async () => {
+    // Gemessen am 21.09.2026: von 405 Zeilen, die im selben Lauf einen exakten UND einen
+    // Drift-Schreiber hatten, gewann in 332 der FREMDE. Die Zeile trug danach die Sachdaten
+    // eines anderen Vorgangs — sichtbar beim Kunden, nicht nur in der Metrik.
+    const db = createFakeDb()
+    await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
+
+    // lat +0,002: weit genug für einen eigenen Dedup-Schlüssel (3 NK ≈ 100 m), nah genug für
+    // den Drift-Match (0,003). Das Item steht HINTER dem eigenen — ohne Vorrang gewinnt es.
+    const fremd = { ...ITEM_A, externeId: "ext-fremd", lat: 52.302, strassenRef: "A99" }
+    await runImport({ db, connector: mockConnector([ITEM_A, fremd]), log: quiet })
+
+    const zeile = db.state.obstacles.find((o) => o.externe_id === "ext-a")
+    expect(zeile.strassen_ref).toBe("A2") // nicht A99
+    expect(db.state.obstacleAenderungen).toHaveLength(0)
+  })
+
   it("GL-Änderungstracking: Treffer nur über den Drift-Match meldet keine Änderung (ID-Rotation)", async () => {
     // Die Quelle vergibt eine neue externe_id fuer dieselbe Stelle. Der gespeicherte Hash stammt
     // dann von der alten ID — ein Vergleich damit misst die Rotation, nicht die Sache.
