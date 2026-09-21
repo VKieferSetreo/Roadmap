@@ -328,13 +328,41 @@ const CHURN_CTES = `
                               AND nk.created_at + ($5::int * interval '1 day')
     )
   ),
+  -- WANN ist eine Massnahme weggefallen? (Max 2026-09-21: "alles ueber den letzten 30 Tagen sind
+  -- nur neu, rekonstruiere so weit es geht die Verteilung".)
+  --
+  -- Bis hierher zaehlte fuer beide Wegfall-Arten der Tag, an dem UNSER Abgleich es bemerkte
+  -- (updated_at). Fuer eine planmaessig AUSGELAUFENE Massnahme ist das die falsche Auskunft: sie
+  -- endete an ihrem eigenen Enddatum, oft Wochen vorher. Beleg im Bestand: 1.330 Zeilen mit
+  -- gueltig_bis zwischen 31 und 90 Tagen zurueck, alle erst spaeter deaktiviert — im Chart
+  -- standen sie am Deaktivierungstag statt am Auslauftag.
+  --
+  -- Das ist zugleich der Grund, warum aelter als 30 Tage nur gruene Balken standen: die Hygiene
+  -- raeumt inaktive Zeilen nach 30 Tagen weg (purgeStaleInactive), also gibt es ueber updated_at
+  -- dort nichts mehr zu sehen. gueltig_bis ueberlebt das, solange die Zeile existiert.
+  --
+  -- Fuer VORZEITIG ENTFERNTE bleibt es bei updated_at: wann eine Massnahme aus dem Feed
+  -- verschwand, weiss nur der Abgleich, ein besseres Datum gibt es nicht. Deren Historie bleibt
+  -- deshalb auf die letzten 30 Tage begrenzt, und das ist ehrlicher, als sie zu erfinden.
+  --
+  -- Der updated_at-Filter bleibt als VORFILTER stehen, obwohl datiert wird nach weg_am: er
+  -- bedient den Index obstacles_inaktiv_updated_idx, und er schneidet nichts Falsches weg.
+  -- Bei einer ausgelaufenen Zeile ist gueltig_bis <= updated_at, das Ereignis liegt also nie
+  -- naeher an heute als der Stempel; was der Vorfilter durchlaesst, entscheidet danach die
+  -- weg_am-Bedingung. Ohne ihn lief die Abfrage in Prod ins Statement-Timeout (Seq-Scan ueber
+  -- den vollen Bestand statt Index-Scan).
   echte_weg AS (
     SELECT w.*,
       CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
-           THEN 'ausgelaufen' ELSE 'entfernt' END AS weg_typ
+           THEN 'ausgelaufen' ELSE 'entfernt' END AS weg_typ,
+      CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
+           THEN w.gueltig_bis ELSE w.updated_at::date END AS weg_am
     FROM obstacles w
     WHERE w.demo = false AND w.kategorie = ANY($1) AND w.aktiv = false
       AND w.updated_at >= current_date - $2::int * interval '1 day'
+      AND (CASE WHEN w.gueltig_bis IS NOT NULL AND w.gueltig_bis <= w.updated_at::date
+                THEN w.gueltig_bis ELSE w.updated_at::date END)
+          BETWEEN current_date - $2::int * interval '1 day' AND current_date
       AND NOT EXISTS (
         SELECT 1 FROM obstacles n
         WHERE n.quellen_id = w.quellen_id AND n.kategorie = w.kategorie
@@ -533,8 +561,8 @@ export async function berechneUebersicht(db, tage) {
            FROM generate_series(current_date - ($2::int - 1) * interval '1 day', current_date, interval '1 day') d
            LEFT JOIN (SELECT created_at::date AS tag, count(*) AS n FROM relevant_neu GROUP BY 1) n ON n.tag = d::date
            LEFT JOIN (SELECT erkannt_am AS tag, count(*) AS n FROM obstacle_aenderungen WHERE ${relevantFilter} GROUP BY 1) g ON g.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
-           LEFT JOIN (SELECT updated_at::date AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
+           LEFT JOIN (SELECT weg_am AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'ausgelaufen' GROUP BY 1) a ON a.tag = d::date
+           LEFT JOIN (SELECT weg_am AS tag, count(*) AS n FROM relevant_weg WHERE weg_typ = 'entfernt' GROUP BY 1) e ON e.tag = d::date
          ),
          -- "neu"/"ausgelaufen"/"entfernt" zählen VORGÄNGE (vorgang_neu/vorgang_weg), nicht
          -- Zeilen — ein Vorgang mit mehreren Segmenten zählt einmal (siehe CHURN_CTES-Kommentar).

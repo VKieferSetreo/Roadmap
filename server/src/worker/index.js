@@ -383,21 +383,32 @@ Vorgeschichte: T-749 (21.09.2026).`
 }
 
 async function runVeraenderungenCache() {
+  // Eigener Pool mit grosszuegigem Statement-Timeout, dasselbe Muster wie migrate.js: die
+  // Abfrage laeuft ueber den vollen Bestand und braucht fuer das 90-Tage-Fenster rund 155 s,
+  // der Standard-Pool bricht bei 120 s ab. Das hier ist ein naechtlicher Batch, kein Request —
+  // die Seite liest ausschliesslich den fertigen Cache. Der Pool wird danach wieder geschlossen,
+  // damit der Worker nicht dauerhaft zehn zusaetzliche Verbindungen haelt.
+  const cachePool = createPool(process.env.DATABASE_URL, { statementTimeoutMs: 300000 })
+  const cacheDb = createDb(cachePool)
   let rohFuerGuete = null
-  for (const tage of VERAENDERUNGEN_FENSTER) {
-    try {
-      const t0 = Date.now()
-      const payload = await berechneUebersicht(db, tage)
-      rohFuerGuete = rohFuerGuete ?? payload?.roh // fensterunabhaengig, erster Treffer genuegt
-      await db.query(
-        `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, now())
-         ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
-        [tage, JSON.stringify(payload)],
-      )
-      log(`Änderungsverfolgung-Cache: ${tage} Tage in ${Date.now() - t0}ms vorgerechnet`)
-    } catch (err) {
-      log(`Änderungsverfolgung-Cache (${tage} Tage) fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+  try {
+    for (const tage of VERAENDERUNGEN_FENSTER) {
+      try {
+        const t0 = Date.now()
+        const payload = await berechneUebersicht(cacheDb, tage)
+        rohFuerGuete = rohFuerGuete ?? payload?.roh // fensterunabhaengig, erster Treffer genuegt
+        await cacheDb.query(
+          `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, now())
+           ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
+          [tage, JSON.stringify(payload)],
+        )
+        log(`Änderungsverfolgung-Cache: ${tage} Tage in ${Date.now() - t0}ms vorgerechnet`)
+      } catch (err) {
+        log(`Änderungsverfolgung-Cache (${tage} Tage) fehlgeschlagen (ignoriert): ${err?.message ?? err}`)
+      }
     }
+  } finally {
+    await cachePool.end().catch(() => {})
   }
   // Erst NACH dem Schreiben pruefen: der Cache soll auch dann aktuell sein, wenn die Zahlen
   // auffaellig sind — eine stille Seite waere die schlechtere Antwort auf einen Verdacht.
