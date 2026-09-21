@@ -134,7 +134,7 @@ function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Je Straßenklasse</CardTitle>
-            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet — ausgeschriebene Namen gelten als Gemeindestraße, Einträge ganz ohne Angabe als „Ohne Straßenangabe"</p>
+            <p className="text-xs text-neutral-400">Aus dem Straßenkennzeichen abgeleitet; fehlt es, aus der Koordinate aufgelöst</p>
           </CardHeader>
           <CardContent className="pt-2">
             <Suspense fallback={<div className="skeleton h-44 w-full rounded-lg" />}>
@@ -183,7 +183,7 @@ function computeInsight(d: VeraenderungenUebersicht) {
   const v = d.vorlaufzeiten
   const messbar = (v.spontan ?? 0) + (v.kurzfristig ?? 0) + (v.geplant ?? 0) + (v.langfristig ?? 0)
   const spontanAnteil = messbar > 0 ? ((v.spontan ?? 0) + (v.kurzfristig ?? 0)) / messbar : null
-  return { proTag, spontanAnteil, messbar }
+  return { proTag, spontanAnteil }
 }
 
 function geaendertSub(d: VeraenderungenUebersicht) {
@@ -225,13 +225,11 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
           <HeroStat
             value={insight.proTag.toLocaleString("de-DE", { maximumFractionDigits: 1 })}
             label="Ereignisse pro Tag"
-            hint="Ø neu + geändert + weggefallen"
           />
           {insight.spontanAnteil != null ? (
             <HeroStat
               value={`${Math.round(insight.spontanAnteil * 100)}%`}
               label="mit ≤6 Tagen Vorlauf"
-              hint={`von ${insight.messbar} datierten neuen Maßnahmen`}
               icon={Zap}
             />
           ) : null}
@@ -241,7 +239,7 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
   )
 }
 
-function HeroStat({ value, label, hint, icon: Icon }: { value: string; label: string; hint: string; icon?: LucideIcon }) {
+function HeroStat({ value, label, icon: Icon }: { value: string; label: string; icon?: LucideIcon }) {
   return (
     <div className="text-right">
       <div className="flex items-center justify-end gap-1.5 text-3xl font-bold tabular-nums tracking-tight text-primary-700 sm:text-4xl">
@@ -249,7 +247,6 @@ function HeroStat({ value, label, hint, icon: Icon }: { value: string; label: st
         {value}
       </div>
       <p className="mt-0.5 text-xs font-medium text-neutral-600">{label}</p>
-      <p className="text-[11px] text-neutral-400">{hint}</p>
     </div>
   )
 }
