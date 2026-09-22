@@ -16,6 +16,7 @@ import { Activity } from "lucide-react"
 import { Inhalt } from "@/pages/VeraenderungenPage"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { Button } from "@/components/ui/Button"
 import type { VeraenderungenUebersicht } from "@/api/roadmap"
 import { cn } from "@/lib/cn"
 
@@ -27,27 +28,57 @@ const basisPfad = window.location.pathname.replace(/\/+$/, "")
 
 type Zustand =
   | { art: "laedt" }
-  | { art: "fehler"; text: string }
+  | { art: "fehler"; text: string; endgueltig: boolean }
   | { art: "da"; daten: VeraenderungenUebersicht }
+
+/** Ein Fehlversuch darf nicht das Ende sein.
+ *
+ *  Ein Empfänger meldete "Daten nicht ladbar", während mit dem Server alles in Ordnung war:
+ *  ein Neustart beim Ausrollen reicht, und der eine fetch, den diese Seite absetzte, lief ins
+ *  Leere. Danach stand die Seite still, bis jemand von sich aus neu lud.
+ *
+ *  Deshalb: dreimal versuchen mit wachsendem Abstand. Nur ein 404 (Link zurückgezogen) wird
+ *  sofort als endgültig behandelt — dort hilft kein Wiederholen. */
+const VERSUCHE = 3
+const warte = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+class LinkUngueltig extends Error {}
+
+async function ladeDaten(tage: number): Promise<VeraenderungenUebersicht> {
+  let letzter: Error = new Error("Die Zahlen konnten nicht geladen werden.")
+  for (let versuch = 1; versuch <= VERSUCHE; versuch++) {
+    try {
+      const r = await fetch(`${basisPfad}/daten?tage=${tage}`, { credentials: "omit" })
+      if (r.status === 404) throw new LinkUngueltig("Dieser Link ist nicht mehr gültig.")
+      if (r.status === 429) throw new Error("Gerade sind viele Abrufe unterwegs.")
+      if (r.status === 503) throw new Error("Die Auswertung wird gerade vorbereitet.")
+      if (!r.ok) throw new Error(`Die Zahlen konnten nicht geladen werden (${r.status}).`)
+      return (await r.json()) as VeraenderungenUebersicht
+    } catch (e) {
+      if (e instanceof LinkUngueltig) throw e
+      letzter = e as Error
+      if (versuch < VERSUCHE) await warte(versuch * 1500)
+    }
+  }
+  throw letzter
+}
 
 export function FreigabeAnsicht() {
   const [tage, setTage] = useState<(typeof FENSTER)[number]>(30)
   const [zustand, setZustand] = useState<Zustand>({ art: "laedt" })
+  const [anlauf, setAnlauf] = useState(0)
 
   useEffect(() => {
     let aktuell = true
     setZustand({ art: "laedt" })
-    fetch(`${basisPfad}/daten?tage=${tage}`, { credentials: "omit" })
-      .then((r) => {
-        if (r.status === 404) throw new Error("Dieser Link ist nicht mehr gültig.")
-        if (!r.ok) throw new Error(`Die Zahlen konnten nicht geladen werden (${r.status}).`)
-        return r.json() as Promise<VeraenderungenUebersicht>
-      })
+    ladeDaten(tage)
       .then((daten) => { if (aktuell) setZustand({ art: "da", daten }) })
-      .catch((e: Error) => { if (aktuell) setZustand({ art: "fehler", text: e.message }) })
+      .catch((e: Error) => {
+        if (aktuell) setZustand({ art: "fehler", text: e.message, endgueltig: e instanceof LinkUngueltig })
+      })
     // Ein zweiter Klick auf ein anderes Fenster darf das Ergebnis des ersten nicht mehr setzen.
     return () => { aktuell = false }
-  }, [tage])
+  }, [tage, anlauf])
 
   return (
     <PageContainer
@@ -78,7 +109,20 @@ export function FreigabeAnsicht() {
       {zustand.art === "laedt" ? (
         <div className="skeleton h-64 w-full rounded-2xl" />
       ) : zustand.art === "fehler" ? (
-        <EmptyState icon={Activity} title="Nicht ladbar" description={zustand.text} />
+        <div className="flex flex-col items-center gap-4">
+          <EmptyState
+            icon={Activity}
+            title={zustand.endgueltig ? "Link nicht mehr gültig" : "Gerade nicht erreichbar"}
+            description={
+              zustand.endgueltig
+                ? zustand.text
+                : `${zustand.text} Die Seite hat es bereits mehrfach versucht.`
+            }
+          />
+          {zustand.endgueltig ? null : (
+            <Button onClick={() => setAnlauf((n) => n + 1)}>Erneut versuchen</Button>
+          )}
+        </div>
       ) : (
         <Inhalt d={zustand.daten} />
       )}

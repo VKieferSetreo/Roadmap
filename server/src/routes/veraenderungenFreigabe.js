@@ -15,7 +15,6 @@ import { createHash, randomBytes, timingSafeEqual } from "node:crypto"
 import { Router } from "express"
 import { createRateLimiter } from "../shares.js"
 import { ApiError, asyncHandler } from "../util.js"
-import { berechneUebersicht } from "./veraenderungen.js"
 
 const TAGE_MIN = 1
 const TAGE_MAX = 365
@@ -58,27 +57,40 @@ async function ladeFreigabe(db, token) {
   return f
 }
 
-/** Dieselbe Cache-first-Logik wie die angemeldete Route: die Berechnung dauert ~55 s. */
+/** NUR aus dem Cache. Der oeffentliche Weg rechnet NIE selbst.
+ *
+ *  Die angemeldete Route faellt bei einem Cache-Miss auf berechneUebersicht zurueck. Hier darf
+ *  sie das nicht: die Rechnung braucht fuer 90 Tage rund 160 s, der API-Pool bricht Statements
+ *  nach 120 s ab (db.js). Der Aufruf haette also zwei Minuten blockiert und WAERE DANN
+ *  GESCHEITERT — aus Sicht des Empfaengers "Daten nicht ladbar", nach zwei Minuten Warten.
+ *
+ *  Fehlt das gewuenschte Fenster, ist der naechstbeste vorhandene Stand die bessere Antwort als
+ *  ein Fehler: die Seite zeigt ohnehin an, fuer welchen Zeitraum und wann gerechnet wurde.
+ *  Ist gar nichts da, sagen wir das ehrlich mit 503 und Retry-After, damit der Empfaenger es
+ *  gleich nochmal versucht statt aufzugeben.
+ */
 async function holeUebersicht(db, tage) {
-  const { rows: [cached] } = await db.query(
-    "SELECT payload, berechnet_am FROM veraenderungen_cache WHERE tage = $1",
-    [tage],
+  const { rows } = await db.query(
+    "SELECT tage, payload, berechnet_am FROM veraenderungen_cache ORDER BY tage",
   )
-  if (cached) return { ...cached.payload, berechnetAm: cached.berechnet_am }
-  const payload = await berechneUebersicht(db, tage)
-  const berechnetAm = new Date()
-  await db.query(
-    `INSERT INTO veraenderungen_cache (tage, payload, berechnet_am) VALUES ($1, $2, $3)
-       ON CONFLICT (tage) DO UPDATE SET payload = excluded.payload, berechnet_am = excluded.berechnet_am`,
-    [tage, JSON.stringify(payload), berechnetAm],
-  )
-  return { ...payload, berechnetAm }
+  if (!rows.length) return null
+  const treffer =
+    rows.find((r) => r.tage === tage) ??
+    // naechstliegendes Fenster, bei Gleichstand das groessere (mehr Kontext statt weniger)
+    rows.reduce((best, r) =>
+      Math.abs(r.tage - tage) < Math.abs(best.tage - tage) ? r : best, rows[0])
+  return { ...treffer.payload, tage: treffer.tage, berechnetAm: treffer.berechnet_am }
 }
 
 export function veraenderungenFreigabeRouter({ db, seiteHtml }) {
   const r = Router()
-  // Grosszuegig genug fuer normales Lesen (die Seite holt einmal), eng genug gegen Durchprobieren.
-  const limiter = createRateLimiter({ max: 60, windowMs: 60_000 })
+  // 60/min war zu eng. Der Empfaenger sitzt typischerweise in einem Firmennetz, und dort teilen
+  // sich ALLE Kollegen eine ausgehende IP (NAT). Ein herumgereichter Link, den ein paar Leute
+  // gleichzeitig oeffnen, lief damit ins Limit — und die Seite sagte "Daten nicht ladbar", ohne
+  // dass irgendetwas kaputt war. Die Antwort kommt aus dem Cache und kostet ~0,15 s, das traegt
+  // ein Vielfaches. Gegen Token-Durchprobieren schuetzt ohnehin der 40-stellige Token, nicht diese
+  // Zahl (und ein falscher Token kostet nur einen Hash-Vergleich, keine Rechnung).
+  const limiter = createRateLimiter({ max: 600, windowMs: 60_000 })
 
   const drossel = (req, res, next) => {
     if (!limiter(req.ip || "anon")) throw new ApiError(429, "Zu viele Anfragen — bitte kurz warten")
@@ -134,6 +146,13 @@ bei Ihrem Ansprechpartner nach einem neuen Link.</p></main></body></html>`
       ? Math.min(TAGE_MAX, Math.max(TAGE_MIN, gewuenscht))
       : f.tage
     const daten = await holeUebersicht(db, tage)
+    if (!daten) {
+      // Noch kein einziger Stand vorgerechnet (frische Datenbank, erster Tag). Kein Fehler des
+      // Empfaengers: ehrlich sagen und ihn gleich wiederkommen lassen, statt ihn zwei Minuten
+      // auf eine Rechnung warten zu lassen, die im Timeout endet.
+      res.setHeader("Retry-After", "60")
+      throw new ApiError(503, "Die Auswertung wird gerade vorbereitet — bitte in einer Minute erneut laden")
+    }
 
     // Zaehler nachfuehren, aber den Abruf nicht daran haengen.
     db.query(

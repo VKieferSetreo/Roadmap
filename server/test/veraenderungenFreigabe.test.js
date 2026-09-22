@@ -13,7 +13,7 @@ import { hashToken, neuerToken, veraenderungenFreigabeRouter } from "../src/rout
 const SEITE = "<!doctype html><title>Seite</title>"
 
 /** Attrappe, die nur die drei Abfragen der Route kennt und jede gesehene SQL mitschreibt. */
-function fakeDb({ freigabe = null, payload = { tage: 30, gesamt: { neu: 1 } } } = {}) {
+function fakeDb({ freigabe = null, payload = { tage: 30, gesamt: { neu: 1 } }, fenster = null } = {}) {
   const gesehen = []
   return {
     gesehen,
@@ -24,7 +24,12 @@ function fakeDb({ freigabe = null, payload = { tage: 30, gesamt: { neu: 1 } } } 
         return { rows: treffer, rowCount: treffer.length }
       }
       if (sql.includes("FROM veraenderungen_cache")) {
-        return { rows: [{ payload, berechnet_am: new Date("2026-09-21T04:00:00Z") }], rowCount: 1 }
+        // `fenster` = die Tage-Werte, die wirklich im Cache liegen. null bedeutet: alle drei da.
+        const vorhanden = fenster ?? [7, 30, 90]
+        const rows = vorhanden.map((t) => ({
+          tage: t, payload: { ...payload, tage: t }, berechnet_am: new Date("2026-09-21T04:00:00Z"),
+        }))
+        return { rows, rowCount: rows.length }
       }
       return { rows: [], rowCount: 1 }
     },
@@ -87,14 +92,43 @@ describe("Freigabelink Aenderungsauswertung", () => {
     expect(alles).toContain(hashToken(token))
   })
 
-  it("tage aus der Abfrage wird auf 1..365 begrenzt", async () => {
+  it("unsinnige tage-Werte liefern trotzdem einen Stand, keinen Fehler", async () => {
     const token = neuerToken()
     const db = fakeDb({ freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 } })
     const app = makeApp(db)
-    await request(app).get(`/_share/v/${token}/daten?tage=99999`)
-    await request(app).get(`/_share/v/${token}/daten?tage=-5`)
-    const cacheAbfragen = db.gesehen.filter((q) => q.sql.includes("FROM veraenderungen_cache"))
-    expect(cacheAbfragen.map((q) => q.params[0])).toEqual([365, 1])
+    for (const t of ["99999", "-5", "abc", ""]) {
+      const res = await request(app).get(`/_share/v/${token}/daten?tage=${t}`)
+      expect(res.status).toBe(200)
+      expect([7, 30, 90]).toContain(res.body.tage)
+    }
+  })
+
+  // Der Grund fuer diese drei Tests: ein Empfaenger meldete "Daten nicht ladbar". Der oeffentliche
+  // Weg darf NIE selbst rechnen — die Auswertung braucht fuer 90 Tage rund 160 s gegen ein
+  // statement_timeout von 120 s, das endet zwangslaeufig im Fehler, nach zwei Minuten Warten.
+  it("rechnet NIE selbst, auch wenn das gewuenschte Fenster fehlt", async () => {
+    const token = neuerToken()
+    const db = fakeDb({
+      freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 },
+      fenster: [7, 90], // 30 fehlt
+    })
+    const res = await request(makeApp(db)).get(`/_share/v/${token}/daten?tage=30`)
+    expect(res.status).toBe(200)
+    // naechstliegendes vorhandenes Fenster, und ehrlich als solches ausgewiesen
+    expect(res.body.tage).toBe(7)
+    // keine einzige Abfrage gegen den Bestand — nur Freigabe, Cache und der Zugriffszaehler
+    expect(db.gesehen.some((q) => q.sql.includes("FROM obstacles"))).toBe(false)
+  })
+
+  it("ohne jeden vorgerechneten Stand: 503 mit Retry-After statt Haenger", async () => {
+    const token = neuerToken()
+    const db = fakeDb({
+      freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 },
+      fenster: [],
+    })
+    const res = await request(makeApp(db)).get(`/_share/v/${token}/daten?tage=30`)
+    expect(res.status).toBe(503)
+    expect(res.headers["retry-after"]).toBe("60")
   })
 
   it("neuerToken liefert jedes Mal einen anderen, ausreichend langen Wert", () => {
