@@ -69,10 +69,15 @@ async function ladeFreigabe(db, token) {
  *  Ist gar nichts da, sagen wir das ehrlich mit 503 und Retry-After, damit der Empfaenger es
  *  gleich nochmal versucht statt aufzugeben.
  */
-async function holeUebersicht(db, tage) {
+async function holeAlleStaende(db) {
   const { rows } = await db.query(
     "SELECT tage, payload, berechnet_am FROM veraenderungen_cache ORDER BY tage",
   )
+  return rows
+}
+
+async function holeUebersicht(db, tage) {
+  const rows = await holeAlleStaende(db)
   if (!rows.length) return null
   const treffer =
     rows.find((r) => r.tage === tage) ??
@@ -120,8 +125,28 @@ h1{font-size:21px;margin:10px 0 12px;font-weight:650}p{color:#5d675d;margin:0 0 
 <p>Bitte prüfen Sie, ob die Adresse vollständig kopiert wurde, und fragen Sie sonst
 bei Ihrem Ansprechpartner nach einem neuen Link.</p></main></body></html>`
 
-  // Die Seite selbst. Der Build aus server/public/freigabe holt die Zahlen per fetch von der
-  // Route darunter.
+  // Die Seite selbst — MIT den Zahlen darin.
+  //
+  // Sie holte sie frueher per fetch nach. Das war ein zweiter Netzabruf, und genau der ging
+  // beim Empfaenger schief: er sah "Die Zahlen konnten nicht geladen werden (403)", waehrend
+  // unser Server in denselben zwoelf Stunden 199 Abrufe dieser Route allesamt mit 200
+  // beantwortete — der 403 kam von Cloudflare davor und erreichte uns nie. Gegen fremde
+  // Bot-Regeln kann man von hier aus nichts ausrichten; man kann ihnen aber den Angriffspunkt
+  // nehmen. Ein Abruf, den es nicht gibt, kann auch niemand blockieren.
+  //
+  // Eingebettet werden ALLE drei Fenster (zusammen rund 15 KB, komprimiert ein Bruchteil davon),
+  // damit auch der Umschalter 7/30/90 ohne Netzabruf auskommt. Der fetch bleibt als Rueckfallweg
+  // im Frontend, wird im Normalfall aber nie gebraucht.
+  const einbetten = (html, staende) => {
+    const daten = staende.map((r) => ({ ...r.payload, tage: r.tage, berechnetAm: r.berechnet_am }))
+    // "<" maskieren: sonst beendet ein "</script>" in den Daten das Script-Tag (XSS).
+    const json = JSON.stringify(daten).replaceAll("<", "\\u003c")
+    return html.replace(
+      "</head>",
+      `<script type="application/json" id="veraenderungen-staende">${json}</script></head>`,
+    )
+  }
+
   r.get("/v/:token", drossel, asyncHandler(async (req, res) => {
     nichtIndexieren(res)
     const f = await ladeFreigabe(db, req.params.token)
@@ -133,7 +158,9 @@ bei Ihrem Ansprechpartner nach einem neuen Link.</p></main></body></html>`
         + `${/^[0-9a-f]+$/.test(t) ? "hex" : /^[A-Za-z0-9_-]+$/.test(t) ? "base64url" : "anderes"}`)
       return res.status(404).type("html").send(UNGUELTIG)
     }
-    res.type("html").send(seiteHtml)
+    // Faellt das Einbetten aus, geht die Seite trotzdem raus — sie holt die Zahlen dann per fetch.
+    const staende = await holeAlleStaende(db).catch(() => [])
+    res.type("html").send(staende.length ? einbetten(seiteHtml, staende) : seiteHtml)
   }))
 
   r.get("/v/:token/daten", drossel, asyncHandler(async (req, res) => {

@@ -42,6 +42,23 @@ type Zustand =
 const VERSUCHE = 3
 const warte = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+/** Die Zahlen, die der Server schon in die Seite gelegt hat.
+ *
+ *  Der Normalweg. Frueher holte diese Seite sie per fetch nach, und genau dieser zweite Abruf
+ *  ging beim Empfaenger schief: "Die Zahlen konnten nicht geladen werden (403)", waehrend unser
+ *  Server in denselben zwoelf Stunden 199 Abrufe dieser Route allesamt mit 200 beantwortete —
+ *  der 403 kam von Cloudflare davor. Ein Abruf, den es nicht gibt, kann niemand blockieren. */
+function eingebettet(): VeraenderungenUebersicht[] {
+  try {
+    const tag = document.getElementById("veraenderungen-staende")
+    if (!tag?.textContent) return []
+    const daten = JSON.parse(tag.textContent) as VeraenderungenUebersicht[]
+    return Array.isArray(daten) ? daten : []
+  } catch {
+    return [] // kaputtes JSON darf die Seite nicht kosten — dann eben ueber das Netz
+  }
+}
+
 class LinkUngueltig extends Error {}
 
 async function ladeDaten(tage: number): Promise<VeraenderungenUebersicht> {
@@ -65,11 +82,19 @@ async function ladeDaten(tage: number): Promise<VeraenderungenUebersicht> {
 
 export function FreigabeAnsicht() {
   const [tage, setTage] = useState<(typeof FENSTER)[number]>(30)
-  const [zustand, setZustand] = useState<Zustand>({ art: "laedt" })
+  const [staende] = useState(eingebettet)
+  const [zustand, setZustand] = useState<Zustand>(() => {
+    const da = eingebettet().find((d) => d.tage === 30)
+    return da ? { art: "da", daten: da } : { art: "laedt" }
+  })
   const [anlauf, setAnlauf] = useState(0)
 
   useEffect(() => {
     let aktuell = true
+    // Liegt das Fenster schon in der Seite, ist nichts zu holen — auch nicht beim Umschalten.
+    const vorhanden = staende.find((d) => d.tage === tage)
+    if (vorhanden) { setZustand({ art: "da", daten: vorhanden }); return }
+
     setZustand({ art: "laedt" })
     ladeDaten(tage)
       .then((daten) => { if (aktuell) setZustand({ art: "da", daten }) })
@@ -78,7 +103,7 @@ export function FreigabeAnsicht() {
       })
     // Ein zweiter Klick auf ein anderes Fenster darf das Ergebnis des ersten nicht mehr setzen.
     return () => { aktuell = false }
-  }, [tage, anlauf])
+  }, [tage, anlauf, staende])
 
   return (
     <PageContainer

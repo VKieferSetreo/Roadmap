@@ -10,7 +10,8 @@ import request from "supertest"
 import { describe, expect, it } from "vitest"
 import { hashToken, neuerToken, veraenderungenFreigabeRouter } from "../src/routes/veraenderungenFreigabe.js"
 
-const SEITE = "<!doctype html><title>Seite</title>"
+// Wie die echte freigabe.html: mit </head>, denn genau dort wird der Stand eingehaengt.
+const SEITE = "<!doctype html><html><head><title>Seite</title></head><body><div id=\"root\"></div></body></html>"
 
 /** Attrappe, die nur die drei Abfragen der Route kennt und jede gesehene SQL mitschreibt. */
 function fakeDb({ freigabe = null, payload = { tage: 30, gesamt: { neu: 1 } }, fenster = null } = {}) {
@@ -129,6 +130,40 @@ describe("Freigabelink Aenderungsauswertung", () => {
     const res = await request(makeApp(db)).get(`/_share/v/${token}/daten?tage=30`)
     expect(res.status).toBe(503)
     expect(res.headers["retry-after"]).toBe("60")
+  })
+
+  // Der Grund: der Empfaenger sah "(403)", waehrend unser Server 199 Abrufe derselben Route
+  // allesamt mit 200 beantwortete — der 403 kam von Cloudflare davor. Gegen fremde Bot-Regeln
+  // hilft nur, den zweiten Abruf ganz abzuschaffen.
+  it("legt die Zahlen MIT in die Seite, damit kein zweiter Abruf noetig ist", async () => {
+    const token = neuerToken()
+    const db = fakeDb({ freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 } })
+    const res = await request(makeApp(db)).get(`/_share/v/${token}`)
+    expect(res.status).toBe(200)
+    expect(res.text).toContain('id="veraenderungen-staende"')
+    const json = res.text.match(/id="veraenderungen-staende">(.*?)<\/script>/s)[1]
+    const staende = JSON.parse(json)
+    expect(staende.map((d) => d.tage).sort((a, b) => a - b)).toEqual([7, 30, 90])
+  })
+
+  it("maskiert '<' in den eingebetteten Daten — sonst beendet ein </script> das Tag", async () => {
+    const token = neuerToken()
+    const db = fakeDb({
+      freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 },
+      payload: { tage: 30, gesamt: { neu: 1 }, boeser: "</script><script>alert(1)</script>" },
+    })
+    const res = await request(makeApp(db)).get(`/_share/v/${token}`)
+    expect(res.text).not.toContain("</script><script>alert(1)")
+    expect(res.text).toContain("\\u003c/script")
+  })
+
+  it("ohne vorgerechneten Stand geht die Seite trotzdem raus (Frontend holt dann nach)", async () => {
+    const token = neuerToken()
+    const db = fakeDb({ freigabe: { id: "f1", token_hash: hashToken(token), name: null, tage: 30 }, fenster: [] })
+    const res = await request(makeApp(db)).get(`/_share/v/${token}`)
+    expect(res.status).toBe(200)
+    expect(res.text).toContain("<title>Seite</title>")
+    expect(res.text).not.toContain('id="veraenderungen-staende"')
   })
 
   it("neuerToken liefert jedes Mal einen anderen, ausreichend langen Wert", () => {
