@@ -17,6 +17,7 @@ import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { VeraenderungenFreigaben } from "@/components/veraenderungen/VeraenderungenFreigaben"
+import { AenderungsBelege } from "@/components/veraenderungen/AenderungsBelege"
 import { cn } from "@/lib/cn"
 import { AMPEL } from "@/lib/ampel"
 
@@ -164,6 +165,8 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
           </CardContent>
         </Card>
       </div>
+
+      <AenderungsBelege belege={d.belege} />
 
       {/* Nur Admin: die Auswertung selbst steht jedem Angemeldeten offen, sie nach AUSSEN
           freizugeben ist eine andere Entscheidung. */}

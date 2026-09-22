@@ -64,8 +64,8 @@ describe("runImport (Mock-Connector)", () => {
     const run = await runImport({ db, connector: mockConnector([changed, ITEM_B]), log: quiet })
 
     expect(run.stats).toEqual({
-      // geaendert: GL-Änderungstracking (T-737-Nachfolger) erkennt den echten Namens-/Datums-Delta
-      // gegenüber dem beim ersten Insert gesetzten change_hash.
+      // geaendert: das Änderungstracking erkennt das verschobene ENDE gegenüber dem beim ersten
+      // Insert gesetzten Quellstand. Der geänderte Name allein täte es seit T-760 nicht mehr.
       gefunden: 2, neu: 1, aktualisiert: 1, uebersprungen: 0, deaktiviert: 0, reaktiviert: 0, geaendert: 1,
     })
     expect(db.state.obstacles).toHaveLength(2)
@@ -94,7 +94,7 @@ describe("runImport (Mock-Connector)", () => {
     })
 
     // T-738: updated_at wird bei JEDEM Re-Import gestempelt, auch ohne Inhalts-Delta — der
-    // change_hash-Vergleich (nicht updated_at) entscheidet, ob geloggt wird. Gleicher Inhalt
+    // Quellstand-Vergleich (nicht updated_at) entscheidet, ob geloggt wird. Gleicher Inhalt
     // nochmal rein → kein zweiter Eintrag.
     await runImport({ db, connector: mockConnector([changed]), log: quiet })
     expect(db.state.obstacleAenderungen).toHaveLength(1)
@@ -108,7 +108,10 @@ describe("runImport (Mock-Connector)", () => {
     await runImport({ db, connector: mockConnector([ITEM_A]), log: quiet })
     expect(db.state.obstacleAenderungen).toHaveLength(0)
 
-    const verlierer = { ...ITEM_A, name: "Baustelle A2 (andere Fassung)" }
+    // Das Unterscheidungsmerkmal ist seit T-760 das ENDE, nicht mehr der Name: ein abweichender
+    // Name ist unter der engen Definition zurecht stumm (er rollt bei der Autobahn GmbH taeglich
+    // mit der Anschlussstellen-Bezeichnung, ohne dass jemand etwas gemeldet haette).
+    const verlierer = { ...ITEM_A, name: "Baustelle A2 (andere Fassung)", gueltigBis: "2026-12-24" }
     const run = await runImport({ db, connector: mockConnector([verlierer, ITEM_A]), log: quiet })
 
     // Gewinner ist ITEM_A und damit identisch mit dem Bestand → keine Aenderung.
@@ -116,9 +119,13 @@ describe("runImport (Mock-Connector)", () => {
     expect(run.stats.geaendert).toBeUndefined()
     expect(db.state.obstacles.find((o) => o.externe_id === "ext-a").name).toBe("Baustelle A2")
 
-    // Gegenprobe: gewinnt der abweichende Schreiber, wird die Aenderung sehr wohl gemeldet.
+    // Gegenprobe: gewinnt der abweichende Schreiber, wird die Aenderung sehr wohl gemeldet —
+    // mit dem Beleg, WAS sich bewegt hat.
     await runImport({ db, connector: mockConnector([ITEM_A, verlierer]), log: quiet })
     expect(db.state.obstacleAenderungen).toHaveLength(1)
+    expect(db.state.obstacleAenderungen[0].aenderung).toEqual({
+      gueltigBis: [ITEM_A.gueltigBis ?? null, "2026-12-24"],
+    })
   })
 
   it("Exakter Identitätstreffer schlägt den Drift-Treffer — die Zeile behält ihre eigenen Daten", async () => {

@@ -13,9 +13,29 @@ describe("pruefeTrackingGuete", () => {
     expect(befunde.find((b) => b.art === "wiederholung").grund).toContain("97 %")
   })
 
-  it("schweigt beim Stand nach dem Fix (78 Aenderungen, kaum Wiederholung)", () => {
+  it("schweigt beim erwarteten Normalstand (eine Handvoll am Tag, kaum Wiederholung)", () => {
+    // Max' Erwartung, an der Archivtabelle nachgemessen: von 628 an zwei Tagen wiederholt
+    // gemeldeten Hindernissen hatten 8 ein wirklich bewegtes Ende, nach Relevanzfilter 4.
     expect(pruefeTrackingGuete({
-      geaendertHeute: 78, geaendertGestern: 74, wiederholtVomVortag: 3,
+      geaendertHeute: 8, geaendertGestern: 6, wiederholtVomVortag: 0, geaendertHeuteGroessteQuelle: 3,
+    })).toEqual([])
+  })
+
+  it("haette den 22.09. gemeldet — 293 von 302 aus EINER Quelle, ohne jede Wiederholung", () => {
+    // Der Fall, den beide alten Schwellen durchliessen: 302 lag unter der damaligen Mengengrenze
+    // von 300 (knapp), und die Wiederholungsquote lag bei 2 %, weil die Autobahn-Identifier
+    // taeglich rotieren und das Rauschen jeden Tag auf andere Zeilen legen.
+    const befunde = pruefeTrackingGuete({
+      geaendertHeute: 302, geaendertGestern: 572, wiederholtVomVortag: 13,
+      geaendertHeuteGroessteQuelle: 293,
+    })
+    expect(befunde.map((b) => b.art).sort()).toEqual(["einquellig", "tagesmenge"])
+    expect(befunde.find((b) => b.art === "einquellig").grund).toContain("97 %")
+  })
+
+  it("meldet Einquelligkeit nicht bei kleiner Masse — 3 von 4 aus einer Quelle ist Alltag", () => {
+    expect(pruefeTrackingGuete({
+      geaendertHeute: 4, geaendertGestern: 4, wiederholtVomVortag: 0, geaendertHeuteGroessteQuelle: 4,
     })).toEqual([])
   })
 

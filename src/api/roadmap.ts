@@ -161,6 +161,17 @@ export interface VeraenderungenUebersicht {
   berechnetAm: string
   zeitreihe: (Ereignistyp & { tag: string })[]
   gesamt: Ereignistyp
+  /** Die letzten Änderungen im Klartext: welches Feld hat sich von welchem Wert auf welchen
+   *  bewegt (T-760, Max: "systematisch tracked wenn solche beispiele kommen"). Eine Kopfzahl
+   *  ohne Belege lässt sich nicht prüfen. */
+  belege?: {
+    tag: string
+    quellenId: string
+    strassenRef: string | null
+    name: string | null
+    /** { feld: [alt, neu] } — z.B. { gueltigBis: ["2026-03-01", "2026-05-01"] } */
+    aenderung: Record<string, [unknown, unknown]>
+  }[]
   /** Zahlen VOR dem Herausrechnen von Quellen-Rotation/Erstbefüllung/Vorgangs-Zusammenfassung —
    *  Beleg, kein Versteck. */
   roh: {

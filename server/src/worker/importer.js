@@ -15,33 +15,36 @@ import { BATCH_ROWS, chunk, placeholders } from "../dbBatch.js"
 import { durchsGate, schreibeBelege } from "../anreicherung/gate.js"
 import { spieleEin } from "../anreicherung/einspielen.js"
 import {
-  buildFachId, changeRelevantHash, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur,
+  buildFachId, insertParams, istLiveVerkehrsmeldung, istReineInfrastruktur, quellStand, standDiff,
   OBSTACLE_COLS, OBSTACLE_INSERT_COLS, OBSTACLE_INSERT_COL_COUNT,
   sachfeldBatchSql, sachfeldParams, SACHFELD_COL_COUNT, todayIso, validateObstacle,
 } from "../obstaclesRepo.js"
 
 // Bulk-Import-Speed (T-042): EINMAL je Lauf den Quellen-Bestand laden statt per-Zeile zu
 // SELECTen — Upsert/Drift-Match/fachId laufen dann in-memory (kein N+1, kein per-Zeile-Lock).
-// change_hash zusätzlich zu OBSTACLE_COLS (nur hier gebraucht, deshalb nicht im geteilten
-// Spalten-Set) — Vergleichsbasis fürs GL-Änderungstracking.
-const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS}, change_hash FROM obstacles WHERE quellen_id = $1`
+// quell_stand zusätzlich zu OBSTACLE_COLS (nur hier gebraucht, deshalb nicht im geteilten
+// Spalten-Set) — der zuletzt von der QUELLE gemeldete Stand, Vergleichsbasis fürs Änderungstracking.
+const EXISTING_ALL_SQL = `SELECT ${OBSTACLE_COLS}, quell_stand FROM obstacles WHERE quellen_id = $1`
 // GL-Änderungstracking (T-737-Nachfolger): eine Zeile je Tag, an dem sich der relevante Inhalt
 // eines Hindernisses wirklich geändert hat. ON CONFLICT DO NOTHING ist nur ein Sicherheitsnetz —
-// die eigentliche Dedup-Logik ist der change_hash-Vergleich weiter unten (nur EIN Delta wird
+// die eigentliche Dedup-Logik ist der quell_stand-Vergleich weiter unten (nur EIN Delta wird
 // je Zeile überhaupt gesammelt).
-const AENDERUNG_COL_COUNT = 6 // obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis
+const AENDERUNG_COL_COUNT = 7 // + aenderung (der Beleg: welches Feld von welchem Wert auf welchen)
 const aenderungBatchSql = (valuesSql) => `INSERT INTO obstacle_aenderungen
-    (obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis, erkannt_am)
-  SELECT obstacle_id::uuid, kategorie, quellen_id, strassen_ref, gueltig_von::date, gueltig_bis::date, current_date
-  FROM (VALUES ${valuesSql}) AS v(obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis)
-  ON CONFLICT (obstacle_id, erkannt_am) DO NOTHING`
-// Nach dem Insert-Batch: change_hash der frisch eingefügten Zeilen setzen (kein eigener
+    (obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis, aenderung, erkannt_am)
+  SELECT obstacle_id::uuid, kategorie, quellen_id, strassen_ref, gueltig_von::date, gueltig_bis::date,
+         aenderung::jsonb, current_date
+  FROM (VALUES ${valuesSql}) AS v(obstacle_id, kategorie, quellen_id, strassen_ref, gueltig_von, gueltig_bis, aenderung)
+  -- Zweiter Lauf am selben Tag ergaenzt den Beleg, statt ihn zu verlieren. Es bleibt EINE Zeile je Tag.
+  ON CONFLICT (obstacle_id, erkannt_am)
+  DO UPDATE SET aenderung = coalesce(obstacle_aenderungen.aenderung, '{}'::jsonb) || excluded.aenderung`
+// Nach dem Insert-Batch: quell_stand der frisch eingefügten Zeilen setzen (kein eigener
 // obstacle_aenderungen-Eintrag dafür — "neu" liest direkt obstacles.created_at, siehe
 // routes/veraenderungen.js). Schlüssel (quellen_id, externe_id) ist derselbe Upsert-Schlüssel
 // wie überall im Importer.
-const CHANGE_HASH_COL_COUNT = 3 // quellen_id, externe_id, change_hash
-const changeHashBatchSql = (valuesSql) => `UPDATE obstacles AS o SET change_hash = v.change_hash
-  FROM (VALUES ${valuesSql}) AS v(quellen_id, externe_id, change_hash)
+const QUELL_STAND_COL_COUNT = 3 // quellen_id, externe_id, quell_stand
+const quellStandBatchSql = (valuesSql) => `UPDATE obstacles AS o SET quell_stand = v.quell_stand::jsonb
+  FROM (VALUES ${valuesSql}) AS v(quellen_id, externe_id, quell_stand)
   WHERE o.quellen_id = v.quellen_id AND o.externe_id = v.externe_id`
 // T-262: Index = ALLES vor QUELLE(4)+DDMMYY(6), also fach_id ohne die letzten 10 Zeichen — NICHT
 // fix die ersten 4. Sonst bricht der Zähler bei >9999 Einträgen/Quelle (5-stelliger Index, fach_id
@@ -216,7 +219,7 @@ export async function runImport({
           // Churn bei rollenden Enddaten.
           const cand = {
             id: r.id, externe_id: r.externe_id, lat: Number(r.lat), lng: Number(r.lng),
-            profil: restriktionsProfil(r.attrs), change_hash: r.change_hash,
+            profil: restriktionsProfil(r.attrs), quell_stand: r.quell_stand,
           }
           const arr = fuzzyIndex.get(k)
           if (arr) arr.push(cand)
@@ -235,13 +238,13 @@ export async function runImport({
       const pendingReactivate = new Set() // obstacle-ids
       const pendingInserts = new Map() // externeId → value (fachId/realerStart bereits vergeben)
       // GL-Änderungstracking: obstacle-id → value, NUR wenn der Sachfeld-Hash sich gegenüber dem
-      // zuletzt gespeicherten change_hash wirklich unterscheidet. Der Vergleich läuft NACH der
+      // zuletzt gespeicherten Quellstand wirklich unterscheidet. Der Vergleich läuft NACH der
       // Schleife (siehe unten) — hier steht nur das Ergebnis.
       const pendingAenderungen = new Map()
       // Herkunft des Schreibers, der die Zeile am Ende wirklich gewinnt (last-write wie
       // pendingUpdates): der gespeicherte Hash der Zielzeile und ob der Treffer nur über den
       // Drift-Match zustande kam. Beides entscheidet unten, ob eine Änderung gemeldet wird.
-      const updateHerkunft = new Map() // obstacle-id → { changeHash, viaFuzzy }
+      const updateHerkunft = new Map() // obstacle-id → { stand, viaFuzzy }
 
       for (const [index, item] of items.entries()) {
         const externeId =
@@ -313,7 +316,7 @@ export async function runImport({
             pendingUpdates.set(target.id, value) // gleiche Staerke mehrfach → letzter gewinnt
             // Dieselbe Regel wie pendingUpdates: der Änderungsvergleich unten muss gegen GENAU den
             // Schreiber laufen, der die Zeile am Ende gewinnt.
-            updateHerkunft.set(target.id, { changeHash: target.change_hash, viaFuzzy })
+            updateHerkunft.set(target.id, { stand: target.quell_stand, viaFuzzy })
           }
           stats.aktualisiert += 1
           // Vollbestand: wieder im Feed ⇒ reaktivieren (war's deaktiviert/abgelaufen).
@@ -362,15 +365,25 @@ export async function runImport({
       // Max 2026-09-21: "geaendert ist nur, wenn extern was angepasst wird an bestehende".
       //
       // Zwei Faelle bleiben bewusst stumm:
-      //   changeHash == null → noch nie verglichen (Altzeile vor dem Rollout): nur Baseline setzen.
+      //   stand == null → noch nie verglichen (Altzeile vor dem Rollout): nur Baseline setzen.
+      //     Das gilt auch nach einem Wechsel des Zuschnitts (STAND_VERSION) — standDiff gibt dann
+      //     null zurueck, und der erste Lauf je Quelle stempelt still. Genau daran fehlte es am
+      //     21.09.2026, als ein Deploy 458 Falschmeldungen in einer Minute erzeugte (T-760).
       //   viaFuzzy → die Quelle hat die ID gewechselt, die Zeile wurde ueber Name+Ort wiedergefunden.
       //     Der gespeicherte Hash stammt dann von einer anderen Quell-ID, ein Vergleich damit
       //     misst die ID-Rotation, nicht die Sache. Dieselbe Entscheidung wie in routes/
       //     veraenderungen.js, wo die Rotation seit dem 20.09. nicht mehr als Aenderung zaehlt.
+      //   Hash aus einer ÄLTEREN Formel-Version → nur Baseline setzen (T-760). Sonst meldet der
+      //     erste Lauf nach einem Deploy, der die Hash- oder Identitätslogik anfasst, den GESAMTEN
+      //     Bestand als geaendert. Genau das geschah am 21.09.2026 um 16:00 UTC: 47 Quellen,
+      //     458 Eintraege in einer Minute, 354 davon auf dem Kunden-Dashboard.
       for (const [id, value] of pendingUpdates) {
         const herkunft = updateHerkunft.get(id)
-        if (!herkunft || herkunft.changeHash == null || herkunft.viaFuzzy) continue
-        if (herkunft.changeHash !== changeRelevantHash(value)) pendingAenderungen.set(id, value)
+        if (!herkunft || herkunft.stand == null || herkunft.viaFuzzy) continue
+        // standDiff liefert null, wenn der gespeicherte Stand aus einer aelteren Zuschnitt-Version
+        // stammt — dann wird unten nur die neue Baseline gestempelt, ohne Meldung.
+        const diff = standDiff(herkunft.stand, quellStand(value))
+        if (diff) pendingAenderungen.set(id, { value, diff })
       }
 
       // ── DAS KI-GATE, vor dem Schreiben (T-660) ──────────────────────────────────────────
@@ -385,11 +398,11 @@ export async function runImport({
       // wirklich neu ist. Vorher wuerde das Gate ueber tausende Punkte laufen, die es laengst
       // gesehen hat.
       // Hash der REINEN QUELLDATEN festhalten, BEVOR das Gate eigene Felder in attrs schreibt.
-      // Sonst traegt die eingefuegte Zeile einen change_hash, der UNSERE Ableitungen enthaelt;
+      // Sonst traegt die eingefuegte Zeile einen Quellstand, der UNSERE Ableitungen enthaelt;
       // der naechste Import vergleicht ihn gegen reine Quelldaten, der Hash weicht ab, und jede
       // angereicherte Neuanlage meldet eine "Aenderung", die die Quelle nie gemacht hat.
       // Max 2026-09-20: "Aenderungen von extern tracken, nicht von intern -- unsere raus".
-      for (const value of pendingInserts.values()) value.quellHash = changeRelevantHash(value)
+      for (const value of pendingInserts.values()) value.quellStand = quellStand(value)
 
       const gateBelege = []
       if (gate && pendingInserts.size) {
@@ -407,13 +420,13 @@ export async function runImport({
           part.flatMap(insertParams),
         )
       }
-      // GL-Änderungstracking: change_hash der frisch eingefügten Zeilen setzen (Baseline für den
+      // GL-Änderungstracking: quell_stand der frisch eingefügten Zeilen setzen (Baseline für den
       // NÄCHSTEN Re-Import-Vergleich). Kein obstacle_aenderungen-Eintrag hierfür — "neu" liest
       // direkt obstacles.created_at (routes/veraenderungen.js).
       for (const part of chunk([...pendingInserts.values()], BATCH_ROWS)) {
         await q.query(
-          changeHashBatchSql(placeholders(part.length, CHANGE_HASH_COL_COUNT)),
-          part.flatMap((value) => [connector.quelleId, value.externeId, value.quellHash ?? changeRelevantHash(value)]),
+          quellStandBatchSql(placeholders(part.length, QUELL_STAND_COL_COUNT)),
+          part.flatMap((value) => [connector.quelleId, value.externeId, JSON.stringify(value.quellStand ?? quellStand(value))]),
         )
       }
       for (const part of chunk([...pendingUpdates], BATCH_ROWS)) {
@@ -426,8 +439,9 @@ export async function runImport({
       for (const part of chunk([...pendingAenderungen], BATCH_ROWS)) {
         await q.query(
           aenderungBatchSql(placeholders(part.length, AENDERUNG_COL_COUNT)),
-          part.flatMap(([id, value]) => [
+          part.flatMap(([id, { value, diff }]) => [
             id, value.kategorie, value.quellenId, value.strassenRef, value.gueltigVon, value.gueltigBis,
+            JSON.stringify(diff),
           ]),
         )
       }

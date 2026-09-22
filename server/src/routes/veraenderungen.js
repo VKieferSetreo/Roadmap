@@ -111,9 +111,17 @@
 //
 // Strenger Nebeneffekt, gewollt: die KI-Anreicherung (anreicherung/einspielen.js `spieleEin`)
 // schreibt attrs direkt per eigenem SQL und läuft NIE über UPDATE_SACHFELDER_SQL — der
-// change_hash-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
+// Quellstand-Vergleich für "geaendert" sieht deshalb IMMER nur, was der Connector selbst
 // liefert (`value`, das eingehende Item), nie den angereicherten DB-Wert. Eine reine
-// KI-Anreicherung kann also strukturell nie als "geaendert" auftauchen.
+// KI-Anreicherung kann also strukturell nie als "geaendert" auftauchen. Am 22.09.2026 gegen
+// die Prod-Daten nachgemessen und bestaetigt: von 293 geprueften Eintraegen liess sich kein
+// einziger auf die Anreicherung zurueckfuehren.
+//
+// SEIT T-760 ist "geaendert" ausserdem ENG definiert (obstaclesRepo.js quellStand/standDiff):
+// nur das ENDE der Massnahme und die harten Restriktionswerte zaehlen. Der BEGINN zaehlt
+// NICHT — er rollt bei der Autobahn GmbH taeglich, weil unser Parser den ersten Termin aus
+// einer Terminliste nimmt und der abgelaufene ueber Nacht aus dem Text faellt. Das war die
+// Ursache von 258 der 302 Falschmeldungen am 22.09.
 
 import { Router } from "express"
 import { asyncHandler } from "../util.js"
@@ -510,19 +518,30 @@ const CHURN_CTES = `
 //    reichlich Luft fuer echte Faelle (eine Quelle, die an zwei Tagen hintereinander wirklich
 //    nachbessert) und haetten den Fehler am zweiten Tag gemeldet.
 // 2. TAGESMENGE. Faengt Ursachen ohne Wiederholungsmuster ab, etwa einen Connector-Umbau, der
-//    einmalig den halben Bestand als geaendert meldet. 300 ist das Vierfache des gemessenen
-//    Normalwerts (78 Aenderungen ueber alle 73 Quellen am 21.09. nach dem Fix).
+//    einmalig den halben Bestand als geaendert meldet.
+// 3. EINQUELLIGKEIT (T-760). Kippt eine einzelne Quelle, faellt das weder ueber die Wiederholung
+//    noch ueber die Menge auf — eine Quelle liefert leicht ein paar hundert Zeilen, ohne dass
+//    eine davon sich wiederholt.
 //
-// Unter TRACKING_MIN_MASSE wird die Quote nicht geprueft: bei einer Handvoll Aenderungen ist
+// BEIDE ERSTEN SCHWELLEN HABEN AM 22.09.2026 VERSAGT, und zwar knapp: 302 Aenderungen bei
+// Schwelle 300 waeren gerade so durchgegangen, und die Wiederholungsquote lag bei 2 % (13 von
+// 572), weil die Autobahn-Identifier taeglich rotieren und das Rauschen jeden Tag auf andere
+// Zeilen legen. Gemeldet wurde nichts, obwohl die Metrik um das Dreissigfache danebenlag.
+// Deshalb: Menge auf 50 (Max' Erwartung sind 2 bis 10 am Tag, das Zehnfache ist reichlich Luft)
+// und der dritte Befund, der genau die Signatur dieses Falls hat — 293 von 302 kamen aus 0001.
+//
+// Unter TRACKING_MIN_MASSE werden die Anteile nicht geprueft: bei einer Handvoll Aenderungen ist
 // ein Anteil kein Signal, sondern Zufall.
 const TRACKING_WIEDERHOLUNG_MAX = 0.25
-const TRACKING_TAGESMENGE_MAX = 300
+const TRACKING_TAGESMENGE_MAX = 50
+const TRACKING_EINQUELLIG_MAX = 0.6
 const TRACKING_MIN_MASSE = 30
 
 /** Befunde der Selbstkontrolle — reine Rechnung auf den roh-Zahlen, damit testbar. */
 export function pruefeTrackingGuete(roh, {
   wiederholungMax = TRACKING_WIEDERHOLUNG_MAX,
   tagesmengeMax = TRACKING_TAGESMENGE_MAX,
+  einquelligMax = TRACKING_EINQUELLIG_MAX,
   minMasse = TRACKING_MIN_MASSE,
 } = {}) {
   const heute = Number(roh?.geaendertHeute ?? 0)
@@ -538,6 +557,15 @@ export function pruefeTrackingGuete(roh, {
   }
   if (heute > tagesmengeMax) {
     befunde.push({ art: "tagesmenge", grund: `${heute} Aenderungen heute (Schwelle ${tagesmengeMax})` })
+  }
+  const groessteQuelle = Number(roh?.geaendertHeuteGroessteQuelle ?? 0)
+  if (heute >= minMasse && groessteQuelle / heute > einquelligMax) {
+    befunde.push({
+      art: "einquellig",
+      grund: `${groessteQuelle} von ${heute} Aenderungen stammen aus einer einzigen Quelle ` +
+             `(${Math.round((groessteQuelle / heute) * 100)} %, erlaubt sind ${Math.round(einquelligMax * 100)} %)` +
+             ` — das ist die Signatur eines kippenden Connectors, nicht die von Behoerdenmeldungen`,
+    })
   }
   return befunde
 }
@@ -658,6 +686,11 @@ export async function berechneUebersicht(db, tage) {
              -- nicht in einem Diagnose-Skript: der Worker schlaegt daraus Alarm (worker/index.js,
              -- meldeTrackingGuete) und die Seite weist sie als Beleg aus.
              (SELECT count(*) FROM obstacle_aenderungen WHERE erkannt_am = current_date) AS geaendert_heute,
+            -- Fuer die Selbstkontrolle (T-760): kippt EIN Connector, sieht das weder die
+            -- Wiederholungs- noch die Mengenschwelle.
+            (SELECT coalesce(max(n), 0) FROM (
+               SELECT count(*) AS n FROM obstacle_aenderungen
+                WHERE erkannt_am = current_date GROUP BY quellen_id) q) AS geaendert_heute_groesste_quelle,
              (SELECT count(*) FROM obstacle_aenderungen WHERE erkannt_am = current_date - 1) AS geaendert_gestern,
              (SELECT count(*) FROM (
                 SELECT obstacle_id FROM obstacle_aenderungen WHERE erkannt_am = current_date
@@ -678,6 +711,24 @@ export async function berechneUebersicht(db, tage) {
              WHERE aktiv = false AND tenant_id IS NULL AND quellen_id IS NOT NULL) AS erfassung_vollstaendig_ab`,
     params,
   )
+
+  const { rows: belegRows } = await db.query(
+    `SELECT a.erkannt_am::text AS tag, a.quellen_id, a.strassen_ref, a.aenderung, o.name
+       FROM obstacle_aenderungen a
+       JOIN obstacles o ON o.id = a.obstacle_id
+      WHERE a.aenderung IS NOT NULL
+        AND a.kategorie = ANY($1)
+        AND a.erkannt_am >= current_date - $2::int * interval '1 day'
+        AND a.gueltig_von IS NOT NULL
+        AND (a.gueltig_bis IS NULL OR a.gueltig_bis - a.gueltig_von > 30)
+      ORDER BY a.erkannt_am DESC, a.created_at DESC
+      LIMIT 25`,
+    [kategorien, tage],
+  )
+  const belege = belegRows.map((b) => ({
+    tag: b.tag, quellenId: b.quellen_id, strassenRef: b.strassen_ref,
+    name: b.name, aenderung: b.aenderung,
+  }))
 
   const bucket = () => ({ neu: {}, ausgelaufen: {}, entfernt: {}, geaendert: {} })
   const kat = bucket()
@@ -747,6 +798,7 @@ export async function berechneUebersicht(db, tage) {
       relevanzAusgeklammertNeu: Number(row.roh?.relevanz_ausgeklammert_neu ?? 0),
       relevanzAusgeklammertWeg: Number(row.roh?.relevanz_ausgeklammert_weg ?? 0),
       relevanzAusgeklammertGeaendert: Number(row.roh?.relevanz_ausgeklammert_geaendert ?? 0),
+      geaendertHeuteGroessteQuelle: Number(row.roh?.geaendert_heute_groesste_quelle ?? 0),
       // Selbstkontrolle (T-749): wie viele der heutigen Aenderungen betrafen dieselbe Zeile wie
       // gestern? Ein Ereignis wiederholt sich nicht. Siehe Kommentar an der SQL oben.
       geaendertHeute: Number(row.roh?.geaendert_heute ?? 0),
@@ -757,6 +809,11 @@ export async function berechneUebersicht(db, tage) {
     proStrassenklasse: strasse,
     laufzeiten: row.laufzeiten ?? {},
     vorlaufzeiten: row.vorlaufzeiten ?? {},
+    // Die letzten Aenderungen im Klartext (T-760, Max: "systematisch tracked wenn solche
+    // beispiele kommen das selbe baustelle anders behandelt wird"). Eine Kopfzahl ohne Belege
+    // laesst sich nicht pruefen — genau deshalb fiel erst Max auf, dass 381 nicht stimmen kann.
+    // Eigene, billige Abfrage: die grosse Query oben braucht schon ~55 s.
+    belege,
   }
 }
 

@@ -7,7 +7,6 @@
 // ersten 4 Stellen bestehender fachIds. Transaktionssicher über pg_advisory_xact_lock
 // pro Quelle — Aufrufer MUSS innerhalb von db.tx arbeiten (q = tx-Client).
 
-import { createHash } from "node:crypto"
 import { KATEGORIEN } from "./engine/rules.js"
 import { isFiniteNumber, isPlainObject } from "./util.js"
 import { schlankeRohdaten } from "./connectors/_helpers.js"
@@ -205,17 +204,92 @@ export const insertParams = (o) => [
   o.roh != null ? JSON.stringify(o.roh) : null,
 ]
 
-/** Hash über die Sachfelder, die eine ECHTE inhaltliche Änderung ausmachen — bewusst OHNE
- *  updated_at/roh/quelle (Rausch-Felder, siehe T-737/T-738). gueltig_von/bis sind bewusst DRIN:
- *  eine verschobene Bauphase IST die Änderung, die das GL-Tracking zeigen soll. attrs-Keys
- *  werden sortiert, damit Objekt-Eintragsreihenfolge den Hash nicht künstlich kippt. */
-export function changeRelevantHash(o) {
-  const attrs = Object.fromEntries(Object.entries(o.attrs ?? {}).sort(([a], [b]) => a.localeCompare(b)))
-  const payload = JSON.stringify({
-    kategorie: o.kategorie, name: o.name ?? null, strassenRef: o.strassenRef ?? null,
-    gueltigVon: o.gueltigVon ?? null, gueltigBis: o.gueltigBis ?? null, attrs,
-  })
-  return createHash("sha256").update(payload).digest("hex").slice(0, 16)
+// ── Was ist eine "Änderung"? (T-760, 22.09.2026) ────────────────────────────────────────────
+//
+// Max' Definition, wörtlich: "wir wollen nur das wenn quelle X eine baustelle bsp vom 01-03
+// meldet und dann auf 01-05 verlängert das das als veränderung zählt. nicht was WIR mit den
+// Daten machen."
+//
+// Vorher hing an dieser Stelle ein Hash über kategorie/name/strassenRef/gueltigVon/gueltigBis
+// und ALLE attrs. Das meldete 302 bis 572 "Änderungen" am Tag, erwartet sind 2 bis 10. Gemessen
+// wurde, woher sie kamen:
+//
+//  1. gueltigVon rollt, weil UNSER PARSER eine Liste kürzt. Die Autobahn-Beschreibung nennt
+//     jeden Termin einer wiederkehrenden Maßnahme ("22.09. von 09:00 bis 14:30" / "23.09." /
+//     "28.09."). Wir nehmen den ERSTEN als Beginn. Fällt der abgelaufene Termin über Nacht aus
+//     dem Text, wandert der Beginn einen Tag weiter, ohne dass die Autobahn GmbH etwas gemeldet
+//     hätte. 258 von 302 Einträgen am 22.09. hatten gueltig_von == Erkennungstag.
+//  2. name/attrs.zeitfenster/attrs.nurNachts bewegen sich aus demselben Grund mit.
+//  3. Bei aggregierten Zeilen (externe_id mit "#") sind restbreiteM & Co. ebenfalls UNSERE
+//     Ableitung: mergeAutobahnGruppe/dedupeObstacles mergen sie über die Gruppenmitglieder, die
+//     heute im Feed stehen — wechselt die Gruppe, wechselt der Wert.
+//
+// Übrig bleibt, was die Quelle wirklich aussagt: das ENDE der Maßnahme und die harten
+// Restriktionswerte. Der Gegencheck an der Archivtabelle des Vorgängerfixes: von 628 an zwei
+// Tagen wiederholt gemeldeten Hindernissen hatten genau 8 ein bewegtes Ende (4 verlängert,
+// 4 verkürzt), nach Relevanzfilter 4 — Max' Größenordnung, gemessen statt geschätzt.
+
+/** Version des STAND-Zuschnitts. Steht als `_v` im gespeicherten Objekt; der Importer vergleicht
+ *  nur Stände derselben Version und setzt bei einer älteren still die neue Baseline.
+ *
+ *  Das ist kein Schmuck: Am 21.09.2026 um 16:00 UTC liefen nach einem Worker-Deploy 47 Importe
+ *  über 47 Quellen an und erzeugten in EINER Minute 458 Änderungseinträge, davon 354 mit langer
+ *  Laufzeit — genau die ">300", die dem Kunden auf dem Dashboard standen. 351 davon betrafen
+ *  Hindernisse, die längst existierten; gemeldet hatte niemand etwas. Der Worker lief bis dahin
+ *  auf älterem Code, und sobald sich die Vergleichslogik ändert, weicht der neu berechnete Wert
+ *  vom gespeicherten ab und der GESAMTE Bestand meldet sich einmal als "geändert".
+ *  WER quellStand() ÄNDERT, ZÄHLT DIESE ZAHL HOCH. Der nächste Lauf ist dann still. */
+export const STAND_VERSION = 1
+
+/** Der Stand, den die QUELLE gemeldet hat — reduziert auf das, was eine Änderung ausmacht.
+ *  Ersetzt den früheren changeRelevantHash: als Objekt statt als Hash, damit derselbe Vergleich
+ *  auch den Beleg liefert ("welches Feld von welchem Wert auf welchen"). */
+export function quellStand(o) {
+  const attrs = o.attrs ?? {}
+  // Datum auf den Tag normalisieren. Der Connector liefert "2026-05-01", ein Date-Objekt käme
+  // über String() als "Fri May 01 …" heraus und würde bei jedem Vergleich abweichen. Der
+  // DATE-TypeParser gibt heute zwar Strings zurück (T-465), aber diese Funktion darf nicht
+  // davon abhängen, wer sie aufruft.
+  const tag = (d) =>
+    d == null ? null : d instanceof Date ? d.toISOString().slice(0, 10) : String(d).slice(0, 10)
+  const stand = {
+    _v: STAND_VERSION,
+    // Der Beginn ist KEIN Auslöser (siehe oben), wird aber mitgeführt: er ist das einzige
+    // Merkmal, an dem sich ein Ende-Rücksprung unseres Parsers erkennen lässt (siehe standDiff).
+    gueltigVon: tag(o.gueltigVon),
+    gueltigBis: tag(o.gueltigBis),
+  }
+  // Aggregierte Zeilen tragen gemergte, also abgeleitete Restriktionswerte — bei ihnen zählt
+  // allein das Ende. Sonst holt man sich über die Hintertür zurück, was gerade rausgeflogen ist.
+  if (!String(o.externeId ?? "").includes("#")) {
+    for (const k of [...RESTRIKTIONS_ATTRS, ...BLOCK_FLAGS]) {
+      if (attrs[k] != null) stand[k] = attrs[k]
+    }
+  }
+  return stand
+}
+
+/** Was hat sich zwischen zwei Quellständen bewegt? `null` = nichts Meldenswertes.
+ *  Rückgabe sonst: { feld: [alt, neu] } — das ist zugleich der Beleg, der gespeichert wird. */
+export function standDiff(alt, neu) {
+  if (!alt || !neu || alt._v !== neu._v) return null // andere Version → nur Baseline setzen
+  const diff = {}
+  for (const k of new Set([...Object.keys(alt), ...Object.keys(neu)])) {
+    if (k === "_v" || k === "gueltigVon") continue // Beginn ist nie Auslöser
+    const a = alt[k] ?? null
+    const b = neu[k] ?? null
+    if (a === b) continue
+    // Ein Wert VERSCHWINDET: das ist bei jedem Feld dieselbe Fehlerklasse — unser Parser findet
+    // im Text nicht mehr, was er vorher fand (die "Ende:"-Zeile, die Breitenangabe). Die Quelle
+    // hat damit nichts gesagt. Dass eine Maßnahme wirklich vorbei ist, zeigt die Auswertung
+    // ohnehin als "ausgelaufen"/"weggefallen", nicht als Änderung.
+    if (b === null) continue
+    // Ende springt auf den Beginn zurück: im Text steht nur noch EIN Termin, die Ende-Heuristik
+    // nimmt dann denselben Tag. Gemessen als häufigster Kunstsprung (z.B. 23.09. → 22.09.).
+    if (k === "gueltigBis" && a !== null && b < a && b === neu.gueltigVon) continue
+    diff[k] = [a, b]
+  }
+  return Object.keys(diff).length ? diff : null
 }
 
 /** Sachfeld-Update beim Re-Import: fachId/realerStart/aktiv/tenant bleiben stabil.
@@ -225,7 +299,7 @@ export function changeRelevantHash(o) {
 export const UPDATE_SACHFELDER_SQL = `UPDATE obstacles SET kategorie = $2, name = $3, beschreibung = $4,
     lat = $5, lng = $6, strassen_ref = $7, zustaendig = $8, quelle = $9, attrs = $10,
     gueltig_von = $11, gueltig_bis = $12, ki_aufbereitet = (ki_aufbereitet OR $13), geom = $14,
-    roh = coalesce($15::jsonb, roh), change_hash = $16, updated_at = now()
+    roh = coalesce($15::jsonb, roh), quell_stand = $16::jsonb, updated_at = now()
   WHERE id = $1 RETURNING *`
 
 export const sachfeldParams = (id, o) => [
@@ -236,7 +310,7 @@ export const sachfeldParams = (id, o) => [
   // coalesce statt Zuweisung: liefert ein Connector (noch) kein roh, soll ein einmal erfasster
   // Rohsatz nicht bei jedem Import geloescht werden.
   o.roh != null ? JSON.stringify(o.roh) : null,
-  changeRelevantHash(o),
+  JSON.stringify(quellStand(o)),
 ]
 export const SACHFELD_COL_COUNT = 16 // sachfeldParams: id + 15 Sachfelder
 
@@ -251,9 +325,9 @@ export const sachfeldBatchSql = (valuesSql) => `UPDATE obstacles AS o SET
     quelle = v.quelle::jsonb, attrs = v.attrs::jsonb,
     gueltig_von = v.gueltig_von::date, gueltig_bis = v.gueltig_bis::date,
     ki_aufbereitet = (o.ki_aufbereitet OR v.ki_aufbereitet::boolean),
-    geom = v.geom::jsonb, roh = coalesce(v.roh::jsonb, o.roh), change_hash = v.change_hash, updated_at = now()
+    geom = v.geom::jsonb, roh = coalesce(v.roh::jsonb, o.roh), quell_stand = v.quell_stand::jsonb, updated_at = now()
   FROM (VALUES ${valuesSql}) AS v(id, kategorie, name, beschreibung, lat, lng, strassen_ref,
-    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom, roh, change_hash)
+    zustaendig, quelle, attrs, gueltig_von, gueltig_bis, ki_aufbereitet, geom, roh, quell_stand)
   WHERE o.id = v.id::uuid`
 
 // T-262: siehe importer.js — Index = fach_id ohne die letzten 10 Zeichen (QUELLE+DDMMYY), damit
