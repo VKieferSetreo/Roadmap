@@ -1,9 +1,9 @@
-// Änderungsverfolgung (recharts, lazy geladen): Zeitreihe neu/geändert/ausgelaufen/entfernt,
+// Änderungsverfolgung (recharts, lazy geladen): Zeitreihe neu/ausgelaufen/entfernt,
 // Kategorie- und Straßenklassen-Aufschlüsselung, Laufzeit- und Vorlaufzeit-Verteilung.
 //
 // Farbcode ist eine AMPEL, keine kategoriale Palette (Max 2026-09-21): rot = schlecht für den
-// Transportplaner, grün = gut. Neu rot (neues Hindernis), geändert orange, ausgelaufen gelb,
-// entfernt grün (Hindernis weg). Dieselbe Ampel trägt Lauf- und Vorlaufzeit: je kurzfristiger
+// Transportplaner, grün = gut. Neu rot (neues Hindernis), ausgelaufen gelb, entfernt grün
+// (Hindernis weg). "Geändert" ist seit 2026-10-07 nicht mehr dabei, siehe VeraenderungenPage. Dieselbe Ampel trägt Lauf- und Vorlaufzeit: je kurzfristiger
 // bzw. länger laufend, desto röter. Der Farbcode ist app-weit fest und wird NIE nach Rang
 // neu zugeordnet.
 // "ausgelaufen" (planmäßig, gueltig_bis war schon erreicht) vs. "entfernt" (Maßnahme war noch
@@ -21,8 +21,8 @@ import type { VeraenderungenUebersicht } from "@/api/roadmap"
 import { katMeta } from "@/components/project/findingMeta"
 import { AMPEL } from "@/lib/ampel"
 
-const FARBE = { neu: AMPEL.rot, geaendert: AMPEL.orange, ausgelaufen: AMPEL.gelb, entfernt: AMPEL.gruen } as const
-const LABEL = { neu: "Neu", geaendert: "Geändert", ausgelaufen: "Ausgelaufen", entfernt: "Entfernt" } as const
+const FARBE = { neu: AMPEL.rot, ausgelaufen: AMPEL.gelb, entfernt: AMPEL.gruen } as const
+const LABEL = { neu: "Neu", ausgelaufen: "Ausgelaufen", entfernt: "Entfernt" } as const
 
 const TOOLTIP = {
   borderRadius: 12,
@@ -36,10 +36,10 @@ function Leer({ text = "Noch keine Daten in diesem Fenster" }: { text?: string }
   return <div className="flex h-44 items-center justify-center text-sm text-neutral-400">{text}</div>
 }
 
-const TYPEN = ["neu", "geaendert", "ausgelaufen", "entfernt"] as const
+const TYPEN = ["neu", "ausgelaufen", "entfernt"] as const
 
 // Recharts' Legend sortiert per Default (itemSorter="value") alphabetisch nach Beschriftung:
-// aus "Neu, Geändert, Ausgelaufen, Entfernt" wurde "Ausgelaufen, Entfernt, Geändert, Neu",
+// aus "Neu, Ausgelaufen, Entfernt" wurde "Ausgelaufen, Entfernt, Neu",
 // also eine andere Ordnung als im gestapelten Balken daneben. Wir wollen überall die fachliche
 // Reihenfolge (Max 2026-09-21), deshalb Sortierung aus: stabiles Sortieren lässt die
 // Eingabereihenfolge stehen. Gilt für Balken wie Donut.
@@ -52,15 +52,15 @@ const OHNE_SORTIERUNG = () => 0
 // leeres Diagramm.
 const BEWEGUNG = !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches)
 
-/** Gestapelte Säulen: neu/geändert/ausgelaufen/entfernt je Tag. Das Kern-Chart der Auswertung —
+/** Gestapelte Säulen: neu/ausgelaufen/entfernt je Tag. Das Kern-Chart der Auswertung —
  *  zeigt Tag für Tag, wie viel Bewegung im Bestand ist. */
 // Grautoene fuer die Tage VOR dem Stichtag. Dort raeumt die Hygiene inaktive Zeilen bereits weg
 // (30 Tage), weggefallene Massnahmen sind nur noch teilweise rekonstruierbar und vorzeitig
 // entfernte gar nicht mehr. Die Balken bestehen dort also fast nur aus Neuanlagen. Sie farbig
 // wie vollstaendige Tage zu zeichnen, waere eine Behauptung, die die Daten nicht tragen
 // (Max 2026-09-21: "grau machen mit Tooltip, dass diese noch nicht systematisch erfasst wurden
-// und Luecken sein koennen"). Vier Abstufungen, damit die Stapelung erkennbar bleibt.
-const GRAU = { neu: "#c4c4c8", geaendert: "#b0b0b5", ausgelaufen: "#9c9ca2", entfernt: "#88888f" } as const
+// und Luecken sein koennen"). Drei Abstufungen, damit die Stapelung erkennbar bleibt.
+const GRAU = { neu: "#c4c4c8", ausgelaufen: "#a6a6ab", entfernt: "#88888f" } as const
 const UNVOLLSTAENDIG_HINWEIS = "Noch nicht systematisch erfasst, hier können Lücken sein"
 
 /** Tooltip, der unvollständige Tage als solche ausweist. */

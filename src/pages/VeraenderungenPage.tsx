@@ -4,11 +4,16 @@
 //
 // Layout bewusst mit einer berechneten Kennzahl vorne (Ø Ereignisse/Tag + Spontan-Anteil),
 // erst danach die Belege als Charts — analytisch, keine Bewertung im Text.
+//
+// Nur noch Neu, Ausgelaufen und Entfernt (Max 2026-10-07). "Geändert" ist raus: ob eine
+// Quelle eine Maßnahme wirklich ändert oder nur anders ausliefert (Re-Import, Überschreiben,
+// wechselnde Felder), lässt sich nicht belegen, und die Zahl blähte die Seite auf. Das Backend
+// liefert `geaendert` weiter, die Seite zeigt und zählt es nicht.
 
 import { Suspense, lazy, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
-  Activity, CalendarX2, Gauge, PlusCircle, Sparkles, XCircle, Zap, type LucideIcon,
+  Activity, CalendarX2, Gauge, PlusCircle, XCircle, Zap, type LucideIcon,
 } from "lucide-react"
 import { PageContainer } from "@/components/layout/PageContainer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
@@ -17,7 +22,6 @@ import { api, type VeraenderungenUebersicht } from "@/api/roadmap"
 import { useDataSourceStore } from "@/store/datasource"
 import { useContextStore } from "@/store/context"
 import { VeraenderungenFreigaben } from "@/components/veraenderungen/VeraenderungenFreigaben"
-import { AenderungsBelege } from "@/components/veraenderungen/AenderungsBelege"
 import { cn } from "@/lib/cn"
 import { AMPEL } from "@/lib/ampel"
 
@@ -102,11 +106,10 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
     <div className="flex flex-col gap-5">
       <Hero d={d} insight={insight} />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Dieselbe Ampel wie in den Diagrammen: eine Kategorie hat EINE Farbe auf der Seite,
             sonst ist "Neu" oben grün und im Balken darunter rot. */}
         <Kpi icon={PlusCircle} label="Neu" value={d.gesamt.neu} akzent={AMPEL.rot} />
-        <Kpi icon={Sparkles} label="Geändert" value={d.gesamt.geaendert} akzent={AMPEL.orange} />
         <Kpi icon={CalendarX2} label="Ausgelaufen" value={d.gesamt.ausgelaufen} akzent={AMPEL.gelb} />
         <Kpi icon={XCircle} label="Entfernt" value={d.gesamt.entfernt} akzent={AMPEL.gruen} />
       </div>
@@ -166,8 +169,6 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
         </Card>
       </div>
 
-      <AenderungsBelege belege={d.belege} />
-
       {/* Nur Admin: die Auswertung selbst steht jedem Angemeldeten offen, sie nach AUSSEN
           freizugeben ist eine andere Entscheidung. */}
       {isAdmin ? <VeraenderungenFreigaben /> : null}
@@ -181,7 +182,7 @@ export function Inhalt({ d }: { d: VeraenderungenUebersicht }) {
  *  als es über den vollen Nenner zu glätten). */
 function computeInsight(d: VeraenderungenUebersicht) {
   const proTag = d.tage > 0
-    ? (d.gesamt.neu + d.gesamt.geaendert + d.gesamt.ausgelaufen + d.gesamt.entfernt) / d.tage
+    ? (d.gesamt.neu + d.gesamt.ausgelaufen + d.gesamt.entfernt) / d.tage
     : 0
   const v = d.vorlaufzeiten
   const messbar = (v.spontan ?? 0) + (v.kurzfristig ?? 0) + (v.geplant ?? 0) + (v.langfristig ?? 0)
@@ -204,7 +205,7 @@ function Hero({ d, insight }: { d: VeraenderungenUebersicht; insight: ReturnType
             <Gauge className="h-3.5 w-3.5" /> Änderungsverfolgung · letzte {d.tage} Tage
           </p>
           <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-neutral-900 sm:text-[1.7rem]">
-            Neue, geänderte und weggefallene Hindernisse
+            Neue und weggefallene Hindernisse
           </h1>
           <p className="mt-2 max-w-xl text-sm text-neutral-600">
             Grundlage sind{" "}
