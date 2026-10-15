@@ -213,7 +213,7 @@
 ---
 
 # 5. SACHSEN-ANHALT
-> Vertiefung/Verifikation der Erst-Recherche (`data/blockade-quellen/sachsen-anhalt.json`).
+> Vertiefung/Verifikation der Erst-Recherche (JSON-Rohdaten am 15.06. entfernt, 1d594b5).
 
 ### 5.1 LSBB — Sperrinfo (Baustellen/Sperrungen/Umleitungen) WFS — **P1 technisch / P3 kommerziell, verifiziert**
 - **quelle:** LSBB Sperrinfo (SPERRINFOSYS ST) — `service.ifak.eu/sperrinfo`
