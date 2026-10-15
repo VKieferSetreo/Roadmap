@@ -3,8 +3,9 @@
 // .gpkg-Datei zu erzeugen hieße SQLite-Seiten von Hand zu schreiben; der Rest von
 // parseGpkgPunkte ist SQL-Verdrahtung, die nur gegen eine echte Datei etwas beweist.
 
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { deflateRawSync } from "node:zlib"
+import { resolve } from "node:path"
 import {
   MAX_PUNKTE_JE_EBENE,
   MAX_ATTRIBUTE_JE_PUNKT,
@@ -16,6 +17,16 @@ import {
 } from "./parsePunkte"
 import { unzip } from "./unzip"
 import { _decodeGpkgGeometry } from "./parseGpkg"
+
+// Vite macht aus "?url" im Test einen Webpfad (/node_modules/...), den sql.js unter Node als
+// Dateipfad liest: ENOENT, und der Abbruch kam als unbehandelte Rejection zurueck, die die CI rot
+// faerbte. Mit dem echten Dateipfad laedt das WASM, und der Test prueft wirklich die Datei.
+vi.mock("sql.js", async (original) => {
+  const echt = await original<typeof import("sql.js")>()
+  // Vitest laeuft vom Repo-Root (lokal und in der CI); import.meta.url ist hier selbst ein Webpfad.
+  const wasm = resolve("node_modules/sql.js/dist/sql-wasm.wasm")
+  return { default: (config?: object) => echt.default({ ...config, locateFile: () => wasm }) }
+})
 
 /** jsdom-Blobs können weder text() noch arrayBuffer() — daher eine minimale File-Attrappe. */
 function alsDatei(name: string, inhalt: string | Uint8Array): File {
@@ -605,7 +616,6 @@ describe("T-744: Kappung, Grenzen, Diagnosen", () => {
 
 describe("GeoPackage-Fehler (T-744, Review)", () => {
   it("meldet eine kaputte .gpkg auf Deutsch statt mit dem rohen SQLite-Text", async () => {
-    // Egal ob sql.js schon beim WASM-Laden oder erst beim Öffnen scheitert — der Nutzer liest Deutsch.
     const kaputt = new File([new Uint8Array([1, 2, 3, 4])], "kaputt.gpkg")
     await expect(parsePunkteFile(kaputt)).rejects.toThrow(/GeoPackage konnte nicht gelesen werden/)
     await expect(parsePunkteFile(kaputt)).rejects.not.toThrow(/file is not a database|not a database/i)
